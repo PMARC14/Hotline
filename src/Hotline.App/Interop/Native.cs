@@ -30,6 +30,7 @@ internal static class Native
     [DllImport("user32.dll")] public static extern bool PostMessage(nint hWnd, uint msg, nint wParam, nint lParam);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern uint RegisterWindowMessage(string name);
     [DllImport("user32.dll")] public static extern nint MonitorFromWindow(nint hWnd, uint flags);
+    [DllImport("user32.dll")] public static extern nint MonitorFromPoint(POINT pt, uint flags);
     [DllImport("shcore.dll")] public static extern int GetDpiForMonitor(nint hMonitor, int type, out uint dpiX, out uint dpiY);
     [DllImport("user32.dll")] public static extern bool GetCursorPos(out POINT pt);
     [DllImport("user32.dll")] public static extern nint CreatePopupMenu();

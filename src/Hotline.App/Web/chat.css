@@ -1,9 +1,9 @@
 /* All colors/sizes come from --hl-* tokens injected by the host (Core ThemeTokens). Background stays transparent for acrylic. */
-:root { color-scheme: light dark; }
+/* No color-scheme here: in WebView2 a dark color-scheme paints an opaque canvas over the acrylic backdrop. */
 * { box-sizing: border-box; }
 html, body { margin: 0; height: 100%; background: transparent; overflow: hidden;
   font-family: var(--hl-font); font-size: var(--hl-font-size); color: var(--hl-text); }
-#app { display: flex; flex-direction: column; height: 100vh; padding: 10px 12px 12px; }
+#app { display: flex; flex-direction: column; justify-content: flex-end; height: 100vh; padding: 10px 12px 12px; }
 #messages { flex: 1 1 auto; overflow-y: auto; display: none; flex-direction: column; gap: 10px; padding: 4px 2px 10px; }
 #app.has-messages #messages { display: flex; }
 .msg { max-width: 100%; line-height: 1.5; overflow-wrap: anywhere; }

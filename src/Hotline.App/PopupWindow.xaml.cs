@@ -108,20 +108,28 @@ public sealed partial class PopupWindow : Window
 
     private void PlaceOnActiveMonitor()
     {
-        var anchor = PreviousForeground != 0 ? PreviousForeground : Hwnd;
-        // GetFromWindowId can return null for some shell/transient windows (crash seen on Copilot key taps);
-        // fall back to the monitor under the cursor, then the primary monitor.
-        var area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(anchor), DisplayAreaFallback.Nearest);
-        if (area is null)
+        // A remembered window may have closed since (stale handle): its monitor/DPI lookups then fail and the
+        // popup came out at 100% scale ("occasionally small"). Only trust live windows; otherwise use the cursor.
+        if (PreviousForeground != 0 && !Native.IsWindow(PreviousForeground))
+            PreviousForeground = 0;
+        var anchor = PreviousForeground;
+        DisplayArea? area = null;
+        nint monitor = 0;
+        if (anchor != 0)
         {
-            _log.Error($"no display area for previous foreground window 0x{anchor:X} ({Native.ClassNameOf(anchor)}); using cursor monitor");
+            area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(anchor), DisplayAreaFallback.Nearest);
+            monitor = Native.MonitorFromWindow(anchor, Native.MONITOR_DEFAULTTONEAREST);
+        }
+        if (area is null || monitor == 0)
+        {
+            if (anchor != 0) _log.Error($"no display area for previous foreground window 0x{anchor:X} ({Native.ClassNameOf(anchor)}); using cursor monitor");
             Native.GetCursorPos(out var pt);
-            area = DisplayArea.GetFromPoint(new PointInt32(pt.X, pt.Y), DisplayAreaFallback.Primary) ?? DisplayArea.Primary;
+            area = DisplayArea.GetFromPoint(new PointInt32(pt.X, pt.Y), DisplayAreaFallback.Nearest) ?? DisplayArea.Primary;
+            monitor = Native.MonitorFromPoint(pt, Native.MONITOR_DEFAULTTONEAREST);
         }
         var wa = area.WorkArea;
-
-        var monitor = Native.MonitorFromWindow(anchor, Native.MONITOR_DEFAULTTONEAREST);
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        if (scale == 1.0 && monitor == 0) _log.Error("monitor DPI lookup failed; using 100%");
 
         var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), _settings.Width, _settings.Height, scale, _settings.VerticalPosition);
         _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
