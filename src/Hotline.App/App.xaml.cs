@@ -1,3 +1,5 @@
+using System.Diagnostics;
+using Hotline.App.Interop;
 using Hotline.Core.Activation;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
@@ -12,6 +14,7 @@ public partial class App : Application
     private FileLog? _log;
     private PopupWindow? _popup;
     private ActivationRouter? _router;
+    private TrayIcon? _tray;
 
     public App(AppActivationArguments initialActivation)
     {
@@ -44,6 +47,16 @@ public partial class App : Application
 
         AppInstance.GetCurrent().Activated += (_, a) =>
             _popup.DispatcherQueue.TryEnqueue(() => _router.OnActivation(a, isFirstLaunch: false));
+
+        var hook = new WindowMessageHook(_popup.Hwnd);
+        CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
+        HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
+            () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
+        _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
+            onToggle: _router.TogglePopup,
+            onOpenSettings: () => Process.Start(new ProcessStartInfo(store.FilePath) { UseShellExecute = true }),
+            onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
+            onQuit: () => { _tray?.Dispose(); Exit(); });
 
         _router.OnActivation(_initialActivation, isFirstLaunch: true);
     }
