@@ -118,12 +118,17 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
    signed with a self-signed cert. **Verify** that it appears in Settings → Personalization → Text input → Copilot key, and that tap and
    hold launch the URIs. Also verify that the MSIX builds without full Visual Studio. If the picker refuses it, fall back to the policy key + hotkey.
 1. **Shell:** single instance + activation redirect, tray, pre-warmed hidden centered popup, fallback hotkey, SettingsStore.
-2. **Chat:** WebView2 chat view, ChatController, OpenAiCompatBackend streaming, HistoryStore.
-3. **Cloud APIs:** Gemini API + Anthropic API backends, SecretStore.
-4. **CLIs:** ClaudeCodeBackend (persistent stream-json) and AgyBackend (install `agy`, verify flags and image handling).
-5. **Context:** window capture (Windows.Graphics.Capture, foreground or picker), region-select overlay, drag-drop/paste,
-   clipboard/selection.
-6. **Polish:** Settings UI, command-bar and side-panel layouts, double-tap action, README, GitHub repo.
+2. **Chat + Gemini (Plan 2):** WebView2 chat view (compact bar grows upward into a panel), ChatController, HistoryStore,
+   theme tokens → CSS variables, + menu (file/image picker, paste, drag-drop, capture window/screen), Gemini API backend
+   (`streamGenerateContent?alt=sse`, stateless, client-held history; the newer stateful Interactions API was considered
+   and not used, because stateless calls make mid-chat backend switching trivial), API keys in Windows PasswordVault.
+3. **More backends (Plan 3), priority order:** Antigravity CLI (`agy` 1.2.14: persistent `--input-format stream-json
+   --output-format stream-json`; events `init` / `step_update{text_delta}` / `result`; loads ~19k tokens of tools per
+   turn, so pick a light agent/mode), then OpenAI-compatible endpoint, then Claude Code CLI (persistent stream-json).
+4. **Region select (later):** Gemini-style draw-a-box capture, designed against Microsoft Click to Do (on-screen
+   entity actions) for contrast.
+5. **Polish:** Settings UI, command-bar and side-panel layouts, double-tap action, user theme files, README, release.
+6. **Context extras:** clipboard/selected-text auto-attach.
 7. **Tools (low priority):** "PowerToys Run"-style actions the AI can call: launch an installed app
    (Start-menu/`shell:AppsFolder` index), open a file, folder, URL or `ms-settings:` page, and search apps. Hotline hosts them as a local
    **MCP server**, so Claude Code, `agy` and API backends with tool calling share one tool set. Every action
