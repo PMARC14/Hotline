@@ -120,3 +120,7 @@
 - switching backend mid-conversation
 - rapid key toggles during streaming
 - mixed-DPI growth
+
+## Update 2026-10-02
+Plan 2 (`docs/superpowers/plans/2026-10-02-hotline-plan2-chat-agy.md`) executed: chat view, attachments/capture,
+agy backend. Next: Plan 3 = Gemini API (when the user has an AI Studio key) → OpenAI-compatible → Claude Code.

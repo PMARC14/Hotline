@@ -3,7 +3,7 @@
 #   powershell -File tests\smoke\smoke.ps1 -Install   # build + install first (needs scripts\dev-cert.ps1 once)
 # Drives the same inputs Windows uses (protocol URIs, Copilot fast-path window messages, fallback hotkey)
 # and asserts on the app log. Exit code = number of failed checks. Restores settings.json afterwards.
-param([switch]$Install)
+param([switch]$Install, [switch]$WithAgy)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
 if ($Install) { & (Join-Path $root 'scripts\install.ps1') | Out-Host }
@@ -70,14 +70,14 @@ try {
     Start-Process 'hotline://key?state=Tap'; Start-Sleep 2
     Start-Process 'hotline://key?state=Down'; Start-Sleep 2
     Expect-Log 'protocol Tap is handled' $n 'key Tap via Protocol -> TogglePopup'
-    Expect-Log 'protocol hold is handled' $n 'key HoldStart via Protocol -> ShowPopup'
+    Expect-Log 'protocol hold is handled' $n 'key HoldStart via Protocol -> NewChat'
     Check 'single instance' (@(Get-Process Hotline).Count -eq 1) "($(@(Get-Process Hotline).Count) processes)"
 
     # 3. Copilot fast path (as the shell sends it)
     $n = Get-LogCount
     Send-Fast 0; Start-Sleep -Milliseconds 400; Send-Fast 1; Start-Sleep -Milliseconds 400; Send-Fast 2; Start-Sleep -Milliseconds 400; Send-Fast 9; Start-Sleep 1
     Expect-Log 'fast path Tap' $n 'key Tap via FastPath -> TogglePopup'
-    Expect-Log 'fast path HoldStart' $n 'key HoldStart via FastPath -> ShowPopup'
+    Expect-Log 'fast path HoldStart' $n 'key HoldStart via FastPath -> NewChat'
     Expect-Log 'fast path HoldStop' $n 'key HoldStop via FastPath -> None'
     Expect-Log 'fast path unknown wParam is ignored' $n 'fast path: unknown wParam 9'
 
@@ -85,6 +85,23 @@ try {
     1..15 | ForEach-Object { Send-Fast 0; Start-Sleep -Milliseconds 120 }
     Start-Sleep 1
     Check 'survives rapid taps' ([bool](Get-Process -Id $hotlinePid -ErrorAction SilentlyContinue))
+
+    # 4b. Chat view loads in the popup
+    $n = Get-LogCount
+    Restart-Hotline
+    for ($i = 0; $i -lt 20 -and -not (Get-NewLog $n | Select-String -SimpleMatch 'chat view ready'); $i++) { Start-Sleep -Milliseconds 500 }
+    Expect-Log 'chat view loads' $n 'chat view ready'
+
+    # 4c. Optional: a real agy round trip (needs agy installed and signed in)
+    if ($WithAgy) {
+        $n = Get-LogCount
+        Start-Process 'hotline://key?state=Down'; Start-Sleep 2
+        $shell = New-Object -ComObject WScript.Shell
+        $shell.SendKeys('Reply with exactly: pong{ENTER}')
+        for ($i = 0; $i -lt 120 -and -not (Get-NewLog $n | Select-String -Pattern 'chat answer (completed|failed)'); $i++) { Start-Sleep -Milliseconds 500 }
+        Expect-Log 'agy answers' $n 'chat answer completed'
+        Check 'one agy process' (@(Get-Process agy -ErrorAction SilentlyContinue).Count -eq 1)
+    }
 
     # 5. Fallback hotkey
     $json = [IO.File]::ReadAllText($settingsFile) -replace '"fallbackHotkey":\s*(null|"[^"]*")', '"fallbackHotkey": "Ctrl+Alt+H"'
@@ -112,6 +129,8 @@ try {
     [SmokeWin]::PostMessage([SmokeWin]::Popup([uint32](Get-Process Hotline).Id), 0x0111, [IntPtr]4, [IntPtr]0) | Out-Null
     Start-Sleep 2
     Check 'tray Quit exits' (-not (Get-Process Hotline -ErrorAction SilentlyContinue))
+    Start-Sleep 1
+    Check 'agy exits with Hotline' (-not (Get-Process agy -ErrorAction SilentlyContinue))
 }
 finally {
     Get-Process Hotline -ErrorAction SilentlyContinue | Stop-Process -Force

@@ -32,7 +32,22 @@ Tray icon → right-click → **Edit settings file**, then **Restart (apply sett
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the popup |
 
+| `chat.defaultBackend` | `agy` | Which AI answers (`agy` = Gemini via your Antigravity CLI sign-in) |
+| `chat.backends[].model` | (agy default) | e.g. `gemini-3.8-flash-low` for faster answers (`agy models` lists them) |
+| `chat.backends[].effort` | (agy default) | `low`, `medium`, `high`, `max` |
+| `chat.maxHeight` | `560` | How tall the popup may grow while chatting |
+| `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to `chat.maxHeight` once you chat |
+| `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
+| `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in LocalState\history (text only) |
+
 Comments and trailing commas are allowed. A broken file is kept as `settings.json.bad` and defaults are used.
+
+### Chatting
+
+Press the Copilot key, type, Enter. **+** attaches files or captures the window you were in / the whole screen;
+you can also paste (Ctrl+V) or drag files in. Ctrl+N (or a long press of the Copilot key) starts a new chat, Esc hides.
+The Antigravity backend needs the [Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once).
+Chats run through `agy` are saved in its own history (`~/.gemini/antigravity-cli`), so `agy` → `/resume` shows them.
 
 ## Debugging
 
