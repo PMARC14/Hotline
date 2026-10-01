@@ -9,6 +9,7 @@ public sealed class HotlineSettings
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
     public DiagnosticsSettings Diagnostics { get; set; } = new();
+    public ChatSettings Chat { get; set; } = new();
 }
 
 public sealed class DiagnosticsSettings
@@ -49,4 +50,39 @@ public sealed class WindowSettings
     public double TintOpacity { get; set; } = 0.15;
     /// <summary>Acrylic luminosity layer, 0 (most see-through) to 1.</summary>
     public double LuminosityOpacity { get; set; } = 0.35;
+}
+
+public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode }
+
+public sealed class BackendProfile
+{
+    public string Id { get; set; } = "";
+    public BackendType Type { get; set; }
+    public string Name { get; set; } = "";
+    /// <summary>Model override (agy: e.g. "gemini-3.8-flash-low"; null = backend default).</summary>
+    public string? Model { get; set; }
+    public string? Endpoint { get; set; }
+    /// <summary>CLI executable path; null = auto-detect.</summary>
+    public string? CliPath { get; set; }
+    /// <summary>agy custom agent name (default "hotline").</summary>
+    public string? Agent { get; set; }
+    /// <summary>Extra CLI arguments, space separated.</summary>
+    public string? ExtraArgs { get; set; }
+}
+
+public sealed class ChatSettings
+{
+    public string DefaultBackend { get; set; } = "agy";
+    public List<BackendProfile> Backends { get; set; } = DefaultBackends();
+    /// <summary>Popup grows upward from the bar to at most this height (DIPs).</summary>
+    public int MaxHeight { get; set; } = 560;
+    public bool SaveHistory { get; set; } = true;
+    public int HistoryRetentionDays { get; set; } = 30;
+    /// <summary>Longest edge for attached/captured images (pixels).</summary>
+    public int MaxImagePixels { get; set; } = 2048;
+
+    public static List<BackendProfile> DefaultBackends() =>
+    [
+        new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" },
+    ];
 }

@@ -89,6 +89,14 @@ public sealed class SettingsStore(string directory)
         s.Activation ??= new ActivationSettings();
         s.Window ??= new WindowSettings();
         s.Diagnostics ??= new DiagnosticsSettings();
+        s.Chat ??= new ChatSettings();
+        s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).ToList();
+        if (s.Chat.Backends.Count == 0) s.Chat.Backends = ChatSettings.DefaultBackends();
+        foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
+        if (!s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
+        s.Chat.MaxHeight = Math.Clamp(s.Chat.MaxHeight, 160, 4000);
+        s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
+        s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
         s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);

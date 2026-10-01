@@ -20,4 +20,16 @@ public static class PopupGeometry
             workArea.Y + (int)Math.Round((workArea.Height - h) * v),
             w, h);
     }
+
+    /// <summary>
+    /// Grows the popup upward from its bar: keeps the bar's bottom edge, height = content clamped to
+    /// [bar height, maxPx], and never above the work area's top.
+    /// </summary>
+    public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea)
+    {
+        var h = Math.Clamp(contentPx, bar.Height, Math.Max(bar.Height, Math.Min(maxPx, workArea.Height)));
+        var bottom = bar.Y + bar.Height;
+        var y = Math.Max(workArea.Y, bottom - h);
+        return bar with { Y = y, Height = h };
+    }
 }
