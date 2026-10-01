@@ -24,7 +24,7 @@ public sealed partial class PopupWindow : Window
     /// <summary>The window the user was in before the popup appeared (target for monitor choice and, later, capture).</summary>
     public nint PreviousForeground { get; private set; }
 
-    public PopupWindow(WindowSettings settings, PopupToggleGuard guard, FileLog log)
+    public PopupWindow(WindowSettings settings, PopupToggleGuard guard, FileLog log, bool showDebugStatus)
     {
         _settings = settings;
         _guard = guard;
@@ -32,7 +32,7 @@ public sealed partial class PopupWindow : Window
         InitializeComponent();
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-        SystemBackdrop = new DesktopAcrylicBackdrop();
+        SystemBackdrop = Backdrops.Create(settings);
         ExtendsContentIntoTitleBar = true;
 
         var presenter = OverlappedPresenter.Create();
@@ -51,6 +51,11 @@ public sealed partial class PopupWindow : Window
             ThemeChoice.Dark => ElementTheme.Dark,
             _ => ElementTheme.Default,
         };
+
+        if (settings.Backdrop == BackdropKind.Solid)
+            Root.Background = (Brush)Application.Current.Resources["SolidBackgroundFillColorBaseBrush"];
+        if (showDebugStatus)
+            StatusText.Visibility = Visibility.Visible;
 
         Activated += OnActivated;
     }
@@ -119,6 +124,7 @@ public sealed partial class PopupWindow : Window
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
 
         var r = PopupGeometry.CenterIn(new RectI(wa.X, wa.Y, wa.Width, wa.Height), _settings.Width, _settings.Height, scale);
+        _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 }

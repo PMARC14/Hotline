@@ -20,8 +20,18 @@ public partial class App : Application
     {
         _initialActivation = initialActivation;
         InitializeComponent();
-        UnhandledException += (_, e) => _log?.Error("unhandled exception", e.Exception);
+        UnhandledException += (_, e) => _log?.Error("unhandled XAML exception", e.Exception);
+        // Last chance: record anything that is about to terminate the process.
+        AppDomain.CurrentDomain.UnhandledException += (_, e) =>
+            _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
+        TaskScheduler.UnobservedTaskException += (_, e) => _log?.Error("unobserved task exception", e.Exception);
     }
+
+#if DEBUG
+    internal const bool IsDebugBuild = true;
+#else
+    internal const bool IsDebugBuild = false;
+#endif
 
     internal static string DataDirectory
     {
@@ -39,9 +49,10 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
-        _log.Info($"starting; settings at {store.FilePath}");
+        _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
+        _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
 
-        _popup = new PopupWindow(settings.Window, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log);
+        _popup = new PopupWindow(settings.Window, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose);
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
 

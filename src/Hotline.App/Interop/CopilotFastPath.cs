@@ -27,6 +27,7 @@ internal static class CopilotFastPath
 
             hook.On(WM_COPILOT, (wParam, _) =>
             {
+                log.Debug($"fast path message wParam={wParam} foreground=0x{Native.GetForegroundWindow():X} ({Native.ClassNameOf(Native.GetForegroundWindow())})");
                 if (ActivationParser.ParseFastPath((nuint)wParam) is { } e) onKey(e);
                 else log.Info($"fast path: unknown wParam {wParam}");
                 return true;

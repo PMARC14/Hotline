@@ -52,4 +52,17 @@ public sealed class FileLogTests : IDisposable
             File.SetAttributes(path, FileAttributes.Normal);
         }
     }
+
+    [Fact]
+    public void Debug_lines_are_written_only_when_verbose()
+    {
+        var path = Path.Combine(_dir, "hotline.log");
+        var log = new FileLog(path);
+        log.Debug("hidden detail");
+        log.Verbose = true;
+        log.Debug("visible detail");
+        var text = File.ReadAllText(path);
+        Assert.DoesNotContain("hidden detail", text);
+        Assert.Contains("DEBUG visible detail", text);
+    }
 }

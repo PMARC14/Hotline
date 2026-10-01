@@ -5,6 +5,14 @@ public sealed class FileLog(string path, long maxBytes = 1_000_000)
 {
     private readonly Lock _gate = new();
 
+    /// <summary>When true, <see cref="Debug"/> lines are written.</summary>
+    public bool Verbose { get; set; }
+
+    public void Debug(string message)
+    {
+        if (Verbose) Write("DEBUG", message);
+    }
+
     public void Info(string message) => Write("INFO", message);
 
     public void Error(string message, Exception? ex = null)

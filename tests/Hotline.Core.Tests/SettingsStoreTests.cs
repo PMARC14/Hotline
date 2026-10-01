@@ -118,4 +118,34 @@ public sealed class SettingsStoreTests : IDisposable
 
         Assert.Equal(640, s.Window.Width);
     }
+
+    [Fact]
+    public void Defaults_are_translucent_acrylic_and_quiet_logging()
+    {
+        var s = New().Load();
+        Assert.Equal(BackdropKind.Acrylic, s.Window.Backdrop);
+        Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
+        Assert.False(s.Diagnostics.VerboseLogging);
+    }
+
+    [Theory]
+    [InlineData(-1.0, 0.0)]
+    [InlineData(5.0, 1.0)]
+    public void Opacities_are_clamped_to_unit_range(double value, double expected)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
+            $$"""{ "window": { "tintOpacity": {{value}}, "luminosityOpacity": {{value}} } }""");
+        var s = New().Load();
+        Assert.Equal(expected, s.Window.TintOpacity);
+        Assert.Equal(expected, s.Window.LuminosityOpacity);
+    }
+
+    [Fact]
+    public void Null_diagnostics_section_is_replaced_with_defaults()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "diagnostics": null }""");
+        Assert.NotNull(New().Load().Diagnostics);
+    }
 }

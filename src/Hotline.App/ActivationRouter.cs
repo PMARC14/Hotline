@@ -12,6 +12,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     public void OnActivation(AppActivationArguments args, bool isFirstLaunch)
     {
         log.Info($"activation kind={args.Kind} first={isFirstLaunch}");
+        if (args.Data is IProtocolActivatedEventArgs p) log.Debug($"activation uri={p.Uri}");
         switch (args.Kind)
         {
             // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
