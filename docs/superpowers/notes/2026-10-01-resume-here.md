@@ -133,3 +133,26 @@ Paused at the user's request. Next: write Plan 3b from the spec's 3b bullet, whi
 dropdowns in the bottom bar and configurable connections. The user will later provide a final icon SVG
 (upside-down phone hanging by its cord); export it to PNG and run make-assets.ps1 -Source.
 Testing etiquette: leave Hotline in the tray with the panel closed; no test windows/typing/clipboard without asking.
+
+## Plan 3b design notes (drafted, plan doc not yet written — usage limit hit)
+Write `docs/superpowers/plans/2026-10-02-hotline-plan3b-settings-providers.md` with these 5 tasks:
+1. Core connections: BackendType += Anthropic, Local. `ConnectionTypes` catalog (display name, default name,
+   fields flags Endpoint/ApiKey/CliPath/Agent/ExtraArgs, default endpoint, effort levels — only agy verified:
+   low/medium/high/max; others empty until Plan 4). `ConnectionEditor` Add/Duplicate/Remove(not last; reassign
+   default)/SetDefault with unique slug ids + names. Tests.
+2. Core `SettingsService` (Update(mutate) → public SettingsStore.Normalize → Save → Changed event) and
+   `SettingsSchema` descriptors (Toggle/Number/Choice/Text items per page: General, Appearance, Window, Chat,
+   Advanced; RequiresRestart for FallbackHotkey, SaveHistory, retention). Tests: round-trip, ranges vs Normalize.
+3. Core models + secrets: `ModelListParsers` (agy `id\tLabel` lines, OpenAI data[].id, Gemini models[] with
+   generateContent, Anthropic data[].id/display_name, Claude Code aliases sonnet/opus/haiku), `ModelCatalog`
+   (10-min cache, HTTP via injected HttpClient, agy via injected runner, ModelListException), `ISecretStore` +
+   `SecretKeys.ApiKey(id)`, `BackendCache.Invalidate(id)`. Tests with fake HttpMessageHandler.
+4. App bottom bar: replace BackendLabel with Provider / Model (editable, loads on open) / Effort ComboBoxes
+   (`ProviderBar`); disabled while answering; changes → SettingsService.Update + BackendCache.Invalidate;
+   PasswordVault secret store; `CliRunner` for `agy models`; PopupWindow.ApplyAppearance + GrowMode setter,
+   ChatPresenter.ApplyAppearance + BusyChanged; live apply on SettingsService.Changed.
+5. App settings window (hand-rolled settings cards, no toolkit dependency; NavigationView; pages generated from
+   SettingsSchema; Connections page: list + add-by-type/duplicate/remove/default + editor incl. API key
+   PasswordBox, model refresh, "Test connection"; Advanced: open settings/logs folder). Open from ⚙, tray
+   "Settings…", and `hotline://settings` (ActivationPlan gets OpenSettings flag + Core test). README.
+Execution: Native (inline), Sonnet 5.5 for the final review; leave Hotline in tray with panel closed.
