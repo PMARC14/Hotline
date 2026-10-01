@@ -136,7 +136,7 @@ finally {
     Get-Process Hotline -ErrorAction SilentlyContinue | Stop-Process -Force
     if ($null -ne $originalSettings) { [IO.File]::WriteAllText($settingsFile, $originalSettings) }
     Remove-Item "$settingsFile.bad" -ErrorAction SilentlyContinue
-    Start-Process "shell:AppsFolder\$pfn!App"   # leave Hotline running as before
+    Start-Process 'hotline://tray'   # leave Hotline running in the tray, panel closed
 }
 
 Write-Host ''

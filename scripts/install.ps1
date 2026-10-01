@@ -7,4 +7,4 @@ Get-Process Hotline -ErrorAction SilentlyContinue | Stop-Process -Force
 Add-AppxPackage -Path $msix -ForceApplicationShutdown -ForceUpdateFromAnyVersion
 $pfn = (Get-AppxPackage pmarc14.Hotline).PackageFamilyName
 Write-Host "Installed $pfn ($Configuration) from $msix"
-Start-Process "shell:AppsFolder\$pfn!App"
+Start-Process 'hotline://tray'   # start in the tray, panel closed

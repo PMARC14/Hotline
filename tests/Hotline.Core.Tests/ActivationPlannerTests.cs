@@ -37,4 +37,11 @@ public class ActivationPlannerTests
     public void Other_activations_show_popup(ActivationKind kind, bool first)
         => Assert.Equal(new ActivationPlan(null, ShowPopup: true),
             ActivationPlanner.Plan(new ActivationRequest(kind, null, first)));
+
+    [Theory]
+    [InlineData(ActivationKind.Protocol, false)]
+    [InlineData(ActivationKind.ProtocolForResults, true)]
+    public void Tray_uri_starts_quietly_without_popup(ActivationKind kind, bool first)
+        => Assert.Equal(new ActivationPlan(null, ShowPopup: false),
+            ActivationPlanner.Plan(new ActivationRequest(kind, new Uri("hotline://tray"), first)));
 }

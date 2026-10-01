@@ -58,6 +58,9 @@ internal sealed partial class ChatPresenter(
         popup.CaptureRequested += window => Run("capture", () => CaptureAsync(window));
 
         popup.Input.PreviewKeyDown += Input_PreviewKeyDown;
+        var restingBorder = popup.Composer.BorderBrush;
+        popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = _style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
+        popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = restingBorder; popup.Composer.BorderThickness = new Thickness(1); };
         popup.Input.Paste += Input_Paste;
         popup.SendButton.Click += (_, _) => Run("send", SendAsync);
         popup.AttachFilesItem.Click += (_, _) => Run("pick files", PickFilesAsync);
@@ -168,10 +171,7 @@ internal sealed partial class ChatPresenter(
         var stack = new StackPanel { Spacing = 4 };
         if (message.Text.Length > 0) stack.Children.Add(text);
         if (message.Attachments.Count > 0)
-            stack.Children.Add(new TextBlock
-            {
-                Text = string.Join("   ", message.Attachments.Select(a => "📎 " + a.Name)), FontSize = _tokens.FontSizePx - 2, Foreground = _style.Muted, TextWrapping = TextWrapping.Wrap,
-            });
+            stack.Children.Add(AttachmentStrip(message.Attachments, thumbSize: 72));
         popup.MessagesPanel.Children.Add(new Border
         {
             Child = stack, Background = Brush(_tokens.UserBubble), CornerRadius = new CornerRadius(_tokens.RadiusPx + 2),

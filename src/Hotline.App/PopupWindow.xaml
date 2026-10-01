@@ -61,7 +61,7 @@
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
-                    <TextBox x:Name="Input" x:FieldModifier="internal" Grid.Column="1" PlaceholderText="📞 Hotline"
+                    <TextBox x:Name="Input" x:FieldModifier="internal" Grid.Column="1" PlaceholderText="📞 Hotline" Padding="10,6,6,6"
                              AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="180" VerticalAlignment="Center"
                              ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     <Button x:Name="SendButton" x:FieldModifier="internal" Grid.Column="2" Width="44" Height="44" Padding="0"

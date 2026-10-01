@@ -18,7 +18,10 @@ public static class ActivationPlanner
     {
         // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
         ActivationKind.Protocol or ActivationKind.ProtocolForResults =>
-            ActivationParser.ParseUri(r.Uri) is { } key ? new ActivationPlan(key, false) : new ActivationPlan(null, true),
+            ActivationParser.ParseUri(r.Uri) is { } key ? new ActivationPlan(key, false)
+            // hotline://tray: start or wake quietly in the tray (used by install/test scripts)
+            : string.Equals(r.Uri?.Host, "tray", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false)
+            : new ActivationPlan(null, true),
         ActivationKind.StartupTask when r.IsFirstLaunch => new ActivationPlan(null, false), // signed in: stay in tray
         _ => new ActivationPlan(null, true),
     };

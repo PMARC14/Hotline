@@ -168,7 +168,7 @@ internal sealed partial class ChatPresenter
                 _ = SetThumbnailAsync(image, a.Data);
                 chip.Children.Add(image);
             }
-            else chip.Children.Add(new FontIcon { Glyph = "\uE8A5", FontSize = 16 });
+            else chip.Children.Add(FileTypeTile(a.Name, size: 28));
             chip.Children.Add(new TextBlock { Text = a.Name, MaxWidth = 160, TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center, FontSize = 12 });
             var remove = new Button { Content = new FontIcon { Glyph = "\uE711", FontSize = 10 }, Padding = new Thickness(4), BorderThickness = new Thickness(0), Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent) };
             ToolTipService.SetToolTip(remove, "Remove");
@@ -196,5 +196,42 @@ internal sealed partial class ChatPresenter
             image.Source = bitmap;
         }
         catch (Exception ex) { log.Error("thumbnail failed", ex); } // chip still shows the name
+    }
+
+    /// <summary>Row of attachment previews for a sent message: image thumbnails, file-type tiles for the rest.</summary>
+    private UIElement AttachmentStrip(IReadOnlyList<Attachment> attachments, double thumbSize)
+    {
+        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, HorizontalAlignment = HorizontalAlignment.Right };
+        foreach (var a in attachments)
+        {
+            FrameworkElement tile;
+            if (a.Kind == AttachmentKind.Image)
+            {
+                var image = new Image { Width = thumbSize, Height = thumbSize, Stretch = Microsoft.UI.Xaml.Media.Stretch.UniformToFill };
+                _ = SetThumbnailAsync(image, a.Data);
+                tile = new Border { Child = image, CornerRadius = new CornerRadius(6) };
+            }
+            else tile = FileTypeTile(a.Name, thumbSize);
+            ToolTipService.SetToolTip(tile, a.Name);
+            row.Children.Add(tile);
+        }
+        return row;
+    }
+
+    /// <summary>A document icon with the file extension underneath (e.g. "MD", "CS").</summary>
+    private FrameworkElement FileTypeTile(string name, double size)
+    {
+        var ext = Path.GetExtension(name).TrimStart('.').ToUpperInvariant();
+        if (ext.Length == 0) ext = "FILE";
+        if (ext.Length > 4) ext = ext[..4];
+        var icon = new FontIcon { Glyph = "\uE8A5", FontSize = size * 0.5 };
+        if (size < 40)
+            return new Grid { Width = size, Height = size, Children = { icon } };
+        var label = new TextBlock { Text = ext, FontSize = 11, FontWeight = Microsoft.UI.Text.FontWeights.SemiBold, HorizontalAlignment = HorizontalAlignment.Center };
+        var stack = new StackPanel { Spacing = 2, VerticalAlignment = VerticalAlignment.Center, Children = { icon, label } };
+        return new Border
+        {
+            Width = size, Height = size, CornerRadius = new CornerRadius(6), Background = Brush(_tokens.SurfaceStrong), Child = stack,
+        };
     }
 }
