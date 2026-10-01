@@ -27,7 +27,7 @@ public sealed partial class PopupWindow : Window
     private RectI _bar;
     private RectI _work;
     private double _scale = 1;
-    private int _contentPx;
+    private double _contentDip;
 
     public nint Hwnd { get; }
     /// <summary>The window the user was in before the popup appeared (target for monitor choice and capture).</summary>
@@ -67,8 +67,6 @@ public sealed partial class PopupWindow : Window
             ThemeChoice.Dark => ElementTheme.Dark,
             _ => ElementTheme.Default,
         };
-        if (settings.Backdrop == BackdropKind.Solid)
-            Root.Background = (Brush)Application.Current.Resources["SolidBackgroundFillColorBaseBrush"];
         if (showDebugStatus)
             StatusText.Visibility = Visibility.Visible;
         MessagesScroll.VerticalScrollBarVisibility = settings.Scrollbar switch
@@ -119,7 +117,7 @@ public sealed partial class PopupWindow : Window
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
     public void SetContentHeight(double dip)
     {
-        _contentPx = (int)Math.Ceiling(dip * _scale);
+        _contentDip = dip; // DIPs: converted with the current monitor scale in ApplyHeight
         if (AppWindow.IsVisible) ApplyHeight();
     }
 
@@ -170,7 +168,7 @@ public sealed partial class PopupWindow : Window
     {
         if (_bar.Width == 0) return;
         var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
-        var r = PopupGeometry.GrowUp(_bar, _contentPx, maxPx, _work, _growMode);
+        var r = PopupGeometry.GrowUp(_bar, (int)Math.Ceiling(_contentDip * _scale), maxPx, _work, _growMode);
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 

@@ -32,4 +32,23 @@ public sealed class HotlinePathsTests : IDisposable
     [Fact]
     public void Nothing_to_migrate_is_fine()
         => Assert.False(HotlinePaths.MigrateFromLegacy(Path.Combine(_root, "none"), Path.Combine(_root, ".hotline")));
+
+    [Fact]
+    public void Existing_history_file_does_not_abort_migration()
+    {
+        var legacy = Path.Combine(_root, "legacy");
+        var data = Path.Combine(_root, ".hotline");
+        Directory.CreateDirectory(Path.Combine(legacy, "history"));
+        Directory.CreateDirectory(Path.Combine(data, "history"));
+        File.WriteAllText(Path.Combine(legacy, "settings.json"), "{}");
+        File.WriteAllText(Path.Combine(legacy, "history", "a.jsonl"), "old");
+        File.WriteAllText(Path.Combine(legacy, "history", "b.jsonl"), "b");
+        File.WriteAllText(Path.Combine(data, "history", "a.jsonl"), "already here");
+
+        Assert.True(HotlinePaths.MigrateFromLegacy(legacy, data));
+        Assert.Equal("already here", File.ReadAllText(Path.Combine(data, "history", "a.jsonl")));
+        Assert.Equal("b", File.ReadAllText(Path.Combine(data, "history", "b.jsonl")));
+        Assert.True(File.Exists(Path.Combine(data, "settings.json")));
+        Assert.False(File.Exists(Path.Combine(data, "settings.json.migrating")));
+    }
 }

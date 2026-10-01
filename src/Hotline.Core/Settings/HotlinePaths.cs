@@ -16,15 +16,24 @@ public static class HotlinePaths
         if (File.Exists(newSettings) || !File.Exists(legacySettings)) return false;
 
         Directory.CreateDirectory(dataDir);
-        File.Copy(legacySettings, newSettings);
+        // History first, file by file: an existing/locked file is skipped instead of aborting the migration.
         var legacyHistory = Path.Combine(legacyDir, "history");
         if (Directory.Exists(legacyHistory))
         {
             var newHistory = Path.Combine(dataDir, "history");
             Directory.CreateDirectory(newHistory);
             foreach (var file in Directory.EnumerateFiles(legacyHistory))
-                File.Copy(file, Path.Combine(newHistory, Path.GetFileName(file)), overwrite: false);
+            {
+                var target = Path.Combine(newHistory, Path.GetFileName(file));
+                if (File.Exists(target)) continue;
+                try { File.Copy(file, target); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep going */ }
+            }
         }
+        // settings.json last, via a temp file: its presence marks the migration done, so a failure retries next launch.
+        var temp = newSettings + ".migrating";
+        File.Copy(legacySettings, temp, overwrite: true);
+        File.Move(temp, newSettings);
         return true;
     }
 }

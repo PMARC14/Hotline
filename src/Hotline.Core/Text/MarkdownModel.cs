@@ -32,6 +32,14 @@ public static class MarkdownModel
 
     public static IReadOnlyList<MdBlock> Parse(string markdown) => Blocks(Markdown.Parse(markdown ?? "", Pipeline));
 
+    /// <summary>Index of the first block that differs (streaming: everything before it can stay rendered).</summary>
+    public static int FirstChangedIndex(IReadOnlyList<MdBlock> previous, IReadOnlyList<MdBlock> current)
+    {
+        var i = 0;
+        while (i < previous.Count && i < current.Count && previous[i].Equals(current[i])) i++;
+        return i;
+    }
+
     private static Seq<MdBlock> Blocks(ContainerBlock container) => new(container.Select(Block).OfType<MdBlock>());
 
     private static MdBlock? Block(Block block) => block switch
@@ -44,6 +52,7 @@ public static class MarkdownModel
             new Seq<IReadOnlyList<MdBlock>>(l.OfType<ListItemBlock>().Select(i => (IReadOnlyList<MdBlock>)Blocks(i)))),
         QuoteBlock q => new MdQuote(Blocks(q)),
         ThematicBreakBlock => new MdRule(),
+        HtmlBlock html => new MdCode("html", html.Lines.ToString()), // show raw HTML rather than silently dropping it
         Table t => new MdTable(
             new Seq<IReadOnlyList<IReadOnlyList<MdInline>>>(t.OfType<TableRow>().Select(r =>
                 (IReadOnlyList<IReadOnlyList<MdInline>>)new Seq<IReadOnlyList<MdInline>>(r.OfType<TableCell>().Select(CellInlines)))),

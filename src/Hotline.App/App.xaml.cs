@@ -58,9 +58,11 @@ public partial class App : Application
     {
         var dataDir = DataDirectory;
         var privateDir = PrivateDirectory;
-        bool migrated;
+        bool migrated = false, migrationFailed = false;
         try { migrated = HotlinePaths.MigrateFromLegacy(privateDir, dataDir); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { migrated = false; Debug.WriteLine(ex); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { migrationFailed = true; Debug.WriteLine(ex); }
+        // If the move failed, keep using the old settings this session (never write defaults over the user data).
+        if (migrationFailed) dataDir = privateDir;
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
@@ -108,7 +110,12 @@ public partial class App : Application
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
-            onOpenSettings: () => Process.Start(new ProcessStartInfo(store.FilePath) { UseShellExecute = true }),
+            onOpenSettings: () =>
+            {
+                try { Process.Start(new ProcessStartInfo(store.FilePath) { UseShellExecute = true }); }
+                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+                { Process.Start(new ProcessStartInfo("notepad.exe", $"\"{store.FilePath}\"") { UseShellExecute = true }); }
+            },
             onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
             onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); }).Wait(TimeSpan.FromSeconds(2)); Exit(); });
 

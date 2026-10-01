@@ -32,4 +32,11 @@ public class ThemeTokensTests
     [Fact]
     public void Font_is_a_xaml_family_list()
         => Assert.Equal("Segoe UI Variable Text, Segoe UI", ThemeTokens.Dark.Font);
+
+    [Fact]
+    public void Solid_background_token_differs_by_theme()
+    {
+        ThemeColor.Parse(ThemeTokens.Dark.SolidBackground);
+        Assert.NotEqual(ThemeTokens.Dark.SolidBackground, ThemeTokens.Light.SolidBackground);
+    }
 }

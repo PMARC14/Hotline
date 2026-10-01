@@ -15,10 +15,13 @@ public sealed partial record ThemeTokens(
     private const string DefaultFont = "Segoe UI Variable Text, Segoe UI";
 
     public static ThemeTokens Dark { get; } = new(
-        "#FFF3F3F3", "#FFA8A8A8", "#FF8B7CFF", "#0FFFFFFF", "#1AFFFFFF", "#1FFFFFFF", "#388B7CFF", "#59000000", DefaultFont, 14, 8);
+        "#FFF3F3F3", "#FFA8A8A8", "#FF8B7CFF", "#0FFFFFFF", "#1AFFFFFF", "#1FFFFFFF", "#388B7CFF", "#59000000", DefaultFont, 14, 8) { SolidBackground = "#FF202020" };
 
     public static ThemeTokens Light { get; } = new(
-        "#FF1A1A1A", "#FF5C5C5C", "#FF5B4BF5", "#0A000000", "#12000000", "#1A000000", "#245B4BF5", "#0D000000", DefaultFont, 14, 8);
+        "#FF1A1A1A", "#FF5C5C5C", "#FF5B4BF5", "#0A000000", "#12000000", "#1A000000", "#245B4BF5", "#0D000000", DefaultFont, 14, 8) { SolidBackground = "#FFF3F3F3" };
+
+    /// <summary>Opaque panel background for the Solid backdrop (follows the chosen theme, not the OS theme).</summary>
+    public string SolidBackground { get; init; } = "#FF202020";
 
     /// <summary>Built-in tokens with the user's font settings applied (unsafe font names are ignored).</summary>
     public static ThemeTokens For(bool dark, WindowSettings window)

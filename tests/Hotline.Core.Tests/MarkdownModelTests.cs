@@ -110,4 +110,21 @@ public class MarkdownModelTests
     [Fact]
     public void Empty_input_gives_no_blocks()
         => Assert.Empty(MarkdownModel.Parse(""));
+
+    [Fact]
+    public void Raw_html_blocks_are_kept_as_text_not_dropped()
+    {
+        var c = Assert.IsType<MdCode>(Assert.Single(MarkdownModel.Parse("<details>\n<summary>More</summary>\nhidden text\n</details>")));
+        Assert.Contains("hidden text", c.Code);
+    }
+
+    [Fact]
+    public void First_changed_block_index_finds_streaming_tail()
+    {
+        var a = MarkdownModel.Parse("# T\n\npara one\n\npara two");
+        var b = MarkdownModel.Parse("# T\n\npara one\n\npara two grows");
+        Assert.Equal(2, MarkdownModel.FirstChangedIndex(a, b));
+        Assert.Equal(3, MarkdownModel.FirstChangedIndex(a, a));
+        Assert.Equal(0, MarkdownModel.FirstChangedIndex([], b));
+    }
 }

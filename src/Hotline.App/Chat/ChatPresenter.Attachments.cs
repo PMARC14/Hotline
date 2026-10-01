@@ -49,11 +49,23 @@ internal sealed partial class ChatPresenter
 
     private partial void Input_Paste(object sender, TextControlPasteEventArgs e)
     {
-        var content = Clipboard.GetContent();
+        DataPackageView content;
+        try { content = Clipboard.GetContent(); }
+        catch (Exception ex) { log.Error("clipboard unavailable", ex); return; } // busy clipboard: default paste
         if (content.Contains(StandardDataFormats.StorageItems))
         {
             e.Handled = true;
-            Run("paste files", async () => await AddFilesAsync((await content.GetStorageItemsAsync()).OfType<StorageFile>().ToList()));
+            Run("paste files", async () =>
+            {
+                var items = await content.GetStorageItemsAsync();
+                var folders = items.OfType<StorageFolder>().Select(f => f.Name).ToList();
+                if (folders.Count > 0) Notice($"Folders can not be attached ({string.Join(", ", folders)}).", InfoBarSeverity.Warning);
+                await AddFilesAsync(items.OfType<StorageFile>().ToList());
+            });
+        }
+        else if (content.Contains(StandardDataFormats.Text))
+        {
+            return; // text wins (Excel/Office copy text plus a bitmap): normal paste into the box
         }
         else if (content.Contains(StandardDataFormats.Bitmap))
         {
@@ -69,7 +81,6 @@ internal sealed partial class ChatPresenter
                 await AddBytesAsync($"pasted-{DateTime.Now:HHmmss}.png", "image/png", bytes);
             });
         }
-        // plain text: default paste
     }
 
     private partial void Root_DragOver(object sender, DragEventArgs e)
@@ -167,7 +178,7 @@ internal sealed partial class ChatPresenter
             popup.ChipsPanel.Children.Add(new Border
             {
                 Child = chip, Padding = new Thickness(6, 3, 2, 3), CornerRadius = new CornerRadius(8),
-                Background = (Microsoft.UI.Xaml.Media.Brush)Application.Current.Resources["ControlFillColorSecondaryBrush"],
+                Background = Brush(_tokens.SurfaceStrong),
             });
         }
         popup.ChipsPanel.Visibility = tray.Items.Count == 0 ? Visibility.Collapsed : Visibility.Visible;

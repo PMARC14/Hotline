@@ -23,8 +23,10 @@ internal sealed partial class ChatPresenter(
 {
     private sealed class AssistantView
     {
-        public required Border Body { get; init; }
+        public required StackPanel Body { get; init; }
         public required StackPanel Container { get; init; }
+        public required TextBlock Caret { get; init; }
+        public IReadOnlyList<MdBlock> Blocks { get; set; } = [];
         public string Text { get; set; } = "";
         public bool Streaming { get; set; } = true;
         public bool Dirty { get; set; }
@@ -44,7 +46,9 @@ internal sealed partial class ChatPresenter(
             _ => Application.Current.RequestedTheme == ApplicationTheme.Dark,
         };
         _tokens = ThemeTokens.For(dark, settings.Window);
-        _style = new RenderStyle(_tokens.FontSizePx, new FontFamily(_tokens.Font), Brush(_tokens.Muted), Brush(_tokens.CodeBackground), _tokens.RadiusPx, OpenLink);
+        _style = new RenderStyle(_tokens.FontSizePx, new FontFamily(_tokens.Font), Brush(_tokens.Muted), Brush(_tokens.CodeBackground), Brush(_tokens.Accent), _tokens.RadiusPx, OpenLink);
+        if (settings.Window.Backdrop == BackdropKind.Solid)
+            popup.Root.Background = Brush(_tokens.SolidBackground); // follows the chosen theme, not the OS theme
         popup.Input.FontSize = _tokens.FontSizePx;
         popup.Input.FontFamily = _style.Font;
 
@@ -181,10 +185,12 @@ internal sealed partial class ChatPresenter(
         var container = new StackPanel { Spacing = 2 };
         if (backendName.Length > 0)
             container.Children.Add(new TextBlock { Text = backendName, FontSize = 11, Foreground = _style.Muted });
-        var body = new Border();
+        var body = new StackPanel { Spacing = 8 };
+        var caret = new TextBlock { Text = "▍", Foreground = _style.Accent, FontSize = _tokens.FontSizePx };
         container.Children.Add(body);
+        container.Children.Add(caret);
         popup.MessagesPanel.Children.Add(container);
-        _assistants[id] = new AssistantView { Body = body, Container = container, Dirty = true };
+        _assistants[id] = new AssistantView { Body = body, Container = container, Caret = caret, Dirty = true };
         _renderTimer?.Start();
     }
 
@@ -210,18 +216,28 @@ internal sealed partial class ChatPresenter(
         ScrollToEnd(force: false);
     }
 
+    /// <summary>
+    /// Re-renders changed answers. Only blocks from the first changed one onward are rebuilt (completed paragraphs,
+    /// code blocks and tables stay put, keeping selection), and the interval adapts to how long rendering takes.
+    /// </summary>
     private void RenderDirty()
     {
+        var watch = Stopwatch.StartNew();
         var any = false;
         foreach (var view in _assistants.Values.Where(v => v.Dirty))
         {
             view.Dirty = false;
             any = true;
-            var text = view.Streaming ? view.Text + " ▍" : view.Text;
-            view.Body.Child = MarkdownRenderer.Render(MarkdownModel.Parse(text), _style);
+            var blocks = MarkdownModel.Parse(view.Text);
+            var from = MarkdownModel.FirstChangedIndex(view.Blocks, blocks);
+            while (view.Body.Children.Count > from) view.Body.Children.RemoveAt(view.Body.Children.Count - 1);
+            for (var b = from; b < blocks.Count; b++) view.Body.Children.Add(MarkdownRenderer.RenderBlock(blocks[b], _style));
+            view.Blocks = blocks;
+            view.Caret.Visibility = view.Streaming ? Visibility.Visible : Visibility.Collapsed;
         }
-        if (!any) _renderTimer?.Stop();
-        else ScrollToEnd(force: false);
+        if (!any) { _renderTimer?.Stop(); return; }
+        _renderTimer?.SetInterval(RenderThrottle.NextInterval(watch.Elapsed));
+        ScrollToEnd(force: false);
     }
 
     // ---- notices, height, scrolling ---------------------------------------------------------
@@ -252,7 +268,7 @@ internal sealed partial class ChatPresenter(
         var sv = popup.MessagesScroll;
         var nearBottom = sv.ScrollableHeight - sv.VerticalOffset < 48;
         if (!force && !nearBottom) return;
-        popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
+        popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal,
             () => sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: true));
     }
 
@@ -268,9 +284,16 @@ internal sealed partial class ChatPresenter(
     /// <summary>Until the settings window (Plan 3b) exists: open ~/.hotline so settings.json is one click away.</summary>
     private void OpenSettings()
     {
-        Directory.CreateDirectory(dataDirectory);
-        Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{store.FilePath}\"") { UseShellExecute = true });
-        popup.HidePopup();
+        try
+        {
+            Directory.CreateDirectory(dataDirectory);
+            Process.Start(new ProcessStartInfo("explorer.exe", $"/select,\"{store.FilePath}\"") { UseShellExecute = true });
+            popup.HidePopup();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
+        {
+            Notice($"Could not open the settings folder ({dataDirectory}): {ex.Message}", InfoBarSeverity.Error);
+        }
     }
 
     private void OpenLink(string url)
@@ -317,6 +340,7 @@ internal sealed partial class ChatPresenter(
             _timer.Tick += (_, _) => tick();
         }
         public void Start() { if (!_timer.IsRunning) _timer.Start(); }
+        public void SetInterval(TimeSpan interval) { if (_timer.Interval != interval) _timer.Interval = interval; }
         public void Stop() => _timer.Stop();
     }
 

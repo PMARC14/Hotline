@@ -38,7 +38,7 @@ Tray icon → right-click → **Edit settings file**, then **Restart (apply sett
 | `chat.defaultBackend` | `agy` | Which AI answers (`agy` = Gemini via your Antigravity CLI sign-in) |
 | `chat.backends[].model` | (agy default) | e.g. `gemini-3.8-flash-low` for faster answers (`agy models` lists them) |
 | `chat.backends[].effort` | (agy default) | `low`, `medium`, `high`, `max` |
-| `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to `chat.maxHeight` once you chat |
+| `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height (`window.maxHeightPercent`) once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in %USERPROFILE%\.hotline\history (text only) |
 

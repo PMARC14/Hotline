@@ -8,7 +8,7 @@ using Windows.ApplicationModel.DataTransfer;
 
 namespace Hotline.App.Chat;
 
-internal sealed record RenderStyle(double FontSize, FontFamily Font, Brush Muted, Brush CodeBackground, double Radius, Action<string> OpenLink);
+internal sealed record RenderStyle(double FontSize, FontFamily Font, Brush Muted, Brush CodeBackground, Brush Accent, double Radius, Action<string> OpenLink);
 
 /// <summary>Renders the Core markdown block model as native, selectable WinUI text.</summary>
 internal static class MarkdownRenderer
@@ -22,7 +22,7 @@ internal static class MarkdownRenderer
         return panel;
     }
 
-    private static UIElement RenderBlock(MdBlock block, RenderStyle s) => block switch
+    public static UIElement RenderBlock(MdBlock block, RenderStyle s) => block switch
     {
         MdParagraph p => Rich(p.Inlines, s, s.FontSize, bold: false),
         MdHeading h => Rich(h.Inlines, s, s.FontSize + h.Level switch { 1 => 6, 2 => 4, _ => 2 }, bold: true),
@@ -31,7 +31,7 @@ internal static class MarkdownRenderer
         MdQuote q => new Border
         {
             BorderThickness = new Thickness(3, 0, 0, 0), Padding = new Thickness(10, 0, 0, 0),
-            BorderBrush = (Brush)Application.Current.Resources["AccentFillColorDefaultBrush"], Child = Render(q.Blocks, s),
+            BorderBrush = s.Accent, Child = Render(q.Blocks, s),
         },
         MdRule => new Border { Height = 1, Margin = new Thickness(0, 4, 0, 4), Background = s.Muted, Opacity = 0.4 },
         MdTable t => Table(t, s),
@@ -90,9 +90,13 @@ internal static class MarkdownRenderer
         ToolTipService.SetToolTip(copy, "Copy");
         copy.Click += (_, _) =>
         {
-            var package = new DataPackage();
-            package.SetText(code.Code);
-            Clipboard.SetContent(package);
+            try
+            {
+                var package = new DataPackage();
+                package.SetText(code.Code);
+                Clipboard.SetContent(package);
+            }
+            catch (Exception) { /* clipboard busy (another app holds it): ignore rather than crash */ }
         };
         var grid = new Grid();
         grid.Children.Add(scroll);
