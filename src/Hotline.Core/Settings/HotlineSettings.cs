@@ -67,6 +67,8 @@ public sealed class BackendProfile
     public string Name { get; set; } = "";
     /// <summary>Model override (agy: e.g. "gemini-3.8-flash-low"; null = backend default).</summary>
     public string? Model { get; set; }
+    /// <summary>Reasoning effort (agy: low | medium | high | max; null = backend default).</summary>
+    public string? Effort { get; set; }
     public string? Endpoint { get; set; }
     /// <summary>CLI executable path; null = auto-detect.</summary>
     public string? CliPath { get; set; }

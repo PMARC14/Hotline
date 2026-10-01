@@ -76,4 +76,16 @@ public class AgyProtocolTests
         Assert.Null(AgyLocator.Find(@"D:\missing.exe", files.Contains, @"C:\L", @"C:\bin"));
         Assert.Null(AgyLocator.Find(null, _ => false, @"C:\L", @"C:\bin"));
     }
+
+    [Theory]
+    [InlineData("low", true)]
+    [InlineData("MAX", true)]
+    [InlineData("turbo", false)]
+    [InlineData(null, false)]
+    public void Effort_is_passed_only_when_valid(string? effort, bool expected)
+    {
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Effort = effort });
+        Assert.Equal(expected, args.Contains("--effort"));
+        if (expected) Assert.Equal(effort!.ToLowerInvariant(), args[args.ToList().IndexOf("--effort") + 1]);
+    }
 }

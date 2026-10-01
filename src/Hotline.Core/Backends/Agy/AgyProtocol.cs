@@ -46,6 +46,8 @@ public static class AgyProtocol
             "--agent", string.IsNullOrWhiteSpace(p.Agent) ? DefaultAgent : p.Agent,
         };
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model]);
+        if (p.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" or "max")
+            args.AddRange(["--effort", p.Effort.Trim().ToLowerInvariant()]);
         if (!string.IsNullOrWhiteSpace(p.ExtraArgs))
             args.AddRange(p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries)
                 .Where(a => !a.Equals("--dangerously-skip-permissions", StringComparison.OrdinalIgnoreCase)));
