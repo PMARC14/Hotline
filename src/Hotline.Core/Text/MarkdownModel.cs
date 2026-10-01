@@ -1,0 +1,142 @@
+using Markdig;
+using Markdig.Extensions.Tables;
+using Markdig.Syntax;
+using Markdig.Syntax.Inlines;
+
+namespace Hotline.Core.Text;
+
+public abstract record MdBlock;
+public sealed record MdParagraph(IReadOnlyList<MdInline> Inlines) : MdBlock;
+public sealed record MdHeading(int Level, IReadOnlyList<MdInline> Inlines) : MdBlock;
+public sealed record MdCode(string? Language, string Code) : MdBlock;
+public sealed record MdList(bool Ordered, int Start, IReadOnlyList<IReadOnlyList<MdBlock>> Items) : MdBlock;
+public sealed record MdQuote(IReadOnlyList<MdBlock> Blocks) : MdBlock;
+public sealed record MdRule : MdBlock;
+public sealed record MdTable(IReadOnlyList<IReadOnlyList<IReadOnlyList<MdInline>>> Rows, bool HasHeader) : MdBlock;
+
+public abstract record MdInline;
+public sealed record MdText(string Text, MdStyle Style) : MdInline;
+public sealed record MdLink(string Url, IReadOnlyList<MdInline> Inlines) : MdInline;
+public sealed record MdBreak : MdInline;
+
+[Flags]
+public enum MdStyle { None = 0, Bold = 1, Italic = 2, Code = 4, Strike = 8 }
+
+/// <summary>
+/// Markdown → a small, UI-agnostic block model the App renders natively. Records compare by value
+/// in tests; lists are materialized as arrays wrapped in <see cref="Seq{T}"/> for structural equality.
+/// </summary>
+public static class MarkdownModel
+{
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UsePipeTables().UseEmphasisExtras().Build();
+
+    public static IReadOnlyList<MdBlock> Parse(string markdown) => Blocks(Markdown.Parse(markdown ?? "", Pipeline));
+
+    private static Seq<MdBlock> Blocks(ContainerBlock container) => new(container.Select(Block).OfType<MdBlock>());
+
+    private static MdBlock? Block(Block block) => block switch
+    {
+        HeadingBlock h => new MdHeading(h.Level, Inlines(h.Inline)),
+        FencedCodeBlock f => new MdCode(string.IsNullOrWhiteSpace(f.Info) ? null : f.Info, f.Lines.ToString()),
+        CodeBlock c => new MdCode(null, c.Lines.ToString()),
+        ParagraphBlock p => new MdParagraph(Inlines(p.Inline)),
+        ListBlock l => new MdList(l.IsOrdered, int.TryParse(l.OrderedStart, out var s) ? s : 1,
+            new Seq<IReadOnlyList<MdBlock>>(l.OfType<ListItemBlock>().Select(i => (IReadOnlyList<MdBlock>)Blocks(i)))),
+        QuoteBlock q => new MdQuote(Blocks(q)),
+        ThematicBreakBlock => new MdRule(),
+        Table t => new MdTable(
+            new Seq<IReadOnlyList<IReadOnlyList<MdInline>>>(t.OfType<TableRow>().Select(r =>
+                (IReadOnlyList<IReadOnlyList<MdInline>>)new Seq<IReadOnlyList<MdInline>>(r.OfType<TableCell>().Select(CellInlines)))),
+            t.OfType<TableRow>().FirstOrDefault()?.IsHeader ?? false),
+        _ => null,
+    };
+
+    private static IReadOnlyList<MdInline> CellInlines(TableCell cell) =>
+        new Seq<MdInline>(cell.OfType<ParagraphBlock>().SelectMany(p => Inlines(p.Inline)));
+
+    private static Seq<MdInline> Inlines(ContainerInline? container)
+    {
+        var result = new List<MdInline>();
+        Walk(container, MdStyle.None, result);
+        return new Seq<MdInline>(Merge(result));
+    }
+
+    private static void Walk(ContainerInline? container, MdStyle style, List<MdInline> output)
+    {
+        for (var inline = container?.FirstChild; inline is not null; inline = inline.NextSibling)
+        {
+            switch (inline)
+            {
+                case LiteralInline lit:
+                    output.Add(new MdText(lit.Content.ToString(), style));
+                    break;
+                case CodeInline code:
+                    output.Add(new MdText(code.Content, style | MdStyle.Code));
+                    break;
+                case EmphasisInline em:
+                    var added = em.DelimiterChar == '~' ? MdStyle.Strike : em.DelimiterCount >= 2 ? MdStyle.Bold : MdStyle.Italic;
+                    Walk(em, style | added, output);
+                    break;
+                case LinkInline { IsImage: false } link when IsSafe(link.Url):
+                    var children = new List<MdInline>();
+                    Walk(link, style, children);
+                    output.Add(new MdLink(link.Url!, new Seq<MdInline>(Merge(children))));
+                    break;
+                case LinkInline link:
+                    Walk(link, style, output); // unsafe scheme or image: keep the visible text only
+                    break;
+                case AutolinkInline auto when IsSafe(auto.Url):
+                    output.Add(new MdLink(auto.Url, new Seq<MdInline>([new MdText(auto.Url, style)])));
+                    break;
+                case AutolinkInline auto:
+                    output.Add(new MdText(auto.Url, style));
+                    break;
+                case LineBreakInline { IsHard: true }:
+                    output.Add(new MdBreak());
+                    break;
+                case LineBreakInline:
+                    output.Add(new MdText(" ", style));
+                    break;
+                case HtmlInline html:
+                    output.Add(new MdText(html.Tag, style));
+                    break;
+                case HtmlEntityInline entity:
+                    output.Add(new MdText(entity.Transcoded.ToString(), style));
+                    break;
+                case ContainerInline nested:
+                    Walk(nested, style, output);
+                    break;
+            }
+        }
+    }
+
+    /// <summary>Joins adjacent text runs with the same style ("a" + " " → "a ").</summary>
+    private static IEnumerable<MdInline> Merge(List<MdInline> inlines)
+    {
+        MdText? pending = null;
+        foreach (var i in inlines)
+        {
+            if (i is MdText t && pending is not null && pending.Style == t.Style) { pending = pending with { Text = pending.Text + t.Text }; continue; }
+            if (pending is not null) yield return pending;
+            pending = i as MdText;
+            if (pending is null) yield return i;
+        }
+        if (pending is not null) yield return pending;
+    }
+
+    private static bool IsSafe(string? url) =>
+        Uri.TryCreate(url, UriKind.Absolute, out var u) && (u.Scheme == "https" || u.Scheme == "http" || u.Scheme == "mailto");
+}
+
+/// <summary>Read-only list with value equality (so records containing lists compare structurally).</summary>
+public sealed class Seq<T>(IEnumerable<T> items) : IReadOnlyList<T>, IEquatable<IReadOnlyList<T>>
+{
+    private readonly T[] _items = items.ToArray();
+    public T this[int index] => _items[index];
+    public int Count => _items.Length;
+    public IEnumerator<T> GetEnumerator() => ((IEnumerable<T>)_items).GetEnumerator();
+    System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _items.GetEnumerator();
+    public bool Equals(IReadOnlyList<T>? other) => other is not null && this.SequenceEqual(other);
+    public override bool Equals(object? obj) => obj is IReadOnlyList<T> other && Equals(other);
+    public override int GetHashCode() => _items.Aggregate(0, (h, x) => HashCode.Combine(h, x));
+}
