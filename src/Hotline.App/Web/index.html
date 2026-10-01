@@ -1,0 +1,36 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="Content-Security-Policy"
+        content="default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self'">
+  <link rel="stylesheet" href="vendor/github-dark.min.css">
+  <link rel="stylesheet" href="chat.css">
+  <style id="theme"></style>
+  <script src="vendor/markdown-it.min.js"></script>
+  <script src="vendor/highlight.min.js"></script>
+  <script type="module" src="chat.js"></script>
+</head>
+<body>
+  <main id="app">
+    <section id="messages" aria-live="polite"></section>
+    <div id="toast" role="status" hidden></div>
+    <section id="composer">
+      <div id="chips"></div>
+      <div id="row">
+        <div class="menu-wrap">
+          <button id="plus" class="icon" title="Add files or capture" aria-haspopup="menu">+</button>
+          <div id="menu" role="menu" hidden>
+            <button role="menuitem" data-cmd="pickFiles">📎 Attach files…</button>
+            <button role="menuitem" data-cmd="captureWindow">🪟 Capture window</button>
+            <button role="menuitem" data-cmd="captureScreen">🖥️ Capture screen</button>
+          </div>
+        </div>
+        <textarea id="input" rows="1" placeholder="📞 Hotline" spellcheck="true"></textarea>
+        <button id="backend" class="pill" title="Switch AI"></button>
+        <button id="send" class="icon" title="Send (Enter)">↑</button>
+      </div>
+    </section>
+  </main>
+</body>
+</html>
