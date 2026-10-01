@@ -124,3 +124,12 @@
 ## Update 2026-10-02
 Plan 2 (`docs/superpowers/plans/2026-10-02-hotline-plan2-chat-agy.md`) executed: chat view, attachments/capture,
 agy backend. Next: Plan 3 = Gemini API (when the user has an AI Studio key) → OpenAI-compatible → Claude Code.
+
+## Update 2026-10-01 (evening) — paused before Plan 3b
+Done since: Plan 3a (native WinUI chat panel, no WebView2; relative sizing; toolbar + pin; native file dialog/paste/drop;
+inline notices; config in %USERPROFILE%\.hotline), polish (hotline://tray quiet start used by scripts, file thumbnails /
+type tiles in messages, visible input focus), telephone placeholder icons (Fluent Emoji, MIT) via scripts/make-assets.ps1.
+Paused at the user's request. Next: write Plan 3b from the spec's 3b bullet, which now includes the provider/model/effort
+dropdowns in the bottom bar and configurable connections. The user will later provide a final icon SVG
+(upside-down phone hanging by its cord); export it to PNG and run make-assets.ps1 -Source.
+Testing etiquette: leave Hotline in the tray with the panel closed; no test windows/typing/clipboard without asking.

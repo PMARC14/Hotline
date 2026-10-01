@@ -145,8 +145,17 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
   new chat, settings; room for more); pin keeps the popup open so drag-drop works; native Windows file dialog;
   paste images/files; errors/rejections shown inline (InfoBar) instead of toasts; config in `%USERPROFILE%\.hotline`
   (settings.json, logs, history), migrated from the old package folder.
-- 3b: settings window (Fluent NavigationView + settings cards) for everything, live apply, "Open settings folder";
-  model/effort picker in the toolbar.
+- 3b: settings window (Fluent NavigationView + settings cards) for everything, live apply, "Open settings folder".
+  **Provider/model/effort controls (user, 2026-10-01):**
+  - Bottom bar gets three dropdowns: **provider** (who serves the AI: Claude Code, Antigravity/agy, Gemini API,
+    other APIs such as Anthropic / OpenAI-compatible incl. OpenRouter, local endpoints like llama.cpp), **model** for
+    the selected provider, and **effort** ("difficulty": low/medium/high/max or whatever the provider supports).
+  - Settings: add/edit/duplicate/remove **connections** (several per type allowed, e.g. two local endpoints or two API
+    keys); per-connection fields: endpoint URL, API key (Windows Credential Manager / PasswordVault, never in JSON),
+    CLI path, extra args, default model, default effort.
+  - Model lists come from the provider where possible (`agy models`, `GET /models` on APIs and local servers),
+    cached, with a free-text fallback. Types not yet implemented (Plan 4) are configurable and listed but marked
+    "coming soon" in the picker.
 - Then Plan 4 = backends (Gemini API, OpenAI-compatible, Claude Code); Plan 5 = controlled local access (Hotline-hosted
   MCP tools with ask/allow/deny + folder scopes, and Windows on-device agent registry connectors).
 
