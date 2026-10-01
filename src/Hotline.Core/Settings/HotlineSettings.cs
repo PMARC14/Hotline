@@ -39,6 +39,8 @@ public sealed class WindowSettings
     /// <remarks>Compact input bar like Copilot's quick view; grows with the conversation (later plan).</remarks>
     public int Width { get; set; } = 560;
     public int Height { get; set; } = 120;
+    /// <summary>Where the popup sits vertically: 0 = top, 0.5 = centered, 1 = bottom of the free space.</summary>
+    public double VerticalPosition { get; set; } = 0.8;
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;

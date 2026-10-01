@@ -89,6 +89,7 @@ public sealed class SettingsStore(string directory)
         s.Activation ??= new ActivationSettings();
         s.Window ??= new WindowSettings();
         s.Diagnostics ??= new DiagnosticsSettings();
+        s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
         Migrate(s);

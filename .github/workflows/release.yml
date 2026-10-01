@@ -1,0 +1,81 @@
+# Builds a signed MSIX and publishes a GitHub Release. Present but DISABLED by default:
+# tag pushes (v1.2.3) only release once the repository variable HOTLINE_ACTIONS_ENABLED is 'true'.
+# Manual "Run workflow" (with a version) always works.
+#
+# Required secrets (see README → Releases):
+#   HOTLINE_SIGNING_PFX_BASE64   base64 of the signing .pfx (subject must equal the manifest Publisher)
+#   HOTLINE_SIGNING_PFX_PASSWORD its password
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Version to release, e.g. 0.2.0'
+        required: true
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    if: ${{ vars.HOTLINE_ACTIONS_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Unit tests
+        run: dotnet test --project tests/Hotline.Core.Tests/Hotline.Core.Tests.csproj -c Release
+
+      - name: Resolve version
+        id: ver
+        shell: pwsh
+        run: |
+          $v = if ('${{ github.event_name }}' -eq 'workflow_dispatch') { '${{ inputs.version }}' } else { '${{ github.ref_name }}'.TrimStart('v') }
+          if ($v -notmatch '^\d+\.\d+\.\d+$') { throw "Version '$v' must look like 1.2.3" }
+          "package=$v.0" >> $env:GITHUB_OUTPUT
+          "tag=v$v" >> $env:GITHUB_OUTPUT
+
+      - name: Decode signing certificate
+        shell: pwsh
+        env:
+          PFX_BASE64: ${{ secrets.HOTLINE_SIGNING_PFX_BASE64 }}
+        run: |
+          if (-not $env:PFX_BASE64) { throw 'Secret HOTLINE_SIGNING_PFX_BASE64 is not set (see README > Releases).' }
+          New-Item -ItemType Directory -Force certs | Out-Null
+          [IO.File]::WriteAllBytes("$PWD\certs\release.pfx", [Convert]::FromBase64String($env:PFX_BASE64))
+
+      - name: Build signed MSIX
+        shell: powershell
+        env:
+          PFX_PASSWORD: ${{ secrets.HOTLINE_SIGNING_PFX_PASSWORD }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $msix = & .\scripts\build-msix.ps1 -Version '${{ steps.ver.outputs.package }}' -CertificatePath "$PWD\certs\release.pfx" -CertificatePassword $env:PFX_PASSWORD | Select-Object -Last 1
+          if (-not $msix) { throw 'No MSIX was produced' }
+          Copy-Item $msix "$PWD\artifacts\Hotline_${{ steps.ver.outputs.package }}_x64.msix"
+          # Public certificate so users of a self-signed build can trust it before installing.
+          $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("$PWD\certs\release.pfx", $env:PFX_PASSWORD)
+          [IO.File]::WriteAllBytes("$PWD\artifacts\Hotline.cer", $cert.Export('Cert'))
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hotline-${{ steps.ver.outputs.tag }}
+          path: |
+            artifacts/Hotline_*.msix
+            artifacts/Hotline.cer
+
+      - name: Publish GitHub Release
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >
+          gh release create '${{ steps.ver.outputs.tag }}'
+          (Get-ChildItem artifacts/Hotline_*.msix).FullName artifacts/Hotline.cer
+          --target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes
