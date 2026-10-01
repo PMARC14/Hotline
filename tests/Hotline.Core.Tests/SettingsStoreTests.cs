@@ -15,7 +15,8 @@ public sealed class SettingsStoreTests : IDisposable
         var store = New();
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal(640, s.Window.Width);
+        Assert.Equal(560, s.Window.Width);
+        Assert.Equal(120, s.Window.Height);
         Assert.True(File.Exists(store.FilePath));
     }
 
@@ -50,7 +51,7 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "window": { "width": 800 } }""");
         var s = New().Load();
         Assert.Equal(800, s.Window.Width);
-        Assert.Equal(520, s.Window.Height);
+        Assert.Equal(120, s.Window.Height);
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
     }
 
@@ -116,7 +117,7 @@ public sealed class SettingsStoreTests : IDisposable
 
         var s = New().Load();
 
-        Assert.Equal(640, s.Window.Width);
+        Assert.Equal(560, s.Window.Width);
     }
 
     [Fact]
@@ -147,5 +148,36 @@ public sealed class SettingsStoreTests : IDisposable
         Directory.CreateDirectory(_dir);
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "diagnostics": null }""");
         Assert.NotNull(New().Load().Diagnostics);
+    }
+
+    [Fact]
+    public void Schema1_untouched_old_default_size_migrates_to_compact_size()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
+            """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
+        var s = New().Load();
+        Assert.Equal((560, 120), (s.Window.Width, s.Window.Height));
+        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
+    }
+
+    [Fact]
+    public void Schema1_customized_size_is_kept()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
+            """{ "schemaVersion": 1, "window": { "width": 700, "height": 400 } }""");
+        var s = New().Load();
+        Assert.Equal((700, 400), (s.Window.Width, s.Window.Height));
+    }
+
+    [Fact]
+    public void Migrated_settings_are_written_back()
+    {
+        Directory.CreateDirectory(_dir);
+        var path = Path.Combine(_dir, SettingsStore.FileName);
+        File.WriteAllText(path, """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
+        New().Load();
+        Assert.Contains("\"height\": 120", File.ReadAllText(path));
     }
 }

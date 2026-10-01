@@ -57,7 +57,18 @@ public partial class App : Application
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
 
         AppInstance.GetCurrent().Activated += (_, a) =>
-            _popup.DispatcherQueue.TryEnqueue(() => _router.OnActivation(a, isFirstLaunch: false));
+        {
+            // Snapshot now, on the event thread, while the redirecting process is still alive.
+            ActivationRequest request;
+            try { request = ActivationRouter.Snapshot(a, isFirstLaunch: false); }
+            catch (Exception ex) { _log.Error("could not read redirected activation", ex); return; }
+            // Exceptions escaping a DispatcherQueue callback fail-fast the process, so contain them.
+            _popup.DispatcherQueue.TryEnqueue(() =>
+            {
+                try { _router.OnActivation(request); }
+                catch (Exception ex) { _log.Error("activation handling failed", ex); }
+            });
+        };
 
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
@@ -69,6 +80,7 @@ public partial class App : Application
             onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
             onQuit: () => { _tray?.Dispose(); Exit(); });
 
-        _router.OnActivation(_initialActivation, isFirstLaunch: true);
+        try { _router.OnActivation(ActivationRouter.Snapshot(_initialActivation, isFirstLaunch: true)); }
+        catch (Exception ex) { _log.Error("initial activation handling failed", ex); }
     }
 }

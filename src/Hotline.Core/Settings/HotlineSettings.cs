@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 1;
+    public const int CurrentSchemaVersion = 2;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -36,8 +36,9 @@ public sealed class WindowSettings
 {
     public PopupLayout Layout { get; set; } = PopupLayout.QuickView;
     /// <summary>Size in device-independent pixels (scaled by monitor DPI).</summary>
-    public int Width { get; set; } = 640;
-    public int Height { get; set; } = 520;
+    /// <remarks>Compact input bar like Copilot's quick view; grows with the conversation (later plan).</remarks>
+    public int Width { get; set; } = 560;
+    public int Height { get; set; } = 120;
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;

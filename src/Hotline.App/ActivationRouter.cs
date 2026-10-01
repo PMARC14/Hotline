@@ -3,30 +3,39 @@ using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Microsoft.Windows.AppLifecycle;
 using Windows.ApplicationModel.Activation;
+using ActivationKind = Hotline.Core.Activation.ActivationKind;
 
 namespace Hotline.App;
 
-/// <summary>Turns activations and key events into popup actions. All calls must be on the UI thread.</summary>
+/// <summary>Turns activations and key events into popup actions. All calls except <see cref="Snapshot"/> must be on the UI thread.</summary>
 public sealed class ActivationRouter(PopupWindow popup, ActivationSettings settings, KeyEventDeduper deduper, FileLog log)
 {
-    public void OnActivation(AppActivationArguments args, bool isFirstLaunch)
+    /// <summary>
+    /// Copies everything needed out of the WinRT activation args. Call this synchronously where the args are
+    /// received: for a redirected launch they proxy into the redirecting process, which exits once the
+    /// redirect completes, after which any access fails with RPC_E_DISCONNECTED/0x800706BE (seen as crashes).
+    /// </summary>
+    public static ActivationRequest Snapshot(AppActivationArguments args, bool isFirstLaunch)
     {
-        log.Info($"activation kind={args.Kind} first={isFirstLaunch}");
-        if (args.Data is IProtocolActivatedEventArgs p) log.Debug($"activation uri={p.Uri}");
-        switch (args.Kind)
+        var kind = args.Kind switch
         {
-            // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
-            case ExtendedActivationKind.Protocol or ExtendedActivationKind.ProtocolForResults
-                when args.Data is IProtocolActivatedEventArgs protocol:
-                if (ActivationParser.ParseUri(protocol.Uri) is { } e) OnKey(e, KeySource.Protocol);
-                else popup.ShowPopup();
-                break;
-            case ExtendedActivationKind.StartupTask when isFirstLaunch:
-                break; // signed in: stay quietly in the tray
-            default:
-                popup.ShowPopup();
-                break;
-        }
+            ExtendedActivationKind.Launch => ActivationKind.Launch,
+            ExtendedActivationKind.Protocol => ActivationKind.Protocol,
+            ExtendedActivationKind.ProtocolForResults => ActivationKind.ProtocolForResults,
+            ExtendedActivationKind.StartupTask => ActivationKind.StartupTask,
+            _ => ActivationKind.Other,
+        };
+        var uri = args.Data is IProtocolActivatedEventArgs protocol ? protocol.Uri : null;
+        return new ActivationRequest(kind, uri, isFirstLaunch);
+    }
+
+    public void OnActivation(ActivationRequest request)
+    {
+        log.Info($"activation kind={request.Kind} first={request.IsFirstLaunch}");
+        log.Debug($"activation uri={request.Uri}");
+        var plan = ActivationPlanner.Plan(request);
+        if (plan.Key is { } key) OnKey(key, KeySource.Protocol);
+        else if (plan.ShowPopup) popup.ShowPopup();
     }
 
     public void OnKey(KeyEvent e, KeySource source)
@@ -58,7 +67,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
                 popup.ShowPopup();
                 break;
             default:
-                // ShowPopup, plus CaptureWindow/RegionSelect which arrive in Plan 4 (context); until then they just open the popup.
+                // ShowPopup, plus CaptureWindow/RegionSelect which arrive with the context plan; until then they just open the popup.
                 popup.ShowPopup();
                 break;
         }

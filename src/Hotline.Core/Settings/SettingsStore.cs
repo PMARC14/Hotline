@@ -32,7 +32,11 @@ public sealed class SettingsStore(string directory)
         {
             var s = JsonSerializer.Deserialize<HotlineSettings>(File.ReadAllText(FilePath), Options)
                     ?? throw new JsonException("settings.json contained null");
-            return Normalize(s);
+            var loadedVersion = s.SchemaVersion;
+            Normalize(s);
+            if (loadedVersion < HotlineSettings.CurrentSchemaVersion)
+                TrySave(s);
+            return s;
         }
         catch (JsonException)
         {
@@ -67,6 +71,19 @@ public sealed class SettingsStore(string directory)
         return d;
     }
 
+    private void TrySave(HotlineSettings s)
+    {
+        try { Save(s); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
+    }
+
+    private static void Migrate(HotlineSettings s)
+    {
+        // v1 → v2: the popup became a compact bar. Only move users still on the untouched v1 default size.
+        if (s.SchemaVersion < 2 && s.Window.Width == 640 && s.Window.Height == 520)
+            (s.Window.Width, s.Window.Height) = (560, 120);
+    }
+
     private static HotlineSettings Normalize(HotlineSettings s)
     {
         s.Activation ??= new ActivationSettings();
@@ -74,8 +91,9 @@ public sealed class SettingsStore(string directory)
         s.Diagnostics ??= new DiagnosticsSettings();
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
+        Migrate(s);
         s.Window.Width = Math.Clamp(s.Window.Width, 320, 4000);
-        s.Window.Height = Math.Clamp(s.Window.Height, 200, 4000);
+        s.Window.Height = Math.Clamp(s.Window.Height, 80, 4000);
         s.SchemaVersion = HotlineSettings.CurrentSchemaVersion;
         return s;
     }
