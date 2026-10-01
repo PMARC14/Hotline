@@ -22,6 +22,8 @@ public sealed class FakeLineProcess : ILineProcess
 
     public async Task<string?> ReadLineAsync(CancellationToken ct) => await _out.Reader.ReadAsync(ct);
 
+    public Task WaitForExitAsync(TimeSpan timeout) => Task.CompletedTask;
+
     /// <summary>Simulates the process dying: pending/next reads return null.</summary>
     public void Exit() { HasExited = true; _out.Writer.TryWrite(null); }
 

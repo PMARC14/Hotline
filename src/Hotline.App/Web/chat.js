@@ -1,4 +1,4 @@
-import { initialState, reduce, desiredHeight } from './chat-core.js';
+import { initialState, reduce, desiredHeight, preReadRejection } from './chat-core.js';
 
 const host = window.chrome?.webview;
 const post = msg => host?.postMessage(msg);
@@ -6,11 +6,13 @@ const $ = id => document.getElementById(id);
 const els = { app: $('app'), messages: $('messages'), chips: $('chips'), input: $('input'), send: $('send'),
   plus: $('plus'), menu: $('menu'), backend: $('backend'), toast: $('toast'), theme: $('theme') };
 
-const md = window.markdownit({ html: false, linkify: true, breaks: false,
+const md = window.markdownit({ html: false, linkify: true, breaks: false, // fuzzy links off below: main.py must not become a URL
   highlight: (code, lang) => {
     try { return lang && hljs.getLanguage(lang) ? hljs.highlight(code, { language: lang }).value : hljs.highlightAuto(code).value; }
     catch { return ''; }
   } });
+
+md.linkify.set({ fuzzyLink: false, fuzzyEmail: false });
 
 let state = initialState();
 const rendered = new Map(); // message id -> element
@@ -62,6 +64,7 @@ function render(msg) {
 }
 
 let lastHeight = 0;
+let pendingDraft = ''; // restored if the host rejects the send
 function reportHeight() {
   requestAnimationFrame(() => {
     // #messages stretches to fill the window, so measure its children, not its scrollHeight.
@@ -91,11 +94,15 @@ function send() {
   const text = els.input.value.trim();
   if (!text && state.attachments.length === 0) return;
   post({ type: 'send', text });
+  pendingDraft = els.input.value;
   els.input.value = ''; autoGrow();
 }
 
 function readFile(file, type) {
+  const rejection = preReadRejection(file);
+  if (rejection) { showToast(rejection); return; }
   const reader = new FileReader();
+  reader.onerror = () => showToast(`${file.name || 'That item'} couldn't be read (folders aren't supported).`);
   reader.onload = () => post({ type, name: file.name || 'pasted.png', mime: file.type, base64: String(reader.result).split(',')[1] ?? '' });
   reader.readAsDataURL(file);
 }
@@ -144,6 +151,8 @@ host?.addEventListener('message', e => {
   const msg = e.data;
   if (msg.type === 'theme') { els.theme.textContent = msg.css; document.body.dataset.scrollbar = msg.scrollbar ?? 'auto'; reportHeight(); return; }
   if (msg.type === 'toast') { showToast(msg.message); return; }
+  if (msg.type === 'sendRejected') { if (!els.input.value) { els.input.value = pendingDraft; autoGrow(); } showToast(msg.message); return; }
+  if (msg.type === 'user') pendingDraft = '';
   if (msg.type === 'focus') { els.input.focus(); return; }
   dispatch(msg);
 });

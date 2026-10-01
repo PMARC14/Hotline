@@ -15,15 +15,30 @@ internal sealed partial class ChatHost
         var picker = new FileOpenPicker { ViewMode = PickerViewMode.List, SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
         picker.FileTypeFilter.Add("*");
         WinRT.Interop.InitializeWithWindow.Initialize(picker, popup.Hwnd);
-        IReadOnlyList<StorageFile> files;
-        using (popup.Modal())
-            files = await picker.PickMultipleFilesAsync();
-        foreach (var file in files)
+        using var modal = popup.Modal(); // covers the dialog and the reads that follow
+        try
         {
-            var buffer = await FileIO.ReadBufferAsync(file);
-            await AddBytesAsync(file.Name, file.ContentType, buffer.ToArray());
+            var files = await picker.PickMultipleFilesAsync();
+            foreach (var file in files)
+            {
+                try
+                {
+                    var size = (await file.GetBasicPropertiesAsync()).Size;
+                    if (size > (ulong)Limits.MaxImageBytes) { Toast($"{file.Name} is too large (max {Limits.MaxImageBytes / (1024 * 1024)} MB)."); continue; }
+                    var buffer = await FileIO.ReadBufferAsync(file);
+                    await AddBytesAsync(file.Name, file.ContentType, buffer.ToArray());
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Runtime.InteropServices.COMException)
+                {
+                    log.Error($"could not read {file.Name}", ex);
+                    Toast($"{file.Name} couldn't be read.");
+                }
+            }
         }
-        popup.ShowPopup();
+        finally
+        {
+            popup.ShowPopup();
+        }
     }
 
     private partial async Task CaptureAsync(bool window)
@@ -58,9 +73,11 @@ internal sealed partial class ChatHost
 
     private async Task AddAttachmentAsync(Attachment attachment)
     {
+        string? thumb = null;
+        try { if (attachment.Kind == AttachmentKind.Image) thumb = await ImageProcessor.ThumbnailDataUrlAsync(attachment.Data); }
+        catch (Exception ex) { log.Error("thumbnail failed", ex); } // show the chip without a preview rather than lose it
         try { tray.Add(attachment); }
         catch (AttachmentRejectedException ex) { Toast(ex.Message); return; }
-        var thumb = attachment.Kind == AttachmentKind.Image ? await ImageProcessor.ThumbnailDataUrlAsync(attachment.Data) : null;
         Post(new { type = "attachmentAdded", id = attachment.Id, name = attachment.Name, kind = attachment.Kind.ToString(), thumb });
         log.Info($"attachment added: {attachment.Kind} {attachment.Data.Length} bytes");
     }

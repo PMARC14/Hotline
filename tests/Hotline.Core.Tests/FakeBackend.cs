@@ -11,6 +11,8 @@ public sealed class FakeBackend(params ChatDelta[] deltas) : IChatBackend
     public BackendCapabilities Capabilities { get; init; } = new(Images: true, TextFiles: true);
     public Exception? Throw { get; init; }
     public TaskCompletionSource? Gate { get; init; }
+    /// <summary>When true, a gated stream ignores cancellation until the gate opens (slow teardown).</summary>
+    public bool SlowCancel { get; init; }
     public List<IReadOnlyList<ChatMessage>> Calls { get; } = [];
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
@@ -19,7 +21,7 @@ public sealed class FakeBackend(params ChatDelta[] deltas) : IChatBackend
         foreach (var d in deltas)
         {
             yield return d;
-            if (Gate is not null) await Gate.Task.WaitAsync(ct);
+            if (Gate is not null) { if (SlowCancel) { await Gate.Task; if (Throw is not null) throw Throw; ct.ThrowIfCancellationRequested(); } else await Gate.Task.WaitAsync(ct); }
         }
         if (Throw is not null) throw Throw;
     }

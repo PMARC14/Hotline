@@ -30,6 +30,13 @@ internal sealed partial class ChatHost(
         core.Settings.AreDefaultContextMenusEnabled = devtools;
         core.Settings.IsStatusBarEnabled = false;
         core.Settings.IsZoomControlEnabled = false;
+        core.Settings.AreBrowserAcceleratorKeysEnabled = false; // F5/Ctrl+R would wipe the visible chat
+        core.ProcessFailed += (_, e) => Guard("webview process failed", () =>
+        {
+            log.Error($"WebView2 process failed: {e.ProcessFailedKind}; reloading chat view");
+            _ready = false;
+            popup.Web.Reload();
+        });
         core.WebMessageReceived += (_, e) => Guard("web message", () => OnWebMessage(e.WebMessageAsJson));
         core.NewWindowRequested += (_, e) => { e.Handled = true; OpenLink(e.Uri); };
         core.NavigationStarting += (_, e) =>
@@ -92,7 +99,7 @@ internal sealed partial class ChatHost(
     {
         if (!chat.CanAccept(tray.Items, out var reason))
         {
-            Toast(reason!);
+            Post(new { type = "sendRejected", message = reason }); // the view restores the draft
             return;
         }
         var attachments = tray.TakeAll();

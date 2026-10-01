@@ -40,6 +40,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     public void NewChat()
     {
         Cancel();
+        _cts = null; // supersede the old turn now: a send right after must not be swallowed while it unwinds
         _messages.Clear();
         _lastFailed = null;
         ConversationId = Ids.New();
@@ -81,9 +82,13 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested)
         {
-            if (reply.Length > 0) Keep(conversationId, user, assistantId, backend, reply.ToString());
-            else _messages.Remove(user);
+            // Keep the question in context even with no reply, so a follow-up ("shorter please") still makes sense.
+            Keep(conversationId, user, assistantId, backend, reply.ToString(), keepEmptyReply: reply.Length > 0);
             Emit(new AssistantCancelled(assistantId));
+        }
+        catch (Exception ex) when (conversationId != ConversationId)
+        {
+            log.Error("turn from a previous conversation failed after a new chat started (ignored)", ex);
         }
         catch (BackendException ex)
         {
@@ -98,17 +103,18 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         }
         finally
         {
-            _cts = null;
+            if (ReferenceEquals(_cts, cts)) _cts = null;
             cts.Dispose();
         }
     }
 
-    private void Keep(string conversationId, ChatMessage user, string assistantId, IChatBackend backend, string text)
+    private void Keep(string conversationId, ChatMessage user, string assistantId, IChatBackend backend, string text, bool keepEmptyReply = true)
     {
         if (conversationId != ConversationId) return; // a new chat started meanwhile: drop the old turn
+        TryHistory(conversationId, user);
+        if (!keepEmptyReply) return; // cancelled before any text: keep the question only
         var assistant = new ChatMessage(assistantId, ChatRole.Assistant, text, [], clock.GetUtcNow(), backend.Id);
         _messages.Add(assistant);
-        TryHistory(conversationId, user);
         TryHistory(conversationId, assistant);
     }
 

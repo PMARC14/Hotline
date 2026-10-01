@@ -151,4 +151,33 @@ public sealed class AgyBackendTests : IDisposable
         await b.DisposeAsync();
         Assert.True(_factory.Started[0].Process.Disposed);
     }
+
+    [Fact]
+    public async Task Failed_turn_does_not_leak_into_next_conversation()
+    {
+        var calls = 0;
+        _factory.Create = () => new FakeLineProcess
+        {
+            Respond = _ => calls++ == 0
+                ? ["""{"event":"result","result":{"status":"ERROR","response":"","error":"model overloaded"}}"""]
+                : Answer("ok"),
+        };
+        var b = New();
+        await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "secret question")], default)));
+        await Collect(b.StreamAsync([U("9", "fresh chat")], default));
+        Assert.Equal(2, _factory.Started.Count); // fresh process: the failed prompt isn't in its memory
+    }
+
+    [Fact]
+    public async Task Crash_stderr_is_mapped_to_specific_error()
+    {
+        _factory.Create = () =>
+        {
+            var p = new FakeLineProcess();
+            p.Respond = _ => { p.StandardErrorTail = "error: UNAUTHENTICATED: sign in required"; p.Exit(); return []; };
+            return p;
+        };
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(New().StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
+    }
 }

@@ -73,3 +73,10 @@ test('desired height sums messages, gaps and chrome, not the stretched list', ()
   // two short messages: 40 + 10 gap + 30 = 80 content + 14 list padding + 56 composer + 22 chrome
   assert.equal(desiredHeight({ messageHeights: [40, 30], gap: 10, listPadding: 14, composer: 56, chrome: 22 }), 172);
 });
+
+import { preReadRejection } from '../../src/Hotline.App/Web/chat-core.js';
+
+test('files over the size limit are rejected before reading', () => {
+  assert.match(preReadRejection({ name: 'huge.mov', size: 50 * 1024 * 1024 }), /huge\.mov.*too large/);
+  assert.equal(preReadRejection({ name: 'shot.png', size: 2 * 1024 * 1024 }), null);
+});

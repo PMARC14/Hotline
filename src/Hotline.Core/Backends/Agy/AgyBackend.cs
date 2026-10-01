@@ -42,6 +42,11 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
             log.Info($"agy started: {exe} {string.Join(' ', args)}");
         }
 
+        // Until this turn succeeds, the process's context is suspect (a failed/cancelled prompt may be in it):
+        // force the next turn to start fresh and replay a clean transcript.
+        _knownCount = -1;
+        _knownFirstId = null;
+
         var images = workspace.SaveImages(user.Id, user.Attachments.Where(a => a.Kind == AttachmentKind.Image).ToList());
         var texts = user.Attachments.Where(a => a.Kind == AttachmentKind.Text).Select(a => (a.Name, a.AsText())).ToList();
         var prompt = AgyProtocol.ComposePrompt(user.Text, images, texts, fresh ? prior : Array.Empty<ChatMessage>());
@@ -62,8 +67,11 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
             if (line is null)
             {
                 ct.ThrowIfCancellationRequested();
+                await process.WaitForExitAsync(TimeSpan.FromSeconds(2)); // let the final stderr arrive
                 var tail = process.StandardErrorTail;
                 await StopAsync();
+                var mapped = tail.Length > 0 ? AgyErrors.Map(tail) : null;
+                if (mapped is { Kind: not BackendErrorKind.Failed }) throw mapped;
                 throw new BackendException(BackendErrorKind.Failed, "agy stopped unexpectedly." + (tail.Length > 0 ? " " + tail : ""));
             }
             foreach (var delta in parser.Feed(line)) yield return delta;

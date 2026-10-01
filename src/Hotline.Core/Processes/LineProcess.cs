@@ -11,6 +11,8 @@ public interface ILineProcess : IAsyncDisposable
     Task WriteLineAsync(string line, CancellationToken ct);
     /// <summary>Next stdout line, or null when the process has ended.</summary>
     Task<string?> ReadLineAsync(CancellationToken ct);
+    /// <summary>Waits (bounded) for the process to exit, e.g. so its final stderr has been collected.</summary>
+    Task WaitForExitAsync(TimeSpan timeout);
 }
 
 public interface ILineProcessFactory
@@ -71,6 +73,13 @@ public sealed class SystemLineProcess : ILineProcess
 
     public Task<string?> ReadLineAsync(CancellationToken ct) => _process.StandardOutput.ReadLineAsync(ct).AsTask();
 
+    public async Task WaitForExitAsync(TimeSpan timeout)
+    {
+        using var cts = new CancellationTokenSource(timeout);
+        try { await _process.WaitForExitAsync(cts.Token); }
+        catch (OperationCanceledException) { /* still running; take what we have */ }
+    }
+
     public async ValueTask DisposeAsync()
     {
         try
@@ -78,10 +87,10 @@ public sealed class SystemLineProcess : ILineProcess
             if (!_process.HasExited)
             {
                 _process.Kill(entireProcessTree: true);
-                await _process.WaitForExitAsync();
+                await WaitForExitAsync(TimeSpan.FromSeconds(3)); // bounded: a stray grandchild holding the pipes must not hang cancel/quit
             }
         }
-        catch (InvalidOperationException) { /* already gone */ }
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { /* already gone / exiting */ }
         _process.Dispose();
     }
 }

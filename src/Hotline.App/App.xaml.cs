@@ -100,7 +100,7 @@ public partial class App : Application
             onToggle: _router.TogglePopup,
             onOpenSettings: () => Process.Start(new ProcessStartInfo(store.FilePath) { UseShellExecute = true }),
             onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
-            onQuit: () => { _tray?.Dispose(); _backends?.DisposeAllAsync().AsTask().Wait(TimeSpan.FromSeconds(2)); Exit(); });
+            onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); }).Wait(TimeSpan.FromSeconds(2)); Exit(); });
 
         try { _router.OnActivation(ActivationRouter.Snapshot(_initialActivation, isFirstLaunch: true)); }
         catch (Exception ex) { _log.Error("initial activation handling failed", ex); }

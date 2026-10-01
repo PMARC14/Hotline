@@ -49,3 +49,10 @@ export function desiredHeight({ messageHeights, gap, listPadding, composer, chro
   const content = messageHeights.reduce((a, b) => a + b, 0) + gap * (messageHeights.length - 1);
   return Math.ceil(content + listPadding + composer + chrome);
 }
+
+const MAX_READ_BYTES = 20 * 1024 * 1024; // matches the host's largest limit (images); the host re-checks precisely
+
+/** Rejects files that are too big to even read/transfer; returns a message, or null to proceed. */
+export function preReadRejection(file) {
+  return file.size > MAX_READ_BYTES ? `${file.name} is too large (max 20 MB).` : null;
+}

@@ -141,4 +141,47 @@ public sealed class ChatControllerTests : IDisposable
         await c.SendAsync("question", []);
         Assert.Equal(["question", "answer"], history.Load(c.ConversationId).Select(e => e.Text));
     }
+
+    [Fact]
+    public async Task Send_right_after_new_chat_is_not_swallowed_while_old_turn_unwinds()
+    {
+        var gate = new TaskCompletionSource();
+        var backend = new FakeBackend(new ChatDelta("old"), new ChatDelta("x")) { Gate = gate, SlowCancel = true };
+        var c = New(backend);
+        var first = c.SendAsync("one", []);
+        c.NewChat();
+        var second = c.SendAsync("two", []);
+        gate.SetResult();
+        await Task.WhenAll(first, second);
+        Assert.Contains(_events, e => e is UserMessageAdded { Message.Text: "two" });
+        Assert.Equal(2, backend.Calls.Count);
+    }
+
+    [Fact]
+    public async Task Late_failure_of_old_turn_does_not_reach_new_chat()
+    {
+        var gate = new TaskCompletionSource();
+        var c = New(new FakeBackend(new ChatDelta("old")) { Gate = gate, SlowCancel = true,
+            Throw = new BackendException(BackendErrorKind.Failed, "teardown blew up") });
+        var send = c.SendAsync("q", []);
+        c.NewChat();
+        var afterReset = _events.Count;
+        gate.TrySetResult();
+        await send;
+        Assert.DoesNotContain(_events.Skip(afterReset), e => e is AssistantFailed);
+        _events.Clear();
+        await c.RetryAsync();
+        Assert.Empty(_events); // nothing to retry in the new chat
+    }
+
+    [Fact]
+    public async Task Cancel_before_any_text_keeps_the_question_in_context()
+    {
+        var gate = new TaskCompletionSource();
+        var c = New(new FakeBackend(new ChatDelta("")) { Gate = gate });
+        var send = c.SendAsync("explain X", []);
+        c.Cancel();
+        await send;
+        Assert.Equal("explain X", Assert.Single(c.Messages).Text);
+    }
 }
