@@ -3,7 +3,10 @@ using System.Text.Json.Serialization;
 
 namespace Hotline.Core.Settings;
 
-/// <summary>Loads/saves settings.json. Never throws on bad content: backs it up to .bad and uses defaults.</summary>
+/// <summary>
+/// Loads/saves settings.json. Never throws: bad content is backed up to .bad and replaced with defaults;
+/// an unreadable/locked file yields in-memory defaults (the file is left untouched).
+/// </summary>
 public sealed class SettingsStore(string directory)
 {
     public const string FileName = "settings.json";
@@ -13,7 +16,9 @@ public sealed class SettingsStore(string directory)
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
         PropertyNameCaseInsensitive = true,
-        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase) },
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) },
     };
 
     public string FilePath => Path.Combine(directory, FileName);
@@ -31,8 +36,19 @@ public sealed class SettingsStore(string directory)
         }
         catch (JsonException)
         {
-            File.Copy(FilePath, FilePath + ".bad", overwrite: true);
-            return SaveDefaults();
+            try
+            {
+                File.Copy(FilePath, FilePath + ".bad", overwrite: true);
+                return SaveDefaults();
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                return new HotlineSettings();
+            }
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            return new HotlineSettings();
         }
     }
 

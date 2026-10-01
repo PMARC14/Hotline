@@ -34,4 +34,22 @@ public sealed class FileLogTests : IDisposable
         Assert.True(File.Exists(path + ".1"));
         Assert.True(new FileInfo(path).Length < 400);
     }
+
+    [Fact]
+    public void Never_throws_when_log_file_is_read_only()
+    {
+        var path = Path.Combine(_dir, "hotline.log");
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(path, "x");
+        File.SetAttributes(path, FileAttributes.ReadOnly);
+        try
+        {
+            var ex = Record.Exception(() => new FileLog(path).Info("still fine"));
+            Assert.Null(ex);
+        }
+        finally
+        {
+            File.SetAttributes(path, FileAttributes.Normal);
+        }
+    }
 }

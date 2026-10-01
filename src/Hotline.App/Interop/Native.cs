@@ -38,7 +38,14 @@ internal static class Native
     [DllImport("user32.dll")] public static extern bool DestroyMenu(nint hMenu);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern nint LoadImage(nint hInst, string name, uint type, int cx, int cy, uint flags);
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)] public static extern bool Shell_NotifyIcon(int message, ref NOTIFYICONDATA data);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(nint hWnd, System.Text.StringBuilder name, int max);
     [DllImport("shell32.dll")] public static extern int SHGetPropertyStoreForWindow(nint hWnd, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IPropertyStore store);
+
+    public static string ClassNameOf(nint hWnd)
+    {
+        var sb = new System.Text.StringBuilder(256);
+        return GetClassName(hWnd, sb, sb.Capacity) > 0 ? sb.ToString() : "<invalid window>";
+    }
 
     [StructLayout(LayoutKind.Sequential)]
     public struct POINT { public int X, Y; }

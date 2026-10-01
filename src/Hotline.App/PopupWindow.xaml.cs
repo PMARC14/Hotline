@@ -1,5 +1,6 @@
 using Hotline.App.Interop;
 using Hotline.Core.Activation;
+using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Hotline.Core.Windowing;
 using Microsoft.UI;
@@ -17,15 +18,17 @@ public sealed partial class PopupWindow : Window
 {
     private readonly WindowSettings _settings;
     private readonly PopupToggleGuard _guard;
+    private readonly FileLog _log;
 
     public nint Hwnd { get; }
     /// <summary>The window the user was in before the popup appeared (target for monitor choice and, later, capture).</summary>
     public nint PreviousForeground { get; private set; }
 
-    public PopupWindow(WindowSettings settings, PopupToggleGuard guard)
+    public PopupWindow(WindowSettings settings, PopupToggleGuard guard, FileLog log)
     {
         _settings = settings;
         _guard = guard;
+        _log = log;
         InitializeComponent();
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
@@ -101,7 +104,15 @@ public sealed partial class PopupWindow : Window
     private void PlaceOnActiveMonitor()
     {
         var anchor = PreviousForeground != 0 ? PreviousForeground : Hwnd;
-        var area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(anchor), DisplayAreaFallback.Primary);
+        // GetFromWindowId can return null for some shell/transient windows (crash seen on Copilot key taps);
+        // fall back to the monitor under the cursor, then the primary monitor.
+        var area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(anchor), DisplayAreaFallback.Nearest);
+        if (area is null)
+        {
+            _log.Error($"no display area for previous foreground window 0x{anchor:X} ({Native.ClassNameOf(anchor)}); using cursor monitor");
+            Native.GetCursorPos(out var pt);
+            area = DisplayArea.GetFromPoint(new PointInt32(pt.X, pt.Y), DisplayAreaFallback.Primary) ?? DisplayArea.Primary;
+        }
         var wa = area.WorkArea;
 
         var monitor = Native.MonitorFromWindow(anchor, Native.MONITOR_DEFAULTTONEAREST);

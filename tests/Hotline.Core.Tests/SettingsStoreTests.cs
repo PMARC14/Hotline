@@ -68,6 +68,8 @@ public sealed class SettingsStoreTests : IDisposable
     [InlineData("{ not json")]
     [InlineData("""{ "activation": { "tap": "Teleport" } }""")]
     [InlineData("null")]
+    [InlineData("""{ "activation": { "tap": 42 } }""")]
+    [InlineData("""{ "window": { "theme": 7 } }""")]
     public void Corrupt_file_is_backed_up_and_defaults_used(string content)
     {
         Directory.CreateDirectory(_dir);
@@ -88,5 +90,32 @@ public sealed class SettingsStoreTests : IDisposable
         Directory.CreateDirectory(_dir);
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), $$"""{ "window": { "width": {{width}} } }""");
         Assert.Equal(expected, New().Load().Window.Width);
+    }
+
+    [Fact]
+    public void Comments_and_trailing_commas_are_tolerated()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
+            """
+            {
+              // my hotkey
+              "activation": { "fallbackHotkey": "Ctrl+Alt+H", },
+            }
+            """);
+        Assert.Equal("Ctrl+Alt+H", New().Load().Activation.FallbackHotkey);
+    }
+
+    [Fact]
+    public void Locked_file_yields_in_memory_defaults_without_throwing()
+    {
+        Directory.CreateDirectory(_dir);
+        var path = Path.Combine(_dir, SettingsStore.FileName);
+        File.WriteAllText(path, """{ "window": { "width": 900 } }""");
+        using var lockHandle = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
+
+        var s = New().Load();
+
+        Assert.Equal(640, s.Window.Width);
     }
 }

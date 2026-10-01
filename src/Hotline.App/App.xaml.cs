@@ -41,14 +41,14 @@ public partial class App : Application
         var settings = store.Load();
         _log.Info($"starting; settings at {store.FilePath}");
 
-        _popup = new PopupWindow(settings.Window, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)));
+        _popup = new PopupWindow(settings.Window, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log);
         _router = new ActivationRouter(_popup, settings.Activation,
-            new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(150)), _log);
+            new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
 
         AppInstance.GetCurrent().Activated += (_, a) =>
             _popup.DispatcherQueue.TryEnqueue(() => _router.OnActivation(a, isFirstLaunch: false));
 
-        var hook = new WindowMessageHook(_popup.Hwnd);
+        var hook = new WindowMessageHook(_popup.Hwnd, _log);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
         HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);

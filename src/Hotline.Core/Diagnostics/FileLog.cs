@@ -21,7 +21,7 @@ public sealed class FileLog(string path, long maxBytes = 1_000_000)
                     File.Move(path, path + ".1", overwrite: true);
                 File.AppendAllText(path, $"{DateTimeOffset.Now:O} {level} {message}{Environment.NewLine}");
             }
-            catch (IOException)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
                 // Logging must never take the app down.
             }

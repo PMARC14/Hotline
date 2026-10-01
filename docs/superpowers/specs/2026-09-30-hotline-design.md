@@ -124,7 +124,11 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
 5. **Context:** window capture (Windows.Graphics.Capture, foreground or picker), region-select overlay, drag-drop/paste,
    clipboard/selection.
 6. **Polish:** Settings UI, command-bar and side-panel layouts, double-tap action, README, GitHub repo.
-7. **Local (low priority):** LocalServerManager + NPU (OpenVINO) and GPU (SYCL) presets, warm-on-key / keep-warm / idle sleep.
+7. **Tools (low priority):** "PowerToys Run"-style actions the AI can call: launch an installed app
+   (Start-menu/`shell:AppsFolder` index), open a file, folder, URL or `ms-settings:` page, and search apps. Hotline hosts them as a local
+   **MCP server**, so Claude Code, `agy` and API backends with tool calling share one tool set. Every action
+   needs user confirmation by default (a setting). PowerToys Run itself stays the user's separate manual launcher.
+8. **Local (low priority):** LocalServerManager + NPU (OpenVINO) and GPU (SYCL) presets, warm-on-key / keep-warm / idle sleep.
 
 Each milestone group gets its own implementation plan in `docs/superpowers/plans/`. Plan 1 covers milestones 0–1.
 

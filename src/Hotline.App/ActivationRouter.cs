@@ -14,9 +14,10 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         log.Info($"activation kind={args.Kind} first={isFirstLaunch}");
         switch (args.Kind)
         {
-            case ExtendedActivationKind.Protocol:
-                var uri = ((IProtocolActivatedEventArgs)args.Data).Uri;
-                if (ActivationParser.ParseUri(uri) is { } e) OnKey(e, KeySource.Protocol);
+            // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
+            case ExtendedActivationKind.Protocol or ExtendedActivationKind.ProtocolForResults
+                when args.Data is IProtocolActivatedEventArgs protocol:
+                if (ActivationParser.ParseUri(protocol.Uri) is { } e) OnKey(e, KeySource.Protocol);
                 else popup.ShowPopup();
                 break;
             case ExtendedActivationKind.StartupTask when isFirstLaunch:
@@ -29,7 +30,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     public void OnKey(KeyEvent e, KeySource source)
     {
-        if (!deduper.ShouldHandle(e))
+        if (!deduper.ShouldHandle(e, source))
         {
             log.Info($"key {e} via {source} (duplicate, ignored)");
             return;
