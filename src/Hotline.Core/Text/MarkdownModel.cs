@@ -70,8 +70,12 @@ public static class MarkdownModel
         return new Seq<MdInline>(Merge(result));
     }
 
-    private static void Walk(ContainerInline? container, MdStyle style, List<MdInline> output)
+    private static void Walk(ContainerInline? container, MdStyle baseStyle, List<MdInline> output)
     {
+        // Inline HTML like <kbd>Ctrl</kbd> arrives as separate open/close tags around ordinary text:
+        // track which known tags are open and apply their style; unknown tags are hidden (text kept).
+        var openTags = new List<MdStyle>();
+        MdStyle style = baseStyle;
         for (var inline = container?.FirstChild; inline is not null; inline = inline.NextSibling)
         {
             switch (inline)
@@ -107,8 +111,14 @@ public static class MarkdownModel
                     output.Add(new MdText(" ", style));
                     break;
                 case HtmlInline html:
-                    output.Add(new MdText(html.Tag, style));
-                    break;
+                    var (name, closing) = TagName(html.Tag);
+                    if (name == "br") { output.Add(new MdBreak()); break; }
+                    if (HtmlStyles.TryGetValue(name, out var tagStyle))
+                    {
+                        if (closing) openTags.Remove(tagStyle); else openTags.Add(tagStyle);
+                        style = openTags.Aggregate(baseStyle, (acc, s2) => acc | s2);
+                    }
+                    break; // other tags (span, sup, div...) are dropped; their text stays
                 case HtmlEntityInline entity:
                     output.Add(new MdText(entity.Transcoded.ToString(), style));
                     break;
@@ -117,6 +127,21 @@ public static class MarkdownModel
                     break;
             }
         }
+    }
+
+    private static readonly Dictionary<string, MdStyle> HtmlStyles = new(StringComparer.OrdinalIgnoreCase)
+    {
+        ["b"] = MdStyle.Bold, ["strong"] = MdStyle.Bold, ["i"] = MdStyle.Italic, ["em"] = MdStyle.Italic,
+        ["s"] = MdStyle.Strike, ["del"] = MdStyle.Strike, ["strike"] = MdStyle.Strike,
+        ["code"] = MdStyle.Code, ["kbd"] = MdStyle.Code, ["samp"] = MdStyle.Code, ["tt"] = MdStyle.Code,
+    };
+
+    private static (string Name, bool Closing) TagName(string tag)
+    {
+        var t = tag.Trim('<', '>', ' ', '/');
+        var closing = tag.StartsWith("</", StringComparison.Ordinal);
+        var end = t.IndexOfAny([' ', '\t', '\n', '/']);
+        return ((end < 0 ? t : t[..end]).ToLowerInvariant(), closing);
     }
 
     /// <summary>Joins adjacent text runs with the same style ("a" + " " → "a ").</summary>

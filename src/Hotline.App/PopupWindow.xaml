@@ -13,6 +13,14 @@
             <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
+            <!-- Scrollbar: transparent track/background, translucent thumb (acrylic shows through). -->
+            <SolidColorBrush x:Key="ScrollBarBackground" Color="Transparent" />
+            <SolidColorBrush x:Key="ScrollBarBackgroundPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="ScrollBarTrackFill" Color="Transparent" />
+            <SolidColorBrush x:Key="ScrollBarTrackFillPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="ScrollBarThumbFill" Color="#59808080" />
+            <SolidColorBrush x:Key="ScrollBarThumbFillPointerOver" Color="#8C9A9A9A" />
+            <SolidColorBrush x:Key="ScrollBarThumbFillPressed" Color="#A6B0B0B0" />
             <Style x:Key="ToolbarButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
                 <Setter Property="Width" Value="36" /><Setter Property="Height" Value="32" />
                 <Setter Property="Padding" Value="0" /><Setter Property="Background" Value="Transparent" />
@@ -29,7 +37,7 @@
 
         <ScrollViewer x:Name="MessagesScroll" x:FieldModifier="internal" VerticalScrollBarVisibility="Auto"
                       HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
-            <StackPanel x:Name="MessagesPanel" x:FieldModifier="internal" Spacing="12" Padding="2,4,10,4" VerticalAlignment="Bottom" />
+            <StackPanel x:Name="MessagesPanel" x:FieldModifier="internal" Spacing="12" Padding="2,4,18,4" VerticalAlignment="Bottom" />
         </ScrollViewer>
         <TextBlock x:Name="StatusText" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
                    Style="{StaticResource CaptionTextBlockStyle}" Visibility="Collapsed" />

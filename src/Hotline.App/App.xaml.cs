@@ -22,6 +22,7 @@ public partial class App : Application
     private TrayIcon? _tray;
     private ChatPresenter? _presenter;
     private BackendCache? _backends;
+    private Microsoft.UI.Dispatching.DispatcherQueueTimer? _heartbeat;
 
     public App(AppActivationArguments initialActivation)
     {
@@ -31,6 +32,10 @@ public partial class App : Application
         // Last chance: record anything that is about to terminate the process.
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
+        // Lifecycle breadcrumbs: Hotline once vanished during Modern Standby without a crash record.
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => _log?.Info($"process exiting (exit code {Environment.ExitCode})");
+        Microsoft.Windows.System.Power.PowerManager.SystemSuspendStatusChanged += (_, _) =>
+            _log?.Info($"system suspend status: {Microsoft.Windows.System.Power.PowerManager.SystemSuspendStatus}");
         TaskScheduler.UnobservedTaskException += (_, e) => _log?.Error("unobserved task exception", e.Exception);
     }
 
@@ -118,6 +123,11 @@ public partial class App : Application
             },
             onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
             onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); }).Wait(TimeSpan.FromSeconds(2)); Exit(); });
+
+        _heartbeat = _popup.DispatcherQueue.CreateTimer();
+        _heartbeat.Interval = TimeSpan.FromMinutes(30);
+        _heartbeat.Tick += (_, _) => _log?.Info($"alive; working set {Environment.WorkingSet / (1024 * 1024)} MB");
+        _heartbeat.Start();
 
         try { _router.OnActivation(ActivationRouter.Snapshot(_initialActivation, isFirstLaunch: true)); }
         catch (Exception ex) { _log.Error("initial activation handling failed", ex); }

@@ -93,7 +93,7 @@ public class MarkdownModelTests
     {
         var p = Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse("one  \ntwo <b>x</b>")));
         Assert.Contains(p.Inlines, i => i is MdBreak);
-        Assert.Contains(p.Inlines, i => i is MdText t && t.Text.Contains("<b>"));
+        Assert.Contains(p.Inlines, i => i is MdText { Text: "x", Style: MdStyle.Bold });
     }
 
     [Fact]
@@ -126,5 +126,36 @@ public class MarkdownModelTests
         Assert.Equal(2, MarkdownModel.FirstChangedIndex(a, b));
         Assert.Equal(3, MarkdownModel.FirstChangedIndex(a, a));
         Assert.Equal(0, MarkdownModel.FirstChangedIndex([], b));
+    }
+
+    [Fact]
+    public void Kbd_tags_render_as_code_without_showing_tags()
+    {
+        var p = Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse("Press <kbd>Ctrl</kbd>+<kbd>C</kbd>")));
+        Assert.Equal([T("Press "), T("Ctrl", MdStyle.Code), T("+"), T("C", MdStyle.Code)], p.Inlines);
+    }
+
+    [Theory]
+    [InlineData("<strong>s</strong>", MdStyle.Bold)]
+    [InlineData("<em>s</em>", MdStyle.Italic)]
+    [InlineData("<del>s</del>", MdStyle.Strike)]
+    [InlineData("<code>s</code>", MdStyle.Code)]
+    public void Common_inline_html_maps_to_styles(string md, MdStyle style)
+        => Assert.Equal([T("s", style)], Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse(md))).Inlines);
+
+    [Fact]
+    public void Br_tag_is_a_line_break_and_unknown_tags_are_hidden()
+    {
+        var p = Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse("a<br>b <span class=\"x\">c</span> <sup>2</sup>")));
+        Assert.Contains(p.Inlines, i => i is MdBreak);
+        Assert.DoesNotContain(p.Inlines, i => i is MdText t && t.Text.Contains('<'));
+        Assert.Contains(p.Inlines, i => i is MdText t && t.Text.Contains('c'));
+    }
+
+    [Fact]
+    public void Unclosed_tag_styles_only_until_end_of_paragraph()
+    {
+        var blocks = MarkdownModel.Parse("<kbd>open\n\nnext para");
+        Assert.Equal([T("next para")], Assert.IsType<MdParagraph>(blocks[1]).Inlines);
     }
 }

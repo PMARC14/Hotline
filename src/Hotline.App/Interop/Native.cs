@@ -29,6 +29,25 @@ internal static class Native
     [DllImport("user32.dll")] public static extern int GetSystemMetricsForDpi(int index, uint dpi);
     public const int SM_CXSMICON = 49;
     [DllImport("user32.dll")] public static extern bool SetForegroundWindow(nint hWnd);
+    [DllImport("user32.dll")] public static extern uint GetWindowThreadProcessId(nint hWnd, out uint processId);
+    [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
+    [DllImport("user32.dll")] public static extern bool AttachThreadInput(uint idAttach, uint idAttachTo, bool attach);
+    [DllImport("user32.dll")] public static extern bool BringWindowToTop(nint hWnd);
+
+    /// <summary>
+    /// SetForegroundWindow that also works when Windows has not granted us foreground rights (e.g. a Copilot-key
+    /// fast-path message): briefly attach to the current foreground thread's input queue.
+    /// </summary>
+    public static bool ForceForeground(nint hWnd)
+    {
+        if (SetForegroundWindow(hWnd) && GetForegroundWindow() == hWnd) return true;
+        var fgThread = GetWindowThreadProcessId(GetForegroundWindow(), out _);
+        var me = GetCurrentThreadId();
+        if (fgThread == 0 || fgThread == me) return SetForegroundWindow(hWnd);
+        AttachThreadInput(me, fgThread, true);
+        try { BringWindowToTop(hWnd); return SetForegroundWindow(hWnd); }
+        finally { AttachThreadInput(me, fgThread, false); }
+    }
     [DllImport("user32.dll")] public static extern bool RegisterHotKey(nint hWnd, int id, uint modifiers, uint vk);
     [DllImport("user32.dll")] public static extern bool PostMessage(nint hWnd, uint msg, nint wParam, nint lParam);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern uint RegisterWindowMessage(string name);

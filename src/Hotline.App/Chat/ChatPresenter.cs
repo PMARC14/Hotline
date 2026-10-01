@@ -33,6 +33,8 @@ internal sealed partial class ChatPresenter(
     }
 
     private readonly Dictionary<string, AssistantView> _assistants = [];
+    private bool _stickToBottom = true;
+    private bool _autoScrolling;
     private DispatcherQueueTimerWrapper? _renderTimer;
     private RenderStyle _style = null!;
     private ThemeTokens _tokens = ThemeTokens.Dark;
@@ -53,7 +55,9 @@ internal sealed partial class ChatPresenter(
         popup.Input.FontFamily = _style.Font;
 
         chat.Event += e => Guard("chat event", () => OnChatEvent(e));
-        popup.Shown += () => popup.Input.Focus(FocusState.Programmatic);
+        // Focus after the window is laid out and active, or the caret may not appear.
+        popup.Shown += () => popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low,
+            () => { if (!popup.Input.Focus(FocusState.Keyboard)) log.Debug("input focus refused"); });
         popup.NewChatRequested += NewChat;
         popup.CaptureRequested += window => Run("capture", () => CaptureAsync(window));
 
@@ -75,7 +79,8 @@ internal sealed partial class ChatPresenter(
         popup.Root.DragOver += Root_DragOver;
         popup.Root.Drop += Root_Drop;
 
-        popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
+        popup.MessagesPanel.SizeChanged += (_, _) => { ReportHeight(); if (_stickToBottom) ScrollToBottomNow(); };
+        popup.MessagesScroll.ViewChanged += OnMessagesViewChanged;
         popup.NoticesPanel.SizeChanged += (_, _) => ReportHeight();
         popup.Composer.SizeChanged += (_, _) => ReportHeight();
 
@@ -263,13 +268,31 @@ internal sealed partial class ChatPresenter(
         popup.SetContentHeight(dip);
     }
 
+    /// <summary>
+    /// Follow the conversation while the user is at the bottom; stop following once they scroll up to read
+    /// (resumes when they scroll back down or send a message). Scrolling happens after layout (SizeChanged),
+    /// so the target is the new bottom, not the old one.
+    /// </summary>
     private void ScrollToEnd(bool force)
     {
+        if (force) _stickToBottom = true;
+        if (_stickToBottom) ScrollToBottomNow();
+    }
+
+    private void ScrollToBottomNow()
+    {
         var sv = popup.MessagesScroll;
-        var nearBottom = sv.ScrollableHeight - sv.VerticalOffset < 48;
-        if (!force && !nearBottom) return;
-        popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Normal,
-            () => sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: true));
+        _autoScrolling = true;
+        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: true);
+    }
+
+    private void OnMessagesViewChanged(object? sender, Microsoft.UI.Xaml.Controls.ScrollViewerViewChangedEventArgs e)
+    {
+        if (e.IsIntermediate) return;
+        var sv = popup.MessagesScroll;
+        var atBottom = sv.ScrollableHeight - sv.VerticalOffset < 24;
+        if (_autoScrolling) { _autoScrolling = false; if (atBottom) return; }
+        _stickToBottom = atBottom; // user scrolled: follow only if they are back at the bottom
     }
 
     // ---- toolbar ----------------------------------------------------------------------------

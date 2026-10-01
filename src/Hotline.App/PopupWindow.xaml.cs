@@ -89,7 +89,7 @@ public sealed partial class PopupWindow : Window
 
         PlaceOnActiveMonitor();
         Activate();
-        Native.SetForegroundWindow(Hwnd);
+        if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
     }
 

@@ -156,6 +156,15 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
   - Model lists come from the provider where possible (`agy models`, `GET /models` on APIs and local servers),
     cached, with a free-text fallback. Types not yet implemented (Plan 4) are configurable and listed but marked
     "coming soon" in the picker.
+  **Tool use + system prompts (user, 2026-10-01 evening):**
+  - Per-connection **tool mode**: "Chat only" (today's safe hotline agent: view attachments only) or "Inherit the CLI's
+    own tools & permissions" (agy default agent / Claude Code as configured by the user, honouring their own
+    settings.json permission rules; headless still denies anything not allowed there), plus a working-directory
+    setting for inherit mode. API backends get tools later via Hotline's MCP layer (Plan 5).
+  - **System prompts**: multiple prompt files in `%USERPROFILE%\.hotline\prompts\*.md` (a default one created on
+    first run); pick the active prompt per connection (and quick-switch in the bottom bar); "Open prompts folder" /
+    "Edit in editor" buttons like settings. agy: the selected prompt becomes the generated agent file body;
+    APIs: sent as the system message; Claude Code: `--append-system-prompt` (verify in Plan 4).
 - Then Plan 4 = backends (Gemini API, OpenAI-compatible, Claude Code); Plan 5 = controlled local access (Hotline-hosted
   MCP tools with ask/allow/deny + folder scopes, and Windows on-device agent registry connectors).
 
