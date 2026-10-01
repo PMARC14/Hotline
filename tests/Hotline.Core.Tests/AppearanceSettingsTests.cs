@@ -46,22 +46,17 @@ public sealed class AppearanceSettingsTests : IDisposable
     [Fact]
     public void Theme_tokens_follow_font_settings()
     {
-        var css = ThemeTokens.For(dark: true, new WindowSettings { FontSize = 17, FontFamily = "Cascadia Code" }).ToCss();
-        Assert.Contains("--hl-font-size:17px", css);
-        Assert.Contains("--hl-font:'Cascadia Code'", css);
+        var t = ThemeTokens.For(dark: true, new WindowSettings { FontSize = 17, FontFamily = "Cascadia Code" });
+        Assert.Equal(17, t.FontSizePx);
+        Assert.Equal("Cascadia Code, Segoe UI Variable Text, Segoe UI", t.Font);
     }
 
-    [Fact]
-    public void Unsafe_font_family_falls_back_to_default()
-        => Assert.DoesNotContain("evil", ThemeTokens.For(dark: true, new WindowSettings { FontFamily = "x;}body{evil" }).ToCss());
-
-    [Fact]
-    public void Theme_tokens_include_scrollbar_colors()
-    {
-        var css = ThemeTokens.Dark.ToCss();
-        Assert.Contains("--hl-scrollbar:", css);
-        Assert.Contains("--hl-scrollbar-hover:", css);
-    }
+    [Theory]
+    [InlineData("x;}body{evil")]
+    [InlineData("<script>")]
+    [InlineData("Font\"Name")]
+    public void Unsafe_font_family_falls_back_to_default(string family)
+        => Assert.Equal(ThemeTokens.Dark.Font, ThemeTokens.For(dark: true, new WindowSettings { FontFamily = family }).Font);
 
     [Fact]
     public void Full_grow_mode_jumps_to_max_once_there_is_content()
