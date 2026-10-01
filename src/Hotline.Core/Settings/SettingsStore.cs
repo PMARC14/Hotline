@@ -80,9 +80,9 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
-        // v1 → v2: the popup became a compact bar. Only move users still on the untouched v1 default size.
-        if (s.SchemaVersion < 2 && s.Window.Width == 640 && s.Window.Height == 520)
-            (s.Window.Width, s.Window.Height) = (560, 120);
+        // → v4: the popup became a relative-width panel with a 320-DIP baseline. Move untouched old default heights.
+        if (s.SchemaVersion < 4 && s.Window.Height is 120 or 520)
+            s.Window.Height = 320;
         // v2 → v3: long press now starts a new chat. Only move users still on the old default.
         if (s.SchemaVersion < 3 && s.Activation.Hold == KeyAction.ShowPopup)
             s.Activation.Hold = KeyAction.NewChat;
@@ -98,7 +98,6 @@ public sealed class SettingsStore(string directory)
         if (s.Chat.Backends.Count == 0) s.Chat.Backends = ChatSettings.DefaultBackends();
         foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
         if (!s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
-        s.Chat.MaxHeight = Math.Clamp(s.Chat.MaxHeight, 160, 4000);
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
         s.Window.FontSize = Math.Clamp(s.Window.FontSize, 10, 32);
@@ -106,8 +105,11 @@ public sealed class SettingsStore(string directory)
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
         Migrate(s);
-        s.Window.Width = Math.Clamp(s.Window.Width, 320, 4000);
-        s.Window.Height = Math.Clamp(s.Window.Height, 80, 4000);
+        s.Window.WidthPercent = Math.Clamp(s.Window.WidthPercent, 20, 90);
+        s.Window.MinWidth = Math.Clamp(s.Window.MinWidth, 320, 4000);
+        s.Window.MaxWidth = Math.Clamp(s.Window.MaxWidth, s.Window.MinWidth, 4000);
+        s.Window.Height = Math.Clamp(s.Window.Height, 120, 4000);
+        s.Window.MaxHeightPercent = Math.Clamp(s.Window.MaxHeightPercent, 30, 95);
         s.SchemaVersion = HotlineSettings.CurrentSchemaVersion;
         return s;
     }

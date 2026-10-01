@@ -15,8 +15,8 @@ public sealed class SettingsStoreTests : IDisposable
         var store = New();
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal(560, s.Window.Width);
-        Assert.Equal(120, s.Window.Height);
+        Assert.Equal(40, s.Window.WidthPercent);
+        Assert.Equal(320, s.Window.Height);
         Assert.True(File.Exists(store.FilePath));
     }
 
@@ -48,10 +48,10 @@ public sealed class SettingsStoreTests : IDisposable
     public void Missing_properties_keep_defaults()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "window": { "width": 800 } }""");
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "window": { "minWidth": 800 } }""");
         var s = New().Load();
-        Assert.Equal(800, s.Window.Width);
-        Assert.Equal(120, s.Window.Height);
+        Assert.Equal(800, s.Window.MinWidth);
+        Assert.Equal(320, s.Window.Height);
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
     }
 
@@ -89,8 +89,8 @@ public sealed class SettingsStoreTests : IDisposable
     public void Window_size_is_clamped(int width, int expected)
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), $$"""{ "window": { "width": {{width}} } }""");
-        Assert.Equal(expected, New().Load().Window.Width);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), $$"""{ "window": { "minWidth": {{width}} } }""");
+        Assert.Equal(expected, New().Load().Window.MinWidth);
     }
 
     [Fact]
@@ -112,12 +112,12 @@ public sealed class SettingsStoreTests : IDisposable
     {
         Directory.CreateDirectory(_dir);
         var path = Path.Combine(_dir, SettingsStore.FileName);
-        File.WriteAllText(path, """{ "window": { "width": 900 } }""");
+        File.WriteAllText(path, """{ "window": { "minWidth": 900 } }""");
         using var lockHandle = new FileStream(path, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
 
         var s = New().Load();
 
-        Assert.Equal(560, s.Window.Width);
+        Assert.Equal(600, s.Window.MinWidth);
     }
 
     [Fact]
@@ -158,7 +158,7 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
             """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
         var s = New().Load();
-        Assert.Equal((560, 120), (s.Window.Width, s.Window.Height));
+        Assert.Equal(320, s.Window.Height);
         Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
     }
 
@@ -169,7 +169,7 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
             """{ "schemaVersion": 1, "window": { "width": 700, "height": 400 } }""");
         var s = New().Load();
-        Assert.Equal((700, 400), (s.Window.Width, s.Window.Height));
+        Assert.Equal(400, s.Window.Height);
     }
 
     [Fact]
@@ -179,6 +179,6 @@ public sealed class SettingsStoreTests : IDisposable
         var path = Path.Combine(_dir, SettingsStore.FileName);
         File.WriteAllText(path, """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
         New().Load();
-        Assert.Contains("\"height\": 120", File.ReadAllText(path));
+        Assert.Contains("\"height\": 320", File.ReadAllText(path));
     }
 }

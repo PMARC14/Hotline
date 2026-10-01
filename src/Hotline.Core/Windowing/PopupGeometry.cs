@@ -35,4 +35,8 @@ public static class PopupGeometry
         var y = Math.Max(workArea.Y, bottom - h);
         return bar with { Y = y, Height = h };
     }
+
+    /// <summary>Panel width in DIPs: percent of the work area (converted from physical pixels), clamped to [min, max].</summary>
+    public static int RelativeWidthDip(int workAreaWidthPx, double scale, double percent, int minDip, int maxDip)
+        => Math.Clamp((int)Math.Round(workAreaWidthPx / scale * percent / 100.0), minDip, Math.Max(minDip, maxDip));
 }

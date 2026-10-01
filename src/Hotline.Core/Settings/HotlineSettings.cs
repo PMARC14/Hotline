@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 3;
+    public const int CurrentSchemaVersion = 4;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -37,10 +37,14 @@ public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 public sealed class WindowSettings
 {
     public PopupLayout Layout { get; set; } = PopupLayout.QuickView;
-    /// <summary>Size in device-independent pixels (scaled by monitor DPI).</summary>
-    /// <remarks>Compact input bar like Copilot's quick view; grows with the conversation (later plan).</remarks>
-    public int Width { get; set; } = 560;
-    public int Height { get; set; } = 120;
+    /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
+    public double WidthPercent { get; set; } = 40;
+    public int MinWidth { get; set; } = 600;
+    public int MaxWidth { get; set; } = 1000;
+    /// <summary>Baseline panel height in DIPs, including space reserved above the composer.</summary>
+    public int Height { get; set; } = 320;
+    /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
+    public double MaxHeightPercent { get; set; } = 70;
     /// <summary>Where the popup sits vertically: 0 = top, 0.5 = centered, 1 = bottom of the free space.</summary>
     public double VerticalPosition { get; set; } = 0.8;
     public bool HideOnBlur { get; set; } = true;
@@ -82,9 +86,7 @@ public sealed class ChatSettings
 {
     public string DefaultBackend { get; set; } = "agy";
     public List<BackendProfile> Backends { get; set; } = DefaultBackends();
-    /// <summary>Popup grows upward from the bar to at most this height (DIPs).</summary>
-    public int MaxHeight { get; set; } = 560;
-    /// <summary>Grow = fit the conversation (up to MaxHeight); Full = jump to MaxHeight once there are messages.</summary>
+    /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
     public GrowMode GrowMode { get; set; } = GrowMode.Grow;
     public bool SaveHistory { get; set; } = true;
     public int HistoryRetentionDays { get; set; } = 30;

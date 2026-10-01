@@ -22,7 +22,6 @@ public sealed class ChatSettingsTests : IDisposable
         var agy = Assert.Single(s.Chat.Backends);
         Assert.Equal(BackendType.Antigravity, agy.Type);
         Assert.Equal("hotline", agy.Agent);
-        Assert.Equal(560, s.Chat.MaxHeight);
     }
 
     [Fact]
@@ -41,12 +40,6 @@ public sealed class ChatSettingsTests : IDisposable
         Assert.Equal("g", g.Name);
         Assert.Equal(BackendType.Gemini, g.Type);
     }
-
-    [Theory]
-    [InlineData(10, 160)]
-    [InlineData(99999, 4000)]
-    public void Max_height_is_clamped(int value, int expected)
-        => Assert.Equal(expected, LoadJson($$"""{ "chat": { "maxHeight": {{value}} } }""").Chat.MaxHeight);
 
     [Fact]
     public void Null_chat_section_gets_defaults()
