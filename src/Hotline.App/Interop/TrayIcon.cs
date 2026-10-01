@@ -23,7 +23,8 @@ internal sealed class TrayIcon : IDisposable
             uID = 1,
             uFlags = Native.NIF_MESSAGE | Native.NIF_ICON | Native.NIF_TIP,
             uCallbackMessage = WM_TRAY,
-            hIcon = Native.LoadImage(0, iconPath, Native.IMAGE_ICON, 0, 0, Native.LR_LOADFROMFILE),
+            // Pick the multi-size .ico entry matching the tray size at this display scale (e.g. 32 px at 200%).
+            hIcon = Native.LoadImage(0, iconPath, Native.IMAGE_ICON, TraySize(hook.Hwnd), TraySize(hook.Hwnd), Native.LR_LOADFROMFILE),
             szTip = "Hotline",
             szInfo = string.Empty,
             szInfoTitle = string.Empty,
@@ -48,6 +49,12 @@ internal sealed class TrayIcon : IDisposable
         });
         // Explorer restarts drop tray icons; re-add when the taskbar comes back.
         hook.On(Native.RegisterWindowMessage("TaskbarCreated"), (_, _) => { Add(); return false; });
+    }
+
+    private static int TraySize(nint hwnd)
+    {
+        var dpi = Native.GetDpiForWindow(hwnd);
+        return Native.GetSystemMetricsForDpi(Native.SM_CXSMICON, dpi == 0 ? 96 : dpi);
     }
 
     private void Add()
