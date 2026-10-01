@@ -63,11 +63,15 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
                 popup.Toggle();
                 break;
             case KeyAction.NewChat:
-                popup.ResetConversation();
+                popup.RequestNewChat();
                 popup.ShowPopup();
                 break;
+            case KeyAction.CaptureWindow:
+                popup.ShowPopup();
+                popup.RequestCapture(window: true);
+                break;
             default:
-                // ShowPopup, plus CaptureWindow/RegionSelect which arrive with the context plan; until then they just open the popup.
+                // ShowPopup; RegionSelect arrives in a later plan and just opens the popup for now.
                 popup.ShowPopup();
                 break;
         }

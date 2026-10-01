@@ -62,3 +62,14 @@ test('unknown messages leave state unchanged', () => {
   const s0 = initialState();
   assert.equal(reduce(s0, { type: 'mystery' }), s0);
 });
+
+import { desiredHeight } from '../../src/Hotline.App/Web/chat-core.js';
+
+test('desired height is the bar alone when there are no messages', () => {
+  assert.equal(desiredHeight({ messageHeights: [], gap: 10, listPadding: 14, composer: 56, chrome: 22 }), 78);
+});
+
+test('desired height sums messages, gaps and chrome, not the stretched list', () => {
+  // two short messages: 40 + 10 gap + 30 = 80 content + 14 list padding + 56 composer + 22 chrome
+  assert.equal(desiredHeight({ messageHeights: [40, 30], gap: 10, listPadding: 14, composer: 56, chrome: 22 }), 172);
+});

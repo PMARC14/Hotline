@@ -90,4 +90,57 @@ internal static class Native
         [PreserveSig] int SetValue(ref PROPERTYKEY key, ref PROPVARIANT value);
         [PreserveSig] int Commit();
     }
+
+    public const uint SRCCOPY = 0x00CC0020, CAPTUREBLT = 0x40000000;
+    public const int DWMWA_EXTENDED_FRAME_BOUNDS = 9;
+    public const uint JOB_OBJECT_LIMIT_KILL_ON_JOB_CLOSE = 0x2000;
+    public const int JobObjectExtendedLimitInformation = 9;
+
+    [DllImport("user32.dll")] public static extern nint GetDC(nint hWnd);
+    [DllImport("user32.dll")] public static extern int ReleaseDC(nint hWnd, nint hdc);
+    [DllImport("user32.dll")] public static extern bool IsWindow(nint hWnd);
+    [DllImport("user32.dll")] public static extern bool IsIconic(nint hWnd);
+    [DllImport("gdi32.dll")] public static extern nint CreateCompatibleDC(nint hdc);
+    [DllImport("gdi32.dll")] public static extern nint CreateCompatibleBitmap(nint hdc, int w, int h);
+    [DllImport("gdi32.dll")] public static extern nint SelectObject(nint hdc, nint obj);
+    [DllImport("gdi32.dll")] public static extern bool BitBlt(nint dst, int x, int y, int w, int h, nint src, int sx, int sy, uint rop);
+    [DllImport("gdi32.dll")] public static extern int GetDIBits(nint hdc, nint bmp, uint start, uint lines, byte[] bits, ref BITMAPINFOHEADER bi, uint usage);
+    [DllImport("gdi32.dll")] public static extern bool DeleteObject(nint obj);
+    [DllImport("gdi32.dll")] public static extern bool DeleteDC(nint hdc);
+    [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(nint hWnd, int attr, out RECT value, int size);
+    [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] public static extern nint CreateJobObject(nint attrs, string? name);
+    [DllImport("kernel32.dll")] public static extern bool SetInformationJobObject(nint job, int cls, ref JOBOBJECT_EXTENDED_LIMIT_INFORMATION info, int size);
+    [DllImport("kernel32.dll")] public static extern bool AssignProcessToJobObject(nint job, nint process);
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct RECT { public int Left, Top, Right, Bottom; }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct BITMAPINFOHEADER
+    {
+        public int biSize; public int biWidth; public int biHeight; public short biPlanes; public short biBitCount;
+        public int biCompression; public int biSizeImage; public int biXPelsPerMeter; public int biYPelsPerMeter;
+        public int biClrUsed; public int biClrImportant;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct JOBOBJECT_BASIC_LIMIT_INFORMATION
+    {
+        public long PerProcessUserTimeLimit; public long PerJobUserTimeLimit; public uint LimitFlags;
+        public nuint MinimumWorkingSetSize; public nuint MaximumWorkingSetSize; public uint ActiveProcessLimit;
+        public nuint Affinity; public uint PriorityClass; public uint SchedulingClass;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct IO_COUNTERS
+    {
+        public ulong ReadOperationCount, WriteOperationCount, OtherOperationCount, ReadTransferCount, WriteTransferCount, OtherTransferCount;
+    }
+
+    [StructLayout(LayoutKind.Sequential)]
+    public struct JOBOBJECT_EXTENDED_LIMIT_INFORMATION
+    {
+        public JOBOBJECT_BASIC_LIMIT_INFORMATION BasicLimitInformation; public IO_COUNTERS IoInfo;
+        public nuint ProcessMemoryLimit, JobMemoryLimit, PeakProcessMemoryUsed, PeakJobMemoryUsed;
+    }
 }

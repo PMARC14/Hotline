@@ -42,3 +42,10 @@ export function reduce(state, msg) {
       return state;
   }
 }
+
+/** Height the popup should have: the composer alone, or composer + the messages' natural height. */
+export function desiredHeight({ messageHeights, gap, listPadding, composer, chrome }) {
+  if (messageHeights.length === 0) return Math.ceil(composer + chrome);
+  const content = messageHeights.reduce((a, b) => a + b, 0) + gap * (messageHeights.length - 1);
+  return Math.ceil(content + listPadding + composer + chrome);
+}

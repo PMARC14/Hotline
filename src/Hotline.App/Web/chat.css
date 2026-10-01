@@ -31,7 +31,7 @@ a { color: var(--hl-accent); }
   border-radius: calc(var(--hl-radius) + 4px); padding: 6px; }
 #row:focus-within { border-color: var(--hl-accent); }
 #input { flex: 1; resize: none; border: 0; outline: 0; background: transparent; color: inherit; font: inherit;
-  line-height: 1.45; max-height: 9em; padding: 5px 4px; }
+  line-height: 1.45; max-height: 9em; padding: 5px 4px; overflow-y: hidden; }
 button { font: inherit; color: inherit; background: transparent; border: 0; cursor: pointer; border-radius: var(--hl-radius); }
 button:hover { background: var(--hl-surface-strong); }
 .icon { width: 32px; height: 32px; font-size: 1.15em; flex: 0 0 auto; }
@@ -45,3 +45,4 @@ button:hover { background: var(--hl-surface-strong); }
 #menu button { text-align: left; padding: 7px 10px; }
 body.dragging #row { border-style: dashed; border-color: var(--hl-accent); }
 @keyframes blink { 50% { opacity: 0; } }
+#messages { scrollbar-width: thin; scrollbar-color: var(--hl-border) transparent; }

@@ -1,4 +1,4 @@
-import { initialState, reduce } from './chat-core.js';
+import { initialState, reduce, desiredHeight } from './chat-core.js';
 
 const host = window.chrome?.webview;
 const post = msg => host?.postMessage(msg);
@@ -64,9 +64,11 @@ function render(msg) {
 let lastHeight = 0;
 function reportHeight() {
   requestAnimationFrame(() => {
-    const composer = $('composer').offsetHeight;
-    const content = state.messages.length ? els.messages.scrollHeight + 14 : 0;
-    const h = Math.ceil(content + composer + 22);
+    // #messages stretches to fill the window, so measure its children, not its scrollHeight.
+    const h = desiredHeight({
+      messageHeights: [...els.messages.children].map(c => c.offsetHeight),
+      gap: 10, listPadding: 14, composer: $('composer').offsetHeight, chrome: 30, // +8 slack: collapsed markdown margins aren't in offsetHeight
+    });
     if (Math.abs(h - lastHeight) > 1) { lastHeight = h; post({ type: 'height', value: h }); }
   });
 }
@@ -76,7 +78,13 @@ function showToast(text) {
   clearTimeout(showToast.t); showToast.t = setTimeout(() => (els.toast.hidden = true), 4000);
 }
 
-function autoGrow() { els.input.style.height = 'auto'; els.input.style.height = els.input.scrollHeight + 'px'; reportHeight(); }
+function autoGrow() {
+  els.input.style.height = 'auto';
+  const h = els.input.scrollHeight;
+  els.input.style.height = h + 'px';
+  els.input.style.overflowY = h > els.input.clientHeight + 1 ? 'auto' : 'hidden'; // no stray scroll arrows on one line
+  reportHeight();
+}
 
 function send() {
   if (state.busy) { post({ type: 'cancel' }); return; }
