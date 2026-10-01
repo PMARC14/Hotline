@@ -73,8 +73,8 @@ public sealed partial class PopupWindow : Window
     public void ShowPopup()
     {
         var fg = Native.GetForegroundWindow();
-        if (fg != Hwnd && fg != 0)
-            PreviousForeground = fg;
+        if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
+            PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
 
         PlaceOnActiveMonitor();
         Activate();
