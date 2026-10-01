@@ -45,4 +45,14 @@ button:hover { background: var(--hl-surface-strong); }
 #menu button { text-align: left; padding: 7px 10px; }
 body.dragging #row { border-style: dashed; border-color: var(--hl-accent); }
 @keyframes blink { 50% { opacity: 0; } }
-#messages { scrollbar-width: thin; scrollbar-color: var(--hl-border) transparent; }
+/* Scrollbars: rounded, transparent track, no arrow buttons. window.scrollbar: auto (shows on hover) | visible | hidden.
+   (Don't set the standard scrollbar-width/scrollbar-color here: in Chromium they disable ::-webkit-scrollbar styling.) */
+#messages::-webkit-scrollbar, #input::-webkit-scrollbar { width: 10px; }
+#messages::-webkit-scrollbar-track, #input::-webkit-scrollbar-track { background: transparent; }
+#messages::-webkit-scrollbar-button, #input::-webkit-scrollbar-button { display: none; height: 0; }
+#messages::-webkit-scrollbar-thumb, #input::-webkit-scrollbar-thumb {
+  background: var(--hl-scrollbar); border-radius: 10px; border: 3px solid transparent; background-clip: padding-box; }
+#messages::-webkit-scrollbar-thumb:hover, #input::-webkit-scrollbar-thumb:hover { background: var(--hl-scrollbar-hover); background-clip: padding-box; }
+body[data-scrollbar="auto"] #messages::-webkit-scrollbar-thumb { background: transparent; }
+body[data-scrollbar="auto"] #messages:hover::-webkit-scrollbar-thumb { background: var(--hl-scrollbar); background-clip: padding-box; }
+body[data-scrollbar="hidden"] #messages::-webkit-scrollbar { display: none; }

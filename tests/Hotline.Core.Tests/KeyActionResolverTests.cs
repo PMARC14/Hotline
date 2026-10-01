@@ -6,11 +6,11 @@ namespace Hotline.Core.Tests;
 public class KeyActionResolverTests
 {
     [Fact]
-    public void Defaults_tap_toggles_and_hold_shows()
+    public void Defaults_tap_toggles_and_hold_starts_new_chat()
     {
         var s = new ActivationSettings();
         Assert.Equal(KeyAction.TogglePopup, KeyActionResolver.Resolve(KeyEvent.Tap, s));
-        Assert.Equal(KeyAction.ShowPopup, KeyActionResolver.Resolve(KeyEvent.HoldStart, s));
+        Assert.Equal(KeyAction.NewChat, KeyActionResolver.Resolve(KeyEvent.HoldStart, s));
     }
 
     [Fact]

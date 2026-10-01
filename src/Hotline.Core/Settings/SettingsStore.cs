@@ -1,3 +1,4 @@
+using Hotline.Core.Activation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
@@ -82,6 +83,9 @@ public sealed class SettingsStore(string directory)
         // v1 → v2: the popup became a compact bar. Only move users still on the untouched v1 default size.
         if (s.SchemaVersion < 2 && s.Window.Width == 640 && s.Window.Height == 520)
             (s.Window.Width, s.Window.Height) = (560, 120);
+        // v2 → v3: long press now starts a new chat. Only move users still on the old default.
+        if (s.SchemaVersion < 3 && s.Activation.Hold == KeyAction.ShowPopup)
+            s.Activation.Hold = KeyAction.NewChat;
     }
 
     private static HotlineSettings Normalize(HotlineSettings s)
@@ -97,6 +101,7 @@ public sealed class SettingsStore(string directory)
         s.Chat.MaxHeight = Math.Clamp(s.Chat.MaxHeight, 160, 4000);
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
+        s.Window.FontSize = Math.Clamp(s.Window.FontSize, 10, 32);
         s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);

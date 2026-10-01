@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 2;
+    public const int CurrentSchemaVersion = 3;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -21,7 +21,8 @@ public sealed class DiagnosticsSettings
 public sealed class ActivationSettings
 {
     public KeyAction Tap { get; set; } = KeyAction.TogglePopup;
-    public KeyAction Hold { get; set; } = KeyAction.ShowPopup;
+    /// <summary>Long press: start a new chat (and open the popup).</summary>
+    public KeyAction Hold { get; set; } = KeyAction.NewChat;
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
     public string? FallbackHotkey { get; set; }
 }
@@ -45,6 +46,11 @@ public sealed class WindowSettings
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
+    /// <summary>Chat text size in px (10–32).</summary>
+    public int FontSize { get; set; } = 14;
+    /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
+    public string? FontFamily { get; set; }
+    public ScrollbarStyle Scrollbar { get; set; } = ScrollbarStyle.Auto;
     public BackdropKind Backdrop { get; set; } = BackdropKind.Acrylic;
     /// <summary>Acrylic tint strength, 0 (clear) to 1 (opaque tint).</summary>
     public double TintOpacity { get; set; } = 0.15;
@@ -76,6 +82,8 @@ public sealed class ChatSettings
     public List<BackendProfile> Backends { get; set; } = DefaultBackends();
     /// <summary>Popup grows upward from the bar to at most this height (DIPs).</summary>
     public int MaxHeight { get; set; } = 560;
+    /// <summary>Grow = fit the conversation (up to MaxHeight); Full = jump to MaxHeight once there are messages.</summary>
+    public GrowMode GrowMode { get; set; } = GrowMode.Grow;
     public bool SaveHistory { get; set; } = true;
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
@@ -86,3 +94,8 @@ public sealed class ChatSettings
         new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" },
     ];
 }
+
+/// <summary>Auto = thin and transparent until hovered; Visible = always shown; Hidden = never shown (still scrolls).</summary>
+public enum ScrollbarStyle { Auto, Visible, Hidden }
+
+public enum GrowMode { Grow, Full }

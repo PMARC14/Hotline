@@ -59,7 +59,7 @@ public partial class App : Application
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
 
-        _popup = new PopupWindow(settings.Window, settings.Chat.MaxHeight, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose);
+        _popup = new PopupWindow(settings.Window, settings.Chat.MaxHeight, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose);
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
         var job = new ChildProcessJob(_log);

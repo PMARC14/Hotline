@@ -138,7 +138,7 @@ internal sealed partial class ChatHost(
             ThemeChoice.Light => false,
             _ => Application.Current.RequestedTheme == ApplicationTheme.Dark,
         };
-        Post(new { type = "theme", css = (dark ? ThemeTokens.Dark : ThemeTokens.Light).ToCss() });
+        Post(new { type = "theme", css = ThemeTokens.For(dark, settings.Window).ToCss(), scrollbar = settings.Window.Scrollbar.ToString().ToLowerInvariant() });
     }
 
     private void PostBackends() => Post(new

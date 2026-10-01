@@ -26,7 +26,9 @@ Tray icon → right-click → **Edit settings file**, then **Restart (apply sett
 | `window.backdrop` | `acrylic` | `acrylic`, `acrylicThin`, `mica`, `solid` |
 | `window.tintOpacity` / `window.luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` | `true` | Hide when you click elsewhere |
-| `activation.tap` / `activation.hold` | `togglePopup` / `showPopup` | What the Copilot key does |
+| `window.fontSize` / `window.fontFamily` | `14` / (Segoe UI Variable) | Chat text size (10–32) and font, e.g. `"Cascadia Code"` |
+| `window.scrollbar` | `auto` | `auto` (transparent until hovered), `visible`, `hidden` |
+| `activation.tap` / `activation.hold` | `togglePopup` / `newChat` | Copilot key: short press opens/closes, long press starts a new chat. Also: `showPopup`, `captureWindow`, `none` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the popup |
 

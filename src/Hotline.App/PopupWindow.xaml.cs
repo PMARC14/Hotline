@@ -20,6 +20,7 @@ public sealed partial class PopupWindow : Window
     private readonly PopupToggleGuard _guard;
     private readonly FileLog _log;
     private readonly int _maxHeightDip;
+    private readonly GrowMode _growMode;
     private int _modal;
     private RectI _bar;
     private RectI _work;
@@ -30,10 +31,11 @@ public sealed partial class PopupWindow : Window
     /// <summary>The window the user was in before the popup appeared (target for monitor choice and, later, capture).</summary>
     public nint PreviousForeground { get; private set; }
 
-    public PopupWindow(WindowSettings settings, int maxHeightDip, PopupToggleGuard guard, FileLog log, bool showDebugStatus)
+    public PopupWindow(WindowSettings settings, int maxHeightDip, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus)
     {
         _settings = settings;
         _maxHeightDip = maxHeightDip;
+        _growMode = growMode;
         _guard = guard;
         _log = log;
         InitializeComponent();
@@ -144,7 +146,7 @@ public sealed partial class PopupWindow : Window
     private void ApplyHeight()
     {
         if (_bar.Width == 0) return;
-        var r = PopupGeometry.GrowUp(_bar, _contentPx, (int)Math.Round(_maxHeightDip * _scale), _work);
+        var r = PopupGeometry.GrowUp(_bar, _contentPx, (int)Math.Round(_maxHeightDip * _scale), _work, _growMode);
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 

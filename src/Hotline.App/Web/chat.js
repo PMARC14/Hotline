@@ -142,7 +142,7 @@ new ResizeObserver(reportHeight).observe($('composer'));
 
 host?.addEventListener('message', e => {
   const msg = e.data;
-  if (msg.type === 'theme') { els.theme.textContent = msg.css; return; }
+  if (msg.type === 'theme') { els.theme.textContent = msg.css; document.body.dataset.scrollbar = msg.scrollbar ?? 'auto'; reportHeight(); return; }
   if (msg.type === 'toast') { showToast(msg.message); return; }
   if (msg.type === 'focus') { els.input.focus(); return; }
   dispatch(msg);
