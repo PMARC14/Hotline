@@ -14,8 +14,11 @@ public GitHub release later.
 
 ## Decisions (agreed)
 - **Name** Hotline · repo `PMARC14/hotline` · protocol `hotline:` · Settings picker name "Hotline".
-- **Stack** C# / .NET 10, WinUI 3 (Windows App SDK), packaged MSIX (full trust). Chat transcript rendered in
-  WebView2 (ships with Win11), with markdown-it + highlight.js bundled locally and no JS framework.
+- **Stack** C# / .NET 10, WinUI 3 (Windows App SDK), packaged MSIX (full trust). **Fully native UI, no WebView2**
+  (decided 2026-10-01): WinUI 3's WebView2 cannot be transparent (breaks acrylic), adds a ~100 MB Chromium renderer,
+  and has browser-style file-dialog/drag-drop quirks. Markdown is parsed with Markdig into a Core block model and rendered
+  as native text. A WebView may be added later only for a feature that truly needs it.
+- **Baseline goal (user):** at minimum, chat equivalent to using Claude in a terminal, plus easy image/screen sharing.
 - **Signing** Self-signed dev cert + install script for now; Azure Trusted Signing or the Store later.
 - **License** Apache-2.0. Monetization via donations only (e.g. GitHub Sponsors link in the README). No CLA.
 - **No Ollama.** Local inference via llama.cpp `llama-server` (and optionally OpenVINO Model Server). The app does **not**
@@ -134,6 +137,18 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
    **MCP server**, so Claude Code, `agy` and API backends with tool calling share one tool set. Every action
    needs user confirmation by default (a setting). PowerToys Run itself stays the user's separate manual launcher.
 8. **Local (low priority):** LocalServerManager + NPU (OpenVINO) and GPU (SYCL) presets, warm-on-key / keep-warm / idle sleep.
+
+**Plan 3 (UX overhaul, before more backends), user-approved 2026-10-01:**
+- 3a: native chat panel (Markdig → Core block model → native text, code blocks with copy), acrylic everywhere;
+  sizing relative to the monitor (width = % of work area, clamped min/max DIP; baseline panel height with space reserved
+  above the composer; grows upward to a % of screen height); bigger + button; bottom toolbar (pin, capture window/screen,
+  new chat, settings; room for more); pin keeps the popup open so drag-drop works; native Windows file dialog;
+  paste images/files; errors/rejections shown inline (InfoBar) instead of toasts; config in `%USERPROFILE%\.hotline`
+  (settings.json, logs, history), migrated from the old package folder.
+- 3b: settings window (Fluent NavigationView + settings cards) for everything, live apply, "Open settings folder";
+  model/effort picker in the toolbar.
+- Then Plan 4 = backends (Gemini API, OpenAI-compatible, Claude Code); Plan 5 = controlled local access (Hotline-hosted
+  MCP tools with ask/allow/deny + folder scopes, and Windows on-device agent registry connectors).
 
 Each milestone group gets its own implementation plan in `docs/superpowers/plans/`. Plan 1 covers milestones 0–1.
 
