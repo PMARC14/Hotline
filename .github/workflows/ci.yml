@@ -23,12 +23,5 @@ jobs:
       - name: Unit tests
         run: dotnet test --project tests/Hotline.Core.Tests/Hotline.Core.Tests.csproj -c Release
 
-      - uses: actions/setup-node@v4
-        with:
-          node-version: '24'
-
-      - name: Web tests
-        run: node --test "tests/web/*.test.mjs"
-
       - name: Build app (x64)
         run: dotnet build src/Hotline.App/Hotline.App.csproj -c Release -p:Platform=x64

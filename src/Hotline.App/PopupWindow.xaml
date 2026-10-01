@@ -3,10 +3,94 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     Title="Hotline">
-    <Grid x:Name="Root">
-        <WebView2 x:Name="Web" x:FieldModifier="internal" />
-        <!-- Debug-only status line (diagnostics.verboseLogging or Debug build). -->
-        <TextBlock x:Name="StatusText" Margin="14,2,14,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
+    <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="8"
+          AllowDrop="True" KeyDown="Root_KeyDown">
+        <Grid.Resources>
+            <!-- Keep the composer TextBox see-through in every state so acrylic shows. -->
+            <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+            <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+            <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
+            <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
+            <Style x:Key="ToolbarButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
+                <Setter Property="Width" Value="36" /><Setter Property="Height" Value="32" />
+                <Setter Property="Padding" Value="0" /><Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
+                <Setter Property="FontSize" Value="15" />
+            </Style>
+        </Grid.Resources>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*" />      <!-- messages; empty space reserved above the composer -->
+            <RowDefinition Height="Auto" />   <!-- inline notices -->
+            <RowDefinition Height="Auto" />   <!-- composer -->
+            <RowDefinition Height="Auto" />   <!-- toolbar -->
+        </Grid.RowDefinitions>
+
+        <ScrollViewer x:Name="MessagesScroll" x:FieldModifier="internal" VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
+            <StackPanel x:Name="MessagesPanel" x:FieldModifier="internal" Spacing="12" Padding="2,4,10,4" VerticalAlignment="Bottom" />
+        </ScrollViewer>
+        <TextBlock x:Name="StatusText" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
                    Style="{StaticResource CaptionTextBlockStyle}" Visibility="Collapsed" />
+
+        <StackPanel x:Name="NoticesPanel" x:FieldModifier="internal" Grid.Row="1" Spacing="6" />
+
+        <Border x:Name="Composer" x:FieldModifier="internal" Grid.Row="2" CornerRadius="12" Padding="6" BorderThickness="1"
+                Background="{ThemeResource ControlFillColorDefaultBrush}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
+            <StackPanel Spacing="6">
+                <StackPanel x:Name="ChipsPanel" x:FieldModifier="internal" Orientation="Horizontal" Spacing="6" Visibility="Collapsed" />
+                <Grid ColumnSpacing="6">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="PlusButton" x:FieldModifier="internal" Width="44" Height="44" Padding="0" CornerRadius="10"
+                            FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xE710;" ToolTipService.ToolTip="Add files or capture"
+                            VerticalAlignment="Bottom">
+                        <Button.Flyout>
+                            <MenuFlyout Placement="TopEdgeAlignedLeft">
+                                <MenuFlyoutItem x:Name="AttachFilesItem" x:FieldModifier="internal" Text="Attach files…">
+                                    <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE723;" /></MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem x:Name="CaptureWindowItem" x:FieldModifier="internal" Text="Capture window">
+                                    <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7C4;" /></MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                                <MenuFlyoutItem x:Name="CaptureScreenItem" x:FieldModifier="internal" Text="Capture screen">
+                                    <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7F4;" /></MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
+                            </MenuFlyout>
+                        </Button.Flyout>
+                    </Button>
+                    <TextBox x:Name="Input" x:FieldModifier="internal" Grid.Column="1" PlaceholderText="📞 Hotline"
+                             AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="180" VerticalAlignment="Center"
+                             ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    <Button x:Name="SendButton" x:FieldModifier="internal" Grid.Column="2" Width="44" Height="44" Padding="0"
+                            CornerRadius="10" Style="{StaticResource AccentButtonStyle}" FontFamily="Segoe Fluent Icons"
+                            FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="Send (Enter)" VerticalAlignment="Bottom" />
+                </Grid>
+            </StackPanel>
+        </Border>
+
+        <!-- Bottom toolbar: room for more features (model/effort picker arrives in Plan 3b). -->
+        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Width="36" Height="32" Padding="0" BorderThickness="0"
+                          Background="Transparent" FontFamily="Segoe Fluent Icons" FontSize="15" Content="&#xE718;"
+                          ToolTipService.ToolTip="Pin open (stays open when you click elsewhere, so you can drag files in)" />
+            <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Grid.Column="1" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE7C4;" ToolTipService.ToolTip="Capture the window you were in" />
+            <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE7F4;" ToolTipService.ToolTip="Capture the whole screen" />
+            <TextBlock x:Name="BackendLabel" x:FieldModifier="internal" Grid.Column="4" VerticalAlignment="Center" Margin="6,0"
+                       Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
+            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE8BD;" ToolTipService.ToolTip="New chat (Ctrl+N)" />
+            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE713;" ToolTipService.ToolTip="Settings" />
+        </Grid>
     </Grid>
 </Window>

@@ -34,7 +34,7 @@ public static class SmokeWin {
 $pkg = Get-AppxPackage pmarc14.Hotline
 if (-not $pkg) { Write-Error 'Hotline is not installed. Run with -Install.'; exit 1 }
 $pfn = $pkg.PackageFamilyName
-$state = "$env:LOCALAPPDATA\Packages\$pfn\LocalState"
+$state = Join-Path $env:USERPROFILE '.hotline'
 $logFile = "$state\logs\hotline.log"
 $settingsFile = "$state\settings.json"
 $script:failures = 0

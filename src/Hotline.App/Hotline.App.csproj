@@ -23,7 +23,6 @@
   <ItemGroup>
     <Content Include="Assets\**" />
     <Content Include="Public\**" />
-    <Content Include="Web\**" CopyToOutputDirectory="PreserveNewest" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
   <ItemGroup>
