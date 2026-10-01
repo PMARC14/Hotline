@@ -150,6 +150,8 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
 - Then Plan 4 = backends (Gemini API, OpenAI-compatible, Claude Code); Plan 5 = controlled local access (Hotline-hosted
   MCP tools with ask/allow/deny + folder scopes, and Windows on-device agent registry connectors).
 
+**Backlog (much later, user 2026-10-01):** live screen sharing the AI can watch while you talk (like Gemini Live on mobile).
+
 Each milestone group gets its own implementation plan in `docs/superpowers/plans/`. Plan 1 covers milestones 0–1.
 
 Execution follows superpowers flow: write spec into repo → user reviews → writing-plans for detailed task plan → TDD on Core.

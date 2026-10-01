@@ -17,17 +17,20 @@ Then: Settings → Personalization → Text input → Customize Copilot key on k
 
 ## Settings
 
+Settings live in `%USERPROFILE%\.hotline\settings.json` (logs and history next to it).
+
 Tray icon → right-click → **Edit settings file**, then **Restart (apply settings)**. Useful keys:
 
 | Key | Default | Meaning |
 |---|---|---|
-| `window.width` / `window.height` | `560` / `120` | Popup size in DIPs (compact bar, like Copilot's quick view) |
+| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
+| `window.height` / `maxHeightPercent` | `320` / `70` | Baseline height (DIPs) and how much of the screen it may grow to |
 | `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the screen's free space |
 | `window.backdrop` | `acrylic` | `acrylic`, `acrylicThin`, `mica`, `solid` |
 | `window.tintOpacity` / `window.luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` | `true` | Hide when you click elsewhere |
 | `window.fontSize` / `window.fontFamily` | `14` / (Segoe UI Variable) | Chat text size (10–32) and font, e.g. `"Cascadia Code"` |
-| `window.scrollbar` | `auto` | `auto` (transparent until hovered), `visible`, `hidden` |
+| `window.scrollbar` | `auto` | `auto`, `visible`, `hidden` |
 | `activation.tap` / `activation.hold` | `togglePopup` / `newChat` | Copilot key: short press opens/closes, long press starts a new chat. Also: `showPopup`, `captureWindow`, `none` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the popup |
@@ -35,23 +38,23 @@ Tray icon → right-click → **Edit settings file**, then **Restart (apply sett
 | `chat.defaultBackend` | `agy` | Which AI answers (`agy` = Gemini via your Antigravity CLI sign-in) |
 | `chat.backends[].model` | (agy default) | e.g. `gemini-3.8-flash-low` for faster answers (`agy models` lists them) |
 | `chat.backends[].effort` | (agy default) | `low`, `medium`, `high`, `max` |
-| `chat.maxHeight` | `560` | How tall the popup may grow while chatting |
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to `chat.maxHeight` once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
-| `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in LocalState\history (text only) |
+| `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in %USERPROFILE%\.hotline\history (text only) |
 
 Comments and trailing commas are allowed. A broken file is kept as `settings.json.bad` and defaults are used.
 
 ### Chatting
 
-Press the Copilot key, type, Enter. **+** attaches files or captures the window you were in / the whole screen;
-you can also paste (Ctrl+V) or drag files in. Ctrl+N (or a long press of the Copilot key) starts a new chat, Esc hides.
-The Antigravity backend needs the [Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once).
+Press the Copilot key, type, Enter. **+** or the toolbar attaches files and captures the window you were in or the whole
+screen; Ctrl+V pastes images/files. To drag files in, **pin** the panel first (📌) — otherwise it hides when you click
+elsewhere. Ctrl+N or a long press starts a new chat, Esc hides. The Antigravity backend needs the
+[Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once).
 Chats run through `agy` are saved in its own history (`~/.gemini/antigravity-cli`), so `agy` → `/resume` shows them.
 
 ## Debugging
 
-- Log: `%LOCALAPPDATA%\Packages\pmarc14.Hotline_*\LocalState\logs\hotline.log` (crashes are logged as `FATAL`).
+- Log: `%USERPROFILE%\.hotline\logs\hotline.log` (crashes are logged as `FATAL`).
 - Debug build (verbose logging always on, key-status line visible): `powershell -File scripts\install.ps1 -Configuration Debug`
 - Full crash dumps (opt-in, admin): `powershell -File scripts\enable-crash-dumps.ps1` (`-Disable` to undo).
 
