@@ -1,0 +1,9 @@
+bin/
+obj/
+artifacts/
+certs/
+AppPackages/
+BundleArtifacts/
+*.user
+.vs/
+TestResults/
