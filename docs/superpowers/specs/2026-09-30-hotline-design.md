@@ -80,6 +80,19 @@ Hotline.Core (net10 lib, no UI)    ▼
 - **Local servers:** profiles as above; idle timers; keep-warm; port; logs viewer.
 - **History:** save on/off, retention days, incognito toggle, export.
 
+### Theming (architecture requirement; full UI later)
+The user wants Hotline to look distinctive, not "default Windows". Design for it from the start:
+- **Theme = data, not code.** A theme is a JSON file (`themes/<name>.json`) holding design tokens: colors
+  (background, surface, text, accent, borders), font family and size, corner radius, spacing, shadow, popup opacity,
+  and backdrop (`acrylic` / `mica` / `solid` / `transparent`). Built-in themes ship in the package; user themes live
+  in LocalFolder, and `settings.window.theme` names the active one. There are separate light and dark variants, plus a "follow system" option.
+- **One token pipeline.** `Hotline.Core` loads and validates the theme, with a fallback to the built-in default. The chat view gets
+  tokens as CSS custom properties (`--hl-bg`, `--hl-accent`, …), so nearly all visual styling lives in CSS. The native frame
+  applies only backdrop, corner radius and border/title-bar colors. No colors are hard-coded in XAML or JS.
+- **Escape hatch:** an optional per-theme `custom.css` lets users override anything in the chat view.
+- Layouts (quick view / command bar / side panel), and later animations, are independent of the theme.
+- Theme switching applies live (no restart) once the settings UI lands.
+
 ### Error handling
 Every backend surfaces typed errors (`NotInstalled`, `NotLoggedIn`, `ServerDown`, `RateLimited`, `Unsupported`) shown in the
 chat view as an actionable banner, for example "claude not found — set path" or "Start local server". There is a cancel button,
