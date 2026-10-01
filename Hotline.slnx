@@ -1,5 +1,8 @@
 <Solution>
   <Folder Name="/src/">
+    <Project Path="src/Hotline.App/Hotline.App.csproj">
+      <Platform Project="x64" />
+    </Project>
     <Project Path="src/Hotline.Core/Hotline.Core.csproj" />
   </Folder>
   <Folder Name="/tests/">

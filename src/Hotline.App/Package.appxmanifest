@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:uap3="http://schemas.microsoft.com/appx/manifest/uap/windows10/3"
+  xmlns:desktop="http://schemas.microsoft.com/appx/manifest/desktop/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap uap3 desktop rescap">
+
+  <Identity Name="pmarc14.Hotline" Publisher="CN=pmarc14 Hotline Dev" Version="0.1.0.0" />
+
+  <Properties>
+    <DisplayName>Hotline</DisplayName>
+    <PublisherDisplayName>pmarc14</PublisherDisplayName>
+    <Logo>Assets\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.22621.0" MaxVersionTested="10.0.26200.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate" />
+  </Resources>
+
+  <Applications>
+    <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="$targetentrypoint$">
+      <uap:VisualElements DisplayName="Hotline" Description="Your AI on the Copilot key"
+        BackgroundColor="transparent" Square150x150Logo="Assets\Square150x150Logo.png"
+        Square44x44Logo="Assets\Square44x44Logo.png" />
+      <Extensions>
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="hotline">
+            <uap:DisplayName>Hotline</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.windows.copilotkeyprovider" Id="Hotline"
+            DisplayName="Hotline" Description="Open the Hotline AI popup" PublicFolder="Public">
+            <uap3:Properties>
+              <SingleTap MessageWParam="0">hotline://key?state=Tap</SingleTap>
+              <PressAndHoldStart MessageWParam="1">hotline://key?state=Down</PressAndHoldStart>
+              <PressAndHoldStop MessageWParam="2">hotline://key?state=Up</PressAndHoldStop>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
+        <desktop:Extension Category="windows.startupTask">
+          <desktop:StartupTask TaskId="HotlineStartup" Enabled="true" DisplayName="Hotline" />
+        </desktop:Extension>
+      </Extensions>
+    </Application>
+  </Applications>
+
+  <Capabilities>
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>
