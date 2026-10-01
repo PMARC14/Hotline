@@ -17,11 +17,13 @@ public GitHub release later.
 - **Stack** C# / .NET 10, WinUI 3 (Windows App SDK), packaged MSIX (full trust). Chat transcript rendered in
   WebView2 (ships with Win11), with markdown-it + highlight.js bundled locally and no JS framework.
 - **Signing** Self-signed dev cert + install script for now; Azure Trusted Signing or the Store later.
-- **License** Source-available, author keeps exclusive commercial rights: **PolyForm Noncommercial 1.0.0**
-  (alternative: FSL-1.1-Apache-2.0, which becomes Apache after 2 years). Contributions need a CLA so the author can
-  commercialize them. Not legal advice; confirm before first public push.
+- **License** Apache-2.0. Monetization via donations only (e.g. GitHub Sponsors link in the README). No CLA.
 - **No Ollama.** Local inference via llama.cpp `llama-server` (and optionally OpenVINO Model Server). The app does **not**
-  bundle inference engines; it points at the user's installed binaries.
+  bundle inference engines; it points at the user's installed binaries. **Low priority:** the user sets up
+  llama.cpp themselves; the local-server milestone comes last.
+- **Key handling:** register both URI activation (`hotline://key?state=Tap|Down|Up`) and the Copilot key
+  **fast path** (window message with `MessageWParam` 0/1/2 sent to the running app's registered window), so a
+  resident app reacts instantly. The tray icon is native (`Shell_NotifyIcon`), with no tray library dependency.
 - **Default UI** centered floating "quick view" panel like Copilot's (≈ 640×520, expandable); alternative
   layouts are a command bar and a right-docked side panel (both settings).
 - **Local warmup default:** the NPU model is always warm (low power); the GPU model wakes on key press and sleeps after an idle period.
@@ -93,9 +95,9 @@ hotline/
   tests/Hotline.Core.Tests/  (xUnit) fake HTTP servers + fake CLI exes for stream parsing & lifecycle
   scripts/ dev-cert.ps1, build-msix.ps1, install.ps1
   docs/superpowers/specs/2026-09-30-hotline-design.md   (this design, committed first)
-  LICENSE (PolyForm NC), CLA.md, README.md
+  LICENSE (Apache-2.0), README.md
 ```
-Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2, H.NotifyIcon.WinUI (tray), and xUnit.
+Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 and xUnit. Win32 interop is hand-written `DllImport`s.
 
 ## Milestones (each ends with a working, committed state)
 0. **Prereqs + risk spike.** Install the .NET 10 SDK (user approval). Create a minimal packaged WinUI app with the
@@ -104,12 +106,14 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2, 
    hold launch the URIs. Also verify that the MSIX builds without full Visual Studio. If the picker refuses it, fall back to the policy key + hotkey.
 1. **Shell:** single instance + activation redirect, tray, pre-warmed hidden centered popup, fallback hotkey, SettingsStore.
 2. **Chat:** WebView2 chat view, ChatController, OpenAiCompatBackend streaming, HistoryStore.
-3. **Local:** LocalServerManager + NPU (OpenVINO) and GPU (SYCL) presets, warm-on-key / keep-warm / idle sleep.
-4. **Cloud APIs:** Gemini API + Anthropic API backends, SecretStore.
-5. **CLIs:** ClaudeCodeBackend (persistent stream-json) and AgyBackend (install `agy`, verify flags and image handling).
-6. **Context:** window capture (Windows.Graphics.Capture, foreground or picker), region-select overlay, drag-drop/paste,
+3. **Cloud APIs:** Gemini API + Anthropic API backends, SecretStore.
+4. **CLIs:** ClaudeCodeBackend (persistent stream-json) and AgyBackend (install `agy`, verify flags and image handling).
+5. **Context:** window capture (Windows.Graphics.Capture, foreground or picker), region-select overlay, drag-drop/paste,
    clipboard/selection.
-7. **Polish:** Settings UI, command-bar and side-panel layouts, packaging scripts, README, LICENSE/CLA, GitHub repo.
+6. **Polish:** Settings UI, command-bar and side-panel layouts, double-tap action, README, GitHub repo.
+7. **Local (low priority):** LocalServerManager + NPU (OpenVINO) and GPU (SYCL) presets, warm-on-key / keep-warm / idle sleep.
+
+Each milestone group gets its own implementation plan in `docs/superpowers/plans/`. Plan 1 covers milestones 0–1.
 
 Execution follows superpowers flow: write spec into repo → user reviews → writing-plans for detailed task plan → TDD on Core.
 
