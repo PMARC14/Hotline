@@ -62,7 +62,10 @@ public sealed class WindowSettings
     public double LuminosityOpacity { get; set; } = 0.35;
 }
 
-public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode }
+public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local }
+
+/// <summary>ChatOnly: answers only (attachments readable). Inherit: the CLI's own tools and permission rules.</summary>
+public enum ToolMode { ChatOnly, Inherit }
 
 public sealed class BackendProfile
 {
@@ -80,11 +83,19 @@ public sealed class BackendProfile
     public string? Agent { get; set; }
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
+    /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>
+    public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
+    /// <summary>Folder the CLI works in when Tools = Inherit. Null or missing = your user folder.</summary>
+    public string? WorkingDirectory { get; set; }
+    /// <summary>System prompt name (file ~/.hotline/prompts/&lt;name&gt;.md). Null = chat.defaultPrompt.</summary>
+    public string? Prompt { get; set; }
 }
 
 public sealed class ChatSettings
 {
     public string DefaultBackend { get; set; } = "agy";
+    /// <summary>System prompt used by connections that don't pick their own.</summary>
+    public string DefaultPrompt { get; set; } = "default";
     public List<BackendProfile> Backends { get; set; } = DefaultBackends();
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
     public GrowMode GrowMode { get; set; } = GrowMode.Grow;

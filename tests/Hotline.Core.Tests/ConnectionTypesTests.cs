@@ -1,0 +1,32 @@
+using Hotline.Core.Backends;
+using Hotline.Core.Settings;
+
+namespace Hotline.Core.Tests;
+
+public class ConnectionTypesTests
+{
+    [Fact]
+    public void Every_backend_type_has_exactly_one_entry()
+        => Assert.Equal(Enum.GetValues<BackendType>().Order(), ConnectionTypes.All.Select(t => t.Type).Order());
+
+    [Fact]
+    public void Only_agy_has_verified_effort_levels()
+    {
+        Assert.Equal(["low", "medium", "high", "max"], ConnectionTypes.Of(BackendType.Antigravity).EffortLevels);
+        Assert.All(ConnectionTypes.All.Where(t => t.Type != BackendType.Antigravity), t => Assert.Empty(t.EffortLevels));
+    }
+
+    [Fact]
+    public void Api_types_need_endpoint_and_key_cli_types_need_cli_path_and_tools()
+    {
+        foreach (var t in new[] { BackendType.Gemini, BackendType.Anthropic, BackendType.OpenAiCompatible, BackendType.Local })
+        {
+            var info = ConnectionTypes.Of(t);
+            Assert.True(info.Has(ConnectionField.Endpoint) && info.Has(ConnectionField.ApiKey));
+            Assert.False(string.IsNullOrEmpty(info.DefaultEndpoint));
+        }
+        foreach (var t in new[] { BackendType.Antigravity, BackendType.ClaudeCode })
+            Assert.True(ConnectionTypes.Of(t).Has(ConnectionField.CliPath) && ConnectionTypes.Of(t).Has(ConnectionField.Tools));
+        Assert.True(ConnectionTypes.Of(BackendType.Local).ApiKeyOptional);
+    }
+}
