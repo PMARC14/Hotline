@@ -97,6 +97,7 @@ internal sealed partial class ChatPresenter(
         popup.PinButton.Checked += (_, _) => { popup.Pinned = true; popup.PinButton.Content = "\uE840"; };
         popup.PinButton.Unchecked += (_, _) => { popup.Pinned = false; popup.PinButton.Content = "\uE718"; };
         popup.NewChatButton.Click += (_, _) => NewChat();
+        popup.RecentMenu.Opening += (_, _) => BuildRecentMenu();
         popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettings(); else SettingsRequested(); };
         popup.Root.DragOver += Root_DragOver;
         popup.Root.Drop += Root_Drop;
@@ -122,6 +123,14 @@ internal sealed partial class ChatPresenter(
 
     private void Input_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
+        var ctrl = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
+        if (e.Key == VirtualKey.Up && ctrl && popup.Input.Text.Length == 0 && !chat.IsBusy)
+        {
+            // Ctrl+Up in an empty box: back to the previous conversation.
+            if (RecentChats?.Invoke(5).FirstOrDefault(c => c.Id != chat.ConversationId) is { } last) ResumeChat(last.Id);
+            e.Handled = true;
+            return;
+        }
         if (e.Key != VirtualKey.Enter) return;
         var shift = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down);
         if (shift) return; // newline
@@ -185,6 +194,12 @@ internal sealed partial class ChatPresenter(
                 if (!_assistants.ContainsKey(f.Id)) StartAssistant(f.Id, "");
                 Finish(f.Id);
                 ShowError(f.Id, f.Message);
+                break;
+            case MessageRestored r when r.Message.Role == ChatRole.User:
+                AddUser(r.Message);
+                break;
+            case MessageRestored r:
+                RestoreAnswer(r.Message);
                 break;
             case ConversationReset:
                 ClearTranscript();

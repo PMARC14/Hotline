@@ -109,7 +109,7 @@
                 <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
                 <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
+                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Width="36" Height="32" Padding="0" BorderThickness="0"
                           Background="Transparent" FontFamily="Segoe Fluent Icons" FontSize="15" Content="&#xE718;"
@@ -160,9 +160,15 @@
                     <MenuFlyout x:Name="PromptMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
                 </Button.Flyout>
             </Button>
-            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE81C;" ToolTipService.ToolTip="Recent chats (Ctrl+Up reopens the last one)">
+                <Button.Flyout>
+                    <MenuFlyout x:Name="RecentMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
+                </Button.Flyout>
+            </Button>
+            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="New chat (Ctrl+N)" />
-            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="Settings" />
         </Grid>
     </Grid>

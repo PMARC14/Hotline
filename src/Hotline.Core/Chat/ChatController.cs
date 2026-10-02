@@ -47,6 +47,38 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         Emit(new ConversationReset());
     }
 
+    /// <summary>
+    /// Continues a saved conversation: its messages come back (attachments as "[attached: name]" — their bytes are
+    /// never saved), new turns are appended to the same history file, and the backend replays it as context.
+    /// </summary>
+    public bool Resume(string conversationId)
+    {
+        IReadOnlyList<HistoryStore.Entry> entries;
+        try { entries = history?.Load(conversationId) ?? []; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
+        {
+            log.Error($"could not read conversation {conversationId}", ex);
+            return false;
+        }
+        if (entries.Count == 0) return false;
+        Cancel();
+        _cts = null;
+        _messages.Clear();
+        _lastFailed = null;
+        ConversationId = conversationId;
+        Emit(new ConversationReset());
+        foreach (var e in entries)
+        {
+            var text = e.Attachments.Count == 0 ? e.Text
+                : (e.Text + "\n" + string.Join("\n", e.Attachments.Select(a => $"[attached: {a.Name}]"))).Trim();
+            var message = new ChatMessage(e.Id, e.Role, text, [], e.At, e.BackendId);
+            _messages.Add(message);
+            Emit(new MessageRestored(message));
+        }
+        log.Info($"resumed conversation {conversationId} ({entries.Count} messages)");
+        return true;
+    }
+
     private async Task SendCoreAsync(string text, IReadOnlyList<Attachment> attachments, bool announce)
     {
         if (IsBusy || (text.Length == 0 && attachments.Count == 0)) return;

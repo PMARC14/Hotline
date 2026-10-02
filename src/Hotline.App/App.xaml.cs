@@ -110,6 +110,7 @@ public partial class App : Application
         }
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir);
+        if (history is not null) _presenter.RecentChats = count => history.Recent(count);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 

@@ -9,3 +9,5 @@ public sealed record AssistantCompleted(string Id) : ChatEvent;
 public sealed record AssistantCancelled(string Id) : ChatEvent;
 public sealed record AssistantFailed(string Id, BackendErrorKind Kind, string Message) : ChatEvent;
 public sealed record ConversationReset : ChatEvent;
+/// <summary>A message from a resumed conversation (shown as it was; no streaming).</summary>
+public sealed record MessageRestored(ChatMessage Message) : ChatEvent;
