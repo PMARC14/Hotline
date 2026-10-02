@@ -11,7 +11,8 @@ namespace Hotline.Core.Backends.Agy;
 /// session per conversation (agy holds the context). If the session is lost (cancel, crash, new chat,
 /// backend switch) the next turn starts a fresh process and replays the conversation as a transcript.
 /// </summary>
-public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, AgyWorkspace workspace, ILineProcessFactory processes, FileLog log)
+public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, AgyWorkspace workspace, ILineProcessFactory processes, FileLog log,
+    Func<BackendProfile, string> systemPrompt, string homeDirectory)
     : IChatBackend
 {
     private ILineProcess? _process;
@@ -35,9 +36,11 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         if (_process is null || _process.HasExited || prior.Count != _knownCount || (prior.Count > 0 && prior[0].Id != _knownFirstId))
         {
             await StopAsync();
-            workspace.Ensure();
-            var args = AgyProtocol.BuildArgs(profile);
-            _process = processes.Start(exe, args, workspace.Root);
+            workspace.Ensure(systemPrompt(profile));
+            var inherit = profile.Tools == ToolMode.Inherit;
+            var cwd = inherit ? WorkingDirectory() : workspace.Root;
+            var args = AgyProtocol.BuildArgs(profile, inherit ? workspace.Root : null);
+            _process = processes.Start(exe, args, cwd);
             fresh = true;
             log.Info($"agy started: {exe} {string.Join(' ', args)}");
         }
@@ -47,9 +50,12 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         _knownCount = -1;
         _knownFirstId = null;
 
-        var images = workspace.SaveImages(user.Id, user.Attachments.Where(a => a.Kind == AttachmentKind.Image).ToList());
+        IReadOnlyList<string> images = workspace.SaveImages(user.Id, user.Attachments.Where(a => a.Kind == AttachmentKind.Image).ToList());
         var texts = user.Attachments.Where(a => a.Kind == AttachmentKind.Text).Select(a => (a.Name, a.AsText())).ToList();
-        var prompt = AgyProtocol.ComposePrompt(user.Text, images, texts, fresh ? prior : Array.Empty<ChatMessage>());
+        var inheritMode = profile.Tools == ToolMode.Inherit;
+        if (inheritMode) images = images.Select(p => Path.Combine(workspace.Root, p.Replace('/', Path.DirectorySeparatorChar))).ToList();
+        var prompt = AgyProtocol.ComposePrompt(user.Text, images, texts, fresh ? prior : Array.Empty<ChatMessage>(),
+            fresh && inheritMode ? systemPrompt(profile) : null);
 
         var process = _process;
         // agy has no "cancel turn" message, so cancelling kills the process (the next turn replays context).
@@ -93,4 +99,8 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         var p = Interlocked.Exchange(ref _process, null);
         if (p is not null) await p.DisposeAsync();
     }
+
+
+    private string WorkingDirectory() =>
+        !string.IsNullOrWhiteSpace(profile.WorkingDirectory) && Directory.Exists(profile.WorkingDirectory) ? profile.WorkingDirectory : homeDirectory;
 }

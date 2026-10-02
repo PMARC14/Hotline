@@ -12,10 +12,11 @@ public sealed class AgyWorkspaceTests : IDisposable
     [Fact]
     public void Agent_file_keeps_default_components()
     {
-        new AgyWorkspace(_dir, _clock).Ensure();
+        new AgyWorkspace(_dir, _clock).Ensure("Be a pirate.");
         var md = File.ReadAllText(Path.Combine(_dir, ".agents", "agents", "hotline.md"));
         Assert.StartsWith("---", md);
         Assert.Contains("name: hotline", md);
+        Assert.Contains("Be a pirate.", md);
         Assert.DoesNotContain("excludeDefaultComponents", md);
     }
 

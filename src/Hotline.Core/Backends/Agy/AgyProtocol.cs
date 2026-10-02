@@ -16,9 +16,11 @@ public static class AgyProtocol
 
     public static string ComposePrompt(
         string text, IReadOnlyList<string> imagePaths, IReadOnlyList<(string Name, string Content)> textFiles,
-        IReadOnlyList<ChatMessage> priorContext)
+        IReadOnlyList<ChatMessage> priorContext, string? instructions = null)
     {
         var sb = new StringBuilder();
+        if (!string.IsNullOrWhiteSpace(instructions))
+            sb.AppendLine("Instructions for this conversation:").AppendLine(instructions.Trim()).AppendLine();
         if (priorContext.Count > 0)
         {
             sb.AppendLine("Conversation so far (for context):");
@@ -38,13 +40,12 @@ public static class AgyProtocol
         return sb.ToString();
     }
 
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p)
+    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string? addDir = null)
     {
-        var args = new List<string>
-        {
-            "--input-format", "stream-json", "--output-format", "stream-json", "-p=",
-            "--agent", string.IsNullOrWhiteSpace(p.Agent) ? DefaultAgent : p.Agent,
-        };
+        var args = new List<string> { "--input-format", "stream-json", "--output-format", "stream-json", "-p=" };
+        if (p.Tools == ToolMode.ChatOnly)
+            args.AddRange(["--agent", string.IsNullOrWhiteSpace(p.Agent) ? DefaultAgent : p.Agent]);
+        if (!string.IsNullOrWhiteSpace(addDir)) args.AddRange(["--add-dir", addDir]);
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model]);
         if (p.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" or "max")
             args.AddRange(["--effort", p.Effort.Trim().ToLowerInvariant()]);

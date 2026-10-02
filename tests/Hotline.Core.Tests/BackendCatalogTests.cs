@@ -12,7 +12,7 @@ public sealed class BackendCatalogTests : IDisposable
     public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private BackendDeps Deps() => new(new FakeLineProcessFactory(), new AgyWorkspace(_dir, new ManualTimeProvider()),
-        new FileLog(Path.Combine(_dir, "h.log")), _ => false, null, null);
+        new FileLog(Path.Combine(_dir, "h.log")), _ => false, null, null, _ => "prompt", _dir);
 
     [Fact]
     public void Agy_profile_creates_agy_backend()
@@ -46,5 +46,18 @@ public sealed class BackendCatalogTests : IDisposable
         Assert.Equal(1, created);
         await cache.DisposeAllAsync();
         Assert.Null(cache.Get("missing"));
+    }
+
+    [Fact]
+    public async Task Invalidate_disposes_and_recreates_on_next_get()
+    {
+        var created = 0;
+        var profiles = new List<BackendProfile> { new() { Id = "a", Type = BackendType.Antigravity } };
+        var cache = new BackendCache(() => profiles, _ => { created++; return new FakeBackend(); });
+        cache.Get("a");
+        await cache.InvalidateAsync("a");
+        cache.Get("a");
+        Assert.Equal(2, created);
+        await cache.InvalidateAsync("missing"); // no-op
     }
 }

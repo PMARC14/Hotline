@@ -88,4 +88,21 @@ public class AgyProtocolTests
         Assert.Equal(expected, args.Contains("--effort"));
         if (expected) Assert.Equal(effort!.ToLowerInvariant(), args[args.ToList().IndexOf("--effort") + 1]);
     }
+
+    [Fact]
+    public void Inherit_mode_uses_default_agent_and_adds_workspace_dir()
+    {
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Agent = "hotline", Tools = ToolMode.Inherit }, addDir: @"C:\ws");
+        Assert.DoesNotContain("--agent", args);
+        Assert.Equal(@"C:\ws", args[args.ToList().IndexOf("--add-dir") + 1]);
+    }
+
+    [Fact]
+    public void Instructions_are_prepended_once()
+    {
+        var p = AgyProtocol.ComposePrompt("hi", [], [], [], instructions: "Be brief.");
+        Assert.StartsWith("Instructions for this conversation:", p);
+        Assert.Contains("Be brief.", p);
+        Assert.EndsWith("hi", p);
+    }
 }

@@ -8,7 +8,8 @@ namespace Hotline.Core.Backends;
 
 public sealed record BackendDeps(
     ILineProcessFactory Processes, AgyWorkspace AgyWorkspace, FileLog Log,
-    Func<string, bool> FileExists, string? LocalAppData, string? PathEnv);
+    Func<string, bool> FileExists, string? LocalAppData, string? PathEnv,
+    Func<BackendProfile, string> SystemPrompt, string HomeDirectory);
 
 public static class BackendFactory
 {
@@ -19,7 +20,7 @@ public static class BackendFactory
     {
         BackendType.Antigravity => new AgyBackend(p,
             () => AgyLocator.Find(p.CliPath, deps.FileExists, deps.LocalAppData, deps.PathEnv),
-            deps.AgyWorkspace, deps.Processes, deps.Log),
+            deps.AgyWorkspace, deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
         _ => null,
     };
 }
@@ -35,6 +36,13 @@ public sealed class BackendCache(Func<IReadOnlyList<BackendProfile>> profiles, F
         var profile = profiles().FirstOrDefault(p => p.Id == id);
         if (profile is null) return null;
         return _instances[id] = create(profile);
+    }
+
+    /// <summary>Drops the live instance for a connection (after its settings change); the next Get recreates it.</summary>
+    public async ValueTask InvalidateAsync(string id)
+    {
+        if (!_instances.Remove(id, out var backend) || backend is null) return;
+        await backend.DisposeAsync();
     }
 
     public async ValueTask DisposeAllAsync()

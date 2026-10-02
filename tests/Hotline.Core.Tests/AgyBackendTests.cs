@@ -27,9 +27,10 @@ public sealed class AgyBackendTests : IDisposable
     private static string PromptOf(string line) =>
         JsonDocument.Parse(line).RootElement.GetProperty("message").GetProperty("content").GetString()!;
 
-    private AgyBackend New(string? exe = @"C:\agy.exe") =>
-        new(new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline" }, () => exe,
-            new AgyWorkspace(Path.Combine(_dir, "ws"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")));
+    private AgyBackend New(string? exe = @"C:\agy.exe", BackendProfile? profile = null, string? home = null) =>
+        new(profile ?? new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline" }, () => exe,
+            new AgyWorkspace(Path.Combine(_dir, "ws"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")),
+            _ => "SYSTEM PROMPT", home ?? Path.Combine(_dir, "home"));
 
     private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
     {
@@ -179,5 +180,40 @@ public sealed class AgyBackendTests : IDisposable
         };
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(New().StreamAsync([U("1", "hi")], default)));
         Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
+    }
+
+    [Fact]
+    public async Task Chat_only_writes_prompt_into_agent_file()
+    {
+        _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
+        await Collect(New().StreamAsync([U("1", "hi")], default));
+        Assert.Contains("SYSTEM PROMPT", File.ReadAllText(Path.Combine(_dir, "ws", ".agents", "agents", "hotline.md")));
+    }
+
+    [Fact]
+    public async Task Inherit_mode_uses_working_dir_and_prefixes_prompt()
+    {
+        var work = Directory.CreateDirectory(Path.Combine(_dir, "project")).FullName;
+        _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
+        var img = new Attachment("a1", "shot.png", AttachmentKind.Image, "image/png", [1, 2]);
+        var b = New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = work });
+        await Collect(b.StreamAsync([U("m1", "look", img)], default));
+
+        var (_, args, cwd, proc) = _factory.Started[0];
+        Assert.Equal(work, cwd);
+        Assert.DoesNotContain("--agent", args);
+        var prompt = PromptOf(proc.Written[0]);
+        Assert.StartsWith("Instructions for this conversation:", prompt);
+        Assert.Contains(Path.Combine(_dir, "ws", "attachments", "m1", "shot.png"), prompt); // absolute path
+    }
+
+    [Fact]
+    public async Task Inherit_missing_working_dir_falls_back_to_home()
+    {
+        var home = Directory.CreateDirectory(Path.Combine(_dir, "home")).FullName;
+        _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
+        var b = New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = @"Z:\does\not\exist" }, home: home);
+        await Collect(b.StreamAsync([U("1", "hi")], default));
+        Assert.Equal(home, _factory.Started[0].Cwd);
     }
 }

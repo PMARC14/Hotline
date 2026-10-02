@@ -9,31 +9,33 @@ namespace Hotline.Core.Backends.Agy;
 /// </summary>
 public sealed class AgyWorkspace(string root, TimeProvider clock)
 {
+    public string Root { get; } = root;
+
+    private string AttachmentsDir => Path.Combine(Root, "attachments");
+
     // Do NOT add excludeDefaultComponents: it drops the default permissions (workspace reads get denied).
-    public const string AgentMarkdown = """
+    public static string AgentMarkdownFor(string systemPrompt) => $"""
         ---
         name: hotline
         description: Fast conversational assistant for the Hotline popup.
         tools:
           - view_file
         ---
-        You are Hotline, a fast desktop assistant opened from the Windows Copilot key.
-        Answer directly and concisely in Markdown. Do not plan, create tasks, browse the web, run commands or edit files.
+        {systemPrompt.Trim()}
+
         When the user lists attached images under ./attachments, use view_file to look at them.
+        Do not run commands, browse the web or edit files in this mode.
         """;
 
-    public string Root { get; } = root;
-
-    private string AttachmentsDir => Path.Combine(Root, "attachments");
-
-    public void Ensure()
+    public void Ensure(string systemPrompt)
     {
         var agentDir = Path.Combine(Root, ".agents", "agents");
         Directory.CreateDirectory(agentDir);
         Directory.CreateDirectory(AttachmentsDir);
         var agentFile = Path.Combine(agentDir, "hotline.md");
-        if (!File.Exists(agentFile) || File.ReadAllText(agentFile) != AgentMarkdown)
-            File.WriteAllText(agentFile, AgentMarkdown);
+        var markdown = AgentMarkdownFor(systemPrompt);
+        if (!File.Exists(agentFile) || File.ReadAllText(agentFile) != markdown)
+            File.WriteAllText(agentFile, markdown);
     }
 
     public IReadOnlyList<string> SaveImages(string messageId, IReadOnlyList<Attachment> images)
