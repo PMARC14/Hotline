@@ -175,6 +175,11 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
 chat path — Claude Code CLI or an API model — so different models/flows can be compared (and so per-provider quirks,
 like agy's effort-in-model-id, are judged against a second implementation); 3) then the rest.
 
+**UI follow-ups (deferred by the user 2026-10-02 unless they become big problems):** verify the solid composer
+surface gives a visible caret on every backdrop/theme; full-fidelity SVG (Windows' SVG renderer drops text labels —
+"Open image" covers it for now); code blocks wrap instead of scrolling sideways (shared selectable text); ==marked==
+has no background (WinUI runs can't have one); further smoothing of panel growth if still visible.
+
 **Bottom bar driven by a file (later):** the pickers (effort / model / provider / prompt, and future ones) should be
 user-configurable from a file (e.g. `~/.hotline/toolbar.json`: which controls, order, per-provider options), because
 different methods/models expose different knobs. Until then the bar is fixed: effort → model → provider, laid out by

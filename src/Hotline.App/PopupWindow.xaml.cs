@@ -230,7 +230,9 @@ public sealed partial class PopupWindow : Window
         }
     }
 
-    private Microsoft.UI.Dispatching.DispatcherQueueTimer? _heightAnimation;
+    private bool _animating;
+    private double _animatedHeight;
+    private long _lastFrame;
     private RectI _targetRect;
     private RectI? _currentRect;
 
@@ -249,32 +251,44 @@ public sealed partial class PopupWindow : Window
         if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
             || current.Y + current.Height != _targetRect.Y + _targetRect.Height)
         {
-            _heightAnimation?.Stop();
+            StopAnimation();
             MoveTo(_targetRect);
             return;
         }
-        if (_heightAnimation is null)
-        {
-            _heightAnimation = DispatcherQueue.CreateTimer();
-            _heightAnimation.Interval = TimeSpan.FromMilliseconds(15);
-            _heightAnimation.Tick += (_, _) => StepHeight();
-        }
-        if (!_heightAnimation.IsRunning) _heightAnimation.Start();
+        if (_animating) return; // the running animation retargets on its next frame
+        _animating = true;
+        _animatedHeight = current.Height;
+        _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
     }
 
-    private void StepHeight()
+    private void StopAnimation()
     {
-        if (_currentRect is not { } current) { _heightAnimation?.Stop(); return; }
-        var delta = _targetRect.Height - current.Height;
-        if (Math.Abs(delta) <= 1)
+        if (!_animating) return;
+        _animating = false;
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
+    }
+
+    /// <summary>
+    /// One display frame: exponential ease toward the target height (time constant ~70 ms, frame-rate independent),
+    /// bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
+    /// </summary>
+    private void OnFrame(object? sender, object e)
+    {
+        var now = System.Diagnostics.Stopwatch.GetTimestamp();
+        var dt = Math.Clamp((now - _lastFrame) / (double)System.Diagnostics.Stopwatch.Frequency, 0.001, 0.1);
+        _lastFrame = now;
+        if (!AppWindow.IsVisible) { StopAnimation(); return; }
+        var target = _targetRect.Height;
+        _animatedHeight += (target - _animatedHeight) * (1 - Math.Exp(-dt / 0.07));
+        if (Math.Abs(target - _animatedHeight) < 0.75)
         {
-            _heightAnimation?.Stop();
+            StopAnimation();
             MoveTo(_targetRect);
             return;
         }
-        var step = (int)Math.Round(delta * 0.35);
-        if (step == 0) step = Math.Sign(delta);
-        var height = current.Height + step;
+        var height = (int)Math.Round(_animatedHeight);
+        if (_currentRect is { } current && current.Height == height) return; // sub-pixel step: nothing to move yet
         MoveTo(_targetRect with { Y = _targetRect.Y + _targetRect.Height - height, Height = height });
     }
 

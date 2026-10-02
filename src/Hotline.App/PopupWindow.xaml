@@ -7,23 +7,24 @@
           AllowDrop="True" KeyDown="Root_KeyDown">
         <Grid.Resources>
           <ResourceDictionary>
-            <!-- Windows draws the text caret in the INVERSE of the box's background colour, ignoring alpha (WinUI issues
-                 #6498/#9005). "Transparent" is white with zero alpha, so the caret came out black (invisible on dark
-                 acrylic). A near-invisible background of the right colour gives a visible caret: white on dark, black
-                 on light. Hotline uses the standard Windows caret (thickness: Settings > Accessibility > Text cursor). -->
+            <!-- The text caret is drawn from the text box's background: its colour inverted AND its opacity (WinUI issues
+                 #6498, #8207, #9005; no caret-colour API). A transparent or nearly transparent box gives an invisible
+                 caret. So the whole message area is one solid surface (the composer and the text box share it): the
+                 standard Windows caret then shows light on dark and dark on light. -->
             <ResourceDictionary.ThemeDictionaries>
                 <ResourceDictionary x:Key="Default">
-                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#01000000" />
-                    <SolidColorBrush x:Key="TextControlBackground" Color="#01000000" />
-                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#01000000" />
+                    <SolidColorBrush x:Key="ComposerSurface" Color="#FF2B2B2B" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FF2B2B2B" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="#FF2B2B2B" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FF2B2B2B" />
                 </ResourceDictionary>
                 <ResourceDictionary x:Key="Light">
-                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#01FFFFFF" />
-                    <SolidColorBrush x:Key="TextControlBackground" Color="#01FFFFFF" />
-                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#01FFFFFF" />
+                    <SolidColorBrush x:Key="ComposerSurface" Color="#FFFBFBFB" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FFFBFBFB" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="#FFFBFBFB" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFBFBFB" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
-            <!-- Keep the composer TextBox see-through in every state so acrylic shows. -->
             <!-- No minimum height: the message box is as tall as one line of text (Hotline sizes it from the font). -->
             <x:Double x:Key="TextControlThemeMinHeight">0</x:Double>
             <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
@@ -67,7 +68,7 @@
         <StackPanel x:Name="NoticesPanel" x:FieldModifier="internal" Grid.Row="1" Spacing="6" />
 
         <Border x:Name="Composer" x:FieldModifier="internal" Grid.Row="2" CornerRadius="12" Padding="4" BorderThickness="1"
-                Background="{ThemeResource ControlFillColorDefaultBrush}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
+                Background="{ThemeResource ComposerSurface}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
             <StackPanel Spacing="4">
                 <StackPanel x:Name="ChipsPanel" x:FieldModifier="internal" Orientation="Horizontal" Spacing="6" Visibility="Collapsed" />
                 <Grid ColumnSpacing="6">

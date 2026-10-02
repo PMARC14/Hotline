@@ -1,4 +1,7 @@
+using System.Text.RegularExpressions;
 using Markdig;
+using Markdig.Extensions.EmphasisExtras;
+using Markdig.Extensions.TaskLists;
 using Markdig.Extensions.Mathematics;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
@@ -15,6 +18,8 @@ public sealed record MdQuote(IReadOnlyList<MdBlock> Blocks) : MdBlock;
 public sealed record MdRule : MdBlock;
 /// <summary>Display math ($$...$$), already converted to Unicode text.</summary>
 public sealed record MdMath(string Text) : MdBlock;
+/// <summary>An SVG drawing the model wrote inline (rendered as an image). Complete = closing tag received.</summary>
+public sealed record MdSvg(string Markup, bool Complete) : MdBlock;
 public sealed record MdTable(IReadOnlyList<IReadOnlyList<IReadOnlyList<MdInline>>> Rows, bool HasHeader) : MdBlock;
 
 public abstract record MdInline;
@@ -23,17 +28,62 @@ public sealed record MdLink(string Url, IReadOnlyList<MdInline> Inlines) : MdInl
 public sealed record MdBreak : MdInline;
 
 [Flags]
-public enum MdStyle { None = 0, Bold = 1, Italic = 2, Code = 4, Strike = 8, Math = 16 }
+public enum MdStyle { None = 0, Bold = 1, Italic = 2, Code = 4, Strike = 8, Math = 16, Superscript = 32, Mark = 64, Underline = 128 }
 
 /// <summary>
 /// Markdown → a small, UI-agnostic block model the App renders natively. Records compare by value
 /// in tests; lists are materialized as arrays wrapped in <see cref="Seq{T}"/> for structural equality.
 /// </summary>
-public static class MarkdownModel
+public static partial class MarkdownModel
 {
-    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UsePipeTables().UseEmphasisExtras().UseMathematics().Build();
+    // No single-~ subscript: chat answers write "~5 minutes" for "about 5".
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder()
+        .UsePipeTables()
+        .UseEmphasisExtras(EmphasisExtraOptions.Strikethrough | EmphasisExtraOptions.Superscript | EmphasisExtraOptions.Marked | EmphasisExtraOptions.Inserted)
+        .UseMathematics().UseAutoLinks().UseTaskLists().Build();
 
-    public static IReadOnlyList<MdBlock> Parse(string markdown) => Blocks(Markdown.Parse(markdown ?? "", Pipeline));
+    private const string SvgToken = "HOTLINESVGBLOCK";
+
+    public static IReadOnlyList<MdBlock> Parse(string markdown)
+    {
+        // Inline SVG drawings contain blank lines and comments that markdown would split into many HTML blocks:
+        // lift them out first, parse, then put each back as one image block.
+        var svgs = new List<MdSvg>();
+        var source = markdown ?? "";
+        var text = SvgElement().Replace(source, m =>
+        {
+            if (InsideCodeFence(source, m.Index)) return m.Value; // SVG shown as source code stays code
+            svgs.Add(new MdSvg(m.Value, Complete: true));
+            return $"\n\n{SvgToken}{svgs.Count - 1}\n\n";
+        });
+        var open = SvgStart().Matches(text).LastOrDefault(m => !InsideCodeFence(text, m.Index)
+            && !text.AsSpan(m.Index).Contains("</svg", StringComparison.OrdinalIgnoreCase));
+        if (open is not null) // still streaming: the closing tag hasn't arrived
+        {
+            svgs.Add(new MdSvg(text[open.Index..], Complete: false));
+            text = text[..open.Index] + $"\n\n{SvgToken}{svgs.Count - 1}\n\n";
+        }
+        var blocks = Blocks(Markdown.Parse(text, Pipeline));
+        return svgs.Count == 0 ? blocks : new Seq<MdBlock>(blocks.Select(b => b is MdParagraph { Inlines: [MdText { Text: var t }] } && t.StartsWith(SvgToken, StringComparison.Ordinal)
+            && int.TryParse(t.AsSpan(SvgToken.Length), out var i) && i < svgs.Count ? svgs[i] : b));
+    }
+
+    /// <summary>True when a ``` / ~~~ fence is open at <paramref name="index"/> (odd number of fence lines before it).</summary>
+    private static bool InsideCodeFence(string text, int index)
+        => CodeFence().Matches(text[..index]).Count % 2 == 1;
+
+    [GeneratedRegex(@"^[ \t]{0,3}(```|~~~)", RegexOptions.Multiline)]
+    private static partial Regex CodeFence();
+
+    [GeneratedRegex(@"<svg\b[\s\S]*?</svg\s*>", RegexOptions.IgnoreCase)]
+    private static partial Regex SvgElement();
+
+    [GeneratedRegex(@"<svg\b", RegexOptions.IgnoreCase)]
+    private static partial Regex SvgStart();
+
+    /// <summary>Layout-only HTML (div/center/p wrappers, comments) adds nothing to a chat answer: hidden.</summary>
+    [GeneratedRegex(@"^(\s*(</?(div|center|p|span|section|figure|figcaption|br)\b[^>]*>|<!--[\s\S]*?-->))*\s*$", RegexOptions.IgnoreCase)]
+    private static partial Regex WrapperHtml();
 
     /// <summary>Index of the first block that differs (streaming: everything before it can stay rendered).</summary>
     public static int FirstChangedIndex(IReadOnlyList<MdBlock> previous, IReadOnlyList<MdBlock> current)
@@ -51,18 +101,27 @@ public static class MarkdownModel
         HeadingBlock h => new MdHeading(h.Level, Inlines(h.Inline)),
         FencedCodeBlock f => new MdCode(string.IsNullOrWhiteSpace(f.Info) ? null : f.Info, f.Lines.ToString()),
         CodeBlock c => new MdCode(null, c.Lines.ToString()),
+        ParagraphBlock p when DisplayMath(p) is { } math => new MdMath(LatexText.ToUnicode(math)),
         ParagraphBlock p => new MdParagraph(Inlines(p.Inline)),
         ListBlock l => new MdList(l.IsOrdered, int.TryParse(l.OrderedStart, out var s) ? s : 1,
             new Seq<IReadOnlyList<MdBlock>>(l.OfType<ListItemBlock>().Select(i => (IReadOnlyList<MdBlock>)Blocks(i)))),
         QuoteBlock q => new MdQuote(Blocks(q)),
         ThematicBreakBlock => new MdRule(),
-        HtmlBlock html => new MdCode("html", html.Lines.ToString()), // show raw HTML rather than silently dropping it
+        HtmlBlock html when WrapperHtml().IsMatch(html.Lines.ToString()) => null,
+        HtmlBlock html => new MdCode("html", html.Lines.ToString()), // show other raw HTML rather than silently dropping it
         Table t => new MdTable(
             new Seq<IReadOnlyList<IReadOnlyList<MdInline>>>(t.OfType<TableRow>().Select(r =>
                 (IReadOnlyList<IReadOnlyList<MdInline>>)new Seq<IReadOnlyList<MdInline>>(r.OfType<TableCell>().Select(CellInlines)))),
             t.OfType<TableRow>().FirstOrDefault()?.IsHeader ?? false),
         _ => null,
     };
+
+    /// <summary>A paragraph that is only $$...$$ (written on one line) is display math.</summary>
+    private static string? DisplayMath(ParagraphBlock p)
+    {
+        var parts = p.Inline?.Where(i => !(i is LiteralInline lit && lit.Content.IsEmptyOrWhitespace()) && i is not LineBreakInline).ToList();
+        return parts is [MathInline { DelimiterCount: >= 2 } math] ? math.Content.ToString() : null;
+    }
 
     private static IReadOnlyList<MdInline> CellInlines(TableCell cell) =>
         new Seq<MdInline>(cell.OfType<ParagraphBlock>().SelectMany(p => Inlines(p.Inline)));
@@ -90,11 +149,22 @@ public static class MarkdownModel
                 case MathInline math:
                     output.Add(new MdText(LatexText.ToUnicode(math.Content.ToString()), style | MdStyle.Math));
                     break;
+                case TaskList task:
+                    output.Add(new MdText(task.Checked ? "☑ " : "☐ ", style));
+                    break;
                 case CodeInline code:
                     output.Add(new MdText(code.Content, style | MdStyle.Code));
                     break;
                 case EmphasisInline em:
-                    var added = em.DelimiterChar == '~' ? MdStyle.Strike : em.DelimiterCount >= 2 ? MdStyle.Bold : MdStyle.Italic;
+                    var added = em.DelimiterChar switch
+                    {
+                        '~' => MdStyle.Strike,
+                        '^' => MdStyle.Superscript,
+                        '=' => MdStyle.Mark,
+                        '+' => MdStyle.Underline,
+                        _ => em.DelimiterCount >= 2 ? MdStyle.Bold : MdStyle.Italic,
+                    };
+                    if (em.DelimiterCount >= 3 && em.DelimiterChar is '*' or '_') added = MdStyle.Bold | MdStyle.Italic;
                     Walk(em, style | added, output);
                     break;
                 case LinkInline { IsImage: false } link when IsSafe(link.Url):

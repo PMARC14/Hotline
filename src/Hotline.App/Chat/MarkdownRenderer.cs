@@ -74,7 +74,10 @@ internal static class MarkdownRenderer
                 return 1;
             }
             case MdTable t:
-                rtb.Blocks.Add(TableText(t, s, indent));
+                rtb.Blocks.Add(Boxed(TableGrid(t, s)));
+                return 1;
+            case MdSvg svg:
+                rtb.Blocks.Add(Boxed(SvgCard(svg, s, contentWidth)));
                 return 1;
             case MdRule:
                 rtb.Blocks.Add(Boxed(new Border { Height = 1, Margin = new Thickness(0, 4, 0, 4), Background = s.Muted, Opacity = 0.4 }));
@@ -87,7 +90,7 @@ internal static class MarkdownRenderer
                 var count = 0;
                 for (var i = 0; i < l.Items.Count; i++)
                 {
-                    var marker = l.Ordered ? $"{l.Start + i}. " : "• ";
+                    var marker = l.Ordered ? $"{l.Start + i}. " : (indent % 3) switch { 0 => "• ", 1 => "◦ ", _ => "▪ " };
                     var first = true;
                     foreach (var child in l.Items[i])
                     {
@@ -134,45 +137,149 @@ internal static class MarkdownRenderer
         return grid;
     }
 
-    /// <summary>Tables as aligned monospace text so they select and copy with the rest of the answer.</summary>
-    private static Paragraph TableText(MdTable table, RenderStyle s, int indent)
+    private static string PlainText(IReadOnlyList<MdInline> inlines) => string.Concat(inlines.Select(i => i switch
     {
-        static string Plain(IReadOnlyList<MdInline> inlines) => string.Concat(inlines.Select(i => i switch
+        MdText t => t.Text,
+        MdLink l => string.Concat(l.Inlines.OfType<MdText>().Select(x => x.Text)),
+        MdBreak => " ",
+        _ => "",
+    }));
+
+    /// <summary>
+    /// A real table: aligned columns that scroll sideways when wide (instead of wrapping), selectable cells, a header
+    /// row and a Copy button (tab-separated, pastes into spreadsheets).
+    /// </summary>
+    private static UIElement TableGrid(MdTable table, RenderStyle s)
+    {
+        var columns = table.Rows.Count == 0 ? 0 : table.Rows.Max(r => r.Count);
+        var grid = new Grid { ColumnSpacing = 18, RowSpacing = 0 };
+        for (var c = 0; c < columns; c++) grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        for (var r = 0; r < table.Rows.Count; r++)
         {
-            MdText t => t.Text,
-            MdLink l => string.Concat(l.Inlines.OfType<MdText>().Select(x => x.Text)),
-            MdBreak => " ",
-            _ => "",
-        }));
-        var rows = table.Rows.Select(r => r.Select(Plain).ToList()).ToList();
-        var columns = rows.Count == 0 ? 0 : rows.Max(r => r.Count);
-        var widths = Enumerable.Range(0, columns).Select(c => rows.Max(r => c < r.Count ? r[c].Length : 0)).ToList();
-        var p = new Paragraph { FontFamily = Mono, FontSize = s.FontSize - 1, Margin = new Thickness(indent * 18, 0, 0, 10) };
-        for (var r = 0; r < rows.Count; r++)
-        {
-            if (r > 0) p.Inlines.Add(new LineBreak());
-            var line = string.Join("  ", Enumerable.Range(0, columns).Select(c => (c < rows[r].Count ? rows[r][c] : "").PadRight(widths[c]))).TrimEnd();
-            var run = new Run { Text = line };
-            if (table.HasHeader && r == 0) run.FontWeight = FontWeights.SemiBold;
-            p.Inlines.Add(run);
-            if (table.HasHeader && r == 0)
+            grid.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+            var header = table.HasHeader && r == 0;
+            for (var c = 0; c < table.Rows[r].Count; c++)
             {
-                p.Inlines.Add(new LineBreak());
-                p.Inlines.Add(new Run { Text = string.Join("  ", widths.Select(w => new string('─', Math.Max(1, w)))), Foreground = s.Muted });
+                var cell = new RichTextBlock { IsTextSelectionEnabled = true, FontSize = s.FontSize, FontFamily = s.Font, Margin = new Thickness(0, 4, 0, 4) };
+                var p = new Paragraph();
+                foreach (var inline in table.Rows[r][c]) p.Inlines.Add(ToInline(inline, s, header));
+                cell.Blocks.Add(p);
+                Grid.SetRow(cell, r);
+                Grid.SetColumn(cell, c);
+                grid.Children.Add(cell);
+            }
+            if (r < table.Rows.Count - 1)
+            {
+                var line = new Border { Height = 1, VerticalAlignment = VerticalAlignment.Bottom, Background = s.Muted, Opacity = header ? 0.5 : 0.18 };
+                Grid.SetRow(line, r);
+                Grid.SetColumnSpan(line, Math.Max(1, columns));
+                grid.Children.Add(line);
             }
         }
-        return p;
+        var scroll = new ScrollViewer
+        {
+            Content = grid, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollMode = ScrollMode.Enabled,
+            VerticalScrollMode = ScrollMode.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Padding = new Thickness(0, 0, 0, 6),
+        };
+        var tsv = string.Join("\n", table.Rows.Select(row => string.Join("\t", row.Select(PlainText))));
+        var copy = SmallButton("\uE8C8", "Copy", "Copy table (pastes into spreadsheets)", () => SetClipboardText(tsv));
+        copy.HorizontalAlignment = HorizontalAlignment.Right;
+        var stack = new StackPanel { Spacing = 2 };
+        stack.Children.Add(copy);
+        stack.Children.Add(scroll);
+        return stack;
+    }
+
+    /// <summary>
+    /// An SVG drawing from the model, drawn natively. Windows' SVG renderer skips text labels and some effects, so
+    /// "Open" shows the full drawing in the default viewer (scripts are stripped from the saved file first).
+    /// </summary>
+    private static UIElement SvgCard(MdSvg svg, RenderStyle s, double contentWidth)
+    {
+        var card = new StackPanel { Spacing = 4 };
+        if (!svg.Complete)
+        {
+            card.Children.Add(new TextBlock { Text = "Drawing an image…", Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
+            return card;
+        }
+        var image = new Image { MaxHeight = 360, MaxWidth = Math.Max(120, contentWidth), Stretch = Stretch.Uniform, HorizontalAlignment = HorizontalAlignment.Left };
+        var source = new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource();
+        image.Source = source;
+        _ = LoadSvgAsync(source, svg.Markup);
+        var open = SmallButton("\uE8A7", "Open image", "Open the full drawing (with labels) in your default viewer", () => OpenSvg(svg.Markup));
+        card.Children.Add(new Border { Child = image, CornerRadius = new CornerRadius(s.Radius), HorizontalAlignment = HorizontalAlignment.Left });
+        card.Children.Add(open);
+        return card;
+    }
+
+    private static async Task LoadSvgAsync(Microsoft.UI.Xaml.Media.Imaging.SvgImageSource source, string markup)
+    {
+        try
+        {
+            using var stream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
+            using (var writer = new Windows.Storage.Streams.DataWriter(stream.GetOutputStreamAt(0)))
+            {
+                writer.WriteString(SafeSvg(markup));
+                await writer.StoreAsync();
+                await writer.FlushAsync();
+                writer.DetachStream();
+            }
+            stream.Seek(0);
+            await source.SetSourceAsync(stream);
+        }
+        catch (Exception) { /* an SVG Windows can't draw: the Open button still works */ }
+    }
+
+    private static string SafeSvg(string markup)
+    {
+        var noScripts = System.Text.RegularExpressions.Regex.Replace(markup, @"<script\b[\s\S]*?</script\s*>", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        noScripts = System.Text.RegularExpressions.Regex.Replace(noScripts, @"\son\w+\s*=\s*(""[^""]*""|'[^']*')", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+        return noScripts.Contains("xmlns", StringComparison.Ordinal) ? noScripts : noScripts.Replace("<svg", "<svg xmlns=\"http://www.w3.org/2000/svg\"");
+    }
+
+    private static void OpenSvg(string markup)
+    {
+        try
+        {
+            var path = Path.Combine(Path.GetTempPath(), $"hotline-drawing-{(uint)markup.GetHashCode():x8}.svg");
+            File.WriteAllText(path, SafeSvg(markup));
+            System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
+        }
+        catch (Exception) { /* no viewer for .svg */ }
+    }
+
+    private static Button SmallButton(string glyph, string text, string tooltip, Action click)
+    {
+        var button = new Button
+        {
+            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Children = { new FontIcon { Glyph = glyph, FontSize = 11 }, new TextBlock { Text = text, FontSize = 11 } } },
+            Padding = new Thickness(6, 2, 6, 2), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0), Opacity = 0.8,
+        };
+        ToolTipService.SetToolTip(button, tooltip);
+        button.Click += (_, _) => click();
+        return button;
+    }
+
+    private static void SetClipboardText(string text)
+    {
+        try
+        {
+            var package = new DataPackage();
+            package.SetText(text);
+            Clipboard.SetContent(package);
+        }
+        catch (Exception) { /* clipboard busy (another app holds it): ignore rather than crash */ }
     }
 
     private static Inline ToInline(MdInline inline, RenderStyle s, bool bold) => inline switch
     {
-        MdText t => ToRun(t, bold),
+        MdText t => ToRun(t, bold, s),
         MdBreak => new LineBreak(),
         MdLink l => ToLink(l, s, bold),
         _ => new Run(),
     };
 
-    private static Run ToRun(MdText t, bool bold)
+    private static Run ToRun(MdText t, bool bold, RenderStyle s)
     {
         var run = new Run { Text = t.Text };
         if (bold || t.Style.HasFlag(MdStyle.Bold)) run.FontWeight = FontWeights.SemiBold;
@@ -180,13 +287,16 @@ internal static class MarkdownRenderer
         if (t.Style.HasFlag(MdStyle.Strike)) run.TextDecorations = Windows.UI.Text.TextDecorations.Strikethrough;
         if (t.Style.HasFlag(MdStyle.Code)) run.FontFamily = Mono;
         if (t.Style.HasFlag(MdStyle.Math)) run.FontFamily = MathFont;
+        if (t.Style.HasFlag(MdStyle.Underline)) run.TextDecorations |= Windows.UI.Text.TextDecorations.Underline;
+        if (t.Style.HasFlag(MdStyle.Mark)) { run.Foreground = s.Accent; run.FontWeight = FontWeights.SemiBold; } // ==marked== (no run backgrounds in WinUI)
+        if (t.Style.HasFlag(MdStyle.Superscript)) Typography.SetVariants(run, FontVariants.Superscript);
         return run;
     }
 
     private static Hyperlink ToLink(MdLink link, RenderStyle s, bool bold)
     {
         var h = new Hyperlink();
-        foreach (var child in link.Inlines.OfType<MdText>()) h.Inlines.Add(ToRun(child, bold));
+        foreach (var child in link.Inlines.OfType<MdText>()) h.Inlines.Add(ToRun(child, bold, s));
         h.Click += (_, _) => s.OpenLink(link.Url);
         ToolTipService.SetToolTip(h, link.Url);
         return h;
