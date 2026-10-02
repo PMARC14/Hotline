@@ -21,6 +21,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     public bool Reload(HotlineSettings fromDisk)
     {
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
+        if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
         if (System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == System.Text.Json.JsonSerializer.Serialize(Current, options)) return false;
         var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options));
         CopyInto(fromDisk.Activation, Current.Activation);
@@ -71,8 +72,14 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         }
     }
 
+    private DateTime _knownWriteUtc = DateTime.MinValue;
+
     public void Update(Action<HotlineSettings> change)
     {
+        // A hand edit saved moments ago may not have been reloaded yet (the file watcher debounces): take it in first
+        // so this save doesn't overwrite it.
+        if (File.Exists(store.FilePath) && File.GetLastWriteTimeUtc(store.FilePath) > _knownWriteUtc && store.TryRead() is { } fromDisk)
+            Reload(fromDisk);
         change(Current);
         SettingsStore.Normalize(Current);
         try
@@ -85,6 +92,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
                 log.Info($"settings.json wasn't valid; kept it as {backup} before saving");
             }
             store.Save(Current);
+            _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("saving settings failed", ex); }
         Changed?.Invoke();

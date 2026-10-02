@@ -104,22 +104,34 @@ internal sealed class CustomCaret
         _shape.Visibility = Visibility.Collapsed;
     }
 
-    /// <summary>Caret position in TextBox coordinates (start of the line when the text is empty or ends in a newline).</summary>
+    /// <summary>
+    /// Caret position in TextBox coordinates. Newline characters have no reliable glyph rectangle, so the position is
+    /// derived from the nearest real character before the caret plus one line per newline in between.
+    /// </summary>
     private Rect CaretRect()
     {
         var text = _box.Text ?? "";
         var index = Math.Clamp(_box.SelectionStart, 0, text.Length);
         var pad = _box.Padding;
         var border = _box.BorderThickness;
-        var empty = new Rect(pad.Left + border.Left, pad.Top + border.Top, 0, _box.FontSize * 1.3);
+        var lineHeight = _box.FontSize * 1.3;
+        var origin = new Rect(pad.Left + border.Left, pad.Top + border.Top, 0, lineHeight);
         try
         {
-            if (text.Length == 0) return empty;
-            if (index < text.Length) return _box.GetRectFromCharacterIndex(index, trailingEdge: false);
-            var last = _box.GetRectFromCharacterIndex(text.Length - 1, trailingEdge: true);
-            return text[^1] is '\r' or '\n' ? new Rect(empty.X, last.Y + last.Height, 0, last.Height) : last;
+            if (index < text.Length && text[index] is not ('\r' or '\n'))
+                return _box.GetRectFromCharacterIndex(index, trailingEdge: false);
+            var k = index - 1;
+            var newlines = 0;
+            while (k >= 0 && text[k] is '\r' or '\n')
+            {
+                if (text[k] == '\r' || (text[k] == '\n' && (k == 0 || text[k - 1] != '\r'))) newlines++;
+                k--;
+            }
+            if (k < 0) return origin with { Y = origin.Y + newlines * lineHeight };
+            var r = _box.GetRectFromCharacterIndex(k, trailingEdge: true);
+            return newlines == 0 ? r : new Rect(origin.X, r.Y + newlines * Math.Max(r.Height, lineHeight), 0, Math.Max(r.Height, lineHeight));
         }
-        catch (ArgumentException) { return empty; }
+        catch (ArgumentException) { return origin; }
     }
 
     private static T? FindChild<T>(DependencyObject parent) where T : DependencyObject

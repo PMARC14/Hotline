@@ -87,6 +87,20 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.Contains(Directory.GetFiles(_dir, "settings.json.*.bak"), f => File.ReadAllText(f) == "{ \"window\": ");
         Assert.NotNull(store.TryRead());
     }
+
+    [Fact]
+    public void Ui_change_right_after_a_hand_edit_keeps_the_hand_edit()
+    {
+        var service = New(out var store);
+        service.Update(s => s.Window.HideOnBlur = true);
+        var edited = store.Load();
+        edited.Window.FontSize = 20;            // hand edit, not yet reloaded by the watcher
+        store.Save(edited);
+        File.SetLastWriteTimeUtc(store.FilePath, DateTime.UtcNow.AddSeconds(5));
+        service.Update(s => s.Window.AlwaysOnTop = false); // e.g. a picker change
+        var onDisk = store.Load();
+        Assert.Equal((20, false), (onDisk.Window.FontSize, onDisk.Window.AlwaysOnTop));
+    }
 }
 
 internal static class TestExtensions

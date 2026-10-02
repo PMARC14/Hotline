@@ -34,6 +34,8 @@ internal sealed partial class ChatPresenter
         public string? Error { get; set; }
         public bool Streaming { get; set; } = true;
         public bool Dirty { get; set; }
+        /// <summary>A failed attempt that was retried: no longer shown.</summary>
+        public bool Superseded { get; set; }
     }
 
     private readonly Dictionary<string, AssistantView> _assistants = [];
@@ -69,7 +71,7 @@ internal sealed partial class ChatPresenter
         foreach (var entry in _entries)
         {
             if (entry is UserEntry u) AppendUser(u.Message);
-            else if (entry is AssistantView a)
+            else if (entry is AssistantView { Superseded: false } a)
             {
                 a.Blocks = [];
                 a.Rendered.Clear();
@@ -166,7 +168,13 @@ internal sealed partial class ChatPresenter
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = view.Error, Width = ContentWidth };
         var retry = new Button { Content = "Retry" };
-        retry.Click += (_, _) => { bar.IsOpen = false; view.Error = null; Run("retry", chat.RetryAsync); };
+        retry.Click += (_, _) =>
+        {
+            view.Error = null;
+            view.Superseded = true; // the retried answer replaces this attempt
+            // Rebuild after this click finishes: the clicked button lives inside the transcript being rebuilt.
+            popup.DispatcherQueue.TryEnqueue(() => { RebuildTranscript(); Run("retry", chat.RetryAsync); });
+        };
         bar.ActionButton = retry;
         var p = new Paragraph();
         p.Inlines.Add(new InlineUIContainer { Child = bar });

@@ -140,7 +140,7 @@ internal sealed class ProviderBar(
         if (settings.Current.Chat.Backends.FirstOrDefault(b => b.Id == id) is { } target && !BackendFactory.IsAvailable(target.Type))
         {
             notify($"{target.Name} can be set up in Settings, but chatting with it arrives in a later update.", InfoBarSeverity.Informational);
-            Refresh(); // back to the current connection
+            popup.DispatcherQueue.TryEnqueue(Refresh); // back to the current connection, after this SelectionChanged
             return;
         }
         chat.BackendId = id;
@@ -198,6 +198,8 @@ internal sealed class ProviderBar(
         try
         {
             var list = await models.GetAsync(profile, refresh: false, CancellationToken.None);
+            // Same list as shown already (the usual case when the dropdown opens): leave the open dropdown alone.
+            if (_loaded.TryGetValue(profile.Id, out var shown) && shown.SequenceEqual(list)) return;
             _loaded[profile.Id] = list;
             if (Current != profile) return; // switched meanwhile
             _updating = true;
