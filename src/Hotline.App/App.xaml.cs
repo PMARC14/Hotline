@@ -112,7 +112,7 @@ public partial class App : Application
         {
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
                       ?? throw new ModelListException("The Antigravity CLI (agy) isn't installed.");
-            return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct);
+            return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }

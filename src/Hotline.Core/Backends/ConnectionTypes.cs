@@ -21,7 +21,7 @@ public static class ConnectionTypes
     public static IReadOnlyList<ConnectionTypeInfo> All { get; } =
     [
         new(BackendType.Antigravity, "Antigravity CLI (agy)", "Gemini (Antigravity)", Cli | ConnectionField.Agent, null,
-            ["low", "medium", "high", "max"], false, "Your installed agy and its Google sign-in."),
+            ["low", "medium", "high"], false, "Your installed agy and its Google sign-in."),
         new(BackendType.ClaudeCode, "Claude Code CLI", "Claude (Claude Code)", Cli, null,
             [], false, "Your installed claude and its sign-in."),
         new(BackendType.Gemini, "Gemini API", "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",

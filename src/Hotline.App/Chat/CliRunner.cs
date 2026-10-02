@@ -6,7 +6,8 @@ namespace Hotline.App.Chat;
 internal static class CliRunner
 {
     /// <summary>Runs a command-line tool and returns its standard output (killed after <paramref name="timeout"/>).</summary>
-    public static async Task<string> RunAsync(string exe, IReadOnlyList<string> args, TimeSpan timeout, CancellationToken ct)
+    /// <param name="adopt">Puts the process in Hotline's kill-on-close job so it can't outlive the app.</param>
+    public static async Task<string> RunAsync(string exe, IReadOnlyList<string> args, TimeSpan timeout, CancellationToken ct, Action<Process>? adopt = null)
     {
         var psi = new ProcessStartInfo(exe)
         {
@@ -15,6 +16,7 @@ internal static class CliRunner
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
         using var process = Process.Start(psi) ?? throw new InvalidOperationException($"Could not start {exe}");
+        adopt?.Invoke(process);
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(timeout);
         var stdout = process.StandardOutput.ReadToEndAsync(cts.Token);

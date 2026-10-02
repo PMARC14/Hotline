@@ -12,7 +12,7 @@ public class ConnectionTypesTests
     [Fact]
     public void Only_agy_has_verified_effort_levels()
     {
-        Assert.Equal(["low", "medium", "high", "max"], ConnectionTypes.Of(BackendType.Antigravity).EffortLevels);
+        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Antigravity).EffortLevels);
         Assert.All(ConnectionTypes.All.Where(t => t.Type != BackendType.Antigravity), t => Assert.Empty(t.EffortLevels));
     }
 

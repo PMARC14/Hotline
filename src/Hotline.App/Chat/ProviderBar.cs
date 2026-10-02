@@ -16,13 +16,45 @@ internal sealed class ProviderBar(
     private const string DefaultLabel = "Default";
     private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = [];
 
-    private void FillModels(BackendProfile? profile, IReadOnlyList<ModelInfo> list)
+    private IReadOnlyList<ModelFamily> Families(BackendProfile? profile) =>
+        profile is not null && _loaded.TryGetValue(profile.Id, out var list) ? ModelFamilies.Group(list) : [];
+
+    /// <summary>Model picker: clean family names ("Gemini 3.8 Flash"); the effort picker picks the variant.</summary>
+    private void FillModels(BackendProfile? profile)
     {
+        var families = Families(profile);
         popup.ModelBox.Items.Clear();
         popup.ModelBox.Items.Add(DefaultLabel);
-        foreach (var m in list) popup.ModelBox.Items.Add(m.Id);
-        if (!string.IsNullOrWhiteSpace(profile?.Model) && !list.Any(m => m.Id == profile.Model)) popup.ModelBox.Items.Add(profile.Model);
+        foreach (var f in families) popup.ModelBox.Items.Add(f.Name);
+        var located = ModelFamilies.Locate(families, profile?.Model);
+        if (!string.IsNullOrWhiteSpace(profile?.Model) && located is null) popup.ModelBox.Items.Add(profile.Model); // typed id
+        popup.ModelBox.SelectedItem = string.IsNullOrWhiteSpace(profile?.Model) ? DefaultLabel : located?.Family.Name ?? profile.Model;
     }
+
+    /// <summary>
+    /// Effort picker: the levels the chosen model really has (agy lists each level as its own model id). With the
+    /// default model, the connection's generic levels (passed as --effort).
+    /// </summary>
+    private void FillEffort(BackendProfile? profile)
+    {
+        popup.EffortBox.Items.Clear();
+        if (profile is null) return;
+        var located = ModelFamilies.Locate(Families(profile), profile.Model);
+        if (located is { } hit)
+        {
+            foreach (var level in hit.Family.Levels) popup.EffortBox.Items.Add(level);
+            popup.EffortBox.SelectedItem = hit.Level.Length > 0 ? hit.Level : null;
+        }
+        else if (string.IsNullOrWhiteSpace(profile.Model))
+        {
+            var levels = ConnectionTypes.Of(profile.Type).EffortLevels;
+            if (levels.Count == 0) return;
+            popup.EffortBox.Items.Add(DefaultLabel);
+            foreach (var level in levels) popup.EffortBox.Items.Add(level);
+            popup.EffortBox.SelectedItem = profile.Effort is { } e && levels.Contains(e) ? e : DefaultLabel;
+        }
+    }
+
     private bool _updating;
     private bool _enabled = true;
 
@@ -63,15 +95,9 @@ internal sealed class ProviderBar(
             popup.ProviderBox.SelectedItem = popup.ProviderBox.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == chat.BackendId);
 
             var current = Current;
-            FillModels(current, current is not null && _loaded.TryGetValue(current.Id, out var known) ? known : []);
-            popup.ModelBox.SelectedItem = string.IsNullOrWhiteSpace(current?.Model) ? DefaultLabel : current.Model;
-
-            IReadOnlyList<string> levels = current is null ? Array.Empty<string>() : ConnectionTypes.Of(current.Type).EffortLevels;
-            popup.EffortBox.Items.Clear();
-            popup.EffortBox.Items.Add(DefaultLabel);
-            foreach (var level in levels) popup.EffortBox.Items.Add(level);
-            popup.EffortBox.SelectedItem = current?.Effort is { } e && levels.Contains(e) ? e : DefaultLabel;
-            ToolTipService.SetToolTip(popup.EffortBox, levels.Count > 0 ? "Reasoning effort" : "This provider doesn't offer effort levels yet");
+            FillModels(current);
+            FillEffort(current);
+            ToolTipService.SetToolTip(popup.EffortBox, "Reasoning effort");
             SetEnabled(_enabled);
         }
         finally { _updating = false; }
@@ -90,7 +116,7 @@ internal sealed class ProviderBar(
         if (bar.ActualWidth <= 0) return;
         var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
                          + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
-        var effortAvailable = popup.EffortBox.Items.Count > 1;
+        var effortAvailable = popup.EffortBox.Items.Count > 0;
         var widths = ToolbarLayout.Compute(bar.ActualWidth, fixedWidth, popup.PickersPanel.Spacing,
             [new("effort", 72, 56, effortAvailable), new("model", 150, 84), new("provider", 128, 72)], HideOrder);
         Apply(popup.EffortBox, widths["effort"]);
@@ -117,9 +143,19 @@ internal sealed class ProviderBar(
     {
         var profile = Current;
         if (profile is null) return;
-        var model = string.IsNullOrWhiteSpace(text) || text == DefaultLabel ? null : text.Trim();
-        if (model == profile.Model) return;
-        settings.Update(_ => profile.Model = model);
+        var families = Families(profile);
+        string? model; string? effort = profile.Effort;
+        if (string.IsNullOrWhiteSpace(text) || text == DefaultLabel) model = null;
+        else if (families.FirstOrDefault(f => f.Name == text) is { } family)
+        {
+            // Keep the current effort level when switching models (nearest level the new model has).
+            var level = ModelFamilies.Locate(families, profile.Model)?.Level is { Length: > 0 } l ? l : profile.Effort;
+            model = ModelFamilies.Resolve(family, level);
+            effort = null; // the level is part of the model id
+        }
+        else model = text.Trim(); // a typed model id
+        if (model == profile.Model && effort == profile.Effort) return;
+        settings.Update(_ => { profile.Model = model; profile.Effort = effort; });
         await invalidate(profile.Id);
         log.Info($"model for {profile.Id} = {model ?? "default"}");
     }
@@ -128,9 +164,18 @@ internal sealed class ProviderBar(
     {
         var profile = Current;
         if (profile is null) return;
-        var effort = level == DefaultLabel ? null : level;
-        if (effort == profile.Effort) return;
-        settings.Update(_ => profile.Effort = effort);
+        if (ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
+        {
+            var model = ModelFamilies.Resolve(hit.Family, level);
+            if (model == profile.Model) return;
+            settings.Update(_ => profile.Model = model);
+        }
+        else
+        {
+            var effort = level == DefaultLabel ? null : level;
+            if (effort == profile.Effort) return;
+            settings.Update(_ => profile.Effort = effort);
+        }
         await invalidate(profile.Id);
     }
 
@@ -145,13 +190,13 @@ internal sealed class ProviderBar(
             _loaded[profile.Id] = list;
             if (Current != profile) return; // switched meanwhile
             _updating = true;
-            var selected = popup.ModelBox.SelectedItem as string ?? DefaultLabel;
-            FillModels(profile, list);
-            popup.ModelBox.SelectedItem = popup.ModelBox.Items.Contains(selected) ? selected : DefaultLabel;
+            FillModels(profile);
+            FillEffort(profile);
         }
         catch (ModelListException ex) { log.Info($"model list: {ex.Message}"); if (!quiet) notify(ex.Message, InfoBarSeverity.Warning); }
         catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }
         finally { _updating = false; }
+        Layout();
     }
 
     private void BuildPromptMenu()
