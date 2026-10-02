@@ -44,7 +44,11 @@ public static class ClaudeCodeProtocol
         {
             var a = extra[i];
             if (a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a.Contains("skip-permission", StringComparison.OrdinalIgnoreCase)) continue;
-            if (a.Equals("--permission-mode", StringComparison.OrdinalIgnoreCase) || a.Equals("--permission-prompts", StringComparison.OrdinalIgnoreCase)) { i++; continue; } // and its value
+            if (a.StartsWith("--permission-mode", StringComparison.OrdinalIgnoreCase) || a.StartsWith("--permission-prompts", StringComparison.OrdinalIgnoreCase))
+            {
+                if (!a.Contains('=')) i++; // and its separate value
+                continue;
+            }
             args.Add(a);
         }
     }
@@ -63,10 +67,10 @@ public static class ClaudeCodeProtocol
         var sb = new StringBuilder();
         if (priorContext.Count > 0)
         {
-            sb.AppendLine("Conversation so far (for context):");
+            sb.Append("<previous_conversation>\n");
             foreach (var m in priorContext)
-                sb.Append(m.Role == ChatRole.User ? "User: " : "Assistant: ").AppendLine(m.Text);
-            sb.AppendLine().AppendLine("New message:");
+                sb.Append("<turn role=\"").Append(m.Role == ChatRole.User ? "user" : "assistant").Append("\">\n").Append(m.Text).Append("\n</turn>\n");
+            sb.Append("</previous_conversation>\n\nNew message:\n");
         }
         foreach (var (name, content) in textFiles)
             sb.Append("Attached file ").Append(name).AppendLine(":").AppendLine("```").AppendLine(content).AppendLine("```").AppendLine();

@@ -53,6 +53,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     /// </summary>
     public bool Resume(string conversationId)
     {
+        if (IsBusy || conversationId == ConversationId) return false; // never while answering, never into itself
         IReadOnlyList<HistoryStore.Entry> entries;
         try { entries = history?.Load(conversationId) ?? []; }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)

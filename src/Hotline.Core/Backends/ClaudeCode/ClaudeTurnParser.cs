@@ -61,7 +61,11 @@ public sealed class ClaudeTurnParser
                 var isError = root.TryGetProperty("is_error", out var e) && e.ValueKind == JsonValueKind.True;
                 if (isError || Str(root, "subtype") is { } sub && sub != "success")
                 {
-                    Error = result.Length > 0 ? result : $"Claude Code ended with {Str(root, "subtype") ?? "an error"}";
+                    Error = result.Length > 0 ? result
+                        : Str(root, "error") is { Length: > 0 } err ? err
+                        : root.TryGetProperty("errors", out var errors) && errors.ValueKind == JsonValueKind.Array && errors.GetArrayLength() > 0
+                            ? string.Join("; ", errors.EnumerateArray().Select(x => x.ValueKind == JsonValueKind.String ? x.GetString() : x.ToString()))
+                        : $"Claude Code ended with {Str(root, "subtype") ?? "an error"}";
                     yield break;
                 }
                 if (_shown.Length == 0 && result.Length > 0) yield return new ChatDelta(result);

@@ -122,6 +122,15 @@ public partial class App : Application
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
+        // Don't keep an idle CLI session (claude/agy) around after New chat or switching provider.
+        var lastBackend = chat.BackendId;
+        chat.Event += e => { if (e is ConversationReset) _ = InvalidateBackend(chat.BackendId).AsTask(); };
+        _settingsService.Changed += () =>
+        {
+            if (chat.BackendId == lastBackend) return;
+            _ = InvalidateBackend(lastBackend).AsTask();
+            lastBackend = chat.BackendId;
+        };
         _presenter.BusyChanged += busy =>
         {
             _providerBar.SetEnabled(!busy);

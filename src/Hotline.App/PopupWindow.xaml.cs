@@ -53,6 +53,7 @@ public sealed partial class PopupWindow : Window
         var presenter = OverlappedPresenter.Create();
         presenter.IsMaximizable = false;
         presenter.IsMinimizable = false;
+        presenter.IsResizable = false; // Hotline sizes the panel (settings: width %, heights); dragging the edge would fight it
         presenter.SetBorderAndTitleBar(hasBorder: true, hasTitleBar: false);
         AppWindow.SetPresenter(presenter);
         AppWindow.IsShownInSwitchers = false;

@@ -82,8 +82,18 @@ public static partial class MarkdownModel
     private static partial Regex SvgStart();
 
     /// <summary>Layout-only HTML (div/center/p wrappers, comments) adds nothing to a chat answer: hidden.</summary>
-    [GeneratedRegex(@"^(\s*(</?(div|center|p|span|section|figure|figcaption|br)\b[^>]*>|<!--[\s\S]*?-->))*\s*$", RegexOptions.IgnoreCase)]
-    private static partial Regex WrapperHtml();
+    private static bool IsWrapperHtml(string html)
+    {
+        // Strip wrapper tags and complete comments, then require nothing but whitespace (no nested quantifiers).
+        var rest = HtmlComment().Replace(WrapperTag().Replace(html, ""), "");
+        return string.IsNullOrWhiteSpace(rest);
+    }
+
+    [GeneratedRegex(@"</?(?:div|center|p|span|section|figure|figcaption|br)\b[^<>]*>", RegexOptions.IgnoreCase)]
+    private static partial Regex WrapperTag();
+
+    [GeneratedRegex(@"<!--.*?-->", RegexOptions.Singleline)]
+    private static partial Regex HtmlComment();
 
     /// <summary>Index of the first block that differs (streaming: everything before it can stay rendered).</summary>
     public static int FirstChangedIndex(IReadOnlyList<MdBlock> previous, IReadOnlyList<MdBlock> current)
@@ -107,7 +117,7 @@ public static partial class MarkdownModel
             new Seq<IReadOnlyList<MdBlock>>(l.OfType<ListItemBlock>().Select(i => (IReadOnlyList<MdBlock>)Blocks(i)))),
         QuoteBlock q => new MdQuote(Blocks(q)),
         ThematicBreakBlock => new MdRule(),
-        HtmlBlock html when WrapperHtml().IsMatch(html.Lines.ToString()) => null,
+        HtmlBlock html when IsWrapperHtml(html.Lines.ToString()) => null,
         HtmlBlock html => new MdCode("html", html.Lines.ToString()), // show other raw HTML rather than silently dropping it
         Table t => new MdTable(
             new Seq<IReadOnlyList<IReadOnlyList<MdInline>>>(t.OfType<TableRow>().Select(r =>

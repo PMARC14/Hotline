@@ -202,11 +202,16 @@ internal static class MarkdownRenderer
             card.Children.Add(new TextBlock { Text = "Drawing an image…", Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
             return card;
         }
+        if (SvgSanitizer.Sanitize(svg.Markup) is not { } safe)
+        {
+            card.Children.Add(new TextBlock { Text = "(a drawing that couldn't be shown safely)", Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
+            return card;
+        }
         var image = new Image { MaxHeight = 360, MaxWidth = Math.Max(120, contentWidth), Stretch = Stretch.Uniform, HorizontalAlignment = HorizontalAlignment.Left };
         var source = new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource();
         image.Source = source;
-        _ = LoadSvgAsync(source, svg.Markup);
-        var open = SmallButton("\uE8A7", "Open image", "Open the full drawing (with labels) in your default viewer", () => OpenSvg(svg.Markup));
+        _ = LoadSvgAsync(source, safe);
+        var open = SmallButton("\uE8A7", "Open image", "Open the full drawing (with labels) in your default viewer", () => OpenSvg(safe));
         card.Children.Add(new Border { Child = image, CornerRadius = new CornerRadius(s.Radius), HorizontalAlignment = HorizontalAlignment.Left });
         card.Children.Add(open);
         return card;
@@ -219,7 +224,7 @@ internal static class MarkdownRenderer
             using var stream = new Windows.Storage.Streams.InMemoryRandomAccessStream();
             using (var writer = new Windows.Storage.Streams.DataWriter(stream.GetOutputStreamAt(0)))
             {
-                writer.WriteString(SafeSvg(markup));
+                writer.WriteString(markup);
                 await writer.StoreAsync();
                 await writer.FlushAsync();
                 writer.DetachStream();
@@ -230,19 +235,13 @@ internal static class MarkdownRenderer
         catch (Exception) { /* an SVG Windows can't draw: the Open button still works */ }
     }
 
-    private static string SafeSvg(string markup)
-    {
-        var noScripts = System.Text.RegularExpressions.Regex.Replace(markup, @"<script\b[\s\S]*?</script\s*>", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-        noScripts = System.Text.RegularExpressions.Regex.Replace(noScripts, @"\son\w+\s*=\s*(""[^""]*""|'[^']*')", "", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
-        return noScripts.Contains("xmlns", StringComparison.Ordinal) ? noScripts : noScripts.Replace("<svg", "<svg xmlns=\"http://www.w3.org/2000/svg\"");
-    }
 
     private static void OpenSvg(string markup)
     {
         try
         {
             var path = Path.Combine(Path.GetTempPath(), $"hotline-drawing-{(uint)markup.GetHashCode():x8}.svg");
-            File.WriteAllText(path, SafeSvg(markup));
+            File.WriteAllText(path, markup); // already sanitized (allowlist)
             System.Diagnostics.Process.Start(new System.Diagnostics.ProcessStartInfo(path) { UseShellExecute = true });
         }
         catch (Exception) { /* no viewer for .svg */ }
