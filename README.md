@@ -17,7 +17,7 @@ Then: Settings → Personalization → Text input → Customize Copilot key on k
 
 ## Settings
 
-Settings live in `%USERPROFILE%\.hotline\settings.json` (logs, history and `prompts\` next to it). The file is the
+Settings live in `%USERPROFILE%\.hotline\settings.json`; each AI connection has its own file in `connections\<id>.json` (logs, history and `prompts\` next to them). Add a connection by dropping in a new file, remove one by deleting its file. The file is the
 configuration: every option is written into it, and saving it applies the change immediately. The settings window
 (⚙ in the panel, tray → **Settings…**, or `hotline://settings`) edits the same file. API keys are the exception: they
 are stored in Windows Credential Locker. Useful keys:
@@ -36,15 +36,16 @@ are stored in Windows Credential Locker. Useful keys:
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the popup |
 
-| `chat.defaultBackend` | `agy` | Which connection answers by default (its `id`). The **order of `chat.backends`** is the order in the Provider dropdown |
-| `chat.backends[].model` | (agy default) | e.g. `gemini-3.8-flash-low` (`agy models` lists them; agy puts the effort level in the model id) |
-| `chat.backends[].effort` | (agy default) | `low`, `medium`, `high` — only used with the default model |
-| `chat.backends[].tools` | `chatOnly` | `chatOnly`, or `inherit` = the CLI's own tools and permission rules in `workingDirectory` |
-| `chat.backends[].prompt` / `chat.defaultPrompt` | `null` / `default` | System prompt = `prompts\<name>.md` |
-| `chat.backends[].approveAllTools` | `false` | ⚠ Dangerous: agy runs any command / edits any file without asking (inherit mode only) |
-| `chat.backends[].args` | `null` | Replaces Hotline's launch flags for the mode, e.g. `["--agent", "mine"]` (agy) or `["--tools", "Read"]` (Claude Code). Hotline always adds the stream/print flags it needs; dangerous flags only via `approveAllTools` |
-| `chat.backends[].extraArgs` | `null` | Added on top, e.g. `"--mcp-config C:\mcp\windows.json"` to give a chat-only Claude exactly those MCP servers |
-| `chat.backends[].keepCliSessions` | `false` | Claude Code also saves Hotline chats in its own history (`claude --resume`); agy always does |
+| `chat.defaultBackend` | `agy` | Which connection answers by default (its `id`) |
+| `chat.order` | (all) | Provider dropdown order, as connection ids; connections not listed follow by name |
+| `connections\<id>.json` → `model` | (agy default) | e.g. `gemini-3.8-flash-low` (`agy models` lists them; agy puts the effort level in the model id) |
+| `connections\<id>.json` → `effort` | (agy default) | `low`, `medium`, `high` — only used with the default model |
+| `connections\<id>.json` → `tools` | `chatOnly` | `chatOnly`, or `inherit` = the CLI's own tools and permission rules in `workingDirectory` |
+| `connections\<id>.json` → `prompt` / `chat.defaultPrompt` | `null` / `default` | System prompt = `prompts\<name>.md` |
+| `connections\<id>.json` → `approveAllTools` | `false` | ⚠ Dangerous: agy runs any command / edits any file without asking (inherit mode only) |
+| `connections\<id>.json` → `args` | `null` | Replaces Hotline's launch flags for the mode, e.g. `["--agent", "mine"]` (agy) or `["--tools", "Read"]` (Claude Code). Hotline always adds the stream/print flags it needs; dangerous flags only via `approveAllTools` |
+| `connections\<id>.json` → `extraArgs` | `null` | Added on top, e.g. `"--mcp-config C:\mcp\windows.json"` to give a chat-only Claude exactly those MCP servers |
+| `connections\<id>.json` → `keepCliSessions` | `false` | Claude Code also saves Hotline chats in its own history (`claude --resume`); agy always does |
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height (`window.maxHeightPercent`) once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in %USERPROFILE%\.hotline\history (text only) |

@@ -110,7 +110,14 @@ public sealed class ChatSettings
     public string DefaultBackend { get; set; } = "agy";
     /// <summary>System prompt used by connections that don't pick their own.</summary>
     public string DefaultPrompt { get; set; } = "default";
+    /// <summary>
+    /// The connections, in dropdown order. Stored one file each in ~/.hotline/connections/&lt;id&gt;.json (not in
+    /// settings.json; an old settings.json "backends" list is moved there once).
+    /// </summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public List<BackendProfile> Backends { get; set; } = DefaultBackends();
+    /// <summary>Dropdown order: connection ids. Connections not listed follow, by name.</summary>
+    public List<string> Order { get; set; } = [];
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
     public GrowMode GrowMode { get; set; } = GrowMode.Grow;
     public bool SaveHistory { get; set; } = true;

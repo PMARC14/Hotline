@@ -222,11 +222,15 @@ public partial class App : Application
         };
         try
         {
-            _settingsWatcher = new FileSystemWatcher(dir, Path.GetFileName(store.FilePath)) { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
-            FileSystemEventHandler changed = (_, _) => _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); });
-            _settingsWatcher.Changed += changed;
-            _settingsWatcher.Created += changed;
-            _settingsWatcher.Renamed += (_, _) => _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); });
+            // settings.json and connections\*.json (one file per connection): edits, new and deleted files apply live.
+            _settingsWatcher = new FileSystemWatcher(dir, "*.json") { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, IncludeSubdirectories = true };
+            bool Relevant(string? path) => path is not null && (string.Equals(path, store.FilePath, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(Path.GetDirectoryName(path), store.ConnectionsDirectory, StringComparison.OrdinalIgnoreCase));
+            void Kick(string? path) { if (Relevant(path)) _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); }); }
+            _settingsWatcher.Changed += (_, e) => Kick(e.FullPath);
+            _settingsWatcher.Created += (_, e) => Kick(e.FullPath);
+            _settingsWatcher.Deleted += (_, e) => Kick(e.FullPath);
+            _settingsWatcher.Renamed += (_, e) => { Kick(e.FullPath); Kick(e.OldFullPath); };
             _settingsWatcher.EnableRaisingEvents = true;
         }
         catch (Exception ex) when (ex is IOException or ArgumentException) { _log?.Error("can't watch settings.json", ex); }

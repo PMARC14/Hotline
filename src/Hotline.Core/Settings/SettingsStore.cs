@@ -11,6 +11,26 @@ namespace Hotline.Core.Settings;
 public sealed class SettingsStore(string directory)
 {
     public const string FileName = "settings.json";
+    public const string ConnectionsFolder = "connections";
+
+    public string ConnectionsDirectory => Path.Combine(directory, ConnectionsFolder);
+
+    /// <summary>Connection files that couldn't be read (left untouched; never overwritten or deleted).</summary>
+    public IReadOnlyList<string> BrokenConnectionFiles { get; private set; } = [];
+
+    /// <summary>Ids whose files this store loaded or wrote: only these are ever deleted (when a connection is removed).</summary>
+    private readonly HashSet<string> _ownedIds = new(StringComparer.OrdinalIgnoreCase);
+
+    private static readonly JsonSerializerOptions ConnectionOptions = new()
+    {
+        WriteIndented = true,
+        PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
+        PropertyNameCaseInsensitive = true,
+        ReadCommentHandling = JsonCommentHandling.Skip,
+        AllowTrailingCommas = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull, // each file shows what's set for that connection
+        Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) },
+    };
 
     private static readonly JsonSerializerOptions Options = new()
     {
@@ -33,8 +53,14 @@ public sealed class SettingsStore(string directory)
         try
         {
             if (!File.Exists(FilePath)) return null;
-            var s = JsonSerializer.Deserialize<HotlineSettings>(File.ReadAllText(FilePath), Options);
-            return s is null ? null : Normalize(s);
+            var text = File.ReadAllText(FilePath);
+            var s = JsonSerializer.Deserialize<HotlineSettings>(text, Options);
+            if (s is null) return null;
+            s.Chat ??= new ChatSettings();
+            var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
+            var (files, _) = ReadConnectionFiles();
+            s.Chat.Backends = Ordered(files.Count > 0 ? files : legacy ?? ChatSettings.DefaultBackends(), s.Chat.Order);
+            return Normalize(s);
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { return null; }
     }
@@ -42,17 +68,26 @@ public sealed class SettingsStore(string directory)
     public HotlineSettings Load()
     {
         if (!File.Exists(FilePath))
-            return SaveDefaults();
+        {
+            var fresh = new HotlineSettings();
+            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order);
+            Normalize(fresh);
+            TrySave(fresh);
+            return fresh;
+        }
 
         try
         {
             var text = File.ReadAllText(FilePath);
             var s = JsonSerializer.Deserialize<HotlineSettings>(text, Options)
                     ?? throw new JsonException("settings.json contained null");
+            s.Chat ??= new ChatSettings();
             var loadedVersion = s.SchemaVersion;
+            var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
+            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
             Normalize(s);
-            if (loadedVersion < HotlineSettings.CurrentSchemaVersion)
-                TrySave(s);
+            if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null)
+                TrySave(s); // writes the connection files and drops "backends" from settings.json
             else if (HasMissingOptions(text, s))
             {
                 // The file is the configuration: write newly added options into it so every setting is visible and
@@ -73,7 +108,9 @@ public sealed class SettingsStore(string directory)
                 File.Copy(FilePath, bad, overwrite: false);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-            return Normalize(new HotlineSettings());
+            var fallback = new HotlineSettings();
+            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
+            return Normalize(fallback);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -84,16 +121,111 @@ public sealed class SettingsStore(string directory)
     public void Save(HotlineSettings s)
     {
         Directory.CreateDirectory(directory);
-        var tmp = FilePath + ".tmp";
-        File.WriteAllText(tmp, JsonSerializer.Serialize(s, Options));
-        File.Move(tmp, FilePath, overwrite: true);
+        s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
+        WriteAtomic(FilePath, SerializeMain(s));
+        SaveConnections(s.Chat.Backends);
     }
 
-    private HotlineSettings SaveDefaults()
+    /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
+    private static string SerializeMain(HotlineSettings s)
     {
-        var d = new HotlineSettings();
-        Save(d);
-        return d;
+        var backends = s.Chat.Backends;
+        s.Chat.Backends = null!;
+        try { return JsonSerializer.Serialize(s, Options); }
+        finally { s.Chat.Backends = backends; }
+    }
+
+    private static void WriteAtomic(string path, string content)
+    {
+        var tmp = path + ".tmp";
+        File.WriteAllText(tmp, content);
+        File.Move(tmp, path, overwrite: true);
+    }
+
+    // ---- connection files ----------------------------------------------------------------------
+
+    public string ConnectionPath(string id) => Path.Combine(ConnectionsDirectory, SafeFileName(id) + ".json");
+
+    private static string SafeFileName(string id)
+    {
+        var safe = new string(id.Select(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.' ? c : '-').ToArray()).Trim('.');
+        return safe.Length == 0 ? "connection" : safe;
+    }
+
+    private static bool HasLegacyBackends(string settingsText)
+    {
+        try
+        {
+            using var doc = JsonDocument.Parse(settingsText, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
+            return doc.RootElement.ValueKind == JsonValueKind.Object
+                   && doc.RootElement.EnumerateObject().FirstOrDefault(p => p.NameEquals("chat") || p.Name.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is { ValueKind: JsonValueKind.Object } chat
+                   && chat.EnumerateObject().Any(p => p.Name.Equals("backends", StringComparison.OrdinalIgnoreCase));
+        }
+        catch (JsonException) { return false; }
+    }
+
+    /// <summary>Reads every connections/*.json. The file name is the id when the file has none.</summary>
+    private (List<BackendProfile> Profiles, List<string> Broken) ReadConnectionFiles()
+    {
+        var profiles = new List<BackendProfile>();
+        var broken = new List<string>();
+        if (!Directory.Exists(ConnectionsDirectory)) return (profiles, broken);
+        foreach (var file in Directory.EnumerateFiles(ConnectionsDirectory, "*.json").Order(StringComparer.OrdinalIgnoreCase))
+        {
+            try
+            {
+                var p = JsonSerializer.Deserialize<BackendProfile>(File.ReadAllText(file), ConnectionOptions);
+                if (p is null) { broken.Add(file); continue; }
+                if (string.IsNullOrWhiteSpace(p.Id)) p.Id = Path.GetFileNameWithoutExtension(file);
+                if (profiles.Any(x => x.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))) { broken.Add(file); continue; } // duplicate id
+                profiles.Add(p);
+            }
+            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { broken.Add(file); }
+        }
+        return (profiles, broken);
+    }
+
+    /// <summary>Connections for Load: the files, or (once) the old settings.json list, or the defaults.</summary>
+    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order)
+    {
+        var (files, broken) = ReadConnectionFiles();
+        BrokenConnectionFiles = broken;
+        foreach (var p in files) _ownedIds.Add(p.Id);
+        if (legacy is not null)
+            foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
+                files.Add(p); // moved into files on the next save
+        var list = files.Count > 0 ? files : broken.Count > 0 ? [] : ChatSettings.DefaultBackends();
+        return Ordered(list, order is { Count: > 0 } ? order : legacy?.Select(p => p.Id).ToList() ?? []);
+    }
+
+    private static List<BackendProfile> Ordered(List<BackendProfile> profiles, List<string>? order)
+    {
+        var rank = (order ?? []).Select((id, i) => (id, i)).GroupBy(x => x.id, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First().i, StringComparer.OrdinalIgnoreCase);
+        return profiles.OrderBy(p => rank.TryGetValue(p.Id, out var r) ? r : int.MaxValue)
+            .ThenBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    /// <summary>Writes changed connection files and deletes the files of removed connections (only ones it owns).</summary>
+    private void SaveConnections(List<BackendProfile> profiles)
+    {
+        Directory.CreateDirectory(ConnectionsDirectory);
+        var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var p in profiles)
+        {
+            var path = ConnectionPath(p.Id);
+            current.Add(p.Id);
+            if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)))
+                continue; // the user's unreadable file stays exactly as it is
+            var json = JsonSerializer.Serialize(p, ConnectionOptions);
+            if (!File.Exists(path) || File.ReadAllText(path) != json) WriteAtomic(path, json);
+            _ownedIds.Add(p.Id);
+        }
+        foreach (var id in _ownedIds.Where(id => !current.Contains(id)).ToList())
+        {
+            try { File.Delete(ConnectionPath(id)); } catch (IOException) { }
+            _ownedIds.Remove(id);
+        }
     }
 
     /// <summary>True when the file lacks an option the current schema has (compared by property names, recursively).</summary>
@@ -101,7 +233,7 @@ public sealed class SettingsStore(string directory)
     {
         var docOptions = new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
         using var file = JsonDocument.Parse(fileText, docOptions);
-        using var full = JsonDocument.Parse(JsonSerializer.Serialize(s, Options));
+        using var full = JsonDocument.Parse(SerializeMain(s));
         return Missing(full.RootElement, file.RootElement);
 
         static bool Missing(JsonElement expected, JsonElement actual)

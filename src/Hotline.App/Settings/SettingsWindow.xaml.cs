@@ -196,6 +196,9 @@ public sealed partial class SettingsWindow : Window
             Orientation = Orientation.Horizontal, Spacing = 8,
             Children = { Link("Open folder", () => CliRunner.OpenFolder(folder)), Link("Edit settings.json", () => CliRunner.OpenInEditor(_settingsFile)) },
         }));
+        var connections = Path.Combine(folder, Hotline.Core.Settings.SettingsStore.ConnectionsFolder);
+        PageHost.Children.Add(Card("AI connections", connections + " — one file per connection; settings.json \"chat.order\" sets the dropdown order",
+            Link("Open connections folder", () => CliRunner.OpenFolder(connections))));
         PageHost.Children.Add(Card("Logs", _logsDir, Link("Open logs folder", () => CliRunner.OpenFolder(_logsDir))));
     }
 
