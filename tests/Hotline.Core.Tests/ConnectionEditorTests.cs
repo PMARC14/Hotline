@@ -32,10 +32,12 @@ public class ConnectionEditorTests
         var chat = Chat();
         chat.Backends[0].Model = "gemini-3.8-flash-low";
         chat.Backends[0].Tools = ToolMode.Inherit;
+        chat.Backends[0].ApproveAllTools = true;
         var copy = ConnectionEditor.Duplicate(chat, "agy");
         Assert.Equal(1, chat.Backends.IndexOf(copy));
         Assert.Equal(("Gemini (Antigravity) (copy)", "gemini-3.8-flash-low", ToolMode.Inherit), (copy.Name, copy.Model, copy.Tools));
         Assert.NotEqual("agy", copy.Id);
+        Assert.False(copy.ApproveAllTools);
     }
 
     [Fact]

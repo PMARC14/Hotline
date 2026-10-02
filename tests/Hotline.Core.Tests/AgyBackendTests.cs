@@ -208,12 +208,35 @@ public sealed class AgyBackendTests : IDisposable
     }
 
     [Fact]
-    public async Task Inherit_missing_working_dir_falls_back_to_home()
+    public async Task Inherit_missing_working_dir_is_an_error_not_the_home_folder()
+    {
+        _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
+        var b = New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = @"Z:\does\not\exist" });
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.NotConfigured, ex.Kind);
+        Assert.Empty(_factory.Started);
+    }
+
+    [Fact]
+    public async Task Inherit_without_folder_uses_home()
     {
         var home = Directory.CreateDirectory(Path.Combine(_dir, "home")).FullName;
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
-        var b = New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = @"Z:\does\not\exist" }, home: home);
-        await Collect(b.StreamAsync([U("1", "hi")], default));
+        await Collect(New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit }, home: home).StreamAsync([U("1", "hi")], default));
         Assert.Equal(home, _factory.Started[0].Cwd);
+    }
+
+    [Fact]
+    public async Task Edited_system_prompt_restarts_the_session()
+    {
+        var prompt = "first";
+        _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
+        var b = new AgyBackend(new BackendProfile { Id = "agy", Name = "G", Agent = "hotline" }, () => @"C:\agy.exe",
+            new AgyWorkspace(Path.Combine(_dir, "ws"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")), _ => prompt, _dir);
+        await Collect(b.StreamAsync([U("1", "hi")], default));
+        prompt = "second";
+        await Collect(b.StreamAsync([U("1", "hi"), new ChatMessage("2", ChatRole.Assistant, "ok", [], Now), U("3", "again")], default));
+        Assert.Equal(2, _factory.Started.Count);
+        Assert.Contains("second", File.ReadAllText(Path.Combine(_dir, "ws", ".agents", "agents", "hotline.md")));
     }
 }

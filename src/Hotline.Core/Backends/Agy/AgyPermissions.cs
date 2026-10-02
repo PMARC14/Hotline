@@ -17,11 +17,11 @@ public static class AgyPermissions
     public static IReadOnlyList<string> ReadOnlyCommandRules { get; } =
     [
         "command(Get-ChildItem)", "command(Get-Content)", "command(Get-Item)", "command(Get-Location)", "command(Get-Process)",
-        "command(Get-Date)", "command(Get-ComputerInfo)", "command(Select-String)", "command(Select-Object)", "command(Measure-Object)",
-        "command(Sort-Object)", "command(Where-Object)", "command(Format-Table)", "command(Format-List)", "command(Test-Path)",
-        "command(Resolve-Path)", "command(Split-Path)", "command(Join-Path)", "command(dir)", "command(ls)", "command(cat)",
-        "command(type)", "command(pwd)", "command(whoami)", "command(hostname)", "command(where)", "command(findstr)",
-        "command(tree)", "command(git status)", "command(git log)", "command(git diff)", "command(git show)", "command(git branch)",
+        "command(Get-Date)", "command(Get-ComputerInfo)", "command(Select-String)", "command(Test-Path)",
+        "command(Resolve-Path)", "command(dir)", "command(ls)", "command(cat)", "command(type)", "command(pwd)",
+        "command(whoami)", "command(hostname)", "command(where)", "command(findstr)", "command(tree)", "command(git status)",
+        // Not included on purpose: Select/Where/Sort-Object and Format-* run script blocks; git log/diff/show/branch
+        // have options that write files or delete branches.
     ];
 
     /// <summary>Destructive commands that stay denied even if something broader is allowed.</summary>
@@ -29,16 +29,19 @@ public static class AgyPermissions
     [
         "command(Remove-Item)", "command(rm)", "command(del)", "command(rmdir)", "command(format)", "command(Format-Volume)",
         "command(Stop-Computer)", "command(Restart-Computer)", "command(git push)", "command(git reset --hard)",
+        "command(Set-Content)", "command(Out-File)", "command(Move-Item)", "command(Invoke-Expression)", "command(iex)",
     ];
 
     /// <summary>Returns the settings JSON with the rules merged in (no duplicates; other content unchanged).</summary>
     public static string AddRules(string? json, IEnumerable<string> allow, IEnumerable<string> deny)
     {
-        var root = (string.IsNullOrWhiteSpace(json) ? null : JsonNode.Parse(json, documentOptions: new JsonDocumentOptions
+        var parsed = string.IsNullOrWhiteSpace(json) ? null : JsonNode.Parse(json, documentOptions: new JsonDocumentOptions
         {
             CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true,
-        })) as JsonObject ?? new JsonObject();
-        if (root["permissions"] is not JsonObject permissions) root["permissions"] = permissions = new JsonObject();
+        });
+        var root = (parsed ?? new JsonObject()) as JsonObject ?? throw new InvalidDataException("agy's settings.json isn't a JSON object; not changing it.");
+        if (root["permissions"] is null) root["permissions"] = new JsonObject();
+        if (root["permissions"] is not JsonObject permissions) throw new InvalidDataException("\"permissions\" in agy's settings.json isn't an object; not changing it.");
         Merge(permissions, "allow", allow);
         Merge(permissions, "deny", deny);
         return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
@@ -50,15 +53,16 @@ public static class AgyPermissions
         try
         {
             return JsonNode.Parse(json ?? "{}", documentOptions: new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true })
-                ?["permissions"]?[list] is JsonArray a ? a.Select(n => n?.GetValue<string>()).OfType<string>().ToList() : [];
+                ?["permissions"]?[list] is JsonArray a ? a.Select(n => n is JsonValue v && v.TryGetValue<string>(out var t) ? t : null).OfType<string>().ToList() : [];
         }
-        catch (JsonException) { return []; }
+        catch (Exception ex) when (ex is JsonException or InvalidOperationException) { return []; }
     }
 
     private static void Merge(JsonObject permissions, string name, IEnumerable<string> rules)
     {
-        if (permissions[name] is not JsonArray list) permissions[name] = list = new JsonArray();
-        var existing = list.Select(n => n?.GetValue<string>()).OfType<string>().ToHashSet(StringComparer.Ordinal);
+        if (permissions[name] is null) permissions[name] = new JsonArray();
+        if (permissions[name] is not JsonArray list) throw new InvalidDataException($"\"permissions.{name}\" in agy's settings.json isn't a list; not changing it.");
+        var existing = list.Select(n => n is JsonValue v && v.TryGetValue<string>(out var t) ? t : null).OfType<string>().ToHashSet(StringComparer.Ordinal);
         foreach (var rule in rules)
             if (existing.Add(rule)) list.Add(rule);
     }

@@ -20,9 +20,11 @@ internal static class CliRunner
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(timeout);
         var stdout = process.StandardOutput.ReadToEndAsync(cts.Token);
-        _ = process.StandardError.ReadToEndAsync(cts.Token);
+        var stderr = process.StandardError.ReadToEndAsync(cts.Token);
         try { await process.WaitForExitAsync(cts.Token); }
-        catch (OperationCanceledException) { try { process.Kill(entireProcessTree: true); } catch (InvalidOperationException) { } throw; }
+        catch (OperationCanceledException) { try { process.Kill(entireProcessTree: true); } catch (Exception) { /* already gone */ } throw; }
+        if (process.ExitCode != 0)
+            throw new Hotline.Core.Backends.ModelListException($"{Path.GetFileName(exe)} failed (exit {process.ExitCode}): {(await stderr).Trim()}");
         return await stdout;
     }
 

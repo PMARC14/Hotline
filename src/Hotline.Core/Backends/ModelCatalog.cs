@@ -97,6 +97,8 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
         if (string.IsNullOrEmpty(key) && !info.ApiKeyOptional)
             throw new ModelListException($"Add an API key for {p.Name} first.");
         var endpoint = (string.IsNullOrWhiteSpace(p.Endpoint) ? info.DefaultEndpoint : p.Endpoint)!.TrimEnd('/');
+        if (!string.IsNullOrEmpty(key) && Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) && uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
+            throw new ModelListException($"Not sending the API key for {p.Name} over plain http to {uri.Host}; use an https:// endpoint.");
         using var request = new HttpRequestMessage(HttpMethod.Get, $"{endpoint}/{path}");
         if (!string.IsNullOrEmpty(key)) addKey(request, key);
         try

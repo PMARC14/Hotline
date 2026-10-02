@@ -30,7 +30,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     }
 
     /// <summary>hotline://selftest renders a scripted conversation in the hidden panel (no typing).</summary>
-    public event Action? SelfTestRequested;
+    public event Action<Uri?>? SelfTestRequested;
     public event Action? OpenSettingsRequested;
 
     public void OnActivation(ActivationRequest request)
@@ -39,7 +39,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         log.Debug($"activation uri={request.Uri}");
         if (string.Equals(request.Uri?.Host, "selftest", StringComparison.OrdinalIgnoreCase))
         {
-            SelfTestRequested?.Invoke();
+            SelfTestRequested?.Invoke(request.Uri);
             return;
         }
         var plan = ActivationPlanner.Plan(request);

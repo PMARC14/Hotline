@@ -11,6 +11,8 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     public HotlineSettings Current { get; } = settings;
 
     public event Action? Changed;
+    /// <summary>After a reload from disk: ids of connections whose settings changed or that were removed.</summary>
+    public event Action<IReadOnlyList<string>>? ConnectionsChanged;
 
     /// <summary>
     /// Takes settings re-read from disk (the user edited settings.json) into the live objects other components hold.
@@ -20,13 +22,38 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     {
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
         if (System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == System.Text.Json.JsonSerializer.Serialize(Current, options)) return false;
+        var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options));
         CopyInto(fromDisk.Activation, Current.Activation);
         CopyInto(fromDisk.Diagnostics, Current.Diagnostics);
         CopyInto(fromDisk.Window, Current.Window);
-        CopyInto(fromDisk.Chat, Current.Chat);
+        MergeChat(fromDisk.Chat, Current.Chat);
         Current.SchemaVersion = fromDisk.SchemaVersion;
+        var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id == kv.Key) is not { } now
+                                         || System.Text.Json.JsonSerializer.Serialize(now, options) != kv.Value)
+            .Select(kv => kv.Key).ToList();
         Changed?.Invoke();
+        if (changed.Count > 0) ConnectionsChanged?.Invoke(changed);
         return true;
+    }
+
+    /// <summary>
+    /// Chat settings: connections are matched by id and updated in place, so backends, the bottom bar and an open
+    /// settings window keep pointing at the live objects. New ones are added, missing ones removed, disk order kept.
+    /// </summary>
+    private static void MergeChat(ChatSettings from, ChatSettings to)
+    {
+        var existing = to.Backends.ToDictionary(b => b.Id);
+        var merged = new List<BackendProfile>();
+        foreach (var profile in from.Backends)
+        {
+            if (existing.TryGetValue(profile.Id, out var live)) { CopyInto(profile, live); merged.Add(live); }
+            else merged.Add(profile);
+        }
+        var backends = to.Backends;
+        CopyInto(from, to);
+        to.Backends = backends; // keep the list instance
+        backends.Clear();
+        backends.AddRange(merged);
     }
 
     /// <summary>Copies every property, keeping the target instance (and the same list instance for lists).</summary>
@@ -48,7 +75,17 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     {
         change(Current);
         SettingsStore.Normalize(Current);
-        try { store.Save(Current); }
+        try
+        {
+            // The file on disk may be a half-finished hand edit (not valid JSON): keep a copy before replacing it.
+            if (File.Exists(store.FilePath) && store.TryRead() is null)
+            {
+                var backup = $"{store.FilePath}.{DateTime.Now:yyyyMMdd-HHmmss}.bak";
+                File.Copy(store.FilePath, backup, overwrite: true);
+                log.Info($"settings.json wasn't valid; kept it as {backup} before saving");
+            }
+            store.Save(Current);
+        }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("saving settings failed", ex); }
         Changed?.Invoke();
     }

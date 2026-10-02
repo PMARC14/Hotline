@@ -116,7 +116,14 @@
                     <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
                     <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
                     <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
+                    <!-- Picker text shrinks to fit the (fixed-width) box instead of being cut off. -->
+                    <DataTemplate x:Key="FitText">
+                        <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding}" />
+                        </Viewbox>
+                    </DataTemplate>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                        <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
                         <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
                         <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
                         <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
@@ -124,7 +131,7 @@
                     </Style>
                 </StackPanel.Resources>
                 <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="Reasoning effort" />
-                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" IsEditable="True"
+                <ComboBox x:Name="ModelBox" x:FieldModifier="internal"
                           ToolTipService.ToolTip="Model (type a name or pick one)" />
                 <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="Who answers" />
             </StackPanel>

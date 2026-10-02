@@ -129,6 +129,23 @@ public sealed partial class PopupWindow : Window
         Shown?.Invoke();
     }
 
+    private bool _offscreen;
+
+    /// <summary>Self-test only: shows the panel far outside every monitor, without activation or focus, so the
+    /// conversation is really drawn (composition) without the user seeing anything.</summary>
+    public void ShowOffscreen()
+    {
+        _offscreen = true;
+        AppWindow.MoveAndResize(new RectInt32(-32000, -32000, 700, 700));
+        AppWindow.Show(activateWindow: false);
+    }
+
+    public void EndOffscreen()
+    {
+        AppWindow.Hide();
+        _offscreen = false;
+    }
+
     public void HidePopup()
     {
         if (!AppWindow.IsVisible) return;
@@ -202,6 +219,7 @@ public sealed partial class PopupWindow : Window
 
     private void ApplyHeight()
     {
+        if (_offscreen) return; // never move the off-screen self-test window onto a monitor
         if (_bar.Width == 0) return;
         var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.

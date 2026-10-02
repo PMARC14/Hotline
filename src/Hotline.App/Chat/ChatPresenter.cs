@@ -51,10 +51,13 @@ internal sealed partial class ChatPresenter(
         SizeComposer();
         _caret ??= new CustomCaret(popup.Input, popup.CaretLayer);
         _caret.Apply(settings.Window.Caret, _style.Accent);
-        if (_transcript is not null) RebuildTranscript();
+        var look = $"{_tokens.FontSizePx}|{_tokens.Font}|{dark}|{settings.Window.Backdrop}";
+        if (_transcript is not null && look != _lastLook) RebuildTranscript();
+        _lastLook = look;
     }
 
     private CustomCaret? _caret;
+    private string? _lastLook;
 
     /// <summary>The message bar is sized from the text size (incl. Windows' text scaling), not fixed pixels.</summary>
     private void SizeComposer()

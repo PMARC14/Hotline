@@ -15,6 +15,7 @@ internal sealed class ProviderBar(
 {
     private const string DefaultLabel = "Default";
     private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = [];
+    private readonly Dictionary<string, string> _providerIds = [];
 
     private IReadOnlyList<ModelFamily> Families(BackendProfile? profile) =>
         profile is not null && _loaded.TryGetValue(profile.Id, out var list) ? ModelFamilies.Group(list) : [];
@@ -32,27 +33,27 @@ internal sealed class ProviderBar(
     }
 
     /// <summary>
-    /// Effort picker: the levels the chosen model really has (agy lists each level as its own model id). With the
-    /// default model, the connection's generic levels (passed as --effort).
+    /// Effort picker: the same low / medium / high for every model. agy encodes the level in the model id and not
+    /// every model has every level, so a choice maps to the closest level that model has (ModelFamilies.Resolve).
+    /// Models without levels (e.g. Claude through agy) leave the picker disabled.
     /// </summary>
     private void FillEffort(BackendProfile? profile)
     {
         popup.EffortBox.Items.Clear();
         if (profile is null) return;
+        var levels = ConnectionTypes.Of(profile.Type).EffortLevels;
+        if (levels.Count == 0) return;
         var located = ModelFamilies.Locate(Families(profile), profile.Model);
-        if (located is { } hit)
+        if (located is { } hit && !hit.Family.HasLevels)
         {
-            foreach (var level in hit.Family.Levels) popup.EffortBox.Items.Add(level);
-            popup.EffortBox.SelectedItem = hit.Level.Length > 0 ? hit.Level : null;
+            popup.EffortBox.Items.Add("n/a");
+            popup.EffortBox.SelectedIndex = 0;
+            return;
         }
-        else if (string.IsNullOrWhiteSpace(profile.Model))
-        {
-            var levels = ConnectionTypes.Of(profile.Type).EffortLevels;
-            if (levels.Count == 0) return;
-            popup.EffortBox.Items.Add(DefaultLabel);
-            foreach (var level in levels) popup.EffortBox.Items.Add(level);
-            popup.EffortBox.SelectedItem = profile.Effort is { } e && levels.Contains(e) ? e : DefaultLabel;
-        }
+        popup.EffortBox.Items.Add(DefaultLabel);
+        foreach (var level in levels) popup.EffortBox.Items.Add(level);
+        var current = located is { } h ? h.Level : profile.Effort;
+        popup.EffortBox.SelectedItem = current is { Length: > 0 } c && levels.Contains(c) ? c : DefaultLabel;
     }
 
     private bool _updating;
@@ -64,7 +65,6 @@ internal sealed class ProviderBar(
     {
         popup.ProviderBox.SelectionChanged += (_, _) => { if (!_updating) OnProviderChanged(); };
         popup.ModelBox.SelectionChanged += (_, _) => { if (!_updating && popup.ModelBox.SelectedItem is string m) _ = SetModelAsync(m); };
-        popup.ModelBox.TextSubmitted += (sender, e) => { if (!_updating) _ = SetModelAsync(e.Text); };
         popup.ModelBox.DropDownOpened += (_, _) => _ = LoadModelsAsync();
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(e); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
@@ -86,13 +86,17 @@ internal sealed class ProviderBar(
         _updating = true;
         try
         {
+            // Plain string items (so the shrink-to-fit item template applies); label → connection id.
             popup.ProviderBox.Items.Clear();
+            _providerIds.Clear();
             foreach (var p in settings.Current.Chat.Backends)
             {
-                var available = BackendFactory.IsAvailable(p.Type);
-                popup.ProviderBox.Items.Add(new ComboBoxItem { Content = available ? p.Name : $"{p.Name} (coming soon)", Tag = p.Id, IsEnabled = available });
+                var label = BackendFactory.IsAvailable(p.Type) ? p.Name : $"{p.Name} (soon)";
+                while (_providerIds.ContainsKey(label)) label += " ";
+                _providerIds[label] = p.Id;
+                popup.ProviderBox.Items.Add(label);
             }
-            popup.ProviderBox.SelectedItem = popup.ProviderBox.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == chat.BackendId);
+            popup.ProviderBox.SelectedItem = _providerIds.FirstOrDefault(kv => kv.Value == chat.BackendId).Key;
 
             var current = Current;
             FillModels(current);
@@ -132,7 +136,13 @@ internal sealed class ProviderBar(
 
     private void OnProviderChanged()
     {
-        if (popup.ProviderBox.SelectedItem is not ComboBoxItem { Tag: string id } || id == chat.BackendId) return;
+        if (popup.ProviderBox.SelectedItem is not string label || !_providerIds.TryGetValue(label, out var id) || id == chat.BackendId) return;
+        if (settings.Current.Chat.Backends.FirstOrDefault(b => b.Id == id) is { } target && !BackendFactory.IsAvailable(target.Type))
+        {
+            notify($"{target.Name} can be set up in Settings, but chatting with it arrives in a later update.", InfoBarSeverity.Informational);
+            Refresh(); // back to the current connection
+            return;
+        }
         chat.BackendId = id;
         settings.Update(s => s.Chat.DefaultBackend = id); // Changed → Refresh
         _ = LoadModelsAsync(quiet: true);
@@ -164,9 +174,10 @@ internal sealed class ProviderBar(
     {
         var profile = Current;
         if (profile is null) return;
+        if (level == "n/a") return;
         if (ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
         {
-            var model = ModelFamilies.Resolve(hit.Family, level);
+            var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
             if (model == profile.Model) return;
             settings.Update(_ => profile.Model = model);
         }
@@ -192,6 +203,7 @@ internal sealed class ProviderBar(
             _updating = true;
             FillModels(profile);
             FillEffort(profile);
+            SetEnabled(_enabled); // levels just arrived: enable the effort picker
         }
         catch (ModelListException ex) { log.Info($"model list: {ex.Message}"); if (!quiet) notify(ex.Message, InfoBarSeverity.Warning); }
         catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }

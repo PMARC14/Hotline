@@ -18,6 +18,7 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
     private ILineProcess? _process;
     private int _knownCount;
     private string? _knownFirstId;
+    private string? _startedPrompt;
 
     public string Id => profile.Id;
     public string DisplayName => profile.Name;
@@ -33,10 +34,13 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         var user = conversation[^1];
         var prior = conversation.Take(conversation.Count - 1).ToList();
         var fresh = false;
-        if (_process is null || _process.HasExited || prior.Count != _knownCount || (prior.Count > 0 && prior[0].Id != _knownFirstId))
+        var currentPrompt = systemPrompt(profile);
+        if (_process is null || _process.HasExited || prior.Count != _knownCount || (prior.Count > 0 && prior[0].Id != _knownFirstId)
+            || currentPrompt != _startedPrompt) // prompt file edited / switched: restart so it applies now
         {
             await StopAsync();
-            workspace.Ensure(systemPrompt(profile));
+            workspace.Ensure(currentPrompt);
+            _startedPrompt = currentPrompt;
             var inherit = profile.Tools == ToolMode.Inherit;
             var cwd = inherit ? WorkingDirectory() : workspace.Root;
             var args = AgyProtocol.BuildArgs(profile, inherit ? workspace.Root : null);
@@ -55,7 +59,7 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         var inheritMode = profile.Tools == ToolMode.Inherit;
         if (inheritMode) images = images.Select(p => Path.Combine(workspace.Root, p.Replace('/', Path.DirectorySeparatorChar))).ToList();
         var prompt = AgyProtocol.ComposePrompt(user.Text, images, texts, fresh ? prior : Array.Empty<ChatMessage>(),
-            fresh && inheritMode ? systemPrompt(profile) : null);
+            fresh && inheritMode ? currentPrompt : null);
 
         var process = _process;
         // agy has no "cancel turn" message, so cancelling kills the process (the next turn replays context).
@@ -101,6 +105,12 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
     }
 
 
-    private string WorkingDirectory() =>
-        !string.IsNullOrWhiteSpace(profile.WorkingDirectory) && Directory.Exists(profile.WorkingDirectory) ? profile.WorkingDirectory : homeDirectory;
+    /// <summary>Inherit mode's folder: the configured one (env vars expanded) or, when none is set, the user folder.</summary>
+    private string WorkingDirectory()
+    {
+        if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
+        var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
+        return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
+            $"The working folder for {profile.Name} doesn't exist: {dir}. Pick another one in Settings › AI connections.");
+    }
 }

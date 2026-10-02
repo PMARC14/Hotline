@@ -11,8 +11,8 @@ namespace Hotline.App.Chat;
 /// <summary>
 /// The conversation is ONE selectable RichTextBlock, so a drag selects across messages, paragraphs, lists and code.
 /// Every message owns a contiguous run of paragraphs; only the last message (the streaming answer) ever changes,
-/// so updates remove and re-append paragraphs at the end. Code blocks are selectable text shaded with a
-/// TextHighlighter; their copy button sits in a small header row.
+/// so updates remove and re-append paragraphs at the end. Code blocks are selectable monospace text under a shaded
+/// header row (language + copy). No TextHighlighters: drawing them crashes WinUI (access violation in Microsoft.UI.Xaml.dll; repro: hotline://selftest).
 /// </summary>
 internal sealed partial class ChatPresenter
 {
@@ -28,7 +28,7 @@ internal sealed partial class ChatPresenter
         public required string BackendName { get; init; }
         public IReadOnlyList<MdBlock> Blocks { get; set; } = [];
         /// <summary>Per rendered markdown block: how many paragraphs it added and its shading highlighters.</summary>
-        public List<(int Paragraphs, List<TextHighlighter> Shades)> Rendered { get; } = [];
+        public List<int> Rendered { get; } = [];
         public Paragraph? CaretParagraph { get; set; }
         public string Text { get; set; } = "";
         public string? Error { get; set; }
@@ -58,7 +58,6 @@ internal sealed partial class ChatPresenter
         _entries.Clear();
         _assistants.Clear();
         _transcript.Blocks.Clear();
-        _transcript.TextHighlighters.Clear();
     }
 
     /// <summary>Re-renders everything (font/theme changes).</summary>
@@ -67,7 +66,6 @@ internal sealed partial class ChatPresenter
         _transcript.FontSize = _tokens.FontSizePx;
         _transcript.FontFamily = _style.Font;
         _transcript.Blocks.Clear();
-        _transcript.TextHighlighters.Clear();
         foreach (var entry in _entries)
         {
             if (entry is UserEntry u) AppendUser(u.Message);
@@ -78,7 +76,7 @@ internal sealed partial class ChatPresenter
                 a.CaretParagraph = null;
                 AppendAssistantHeader(a);
                 RenderAssistant(a);
-                if (!a.Streaming) AppendAssistantFooter(a);
+                if (!a.Streaming) AppendAssistantFooter(a, withError: entry == _entries[^1]);
             }
         }
     }
@@ -95,12 +93,14 @@ internal sealed partial class ChatPresenter
     private void AppendUser(ChatMessage message)
     {
         _transcript.Blocks.Add(Spacer());
+        var label = new Paragraph { TextAlignment = TextAlignment.Right, FontSize = 11, Foreground = _style.Accent, Margin = new Thickness(80, 0, 0, 2) };
+        label.Inlines.Add(new Run { Text = "You" });
+        _transcript.Blocks.Add(label);
         if (message.Text.Length > 0)
         {
             var p = new Paragraph { TextAlignment = TextAlignment.Right, Margin = new Thickness(80, 0, 0, 4) };
             AddLines(p, message.Text);
             _transcript.Blocks.Add(p);
-            Shade(p, Brush(_tokens.UserBubble));
         }
         if (message.Attachments.Count > 0)
         {
@@ -138,7 +138,7 @@ internal sealed partial class ChatPresenter
             RenderDirty();
             view.Streaming = false;
             RemoveCaret(view);
-            AppendAssistantFooter(view);
+            AppendAssistantFooter(view, withError: true);
         }
         SetBusy(false);
     }
@@ -151,7 +151,7 @@ internal sealed partial class ChatPresenter
         ScrollToEnd(force: false);
     }
 
-    private void AppendAssistantFooter(AssistantView view)
+    private void AppendAssistantFooter(AssistantView view, bool withError)
     {
         if (view.Text.Length > 0)
         {
@@ -159,14 +159,14 @@ internal sealed partial class ChatPresenter
             p.Inlines.Add(new InlineUIContainer { Child = CopyButton(() => view.Text, "Copy response") });
             _transcript.Blocks.Add(p);
         }
-        if (view.Error is not null) AppendError(view);
+        if (withError && view.Error is not null) AppendError(view);
     }
 
     private void AppendError(AssistantView view)
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = view.Error, Width = ContentWidth };
         var retry = new Button { Content = "Retry" };
-        retry.Click += (_, _) => { bar.IsOpen = false; Run("retry", chat.RetryAsync); };
+        retry.Click += (_, _) => { bar.IsOpen = false; view.Error = null; Run("retry", chat.RetryAsync); };
         bar.ActionButton = retry;
         var p = new Paragraph();
         p.Inlines.Add(new InlineUIContainer { Child = bar });
@@ -200,16 +200,14 @@ internal sealed partial class ChatPresenter
         RemoveCaret(view);
         while (view.Rendered.Count > from)
         {
-            var (paragraphs, shades) = view.Rendered[^1];
+            var paragraphs = view.Rendered[^1];
             view.Rendered.RemoveAt(view.Rendered.Count - 1);
-            foreach (var h in shades) _transcript.TextHighlighters.Remove(h);
             for (var k = 0; k < paragraphs; k++) _transcript.Blocks.RemoveAt(_transcript.Blocks.Count - 1);
         }
         for (var b = from; b < blocks.Count; b++)
         {
-            var shaded = new List<Paragraph>();
-            var count = MarkdownRenderer.AppendBlock(_transcript, blocks[b], _style, ContentWidth, shaded);
-            view.Rendered.Add((count, shaded.Select(p => Shade(p, _style.CodeBackground)).ToList()));
+            var count = MarkdownRenderer.AppendBlock(_transcript, blocks[b], _style, ContentWidth);
+            view.Rendered.Add(count);
         }
         view.Blocks = blocks;
         if (view.Streaming)
@@ -241,43 +239,59 @@ internal sealed partial class ChatPresenter
         }
     }
 
-    /// <summary>Shades a paragraph's text range (code blocks, your messages). Must be called after it is in the transcript.</summary>
-    private TextHighlighter Shade(Paragraph p, Brush background)
-    {
-        var start = p.ContentStart.Offset;
-        var highlighter = new TextHighlighter { Background = background };
-        highlighter.Ranges.Add(new TextRange { StartIndex = start, Length = Math.Max(0, p.ContentEnd.Offset - start) });
-        _transcript.TextHighlighters.Add(highlighter);
-        return highlighter;
-    }
 
     /// <summary>
     /// Debug self-test: streams a scripted answer (lists, code, table, quote) through the real transcript code while the
     /// panel stays hidden, logs what was built, then clears it. Exercises rendering without typing into the panel.
     /// </summary>
-    public void SelfTest()
+
+    /// <summary>
+    /// Self-test (hotline://selftest): streams a scripted answer (lists, code, table, quote, error) through the real
+    /// transcript code while the panel is shown OFF-SCREEN (really drawn, never visible, no focus), logs each step,
+    /// then clears and hides it.
+    /// </summary>
+    public async void SelfTest(Uri? uri)
     {
         const string answer = "# Heading\n\nSome **bold** text with `code` and <kbd>Ctrl</kbd>.\n\n- one\n- two\n  1. nested\n\n" +
             "```csharp\nvar x = 1;\nConsole.WriteLine(x);\n```\n\n| a | b |\n|---|---|\n| 1 | 22 |\n\n> quoted\n\n---\n\nEnd.";
+        if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
         try
         {
-            OnChatEvent(new ConversationReset());
-            OnChatEvent(new UserMessageAdded(new ChatMessage("st-u", ChatRole.User, "self test\nsecond line", [], DateTimeOffset.Now)));
-            OnChatEvent(new AssistantStarted("st-a", "Self test"));
-            for (var i = 0; i < answer.Length; i += 17)
+            popup.ShowOffscreen();
+            async Task Step(string name)
             {
-                OnChatEvent(new AssistantDelta("st-a", answer.Substring(i, Math.Min(17, answer.Length - i)), false));
+                log.Info($"selftest step: {name}");
+                await Task.Delay(120); // let the frame be laid out and drawn
+            }
+            OnChatEvent(new ConversationReset());
+            await Step("reset");
+            OnChatEvent(new UserMessageAdded(new ChatMessage("st-u", ChatRole.User, "self test\nsecond line", [], DateTimeOffset.Now)));
+            await Step("user message");
+            OnChatEvent(new AssistantStarted("st-a", "Self test"));
+            await Step("answer started");
+            for (var i = 0; i < answer.Length; i += 23)
+            {
+                OnChatEvent(new AssistantDelta("st-a", answer.Substring(i, Math.Min(23, answer.Length - i)), false));
                 RenderDirty();
+                await Step($"delta {i}");
             }
             OnChatEvent(new AssistantCompleted("st-a"));
+            await Step("completed");
             OnChatEvent(new AssistantStarted("st-b", "Self test"));
             OnChatEvent(new AssistantFailed("st-b", BackendErrorKind.Failed, "simulated failure"));
-            log.Info($"selftest ok: {_transcript.Blocks.Count} paragraphs, {_transcript.TextHighlighters.Count} shaded ranges, " +
+            await Step("failed answer");
+            log.Info($"selftest ok: {_transcript.Blocks.Count} paragraphs, " +
                      $"{_transcript.Blocks.OfType<Paragraph>().SelectMany(p => p.Inlines).OfType<InlineUIContainer>().Count()} embedded controls");
+            _lastLook = null;
             ApplyAppearance(); // full rebuild path
-            log.Info($"selftest rebuild ok: {_transcript.Blocks.Count} paragraphs, {_transcript.TextHighlighters.Count} shaded ranges");
+            await Step("rebuild");
+            log.Info($"selftest rebuild ok: {_transcript.Blocks.Count} paragraphs");
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }
-        finally { OnChatEvent(new ConversationReset()); }
+        finally
+        {
+            OnChatEvent(new ConversationReset());
+            popup.EndOffscreen();
+        }
     }
 }

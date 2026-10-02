@@ -23,8 +23,12 @@ internal sealed class PasswordVaultSecretStore(FileLog log) : ISecretStore
 
     public void Set(string key, string? value)
     {
-        try { _vault.Remove(_vault.Retrieve(Resource, key)); } catch (Exception) { /* nothing stored */ }
-        if (string.IsNullOrEmpty(value)) return;
+        if (string.IsNullOrEmpty(value))
+        {
+            try { _vault.Remove(_vault.Retrieve(Resource, key)); } catch (Exception) { /* nothing stored */ }
+            return;
+        }
+        // Add replaces an existing credential with the same resource + name, so a failure never loses the old key.
         try { _vault.Add(new PasswordCredential(Resource, key, value)); }
         catch (Exception ex) { log.Error("saving API key failed", ex); throw; }
     }

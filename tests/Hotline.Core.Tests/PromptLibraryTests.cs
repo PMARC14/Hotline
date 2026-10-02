@@ -68,5 +68,6 @@ public sealed class PromptLibraryTests : IDisposable
     [InlineData("../x", false)]
     [InlineData("a:b", false)]
     [InlineData("", false)]
+    [InlineData("name\n", false)]
     public void Name_validation(string name, bool ok) => Assert.Equal(ok, PromptLibrary.IsValidName(name));
 }

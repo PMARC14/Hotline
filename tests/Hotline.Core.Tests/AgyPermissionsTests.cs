@@ -36,4 +36,19 @@ public class AgyPermissionsTests
         Assert.DoesNotContain(AgyPermissions.ReadOnlyCommandRules, r => r.Contains("Remove") || r.Contains("rm)") || r.Contains("push"));
         Assert.Contains("command(Remove-Item)", AgyPermissions.DenyRules);
     }
+
+    [Theory]
+    [InlineData("[]")]
+    [InlineData("""{ "permissions": [] }""")]
+    [InlineData("""{ "permissions": { "allow": "command(ls)" } }""")]
+    public void Unexpected_shapes_are_refused_not_replaced(string json)
+        => Assert.Throws<InvalidDataException>(() => AgyPermissions.AddRules(json, ["command(ls)"], []));
+
+    [Fact]
+    public void Non_string_rules_are_ignored_when_reading()
+        => Assert.Equal(["command(ls)"], AgyPermissions.Rules("""{ "permissions": { "allow": [1, "command(ls)", null] } }""", "allow"));
+
+    [Fact]
+    public void Preset_excludes_commands_that_run_script_blocks_or_write()
+        => Assert.DoesNotContain(AgyPermissions.ReadOnlyCommandRules, r => r is "command(Select-Object)" or "command(Where-Object)" or "command(git branch)" or "command(git diff)");
 }

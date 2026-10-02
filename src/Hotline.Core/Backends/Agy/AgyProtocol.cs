@@ -53,7 +53,8 @@ public static class AgyProtocol
             args.AddRange(["--effort", p.Effort.Trim().ToLowerInvariant()]);
         if (!string.IsNullOrWhiteSpace(p.ExtraArgs))
             args.AddRange(p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries)
-                .Where(a => !a.Equals("--dangerously-skip-permissions", StringComparison.OrdinalIgnoreCase)));
+                .Where(a => !a.StartsWith("--dangerous", StringComparison.OrdinalIgnoreCase)
+                            && !a.Contains("skip-permission", StringComparison.OrdinalIgnoreCase)));
         return args;
     }
 }

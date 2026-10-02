@@ -118,4 +118,17 @@ public class ModelCatalogTests
         Assert.Equal("m1", Assert.Single(await catalog.GetAsync(new BackendProfile { Id = "agy", Type = BackendType.Antigravity }, false, default)).Id);
         Assert.Contains(await catalog.GetAsync(new BackendProfile { Id = "cc", Type = BackendType.ClaudeCode }, false, default), m => m.Id == "sonnet");
     }
+
+    [Fact]
+    public async Task Key_is_never_sent_over_plain_http_to_another_host()
+    {
+        var (catalog, http, secrets, _) = New(_ => Json("""{"data":[]}"""));
+        secrets.Set(SecretKeys.ApiKey("oa"), "sk");
+        var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(
+            new BackendProfile { Id = "oa", Name = "X", Type = BackendType.OpenAiCompatible, Endpoint = "http://example.com/v1" }, false, default));
+        Assert.Contains("https", ex.Message);
+        Assert.Empty(http.Requests);
+        secrets.Set(SecretKeys.ApiKey("l"), "sk");
+        await catalog.GetAsync(new BackendProfile { Id = "l", Type = BackendType.Local, Endpoint = "http://127.0.0.1:8080/v1" }, false, default); // loopback ok
+    }
 }

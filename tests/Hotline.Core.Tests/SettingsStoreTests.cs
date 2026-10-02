@@ -81,6 +81,7 @@ public sealed class SettingsStoreTests : IDisposable
 
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
         Assert.Equal(content, File.ReadAllText(path + ".bad"));
+        Assert.Equal(content, File.ReadAllText(path)); // the user's file is left alone
     }
 
     [Theory]

@@ -56,6 +56,37 @@ public sealed class SettingsServiceTests : IDisposable
         Assert.False(service.Reload(store.Load().Also(s => { s.Window.FontSize = 18; s.Chat.Backends[0].Model = "gemini-3.1-pro-high"; })));
         Assert.Equal(1, raised);
     }
+
+    [Fact]
+    public void Reload_updates_connections_in_place_and_reports_changed_ones()
+    {
+        var service = New(out var store);
+        service.Update(s => Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Local));
+        var agy = service.Current.Chat.Backends[0];
+        var local = service.Current.Chat.Backends[1];
+        IReadOnlyList<string>? changed = null;
+        service.ConnectionsChanged += ids => changed = ids;
+
+        var edited = store.Load();
+        edited.Chat.Backends[0].ApproveAllTools = true;  // agy changed
+        edited.Chat.Backends.RemoveAt(1);                 // local removed
+        Assert.True(service.Reload(edited));
+
+        Assert.Same(agy, service.Current.Chat.Backends[0]); // live instance kept
+        Assert.True(agy.ApproveAllTools);
+        Assert.Single(service.Current.Chat.Backends);
+        Assert.Equal(["agy", local.Id], changed!.Order());
+    }
+
+    [Fact]
+    public void Update_keeps_a_backup_of_a_broken_hand_edit()
+    {
+        var service = New(out var store);
+        File.WriteAllText(store.FilePath, "{ \"window\": ");
+        service.Update(s => s.Window.HideOnBlur = false);
+        Assert.Contains(Directory.GetFiles(_dir, "settings.json.*.bak"), f => File.ReadAllText(f) == "{ \"window\": ");
+        Assert.NotNull(store.TryRead());
+    }
 }
 
 internal static class TestExtensions

@@ -37,7 +37,8 @@ public partial class App : Application
     {
         _initialActivation = initialActivation;
         InitializeComponent();
-        UnhandledException += (_, e) => _log?.Error("unhandled XAML exception", e.Exception);
+        // Log and keep running: an exception in one button handler must not take the whole app down.
+        UnhandledException += (_, e) => { _log?.Error("unhandled UI exception (kept running)", e.Exception); e.Handled = true; };
         // Last chance: record anything that is about to terminate the process.
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
@@ -124,12 +125,17 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        _router.SelfTestRequested += () => _presenter.SelfTest();
+        _router.SelfTestRequested += uri => _presenter.SelfTest(uri);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
         WatchSettingsFile(store);
+        _settingsService.ConnectionsChanged += ids =>
+        {
+            foreach (var id in ids) _ = InvalidateBackend(id).AsTask();
+            if (settings.Chat.Backends.All(b => b.Id != chat.BackendId)) chat.BackendId = settings.Chat.DefaultBackend;
+        };
         _settingsService.Changed += () =>
         {
             try

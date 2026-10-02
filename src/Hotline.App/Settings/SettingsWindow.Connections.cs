@@ -11,6 +11,16 @@ namespace Hotline.App.Settings;
 public sealed partial class SettingsWindow
 {
     private string? _selectedConnection;
+    private bool _dialogOpen;
+
+    /// <summary>Only one ContentDialog may be open; a second request is ignored (treated as Cancel).</summary>
+    private async Task<ContentDialogResult> ShowDialogAsync(ContentDialog dialog)
+    {
+        if (_dialogOpen) return ContentDialogResult.None;
+        _dialogOpen = true;
+        try { return await dialog.ShowAsync(); }
+        finally { _dialogOpen = false; }
+    }
 
     private void BuildConnectionsPage()
     {
@@ -46,7 +56,7 @@ public sealed partial class SettingsWindow
                 XamlRoot = Root.XamlRoot, Title = "Remove this connection?", Content = chat.Backends.First(b => b.Id == id).Name,
                 PrimaryButtonText = "Remove", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Close,
             };
-            if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
             _secrets.Set(SecretKeys.ApiKey(id), null);
             await _invalidate(id);
@@ -91,7 +101,9 @@ public sealed partial class SettingsWindow
         var agySettings = Hotline.Core.Backends.Agy.AgyPermissions.SettingsPath(home);
         string Summary()
         {
-            var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
+            string? json;
+            try { json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null; }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return "Couldn't read agy's settings right now."; }
             return $"agy rules: {Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "allow").Count} allowed, " +
                    $"{Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "deny").Count} denied. Reading files in the working folder is allowed by default; " +
                    "shell commands need an allow rule.";
@@ -117,14 +129,17 @@ public sealed partial class SettingsWindow
                 },
                 PrimaryButtonText = "Add rules", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Close,
             };
-            if (await dialog.ShowAsync() != ContentDialogResult.Primary) return;
+            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(agySettings)!);
                 var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
-                if (json is not null) File.Copy(agySettings, agySettings + ".bak", overwrite: true);
-                File.WriteAllText(agySettings, Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
-                    Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules));
+                var updated = Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
+                    Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules);
+                // Keep the user's original file once (never overwritten by later presses), then replace atomically.
+                if (json is not null && !File.Exists(agySettings + ".hotline-original.bak")) File.Copy(agySettings, agySettings + ".hotline-original.bak");
+                File.WriteAllText(agySettings + ".tmp", updated);
+                File.Move(agySettings + ".tmp", agySettings, overwrite: true);
                 summary.Text = Summary();
                 await _invalidate(p.Id);
             }
@@ -151,7 +166,7 @@ public sealed partial class SettingsWindow
                               "A wrong answer or a malicious web page or file can make it do real damage. Only use this with a working folder you can afford to lose.",
                     PrimaryButtonText = "I understand, turn on", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Close,
                 };
-                if (await dialog.ShowAsync() != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
+                if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
             }
             await save(x => x.ApproveAllTools = approveAll.IsOn);
         };
@@ -255,10 +270,12 @@ public sealed partial class SettingsWindow
         if (!string.IsNullOrWhiteSpace(p.Model)) model.Items.Add(p.Model);
         model.SelectedItem = string.IsNullOrWhiteSpace(p.Model) ? "Default" : p.Model;
         var status = new InfoBar { IsClosable = true };
+        var filling = false;
         async Task LoadModels(bool refresh)
         {
             try
             {
+                filling = true;
                 var list = await _models.GetAsync(p, refresh, CancellationToken.None);
                 var current = model.SelectedItem as string ?? "Default";
                 model.Items.Clear();
@@ -266,17 +283,21 @@ public sealed partial class SettingsWindow
                 foreach (var m in list) model.Items.Add(m.Id);
                 if (current != "Default" && !list.Any(m => m.Id == current)) model.Items.Add(current);
                 model.SelectedItem = current;
+                filling = false;
                 status.Severity = InfoBarSeverity.Success;
                 status.Message = $"Connected: {list.Count} model(s) available.";
             }
             catch (ModelListException ex) { status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
             catch (Exception ex) { _log.Error("model list failed", ex); status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
+            finally { filling = false; }
             status.IsOpen = true;
         }
         model.DropDownOpened += async (_, _) => await LoadModels(false);
         model.SelectionChanged += async (_, _) =>
         {
-            if (model.SelectedItem is string m) await Save(x => x.Model = m == "Default" ? null : m);
+            if (filling || model.SelectedItem is not string m) return;
+            var value = m == "Default" ? null : m;
+            if (value != p.Model) await Save(x => x.Model = value);
         };
         model.TextSubmitted += async (_, e) => await Save(x => x.Model = string.IsNullOrWhiteSpace(e.Text) || e.Text == "Default" ? null : e.Text.Trim());
         host.Children.Add(Card("Default model", null, model));

@@ -67,7 +67,9 @@ internal sealed class CustomCaret
         }
         HookInnerScroll();
         var r = CaretRect();
+        if (r.IsEmpty || !double.IsFinite(r.X) || !double.IsFinite(r.Y)) { Hide(); return; } // not laid out yet
         var origin = _box.TransformToVisual(_layer).TransformPoint(new Point(r.X, r.Y));
+        if (!double.IsFinite(origin.X) || !double.IsFinite(origin.Y)) { Hide(); return; }
         var lineHeight = Math.Max(r.Height, _box.FontSize * 1.3);
         var charWidth = Math.Max(_box.FontSize * 0.55, 4);
         switch (_settings.Style)

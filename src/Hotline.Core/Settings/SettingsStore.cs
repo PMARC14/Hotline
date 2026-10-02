@@ -64,15 +64,16 @@ public sealed class SettingsStore(string directory)
         }
         catch (JsonException)
         {
+            // Keep the user's file as it is (they can fix it; a fix applies live) plus a copy, and run on defaults
+            // in memory. Earlier copies are never overwritten.
             try
             {
-                File.Copy(FilePath, FilePath + ".bad", overwrite: true);
-                return SaveDefaults();
+                var bad = FilePath + ".bad";
+                if (File.Exists(bad)) bad = $"{FilePath}.{DateTime.Now:yyyyMMdd-HHmmss}.bad";
+                File.Copy(FilePath, bad, overwrite: false);
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            {
-                return new HotlineSettings();
-            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+            return Normalize(new HotlineSettings());
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {

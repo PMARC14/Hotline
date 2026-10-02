@@ -64,6 +64,6 @@ public sealed partial class PromptLibrary(string directory)
         return true;
     }
 
-    [GeneratedRegex(@"^[\w\- ]+$")]
+    [GeneratedRegex(@"^[\w\- ]+\z")]
     private static partial Regex SafeName();
 }

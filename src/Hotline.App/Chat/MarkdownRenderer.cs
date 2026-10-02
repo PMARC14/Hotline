@@ -20,7 +20,7 @@ internal static class MarkdownRenderer
     /// drag. Code blocks, tables and rules are embedded boxes (they keep their own copy/scroll). Returns how
     /// many paragraphs were added (the presenter uses it to replace only the streaming tail).
     /// </summary>
-    public static int AppendBlock(RichTextBlock rtb, MdBlock block, RenderStyle s, double contentWidth, List<Paragraph> shaded, int indent = 0, Brush? foreground = null)
+    public static int AppendBlock(RichTextBlock rtb, MdBlock block, RenderStyle s, double contentWidth, int indent = 0, Brush? foreground = null)
     {
         Paragraph Para(IReadOnlyList<MdInline> inlines, double size, bool bold, string? marker = null)
         {
@@ -48,7 +48,7 @@ internal static class MarkdownRenderer
                 return 1;
             case MdCode c:
             {
-                // Header row (language + copy) is a small control; the code itself is selectable text, shaded.
+                // Header row (language + copy) is a small shaded control; the code itself is selectable monospace text.
                 rtb.Blocks.Add(Boxed(CodeHeader(c, s)));
                 var code = new Paragraph { FontFamily = Mono, FontSize = s.FontSize - 1, Margin = new Thickness(indent * 18 + 10, 0, 0, 10) };
                 var lines = c.Code.TrimEnd('\n', '\r').Replace("\r\n", "\n").Split('\n');
@@ -58,7 +58,6 @@ internal static class MarkdownRenderer
                     code.Inlines.Add(new Run { Text = lines[i].Length == 0 ? " " : lines[i] });
                 }
                 rtb.Blocks.Add(code);
-                shaded.Add(code);
                 return 2;
             }
             case MdTable t:
@@ -69,7 +68,7 @@ internal static class MarkdownRenderer
                 return 1;
             case MdQuote q:
                 var quoted = 0;
-                foreach (var child in q.Blocks) quoted += AppendBlock(rtb, child, s, contentWidth, shaded, indent + 1, s.Muted);
+                foreach (var child in q.Blocks) quoted += AppendBlock(rtb, child, s, contentWidth, indent + 1, s.Muted);
                 return quoted;
             case MdList l:
                 var count = 0;
@@ -86,7 +85,7 @@ internal static class MarkdownRenderer
                             rtb.Blocks.Add(p);
                             count++;
                         }
-                        else count += AppendBlock(rtb, child, s, contentWidth, shaded, indent + 1, foreground);
+                        else count += AppendBlock(rtb, child, s, contentWidth, indent + 1, foreground);
                         first = false;
                     }
                 }

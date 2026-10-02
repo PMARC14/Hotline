@@ -113,4 +113,11 @@ public class AgyProtocolTests
         Assert.Contains("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }));
         Assert.DoesNotContain("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.ChatOnly, ApproveAllTools = true }));
     }
+
+    [Theory]
+    [InlineData("--dangerously-skip-permissions=true")]
+    [InlineData("--DANGEROUSLY-skip-permissions")]
+    [InlineData("--skip-permissions")]
+    public void Dangerous_flag_variants_in_extra_args_are_dropped(string flag)
+        => Assert.DoesNotContain(AgyProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--foo " + flag }), a => a.Contains("permission", StringComparison.OrdinalIgnoreCase));
 }
