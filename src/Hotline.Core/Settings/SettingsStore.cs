@@ -88,7 +88,7 @@ public sealed class SettingsStore(string directory)
             s.Activation.Hold = KeyAction.NewChat;
     }
 
-    private static HotlineSettings Normalize(HotlineSettings s)
+    public static HotlineSettings Normalize(HotlineSettings s)
     {
         s.Activation ??= new ActivationSettings();
         s.Window ??= new WindowSettings();
