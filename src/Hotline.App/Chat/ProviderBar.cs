@@ -2,6 +2,8 @@ using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Hotline.App.Chat;
@@ -12,6 +14,15 @@ internal sealed class ProviderBar(
     PromptLibrary prompts, Action<string, InfoBarSeverity> notify, FileLog log)
 {
     private const string DefaultLabel = "Default";
+    private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = [];
+
+    private void FillModels(BackendProfile? profile, IReadOnlyList<ModelInfo> list)
+    {
+        popup.ModelBox.Items.Clear();
+        popup.ModelBox.Items.Add(DefaultLabel);
+        foreach (var m in list) popup.ModelBox.Items.Add(m.Id);
+        if (!string.IsNullOrWhiteSpace(profile?.Model) && !list.Any(m => m.Id == profile.Model)) popup.ModelBox.Items.Add(profile.Model);
+    }
     private bool _updating;
     private bool _enabled = true;
 
@@ -25,7 +36,9 @@ internal sealed class ProviderBar(
         popup.ModelBox.DropDownOpened += (_, _) => _ = LoadModelsAsync();
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(e); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
+        popup.Toolbar.SizeChanged += (_, _) => Layout();
         Refresh();
+        _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
     }
 
     /// <summary>Disabled while an answer streams: changing model/effort restarts the backend.</summary>
@@ -50,9 +63,7 @@ internal sealed class ProviderBar(
             popup.ProviderBox.SelectedItem = popup.ProviderBox.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == chat.BackendId);
 
             var current = Current;
-            popup.ModelBox.Items.Clear();
-            popup.ModelBox.Items.Add(DefaultLabel);
-            if (!string.IsNullOrWhiteSpace(current?.Model)) popup.ModelBox.Items.Add(current.Model);
+            FillModels(current, current is not null && _loaded.TryGetValue(current.Id, out var known) ? known : []);
             popup.ModelBox.SelectedItem = string.IsNullOrWhiteSpace(current?.Model) ? DefaultLabel : current.Model;
 
             IReadOnlyList<string> levels = current is null ? Array.Empty<string>() : ConnectionTypes.Of(current.Type).EffortLevels;
@@ -64,6 +75,33 @@ internal sealed class ProviderBar(
             SetEnabled(_enabled);
         }
         finally { _updating = false; }
+        Layout();
+    }
+
+    private static readonly string[] HideOrder = ["effort", "provider", "model"];
+
+    /// <summary>
+    /// Gives the pickers explicit widths from the space the fixed buttons leave (see ToolbarLayout): the bar never
+    /// reflows when a picker's text changes and the buttons on the right never get pushed off the edge.
+    /// </summary>
+    private void Layout()
+    {
+        var bar = popup.Toolbar;
+        if (bar.ActualWidth <= 0) return;
+        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
+                         + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
+        var effortAvailable = popup.EffortBox.Items.Count > 1;
+        var widths = ToolbarLayout.Compute(bar.ActualWidth, fixedWidth, popup.PickersPanel.Spacing,
+            [new("effort", 72, 56, effortAvailable), new("model", 150, 84), new("provider", 128, 72)], HideOrder);
+        Apply(popup.EffortBox, widths["effort"]);
+        Apply(popup.ModelBox, widths["model"]);
+        Apply(popup.ProviderBox, widths["provider"]);
+
+        static void Apply(ComboBox box, double width)
+        {
+            box.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (width > 0) box.Width = width;
+        }
     }
 
     private void OnProviderChanged()
@@ -71,6 +109,7 @@ internal sealed class ProviderBar(
         if (popup.ProviderBox.SelectedItem is not ComboBoxItem { Tag: string id } || id == chat.BackendId) return;
         chat.BackendId = id;
         settings.Update(s => s.Chat.DefaultBackend = id); // Changed → Refresh
+        _ = LoadModelsAsync(quiet: true);
         log.Info($"provider switched to {id}");
     }
 
@@ -95,23 +134,23 @@ internal sealed class ProviderBar(
         await invalidate(profile.Id);
     }
 
-    private async Task LoadModelsAsync()
+    /// <summary>Fills the model list (cached per connection). Quiet = background preload: problems are only logged.</summary>
+    private async Task LoadModelsAsync(bool quiet = false)
     {
         var profile = Current;
         if (profile is null) return;
         try
         {
             var list = await models.GetAsync(profile, refresh: false, CancellationToken.None);
+            _loaded[profile.Id] = list;
+            if (Current != profile) return; // switched meanwhile
             _updating = true;
             var selected = popup.ModelBox.SelectedItem as string ?? DefaultLabel;
-            popup.ModelBox.Items.Clear();
-            popup.ModelBox.Items.Add(DefaultLabel);
-            foreach (var m in list) popup.ModelBox.Items.Add(m.Id);
-            if (selected != DefaultLabel && !list.Any(m => m.Id == selected)) popup.ModelBox.Items.Add(selected);
-            popup.ModelBox.SelectedItem = selected;
+            FillModels(profile, list);
+            popup.ModelBox.SelectedItem = popup.ModelBox.Items.Contains(selected) ? selected : DefaultLabel;
         }
-        catch (ModelListException ex) { notify(ex.Message, InfoBarSeverity.Warning); }
-        catch (Exception ex) { log.Error("model list failed", ex); notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }
+        catch (ModelListException ex) { log.Info($"model list: {ex.Message}"); if (!quiet) notify(ex.Message, InfoBarSeverity.Warning); }
+        catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }
         finally { _updating = false; }
     }
 

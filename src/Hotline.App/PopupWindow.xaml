@@ -100,7 +100,8 @@
             <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7F4;" ToolTipService.ToolTip="Capture the whole screen" />
             <!-- Pickers blend into the bar (no fill/border) until hovered; order: effort, model, provider. -->
-            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+            <StackPanel x:Name="PickersPanel" x:FieldModifier="internal" Grid.Column="3" Orientation="Horizontal" Spacing="2"
+                        VerticalAlignment="Center" HorizontalAlignment="Right">
                 <StackPanel.Resources>
                     <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
                     <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
@@ -116,16 +117,16 @@
                     <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
                     <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
-                        <Setter Property="Height" Value="30" /><Setter Property="FontSize" Value="12" />
-                        <Setter Property="Padding" Value="8,2" /><Setter Property="MinWidth" Value="0" />
+                        <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
+                        <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
                         <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
                         <Setter Property="Opacity" Value="0.85" />
                     </Style>
                 </StackPanel.Resources>
-                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" MaxWidth="100" ToolTipService.ToolTip="Reasoning effort" />
-                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" MinWidth="90" MaxWidth="200" IsEditable="True"
+                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="Reasoning effort" />
+                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" IsEditable="True"
                           ToolTipService.ToolTip="Model (type a name or pick one)" />
-                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" MaxWidth="180" ToolTipService.ToolTip="Who answers" />
+                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="Who answers" />
             </StackPanel>
             <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8A5;" ToolTipService.ToolTip="System prompt">
