@@ -171,6 +171,24 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
 **Packaging note (2026-10-01):** the Copilot key picker requires package identity; keep MSIX for now, switch to a
 *sparse package* (identity only, normal unpackaged install) when building the public installer.
 
+**Priorities (user, 2026-10-01):** 1) make what exists work reliably and finish the remaining UI; 2) add a second
+chat path — Claude Code CLI or an API model — so different models/flows can be compared (and so per-provider quirks,
+like agy's effort-in-model-id, are judged against a second implementation); 3) then the rest.
+
+**Bottom bar driven by a file (later):** the pickers (effort / model / provider / prompt, and future ones) should be
+user-configurable from a file (e.g. `~/.hotline/toolbar.json`: which controls, order, per-provider options), because
+different methods/models expose different knobs. Until then the bar is fixed: effort → model → provider, laid out by
+`ToolbarLayout` (tested), with the same low/medium/high effort list for every model.
+
+**Thinking budgets (with the API/Claude Code backends):** agy only offers its listed levels (`max` is rejected for Flash),
+but the Anthropic API (`thinking.budget_tokens`), Gemini API (`thinkingConfig.thinkingBudget`) and Claude Code expose real
+token budgets — offer them as an advanced per-connection setting / hidden picker option.
+
+**Windows on-device agent registry (ODR):** Windows ships agent-connector MCP servers (files, file search, settings,
+system info, windowing, window UI, app info/launch) that run only through `odr.exe` (build 26220.7262+, not yet on the
+user's PC). Plan 5 reads `odr.exe list` when present, offers read-only connectors by default (destructive ones opt-in),
+and hands them to backends as MCP tools; until then the code path should degrade to "not available on this Windows".
+
 **Backlog — last (security/testing heavy):** Gemini consumer web (personal Gmail/Drive context) inside Hotline via an
 embedded WebView2 panel signed into the user's Google account. Manual use (user types in the embedded page) is fine;
 scripting/injecting queries into gemini.google.com conflicts with Google's terms (automated access) and could put
