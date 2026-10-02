@@ -84,6 +84,7 @@ public partial class App : Application
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
+        _ = LogStartupStateAsync();
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
         try { _prompts.EnsureDefault(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("prompt folder setup failed", ex); }
@@ -228,5 +229,11 @@ public partial class App : Application
             _settingsWatcher.EnableRaisingEvents = true;
         }
         catch (Exception ex) when (ex is IOException or ArgumentException) { _log?.Error("can't watch settings.json", ex); }
+    }
+
+    private async Task LogStartupStateAsync()
+    {
+        var state = await StartupRegistration.GetStateAsync();
+        _log?.Info($"start with Windows: {state?.ToString() ?? "n/a"}");
     }
 }

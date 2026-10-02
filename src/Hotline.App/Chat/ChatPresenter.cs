@@ -49,14 +49,11 @@ internal sealed partial class ChatPresenter(
         popup.Input.FontSize = _tokens.FontSizePx;
         popup.Input.FontFamily = _style.Font;
         SizeComposer();
-        _caret ??= new CustomCaret(popup.Input, popup.CaretLayer);
-        _caret.Apply(settings.Window.Caret, _style.Accent);
         var look = $"{_tokens.FontSizePx}|{_tokens.Font}|{dark}|{settings.Window.Backdrop}";
         if (_transcript is not null && look != _lastLook) RebuildTranscript();
         _lastLook = look;
     }
 
-    private CustomCaret? _caret;
     private string? _lastLook;
 
     /// <summary>The message bar is sized from the text size (incl. Windows' text scaling), not fixed pixels.</summary>
@@ -106,6 +103,7 @@ internal sealed partial class ChatPresenter(
 
         popup.MessagesPanel.SizeChanged += (_, _) => { ReportHeight(); if (_stickToBottom) ScrollToBottomNow(); };
         popup.MessagesScroll.ViewChanged += OnMessagesViewChanged;
+        popup.JumpToLatestButton.Click += (_, _) => { _stickToBottom = true; UpdateJumpButton(); ScrollToBottomNow(); };
         popup.NoticesPanel.SizeChanged += (_, _) => ReportHeight();
         popup.Composer.SizeChanged += (_, _) => ReportHeight();
 
@@ -230,11 +228,14 @@ internal sealed partial class ChatPresenter(
         if (_stickToBottom) ScrollToBottomNow();
     }
 
+    private void UpdateJumpButton()
+        => popup.JumpToLatestButton.Visibility = !_stickToBottom && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
+
     private void ScrollToBottomNow()
     {
         var sv = popup.MessagesScroll;
         _autoScrolling = true;
-        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: true);
+        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: false); // animated: no jolts while streaming
     }
 
     private void OnMessagesViewChanged(object? sender, Microsoft.UI.Xaml.Controls.ScrollViewerViewChangedEventArgs e)
@@ -242,8 +243,9 @@ internal sealed partial class ChatPresenter(
         if (e.IsIntermediate) return;
         var sv = popup.MessagesScroll;
         var atBottom = sv.ScrollableHeight - sv.VerticalOffset < 24;
-        if (_autoScrolling) { _autoScrolling = false; if (atBottom) return; }
+        if (_autoScrolling) { _autoScrolling = false; if (atBottom) { UpdateJumpButton(); return; } }
         _stickToBottom = atBottom; // user scrolled: follow only if they are back at the bottom
+        UpdateJumpButton();
     }
 
     // ---- toolbar ----------------------------------------------------------------------------

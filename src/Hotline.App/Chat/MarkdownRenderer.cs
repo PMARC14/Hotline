@@ -14,6 +14,7 @@ internal sealed record RenderStyle(double FontSize, FontFamily Font, Brush Muted
 internal static class MarkdownRenderer
 {
     private static readonly FontFamily Mono = new("Cascadia Mono, Consolas");
+    private static readonly FontFamily MathFont = new("Cambria Math, Segoe UI Symbol");
 
     /// <summary>
     /// Appends one markdown block to a single RichTextBlock so a whole answer can be selected and copied in one
@@ -59,6 +60,18 @@ internal static class MarkdownRenderer
                 }
                 rtb.Blocks.Add(code);
                 return 2;
+            }
+            case MdMath m:
+            {
+                var math = new Paragraph { FontFamily = MathFont, FontSize = s.FontSize + 2, TextAlignment = TextAlignment.Center, Margin = new Thickness(indent * 18, 2, 0, 10) };
+                var lines = m.Text.Split('\n');
+                for (var i = 0; i < lines.Length; i++)
+                {
+                    if (i > 0) math.Inlines.Add(new LineBreak());
+                    math.Inlines.Add(new Run { Text = lines[i] });
+                }
+                rtb.Blocks.Add(math);
+                return 1;
             }
             case MdTable t:
                 rtb.Blocks.Add(TableText(t, s, indent));
@@ -166,6 +179,7 @@ internal static class MarkdownRenderer
         if (t.Style.HasFlag(MdStyle.Italic)) run.FontStyle = Windows.UI.Text.FontStyle.Italic;
         if (t.Style.HasFlag(MdStyle.Strike)) run.TextDecorations = Windows.UI.Text.TextDecorations.Strikethrough;
         if (t.Style.HasFlag(MdStyle.Code)) run.FontFamily = Mono;
+        if (t.Style.HasFlag(MdStyle.Math)) run.FontFamily = MathFont;
         return run;
     }
 

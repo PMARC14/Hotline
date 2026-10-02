@@ -52,8 +52,6 @@ public sealed class WindowSettings
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
     /// <summary>Chat text size in px (10–32); null = the Windows default (scaled by Settings › Accessibility › Text size).</summary>
     public int? FontSize { get; set; }
-    /// <summary>The text cursor in the message box.</summary>
-    public CaretSettings Caret { get; set; } = new();
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
     public string? FontFamily { get; set; }
     public ScrollbarStyle Scrollbar { get; set; } = ScrollbarStyle.Auto;
@@ -62,21 +60,6 @@ public sealed class WindowSettings
     public double TintOpacity { get; set; } = 0.15;
     /// <summary>Acrylic luminosity layer, 0 (most see-through) to 1.</summary>
     public double LuminosityOpacity { get; set; } = 0.35;
-}
-
-public enum CaretStyle { Bar, Block, Underline, System }
-
-public sealed class CaretSettings
-{
-    /// <summary>Bar, Block, Underline, or System (Windows' own caret; can be hard to see over acrylic).</summary>
-    public CaretStyle Style { get; set; } = CaretStyle.Bar;
-    /// <summary>"#RRGGBB" / "#AARRGGBB"; null = the accent color.</summary>
-    public string? Color { get; set; }
-    /// <summary>Bar width / underline thickness in DIPs (1–8).</summary>
-    public double Width { get; set; } = 2;
-    public bool Blink { get; set; } = true;
-    /// <summary>Blink half-period in milliseconds (200–2000).</summary>
-    public int BlinkMs { get; set; } = 530;
 }
 
 public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local }

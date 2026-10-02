@@ -6,10 +6,24 @@
     <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="8"
           AllowDrop="True" KeyDown="Root_KeyDown">
         <Grid.Resources>
+          <ResourceDictionary>
+            <!-- Windows draws the text caret in the INVERSE of the box's background colour, ignoring alpha (WinUI issues
+                 #6498/#9005). "Transparent" is white with zero alpha, so the caret came out black (invisible on dark
+                 acrylic). A near-invisible background of the right colour gives a visible caret: white on dark, black
+                 on light. Hotline uses the standard Windows caret (thickness: Settings > Accessibility > Text cursor). -->
+            <ResourceDictionary.ThemeDictionaries>
+                <ResourceDictionary x:Key="Default">
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#01000000" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="#01000000" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#01000000" />
+                </ResourceDictionary>
+                <ResourceDictionary x:Key="Light">
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#01FFFFFF" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="#01FFFFFF" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#01FFFFFF" />
+                </ResourceDictionary>
+            </ResourceDictionary.ThemeDictionaries>
             <!-- Keep the composer TextBox see-through in every state so acrylic shows. -->
-            <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
-            <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
-            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
             <!-- No minimum height: the message box is as tall as one line of text (Hotline sizes it from the font). -->
             <x:Double x:Key="TextControlThemeMinHeight">0</x:Double>
             <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
@@ -29,6 +43,7 @@
                 <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
                 <Setter Property="FontSize" Value="15" />
             </Style>
+          </ResourceDictionary>
         </Grid.Resources>
         <Grid.RowDefinitions>
             <RowDefinition Height="*" />      <!-- messages; empty space reserved above the composer -->
@@ -41,6 +56,11 @@
                       HorizontalScrollMode="Disabled" HorizontalScrollBarVisibility="Disabled">
             <StackPanel x:Name="MessagesPanel" x:FieldModifier="internal" Spacing="12" Padding="2,4,18,4" VerticalAlignment="Bottom" />
         </ScrollViewer>
+        <!-- Shown when you've scrolled up: back to the newest message and following again. -->
+        <Button x:Name="JumpToLatestButton" x:FieldModifier="internal" Grid.Row="0" Width="34" Height="34" Padding="0"
+                CornerRadius="17" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,22,6"
+                FontFamily="Segoe Fluent Icons" FontSize="14" Content="&#xE74B;" Visibility="Collapsed"
+                ToolTipService.ToolTip="Jump to the latest message" />
         <TextBlock x:Name="StatusText" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
                    Style="{StaticResource CaptionTextBlockStyle}" Visibility="Collapsed" />
 
@@ -74,8 +94,6 @@
                     <TextBox x:Name="Input" x:FieldModifier="internal" Grid.Column="1" PlaceholderText="📞 Hotline" Padding="8,4,6,4"
                              MinHeight="0" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="180" VerticalAlignment="Center"
                              ScrollViewer.VerticalScrollBarVisibility="Auto" />
-                    <!-- Hotline's own text cursor is drawn here (see CustomCaret). -->
-                    <Canvas x:Name="CaretLayer" x:FieldModifier="internal" Grid.Column="1" IsHitTestVisible="False" />
                     <Button x:Name="SendButton" x:FieldModifier="internal" Grid.Column="2" Width="44" Height="44" Padding="0"
                             CornerRadius="10" Style="{StaticResource AccentButtonStyle}" FontFamily="Segoe Fluent Icons"
                             FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="Send (Enter)" VerticalAlignment="Bottom" />

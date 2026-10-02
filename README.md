@@ -31,7 +31,6 @@ are stored in Windows Credential Locker. Useful keys:
 | `window.tintOpacity` / `window.luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` | `true` | Hide when you click elsewhere |
 | `window.fontSize` / `window.fontFamily` | (Windows default) / (Segoe UI Variable) | Chat text size (10–32; empty = follows Windows' text size) and font, e.g. `"Cascadia Code"` |
-| `window.caret` | bar, accent, 2, blink | Text cursor: `style` (`bar`, `block`, `underline`, `system`), `color` (`#RRGGBB`), `width`, `blink`, `blinkMs` |
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
 | `activation.tap` / `activation.hold` | `togglePopup` / `newChat` | Copilot key: short press opens/closes, long press starts a new chat. Also: `showPopup`, `captureWindow`, `none` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |

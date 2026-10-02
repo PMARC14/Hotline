@@ -1,4 +1,5 @@
 using Markdig;
+using Markdig.Extensions.Mathematics;
 using Markdig.Extensions.Tables;
 using Markdig.Syntax;
 using Markdig.Syntax.Inlines;
@@ -12,6 +13,8 @@ public sealed record MdCode(string? Language, string Code) : MdBlock;
 public sealed record MdList(bool Ordered, int Start, IReadOnlyList<IReadOnlyList<MdBlock>> Items) : MdBlock;
 public sealed record MdQuote(IReadOnlyList<MdBlock> Blocks) : MdBlock;
 public sealed record MdRule : MdBlock;
+/// <summary>Display math ($$...$$), already converted to Unicode text.</summary>
+public sealed record MdMath(string Text) : MdBlock;
 public sealed record MdTable(IReadOnlyList<IReadOnlyList<IReadOnlyList<MdInline>>> Rows, bool HasHeader) : MdBlock;
 
 public abstract record MdInline;
@@ -20,7 +23,7 @@ public sealed record MdLink(string Url, IReadOnlyList<MdInline> Inlines) : MdInl
 public sealed record MdBreak : MdInline;
 
 [Flags]
-public enum MdStyle { None = 0, Bold = 1, Italic = 2, Code = 4, Strike = 8 }
+public enum MdStyle { None = 0, Bold = 1, Italic = 2, Code = 4, Strike = 8, Math = 16 }
 
 /// <summary>
 /// Markdown → a small, UI-agnostic block model the App renders natively. Records compare by value
@@ -28,7 +31,7 @@ public enum MdStyle { None = 0, Bold = 1, Italic = 2, Code = 4, Strike = 8 }
 /// </summary>
 public static class MarkdownModel
 {
-    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UsePipeTables().UseEmphasisExtras().Build();
+    private static readonly MarkdownPipeline Pipeline = new MarkdownPipelineBuilder().UsePipeTables().UseEmphasisExtras().UseMathematics().Build();
 
     public static IReadOnlyList<MdBlock> Parse(string markdown) => Blocks(Markdown.Parse(markdown ?? "", Pipeline));
 
@@ -44,6 +47,7 @@ public static class MarkdownModel
 
     private static MdBlock? Block(Block block) => block switch
     {
+        MathBlock m => new MdMath(LatexText.ToUnicode(m.Lines.ToString())), // before FencedCodeBlock: MathBlock derives from it
         HeadingBlock h => new MdHeading(h.Level, Inlines(h.Inline)),
         FencedCodeBlock f => new MdCode(string.IsNullOrWhiteSpace(f.Info) ? null : f.Info, f.Lines.ToString()),
         CodeBlock c => new MdCode(null, c.Lines.ToString()),
@@ -82,6 +86,9 @@ public static class MarkdownModel
             {
                 case LiteralInline lit:
                     output.Add(new MdText(lit.Content.ToString(), style));
+                    break;
+                case MathInline math:
+                    output.Add(new MdText(LatexText.ToUnicode(math.Content.ToString()), style | MdStyle.Math));
                     break;
                 case CodeInline code:
                     output.Add(new MdText(code.Content, style | MdStyle.Code));

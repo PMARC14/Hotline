@@ -124,12 +124,16 @@ public sealed partial class PopupWindow : Window
             PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
 
         PlaceOnActiveMonitor();
+        _shownAtMs = Environment.TickCount64;
+        _reclaimed = false;
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
     }
 
     private bool _offscreen;
+    private long _shownAtMs;
+    private bool _reclaimed;
 
     /// <summary>Self-test only: shows the panel far outside every monitor, without activation or focus, so the
     /// conversation is really drawn (composition) without the user seeing anything.</summary>
@@ -198,8 +202,17 @@ public sealed partial class PopupWindow : Window
 
     private void OnActivated(object sender, WindowActivatedEventArgs e)
     {
-        if (e.WindowActivationState == WindowActivationState.Deactivated && _settings.HideOnBlur && _modal == 0 && !Pinned)
-            HidePopup();
+        if (e.WindowActivationState != WindowActivationState.Deactivated || !_settings.HideOnBlur || _modal != 0 || Pinned) return;
+        // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
+        // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show).
+        if (Environment.TickCount64 - _shownAtMs < 1500 && !_reclaimed)
+        {
+            _reclaimed = true;
+            _log.Info("lost focus right after opening; taking it back");
+            DispatcherQueue.TryEnqueue(() => { if (AppWindow.IsVisible && !Native.ForceForeground(Hwnd)) _log.Error("could not take focus back"); });
+            return;
+        }
+        HidePopup();
     }
 
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -217,14 +230,57 @@ public sealed partial class PopupWindow : Window
         }
     }
 
-    private void ApplyHeight()
+    private Microsoft.UI.Dispatching.DispatcherQueueTimer? _heightAnimation;
+    private RectI _targetRect;
+    private RectI? _currentRect;
+
+    /// <summary>
+    /// Sizes the panel to its content. While visible, the height eases toward the new size over a few frames
+    /// (bottom edge fixed) instead of jumping, so streamed answers and new messages slide in smoothly.
+    /// </summary>
+    private void ApplyHeight(bool animate = true)
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
         if (_bar.Width == 0) return;
         var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
-        var r = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
+        _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
+        if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
+            || current.Y + current.Height != _targetRect.Y + _targetRect.Height)
+        {
+            _heightAnimation?.Stop();
+            MoveTo(_targetRect);
+            return;
+        }
+        if (_heightAnimation is null)
+        {
+            _heightAnimation = DispatcherQueue.CreateTimer();
+            _heightAnimation.Interval = TimeSpan.FromMilliseconds(15);
+            _heightAnimation.Tick += (_, _) => StepHeight();
+        }
+        if (!_heightAnimation.IsRunning) _heightAnimation.Start();
+    }
+
+    private void StepHeight()
+    {
+        if (_currentRect is not { } current) { _heightAnimation?.Stop(); return; }
+        var delta = _targetRect.Height - current.Height;
+        if (Math.Abs(delta) <= 1)
+        {
+            _heightAnimation?.Stop();
+            MoveTo(_targetRect);
+            return;
+        }
+        var step = (int)Math.Round(delta * 0.35);
+        if (step == 0) step = Math.Sign(delta);
+        var height = current.Height + step;
+        MoveTo(_targetRect with { Y = _targetRect.Y + _targetRect.Height - height, Height = height });
+    }
+
+    private void MoveTo(RectI r)
+    {
+        _currentRect = r;
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 
@@ -256,7 +312,7 @@ public sealed partial class PopupWindow : Window
         var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.VerticalPosition);
         _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
         (_bar, _work, _scale) = (r, new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale);
-        ApplyHeight();
+        ApplyHeight(animate: false);
     }
 
     private sealed class Releaser(Action release) : IDisposable

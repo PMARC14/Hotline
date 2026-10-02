@@ -69,6 +69,7 @@ public sealed partial class SettingsWindow : Window
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
+                if (page == SettingsPage.General) BuildStartupCard();
                 break;
         }
     }
@@ -146,6 +147,39 @@ public sealed partial class SettingsWindow : Window
             default:
                 return Card(item.Header, description, null);
         }
+    }
+
+    /// <summary>Start with Windows (the package's StartupTask; not a settings.json value — Windows owns it).</summary>
+    private void BuildStartupCard()
+    {
+        var status = new TextBlock { FontSize = 12, Opacity = 0.75, TextWrapping = TextWrapping.Wrap, MaxWidth = 380 };
+        var toggle = new ToggleSwitch { OnContent = "", OffContent = "", MinWidth = 0 };
+        var updating = true;
+        async void Refresh()
+        {
+            var state = await StartupRegistration.GetStateAsync();
+            updating = true;
+            toggle.IsOn = state is Windows.ApplicationModel.StartupTaskState.Enabled or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
+            toggle.IsEnabled = state is not (null or Windows.ApplicationModel.StartupTaskState.DisabledByPolicy or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy);
+            status.Text = StartupRegistration.Describe(state);
+            updating = false;
+        }
+        toggle.Toggled += async (_, _) =>
+        {
+            if (updating) return;
+            if (toggle.IsOn)
+            {
+                var state = await StartupRegistration.EnableAsync();
+                if (state == Windows.ApplicationModel.StartupTaskState.DisabledByUser)
+                    await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
+            }
+            else StartupRegistration.Disable();
+            Refresh();
+        };
+        var panel = new StackPanel { Spacing = 4, HorizontalAlignment = HorizontalAlignment.Right };
+        panel.Children.Add(toggle);
+        PageHost.Children.Add(Card("Start with Windows", null, new StackPanel { Spacing = 4, Children = { toggle, status } }));
+        Refresh();
     }
 
     private void BuildAdvancedExtras()

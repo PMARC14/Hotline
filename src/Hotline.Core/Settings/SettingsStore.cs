@@ -158,10 +158,6 @@ public sealed class SettingsStore(string directory)
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
         if (s.Window.FontSize is { } fontSize) s.Window.FontSize = Math.Clamp(fontSize, 10, 32);
-        s.Window.Caret ??= new CaretSettings();
-        s.Window.Caret.Width = Math.Clamp(s.Window.Caret.Width, 1, 8);
-        s.Window.Caret.BlinkMs = Math.Clamp(s.Window.Caret.BlinkMs, 200, 2000);
-        if (s.Window.Caret.Color is { } caretColor && !Theming.ThemeColor.TryParse(caretColor, out _)) s.Window.Caret.Color = null;
         s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);

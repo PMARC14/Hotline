@@ -24,7 +24,6 @@ public sealed class AppearanceSettingsTests : IDisposable
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
         Assert.Equal(KeyAction.NewChat, s.Activation.Hold);
         Assert.Null(s.Window.FontSize); // Windows default
-        Assert.Equal(CaretStyle.Bar, s.Window.Caret.Style);
         Assert.Null(s.Window.FontFamily);
         Assert.Equal(ScrollbarStyle.Auto, s.Window.Scrollbar);
         Assert.Equal(GrowMode.Grow, s.Chat.GrowMode);
@@ -80,11 +79,4 @@ public sealed class AppearanceSettingsTests : IDisposable
     public void Default_font_size_tokens_use_windows_size()
         => Assert.Equal(ThemeTokens.DefaultFontSize, ThemeTokens.For(dark: false, new WindowSettings()).FontSizePx);
 
-    [Fact]
-    public void Caret_settings_are_clamped_and_bad_colors_dropped()
-    {
-        var c = LoadJson("""{ "window": { "caret": { "style": "block", "width": 40, "blinkMs": 5, "color": "orange" } } }""").Window.Caret;
-        Assert.Equal((CaretStyle.Block, 8.0, 200, (string?)null), (c.Style, c.Width, c.BlinkMs, c.Color));
-        Assert.Equal("#FF8800", LoadJson("""{ "window": { "caret": { "color": "#FF8800" } } }""").Window.Caret.Color);
-    }
 }
