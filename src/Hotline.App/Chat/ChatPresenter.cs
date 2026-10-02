@@ -19,7 +19,7 @@ namespace Hotline.App.Chat;
 /// <summary>Connects the native chat panel to the ChatController. All members run on the UI thread.</summary>
 internal sealed partial class ChatPresenter(
     PopupWindow popup, ChatController chat, AttachmentTray tray, HotlineSettings settings, SettingsStore store, FileLog log,
-    Func<IReadOnlyList<BackendProfile>> profiles, string dataDirectory)
+    string dataDirectory)
 {
     private sealed class AssistantView
     {
@@ -40,7 +40,13 @@ internal sealed partial class ChatPresenter(
     private RenderStyle _style = null!;
     private ThemeTokens _tokens = ThemeTokens.Dark;
 
-    public void Initialize()
+    /// <summary>Raised when an answer starts or finishes streaming (the bottom-bar pickers lock meanwhile).</summary>
+    public event Action<bool>? BusyChanged;
+    public event Action? SettingsRequested;
+    public bool IsBusy { get; private set; }
+
+    /// <summary>Recomputes tokens from the live settings and re-renders answers (font, colours, solid background).</summary>
+    public void ApplyAppearance()
     {
         var dark = settings.Window.Theme switch
         {
@@ -49,11 +55,27 @@ internal sealed partial class ChatPresenter(
             _ => Application.Current.RequestedTheme == ApplicationTheme.Dark,
         };
         _tokens = ThemeTokens.For(dark, settings.Window);
-        _style = new RenderStyle(_tokens.FontSizePx, new FontFamily(_tokens.Font), Brush(_tokens.Muted), Brush(_tokens.CodeBackground), Brush(_tokens.Accent), _tokens.RadiusPx, OpenLink);
+        _style = new RenderStyle(_tokens.FontSizePx, new FontFamily(_tokens.Font), Brush(_tokens.Muted), Brush(_tokens.CodeBackground),
+            Brush(_tokens.Accent), _tokens.RadiusPx, OpenLink);
         if (settings.Window.Backdrop == BackdropKind.Solid)
             popup.Root.Background = Brush(_tokens.SolidBackground); // follows the chosen theme, not the OS theme
         popup.Input.FontSize = _tokens.FontSizePx;
         popup.Input.FontFamily = _style.Font;
+        foreach (var view in _assistants.Values)
+        {
+            view.Body.Blocks.Clear();
+            view.ParagraphCounts.Clear();
+            view.Blocks = [];
+            view.Body.FontSize = _tokens.FontSizePx;
+            view.Body.FontFamily = _style.Font;
+            view.Dirty = true;
+        }
+        if (_assistants.Count > 0) RenderDirty();
+    }
+
+    public void Initialize()
+    {
+        ApplyAppearance();
 
         chat.Event += e => Guard("chat event", () => OnChatEvent(e));
         // Focus after the window is laid out and active, or the caret may not appear.
@@ -76,7 +98,7 @@ internal sealed partial class ChatPresenter(
         popup.PinButton.Checked += (_, _) => { popup.Pinned = true; popup.PinButton.Content = "\uE840"; };
         popup.PinButton.Unchecked += (_, _) => { popup.Pinned = false; popup.PinButton.Content = "\uE718"; };
         popup.NewChatButton.Click += (_, _) => NewChat();
-        popup.SettingsButton.Click += (_, _) => OpenSettings();
+        popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettings(); else SettingsRequested(); };
         popup.Root.DragOver += Root_DragOver;
         popup.Root.Drop += Root_Drop;
 
@@ -86,7 +108,6 @@ internal sealed partial class ChatPresenter(
         popup.Composer.SizeChanged += (_, _) => ReportHeight();
 
         _renderTimer = new DispatcherQueueTimerWrapper(popup.DispatcherQueue, TimeSpan.FromMilliseconds(50), RenderDirty);
-        UpdateBackendLabel();
         log.Info("chat view ready");
     }
 
@@ -129,6 +150,9 @@ internal sealed partial class ChatPresenter(
     {
         popup.SendButton.Content = busy ? "\uE71A" : "\uE724";
         ToolTipService.SetToolTip(popup.SendButton, busy ? "Stop" : "Send (Enter)");
+        if (IsBusy == busy) return;
+        IsBusy = busy;
+        BusyChanged?.Invoke(busy);
     }
 
     // ---- conversation -----------------------------------------------------------------------
@@ -262,7 +286,7 @@ internal sealed partial class ChatPresenter(
 
     // ---- notices, height, scrolling ---------------------------------------------------------
 
-    private void Notice(string message, InfoBarSeverity severity)
+    internal void Notice(string message, InfoBarSeverity severity)
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = true, Severity = severity, Message = message };
         bar.Closed += (_, _) => popup.NoticesPanel.Children.Remove(bar);
@@ -311,13 +335,6 @@ internal sealed partial class ChatPresenter(
     }
 
     // ---- toolbar ----------------------------------------------------------------------------
-
-    private void UpdateBackendLabel()
-    {
-        var profile = profiles().FirstOrDefault(p => p.Id == chat.BackendId);
-        popup.BackendLabel.Text = profile is null ? "" :
-            profile.Name + (string.IsNullOrWhiteSpace(profile.Model) ? "" : $" · {profile.Model}") + (string.IsNullOrWhiteSpace(profile.Effort) ? "" : $" · {profile.Effort}");
-    }
 
     /// <summary>Until the settings window (Plan 3b) exists: open ~/.hotline so settings.json is one click away.</summary>
     private void OpenSettings()

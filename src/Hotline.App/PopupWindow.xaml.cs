@@ -20,7 +20,7 @@ namespace Hotline.App;
 public sealed partial class PopupWindow : Window
 {
     private readonly WindowSettings _settings;
-    private readonly GrowMode _growMode;
+    public GrowMode GrowMode { get; set; }
     private readonly PopupToggleGuard _guard;
     private readonly FileLog _log;
     private int _modal;
@@ -42,41 +42,49 @@ public sealed partial class PopupWindow : Window
     public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus)
     {
         _settings = settings;
-        _growMode = growMode;
+        GrowMode = growMode;
         _guard = guard;
         _log = log;
         InitializeComponent();
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
 
-        SystemBackdrop = Backdrops.Create(settings);
         ExtendsContentIntoTitleBar = true;
 
         var presenter = OverlappedPresenter.Create();
         presenter.IsMaximizable = false;
         presenter.IsMinimizable = false;
-        presenter.IsAlwaysOnTop = settings.AlwaysOnTop;
         presenter.SetBorderAndTitleBar(hasBorder: true, hasTitleBar: false);
         AppWindow.SetPresenter(presenter);
         AppWindow.IsShownInSwitchers = false;
         AppWindow.SetIcon("Assets\\Hotline.ico");
         AppWindow.Closing += (_, e) => { e.Cancel = true; HidePopup(); };
 
-        Root.RequestedTheme = settings.Theme switch
+        if (showDebugStatus)
+            StatusText.Visibility = Visibility.Visible;
+        ApplyAppearance();
+
+        Activated += OnActivated;
+    }
+
+    /// <summary>Re-applies backdrop, theme, always-on-top and scrollbar from the (live) settings object.</summary>
+    public void ApplyAppearance()
+    {
+        SystemBackdrop = Backdrops.Create(_settings);
+        if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
+        Root.RequestedTheme = _settings.Theme switch
         {
             ThemeChoice.Light => ElementTheme.Light,
             ThemeChoice.Dark => ElementTheme.Dark,
             _ => ElementTheme.Default,
         };
-        if (showDebugStatus)
-            StatusText.Visibility = Visibility.Visible;
-        MessagesScroll.VerticalScrollBarVisibility = settings.Scrollbar switch
+        if (_settings.Backdrop != BackdropKind.Solid) Root.Background = null;
+        MessagesScroll.VerticalScrollBarVisibility = _settings.Scrollbar switch
         {
             ScrollbarStyle.Visible => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Visible,
             ScrollbarStyle.Hidden => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden,
             _ => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Auto,
         };
-
-        Activated += OnActivated;
+        if (AppWindow.IsVisible) PlaceOnActiveMonitor();
     }
 
     public bool IsShown => AppWindow.IsVisible;
@@ -168,7 +176,7 @@ public sealed partial class PopupWindow : Window
     {
         if (_bar.Width == 0) return;
         var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
-        var r = PopupGeometry.GrowUp(_bar, (int)Math.Ceiling(_contentDip * _scale), maxPx, _work, _growMode);
+        var r = PopupGeometry.GrowUp(_bar, (int)Math.Ceiling(_contentDip * _scale), maxPx, _work, GrowMode);
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 

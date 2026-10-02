@@ -80,10 +80,12 @@
         </Border>
 
         <!-- Bottom toolbar: room for more features (model/effort picker arrives in Plan 3b). -->
+        <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings. -->
         <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
             </Grid.ColumnDefinitions>
             <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Width="36" Height="32" Padding="0" BorderThickness="0"
@@ -93,11 +95,23 @@
                     Content="&#xE7C4;" ToolTipService.ToolTip="Capture the window you were in" />
             <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7F4;" ToolTipService.ToolTip="Capture the whole screen" />
-            <TextBlock x:Name="BackendLabel" x:FieldModifier="internal" Grid.Column="4" VerticalAlignment="Center" Margin="6,0"
-                       Style="{StaticResource CaptionTextBlockStyle}" Opacity="0.7" />
-            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" Width="130" Height="30" FontSize="12" Padding="8,2"
+                          ToolTipService.ToolTip="Who answers" />
+                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" Width="140" Height="30" FontSize="12" Padding="8,2"
+                          IsEditable="True" ToolTipService.ToolTip="Model (type a name or pick one)" />
+                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" Width="86" Height="30" FontSize="12" Padding="8,2"
+                          ToolTipService.ToolTip="Reasoning effort" />
+            </StackPanel>
+            <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE8A5;" ToolTipService.ToolTip="System prompt">
+                <Button.Flyout>
+                    <MenuFlyout x:Name="PromptMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
+                </Button.Flyout>
+            </Button>
+            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="New chat (Ctrl+N)" />
-            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="Settings" />
         </Grid>
     </Grid>

@@ -23,6 +23,12 @@ public partial class App : Application
     private ChatPresenter? _presenter;
     private BackendCache? _backends;
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _heartbeat;
+    private ProviderBar? _providerBar;
+    private SettingsService? _settingsService;
+    private PromptLibrary? _prompts;
+    private ModelCatalog? _models;
+    private ISecretStore? _secrets;
+    private readonly HashSet<string> _pendingInvalidations = [];
 
     public App(AppActivationArguments initialActivation)
     {
@@ -74,6 +80,12 @@ public partial class App : Application
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
+        _settingsService = new SettingsService(store, settings, _log);
+        _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
+        try { _prompts.EnsureDefault(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("prompt folder setup failed", ex); }
+        _secrets = new PasswordVaultSecretStore(_log);
+        var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+        var prompts = _prompts;
 
         _popup = new PopupWindow(settings.Window, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose);
         _router = new ActivationRouter(_popup, settings.Activation,
@@ -82,7 +94,8 @@ public partial class App : Application
         var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
-            Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"));
+            Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
+            p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home);
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -91,9 +104,35 @@ public partial class App : Application
             try { history.Prune(settings.Chat.HistoryRetentionDays); } catch (IOException ex) { _log.Error("history prune failed", ex); }
         }
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
-        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, () => settings.Chat.Backends, dataDir);
+        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
+
+        _models = new ModelCatalog(new HttpClient { Timeout = TimeSpan.FromSeconds(20) }, _secrets, (p, ct) =>
+        {
+            var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
+                      ?? throw new ModelListException("The Antigravity CLI (agy) isn't installed.");
+            return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct);
+        }, TimeProvider.System);
+        _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
+        try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
+        _presenter.BusyChanged += busy =>
+        {
+            _providerBar.SetEnabled(!busy);
+            if (!busy) _ = FlushInvalidationsAsync();
+        };
+        _settingsService.Changed += () =>
+        {
+            try
+            {
+                _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
+                _popup.GrowMode = settings.Chat.GrowMode;
+                _popup.ApplyAppearance();
+                _presenter.ApplyAppearance();
+                _providerBar.Refresh();
+            }
+            catch (Exception ex) { _log.Error("applying settings failed", ex); }
+        };
 
         AppInstance.GetCurrent().Activated += (_, a) =>
         {
@@ -131,5 +170,25 @@ public partial class App : Application
 
         try { _router.OnActivation(ActivationRouter.Snapshot(_initialActivation, isFirstLaunch: true)); }
         catch (Exception ex) { _log.Error("initial activation handling failed", ex); }
+    }
+
+    /// <summary>
+    /// Restarts a connection's backend after its settings change, but never mid-answer: while an answer streams the
+    /// restart waits until it finishes (changes apply to the next message).
+    /// </summary>
+    private ValueTask InvalidateBackend(string id)
+    {
+        if (_presenter?.IsBusy == true) { _pendingInvalidations.Add(id); return ValueTask.CompletedTask; }
+        return _backends?.InvalidateAsync(id) ?? ValueTask.CompletedTask;
+    }
+
+    private async Task FlushInvalidationsAsync()
+    {
+        foreach (var id in _pendingInvalidations.ToList())
+        {
+            _pendingInvalidations.Remove(id);
+            try { if (_backends is not null) await _backends.InvalidateAsync(id); }
+            catch (Exception ex) { _log?.Error($"restarting backend {id} failed", ex); }
+        }
     }
 }
