@@ -100,7 +100,7 @@ public partial class App : Application
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
-            p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home);
+            p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)

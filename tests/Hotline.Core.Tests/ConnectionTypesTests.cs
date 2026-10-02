@@ -10,10 +10,13 @@ public class ConnectionTypesTests
         => Assert.Equal(Enum.GetValues<BackendType>().Order(), ConnectionTypes.All.Select(t => t.Type).Order());
 
     [Fact]
-    public void Only_agy_has_verified_effort_levels()
+    public void Only_verified_effort_levels_are_offered()
     {
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Antigravity).EffortLevels);
-        Assert.All(ConnectionTypes.All.Where(t => t.Type != BackendType.Antigravity), t => Assert.Empty(t.EffortLevels));
+        Assert.True(ConnectionTypes.Of(BackendType.Antigravity).EffortInModelId);
+        Assert.Equal(["low", "medium", "high", "xhigh", "max"], ConnectionTypes.Of(BackendType.ClaudeCode).EffortLevels);
+        Assert.False(ConnectionTypes.Of(BackendType.ClaudeCode).EffortInModelId);
+        Assert.All(ConnectionTypes.All.Where(t => t.Type is not (BackendType.Antigravity or BackendType.ClaudeCode)), t => Assert.Empty(t.EffortLevels));
     }
 
     [Fact]

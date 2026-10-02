@@ -25,8 +25,7 @@ public sealed class BackendCatalogTests : IDisposable
     [Theory]
     [InlineData(BackendType.Gemini)]
     [InlineData(BackendType.OpenAiCompatible)]
-    [InlineData(BackendType.ClaudeCode)]
-    public void Plan3_backends_are_not_available_yet(BackendType type)
+    public void Api_backends_are_not_available_yet(BackendType type)
     {
         Assert.Null(BackendFactory.Create(new BackendProfile { Id = "x", Type = type }, Deps()));
         Assert.False(BackendFactory.IsAvailable(type));
@@ -59,5 +58,12 @@ public sealed class BackendCatalogTests : IDisposable
         cache.Get("a");
         Assert.Equal(2, created);
         await cache.InvalidateAsync("missing"); // no-op
+    }
+
+    [Fact]
+    public void Claude_code_is_available()
+    {
+        Assert.True(BackendFactory.IsAvailable(BackendType.ClaudeCode));
+        Assert.IsType<Hotline.Core.Backends.ClaudeCode.ClaudeCodeBackend>(BackendFactory.Create(new BackendProfile { Id = "cc", Type = BackendType.ClaudeCode }, Deps()));
     }
 }

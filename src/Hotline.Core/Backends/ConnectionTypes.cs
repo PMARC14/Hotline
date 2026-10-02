@@ -7,7 +7,7 @@ public enum ConnectionField { None = 0, Endpoint = 1, ApiKey = 2, CliPath = 4, A
 
 public sealed record ConnectionTypeInfo(
     BackendType Type, string DisplayName, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
-    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string Description)
+    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string Description, bool EffortInModelId = false)
 {
     public bool Has(ConnectionField field) => (Fields & field) == field;
 }
@@ -21,9 +21,9 @@ public static class ConnectionTypes
     public static IReadOnlyList<ConnectionTypeInfo> All { get; } =
     [
         new(BackendType.Antigravity, "Antigravity CLI (agy)", "Gemini (Antigravity)", Cli | ConnectionField.Agent, null,
-            ["low", "medium", "high"], false, "Your installed agy and its Google sign-in."),
+            ["low", "medium", "high"], false, "Your installed agy and its Google sign-in.", EffortInModelId: true),
         new(BackendType.ClaudeCode, "Claude Code CLI", "Claude (Claude Code)", Cli, null,
-            [], false, "Your installed claude and its sign-in."),
+            ClaudeCode.ClaudeCodeProtocol.EffortLevels, false, "Your installed claude and its sign-in (your Claude plan)."),
         new(BackendType.Gemini, "Gemini API", "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",
             [], false, "A Google AI Studio API key."),
         new(BackendType.Anthropic, "Anthropic API", "Claude API", Api, "https://api.anthropic.com/v1",

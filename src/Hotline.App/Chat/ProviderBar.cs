@@ -41,9 +41,10 @@ internal sealed class ProviderBar(
     {
         popup.EffortBox.Items.Clear();
         if (profile is null) return;
-        var levels = ConnectionTypes.Of(profile.Type).EffortLevels;
+        var info = ConnectionTypes.Of(profile.Type);
+        var levels = info.EffortLevels;
         if (levels.Count == 0) return;
-        var located = ModelFamilies.Locate(Families(profile), profile.Model);
+        var located = info.EffortInModelId ? ModelFamilies.Locate(Families(profile), profile.Model) : null;
         if (located is { } hit && !hit.Family.HasLevels)
         {
             popup.EffortBox.Items.Add("n/a");
@@ -156,6 +157,8 @@ internal sealed class ProviderBar(
         var families = Families(profile);
         string? model; string? effort = profile.Effort;
         if (string.IsNullOrWhiteSpace(text) || text == DefaultLabel) model = null;
+        else if (families.FirstOrDefault(f => f.Name == text) is { } plain && !ConnectionTypes.Of(profile.Type).EffortInModelId)
+            model = plain.Variants[0].Id; // effort is a separate setting (e.g. Claude Code --effort)
         else if (families.FirstOrDefault(f => f.Name == text) is { } family)
         {
             // Keep the current effort level when switching models (nearest level the new model has).
@@ -175,7 +178,7 @@ internal sealed class ProviderBar(
         var profile = Current;
         if (profile is null) return;
         if (level == "n/a") return;
-        if (ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
+        if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
         {
             var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
             if (model == profile.Model) return;

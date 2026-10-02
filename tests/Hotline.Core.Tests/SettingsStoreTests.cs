@@ -218,4 +218,22 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal("{ \"window\": { \"fontSize\": 1", File.ReadAllText(store.FilePath));
         Assert.False(File.Exists(store.FilePath + ".bad"));
     }
+
+    [Fact]
+    public void Schema6_gets_a_claude_code_connection_once()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 6 }""");
+        var s = New().Load();
+        Assert.Contains(s.Chat.Backends, b => b.Type == BackendType.ClaudeCode && b.Name == "Claude (Claude Code)");
+        Assert.Equal("agy", s.Chat.DefaultBackend);
+    }
+
+    [Fact]
+    public void Removed_claude_code_connection_is_not_re_added()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 7 }""");
+        Assert.DoesNotContain(New().Load().Chat.Backends, b => b.Type == BackendType.ClaudeCode);
+    }
 }

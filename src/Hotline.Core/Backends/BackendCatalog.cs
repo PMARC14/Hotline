@@ -9,11 +9,11 @@ namespace Hotline.Core.Backends;
 public sealed record BackendDeps(
     ILineProcessFactory Processes, AgyWorkspace AgyWorkspace, FileLog Log,
     Func<string, bool> FileExists, string? LocalAppData, string? PathEnv,
-    Func<BackendProfile, string> SystemPrompt, string HomeDirectory);
+    Func<BackendProfile, string> SystemPrompt, string HomeDirectory, string? ClaudeWorkspace = null);
 
 public static class BackendFactory
 {
-    public static bool IsAvailable(BackendType type) => type == BackendType.Antigravity;
+    public static bool IsAvailable(BackendType type) => type is BackendType.Antigravity or BackendType.ClaudeCode;
 
     /// <summary>Creates the backend for a profile, or null if that backend type isn't implemented yet (Plan 3).</summary>
     public static IChatBackend? Create(BackendProfile p, BackendDeps deps) => p.Type switch
@@ -21,6 +21,9 @@ public static class BackendFactory
         BackendType.Antigravity => new AgyBackend(p,
             () => AgyLocator.Find(p.CliPath, deps.FileExists, deps.LocalAppData, deps.PathEnv),
             deps.AgyWorkspace, deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
+        BackendType.ClaudeCode => new ClaudeCode.ClaudeCodeBackend(p,
+            () => ClaudeCode.ClaudeLocator.Find(p.CliPath, deps.FileExists, deps.HomeDirectory, deps.PathEnv),
+            deps.ClaudeWorkspace ?? Path.Combine(Path.GetTempPath(), "hotline-claude"), deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
         _ => null,
     };
 }

@@ -180,6 +180,16 @@ surface gives a visible caret on every backdrop/theme; full-fidelity SVG (Window
 "Open image" covers it for now); code blocks wrap instead of scrolling sideways (shared selectable text); ==marked==
 has no background (WinUI runs can't have one); further smoothing of panel growth if still visible.
 
+**Claude Code backend (done 2026-10-02):** `claude -p` stream-json in/out, persistent per conversation, the user's own
+login/plan. Chat only = `--tools "" --setting-sources "" --strict-mcp-config` (none of the user's settings, plugins,
+hooks or MCP servers; NOT `--bare`, which never reads the OAuth login); own tools = the user's Claude Code setup in
+the working folder; always `--permission-prompts none` (prompts are denied in the background); prompts via
+`--append-system-prompt`; images inline as base64 blocks; effort = `--effort low|medium|high|xhigh|max`.
+
+**Plan 4b — recent chats (user idea 2026-10-02):** small, overlay-sized: a "Recent" menu (last ~10 conversations from
+`~/.hotline/history`, one click continues), Ctrl+↑ reopens the last chat, "Open in CLI" (`agy` /resume,
+`claude --resume`) for the full experience. Full history browsing/search stays out of the overlay.
+
 **Bottom bar driven by a file (later):** the pickers (effort / model / provider / prompt, and future ones) should be
 user-configurable from a file (e.g. `~/.hotline/toolbar.json`: which controls, order, per-provider options), because
 different methods/models expose different knobs. Until then the bar is fixed: effort → model → provider, laid out by

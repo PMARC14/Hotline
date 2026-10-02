@@ -10,7 +10,7 @@ public sealed class ModelListException(string message) : Exception(message);
 public static class ModelListParsers
 {
     public static IReadOnlyList<ModelInfo> ClaudeCodeAliases { get; } =
-        [new("sonnet", "Sonnet (latest)"), new("opus", "Opus (latest)"), new("haiku", "Haiku (latest)")];
+        [new("fable", "Fable"), new("opus", "Opus"), new("sonnet", "Sonnet"), new("haiku", "Haiku")];
 
     /// <summary>`agy models` prints "id\tLabel" per line (plus a "Fetching…" banner).</summary>
     public static IReadOnlyList<ModelInfo> Agy(string output) =>
