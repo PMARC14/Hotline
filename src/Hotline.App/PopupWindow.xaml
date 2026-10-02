@@ -9,7 +9,9 @@
             <!-- Keep the composer TextBox see-through in every state so acrylic shows. -->
             <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
-            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+            <!-- Focused input gets a real fill: the text caret is drawn by inverting what is behind it, so over a
+                 fully transparent (acrylic) background it is invisible. -->
+            <StaticResource x:Key="TextControlBackgroundFocused" ResourceKey="ControlFillColorInputActiveBrush" />
             <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
@@ -109,7 +111,6 @@
                     <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="Transparent" />
                     <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
                     <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
-                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
                     <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
                     <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
@@ -119,10 +120,10 @@
                         <Setter Property="Opacity" Value="0.85" />
                     </Style>
                 </StackPanel.Resources>
-                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" Width="86" ToolTipService.ToolTip="Reasoning effort" />
-                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" Width="150" IsEditable="True"
+                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" MaxWidth="100" ToolTipService.ToolTip="Reasoning effort" />
+                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" MinWidth="90" MaxWidth="200" IsEditable="True"
                           ToolTipService.ToolTip="Model (type a name or pick one)" />
-                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" Width="140" ToolTipService.ToolTip="Who answers" />
+                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" MaxWidth="180" ToolTipService.ToolTip="Who answers" />
             </StackPanel>
             <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8A5;" ToolTipService.ToolTip="System prompt">
