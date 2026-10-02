@@ -31,12 +31,20 @@ public sealed class SettingsStore(string directory)
 
         try
         {
-            var s = JsonSerializer.Deserialize<HotlineSettings>(File.ReadAllText(FilePath), Options)
+            var text = File.ReadAllText(FilePath);
+            var s = JsonSerializer.Deserialize<HotlineSettings>(text, Options)
                     ?? throw new JsonException("settings.json contained null");
             var loadedVersion = s.SchemaVersion;
             Normalize(s);
             if (loadedVersion < HotlineSettings.CurrentSchemaVersion)
                 TrySave(s);
+            else if (HasMissingOptions(text, s))
+            {
+                // The file is the configuration: write newly added options into it so every setting is visible and
+                // editable there. Keep the previous file (it may hold comments) as settings.json.bak.
+                try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (IOException) { }
+                TrySave(s);
+            }
             return s;
         }
         catch (JsonException)
@@ -70,6 +78,35 @@ public sealed class SettingsStore(string directory)
         var d = new HotlineSettings();
         Save(d);
         return d;
+    }
+
+    /// <summary>True when the file lacks an option the current schema has (compared by property names, recursively).</summary>
+    private static bool HasMissingOptions(string fileText, HotlineSettings s)
+    {
+        var docOptions = new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
+        using var file = JsonDocument.Parse(fileText, docOptions);
+        using var full = JsonDocument.Parse(JsonSerializer.Serialize(s, Options));
+        return Missing(full.RootElement, file.RootElement);
+
+        static bool Missing(JsonElement expected, JsonElement actual)
+        {
+            if (expected.ValueKind == JsonValueKind.Object)
+            {
+                if (actual.ValueKind != JsonValueKind.Object) return false;
+                foreach (var p in expected.EnumerateObject())
+                {
+                    var found = actual.EnumerateObject().FirstOrDefault(a => string.Equals(a.Name, p.Name, StringComparison.OrdinalIgnoreCase));
+                    if (found.Value.ValueKind == JsonValueKind.Undefined) return p.Value.ValueKind != JsonValueKind.Null;
+                    if (Missing(p.Value, found.Value)) return true;
+                }
+            }
+            else if (expected.ValueKind == JsonValueKind.Array && actual.ValueKind == JsonValueKind.Array)
+            {
+                foreach (var (e, a) in expected.EnumerateArray().Zip(actual.EnumerateArray()))
+                    if (Missing(e, a)) return true;
+            }
+            return false;
+        }
     }
 
     private void TrySave(HotlineSettings s)

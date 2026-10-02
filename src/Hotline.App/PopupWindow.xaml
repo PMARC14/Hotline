@@ -95,13 +95,34 @@
                     Content="&#xE7C4;" ToolTipService.ToolTip="Capture the window you were in" />
             <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7F4;" ToolTipService.ToolTip="Capture the whole screen" />
-            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
-                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" Width="130" Height="30" FontSize="12" Padding="8,2"
-                          ToolTipService.ToolTip="Who answers" />
-                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" Width="140" Height="30" FontSize="12" Padding="8,2"
-                          IsEditable="True" ToolTipService.ToolTip="Model (type a name or pick one)" />
-                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" Width="86" Height="30" FontSize="12" Padding="8,2"
-                          ToolTipService.ToolTip="Reasoning effort" />
+            <!-- Pickers blend into the bar (no fill/border) until hovered; order: effort, model, provider. -->
+            <StackPanel Grid.Column="4" Orientation="Horizontal" Spacing="2" VerticalAlignment="Center">
+                <StackPanel.Resources>
+                    <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundDisabled" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="Transparent" />
+                    <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="Transparent" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+                    <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+                    <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
+                    <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
+                    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                        <Setter Property="Height" Value="30" /><Setter Property="FontSize" Value="12" />
+                        <Setter Property="Padding" Value="8,2" /><Setter Property="MinWidth" Value="0" />
+                        <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
+                        <Setter Property="Opacity" Value="0.85" />
+                    </Style>
+                </StackPanel.Resources>
+                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" Width="86" ToolTipService.ToolTip="Reasoning effort" />
+                <ComboBox x:Name="ModelBox" x:FieldModifier="internal" Width="150" IsEditable="True"
+                          ToolTipService.ToolTip="Model (type a name or pick one)" />
+                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" Width="140" ToolTipService.ToolTip="Who answers" />
             </StackPanel>
             <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8A5;" ToolTipService.ToolTip="System prompt">

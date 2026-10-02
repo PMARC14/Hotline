@@ -181,4 +181,29 @@ public sealed class SettingsStoreTests : IDisposable
         New().Load();
         Assert.Contains("\"height\": 120", File.ReadAllText(path));
     }
+
+    [Fact]
+    public void New_options_are_written_into_an_existing_file_with_backup()
+    {
+        var store = new SettingsStore(_dir);
+        store.Save(new HotlineSettings());
+        var path = store.FilePath;
+        var json = File.ReadAllText(path).Replace("\"defaultPrompt\": \"default\",", "");
+        File.WriteAllText(path, json);
+        store.Load();
+        Assert.Contains("\"defaultPrompt\"", File.ReadAllText(path));
+        Assert.True(File.Exists(path + ".bak"));
+    }
+
+    [Fact]
+    public void Complete_file_is_not_rewritten()
+    {
+        var store = new SettingsStore(_dir);
+        store.Save(new HotlineSettings());
+        var path = store.FilePath;
+        File.WriteAllText(path, "// my notes\n" + File.ReadAllText(path));
+        store.Load();
+        Assert.StartsWith("// my notes", File.ReadAllText(path));
+        Assert.False(File.Exists(path + ".bak"));
+    }
 }
