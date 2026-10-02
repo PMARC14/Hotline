@@ -61,6 +61,9 @@ internal sealed partial class ChatPresenter(
             popup.Root.Background = Brush(_tokens.SolidBackground); // follows the chosen theme, not the OS theme
         popup.Input.FontSize = _tokens.FontSizePx;
         popup.Input.FontFamily = _style.Font;
+        SizeComposer();
+        _caret ??= new CustomCaret(popup.Input, popup.CaretLayer);
+        _caret.Apply(settings.Window.Caret, _style.Accent);
         foreach (var view in _assistants.Values)
         {
             view.Body.Blocks.Clear();
@@ -71,6 +74,23 @@ internal sealed partial class ChatPresenter(
             view.Dirty = true;
         }
         if (_assistants.Count > 0) RenderDirty();
+    }
+
+    private CustomCaret? _caret;
+
+    /// <summary>The message bar is sized from the text size (incl. Windows' text scaling), not fixed pixels.</summary>
+    private void SizeComposer()
+    {
+        var line = _tokens.FontSizePx * new Windows.UI.ViewManagement.UISettings().TextScaleFactor;
+        var button = Math.Round(Math.Clamp(line * 2.1, 28, 64));
+        foreach (var b in new[] { popup.PlusButton, popup.SendButton })
+        {
+            b.Width = b.Height = button;
+            b.CornerRadius = new CornerRadius(Math.Round(button * 0.3));
+        }
+        popup.PlusButton.FontSize = Math.Round(button * 0.45);
+        popup.SendButton.FontSize = Math.Round(button * 0.4);
+        popup.Composer.CornerRadius = new CornerRadius(Math.Round(button * 0.3) + 4);
     }
 
     public void Initialize()

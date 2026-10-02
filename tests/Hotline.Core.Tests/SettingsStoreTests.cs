@@ -16,7 +16,7 @@ public sealed class SettingsStoreTests : IDisposable
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
         Assert.Equal(40, s.Window.WidthPercent);
-        Assert.Equal(120, s.Window.Height);
+        Assert.Equal(0, s.Window.Height);
         Assert.True(File.Exists(store.FilePath));
     }
 
@@ -51,7 +51,7 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "window": { "minWidth": 800 } }""");
         var s = New().Load();
         Assert.Equal(800, s.Window.MinWidth);
-        Assert.Equal(120, s.Window.Height);
+        Assert.Equal(0, s.Window.Height);
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
     }
 
@@ -158,7 +158,7 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
             """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
         var s = New().Load();
-        Assert.Equal(120, s.Window.Height);
+        Assert.Equal(0, s.Window.Height);
         Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
     }
 
@@ -179,7 +179,7 @@ public sealed class SettingsStoreTests : IDisposable
         var path = Path.Combine(_dir, SettingsStore.FileName);
         File.WriteAllText(path, """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
         New().Load();
-        Assert.Contains("\"height\": 120", File.ReadAllText(path));
+        Assert.Contains("\"height\": 0", File.ReadAllText(path));
     }
 
     [Fact]

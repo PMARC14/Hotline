@@ -13,6 +13,8 @@ public sealed partial record ThemeTokens(
     string UserBubble, string CodeBackground, string Font, int FontSizePx, int RadiusPx)
 {
     private const string DefaultFont = "Segoe UI Variable Text, Segoe UI";
+    /// <summary>Windows' body text size; the app scales it with the system text-size setting.</summary>
+    public const int DefaultFontSize = 14;
 
     public static ThemeTokens Dark { get; } = new(
         "#FFF3F3F3", "#FFA8A8A8", "#FF8B7CFF", "#0FFFFFFF", "#1AFFFFFF", "#1FFFFFFF", "#388B7CFF", "#59000000", DefaultFont, 14, 8) { SolidBackground = "#FF202020" };
@@ -29,7 +31,7 @@ public sealed partial record ThemeTokens(
         var baseTokens = dark ? Dark : Light;
         var family = window.FontFamily?.Trim();
         var font = string.IsNullOrEmpty(family) || !SafeFont().IsMatch(family) ? baseTokens.Font : $"{family}, {DefaultFont}";
-        return baseTokens with { Font = font, FontSizePx = window.FontSize };
+        return baseTokens with { Font = font, FontSizePx = window.FontSize ?? DefaultFontSize };
     }
 
     [GeneratedRegex(@"^[\w ,.\-]+$")]
@@ -38,6 +40,12 @@ public sealed partial record ThemeTokens(
 
 public static class ThemeColor
 {
+    public static bool TryParse(string hex, out (byte A, byte R, byte G, byte B) color)
+    {
+        try { color = Parse(hex); return true; }
+        catch (FormatException) { color = default; return false; }
+    }
+
     public static (byte A, byte R, byte G, byte B) Parse(string hex)
     {
         if (hex.Length is not (7 or 9) || hex[0] != '#' || !uint.TryParse(hex.AsSpan(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var v))

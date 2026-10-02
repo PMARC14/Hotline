@@ -64,6 +64,22 @@ public sealed partial class PopupWindow : Window
         ApplyAppearance();
 
         Activated += OnActivated;
+        _scrollbarHide = DispatcherQueue.CreateTimer();
+        _scrollbarHide.Interval = TimeSpan.FromMilliseconds(1200);
+        _scrollbarHide.Tick += (_, _) =>
+        {
+            if (_pointerOnScrollbar) return; // keep it while hovered; re-checked next tick
+            _scrollbarHide.Stop();
+            if (_settings.Scrollbar == ScrollbarStyle.Auto)
+                MessagesScroll.VerticalScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden;
+        };
+        MessagesScroll.PointerWheelChanged += (_, _) => ShowScrollbarBriefly();
+        MessagesScroll.PointerMoved += (_, e) =>
+        {
+            _pointerOnScrollbar = e.GetCurrentPoint(MessagesScroll).Position.X > MessagesScroll.ActualWidth - 20;
+            if (_pointerOnScrollbar) ShowScrollbarBriefly();
+        };
+        MessagesScroll.PointerExited += (_, _) => _pointerOnScrollbar = false;
     }
 
     /// <summary>Re-applies backdrop, theme, always-on-top and scrollbar from the (live) settings object.</summary>
@@ -82,9 +98,21 @@ public sealed partial class PopupWindow : Window
         {
             ScrollbarStyle.Visible => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Visible,
             ScrollbarStyle.Hidden => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden,
-            _ => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Auto,
+            _ => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden, // Auto: shown on wheel/hover (ShowScrollbarBriefly)
         };
         if (AppWindow.IsVisible) PlaceOnActiveMonitor();
+    }
+
+    private readonly Microsoft.UI.Dispatching.DispatcherQueueTimer _scrollbarHide;
+    private bool _pointerOnScrollbar;
+
+    /// <summary>Scrollbar style Auto: invisible until the user scrolls or points at the right edge, then fades.</summary>
+    private void ShowScrollbarBriefly()
+    {
+        if (_settings.Scrollbar != ScrollbarStyle.Auto) return;
+        MessagesScroll.VerticalScrollBarVisibility = Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Auto;
+        _scrollbarHide.Stop();
+        _scrollbarHide.Start();
     }
 
     public bool IsShown => AppWindow.IsVisible;
@@ -176,7 +204,9 @@ public sealed partial class PopupWindow : Window
     {
         if (_bar.Width == 0) return;
         var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
-        var r = PopupGeometry.GrowUp(_bar, (int)Math.Ceiling(_contentDip * _scale), maxPx, _work, GrowMode);
+        // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
+        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
+        var r = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 

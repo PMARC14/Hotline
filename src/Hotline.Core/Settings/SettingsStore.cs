@@ -117,9 +117,13 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v6: text size follows Windows unless chosen. 14 was the old fixed default.
+        if (s.SchemaVersion < 6 && s.Window.FontSize == 14)
+            s.Window.FontSize = null;
+        // → v6: the empty panel hugs the message bar (no reserved space). Move untouched old default heights.
+        if (s.SchemaVersion < 6 && s.Window.Height is 120 or 320 or 520)
+            s.Window.Height = 0;
         // → v5: the panel starts as a minimal input bar again (user feedback). Move untouched old default heights.
-        if (s.SchemaVersion < 5 && s.Window.Height is 320 or 520)
-            s.Window.Height = 120;
         // v2 → v3: long press now starts a new chat. Only move users still on the old default.
         if (s.SchemaVersion < 3 && s.Activation.Hold == KeyAction.ShowPopup)
             s.Activation.Hold = KeyAction.NewChat;
@@ -137,7 +141,11 @@ public sealed class SettingsStore(string directory)
         if (!s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
-        s.Window.FontSize = Math.Clamp(s.Window.FontSize, 10, 32);
+        if (s.Window.FontSize is { } fontSize) s.Window.FontSize = Math.Clamp(fontSize, 10, 32);
+        s.Window.Caret ??= new CaretSettings();
+        s.Window.Caret.Width = Math.Clamp(s.Window.Caret.Width, 1, 8);
+        s.Window.Caret.BlinkMs = Math.Clamp(s.Window.Caret.BlinkMs, 200, 2000);
+        if (s.Window.Caret.Color is { } caretColor && !Theming.ThemeColor.TryParse(caretColor, out _)) s.Window.Caret.Color = null;
         s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
@@ -145,7 +153,7 @@ public sealed class SettingsStore(string directory)
         s.Window.WidthPercent = Math.Clamp(s.Window.WidthPercent, 20, 90);
         s.Window.MinWidth = Math.Clamp(s.Window.MinWidth, 320, 4000);
         s.Window.MaxWidth = Math.Clamp(s.Window.MaxWidth, s.Window.MinWidth, 4000);
-        s.Window.Height = Math.Clamp(s.Window.Height, 120, 4000);
+        s.Window.Height = Math.Clamp(s.Window.Height, 0, 4000);
         s.Window.MaxHeightPercent = Math.Clamp(s.Window.MaxHeightPercent, 30, 95);
         s.SchemaVersion = HotlineSettings.CurrentSchemaVersion;
         return s;

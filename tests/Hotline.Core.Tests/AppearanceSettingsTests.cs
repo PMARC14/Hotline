@@ -23,7 +23,8 @@ public sealed class AppearanceSettingsTests : IDisposable
         var s = new SettingsStore(_dir).Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
         Assert.Equal(KeyAction.NewChat, s.Activation.Hold);
-        Assert.Equal(14, s.Window.FontSize);
+        Assert.Null(s.Window.FontSize); // Windows default
+        Assert.Equal(CaretStyle.Bar, s.Window.Caret.Style);
         Assert.Null(s.Window.FontFamily);
         Assert.Equal(ScrollbarStyle.Auto, s.Window.Scrollbar);
         Assert.Equal(GrowMode.Grow, s.Chat.GrowMode);
@@ -66,5 +67,24 @@ public sealed class AppearanceSettingsTests : IDisposable
         Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, work, GrowMode.Full).Height);
         Assert.Equal(120, PopupGeometry.GrowUp(bar, 120, 560, work, GrowMode.Full).Height); // bar only: stays a bar
         Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, work, GrowMode.Grow).Height);
+    }
+
+    [Fact]
+    public void Old_fixed_font_size_migrates_to_windows_default()
+    {
+        Assert.Null(LoadJson("""{ "schemaVersion": 5, "window": { "fontSize": 14 } }""").Window.FontSize);
+        Assert.Equal(16, LoadJson("""{ "schemaVersion": 5, "window": { "fontSize": 16 } }""").Window.FontSize);
+    }
+
+    [Fact]
+    public void Default_font_size_tokens_use_windows_size()
+        => Assert.Equal(ThemeTokens.DefaultFontSize, ThemeTokens.For(dark: false, new WindowSettings()).FontSizePx);
+
+    [Fact]
+    public void Caret_settings_are_clamped_and_bad_colors_dropped()
+    {
+        var c = LoadJson("""{ "window": { "caret": { "style": "block", "width": 40, "blinkMs": 5, "color": "orange" } } }""").Window.Caret;
+        Assert.Equal((CaretStyle.Block, 8.0, 200, (string?)null), (c.Style, c.Width, c.BlinkMs, c.Color));
+        Assert.Equal("#FF8800", LoadJson("""{ "window": { "caret": { "color": "#FF8800" } } }""").Window.Caret.Color);
     }
 }

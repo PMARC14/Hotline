@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 5;
+    public const int CurrentSchemaVersion = 6;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -41,8 +41,8 @@ public sealed class WindowSettings
     public double WidthPercent { get; set; } = 40;
     public int MinWidth { get; set; } = 600;
     public int MaxWidth { get; set; } = 1000;
-    /// <summary>Starting panel height in DIPs: a minimal input bar by default; it grows upward with text and replies.</summary>
-    public int Height { get; set; } = 120;
+    /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
+    public int Height { get; set; }
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
     public double MaxHeightPercent { get; set; } = 70;
     /// <summary>Where the popup sits vertically: 0 = top, 0.5 = centered, 1 = bottom of the free space.</summary>
@@ -50,8 +50,10 @@ public sealed class WindowSettings
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
-    /// <summary>Chat text size in px (10–32).</summary>
-    public int FontSize { get; set; } = 14;
+    /// <summary>Chat text size in px (10–32); null = the Windows default (scaled by Settings › Accessibility › Text size).</summary>
+    public int? FontSize { get; set; }
+    /// <summary>The text cursor in the message box.</summary>
+    public CaretSettings Caret { get; set; } = new();
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
     public string? FontFamily { get; set; }
     public ScrollbarStyle Scrollbar { get; set; } = ScrollbarStyle.Auto;
@@ -60,6 +62,21 @@ public sealed class WindowSettings
     public double TintOpacity { get; set; } = 0.15;
     /// <summary>Acrylic luminosity layer, 0 (most see-through) to 1.</summary>
     public double LuminosityOpacity { get; set; } = 0.35;
+}
+
+public enum CaretStyle { Bar, Block, Underline, System }
+
+public sealed class CaretSettings
+{
+    /// <summary>Bar, Block, Underline, or System (Windows' own caret; can be hard to see over acrylic).</summary>
+    public CaretStyle Style { get; set; } = CaretStyle.Bar;
+    /// <summary>"#RRGGBB" / "#AARRGGBB"; null = the accent color.</summary>
+    public string? Color { get; set; }
+    /// <summary>Bar width / underline thickness in DIPs (1–8).</summary>
+    public double Width { get; set; } = 2;
+    public bool Blink { get; set; } = true;
+    /// <summary>Blink half-period in milliseconds (200–2000).</summary>
+    public int BlinkMs { get; set; } = 530;
 }
 
 public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local }

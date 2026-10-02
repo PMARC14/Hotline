@@ -9,9 +9,9 @@
             <!-- Keep the composer TextBox see-through in every state so acrylic shows. -->
             <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="Transparent" />
-            <!-- Focused input gets a real fill: the text caret is drawn by inverting what is behind it, so over a
-                 fully transparent (acrylic) background it is invisible. -->
-            <StaticResource x:Key="TextControlBackgroundFocused" ResourceKey="ControlFillColorInputActiveBrush" />
+            <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="Transparent" />
+            <!-- No minimum height: the message box is as tall as one line of text (Hotline sizes it from the font). -->
+            <x:Double x:Key="TextControlThemeMinHeight">0</x:Double>
             <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBorderBrushPointerOver" Color="Transparent" />
             <SolidColorBrush x:Key="TextControlBorderBrushFocused" Color="Transparent" />
@@ -46,9 +46,9 @@
 
         <StackPanel x:Name="NoticesPanel" x:FieldModifier="internal" Grid.Row="1" Spacing="6" />
 
-        <Border x:Name="Composer" x:FieldModifier="internal" Grid.Row="2" CornerRadius="12" Padding="6" BorderThickness="1"
+        <Border x:Name="Composer" x:FieldModifier="internal" Grid.Row="2" CornerRadius="12" Padding="4" BorderThickness="1"
                 Background="{ThemeResource ControlFillColorDefaultBrush}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
-            <StackPanel Spacing="6">
+            <StackPanel Spacing="4">
                 <StackPanel x:Name="ChipsPanel" x:FieldModifier="internal" Orientation="Horizontal" Spacing="6" Visibility="Collapsed" />
                 <Grid ColumnSpacing="6">
                     <Grid.ColumnDefinitions>
@@ -71,9 +71,11 @@
                             </MenuFlyout>
                         </Button.Flyout>
                     </Button>
-                    <TextBox x:Name="Input" x:FieldModifier="internal" Grid.Column="1" PlaceholderText="📞 Hotline" Padding="10,6,6,6"
-                             AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="180" VerticalAlignment="Center"
+                    <TextBox x:Name="Input" x:FieldModifier="internal" Grid.Column="1" PlaceholderText="📞 Hotline" Padding="8,4,6,4"
+                             MinHeight="0" AcceptsReturn="True" TextWrapping="Wrap" MaxHeight="180" VerticalAlignment="Center"
                              ScrollViewer.VerticalScrollBarVisibility="Auto" />
+                    <!-- Hotline's own text cursor is drawn here (see CustomCaret). -->
+                    <Canvas x:Name="CaretLayer" x:FieldModifier="internal" Grid.Column="1" IsHitTestVisible="False" />
                     <Button x:Name="SendButton" x:FieldModifier="internal" Grid.Column="2" Width="44" Height="44" Padding="0"
                             CornerRadius="10" Style="{StaticResource AccentButtonStyle}" FontFamily="Segoe Fluent Icons"
                             FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="Send (Enter)" VerticalAlignment="Bottom" />
