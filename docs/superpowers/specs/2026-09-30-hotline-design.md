@@ -186,6 +186,11 @@ hooks or MCP servers; NOT `--bare`, which never reads the OAuth login); own tool
 the working folder; always `--permission-prompts none` (prompts are denied in the background); prompts via
 `--append-system-prompt`; images inline as base64 blocks; effort = `--effort low|medium|high|xhigh|max`.
 
+**API backends (done 2026-10-02):** OpenAI-compatible/local (chat/completions SSE, images as data URLs,
+reasoning_effort from the file), Gemini (streamGenerateContent SSE, thought parts hidden), Anthropic (official C# SDK,
+beta messages stream, default claude-opus-5-5, adaptive thinking default, output_config.effort, server-side refusal
+fallback "default" on supported models). All stateless: full conversation per turn; keys only over https/loopback.
+
 **Plan 4b — recent chats (user idea 2026-10-02):** small, overlay-sized: a "Recent" menu (last ~10 conversations from
 `~/.hotline/history`, one click continues), Ctrl+↑ reopens the last chat, "Open in CLI" (`agy` /resume,
 `claude --resume`) for the full experience. Full history browsing/search stays out of the overlay.

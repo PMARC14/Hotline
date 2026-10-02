@@ -91,6 +91,8 @@ public sealed class BackendProfile
     public List<string>? Args { get; set; }
     /// <summary>Let the CLI keep its own copy of these chats (agy always does; Claude Code only when true).</summary>
     public bool KeepCliSessions { get; set; }
+    /// <summary>Anthropic API: if a safety check declines a request, let the API re-serve it with a suitable model.</summary>
+    public bool RefusalFallback { get; set; } = true;
     /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
     /// <summary>

@@ -255,6 +255,13 @@ public sealed partial class SettingsWindow
             if (p.Type == BackendType.Antigravity) AddAgyPermissions(host, p, Save);
         }
 
+        if (p.Type == BackendType.Anthropic)
+        {
+            var fallback = new ToggleSwitch { IsOn = p.RefusalFallback, OnContent = "", OffContent = "", MinWidth = 0 };
+            fallback.Toggled += async (_, _) => await Save(x => x.RefusalFallback = fallback.IsOn);
+            host.Children.Add(Card("Refusal fallback", "If a safety check declines a request, the API re-serves it with a suitable model instead of stopping (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).", fallback));
+        }
+
         var prompt = new ComboBox { MinWidth = 220 };
         prompt.Items.Add(new ComboBoxItem { Content = $"Default ({_settings.Current.Chat.DefaultPrompt})", Tag = "" });
         foreach (var name in _prompts.List()) prompt.Items.Add(new ComboBoxItem { Content = name, Tag = name });

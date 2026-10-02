@@ -23,12 +23,14 @@ public sealed class BackendCatalogTests : IDisposable
     }
 
     [Theory]
-    [InlineData(BackendType.Gemini)]
-    [InlineData(BackendType.OpenAiCompatible)]
-    public void Api_backends_are_not_available_yet(BackendType type)
+    [InlineData(BackendType.Gemini, typeof(Hotline.Core.Backends.Api.GeminiBackend))]
+    [InlineData(BackendType.OpenAiCompatible, typeof(Hotline.Core.Backends.Api.OpenAiBackend))]
+    [InlineData(BackendType.Local, typeof(Hotline.Core.Backends.Api.OpenAiBackend))]
+    [InlineData(BackendType.Anthropic, typeof(Hotline.Core.Backends.Api.AnthropicBackend))]
+    public void Api_backends_are_available(BackendType type, Type expected)
     {
-        Assert.Null(BackendFactory.Create(new BackendProfile { Id = "x", Type = type }, Deps()));
-        Assert.False(BackendFactory.IsAvailable(type));
+        Assert.IsType(expected, BackendFactory.Create(new BackendProfile { Id = "x", Type = type }, Deps()));
+        Assert.True(BackendFactory.IsAvailable(type));
     }
 
     [Fact]

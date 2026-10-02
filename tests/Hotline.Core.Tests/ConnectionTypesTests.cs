@@ -16,7 +16,8 @@ public class ConnectionTypesTests
         Assert.True(ConnectionTypes.Of(BackendType.Antigravity).EffortInModelId);
         Assert.Equal(["low", "medium", "high", "xhigh", "max"], ConnectionTypes.Of(BackendType.ClaudeCode).EffortLevels);
         Assert.False(ConnectionTypes.Of(BackendType.ClaudeCode).EffortInModelId);
-        Assert.All(ConnectionTypes.All.Where(t => t.Type is not (BackendType.Antigravity or BackendType.ClaudeCode)), t => Assert.Empty(t.EffortLevels));
+        Assert.Equal(["low", "medium", "high", "xhigh", "max"], ConnectionTypes.Of(BackendType.Anthropic).EffortLevels);
+        Assert.All(ConnectionTypes.All.Where(t => t.Type is not (BackendType.Antigravity or BackendType.ClaudeCode or BackendType.Anthropic)), t => Assert.Empty(t.EffortLevels));
     }
 
     [Fact]

@@ -59,6 +59,12 @@ file is kept as `settings.json.bad` and defaults are used.
 API, Anthropic API, OpenAI-compatible APIs and local endpoints (llama.cpp, LM Studio). Only Antigravity chats today; the
 others can already be configured and tested. In the bottom bar, **Effort → Model → Provider** pick who answers.
 
+**API connections** (OpenAI-compatible incl. OpenRouter/Groq, local llama.cpp/LM Studio servers, Gemini API, Anthropic API)
+chat directly: add one in Settings › AI connections, paste the key (stored in Windows Credential Locker), pick a model.
+Keys are only sent over https (plain http only to this PC). The Anthropic connection uses the official SDK, defaults to
+Claude Opus 5.5 and has a refusal fallback (on by default): if a safety check declines a request, the API re-serves it
+with a suitable model.
+
 **Tool use** per connection: *Chat only* (default; reads only your attachments) or *Use the program's own tools*. agy
 then works in your chosen folder under **its own** permission rules (`~/.gemini/antigravity-cli/settings.json`,
 `permissions.allow/deny`). Hotline runs agy in the background, where anything that would ask is **denied**, so shell

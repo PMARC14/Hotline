@@ -9,13 +9,18 @@ namespace Hotline.Core.Backends;
 public sealed record BackendDeps(
     ILineProcessFactory Processes, AgyWorkspace AgyWorkspace, FileLog Log,
     Func<string, bool> FileExists, string? LocalAppData, string? PathEnv,
-    Func<BackendProfile, string> SystemPrompt, string HomeDirectory, string? ClaudeWorkspace = null);
+    Func<BackendProfile, string> SystemPrompt, string HomeDirectory, string? ClaudeWorkspace = null,
+    ISecretStore? Secrets = null, HttpClient? Http = null);
 
 public static class BackendFactory
 {
-    public static bool IsAvailable(BackendType type) => type is BackendType.Antigravity or BackendType.ClaudeCode;
+    public static bool IsAvailable(BackendType type) => Enum.IsDefined(type);
 
     /// <summary>Creates the backend for a profile, or null if that backend type isn't implemented yet (Plan 3).</summary>
+    private static readonly Lazy<HttpClient> SharedHttp = new(() => new HttpClient { Timeout = TimeSpan.FromMinutes(10) });
+    private static HttpClient Http(BackendDeps deps) => deps.Http ?? SharedHttp.Value;
+    private static ISecretStore Secrets(BackendDeps deps) => deps.Secrets ?? new InMemorySecretStore();
+
     public static IChatBackend? Create(BackendProfile p, BackendDeps deps) => p.Type switch
     {
         BackendType.Antigravity => new AgyBackend(p,
@@ -24,6 +29,9 @@ public static class BackendFactory
         BackendType.ClaudeCode => new ClaudeCode.ClaudeCodeBackend(p,
             () => ClaudeCode.ClaudeLocator.Find(p.CliPath, deps.FileExists, deps.HomeDirectory, deps.PathEnv),
             deps.ClaudeWorkspace ?? Path.Combine(Path.GetTempPath(), "hotline-claude"), deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
+        BackendType.OpenAiCompatible or BackendType.Local => new Api.OpenAiBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log),
+        BackendType.Anthropic => new Api.AnthropicBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log),
+        BackendType.Gemini => new Api.GeminiBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log),
         _ => null,
     };
 }

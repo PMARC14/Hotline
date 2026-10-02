@@ -27,7 +27,7 @@ public static class ConnectionTypes
         new(BackendType.Gemini, "Gemini API", "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",
             [], false, "A Google AI Studio API key."),
         new(BackendType.Anthropic, "Anthropic API", "Claude API", Api, "https://api.anthropic.com/v1",
-            [], false, "An Anthropic Console API key."),
+            Hotline.Core.Backends.Api.AnthropicBackend.EffortLevels, false, "An Anthropic Console API key. Default model: Claude Opus 5.5."),
         new(BackendType.OpenAiCompatible, "OpenAI-compatible API", "OpenAI-compatible", Api, "https://api.openai.com/v1",
             [], false, "OpenAI, OpenRouter, Groq and other OpenAI-style APIs."),
         new(BackendType.Local, "Local endpoint", "Local model", Api, "http://127.0.0.1:8080/v1",
