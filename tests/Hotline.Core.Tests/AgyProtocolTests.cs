@@ -105,4 +105,12 @@ public class AgyProtocolTests
         Assert.Contains("Be brief.", p);
         Assert.EndsWith("hi", p);
     }
+
+
+    [Fact]
+    public void Approve_all_only_applies_in_inherit_mode()
+    {
+        Assert.Contains("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }));
+        Assert.DoesNotContain("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.ChatOnly, ApproveAllTools = true }));
+    }
 }

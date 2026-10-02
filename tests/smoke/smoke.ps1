@@ -109,6 +109,13 @@ try {
     for ($i = 0; $i -lt 20 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest (rebuild ok|FAILED)'); $i++) { Start-Sleep -Milliseconds 500 }
     Expect-Log 'transcript self-test renders' $n 'selftest rebuild ok'
 
+    # 4c. Hand edits to settings.json apply live (no restart)
+    $n = Get-LogCount
+    $json = [IO.File]::ReadAllText($settingsFile) -replace '"verticalPosition":\s*[0-9.]+', '"verticalPosition": 0.75'
+    [IO.File]::WriteAllText($settingsFile, $json)
+    for ($i = 0; $i -lt 10 -and -not (Get-NewLog $n | Select-String -Pattern 'settings.json changed on disk'); $i++) { Start-Sleep -Milliseconds 500 }
+    Expect-Log 'settings.json edits apply live' $n 'settings.json changed on disk; applied'
+
     # 5. Fallback hotkey
     $json = [IO.File]::ReadAllText($settingsFile) -replace '"fallbackHotkey":\s*(null|"[^"]*")', '"fallbackHotkey": "Ctrl+Alt+H"'
     [IO.File]::WriteAllText($settingsFile, $json)

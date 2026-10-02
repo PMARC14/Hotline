@@ -34,4 +34,31 @@ public sealed class SettingsServiceTests : IDisposable
         service.Update(s => s.Window.HideOnBlur = false);
         Assert.False(window.HideOnBlur);
     }
+
+
+    [Fact]
+    public void Reload_copies_hand_edits_into_the_live_objects_once()
+    {
+        var service = New(out var store);
+        var window = service.Current.Window;
+        var backends = service.Current.Chat.Backends;
+        var raised = 0;
+        service.Changed += () => raised++;
+
+        var edited = store.Load();
+        edited.Window.FontSize = 18;
+        edited.Chat.Backends[0].Model = "gemini-3.1-pro-high";
+        Assert.True(service.Reload(edited));
+        Assert.Equal(18, window.FontSize);                       // same object other components hold
+        Assert.Equal("gemini-3.1-pro-high", backends[0].Model);  // same list instance
+        Assert.Equal(1, raised);
+
+        Assert.False(service.Reload(store.Load().Also(s => { s.Window.FontSize = 18; s.Chat.Backends[0].Model = "gemini-3.1-pro-high"; })));
+        Assert.Equal(1, raised);
+    }
+}
+
+internal static class TestExtensions
+{
+    public static T Also<T>(this T value, Action<T> change) { change(value); return value; }
 }

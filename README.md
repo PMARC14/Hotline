@@ -17,32 +17,52 @@ Then: Settings → Personalization → Text input → Customize Copilot key on k
 
 ## Settings
 
-Settings live in `%USERPROFILE%\.hotline\settings.json` (logs and history next to it).
-
-Tray icon → right-click → **Edit settings file**, then **Restart (apply settings)**. Useful keys:
+Settings live in `%USERPROFILE%\.hotline\settings.json` (logs, history and `prompts\` next to it). The file is the
+configuration: every option is written into it, and saving it applies the change immediately. The settings window
+(⚙ in the panel, tray → **Settings…**, or `hotline://settings`) edits the same file. API keys are the exception: they
+are stored in Windows Credential Locker. Useful keys:
 
 | Key | Default | Meaning |
 |---|---|---|
 | `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
-| `window.height` / `maxHeightPercent` | `320` / `70` | Baseline height (DIPs) and how much of the screen it may grow to |
+| `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (DIPs; 0 = just the message bar) and how much of the screen it may grow to |
 | `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the screen's free space |
 | `window.backdrop` | `acrylic` | `acrylic`, `acrylicThin`, `mica`, `solid` |
 | `window.tintOpacity` / `window.luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` | `true` | Hide when you click elsewhere |
-| `window.fontSize` / `window.fontFamily` | `14` / (Segoe UI Variable) | Chat text size (10–32) and font, e.g. `"Cascadia Code"` |
-| `window.scrollbar` | `auto` | `auto`, `visible`, `hidden` |
+| `window.fontSize` / `window.fontFamily` | (Windows default) / (Segoe UI Variable) | Chat text size (10–32; empty = follows Windows' text size) and font, e.g. `"Cascadia Code"` |
+| `window.caret` | bar, accent, 2, blink | Text cursor: `style` (`bar`, `block`, `underline`, `system`), `color` (`#RRGGBB`), `width`, `blink`, `blinkMs` |
+| `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
 | `activation.tap` / `activation.hold` | `togglePopup` / `newChat` | Copilot key: short press opens/closes, long press starts a new chat. Also: `showPopup`, `captureWindow`, `none` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the popup |
 
 | `chat.defaultBackend` | `agy` | Which AI answers (`agy` = Gemini via your Antigravity CLI sign-in) |
-| `chat.backends[].model` | (agy default) | e.g. `gemini-3.8-flash-low` for faster answers (`agy models` lists them) |
-| `chat.backends[].effort` | (agy default) | `low`, `medium`, `high`, `max` |
+| `chat.backends[].model` | (agy default) | e.g. `gemini-3.8-flash-low` (`agy models` lists them; agy puts the effort level in the model id) |
+| `chat.backends[].effort` | (agy default) | `low`, `medium`, `high` — only used with the default model |
+| `chat.backends[].tools` | `chatOnly` | `chatOnly`, or `inherit` = the CLI's own tools and permission rules in `workingDirectory` |
+| `chat.backends[].prompt` / `chat.defaultPrompt` | `null` / `default` | System prompt = `prompts\<name>.md` |
+| `chat.backends[].approveAllTools` | `false` | ⚠ Dangerous: agy runs any command / edits any file without asking (inherit mode only) |
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height (`window.maxHeightPercent`) once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in %USERPROFILE%\.hotline\history (text only) |
 
-Comments and trailing commas are allowed. A broken file is kept as `settings.json.bad` and defaults are used.
+Comments and trailing commas are allowed. A half-saved or broken file is ignored while Hotline runs; at startup a broken
+file is kept as `settings.json.bad` and defaults are used.
+
+### AI connections, tools and prompts
+
+**AI connections** (settings window) adds, duplicates and removes connections: Antigravity (agy), Claude Code, Gemini
+API, Anthropic API, OpenAI-compatible APIs and local endpoints (llama.cpp, LM Studio). Only Antigravity chats today; the
+others can already be configured and tested. In the bottom bar, **Effort → Model → Provider** pick who answers.
+
+**Tool use** per connection: *Chat only* (default; reads only your attachments) or *Use the program's own tools*. agy
+then works in your chosen folder under **its own** permission rules (`~/.gemini/antigravity-cli/settings.json`,
+`permissions.allow/deny`). Hotline runs agy in the background, where anything that would ask is **denied**, so shell
+commands need allow rules: **Allow read-only commands** adds a curated list (and denies `Remove-Item`, `rm`,
+`git push`…). **Approve everything** skips all checks — dangerous.
+
+**System prompts** are Markdown files in `%USERPROFILE%\.hotline\prompts`; switch them from the 📄 button in the bar.
 
 ### Chatting
 

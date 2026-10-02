@@ -10,7 +10,7 @@ public enum ActivationKind { Launch, Protocol, ProtocolForResults, StartupTask, 
 public sealed record ActivationRequest(ActivationKind Kind, Uri? Uri, bool IsFirstLaunch);
 
 /// <summary>What to do: route a key event, show the popup, or (neither) stay in the tray.</summary>
-public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup);
+public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false);
 
 public static class ActivationPlanner
 {
@@ -19,6 +19,7 @@ public static class ActivationPlanner
         // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
         ActivationKind.Protocol or ActivationKind.ProtocolForResults =>
             ActivationParser.ParseUri(r.Uri) is { } key ? new ActivationPlan(key, false)
+            : string.Equals(r.Uri?.Host, "settings", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false, OpenSettings: true)
             // hotline://tray: start or wake quietly in the tray (used by install/test scripts)
             : string.Equals(r.Uri?.Host, "tray", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false)
             : new ActivationPlan(null, true),

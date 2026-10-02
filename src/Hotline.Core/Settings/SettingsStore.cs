@@ -24,6 +24,21 @@ public sealed class SettingsStore(string directory)
 
     public string FilePath => Path.Combine(directory, FileName);
 
+    /// <summary>
+    /// Reads settings.json without any side effects (no defaults written, no backup, no write-back): null when the
+    /// file is missing, unreadable or not valid JSON — e.g. half-saved by an editor. Used for live reloads.
+    /// </summary>
+    public HotlineSettings? TryRead()
+    {
+        try
+        {
+            if (!File.Exists(FilePath)) return null;
+            var s = JsonSerializer.Deserialize<HotlineSettings>(File.ReadAllText(FilePath), Options);
+            return s is null ? null : Normalize(s);
+        }
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { return null; }
+    }
+
     public HotlineSettings Load()
     {
         if (!File.Exists(FilePath))

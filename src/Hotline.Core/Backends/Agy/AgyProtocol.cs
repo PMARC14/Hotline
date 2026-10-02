@@ -46,6 +46,8 @@ public static class AgyProtocol
         if (p.Tools == ToolMode.ChatOnly)
             args.AddRange(["--agent", string.IsNullOrWhiteSpace(p.Agent) ? DefaultAgent : p.Agent]);
         if (!string.IsNullOrWhiteSpace(addDir)) args.AddRange(["--add-dir", addDir]);
+        // Only via the explicit, warned setting (never from ExtraArgs) and never in chat-only mode.
+        if (p.Tools == ToolMode.Inherit && p.ApproveAllTools) args.Add("--dangerously-skip-permissions");
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model]);
         if (p.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" or "max")
             args.AddRange(["--effort", p.Effort.Trim().ToLowerInvariant()]);

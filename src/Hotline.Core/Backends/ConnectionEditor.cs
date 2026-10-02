@@ -29,7 +29,7 @@ public static class ConnectionEditor
         {
             Id = UniqueId(chat, source.Id), Type = source.Type, Name = UniqueName(chat, source.Name + " (copy)"),
             Model = source.Model, Effort = source.Effort, Endpoint = source.Endpoint, CliPath = source.CliPath,
-            Agent = source.Agent, ExtraArgs = source.ExtraArgs, Tools = source.Tools,
+            Agent = source.Agent, ExtraArgs = source.ExtraArgs, Tools = source.Tools, ApproveAllTools = source.ApproveAllTools,
             WorkingDirectory = source.WorkingDirectory, Prompt = source.Prompt,
         };
         chat.Backends.Insert(chat.Backends.IndexOf(source) + 1, copy);

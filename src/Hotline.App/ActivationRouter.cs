@@ -31,6 +31,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     /// <summary>hotline://selftest renders a scripted conversation in the hidden panel (no typing).</summary>
     public event Action? SelfTestRequested;
+    public event Action? OpenSettingsRequested;
 
     public void OnActivation(ActivationRequest request)
     {
@@ -42,6 +43,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
             return;
         }
         var plan = ActivationPlanner.Plan(request);
+        if (plan.OpenSettings) { OpenSettingsRequested?.Invoke(); return; }
         if (plan.Key is { } key) OnKey(key, KeySource.Protocol);
         else if (plan.ShowPopup) popup.ShowPopup();
     }

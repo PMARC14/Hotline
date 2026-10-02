@@ -67,7 +67,7 @@ internal sealed class TrayIcon : IDisposable
     {
         var menu = Native.CreatePopupMenu();
         Native.AppendMenu(menu, Native.MF_STRING, CmdOpen, "Open Hotline");
-        Native.AppendMenu(menu, Native.MF_STRING, CmdSettings, "Edit settings file");
+        Native.AppendMenu(menu, Native.MF_STRING, CmdSettings, "Settings…");
         Native.AppendMenu(menu, Native.MF_STRING, CmdRestart, "Restart (apply settings)");
         Native.AppendMenu(menu, Native.MF_SEPARATOR, 0, null);
         Native.AppendMenu(menu, Native.MF_STRING, CmdQuit, "Quit");

@@ -102,6 +102,12 @@ public sealed class BackendProfile
     public string? ExtraArgs { get; set; }
     /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
+    /// <summary>
+    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy --dangerously-skip-permissions), including
+    /// shell commands and file edits, with no prompt. Off: the CLI's own permission rules apply (in the background,
+    /// anything that would ask is denied).
+    /// </summary>
+    public bool ApproveAllTools { get; set; }
     /// <summary>Folder the CLI works in when Tools = Inherit. Null or missing = your user folder.</summary>
     public string? WorkingDirectory { get; set; }
     /// <summary>System prompt name (file ~/.hotline/prompts/&lt;name&gt;.md). Null = chat.defaultPrompt.</summary>

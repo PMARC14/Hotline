@@ -206,4 +206,15 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.StartsWith("// my notes", File.ReadAllText(path));
         Assert.False(File.Exists(path + ".bak"));
     }
+
+    [Fact]
+    public void TryRead_never_touches_a_broken_file()
+    {
+        var store = new SettingsStore(_dir);
+        store.Save(new HotlineSettings());
+        File.WriteAllText(store.FilePath, "{ \"window\": { \"fontSize\": 1");
+        Assert.Null(store.TryRead());
+        Assert.Equal("{ \"window\": { \"fontSize\": 1", File.ReadAllText(store.FilePath));
+        Assert.False(File.Exists(store.FilePath + ".bad"));
+    }
 }

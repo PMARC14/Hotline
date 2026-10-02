@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Hotline.App.Chat;
 using Hotline.App.Interop;
+using Hotline.App.Settings;
 using Hotline.Core.Backends;
 using Hotline.Core.Backends.Agy;
 using Hotline.Core.Chat;
@@ -29,6 +30,8 @@ public partial class App : Application
     private ModelCatalog? _models;
     private ISecretStore? _secrets;
     private readonly HashSet<string> _pendingInvalidations = [];
+    private SettingsHost? _settingsHost;
+    private FileSystemWatcher? _settingsWatcher;
 
     public App(AppActivationArguments initialActivation)
     {
@@ -122,6 +125,11 @@ public partial class App : Application
             if (!busy) _ = FlushInvalidationsAsync();
         };
         _router.SelfTestRequested += () => _presenter.SelfTest();
+        _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
+            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log), _log);
+        _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
+        _router.OpenSettingsRequested += () => _settingsHost.Show();
+        WatchSettingsFile(store);
         _settingsService.Changed += () =>
         {
             try
@@ -155,12 +163,7 @@ public partial class App : Application
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
-            onOpenSettings: () =>
-            {
-                try { Process.Start(new ProcessStartInfo(store.FilePath) { UseShellExecute = true }); }
-                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
-                { Process.Start(new ProcessStartInfo("notepad.exe", $"\"{store.FilePath}\"") { UseShellExecute = true }); }
-            },
+            onOpenSettings: () => _settingsHost?.Show(),
             onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
             onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); }).Wait(TimeSpan.FromSeconds(2)); Exit(); });
 
@@ -191,5 +194,33 @@ public partial class App : Application
             try { if (_backends is not null) await _backends.InvalidateAsync(id); }
             catch (Exception ex) { _log?.Error($"restarting backend {id} failed", ex); }
         }
+    }
+
+    /// <summary>settings.json is the configuration: hand edits apply live (debounced; Hotline's own saves are no-ops).</summary>
+    private void WatchSettingsFile(SettingsStore store)
+    {
+        var dir = Path.GetDirectoryName(store.FilePath)!;
+        var timer = _popup!.DispatcherQueue.CreateTimer();
+        timer.Interval = TimeSpan.FromMilliseconds(400);
+        timer.IsRepeating = false;
+        timer.Tick += (_, _) =>
+        {
+            try
+            {
+                if (store.TryRead() is not { } fromDisk) { _log?.Info("settings.json not readable yet (being edited?); keeping current settings"); return; }
+                if (_settingsService!.Reload(fromDisk)) _log?.Info("settings.json changed on disk; applied");
+            }
+            catch (Exception ex) { _log?.Error("reloading settings failed", ex); }
+        };
+        try
+        {
+            _settingsWatcher = new FileSystemWatcher(dir, Path.GetFileName(store.FilePath)) { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName };
+            FileSystemEventHandler changed = (_, _) => _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); });
+            _settingsWatcher.Changed += changed;
+            _settingsWatcher.Created += changed;
+            _settingsWatcher.Renamed += (_, _) => _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); });
+            _settingsWatcher.EnableRaisingEvents = true;
+        }
+        catch (Exception ex) when (ex is IOException or ArgumentException) { _log?.Error("can't watch settings.json", ex); }
     }
 }
