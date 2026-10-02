@@ -103,6 +103,12 @@ try {
         Check 'one agy process' (@(Get-Process agy -ErrorAction SilentlyContinue).Count -eq 1)
     }
 
+    # 4b. Transcript rendering self-test (hidden panel; no typing)
+    $n = Get-LogCount
+    Start-Process 'hotline://selftest'
+    for ($i = 0; $i -lt 20 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest (rebuild ok|FAILED)'); $i++) { Start-Sleep -Milliseconds 500 }
+    Expect-Log 'transcript self-test renders' $n 'selftest rebuild ok'
+
     # 5. Fallback hotkey
     $json = [IO.File]::ReadAllText($settingsFile) -replace '"fallbackHotkey":\s*(null|"[^"]*")', '"fallbackHotkey": "Ctrl+Alt+H"'
     [IO.File]::WriteAllText($settingsFile, $json)

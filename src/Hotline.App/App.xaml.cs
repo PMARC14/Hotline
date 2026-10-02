@@ -121,6 +121,7 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
+        _router.SelfTestRequested += () => _presenter.SelfTest();
         _settingsService.Changed += () =>
         {
             try

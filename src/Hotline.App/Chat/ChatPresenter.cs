@@ -21,19 +21,6 @@ internal sealed partial class ChatPresenter(
     PopupWindow popup, ChatController chat, AttachmentTray tray, HotlineSettings settings, SettingsStore store, FileLog log,
     string dataDirectory)
 {
-    private sealed class AssistantView
-    {
-        public required RichTextBlock Body { get; init; }
-        public List<int> ParagraphCounts { get; } = [];
-        public required StackPanel Container { get; init; }
-        public required TextBlock Caret { get; init; }
-        public IReadOnlyList<MdBlock> Blocks { get; set; } = [];
-        public string Text { get; set; } = "";
-        public bool Streaming { get; set; } = true;
-        public bool Dirty { get; set; }
-    }
-
-    private readonly Dictionary<string, AssistantView> _assistants = [];
     private bool _stickToBottom = true;
     private bool _autoScrolling;
     private DispatcherQueueTimerWrapper? _renderTimer;
@@ -64,16 +51,7 @@ internal sealed partial class ChatPresenter(
         SizeComposer();
         _caret ??= new CustomCaret(popup.Input, popup.CaretLayer);
         _caret.Apply(settings.Window.Caret, _style.Accent);
-        foreach (var view in _assistants.Values)
-        {
-            view.Body.Blocks.Clear();
-            view.ParagraphCounts.Clear();
-            view.Blocks = [];
-            view.Body.FontSize = _tokens.FontSizePx;
-            view.Body.FontFamily = _style.Font;
-            view.Dirty = true;
-        }
-        if (_assistants.Count > 0) RenderDirty();
+        if (_transcript is not null) RebuildTranscript();
     }
 
     private CustomCaret? _caret;
@@ -96,6 +74,7 @@ internal sealed partial class ChatPresenter(
     public void Initialize()
     {
         ApplyAppearance();
+        CreateTranscript();
 
         chat.Event += e => Guard("chat event", () => OnChatEvent(e));
         // Focus after the window is laid out and active, or the caret may not appear.
@@ -207,101 +186,11 @@ internal sealed partial class ChatPresenter(
                 ShowError(f.Id, f.Message);
                 break;
             case ConversationReset:
-                _assistants.Clear();
-                popup.MessagesPanel.Children.Clear();
+                ClearTranscript();
                 popup.NoticesPanel.Children.Clear();
                 SetBusy(false);
                 break;
         }
-    }
-
-    private void AddUser(ChatMessage message)
-    {
-        var text = new TextBlock { Text = message.Text, TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true, FontSize = _tokens.FontSizePx, FontFamily = _style.Font };
-        var stack = new StackPanel { Spacing = 4 };
-        if (message.Text.Length > 0) stack.Children.Add(text);
-        if (message.Attachments.Count > 0)
-            stack.Children.Add(AttachmentStrip(message.Attachments, thumbSize: 72));
-        var userText = message.Text;
-        var menu = new MenuFlyout();
-        var copyItem = new MenuFlyoutItem { Text = "Copy", Icon = new FontIcon { Glyph = "\uE8C8" } };
-        copyItem.Click += (_, _) => CopyText(userText);
-        menu.Items.Add(copyItem);
-        popup.MessagesPanel.Children.Add(new Border
-        {
-            ContextFlyout = menu,
-            Child = stack, Background = Brush(_tokens.UserBubble), CornerRadius = new CornerRadius(_tokens.RadiusPx + 2),
-            Padding = new Thickness(12, 8, 12, 8), HorizontalAlignment = HorizontalAlignment.Right, MaxWidth = 720,
-        });
-        ScrollToEnd(force: true);
-    }
-
-    private void StartAssistant(string id, string backendName)
-    {
-        var container = new StackPanel { Spacing = 2 };
-        if (backendName.Length > 0)
-            container.Children.Add(new TextBlock { Text = backendName, FontSize = 11, Foreground = _style.Muted });
-        var body = new RichTextBlock { IsTextSelectionEnabled = true, TextWrapping = TextWrapping.Wrap, FontSize = _tokens.FontSizePx, FontFamily = _style.Font };
-        var caret = new TextBlock { Text = "▍", Foreground = _style.Accent, FontSize = _tokens.FontSizePx };
-        container.Children.Add(body);
-        container.Children.Add(caret);
-        popup.MessagesPanel.Children.Add(container);
-        _assistants[id] = new AssistantView { Body = body, Container = container, Caret = caret, Dirty = true };
-        _renderTimer?.Start();
-    }
-
-    private void Finish(string id)
-    {
-        if (_assistants.TryGetValue(id, out var view) && view.Streaming && view.Text.Length > 0)
-            view.Container.Children.Add(CopyButton(() => view.Text, "Copy response"));
-        if (_assistants.TryGetValue(id, out view))
-        {
-            view.Streaming = false;
-            view.Dirty = true;
-            RenderDirty();
-        }
-        SetBusy(false);
-    }
-
-    private void ShowError(string id, string message)
-    {
-        if (!_assistants.TryGetValue(id, out var view)) return;
-        var bar = new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = message };
-        var retry = new Button { Content = "Retry" };
-        retry.Click += (_, _) => { bar.IsOpen = false; Run("retry", chat.RetryAsync); };
-        bar.ActionButton = retry;
-        view.Container.Children.Add(bar);
-        ScrollToEnd(force: false);
-    }
-
-    /// <summary>
-    /// Re-renders changed answers. Only blocks from the first changed one onward are rebuilt (completed paragraphs,
-    /// code blocks and tables stay put, keeping selection), and the interval adapts to how long rendering takes.
-    /// </summary>
-    private void RenderDirty()
-    {
-        var watch = Stopwatch.StartNew();
-        var any = false;
-        foreach (var view in _assistants.Values.Where(v => v.Dirty))
-        {
-            view.Dirty = false;
-            any = true;
-            var blocks = MarkdownModel.Parse(view.Text);
-            var from = MarkdownModel.FirstChangedIndex(view.Blocks, blocks);
-            var width = Math.Max(200, popup.MessagesPanel.ActualWidth - 24);
-            while (view.ParagraphCounts.Count > from)
-            {
-                var n = view.ParagraphCounts[^1];
-                view.ParagraphCounts.RemoveAt(view.ParagraphCounts.Count - 1);
-                for (var k = 0; k < n; k++) view.Body.Blocks.RemoveAt(view.Body.Blocks.Count - 1);
-            }
-            for (var b = from; b < blocks.Count; b++) view.ParagraphCounts.Add(MarkdownRenderer.AppendBlock(view.Body, blocks[b], _style, width));
-            view.Blocks = blocks;
-            view.Caret.Visibility = view.Streaming ? Visibility.Visible : Visibility.Collapsed;
-        }
-        if (!any) { _renderTimer?.Stop(); return; }
-        _renderTimer?.SetInterval(RenderThrottle.NextInterval(watch.Elapsed));
-        ScrollToEnd(force: false);
     }
 
     // ---- notices, height, scrolling ---------------------------------------------------------
@@ -322,7 +211,7 @@ internal sealed partial class ChatPresenter(
     private void ReportHeight()
     {
         // Messages area (natural height) + notices + composer + toolbar + spacing (3×8) + root padding (20).
-        var messages = popup.MessagesPanel.Children.Count == 0 ? 0 : popup.MessagesPanel.ActualHeight;
+        var messages = _transcript is null || _transcript.Blocks.Count == 0 ? 0 : popup.MessagesPanel.ActualHeight;
         var dip = messages + popup.NoticesPanel.ActualHeight + popup.Composer.ActualHeight + popup.Toolbar.ActualHeight + 24 + 20;
         popup.SetContentHeight(dip);
     }
