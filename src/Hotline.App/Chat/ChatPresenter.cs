@@ -23,7 +23,8 @@ internal sealed partial class ChatPresenter(
 {
     private sealed class AssistantView
     {
-        public required StackPanel Body { get; init; }
+        public required RichTextBlock Body { get; init; }
+        public List<int> ParagraphCounts { get; } = [];
         public required StackPanel Container { get; init; }
         public required TextBlock Caret { get; init; }
         public IReadOnlyList<MdBlock> Blocks { get; set; } = [];
@@ -177,8 +178,14 @@ internal sealed partial class ChatPresenter(
         if (message.Text.Length > 0) stack.Children.Add(text);
         if (message.Attachments.Count > 0)
             stack.Children.Add(AttachmentStrip(message.Attachments, thumbSize: 72));
+        var userText = message.Text;
+        var menu = new MenuFlyout();
+        var copyItem = new MenuFlyoutItem { Text = "Copy", Icon = new FontIcon { Glyph = "\uE8C8" } };
+        copyItem.Click += (_, _) => CopyText(userText);
+        menu.Items.Add(copyItem);
         popup.MessagesPanel.Children.Add(new Border
         {
+            ContextFlyout = menu,
             Child = stack, Background = Brush(_tokens.UserBubble), CornerRadius = new CornerRadius(_tokens.RadiusPx + 2),
             Padding = new Thickness(12, 8, 12, 8), HorizontalAlignment = HorizontalAlignment.Right, MaxWidth = 720,
         });
@@ -190,7 +197,7 @@ internal sealed partial class ChatPresenter(
         var container = new StackPanel { Spacing = 2 };
         if (backendName.Length > 0)
             container.Children.Add(new TextBlock { Text = backendName, FontSize = 11, Foreground = _style.Muted });
-        var body = new StackPanel { Spacing = 8 };
+        var body = new RichTextBlock { IsTextSelectionEnabled = true, TextWrapping = TextWrapping.Wrap, FontSize = _tokens.FontSizePx, FontFamily = _style.Font };
         var caret = new TextBlock { Text = "▍", Foreground = _style.Accent, FontSize = _tokens.FontSizePx };
         container.Children.Add(body);
         container.Children.Add(caret);
@@ -201,7 +208,9 @@ internal sealed partial class ChatPresenter(
 
     private void Finish(string id)
     {
-        if (_assistants.TryGetValue(id, out var view))
+        if (_assistants.TryGetValue(id, out var view) && view.Streaming && view.Text.Length > 0)
+            view.Container.Children.Add(CopyButton(() => view.Text, "Copy response"));
+        if (_assistants.TryGetValue(id, out view))
         {
             view.Streaming = false;
             view.Dirty = true;
@@ -235,8 +244,14 @@ internal sealed partial class ChatPresenter(
             any = true;
             var blocks = MarkdownModel.Parse(view.Text);
             var from = MarkdownModel.FirstChangedIndex(view.Blocks, blocks);
-            while (view.Body.Children.Count > from) view.Body.Children.RemoveAt(view.Body.Children.Count - 1);
-            for (var b = from; b < blocks.Count; b++) view.Body.Children.Add(MarkdownRenderer.RenderBlock(blocks[b], _style));
+            var width = Math.Max(200, popup.MessagesPanel.ActualWidth - 24);
+            while (view.ParagraphCounts.Count > from)
+            {
+                var n = view.ParagraphCounts[^1];
+                view.ParagraphCounts.RemoveAt(view.ParagraphCounts.Count - 1);
+                for (var k = 0; k < n; k++) view.Body.Blocks.RemoveAt(view.Body.Blocks.Count - 1);
+            }
+            for (var b = from; b < blocks.Count; b++) view.ParagraphCounts.Add(MarkdownRenderer.AppendBlock(view.Body, blocks[b], _style, width));
             view.Blocks = blocks;
             view.Caret.Visibility = view.Streaming ? Visibility.Visible : Visibility.Collapsed;
         }
@@ -365,6 +380,30 @@ internal sealed partial class ChatPresenter(
         public void Start() { if (!_timer.IsRunning) _timer.Start(); }
         public void SetInterval(TimeSpan interval) { if (_timer.Interval != interval) _timer.Interval = interval; }
         public void Stop() => _timer.Stop();
+    }
+
+    private Button CopyButton(Func<string> text, string tooltip)
+    {
+        var button = new Button
+        {
+            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { new FontIcon { Glyph = "\uE8C8", FontSize = 12 }, new TextBlock { Text = "Copy", FontSize = 12 } } },
+            Padding = new Thickness(8, 3, 8, 3), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
+            Opacity = 0.75,
+        };
+        ToolTipService.SetToolTip(button, tooltip);
+        button.Click += (_, _) => { CopyText(text()); Notice("Copied.", InfoBarSeverity.Success); };
+        return button;
+    }
+
+    private void CopyText(string text)
+    {
+        try
+        {
+            var package = new Windows.ApplicationModel.DataTransfer.DataPackage();
+            package.SetText(text);
+            Windows.ApplicationModel.DataTransfer.Clipboard.SetContent(package);
+        }
+        catch (Exception ex) { log.Error("copy failed", ex); Notice("The clipboard is busy; try again.", InfoBarSeverity.Warning); }
     }
 
     // Attachments, paste, drag-drop and capture: ChatPresenter.Attachments.cs (Task 5).

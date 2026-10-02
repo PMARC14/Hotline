@@ -168,6 +168,14 @@ Dependencies are kept minimal: Microsoft.WindowsAppSDK, Microsoft.Web.WebView2 a
 - Then Plan 4 = backends (Gemini API, OpenAI-compatible, Claude Code); Plan 5 = controlled local access (Hotline-hosted
   MCP tools with ask/allow/deny + folder scopes, and Windows on-device agent registry connectors).
 
+**Packaging note (2026-10-01):** the Copilot key picker requires package identity; keep MSIX for now, switch to a
+*sparse package* (identity only, normal unpackaged install) when building the public installer.
+
+**Backlog — last (security/testing heavy):** Gemini consumer web (personal Gmail/Drive context) inside Hotline via an
+embedded WebView2 panel signed into the user's Google account. Manual use (user types in the embedded page) is fine;
+scripting/injecting queries into gemini.google.com conflicts with Google's terms (automated access) and could put
+the account at risk — evaluate only with that caveat.
+
 **Backlog (much later, user 2026-10-01):** live screen sharing the AI can watch while you talk (like Gemini Live on mobile).
 
 Each milestone group gets its own implementation plan in `docs/superpowers/plans/`. Plan 1 covers milestones 0–1.

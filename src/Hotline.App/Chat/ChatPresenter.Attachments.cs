@@ -210,6 +210,12 @@ internal sealed partial class ChatPresenter
                 var image = new Image { Width = thumbSize, Height = thumbSize, Stretch = Microsoft.UI.Xaml.Media.Stretch.UniformToFill };
                 _ = SetThumbnailAsync(image, a.Data);
                 tile = new Border { Child = image, CornerRadius = new CornerRadius(6) };
+                var png = a.Data;
+                var menu = new MenuFlyout();
+                var copyImage = new MenuFlyoutItem { Text = "Copy image", Icon = new FontIcon { Glyph = "\uE8C8" } };
+                copyImage.Click += (_, _) => CopyImage(png);
+                menu.Items.Add(copyImage);
+                tile.ContextFlyout = menu;
             }
             else tile = FileTypeTile(a.Name, thumbSize);
             ToolTipService.SetToolTip(tile, a.Name);
@@ -233,5 +239,20 @@ internal sealed partial class ChatPresenter
         {
             Width = size, Height = size, CornerRadius = new CornerRadius(6), Background = Brush(_tokens.SurfaceStrong), Child = stack,
         };
+    }
+
+    private void CopyImage(byte[] png)
+    {
+        try
+        {
+            var stream = new InMemoryRandomAccessStream();
+            stream.WriteAsync(png.AsBuffer()).AsTask().GetAwaiter().GetResult();
+            stream.Seek(0);
+            var package = new DataPackage();
+            package.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
+            Clipboard.SetContent(package);
+            Notice("Image copied.", InfoBarSeverity.Success);
+        }
+        catch (Exception ex) { log.Error("copy image failed", ex); Notice("The clipboard is busy; try again.", InfoBarSeverity.Warning); }
     }
 }

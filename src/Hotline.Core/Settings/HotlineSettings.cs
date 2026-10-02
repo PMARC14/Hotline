@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 4;
+    public const int CurrentSchemaVersion = 5;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -41,8 +41,8 @@ public sealed class WindowSettings
     public double WidthPercent { get; set; } = 40;
     public int MinWidth { get; set; } = 600;
     public int MaxWidth { get; set; } = 1000;
-    /// <summary>Baseline panel height in DIPs, including space reserved above the composer.</summary>
-    public int Height { get; set; } = 320;
+    /// <summary>Starting panel height in DIPs: a minimal input bar by default; it grows upward with text and replies.</summary>
+    public int Height { get; set; } = 120;
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
     public double MaxHeightPercent { get; set; } = 70;
     /// <summary>Where the popup sits vertically: 0 = top, 0.5 = centered, 1 = bottom of the free space.</summary>

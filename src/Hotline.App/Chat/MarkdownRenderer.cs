@@ -15,6 +15,75 @@ internal static class MarkdownRenderer
 {
     private static readonly FontFamily Mono = new("Cascadia Mono, Consolas");
 
+    /// <summary>
+    /// Appends one markdown block to a single RichTextBlock so a whole answer can be selected and copied in one
+    /// drag. Code blocks, tables and rules are embedded boxes (they keep their own copy/scroll). Returns how
+    /// many paragraphs were added (the presenter uses it to replace only the streaming tail).
+    /// </summary>
+    public static int AppendBlock(RichTextBlock rtb, MdBlock block, RenderStyle s, double contentWidth, int indent = 0, Brush? foreground = null)
+    {
+        Paragraph Para(IReadOnlyList<MdInline> inlines, double size, bool bold, string? marker = null)
+        {
+            var p = new Paragraph { FontSize = size, Margin = new Thickness(indent * 18, 0, 0, 8) };
+            if (foreground is not null) p.Foreground = foreground;
+            if (marker is not null) p.Inlines.Add(new Run { Text = marker, Foreground = s.Muted });
+            foreach (var inline in inlines) p.Inlines.Add(ToInline(inline, s, bold));
+            return p;
+        }
+        Paragraph Boxed(UIElement element)
+        {
+            if (element is FrameworkElement fe) fe.Width = Math.Max(160, contentWidth - indent * 18);
+            var p = new Paragraph { Margin = new Thickness(indent * 18, 0, 0, 8) };
+            p.Inlines.Add(new InlineUIContainer { Child = element });
+            return p;
+        }
+
+        switch (block)
+        {
+            case MdParagraph para:
+                rtb.Blocks.Add(Para(para.Inlines, s.FontSize, bold: false));
+                return 1;
+            case MdHeading h:
+                rtb.Blocks.Add(Para(h.Inlines, s.FontSize + h.Level switch { 1 => 6, 2 => 4, _ => 2 }, bold: true));
+                return 1;
+            case MdCode c:
+                rtb.Blocks.Add(Boxed(Code(c, s)));
+                return 1;
+            case MdTable t:
+                rtb.Blocks.Add(Boxed(Table(t, s)));
+                return 1;
+            case MdRule:
+                rtb.Blocks.Add(Boxed(new Border { Height = 1, Margin = new Thickness(0, 4, 0, 4), Background = s.Muted, Opacity = 0.4 }));
+                return 1;
+            case MdQuote q:
+                var quoted = 0;
+                foreach (var child in q.Blocks) quoted += AppendBlock(rtb, child, s, contentWidth, indent + 1, s.Muted);
+                return quoted;
+            case MdList l:
+                var count = 0;
+                for (var i = 0; i < l.Items.Count; i++)
+                {
+                    var marker = l.Ordered ? $"{l.Start + i}. " : "• ";
+                    var first = true;
+                    foreach (var child in l.Items[i])
+                    {
+                        if (first && child is MdParagraph itemPara)
+                        {
+                            var p = Para(itemPara.Inlines, s.FontSize, bold: false, marker);
+                            p.Margin = new Thickness(indent * 18 + 4, 0, 0, 4);
+                            rtb.Blocks.Add(p);
+                            count++;
+                        }
+                        else count += AppendBlock(rtb, child, s, contentWidth, indent + 1, foreground);
+                        first = false;
+                    }
+                }
+                return count;
+            default:
+                return 0;
+        }
+    }
+
     public static UIElement Render(IReadOnlyList<MdBlock> blocks, RenderStyle style)
     {
         var panel = new StackPanel { Spacing = 8 };

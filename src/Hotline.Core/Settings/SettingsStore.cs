@@ -80,9 +80,9 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
-        // → v4: the popup became a relative-width panel with a 320-DIP baseline. Move untouched old default heights.
-        if (s.SchemaVersion < 4 && s.Window.Height is 120 or 520)
-            s.Window.Height = 320;
+        // → v5: the panel starts as a minimal input bar again (user feedback). Move untouched old default heights.
+        if (s.SchemaVersion < 5 && s.Window.Height is 320 or 520)
+            s.Window.Height = 120;
         // v2 → v3: long press now starts a new chat. Only move users still on the old default.
         if (s.SchemaVersion < 3 && s.Activation.Hold == KeyAction.ShowPopup)
             s.Activation.Hold = KeyAction.NewChat;

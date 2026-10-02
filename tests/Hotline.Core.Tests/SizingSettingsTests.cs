@@ -18,16 +18,15 @@ public sealed class SizingSettingsTests : IDisposable
     public void Defaults()
     {
         var w = new SettingsStore(_dir).Load().Window;
-        Assert.Equal((40.0, 600, 1000, 320, 70.0), (w.WidthPercent, w.MinWidth, w.MaxWidth, w.Height, w.MaxHeightPercent));
+        Assert.Equal((40.0, 600, 1000, 120, 70.0), (w.WidthPercent, w.MinWidth, w.MaxWidth, w.Height, w.MaxHeightPercent));
     }
 
     [Theory]
-    [InlineData(1, 120)]
-    [InlineData(2, 120)]
-    [InlineData(3, 120)]
     [InlineData(1, 520)]
-    public void Old_default_heights_migrate_to_320(int schema, int height)
-        => Assert.Equal(320, LoadJson($$"""{ "schemaVersion": {{schema}}, "window": { "height": {{height}} } }""").Window.Height);
+    [InlineData(3, 120)]
+    [InlineData(4, 320)]
+    public void Old_default_heights_migrate_to_compact_bar(int schema, int height)
+        => Assert.Equal(120, LoadJson($$"""{ "schemaVersion": {{schema}}, "window": { "height": {{height}} } }""").Window.Height);
 
     [Fact]
     public void Custom_height_is_kept()
