@@ -43,7 +43,10 @@ public static class AgyProtocol
     public static IReadOnlyList<string> BuildArgs(BackendProfile p, string? addDir = null)
     {
         var args = new List<string> { "--input-format", "stream-json", "--output-format", "stream-json", "-p=" };
-        if (p.Tools == ToolMode.ChatOnly)
+        if (p.Args is not null)
+            args.AddRange(p.Args.Where(a => !a.StartsWith("--dangerous", StringComparison.OrdinalIgnoreCase)
+                                            && !a.Contains("skip-permission", StringComparison.OrdinalIgnoreCase))); // replaces the agent flags
+        else if (p.Tools == ToolMode.ChatOnly)
             args.AddRange(["--agent", string.IsNullOrWhiteSpace(p.Agent) ? DefaultAgent : p.Agent]);
         if (!string.IsNullOrWhiteSpace(addDir)) args.AddRange(["--add-dir", addDir]);
         // Only via the explicit, warned setting (never from ExtraArgs) and never in chat-only mode.

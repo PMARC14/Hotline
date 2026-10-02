@@ -226,4 +226,23 @@ public sealed class ClaudeCodeTests : IDisposable
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(New().StreamAsync([U("1", "hi")], default)));
         Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
     }
+
+    [Fact]
+    public void Sessions_are_not_saved_by_claude_unless_asked()
+    {
+        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile(), "x"));
+        Assert.DoesNotContain("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile { KeepCliSessions = true }, "x"));
+    }
+
+    [Fact]
+    public void Custom_args_replace_the_mode_flags_but_not_the_protocol_or_safety()
+    {
+        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Args = ["--tools", "Read", "--mcp-config", @"C:\mcp.json", "--dangerously-skip-permissions"] }, "x").ToList();
+        Assert.Equal("Read", args[args.IndexOf("--tools") + 1]);
+        Assert.Contains(@"C:\mcp.json", args);
+        Assert.DoesNotContain("--setting-sources", args);               // mode defaults replaced
+        Assert.Contains("--include-partial-messages", args);            // protocol kept
+        Assert.Equal("none", args[args.IndexOf("--permission-prompts") + 1]);
+        Assert.DoesNotContain("--dangerously-skip-permissions", args);  // only via ApproveAllTools
+    }
 }

@@ -83,6 +83,14 @@ public sealed class BackendProfile
     public string? Agent { get; set; }
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
+    /// <summary>
+    /// Replaces Hotline's built-in launch flags for this connection's mode (e.g. agy's --agent, Claude Code's chat-only
+    /// isolation). The flags Hotline needs to talk to the CLI (print mode, stream-json, no permission prompts) are
+    /// always added; dangerous flags only come from ApproveAllTools. Null = Hotline's defaults.
+    /// </summary>
+    public List<string>? Args { get; set; }
+    /// <summary>Let the CLI keep its own copy of these chats (agy always does; Claude Code only when true).</summary>
+    public bool KeepCliSessions { get; set; }
     /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
     /// <summary>

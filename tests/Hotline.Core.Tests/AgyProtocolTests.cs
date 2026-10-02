@@ -120,4 +120,14 @@ public class AgyProtocolTests
     [InlineData("--skip-permissions")]
     public void Dangerous_flag_variants_in_extra_args_are_dropped(string flag)
         => Assert.DoesNotContain(AgyProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--foo " + flag }), a => a.Contains("permission", StringComparison.OrdinalIgnoreCase));
+
+    [Fact]
+    public void Custom_args_replace_the_agent_flags_but_keep_the_protocol()
+    {
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Agent = "hotline", Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
+        Assert.Equal("mine", args[args.IndexOf("--agent") + 1]);
+        Assert.Single(args, "--agent");
+        Assert.Contains("stream-json", args);
+        Assert.Contains("plan", args);
+    }
 }

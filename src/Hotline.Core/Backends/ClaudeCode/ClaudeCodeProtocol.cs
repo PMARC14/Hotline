@@ -21,12 +21,10 @@ public static class ClaudeCodeProtocol
             // In the background nobody can answer a permission prompt: anything that would ask is denied.
             "--permission-prompts", "none",
         };
-        if (p.Tools == ToolMode.Inherit)
-        {
-            // The user's own Claude Code setup: settings, permissions, MCP servers, hooks, tools.
-            if (p.ApproveAllTools) args.Add("--dangerously-skip-permissions");
-        }
-        else
+        if (!p.KeepCliSessions) args.Add("--no-session-persistence"); // Hotline keeps its own history
+        if (p.Tools == ToolMode.Inherit && p.ApproveAllTools) args.Add("--dangerously-skip-permissions");
+        if (p.Args is not null) AddSafe(args, p.Args); // the user's own launch flags replace the mode defaults
+        else if (p.Tools == ToolMode.ChatOnly)
         {
             // Chat only: no tools, and none of the user's settings/plugins/hooks/MCP servers. (Not --bare: it never
             // reads the user's Claude login.)
@@ -35,18 +33,20 @@ public static class ClaudeCodeProtocol
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort)) args.AddRange(["--effort", effort]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["--append-system-prompt", systemPrompt.Trim()]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs))
-        {
-            var extra = p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries);
-            for (var i = 0; i < extra.Length; i++)
-            {
-                var a = extra[i];
-                if (a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a.Contains("skip-permission", StringComparison.OrdinalIgnoreCase)) continue;
-                if (a.Equals("--permission-mode", StringComparison.OrdinalIgnoreCase)) { i++; continue; } // and its value
-                args.Add(a);
-            }
-        }
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries));
         return args;
+    }
+
+    /// <summary>User-supplied flags, minus anything that would bypass permissions (only ApproveAllTools may).</summary>
+    private static void AddSafe(List<string> args, IReadOnlyList<string> extra)
+    {
+        for (var i = 0; i < extra.Count; i++)
+        {
+            var a = extra[i];
+            if (a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a.Contains("skip-permission", StringComparison.OrdinalIgnoreCase)) continue;
+            if (a.Equals("--permission-mode", StringComparison.OrdinalIgnoreCase) || a.Equals("--permission-prompts", StringComparison.OrdinalIgnoreCase)) { i++; continue; } // and its value
+            args.Add(a);
+        }
     }
 
     /// <summary>One user turn: text (with replayed context when the session is fresh) plus inline images.</summary>
