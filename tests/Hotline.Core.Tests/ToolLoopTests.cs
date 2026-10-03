@@ -113,4 +113,36 @@ public sealed class ToolLoopTests : IDisposable
         Assert.Equal(ToolLoop.MaxRounds, host.Calls.Count);
         Assert.Contains("Stopped", text);
     }
+
+    // ---- Gemini --------------------------------------------------------------------------------
+
+    private static string GeminiParts(params object[] parts) => JsonSerializer.Serialize(new { candidates = new[] { new { content = new { role = "model", parts } } } });
+
+    [Fact]
+    public async Task Gemini_runs_function_calls_and_echoes_the_models_parts()
+    {
+        var host = new FakeToolHost();
+        var handler = new Handler((n, _) => n == 1
+            ? Sse(GeminiParts(new { text = "Checking." }), GeminiParts(new { functionCall = new { name = "files__read_file", args = new { path = "a.txt" }, id = "fc1" }, thoughtSignature = "sig==" }))
+            : Sse(GeminiParts(new { text = "It says hi." })));
+        var secrets = new InMemorySecretStore();
+        secrets.Set(SecretKeys.ApiKey("g"), "k");
+        var b = new GeminiBackend(new BackendProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
+            new HttpClient(handler), secrets, _ => "", Log, host);
+
+        var text = await Collect(b.StreamAsync([U("read a.txt")], default));
+
+        Assert.Equal(("files__read_file", """{"path":"a.txt"}"""), Assert.Single(host.Calls));
+        Assert.EndsWith("It says hi.", text);
+        var first = JsonDocument.Parse(handler.Bodies[0]).RootElement;
+        Assert.Equal("files__read_file", first.GetProperty("tools")[0].GetProperty("functionDeclarations")[0].GetProperty("name").GetString());
+        Assert.True(first.GetProperty("tools")[0].GetProperty("functionDeclarations")[0].TryGetProperty("parametersJsonSchema", out _));
+        var contents = JsonDocument.Parse(handler.Bodies[1]).RootElement.GetProperty("contents").EnumerateArray().ToList();
+        var model = contents[^2];
+        Assert.Equal("model", model.GetProperty("role").GetString());
+        Assert.Contains(model.GetProperty("parts").EnumerateArray(), p => p.TryGetProperty("thoughtSignature", out var sig) && sig.GetString() == "sig==");
+        var response = contents[^1].GetProperty("parts")[0].GetProperty("functionResponse");
+        Assert.Equal(("files__read_file", "fc1"), (response.GetProperty("name").GetString(), response.GetProperty("id").GetString()));
+        Assert.Equal("files__read_file result", response.GetProperty("response").GetProperty("content").GetString());
+    }
 }
