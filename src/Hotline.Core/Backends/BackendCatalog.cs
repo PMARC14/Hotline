@@ -10,7 +10,7 @@ public sealed record BackendDeps(
     ILineProcessFactory Processes, AgyWorkspace AgyWorkspace, FileLog Log,
     Func<string, bool> FileExists, string? LocalAppData, string? PathEnv,
     Func<BackendProfile, string> SystemPrompt, string HomeDirectory, string? ClaudeWorkspace = null,
-    ISecretStore? Secrets = null, HttpClient? Http = null);
+    ISecretStore? Secrets = null, HttpClient? Http = null, Tools.IToolHost? ToolHost = null);
 
 public static class BackendFactory
 {
@@ -36,9 +36,9 @@ public static class BackendFactory
         BackendType.ClaudeCode => new ClaudeCode.ClaudeCodeBackend(p,
             () => ClaudeCode.ClaudeLocator.Find(p.CliPath, deps.FileExists, deps.HomeDirectory, deps.PathEnv),
             deps.ClaudeWorkspace ?? Path.Combine(Path.GetTempPath(), "hotline-claude"), deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
-        BackendType.OpenAiCompatible or BackendType.Local => new Api.OpenAiBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log),
-        BackendType.Anthropic => new Api.AnthropicBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log),
-        BackendType.Gemini => new Api.GeminiBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log),
+        BackendType.OpenAiCompatible or BackendType.Local => new Api.OpenAiBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log, deps.ToolHost),
+        BackendType.Anthropic => new Api.AnthropicBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log, deps.ToolHost),
+        BackendType.Gemini => new Api.GeminiBackend(p, Http(deps), Secrets(deps), deps.SystemPrompt, deps.Log, deps.ToolHost),
         _ => null,
     };
 }

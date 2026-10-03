@@ -31,6 +31,9 @@ public partial class App : Application
     private ISecretStore? _secrets;
     private readonly HashSet<string> _pendingInvalidations = [];
     private SettingsHost? _settingsHost;
+    private Hotline.Core.Tools.McpToolHost? _toolHost;
+    private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
+    private string? _odrPath;
     private FileSystemWatcher? _settingsWatcher;
 
     public App(AppActivationArguments initialActivation)
@@ -101,7 +104,7 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"),
-            _secrets, BackendFactory.CreateApiHttpClient());
+            _secrets, BackendFactory.CreateApiHttpClient(), ToolHost(dataDir));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -146,7 +149,7 @@ public partial class App : Application
         };
         _router.DemoRequested += () => _presenter.Demo();
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
-            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log), _log);
+            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
         WatchSettingsFile(store);
@@ -190,7 +193,7 @@ public partial class App : Application
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
             onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
-            onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); }).Wait(TimeSpan.FromSeconds(2)); Exit(); });
+            onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); if (_toolHost is not null) await _toolHost.DisposeAsync(); }).Wait(TimeSpan.FromSeconds(3)); Exit(); });
 
         _heartbeat = _popup.DispatcherQueue.CreateTimer();
         _heartbeat.Interval = TimeSpan.FromMinutes(30);
@@ -257,5 +260,39 @@ public partial class App : Application
     {
         var state = await StartupRegistration.GetStateAsync();
         _log?.Info($"start with Windows: {state?.ToString() ?? "n/a"}");
+    }
+
+    /// <summary>
+    /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
+    /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
+    /// </summary>
+    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir)
+    {
+        var mcpPath = Path.Combine(dataDir, "mcp.json");
+        _ = Hotline.Core.Tools.McpConfig.Load(mcpPath); // creates mcp.json with a commented example on first run
+        _odrPath = Hotline.Core.Tools.OdrDiscovery.FindOdr(File.Exists, Environment.GetEnvironmentVariable("WINDIR"), Environment.GetEnvironmentVariable("LOCALAPPDATA"));
+        _log?.Info(_odrPath is null ? "Windows agent registry: not available on this Windows" : $"Windows agent registry: {_odrPath}");
+        if (_odrPath is { } odr)
+            _ = Task.Run(async () =>
+            {
+                foreach (var args in new[] { new[] { "mcp", "list" }, new[] { "list" } })
+                {
+                    try
+                    {
+                        var json = await CliRunner.RunAsync(odr, args, TimeSpan.FromSeconds(20), CancellationToken.None);
+                        var servers = Hotline.Core.Tools.OdrDiscovery.Parse(json);
+                        if (servers.Count == 0) continue;
+                        _odrServers = servers;
+                        _log?.Info($"Windows agent registry: {servers.Count} connector(s)");
+                        return;
+                    }
+                    catch (Exception ex) { _log?.Error($"odr {string.Join(' ', args)} failed", ex); }
+                }
+            });
+        _toolHost = new Hotline.Core.Tools.McpToolHost(
+            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers, Hotline.Core.Tools.StdioMcpSession.ConnectAsync,
+            (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
+            _log!, mcpPath);
+        return _toolHost;
     }
 }

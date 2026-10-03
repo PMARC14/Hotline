@@ -211,6 +211,53 @@ internal sealed partial class ChatPresenter(
 
     // ---- notices, height, scrolling ---------------------------------------------------------
 
+    /// <summary>
+    /// Asks whether a tool may run: an InfoBar in the panel with Allow once / Always / Deny. No answer within five
+    /// minutes (or the answer being stopped) counts as Deny. Brings the panel up if it was hidden.
+    /// </summary>
+    internal Task<Hotline.Core.Tools.ToolDecision> AskToolApprovalAsync(Hotline.Core.Tools.ToolCallRequest request, CancellationToken ct)
+    {
+        var tcs = new TaskCompletionSource<Hotline.Core.Tools.ToolDecision>(TaskCreationOptions.RunContinuationsAsynchronously);
+        popup.DispatcherQueue.TryEnqueue(() =>
+        {
+            var args = request.Arguments.ValueKind == System.Text.Json.JsonValueKind.Undefined ? "" : request.Arguments.GetRawText();
+            if (args.Length > 400) args = args[..400] + "…";
+            var bar = new InfoBar
+            {
+                IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
+                Title = $"Allow {request.Tool.Server} › {request.Tool.Tool}?",
+                Message = string.IsNullOrWhiteSpace(request.Tool.Description) ? args : $"{request.Tool.Description}\n{args}",
+            };
+            void Answer(Hotline.Core.Tools.ToolDecision d)
+            {
+                if (!tcs.TrySetResult(d)) return;
+                popup.NoticesPanel.Children.Remove(bar);
+                log.Info($"tool {request.Tool.Server}/{request.Tool.Tool}: {d}");
+            }
+            Button B(string text, Hotline.Core.Tools.ToolDecision d, bool accent = false)
+            {
+                var b = new Button { Content = text };
+                if (accent) b.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
+                b.Click += (_, _) => Answer(d);
+                return b;
+            }
+            bar.Content = new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 8),
+                Children = { B("Allow once", Hotline.Core.Tools.ToolDecision.AllowOnce, accent: true), B("Always allow", Hotline.Core.Tools.ToolDecision.AllowAlways), B("Deny", Hotline.Core.Tools.ToolDecision.Deny) },
+            };
+            popup.NoticesPanel.Children.Add(bar);
+            if (!popup.IsShown) popup.ShowPopup();
+            var timer = popup.DispatcherQueue.CreateTimer();
+            timer.Interval = TimeSpan.FromMinutes(5);
+            timer.IsRepeating = false;
+            timer.Tick += (_, _) => Answer(Hotline.Core.Tools.ToolDecision.Deny);
+            timer.Start();
+            ct.Register(() => popup.DispatcherQueue.TryEnqueue(() => Answer(Hotline.Core.Tools.ToolDecision.Deny)));
+        });
+        return tcs.Task;
+    }
+
     internal void Notice(string message, InfoBarSeverity severity)
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = true, Severity = severity, Message = message };

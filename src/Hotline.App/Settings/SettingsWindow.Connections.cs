@@ -226,7 +226,20 @@ public sealed partial class SettingsWindow
         if (info.Has(ConnectionField.ExtraArgs))
             host.Children.Add(Card("Extra arguments", "Passed to the program as-is (space separated).", Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
 
-        if (info.Has(ConnectionField.Tools))
+        if (info.Has(ConnectionField.Tools) && !info.Has(ConnectionField.CliPath))
+        {
+            // API connections: Hotline's own MCP tools (Settings › Tools), approved in the panel.
+            var apiMode = new ComboBox { MinWidth = 280 };
+            apiMode.Items.Add(new ComboBoxItem { Content = "Chat only", Tag = ToolMode.ChatOnly });
+            apiMode.Items.Add(new ComboBoxItem { Content = "Use Hotline's tools (MCP)", Tag = ToolMode.Inherit });
+            apiMode.SelectedIndex = p.Tools == ToolMode.Inherit ? 1 : 0;
+            apiMode.SelectionChanged += async (_, _) =>
+            {
+                if (apiMode.SelectedItem is ComboBoxItem { Tag: ToolMode m }) await Save(x => x.Tools = m);
+            };
+            host.Children.Add(Card("Tool use", "Lets this AI use the tools from your MCP servers (Settings › Tools). Read-only tools run; anything else asks you in the panel first.", apiMode));
+        }
+        else if (info.Has(ConnectionField.Tools))
         {
             var mode = new ComboBox { MinWidth = 280 };
             mode.Items.Add(new ComboBoxItem { Content = "Chat only (can read your attachments)", Tag = ToolMode.ChatOnly });
