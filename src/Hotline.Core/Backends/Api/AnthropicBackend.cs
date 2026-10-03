@@ -67,7 +67,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
     private MessageCreateParams Build(IReadOnlyList<ChatMessage> conversation, string model)
     {
         var messages = new List<BetaMessageParam>();
-        foreach (var m in conversation)
+        foreach (var m in ApiCommon.Alternating(conversation))
         {
             var blocks = new List<BetaContentBlockParam> { new BetaTextBlockParam { Text = Nonempty(ApiCommon.WithTextFiles(m)) } };
             if (m.Role == ChatRole.User)

@@ -59,7 +59,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
         var messages = new JsonArray();
         var system = systemPrompt(profile);
         if (!string.IsNullOrWhiteSpace(system)) messages.Add(new JsonObject { ["role"] = "system", ["content"] = system.Trim() });
-        foreach (var m in conversation)
+        foreach (var m in ApiCommon.Alternating(conversation))
         {
             var text = ApiCommon.WithTextFiles(m);
             var images = m.Attachments.Where(a => a.Kind == AttachmentKind.Image).ToList();
@@ -68,7 +68,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
                 messages.Add(new JsonObject { ["role"] = m.Role == ChatRole.User ? "user" : "assistant", ["content"] = text });
                 continue;
             }
-            var parts = new JsonArray { new JsonObject { ["type"] = "text", ["text"] = text } };
+            var parts = new JsonArray { new JsonObject { ["type"] = "text", ["text"] = text.Length > 0 ? text : "Please look at the attached image(s)." } };
             foreach (var image in images)
                 parts.Add(new JsonObject
                 {

@@ -25,7 +25,9 @@ public static class ApiCommon
     /// <summary>A key only travels over https, or plain http to this PC (local servers).</summary>
     public static void RequireSafeTransport(BackendProfile p, string endpoint, string? key)
     {
-        if (key is null || !Uri.TryCreate(endpoint, UriKind.Absolute, out var uri)) return;
+        if (key is null) return;
+        if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
+            throw new BackendException(BackendErrorKind.NotConfigured, $"The endpoint for {Name(p)} isn't a valid http(s) address: {endpoint}");
         if (uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
             throw new BackendException(BackendErrorKind.NotConfigured,
                 $"Not sending the API key for {Name(p)} over plain http to {uri.Host}; use an https:// endpoint.");
@@ -94,10 +96,31 @@ public static class ApiCommon
             if (line.StartsWith("data:", StringComparison.Ordinal))
             {
                 if (data.Length > 0) data.Append('\n');
-                data.Append(line.AsSpan(5).TrimStart(' '));
+                var value = line.AsSpan(5);
+                data.Append(value.StartsWith(" ") ? value[1..] : value); // the spec strips one space: keep indentation
             }
         }
         if (data.Length > 0) yield return data.ToString();
+    }
+
+    /// <summary>
+    /// Merges consecutive messages of the same role (e.g. a question whose answer was cancelled, then the next
+    /// question): Anthropic and Gemini require alternating turns.
+    /// </summary>
+    public static IReadOnlyList<ChatMessage> Alternating(IReadOnlyList<ChatMessage> conversation)
+    {
+        var result = new List<ChatMessage>();
+        foreach (var m in conversation)
+        {
+            if (result.Count > 0 && result[^1].Role == m.Role)
+            {
+                var last = result[^1];
+                var text = string.Join("\n\n", new[] { last.Text, m.Text }.Where(t => t.Length > 0));
+                result[^1] = last with { Text = text, Attachments = [.. last.Attachments, .. m.Attachments] };
+            }
+            else result.Add(m);
+        }
+        return result;
     }
 
     public static string WithTextFiles(ChatMessage m)

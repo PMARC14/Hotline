@@ -62,7 +62,7 @@ public static class ConnectionEditor
     private static string UniqueId(ChatSettings chat, string baseId)
     {
         var id = baseId;
-        for (var i = 2; chat.Backends.Any(b => b.Id == id); i++) id = $"{baseId}-{i}";
+        for (var i = 2; chat.Backends.Any(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase)); i++) id = $"{baseId}-{i}";
         return id;
     }
 

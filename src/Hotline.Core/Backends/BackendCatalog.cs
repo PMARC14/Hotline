@@ -17,7 +17,14 @@ public static class BackendFactory
     public static bool IsAvailable(BackendType type) => Enum.IsDefined(type);
 
     /// <summary>Creates the backend for a profile, or null if that backend type isn't implemented yet (Plan 3).</summary>
-    private static readonly Lazy<HttpClient> SharedHttp = new(() => new HttpClient { Timeout = TimeSpan.FromMinutes(10) });
+    private static readonly Lazy<HttpClient> SharedHttp = new(CreateApiHttpClient);
+
+    /// <summary>
+    /// For key-carrying API calls: never follows redirects (a redirect could carry the key header to another host),
+    /// and no overall time limit (long, thinking-heavy answers stream for many minutes; Stop cancels).
+    /// </summary>
+    public static HttpClient CreateApiHttpClient() =>
+        new(new SocketsHttpHandler { AllowAutoRedirect = false, ConnectTimeout = TimeSpan.FromSeconds(30) }) { Timeout = Timeout.InfiniteTimeSpan };
     private static HttpClient Http(BackendDeps deps) => deps.Http ?? SharedHttp.Value;
     private static ISecretStore Secrets(BackendDeps deps) => deps.Secrets ?? new InMemorySecretStore();
 

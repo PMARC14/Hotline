@@ -59,7 +59,11 @@ public sealed class SettingsStore(string directory)
             s.Chat ??= new ChatSettings();
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
             var (files, _) = ReadConnectionFiles();
-            s.Chat.Backends = Ordered(files.Count > 0 ? files : legacy ?? ChatSettings.DefaultBackends(), s.Chat.Order);
+            if (legacy is not null)
+                foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
+                    files.Add(p);
+            s.Chat.Backends = Ordered(files.Count > 0 ? files : ChatSettings.DefaultBackends(),
+                s.Chat.Order is { Count: > 0 } order ? order : legacy?.Select(p => p.Id).ToList());
             return Normalize(s);
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { return null; }
@@ -122,8 +126,8 @@ public sealed class SettingsStore(string directory)
     {
         Directory.CreateDirectory(directory);
         s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
+        SaveConnections(s.Chat.Backends);        // first: if this fails, settings.json still has the old list
         WriteAtomic(FilePath, SerializeMain(s));
-        SaveConnections(s.Chat.Backends);
     }
 
     /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
@@ -221,9 +225,12 @@ public sealed class SettingsStore(string directory)
             if (!File.Exists(path) || File.ReadAllText(path) != json) WriteAtomic(path, json);
             _ownedIds.Add(p.Id);
         }
+        var inUse = new HashSet<string>(profiles.Select(p => Path.GetFullPath(ConnectionPath(p.Id))), StringComparer.OrdinalIgnoreCase);
         foreach (var id in _ownedIds.Where(id => !current.Contains(id)).ToList())
         {
-            try { File.Delete(ConnectionPath(id)); } catch (IOException) { }
+            var path = Path.GetFullPath(ConnectionPath(id));
+            if (!inUse.Contains(path)) // two ids can map to one file name: never delete a file a remaining connection uses
+                try { File.Delete(path); } catch (IOException) { }
             _ownedIds.Remove(id);
         }
     }

@@ -113,3 +113,65 @@ public sealed class ReviewFixesTests : IDisposable
         Assert.EndsWith("next", text);
     }
 }
+
+/// <summary>Antigravity review of the API backends and connection files (2026-10-02).</summary>
+public sealed class ApiReviewFixesTests : IDisposable
+{
+    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
+    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
+
+    [Fact]
+    public async Task Sse_keeps_indentation_and_strips_only_one_space()
+    {
+        var bytes = System.Text.Encoding.UTF8.GetBytes("data:    indented code\r\n\r\n: keep-alive comment\r\n\r\ndata:x\n\ndata: last-without-blank-line");
+        var items = new List<string>();
+        await foreach (var d in Hotline.Core.Backends.Api.ApiCommon.SseData(new MemoryStream(bytes), default)) items.Add(d);
+        Assert.Equal(["   indented code", "x", "last-without-blank-line"], items);
+    }
+
+    [Fact]
+    public void Consecutive_same_role_messages_are_merged()
+    {
+        var merged = Hotline.Core.Backends.Api.ApiCommon.Alternating(
+        [
+            new ChatMessage("1", ChatRole.User, "first (cancelled)", [], DateTimeOffset.UnixEpoch),
+            new ChatMessage("2", ChatRole.User, "second", [new Attachment("a", "x.png", AttachmentKind.Image, "image/png", [1])], DateTimeOffset.UnixEpoch),
+        ]);
+        var m = Assert.Single(merged);
+        Assert.Equal("first (cancelled)\n\nsecond", m.Text);
+        Assert.Single(m.Attachments);
+    }
+
+    [Fact]
+    public void Malformed_endpoint_with_a_key_is_refused()
+        => Assert.Throws<BackendException>(() => Hotline.Core.Backends.Api.ApiCommon.RequireSafeTransport(new BackendProfile { Name = "X" }, "not a url", "key"));
+
+    [Theory]
+    [InlineData("http://127.0.0.1.evil.com/v1")]
+    [InlineData("http://localhost.evil.com/v1")]
+    public void Lookalike_loopback_hosts_are_not_loopback(string endpoint)
+        => Assert.Throws<BackendException>(() => Hotline.Core.Backends.Api.ApiCommon.RequireSafeTransport(new BackendProfile { Name = "X" }, endpoint, "key"));
+
+    [Fact]
+    public void Ids_that_differ_only_in_case_are_unique()
+    {
+        var chat = new ChatSettings();
+        chat.Backends[0].Id = "LOCAL-MODEL";
+        var added = Hotline.Core.Backends.ConnectionEditor.Add(chat, BackendType.Local);
+        Assert.NotEqual("local-model", added.Id, StringComparer.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Removing_a_connection_never_deletes_a_file_another_connection_uses()
+    {
+        var store = new SettingsStore(_dir);
+        var s = store.Load();
+        s.Chat.Backends.Add(new BackendProfile { Id = "a/b", Type = BackendType.Local, Name = "slash" });
+        store.Save(s); // file a-b.json
+        s.Chat.Backends.RemoveAll(b => b.Id == "a/b");
+        s.Chat.Backends.Add(new BackendProfile { Id = "a-b", Type = BackendType.Local, Name = "dash" });
+        store.Save(s);
+        Assert.True(File.Exists(store.ConnectionPath("a-b")));
+        Assert.Contains("dash", File.ReadAllText(store.ConnectionPath("a-b")));
+    }
+}

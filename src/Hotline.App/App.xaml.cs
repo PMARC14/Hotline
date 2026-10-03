@@ -101,7 +101,7 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"),
-            _secrets, new HttpClient { Timeout = TimeSpan.FromMinutes(10) });
+            _secrets, BackendFactory.CreateApiHttpClient());
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -115,7 +115,7 @@ public partial class App : Application
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 
-        _models = new ModelCatalog(new HttpClient { Timeout = TimeSpan.FromSeconds(20) }, _secrets, (p, ct) =>
+        _models = new ModelCatalog(new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) }, _secrets, (p, ct) =>
         {
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
                       ?? throw new ModelListException("The Antigravity CLI (agy) isn't installed.");

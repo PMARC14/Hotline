@@ -70,7 +70,7 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
     private string Body(IReadOnlyList<ChatMessage> conversation)
     {
         var contents = new JsonArray();
-        foreach (var m in conversation)
+        foreach (var m in ApiCommon.Alternating(conversation))
         {
             var parts = new JsonArray { new JsonObject { ["text"] = ApiCommon.WithTextFiles(m) is { Length: > 0 } t ? t : "(no text)" } };
             if (m.Role == ChatRole.User)
