@@ -33,7 +33,14 @@ internal static class MarkdownRenderer
         }
         Paragraph Boxed(UIElement element)
         {
-            if (element is FrameworkElement fe) fe.Width = Math.Max(160, contentWidth - indent * 18);
+            // Width from the text area's real size (a box wider than the line is clipped on the right).
+            var available = rtb.ActualWidth > 0 ? rtb.ActualWidth : contentWidth;
+            if (element is FrameworkElement fe)
+            {
+                var width = Math.Max(160, available - indent * 18 - 8);
+                if (fe.HorizontalAlignment == HorizontalAlignment.Left) fe.MaxWidth = width; // content-sized, never wider than the line
+                else fe.Width = width;
+            }
             var p = new Paragraph { Margin = new Thickness(indent * 18, 0, 0, 8) };
             p.Inlines.Add(new InlineUIContainer { Child = element });
             return p;
@@ -131,8 +138,17 @@ internal static class MarkdownRenderer
             }
             catch (Exception) { /* clipboard busy (another app holds it): ignore rather than crash */ }
         };
-        var grid = new Grid { Background = s.CodeBackground, CornerRadius = new CornerRadius(s.Radius, s.Radius, 0, 0), Padding = new Thickness(10, 0, 2, 0) };
+        // Sized to its content (language · Copy) so it can never be clipped by the line width.
+        var grid = new Grid
+        {
+            Background = s.CodeBackground, CornerRadius = new CornerRadius(s.Radius), Padding = new Thickness(10, 0, 2, 0), MinHeight = 26,
+            HorizontalAlignment = HorizontalAlignment.Left, ColumnSpacing = 12,
+        };
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         grid.Children.Add(new TextBlock { Text = code.Language ?? "code", FontSize = 11, Foreground = s.Muted, VerticalAlignment = VerticalAlignment.Center });
+        Grid.SetColumn(copy, 1);
+        copy.Foreground = s.Muted;
         grid.Children.Add(copy);
         return grid;
     }
@@ -182,9 +198,9 @@ internal static class MarkdownRenderer
             VerticalScrollMode = ScrollMode.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Padding = new Thickness(0, 0, 0, 6),
         };
         var tsv = string.Join("\n", table.Rows.Select(row => string.Join("\t", row.Select(PlainText))));
-        var copy = SmallButton("\uE8C8", "Copy", "Copy table (pastes into spreadsheets)", () => SetClipboardText(tsv));
-        copy.HorizontalAlignment = HorizontalAlignment.Right;
-        var stack = new StackPanel { Spacing = 2 };
+        var copy = SmallButton("\uE8C8", "Copy table", "Copy table (pastes into spreadsheets)", () => SetClipboardText(tsv));
+        copy.HorizontalAlignment = HorizontalAlignment.Left;
+        var stack = new StackPanel { Spacing = 2, HorizontalAlignment = HorizontalAlignment.Left };
         stack.Children.Add(copy);
         stack.Children.Add(scroll);
         return stack;
