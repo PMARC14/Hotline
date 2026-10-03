@@ -86,6 +86,9 @@
                                 <MenuFlyoutItem x:Name="CaptureWindowItem" x:FieldModifier="internal" Text="Capture window">
                                     <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7C4;" /></MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
+                                <MenuFlyoutItem x:Name="CaptureRegionItem" x:FieldModifier="internal" Text="Capture region">
+                                    <MenuFlyoutItem.Icon><FontIcon Glyph="&#xF407;" /></MenuFlyoutItem.Icon>
+                                </MenuFlyoutItem>
                                 <MenuFlyoutItem x:Name="CaptureScreenItem" x:FieldModifier="internal" Text="Capture screen">
                                     <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7F4;" /></MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>

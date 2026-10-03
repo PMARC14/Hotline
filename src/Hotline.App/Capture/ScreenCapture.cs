@@ -28,6 +28,15 @@ internal static class ScreenCapture
         return new RectI(b.X, b.Y, b.Width, b.Height);
     }
 
+    /// <summary>The monitor under the mouse pointer (region capture happens where you're looking).</summary>
+    public static RectI CursorMonitorRect()
+    {
+        Native.GetCursorPos(out var pt);
+        var area = DisplayArea.GetFromPoint(new Windows.Graphics.PointInt32(pt.X, pt.Y), DisplayAreaFallback.Primary) ?? DisplayArea.Primary;
+        var b = area.OuterBounds;
+        return new RectI(b.X, b.Y, b.Width, b.Height);
+    }
+
     /// <summary>Top-down BGRA pixels of the given screen rectangle.</summary>
     public static byte[] GrabBgra(RectI r)
     {

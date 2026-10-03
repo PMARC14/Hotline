@@ -87,8 +87,11 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
                 popup.ShowPopup();
                 popup.RequestCapture(window: true);
                 break;
+            case KeyAction.RegionSelect:
+                popup.ShowPopup();
+                popup.RequestRegionCapture();
+                break;
             default:
-                // ShowPopup; RegionSelect arrives in a later plan and just opens the popup for now.
                 popup.ShowPopup();
                 break;
         }

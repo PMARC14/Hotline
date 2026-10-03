@@ -82,6 +82,7 @@ internal sealed partial class ChatPresenter(
             () => { if (!popup.Input.Focus(FocusState.Keyboard)) log.Debug("input focus refused"); });
         popup.NewChatRequested += NewChat;
         popup.CaptureRequested += window => Run("capture", () => CaptureAsync(window));
+        popup.RegionCaptureRequested += () => Run("capture region", CaptureRegionAsync);
 
         popup.Input.PreviewKeyDown += Input_PreviewKeyDown;
         var restingBorder = popup.Composer.BorderBrush;
@@ -92,6 +93,7 @@ internal sealed partial class ChatPresenter(
         popup.AttachFilesItem.Click += (_, _) => Run("pick files", PickFilesAsync);
         popup.CaptureWindowItem.Click += (_, _) => Run("capture window", () => CaptureAsync(window: true));
         popup.CaptureScreenItem.Click += (_, _) => Run("capture screen", () => CaptureAsync(window: false));
+        popup.CaptureRegionItem.Click += (_, _) => Run("capture region", CaptureRegionAsync);
         popup.CaptureWindowButton.Click += (_, _) => Run("capture window", () => CaptureAsync(window: true));
         popup.CaptureScreenButton.Click += (_, _) => Run("capture screen", () => CaptureAsync(window: false));
         popup.PinButton.Checked += (_, _) => { popup.Pinned = true; popup.PinButton.Content = "\uE840"; };

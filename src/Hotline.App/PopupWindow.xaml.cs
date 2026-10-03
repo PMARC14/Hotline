@@ -171,6 +171,8 @@ public sealed partial class PopupWindow : Window
 
     public void RequestNewChat() => NewChatRequested?.Invoke();
     public void RequestCapture(bool window) => CaptureRequested?.Invoke(window);
+    public event Action? RegionCaptureRequested;
+    public void RequestRegionCapture() => RegionCaptureRequested?.Invoke();
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
     public void SetContentHeight(double dip)
