@@ -23,11 +23,15 @@ configurable in plain files.
 - **Native and light** — WinUI 3 with acrylic, no embedded browser. Answers stream in and the panel grows smoothly.
 - **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
   SVG drawings, and the whole conversation selectable in one drag.
-- **Screens and files** — capture the window you were in or the whole screen, paste or drop images and files.
+- **Screens and files** — capture the window you were in, the whole screen, or a region you drag out; paste or drop
+  images and files.
 - **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑.
-- **Tools, carefully** — CLI connections can use their own tools under their own permission rules; nothing runs
-  without your rules allowing it. (Tools for API connections through MCP are in progress.)
+- **Tools, carefully** — API connections can use tools from your **MCP servers** (`mcp.json`, the same format other
+  MCP apps use) and, when your Windows has it, the built-in **Windows agent connectors**. Read-only tools run; anything
+  else asks you in the panel (*Allow once / Always / Deny*). CLI connections can use their own tools under their own
+  permission rules.
 - **System prompts** as Markdown files you can switch from the bar.
+- **Your bar, your way** — `toolbar.json` picks which buttons and pickers the bar shows, and in what order.
 - **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly. API keys live in
   Windows Credential Locker.
 
@@ -52,7 +56,7 @@ Hotline**. (Windows only lets packaged apps take the Copilot key, which is why H
 ## Using it
 
 - **Copilot key** — open/close. **Long press** — new chat. **Esc** hides, **Ctrl+N** new chat.
-- **+** / bar buttons — attach files, capture the window you were in, or the whole screen. Ctrl+V pastes images.
+- **+** / bar buttons — attach files, capture the window you were in, the whole screen, or a region. Ctrl+V pastes images.
 - **📌 Pin** keeps the panel open while you drag files in.
 - **⚙ Settings** — AI connections, prompts, appearance, window size, history, folders.
 
@@ -100,10 +104,10 @@ gh secret set HOTLINE_SIGNING_PFX_PASSWORD   # prompts for your certificate pass
 
 ## Roadmap
 
-Tools for API connections via MCP (with in-panel approvals and the Windows on-device agent registry), region capture,
-a customizable bottom bar, a normal installer — see [docs/HANDOFF.md](docs/HANDOFF.md).
+A normal installer (sparse package) and trusted signing for the first public release — see
+[docs/RELEASING.md](docs/RELEASING.md) and [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## License
 
-Apache-2.0 — see [LICENSE](LICENSE). Placeholder app icon from Microsoft's
-[Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT, see `assets/source/ATTRIBUTION.md`).
+Apache-2.0 — see [LICENSE](LICENSE). Third-party components: [THIRD-PARTY-NOTICES.md](THIRD-PARTY-NOTICES.md)
+(placeholder app icon from Microsoft's [Fluent Emoji](https://github.com/microsoft/fluentui-emoji), MIT).

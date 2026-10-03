@@ -8,7 +8,8 @@ same files). Comments and trailing commas are allowed.
 | `settings.json` | General options (window, appearance, chat, key actions), `chat.order` (Provider dropdown order) and `chat.defaultBackend` |
 | `connections\<id>.json` | One file per AI connection. Add a connection by dropping in a file; remove one by deleting it |
 | `prompts\<name>.md` | System prompts (`default.md` is created on first run) |
-| `mcp.json` | MCP servers and tool approvals (tools for API connections — in progress, see the roadmap) |
+| `mcp.json` | MCP servers and tool approvals (tools for API connections) |
+| `toolbar.json` | The bottom bar: which items, in what order |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`) |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 
@@ -26,7 +27,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `window.hideOnBlur` / `alwaysOnTop` | `true` / `true` | Hide when you click elsewhere; keep on top |
 | `window.fontSize` / `fontFamily` | Windows default / Segoe UI Variable | Text size (10–32; empty follows Windows' text size) and font |
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
-| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `none` |
+| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `none` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `chat.defaultBackend` | `agy` | Connection that answers by default (its `id`) |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
@@ -50,7 +51,7 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `prompt` | all | System prompt name (`prompts\<name>.md`); empty = `chat.defaultPrompt` |
 | `endpoint` | APIs | Base URL (defaults per type, e.g. `http://127.0.0.1:8080/v1` for `local`) |
 | `cliPath` | agy, Claude Code | Program path (empty = auto-detect) |
-| `tools` | agy, Claude Code | `chatOnly` (default) or `inherit` = the CLI's own tools and permission rules in `workingDirectory` |
+| `tools` | all | `chatOnly` (default) or `inherit`: CLIs use their own tools and permission rules in `workingDirectory`; API connections use Hotline's MCP tools (`mcp.json`) |
 | `workingDirectory` | agy, Claude Code | Folder for `inherit` mode (empty = your user folder) |
 | `approveAllTools` | agy, Claude Code | ⚠ Dangerous: auto-approve every tool request (inherit mode only) |
 | `args` | agy, Claude Code | Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
@@ -58,6 +59,31 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `keepCliSessions` | Claude Code | Also keep Hotline chats in Claude Code's own history (`claude --resume`) |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `refusalFallback` | Anthropic | If a safety check declines a request, the API re-serves it with a suitable model (default on) |
+
+## mcp.json (tools for API connections)
+
+```jsonc
+{
+  "mcpServers": {
+    // same format as other MCP apps
+    "files": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\you\\Documents"] },
+    "off":   { "command": "some-server.exe", "disabled": true, "env": { "TOKEN": "..." }, "cwd": "C:\\work" }
+  },
+  // "allow" (no prompt) | "ask" (prompt in the panel) | "deny"; "server/*" covers a whole server
+  "approvals": { "files/write_file": "ask", "files/*": "allow" }
+}
+```
+
+A connection uses these tools when its `tools` is `inherit` ("Use Hotline's tools" in Settings › AI connections).
+Without a rule, tools the server marks read-only run and everything else asks; denied tools aren't offered at all.
+"Always allow" in the panel writes an `allow` rule here. When Windows has the on-device agent registry (`odr.exe`,
+build 26220.7262+), its connectors are added as `windows-…` servers. Settings › **Tools** shows each server's status.
+
+## toolbar.json
+
+`{ "items": ["pin", "captureWindow", "captureScreen", "spacer", "effort", "model", "provider", "prompt", "recent", "newChat", "settings"] }`
+— left to right; remove an item to hide it; `spacer` takes the free space (repeatable). Also available:
+`captureRegion`. The pickers (effort, model, provider) sit together in the order listed.
 
 ## agy permissions
 
@@ -69,4 +95,5 @@ curated list (and denies `Remove-Item`, `rm`, `git push`, …) after showing it 
 ## Links
 
 `hotline://settings` opens the settings window, `hotline://tray` starts quietly in the tray, `hotline://demo` shows an
-example conversation, `hotline://selftest` renders a scripted conversation off-screen (used by the smoke test).
+example conversation, `hotline://selftest` renders a scripted conversation off-screen and builds every settings page
+(used by the smoke test).

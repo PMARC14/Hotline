@@ -14,33 +14,35 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 - `main`: Plans 1–4 complete (key + shell, chat, native UI, settings window, connections, pickers, prompts, tool
   modes for CLIs, Claude Code backend, API backends, recent chats, one file per connection, review fixes).
-- Branch **`plan5-tools`** (pushed, open a PR to merge): Plan 5 **Task 1 done** — `src/Hotline.Core/Tools/`
-  (`McpConfig`, `ToolPolicy`, `ToolNames`, `OdrDiscovery`, `McpToolHost`, `StdioMcpSession`), plus the settings-window
-  crash fix, a settings-window self-test, `hotline://demo`, README/config docs and screenshots.
-- Tests: 483 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
+- Branch **`plan5-tools`**, PR #1 (https://github.com/PMARC14/hotline/pull/1): **Plan 5 complete.**
+  1. MCP core — `src/Hotline.Core/Tools/` (`McpConfig`, `ToolPolicy`, `ToolNames`, `OdrDiscovery`, `McpToolHost`,
+     `StdioMcpSession`).
+  2. Tool loops in the OpenAI-compatible, Gemini and Anthropic backends (`Backends/Api/ToolLoop.cs`, max 20 rounds).
+  3. App: tool host in `App.xaml.cs`, approval InfoBar (Allow once / Always / Deny), Settings › Tools page,
+     "Use Hotline's tools" for API connections. Verified with the real filesystem MCP server.
+  4. Region capture — `Capture/RegionSelectWindow.cs` (frozen, dimmed snapshot of the monitor under the mouse; drag;
+     Esc / right-click cancels), `Core/Windowing/RegionMath.cs`; + menu item, optional bar button, key action
+     `regionSelect`.
+  5. Customizable bar — `~/.hotline/toolbar.json` (`Core/Windowing/ToolbarConfig.cs`, `PopupWindow.ApplyToolbar`),
+     live reload.
+  6. Release prep — `docs/RELEASING.md` (sparse-package installer design, signing, checklist),
+     `THIRD-PARTY-NOTICES.md`; CI ran green on GitHub (manual run; still gated by `HOTLINE_ACTIONS_ENABLED`).
+  Also fixed: code-block / table Copy buttons were clipped off the right edge (now content-sized headers).
+- Tests: 499 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
   the user is typing during the run — it sends a synthetic Ctrl+Alt+H).
+- Needs a human check: region capture (drag on a real screen; multi-monitor and mixed DPI).
 
-## Next work (Plan 5, `docs/superpowers/plans/2026-10-03-hotline-plan5-tools-capture-toolbar-release.md`)
+## Next work
 
-2. **Tool loops in the API backends** (`src/Hotline.Core/Backends/Api/`): give `OpenAiBackend`, `AnthropicBackend`
-   (official SDK — `Anthropic.Models.Beta.Messages` types; load the `claude-api` skill first) and `GeminiBackend` an
-   `IToolHost?`; when the connection's `tools` is `inherit`, send the tool list, run requested calls through
-   `IToolHost.CallAsync` (approval happens inside), feed results back, loop (max 20 rounds), and stream short
-   transcript notes ("🔧 files/search_files…"). Add `ToolHost` to `BackendDeps`; show the Tool use field for API types
-   (`ConnectionField.Tools`). Unit-test each loop with the fake HTTP handlers already used in `*BackendTests.cs`.
-3. **App:** construct `McpToolHost` in `App.xaml.cs` (config `~/.hotline/mcp.json`, ODR servers when `odr.exe` exists,
-   `StdioMcpSession.ConnectAsync`), an approval InfoBar in the panel (Allow once / Always / Deny, 5-minute timeout =
-   Deny), a Tools settings page (server status from `McpToolHost.Status`, open mcp.json, ODR availability), live reload
-   of mcp.json (the watcher already covers `*.json` in the data folder — extend `Relevant()`), and put MCP server
-   processes in the kill-on-close job if possible (`ChildProcessJob`).
-4. **Region capture:** full-screen overlay window to drag a rectangle (Esc cancels); key action `RegionSelect` exists.
-5. **Customizable bar:** `~/.hotline/toolbar.json` with ordered `items`; `ProviderBar`/`ToolbarLayout` already compute
-   widths — generalize the fixed buttons.
-6. **Release prep:** sparse-package installer design (identity needed for the Copilot key), enable CI, signing.
+- Merge PR #1 after review (`/code-review ultra 1` is the user's call — it's billed).
+- First public release checklist: `docs/RELEASING.md` (installer, trusted signing, final icon).
+- Known limit: MCP server processes are started by the MCP SDK, not `ChildProcessJob`, so a Hotline *crash* can leave
+  them running (a normal quit disposes them). Fix idea: start them through our own process factory/transport.
+- Windows agent registry (`odr.exe`) is untested on a real build (needs 26220.7262+; the dev PC is 26200).
 
-UI follow-ups the user deferred (only fix if they become big problems): code-block Copy button isn't visible in its
-header row; provider name shrinks very small in the bar; full-fidelity SVG (Windows' renderer drops text); code blocks
-wrap instead of scrolling; panel-growth smoothness; caret visibility on all themes.
+UI follow-ups the user deferred (only fix if they become big problems): provider name shrinks very small in the bar;
+full-fidelity SVG (Windows' renderer drops text); code blocks wrap instead of scrolling; panel-growth smoothness;
+caret visibility on all themes.
 
 ## Architecture map
 
