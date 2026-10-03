@@ -41,6 +41,18 @@ public sealed partial class SettingsWindow : Window
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 
+    /// <summary>Self-test: builds every page once (hidden window) so a broken page fails the smoke test.</summary>
+    internal IReadOnlyList<string> BuildAllPages()
+    {
+        var failures = new List<string>();
+        foreach (var tag in Nav.MenuItems.OfType<NavigationViewItem>().Select(i => (string)i.Tag))
+        {
+            try { ShowPage(tag); }
+            catch (Exception ex) { failures.Add($"{tag}: {ex.Message}"); }
+        }
+        return failures;
+    }
+
     private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
 
     private void ApplyTheme() => Root.RequestedTheme = _settings.Current.Window.Theme switch
@@ -176,8 +188,6 @@ public sealed partial class SettingsWindow : Window
             else StartupRegistration.Disable();
             Refresh();
         };
-        var panel = new StackPanel { Spacing = 4, HorizontalAlignment = HorizontalAlignment.Right };
-        panel.Children.Add(toggle);
         PageHost.Children.Add(Card("Start with Windows", null, new StackPanel { Spacing = 4, Children = { toggle, status } }));
         Refresh();
     }

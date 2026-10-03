@@ -8,3 +8,6 @@ BundleArtifacts/
 .vs/
 TestResults/
 .superpowers/
+
+# Machine-specific / private notes (handoff)
+docs/local/

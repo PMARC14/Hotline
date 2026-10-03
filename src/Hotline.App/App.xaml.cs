@@ -137,7 +137,14 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        _router.SelfTestRequested += uri => _presenter.SelfTest(uri);
+        _router.SelfTestRequested += uri =>
+        {
+            _presenter.SelfTest(uri);
+            var problems = _settingsHost?.SelfTest() ?? [];
+            if (problems.Count == 0) _log.Info("selftest settings ok");
+            else _log.Error("selftest settings FAILED: " + string.Join("; ", problems));
+        };
+        _router.DemoRequested += () => _presenter.Demo();
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };

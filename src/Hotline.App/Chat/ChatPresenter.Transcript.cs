@@ -258,6 +258,27 @@ internal sealed partial class ChatPresenter
     /// transcript code while the panel is shown OFF-SCREEN (really drawn, never visible, no focus), logs each step,
     /// then clears and hides it.
     /// </summary>
+    /// <summary>Shows the panel with a scripted example conversation (no AI call): for screenshots and demos.</summary>
+    public void Demo()
+    {
+        const string answer = "### Area of a circle\n\nThe area is\n\n$$A = \\pi r^2$$\n\n" +
+            "- **r** is the radius (half the diameter)\n- **π** ≈ 3.14159\n\n" +
+            "For a radius of 2: $A = \\pi \\times 2^2 \\approx 12.57$.\n\n" +
+            "```python\nimport math\n\ndef circle_area(r: float) -> float:\n    return math.pi * r ** 2\n\nprint(round(circle_area(2), 2))  # 12.57\n```\n\n" +
+            "| Radius | Area |\n|---|---|\n| 1 | 3.14 |\n| 2 | 12.57 |\n| 3 | 28.27 |";
+        try
+        {
+            OnChatEvent(new ConversationReset());
+            popup.ShowPopup();
+            OnChatEvent(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, "How do I find the area of a circle? Show it in Python.", [], DateTimeOffset.Now)));
+            OnChatEvent(new AssistantStarted("demo-a", settings.Chat.Backends.FirstOrDefault()?.Name ?? "Gemini (Antigravity)"));
+            OnChatEvent(new AssistantDelta("demo-a", answer, false));
+            OnChatEvent(new AssistantCompleted("demo-a"));
+            log.Info("demo conversation shown");
+        }
+        catch (Exception ex) { log.Error("demo failed", ex); }
+    }
+
     public async void SelfTest(Uri? uri)
     {
         const string answer = "# Heading\n\nSome **bold** text with `code` and <kbd>Ctrl</kbd>.\n\n- one\n- two\n  1. nested\n\n" +

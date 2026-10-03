@@ -1,109 +1,109 @@
 # Hotline
 
-Replace the Windows Copilot key with a fast popup that talks to the AI you choose:
-Claude (via your installed Claude Code), Gemini (API or Antigravity CLI), any
-OpenAI-compatible endpoint, or local llama.cpp models.
+**Turn the Windows Copilot key into a fast, native AI popup that talks to the AI *you* choose.**
 
-Status: early development. Licensed under Apache-2.0.
+Press the key, ask, get a streamed answer — then it's gone. Hotline uses the AI tools you already have (your
+installed Claude Code or Antigravity CLI and their sign-ins) or any API key you bring, and keeps everything
+configurable in plain files.
 
-## Build & install (dev)
+<p align="center">
+  <img src="docs/images/panel.png" width="560" alt="The Hotline panel answering a question with a formula, code and a table">
+</p>
 
-Requires .NET SDK 10.0.401+ on Windows 11 (22H2 or later).
+> Status: early development, personal-use quality. Windows 11 only. Apache-2.0.
 
-    powershell -File scripts\dev-cert.ps1   # once: self-signed cert, trusted for sideloading (UAC)
-    powershell -File scripts\install.ps1    # build, sign, install, launch
+## Features
 
-Then: Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom → Hotline.
+- **The Copilot key, reclaimed** — short press opens/closes, long press starts a new chat (both configurable), plus an
+  optional extra hotkey. Opens on the monitor you're working on, focused and ready to type.
+- **Your choice of AI** — pick *Effort → Model → Provider* in the bar:
+  - **Claude Code** (your Claude plan, no API key) and **Antigravity CLI / agy** (Gemini with your Google sign-in)
+  - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, Groq, …)
+  - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
+- **Native and light** — WinUI 3 with acrylic, no embedded browser. Answers stream in and the panel grows smoothly.
+- **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
+  SVG drawings, and the whole conversation selectable in one drag.
+- **Screens and files** — capture the window you were in or the whole screen, paste or drop images and files.
+- **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑.
+- **Tools, carefully** — CLI connections can use their own tools under their own permission rules; nothing runs
+  without your rules allowing it. (Tools for API connections through MCP are in progress.)
+- **System prompts** as Markdown files you can switch from the bar.
+- **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly. API keys live in
+  Windows Credential Locker.
 
-## Settings
+<p align="center">
+  <img src="docs/images/settings.png" width="640" alt="The Hotline settings window">
+</p>
 
-Settings live in `%USERPROFILE%\.hotline\settings.json`; each AI connection has its own file in `connections\<id>.json` (logs, history and `prompts\` next to them). Add a connection by dropping in a new file, remove one by deleting its file. The file is the
-configuration: every option is written into it, and saving it applies the change immediately. The settings window
-(⚙ in the panel, tray → **Settings…**, or `hotline://settings`) edits the same file. API keys are the exception: they
-are stored in Windows Credential Locker. Useful keys:
+## Install (from source)
 
-| Key | Default | Meaning |
-|---|---|---|
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
-| `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (DIPs; 0 = just the message bar) and how much of the screen it may grow to |
-| `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the screen's free space |
-| `window.backdrop` | `acrylic` | `acrylic`, `acrylicThin`, `mica`, `solid` |
-| `window.tintOpacity` / `window.luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
-| `window.hideOnBlur` | `true` | Hide when you click elsewhere |
-| `window.fontSize` / `window.fontFamily` | (Windows default) / (Segoe UI Variable) | Chat text size (10–32; empty = follows Windows' text size) and font, e.g. `"Cascadia Code"` |
-| `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
-| `activation.tap` / `activation.hold` | `togglePopup` / `newChat` | Copilot key: short press opens/closes, long press starts a new chat. Also: `showPopup`, `captureWindow`, `none` |
-| `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
-| `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the popup |
+Requires Windows 11 22H2+ and the [.NET SDK 10.0.401+](https://dotnet.microsoft.com/download).
 
-| `chat.defaultBackend` | `agy` | Which connection answers by default (its `id`) |
-| `chat.order` | (all) | Provider dropdown order, as connection ids; connections not listed follow by name |
-| `connections\<id>.json` → `model` | (agy default) | e.g. `gemini-3.8-flash-low` (`agy models` lists them; agy puts the effort level in the model id) |
-| `connections\<id>.json` → `effort` | (agy default) | `low`, `medium`, `high` — only used with the default model |
-| `connections\<id>.json` → `tools` | `chatOnly` | `chatOnly`, or `inherit` = the CLI's own tools and permission rules in `workingDirectory` |
-| `connections\<id>.json` → `prompt` / `chat.defaultPrompt` | `null` / `default` | System prompt = `prompts\<name>.md` |
-| `connections\<id>.json` → `approveAllTools` | `false` | ⚠ Dangerous: agy runs any command / edits any file without asking (inherit mode only) |
-| `connections\<id>.json` → `args` | `null` | Replaces Hotline's launch flags for the mode, e.g. `["--agent", "mine"]` (agy) or `["--tools", "Read"]` (Claude Code). Hotline always adds the stream/print flags it needs; dangerous flags only via `approveAllTools` |
-| `connections\<id>.json` → `extraArgs` | `null` | Added on top, e.g. `"--mcp-config C:\mcp\windows.json"` to give a chat-only Claude exactly those MCP servers |
-| `connections\<id>.json` → `keepCliSessions` | `false` | Claude Code also saves Hotline chats in its own history (`claude --resume`); agy always does |
-| `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height (`window.maxHeightPercent`) once you chat |
-| `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
-| `chat.saveHistory` / `chat.historyRetentionDays` | `true` / `30` | Conversation logs in %USERPROFILE%\.hotline\history (text only) |
+```powershell
+git clone https://github.com/PMARC14/hotline
+cd hotline
+powershell -File scripts\dev-cert.ps1   # once: creates a self-signed certificate and trusts it for sideloading (UAC)
+powershell -File scripts\install.ps1    # builds, signs and installs Hotline, then starts it in the tray
+```
 
-Comments and trailing commas are allowed. A half-saved or broken file is ignored while Hotline runs; at startup a broken
-file is kept as `settings.json.bad` and defaults are used.
+Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
+Hotline**. (Windows only lets packaged apps take the Copilot key, which is why Hotline installs as a package.)
 
-### AI connections, tools and prompts
+## Using it
 
-**AI connections** (settings window) adds, duplicates and removes connections: Antigravity (agy), Claude Code, Gemini
-API, Anthropic API, OpenAI-compatible APIs and local endpoints (llama.cpp, LM Studio). Only Antigravity chats today; the
-others can already be configured and tested. In the bottom bar, **Effort → Model → Provider** pick who answers.
+- **Copilot key** — open/close. **Long press** — new chat. **Esc** hides, **Ctrl+N** new chat.
+- **+** / bar buttons — attach files, capture the window you were in, or the whole screen. Ctrl+V pastes images.
+- **📌 Pin** keeps the panel open while you drag files in.
+- **⚙ Settings** — AI connections, prompts, appearance, window size, history, folders.
 
-**API connections** (OpenAI-compatible incl. OpenRouter/Groq, local llama.cpp/LM Studio servers, Gemini API, Anthropic API)
-chat directly: add one in Settings › AI connections, paste the key (stored in Windows Credential Locker), pick a model.
-Keys are only sent over https (plain http only to this PC). The Anthropic connection uses the official SDK, defaults to
-Claude Opus 5.5 and has a refusal fallback (on by default): if a safety check declines a request, the API re-serves it
-with a suitable model.
+### Connecting an AI
 
-**Tool use** per connection: *Chat only* (default; reads only your attachments) or *Use the program's own tools*. agy
-then works in your chosen folder under **its own** permission rules (`~/.gemini/antigravity-cli/settings.json`,
-`permissions.allow/deny`). Hotline runs agy in the background, where anything that would ask is **denied**, so shell
-commands need allow rules: **Allow read-only commands** adds a curated list (and denies `Remove-Item`, `rm`,
-`git push`…). **Approve everything** skips all checks — dangerous.
+| Connection | You need |
+|---|---|
+| Claude Code | [Claude Code](https://claude.com/claude-code) installed and signed in (run `claude` once) |
+| Antigravity (agy) | The [Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once) |
+| Anthropic / Gemini / OpenAI-compatible | An API key — Settings › AI connections › Add connection, paste the key, pick a model |
+| Local | An OpenAI-style server running (e.g. `llama-server` on `http://127.0.0.1:8080`) |
 
-**System prompts** are Markdown files in `%USERPROFILE%\.hotline\prompts`; switch them from the 📄 button in the bar.
+Keys are only ever sent over https (plain http only to this PC).
 
-### Chatting
+### Configuration
 
-Press the Copilot key, type, Enter. **+** or the toolbar attaches files and captures the window you were in or the whole
-screen; Ctrl+V pastes images/files. To drag files in, **pin** the panel first (📌) — otherwise it hides when you click
-elsewhere. Ctrl+N or a long press starts a new chat, Esc hides. The Antigravity backend needs the
-[Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once).
-Chats run through `agy` are saved in its own history (`~/.gemini/antigravity-cli`), so `agy` → `/resume` shows them.
+All options, the file layout and the agy permission setup: **[docs/configuration.md](docs/configuration.md)**.
 
-## Debugging
+## Development
 
-- Log: `%USERPROFILE%\.hotline\logs\hotline.log` (crashes are logged as `FATAL`).
-- Debug build (verbose logging always on, key-status line visible): `powershell -File scripts\install.ps1 -Configuration Debug`
-- Full crash dumps (opt-in, admin): `powershell -File scripts\enable-crash-dumps.ps1` (`-Disable` to undo).
+```powershell
+dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj   # unit tests (Core)
+powershell -File tests\smoke\smoke.ps1 [-Install]                         # end-to-end against the installed app
+```
 
-## Tests
+The smoke test drives the same inputs Windows uses (protocol links, Copilot key messages, the hotkey), renders a
+scripted conversation off-screen and builds every settings page, then checks the log. It restores your settings.
+Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status line). Crash dumps (opt-in, admin):
+`scripts\enable-crash-dumps.ps1`.
 
-    dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj   # unit tests
-    powershell -File tests\smoke\smoke.ps1 [-Install]                         # end-to-end against the installed app
+- **Layout:** `src/Hotline.Core` (UI-free logic: backends, settings, markdown, tools — fully unit-tested),
+  `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/` (design spec, plans, handoff notes).
+- **Contributors / new sessions:** start with [docs/HANDOFF.md](docs/HANDOFF.md).
 
-The smoke test drives the same inputs Windows uses (protocol URIs, Copilot fast-path messages, the
-fallback hotkey) and checks the app log. It restarts Hotline and restores your settings afterwards.
+### CI and releases
 
-## CI and releases (GitHub Actions)
+`.github/workflows/ci.yml` (build + tests) and `release.yml` (signed MSIX → GitHub Release) are disabled by default;
+enable them with the repository variable `HOTLINE_ACTIONS_ENABLED=true`. Releases need the signing certificate as
+secrets (its subject must equal the manifest `Publisher`):
 
-`.github/workflows/ci.yml` (build + tests) and `release.yml` (signed MSIX → GitHub Release) are **disabled by
-default**. Enable them with the repository variable `HOTLINE_ACTIONS_ENABLED=true`. Manual runs work any time.
+```powershell
+[Convert]::ToBase64String([IO.File]::ReadAllBytes('certs\hotline-dev.pfx')) | gh secret set HOTLINE_SIGNING_PFX_BASE64
+gh secret set HOTLINE_SIGNING_PFX_PASSWORD   # prompts for your certificate password
+```
 
-Releases need two secrets. The certificate subject must equal the manifest `Publisher` (`CN=pmarc14 Hotline Dev`):
+## Roadmap
 
-    [Convert]::ToBase64String([IO.File]::ReadAllBytes('certs\hotline-dev.pfx')) | gh secret set HOTLINE_SIGNING_PFX_BASE64
-    gh secret set HOTLINE_SIGNING_PFX_PASSWORD
+Tools for API connections via MCP (with in-panel approvals and the Windows on-device agent registry), region capture,
+a customizable bottom bar, a normal installer — see [docs/HANDOFF.md](docs/HANDOFF.md).
 
-Then push a tag (`git tag v0.2.0; git push origin v0.2.0`) or run **Release** manually. Each release attaches the
-`.msix` plus `Hotline.cer`, which users must trust (Local Machine → Trusted People) before installing a self-signed build.
+## License
+
+Apache-2.0 — see [LICENSE](LICENSE). Placeholder app icon from Microsoft's
+[Fluent Emoji](https://github.com/microsoft/fluentui-emoji) (MIT, see `assets/source/ATTRIBUTION.md`).
