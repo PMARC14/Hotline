@@ -152,6 +152,7 @@ public partial class App : Application
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
+        ApplyToolbarFile(dataDir);
         WatchSettingsFile(store);
         _settingsService.ConnectionsChanged += ids =>
         {
@@ -235,6 +236,7 @@ public partial class App : Application
         {
             try
             {
+                ApplyToolbarFile(dir);
                 if (store.TryRead() is not { } fromDisk) { _log?.Info("settings.json not readable yet (being edited?); keeping current settings"); return; }
                 if (_settingsService!.Reload(fromDisk)) _log?.Info("settings.json changed on disk; applied");
             }
@@ -244,7 +246,9 @@ public partial class App : Application
         {
             // settings.json and connections\*.json (one file per connection): edits, new and deleted files apply live.
             _settingsWatcher = new FileSystemWatcher(dir, "*.json") { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, IncludeSubdirectories = true };
+            var toolbarPath = Path.Combine(dir, "toolbar.json");
             bool Relevant(string? path) => path is not null && (string.Equals(path, store.FilePath, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(path, toolbarPath, StringComparison.OrdinalIgnoreCase)
                 || string.Equals(Path.GetDirectoryName(path), store.ConnectionsDirectory, StringComparison.OrdinalIgnoreCase));
             void Kick(string? path) { if (Relevant(path)) _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); }); }
             _settingsWatcher.Changed += (_, e) => Kick(e.FullPath);
@@ -295,4 +299,17 @@ public partial class App : Application
             _log!, mcpPath);
         return _toolHost;
     }
+
+    /// <summary>~/.hotline/toolbar.json → the bottom bar (written with the defaults on first run; applies live).</summary>
+    private void ApplyToolbarFile(string dataDir)
+    {
+        var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
+        if (config.Error is { } error) _log?.Error(error);
+        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
+        _toolbarApplied = true;
+        try { _popup.ApplyToolbar(config.Items); }
+        catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
+    }
+
+    private bool _toolbarApplied;
 }

@@ -94,6 +94,7 @@ internal sealed partial class ChatPresenter(
         popup.CaptureWindowItem.Click += (_, _) => Run("capture window", () => CaptureAsync(window: true));
         popup.CaptureScreenItem.Click += (_, _) => Run("capture screen", () => CaptureAsync(window: false));
         popup.CaptureRegionItem.Click += (_, _) => Run("capture region", CaptureRegionAsync);
+        popup.CaptureRegionButton.Click += (_, _) => Run("capture region", CaptureRegionAsync);
         popup.CaptureWindowButton.Click += (_, _) => Run("capture window", () => CaptureAsync(window: true));
         popup.CaptureScreenButton.Click += (_, _) => Run("capture screen", () => CaptureAsync(window: false));
         popup.PinButton.Checked += (_, _) => { popup.Pinned = true; popup.PinButton.Content = "\uE840"; };

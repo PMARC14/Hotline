@@ -121,6 +121,9 @@
                     Content="&#xE7C4;" ToolTipService.ToolTip="Capture the window you were in" />
             <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7F4;" ToolTipService.ToolTip="Capture the whole screen" />
+            <!-- Arranged at runtime from ~/.hotline/toolbar.json (see PopupWindow.ApplyToolbar). -->
+            <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
+                    Content="&#xF407;" ToolTipService.ToolTip="Capture a region" Visibility="Collapsed" />
             <!-- Pickers blend into the bar (no fill/border) until hovered; order: effort, model, provider. -->
             <StackPanel x:Name="PickersPanel" x:FieldModifier="internal" Grid.Column="3" Orientation="Horizontal" Spacing="2"
                         VerticalAlignment="Center" HorizontalAlignment="Right">
