@@ -93,15 +93,10 @@ Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status
 
 ### CI and releases
 
-`.github/workflows/ci.yml` (build + tests) and `release.yml` (signed MSIX + `Hotline.appinstaller` for automatic
-updates → GitHub Release) are disabled by default;
-enable them with the repository variable `HOTLINE_ACTIONS_ENABLED=true`. Releases need the signing certificate as
-secrets (its subject must equal the manifest `Publisher`):
-
-```powershell
-[Convert]::ToBase64String([IO.File]::ReadAllBytes('certs\hotline-dev.pfx')) | gh secret set HOTLINE_SIGNING_PFX_BASE64
-gh secret set HOTLINE_SIGNING_PFX_PASSWORD   # prompts for your certificate password
-```
+Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
+to `main` publishes a release with the `.msix`, `Hotline.cer` and `Hotline.appinstaller`
+(`.github/workflows/release.yml`); until the signing secrets are set these are self-signed pre-release test builds.
+Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
 

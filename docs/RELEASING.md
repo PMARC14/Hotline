@@ -8,15 +8,18 @@ with a certificate the PC trusts. A classic installer would add a wizard and a P
 signing requirement, so we ship the MSIX directly. Double-clicking a signed `.msix` opens Windows' App Installer
 (an Install button); an unpackaged build could only offer the fallback hotkey, not the Copilot key.
 
-## How a release is built
+## How a release is built (GitHub Actions)
 
-1. Merge to `main` through a PR; CI (`.github/workflows/ci.yml`) builds and runs the unit tests (manual runs any time;
-   automatic once the repository variable `HOTLINE_ACTIONS_ENABLED=true`).
-2. Signing certificate as secrets: `HOTLINE_SIGNING_PFX_BASE64`, `HOTLINE_SIGNING_PFX_PASSWORD`. Its subject must
-   equal the manifest `Publisher` in `src/Hotline.App/Package.appxmanifest`.
-3. Push a tag `vX.Y.Z` (or run **Release** manually). The workflow tests, builds the signed `.msix`
-   (`scripts/build-msix.ps1`), writes `Hotline.appinstaller` (`scripts/make-appinstaller.ps1`) and publishes a GitHub
-   Release with the `.msix`, `Hotline.cer` and `Hotline.appinstaller`.
+- **CI** (`.github/workflows/ci.yml`): unit tests + app build on every pull request and every push to `main`.
+- **Release** (`.github/workflows/release.yml`): every push to `main` that changes code publishes a release
+  `v<version.txt>.<run number>` (e.g. `v0.2.57`); a pushed tag `vX.Y.Z` or **Run workflow** with a version publishes
+  that version. Bump `version.txt` (e.g. `0.3`, `1.0`) for a new minor/major line.
+  - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
+    `Publisher`): a normal release.
+  - Without them: signed with a throwaway self-signed certificate and published as a **pre-release** test build.
+  - Assets: the `.msix`, `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.ps1`).
+- **winget** (`.github/workflows/winget.yml`): disabled until the repository variable `HOTLINE_WINGET_ENABLED=true`;
+  needs trusted signing, a first manual submission (`wingetcreate new`) and a `WINGET_TOKEN` secret (details in the file).
 
 Users then either double-click the `.msix`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
 checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background. Updates keep
@@ -36,9 +39,9 @@ release (the update check compares versions).
     certification (expect questions about full trust and the Copilot key extension).
   - **Azure Trusted Signing** (or a regular code-signing certificate): set the manifest `Publisher` to the
     certificate subject, update the two secrets; ship via GitHub Releases + `.appinstaller`.
-- [ ] **winget** (optional, after signing): a manifest PR to `microsoft/winget-pkgs` pointing at the release `.msix`.
+- [ ] **winget** (after signing): submit the first version by hand (`wingetcreate new`), add `WINGET_TOKEN`, set
+      `HOTLINE_WINGET_ENABLED=true` — later releases are submitted automatically.
 - [ ] **Final icon** (the user's SVG of an upside-down phone hanging by its cord) → `scripts\make-assets.ps1 -Source`.
 - [ ] **README:** fresh screenshots (`hotline://demo`, blur anything personal), install steps for signed releases.
 - [x] **License check:** Apache-2.0 for Hotline; third-party components listed in `THIRD-PARTY-NOTICES.md` (licenses
       taken from the package metadata).
-- [ ] Turn on `HOTLINE_ACTIONS_ENABLED` so every PR is built and tested.

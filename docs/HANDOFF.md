@@ -26,7 +26,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   5. Customizable bar — `~/.hotline/toolbar.json` (`Core/Windowing/ToolbarConfig.cs`, `PopupWindow.ApplyToolbar`),
      live reload.
   6. Release prep — `docs/RELEASING.md` (why MSIX, signing options, `.appinstaller` updates, checklist),
-     `THIRD-PARTY-NOTICES.md`; CI ran green on GitHub (manual run; still gated by `HOTLINE_ACTIONS_ENABLED`).
+     `THIRD-PARTY-NOTICES.md`; CI on every PR/push; releases on every code merge to main (self-signed pre-releases until signing secrets exist); winget workflow present but disabled.
   Also fixed: code-block / table Copy buttons were clipped off the right edge (now content-sized headers).
 - Tests: 521 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
   the user is typing during the run — it sends a synthetic Ctrl+Alt+H).
