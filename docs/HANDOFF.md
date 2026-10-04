@@ -10,43 +10,27 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 the user picks — Claude Code CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-10-03)
+## State (2026-10-04)
 
-- `main`: Plans 1–4 complete (key + shell, chat, native UI, settings window, connections, pickers, prompts, tool
-  modes for CLIs, Claude Code backend, API backends, recent chats, one file per connection, review fixes).
-- Branch **`plan5-tools`**, PR #1 (https://github.com/PMARC14/hotline/pull/1): **Plan 5 complete.**
-  1. MCP core — `src/Hotline.Core/Tools/` (`McpConfig`, `ToolPolicy`, `ToolNames`, `OdrDiscovery`, `McpToolHost`,
-     `StdioMcpSession`).
-  2. Tool loops in the OpenAI-compatible, Gemini and Anthropic backends (`Backends/Api/ToolLoop.cs`, max 20 rounds).
-  3. App: tool host in `App.xaml.cs`, approval InfoBar (Allow once / Always / Deny), Settings › Tools page,
-     "Use Hotline's tools" for API connections. Verified with the real filesystem MCP server.
-  4. Region capture — `Capture/RegionSelectWindow.cs` (frozen, dimmed snapshot of the monitor under the mouse; drag;
-     Esc / right-click cancels), `Core/Windowing/RegionMath.cs`; + menu item, optional bar button, key action
-     `regionSelect`.
-  5. Customizable bar — `~/.hotline/toolbar.json` (`Core/Windowing/ToolbarConfig.cs`, `PopupWindow.ApplyToolbar`),
-     live reload.
-  6. Release prep — `docs/RELEASING.md` (why MSIX, signing options, `.appinstaller` updates, checklist),
-     `THIRD-PARTY-NOTICES.md`; CI on every PR/push; releases on every code merge to main (self-signed pre-releases until signing secrets exist); winget workflow present but disabled.
-  Also fixed: code-block / table Copy buttons were clipped off the right edge (now content-sized headers).
+- `main`: Plans 1–5 merged (PR #1). This adds MCP tools for API connections with approvals, region capture,
+  `toolbar.json`, release automation and three review rounds of hardening. See the PR #1 description for the full list.
+- Branch **`plan6-public`**, draft PR #2: **Plan 6, the public-ready build** —
+  `docs/superpowers/plans/2026-10-04-hotline-plan6-public-release.md`. Nothing is implemented yet; start at task 1.
+- Release automation: every code merge to `main` publishes a release `v<version.txt>.<run number>`. These are
+  self-signed pre-releases until the signing secrets exist (`docs/RELEASING.md`).
 - Tests: 521 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
-  the user is typing during the run — it sends a synthetic Ctrl+Alt+H).
-- Needs a human check: region capture (drag on a real screen; multi-monitor and mixed DPI).
+  the user is typing during the run).
+- Git history was rewritten on 2026-10-04: noreply author, no personal paths, no certificate password. The dev
+  certificate password now lives in `certs/hotline-dev.password` (git-ignored); `build-msix.ps1` reads it.
 
 ## Next work
 
-- Final Antigravity review of Plan 5 done and fixed (a33f6a4). Merge PR #1 after the user's review
-  (`/code-review ultra 1` is the user's call — it's billed).
-- First public release checklist: `docs/RELEASING.md` (installer, trusted signing, final icon).
-- Known limit: MCP server processes are started by the MCP SDK, not `ChildProcessJob`, so a Hotline *crash* can leave
-  them running (Quit and Restart stop them). Fix idea: start them through our own process factory/transport.
-- Known limit: tool calls and results live only inside one answer; later turns replay the answer text (tool notes
-  stripped), so follow-ups about tool output may need the tool again. Fix idea: store tool turns in the conversation.
-- 2026-10-04 reviews, all real findings fixed: Opus 5.5 via agy (9e3f560), Gemini 3.1 Pro via agy (33e85a9), and
-  `/code-review high` findings: tool host caches lists, restarts only changed servers, 30 s
-  start+list timeout, failed servers retried after 1 min / "Check servers", consistent snapshot for calls; mcp.json
-  backed up before "Always allow" rewrites it; Gemini-safe tool names; shared tool-call/result handling; whitespace
-  text blocks dropped for Anthropic; demo resets the chat properly.
-- Windows agent registry (`odr.exe`) is untested on a real build (needs 26220.7262+; the dev PC is 26200).
+Plan 6 (link above), in order: MCP servers in the kill-on-close job; API polish (Gemini/OpenAI effort pickers, 429
+retries, Test connection); quick actions; selected text; OCR for text-only models; push-to-talk voice; public-ready
+README and reviews. The user does trusted signing and real-key API tests before making the repo public. They flip the
+visibility themselves.
+
+Still open: the region capture human check (multi-monitor / mixed DPI); `odr.exe` untested (needs build 26220.7262+).
 
 UI follow-ups the user deferred (only fix if they become big problems): provider name shrinks very small in the bar;
 full-fidelity SVG (Windows' renderer drops text); code blocks wrap instead of scrolling; panel-growth smoothness;
