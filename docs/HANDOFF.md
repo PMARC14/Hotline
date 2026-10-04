@@ -28,7 +28,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   6. Release prep — `docs/RELEASING.md` (why MSIX, signing options, `.appinstaller` updates, checklist),
      `THIRD-PARTY-NOTICES.md`; CI ran green on GitHub (manual run; still gated by `HOTLINE_ACTIONS_ENABLED`).
   Also fixed: code-block / table Copy buttons were clipped off the right edge (now content-sized headers).
-- Tests: 508 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
+- Tests: 521 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
   the user is typing during the run — it sends a synthetic Ctrl+Alt+H).
 - Needs a human check: region capture (drag on a real screen; multi-monitor and mixed DPI).
 
@@ -41,7 +41,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   them running (Quit and Restart stop them). Fix idea: start them through our own process factory/transport.
 - Known limit: tool calls and results live only inside one answer; later turns replay the answer text (tool notes
   stripped), so follow-ups about tool output may need the tool again. Fix idea: store tool turns in the conversation.
-- `/code-review high` (2026-10-04) findings fixed: tool host caches lists, restarts only changed servers, 30 s
+- 2026-10-04 reviews, all real findings fixed: Opus 5.5 via agy (9e3f560), Gemini 3.1 Pro via agy (33e85a9), and
+  `/code-review high` findings: tool host caches lists, restarts only changed servers, 30 s
   start+list timeout, failed servers retried after 1 min / "Check servers", consistent snapshot for calls; mcp.json
   backed up before "Always allow" rewrites it; Gemini-safe tool names; shared tool-call/result handling; whitespace
   text blocks dropped for Anthropic; demo resets the chat properly.
@@ -72,9 +73,11 @@ caret visibility on all themes.
 
 ## Hard-won facts (don't relearn these)
 
-- Antigravity reviews: the agy MCP tool can return nothing; run `agy -p "$(cat prompt.txt)"` from Bash instead and start
-  the prompt with "use only file-reading tools, no shell commands" — headless agy aborts silently when a command is denied.
-
+- Antigravity reviews: the agy MCP tool can return nothing and can't pick a model. What works: `agy --model
+  <claude-opus-5-5-high | gemini-3.1-pro-high> -p "<prompt>"` with the code pasted INTO the prompt and "do not use any
+  tools" (headless agy aborts silently when it tries a shell command). Windows caps the command line at ~32k chars, so
+  split the review into chunks (a script did 5 parts in parallel: tool host, Anthropic, OpenAI+Gemini, app wiring,
+  capture).
 - **WinUI `TextHighlighter` on a `RichTextBlock` crashes natively when drawn** (AV in Microsoft.UI.Xaml.dll). Removed;
   don't reintroduce. Reproduced only when actually rendered → `hotline://selftest` renders off-screen for that reason.
 - **The TextBox caret takes the inverse colour *and the opacity* of the box background** (WinUI #6498/#8207/#9005):
