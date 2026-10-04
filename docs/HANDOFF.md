@@ -74,7 +74,7 @@ caret visibility on all themes.
 ## Hard-won facts (don't relearn these)
 
 - Antigravity reviews: the agy MCP tool can return nothing and can't pick a model. What works: `agy --model
-  <claude-opus-5-5-high | gemini-3.1-pro-high> -p "<prompt>"` with the code pasted INTO the prompt and "do not use any
+  <claude-opus-5-5-high | gemini-3.8-flash-high> -p "<prompt>"` with the code pasted INTO the prompt and "do not use any
   tools" (headless agy aborts silently when it tries a shell command). Windows caps the command line at ~32k chars, so
   split the review into chunks (a script did 5 parts in parallel: tool host, Anthropic, OpenAI+Gemini, app wiring,
   capture).
