@@ -64,7 +64,13 @@ internal sealed class RegionSelectWindow : Window
             Child = new TextBlock { Text = "Drag to capture a region  ·  Esc to cancel", Foreground = new SolidColorBrush(Colors.White) },
         });
         Content = _root;
-        _root.Loaded += (_, _) => { Layout(null); _root.Focus(FocusState.Programmatic); };
+        _root.Loaded += (_, _) =>
+        {
+            // Again now that the window is on the target monitor: moving across monitors with different DPI rescales it.
+            AppWindow.MoveAndResize(new RectInt32(monitor.X, monitor.Y, monitor.Width, monitor.Height));
+            Layout(null);
+            _root.Focus(FocusState.Programmatic);
+        };
         _root.SizeChanged += (_, _) => Layout(_current);
         _root.PointerPressed += OnPressed;
         _root.PointerMoved += OnMoved;
@@ -86,7 +92,8 @@ internal sealed class RegionSelectWindow : Window
     public Task<RectI?> SelectAsync()
     {
         Activate();
-        Interop.Native.ForceForeground(WinRT.Interop.WindowNative.GetWindowHandle(this));
+        // Without focus Esc can't arrive and blur can't be noticed: then let the first click elsewhere cancel.
+        if (!Interop.Native.ForceForeground(WinRT.Interop.WindowNative.GetWindowHandle(this))) _wasActive = true;
         return _result.Task;
     }
 

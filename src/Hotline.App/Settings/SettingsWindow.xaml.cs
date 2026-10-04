@@ -242,8 +242,12 @@ public sealed partial class SettingsWindow : Window
         check.Click += async (_, _) =>
         {
             check.IsEnabled = false;
-            _toolHost.RetryFailedServers();
-            try { await _toolHost.GetToolsAsync(CancellationToken.None); }
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60)); // a server stuck starting can't hold the button forever
+            try
+            {
+                _toolHost.RetryFailedServers();
+                await _toolHost.GetToolsAsync(timeout.Token);
+            }
             catch (Exception ex) { _log.Error("checking MCP servers failed", ex); }
             finally { check.IsEnabled = true; Fill(); }
         };

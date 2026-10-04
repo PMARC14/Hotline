@@ -79,7 +79,7 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
             foreach (var (name, id, args) in calls)
             {
                 yield return new ChatDelta(ToolLoop.Note(offered, name));
-                var result = await tools!.CallAsync(name, args, ct);
+                var result = await ToolLoop.CallAsync(tools!, offered, name, args.GetRawText(), ct);
                 if (result.IsError) yield return new ChatDelta(ToolLoop.Failed(result));
                 var fr = new JsonObject
                 {

@@ -194,7 +194,15 @@ public partial class App : Application
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
             onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
-            onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); if (_toolHost is not null) await _toolHost.DisposeAsync(); }).Wait(TimeSpan.FromSeconds(3)); Exit(); });
+            onQuit: () =>
+            {
+                _tray?.Dispose();
+                // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
+                Task.Run(() => Task.WhenAll(
+                    _toolHost is null ? Task.CompletedTask : _toolHost.DisposeAsync().AsTask(),
+                    _backends is null ? Task.CompletedTask : _backends.DisposeAllAsync().AsTask())).Wait(TimeSpan.FromSeconds(3));
+                Exit();
+            });
 
         _heartbeat = _popup.DispatcherQueue.CreateTimer();
         _heartbeat.Interval = TimeSpan.FromMinutes(30);

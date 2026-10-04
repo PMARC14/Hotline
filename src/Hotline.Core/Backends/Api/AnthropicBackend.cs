@@ -113,7 +113,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
             foreach (var use in toolUses)
             {
                 yield return new ChatDelta(ToolLoop.Note(offered, use.Name));
-                var result = await ToolLoop.CallAsync(tools!, use.Name, use.Json.ToString(), ct);
+                var result = await ToolLoop.CallAsync(tools!, offered, use.Name, use.Json.ToString(), ct);
                 if (result.IsError) yield return new ChatDelta(ToolLoop.Failed(result));
                 results.Add(BetaToolResultBlockParam.FromRawUnchecked(Raw(new JsonObject
                 {
@@ -206,7 +206,8 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
         return p;
     }
 
-    private static string Nonempty(string text) => text.Length > 0 ? text : "(no text)";
+    // Whitespace-only text (e.g. a reply cancelled after its first "\n\n") is rejected by the API too.
+    private static string Nonempty(string text) => string.IsNullOrWhiteSpace(text) ? "(no text)" : text;
 
     private BackendException? Map(Exception ex) => ex switch
     {

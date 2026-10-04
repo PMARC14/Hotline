@@ -33,8 +33,10 @@ public static class ToolLoop
     /// Runs one requested call: arguments that aren't a JSON object go back to the model as an error instead of
     /// silently running the tool with no arguments.
     /// </summary>
-    public static async Task<ToolResult> CallAsync(IToolHost host, string apiName, string? argumentsJson, CancellationToken ct)
+    public static async Task<ToolResult> CallAsync(IToolHost host, IReadOnlyList<ToolSpec> offered, string apiName, string? argumentsJson, CancellationToken ct)
     {
+        // Only tools this answer offered (a prompt-injected name for anything else goes nowhere).
+        if (offered.FirstOrDefault(t => t.ApiName == apiName) is not { } tool) return new ToolResult($"There is no tool named {apiName}.", true);
         JsonElement args;
         try
         {
@@ -42,7 +44,7 @@ public static class ToolLoop
         }
         catch (JsonException ex) { return new ToolResult($"The arguments weren't valid JSON ({ex.Message}); call the tool again with a JSON object.", true); }
         if (args.ValueKind != JsonValueKind.Object) return new ToolResult("The arguments must be a JSON object; call the tool again.", true);
-        return await host.CallAsync(apiName, args, ct);
+        return await host.CallAsync(tool, args, ct);
     }
 
     /// <summary>

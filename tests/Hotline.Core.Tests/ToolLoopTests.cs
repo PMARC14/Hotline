@@ -24,10 +24,10 @@ public sealed class ToolLoopTests : IDisposable
         [
             new ToolSpec("files__read_file", "files", "read_file", "Reads a file", JsonDocument.Parse("""{"type":"object","properties":{"path":{"type":"string"}},"required":["path"]}""").RootElement, true),
         ]);
-        public Task<ToolResult> CallAsync(string apiName, JsonElement arguments, CancellationToken ct)
+        public Task<ToolResult> CallAsync(ToolSpec tool, JsonElement arguments, CancellationToken ct)
         {
-            Calls.Add((apiName, arguments.GetRawText()));
-            return Task.FromResult(Result(apiName));
+            Calls.Add((tool.ApiName, arguments.GetRawText()));
+            return Task.FromResult(Result(tool.ApiName));
         }
     }
 
@@ -92,6 +92,17 @@ public sealed class ToolLoopTests : IDisposable
         Assert.Equal("call_1", assistant.GetProperty("tool_calls")[0].GetProperty("id").GetString());
         Assert.Equal(("tool", "call_1", "files__read_file result"),
             (second[^1].GetProperty("role").GetString(), second[^1].GetProperty("tool_call_id").GetString(), second[^1].GetProperty("content").GetString()));
+    }
+
+    [Fact]
+    public async Task OpenAi_does_not_run_tool_calls_from_a_cut_off_stream()
+    {
+        var host = new FakeToolHost();
+        var handler = new Handler((_, _) => Sse(ToolCallChunk(0, "call_1", "files__read_file", "{\"pa")));
+        var b = new OpenAiBackend(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = ToolMode.Inherit },
+            new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("read a.txt")], default)));
+        Assert.Empty(host.Calls);
     }
 
     [Fact]

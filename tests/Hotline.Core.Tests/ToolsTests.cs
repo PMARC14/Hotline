@@ -150,7 +150,7 @@ public sealed class ToolsTests : IDisposable
         var asked = 0;
         var host = Host(session, (_, _) => { asked++; return Task.FromResult(ToolDecision.Deny); }, OneServer);
         var tools = await host.GetToolsAsync(default);
-        var result = await host.CallAsync(tools[0].ApiName, JsonDocument.Parse("{}").RootElement, default);
+        var result = await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default);
         Assert.Equal(("read done", false, 0), (result.Text, result.IsError, asked));
     }
 
@@ -160,7 +160,7 @@ public sealed class ToolsTests : IDisposable
         var session = new FakeSession(("write", false));
         var host = Host(session, (_, _) => Task.FromResult(ToolDecision.Deny), OneServer);
         var tools = await host.GetToolsAsync(default);
-        var result = await host.CallAsync(tools[0].ApiName, JsonDocument.Parse("{}").RootElement, default);
+        var result = await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default);
         Assert.True(result.IsError);
         Assert.Contains("declined", result.Text);
         Assert.Empty(session.Called);
@@ -173,8 +173,8 @@ public sealed class ToolsTests : IDisposable
         var asked = 0;
         var host = Host(session, (_, _) => { asked++; return Task.FromResult(ToolDecision.AllowAlways); }, OneServer);
         var tools = await host.GetToolsAsync(default);
-        await host.CallAsync(tools[0].ApiName, JsonDocument.Parse("{}").RootElement, default);
-        await host.CallAsync(tools[0].ApiName, JsonDocument.Parse("{}").RootElement, default);
+        await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default);
+        await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default);
         Assert.Equal(1, asked);
         Assert.Equal(ToolApproval.Allow, McpConfig.Load(McpPath).Approvals["files/write"]);
     }
@@ -198,6 +198,7 @@ public sealed class ToolsTests : IDisposable
     {
         var host = Host(new FakeSession(("read", true)), (_, _) => Task.FromResult(ToolDecision.Deny), OneServer);
         await host.GetToolsAsync(default);
-        Assert.True((await host.CallAsync("nope", JsonDocument.Parse("{}").RootElement, default)).IsError);
+        var stranger = new ToolSpec("x__nope", "x", "nope", "", JsonDocument.Parse("{}").RootElement, true);
+        Assert.True((await host.CallAsync(stranger, JsonDocument.Parse("{}").RootElement, default)).IsError);
     }
 }

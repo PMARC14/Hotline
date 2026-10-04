@@ -221,52 +221,82 @@ internal sealed partial class ChatPresenter(
     internal Task<Hotline.Core.Tools.ToolDecision> AskToolApprovalAsync(Hotline.Core.Tools.ToolCallRequest request, CancellationToken ct)
     {
         var tcs = new TaskCompletionSource<Hotline.Core.Tools.ToolDecision>(TaskCreationOptions.RunContinuationsAsynchronously);
-        popup.DispatcherQueue.TryEnqueue(() =>
+        // Anything that goes wrong (shutting down, UI failure, cancellation) means Deny — never an endless wait.
+        var registration = ct.Register(() => tcs.TrySetResult(Hotline.Core.Tools.ToolDecision.Deny));
+        _ = tcs.Task.ContinueWith(_ => registration.Dispose(), TaskScheduler.Default);
+        if (!popup.DispatcherQueue.TryEnqueue(() =>
         {
-            var args = request.Arguments.ValueKind == System.Text.Json.JsonValueKind.Undefined ? "" : request.Arguments.GetRawText();
-            if (args.Length > 400) args = args[..400] + "…";
-            var bar = new InfoBar
+            try { ShowApproval(request, tcs); }
+            catch (Exception ex)
             {
-                IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
-                Title = $"Allow {request.Tool.Server} › {request.Tool.Tool}?",
-                Message = string.IsNullOrWhiteSpace(request.Tool.Description) ? args : $"{request.Tool.Description}\n{args}",
-            };
-            void Answer(Hotline.Core.Tools.ToolDecision d)
-            {
-                if (!tcs.TrySetResult(d)) return;
-                popup.NoticesPanel.Children.Remove(bar);
-                log.Info($"tool {request.Tool.Server}/{request.Tool.Tool}: {d}");
+                log.Error("showing the tool approval failed", ex);
+                tcs.TrySetResult(Hotline.Core.Tools.ToolDecision.Deny);
             }
-            Button B(string text, Hotline.Core.Tools.ToolDecision d, bool accent = false)
-            {
-                var b = new Button { Content = text };
-                if (accent) b.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
-                b.Click += (_, _) => Answer(d);
-                return b;
-            }
-            bar.Content = new StackPanel
-            {
-                Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 8),
-                Children = { B("Allow once", Hotline.Core.Tools.ToolDecision.AllowOnce, accent: true), B("Always allow", Hotline.Core.Tools.ToolDecision.AllowAlways), B("Deny", Hotline.Core.Tools.ToolDecision.Deny) },
-            };
-            popup.NoticesPanel.Children.Add(bar);
-            if (!popup.IsShown) popup.ShowPopup();
-            var timer = popup.DispatcherQueue.CreateTimer();
-            timer.Interval = TimeSpan.FromMinutes(5);
-            timer.IsRepeating = false;
-            timer.Tick += (_, _) => Answer(Hotline.Core.Tools.ToolDecision.Deny);
-            timer.Start();
-            ct.Register(() => popup.DispatcherQueue.TryEnqueue(() => Answer(Hotline.Core.Tools.ToolDecision.Deny)));
-        });
+        }))
+            tcs.TrySetResult(Hotline.Core.Tools.ToolDecision.Deny);
         return tcs.Task;
     }
+
+    /// <summary>The approval bar: the full arguments (pretty-printed, scrollable, selectable) — nothing is hidden.</summary>
+    private void ShowApproval(Hotline.Core.Tools.ToolCallRequest request, TaskCompletionSource<Hotline.Core.Tools.ToolDecision> tcs)
+    {
+        var args = request.Arguments.ValueKind == System.Text.Json.JsonValueKind.Undefined ? "{}"
+            : System.Text.Json.JsonSerializer.Serialize(request.Arguments, new System.Text.Json.JsonSerializerOptions { WriteIndented = true });
+        var description = request.Tool.Description.Trim();
+        if (description.Length > 200) description = description[..200] + "…";
+        var details = new StackPanel { Spacing = 4 };
+        if (description.Length > 0) details.Children.Add(new TextBlock { Text = description, TextWrapping = TextWrapping.Wrap, Opacity = 0.8 });
+        details.Children.Add(new ScrollViewer
+        {
+            MaxHeight = 160, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+            Content = new TextBlock { Text = args, IsTextSelectionEnabled = true, FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Cascadia Mono, Consolas") },
+        });
+        var bar = new InfoBar
+        {
+            IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning, Tag = ApprovalTag,
+            Title = $"Allow {request.Tool.Server} › {request.Tool.Tool}?",
+        };
+        var timer = popup.DispatcherQueue.CreateTimer();
+        void Answer(Hotline.Core.Tools.ToolDecision d)
+        {
+            timer.Stop();
+            popup.NoticesPanel.Children.Remove(bar);
+            if (tcs.TrySetResult(d)) log.Info($"tool {request.Tool.Server}/{request.Tool.Tool}: {d}");
+        }
+        Button B(string text, Hotline.Core.Tools.ToolDecision d, bool accent = false)
+        {
+            var b = new Button { Content = text };
+            if (accent && Application.Current.Resources.TryGetValue("AccentButtonStyle", out var style) && style is Style s) b.Style = s;
+            b.Click += (_, _) => Answer(d);
+            return b;
+        }
+        details.Children.Add(new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 8),
+            Children = { B("Allow once", Hotline.Core.Tools.ToolDecision.AllowOnce, accent: true), B("Always allow", Hotline.Core.Tools.ToolDecision.AllowAlways), B("Deny", Hotline.Core.Tools.ToolDecision.Deny) },
+        });
+        bar.Content = details;
+        popup.NoticesPanel.Children.Add(bar);
+        if (!popup.IsShown) popup.ShowPopup();
+        timer.Interval = TimeSpan.FromMinutes(5);
+        timer.IsRepeating = false;
+        timer.Tick += (_, _) => Answer(Hotline.Core.Tools.ToolDecision.Deny);
+        timer.Start();
+        // Cancelled or timed out elsewhere: take the bar down.
+        _ = tcs.Task.ContinueWith(_ => popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); popup.NoticesPanel.Children.Remove(bar); }), TaskScheduler.Default);
+    }
+
+    private const string ApprovalTag = "approval";
 
     internal void Notice(string message, InfoBarSeverity severity)
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = true, Severity = severity, Message = message };
         bar.Closed += (_, _) => popup.NoticesPanel.Children.Remove(bar);
         popup.NoticesPanel.Children.Add(bar);
-        while (popup.NoticesPanel.Children.Count > 3) popup.NoticesPanel.Children.RemoveAt(0);
+        // Keep at most 3 plain notices; pending tool approvals are never pushed out.
+        while (popup.NoticesPanel.Children.OfType<InfoBar>().Count(b => !ApprovalTag.Equals(b.Tag)) > 3
+               && popup.NoticesPanel.Children.OfType<InfoBar>().FirstOrDefault(b => !ApprovalTag.Equals(b.Tag)) is { } oldest)
+            popup.NoticesPanel.Children.Remove(oldest);
         var timer = popup.DispatcherQueue.CreateTimer();
         timer.Interval = TimeSpan.FromSeconds(10);
         timer.IsRepeating = false;

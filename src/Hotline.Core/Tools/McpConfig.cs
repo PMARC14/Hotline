@@ -19,6 +19,8 @@ public sealed class McpConfig
     public IReadOnlyDictionary<string, ToolApproval> Approvals { get; init; } = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase);
     /// <summary>Set when the file couldn't be read; servers/approvals are then empty and the file is left untouched.</summary>
     public string? Error { get; init; }
+    /// <summary>Problems in an otherwise readable file (e.g. an unknown approval value, which counts as "deny").</summary>
+    public IReadOnlyList<string> Warnings { get; init; } = [];
 
     private static readonly JsonDocumentOptions ReadOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
 
@@ -68,11 +70,16 @@ public sealed class McpConfig
                 servers.Add(new McpServerConfig(name, command, args, env, disabled, s["cwd"]?.GetValue<string>(), s["displayName"]?.GetValue<string>()));
             }
         var approvals = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase);
+        var warnings = new List<string>();
         if (root["approvals"] is JsonObject rules)
             foreach (var (key, value) in rules)
-                if (value is JsonValue v && v.TryGetValue<string>(out var text) && Enum.TryParse<ToolApproval>(text, ignoreCase: true, out var approval))
-                    approvals[key] = approval;
-        return new McpConfig { Servers = servers, Approvals = approvals };
+            {
+                // Only the exact words count; anything else (a typo, "3", "allow, deny") is treated as "deny".
+                var text = value is JsonValue v && v.TryGetValue<string>(out var t) ? t.Trim().ToLowerInvariant() : null;
+                approvals[key] = text switch { "allow" => ToolApproval.Allow, "ask" => ToolApproval.Ask, "deny" => ToolApproval.Deny, _ => ToolApproval.Deny };
+                if (text is not ("allow" or "ask" or "deny")) warnings.Add($"Approval \"{key}\" has an unknown value, so it's treated as \"deny\".");
+            }
+        return new McpConfig { Servers = servers, Approvals = approvals, Warnings = warnings };
     }
 
     /// <summary>
@@ -81,30 +88,62 @@ public sealed class McpConfig
     /// </summary>
     public static void SaveApproval(string path, string key, ToolApproval approval)
     {
-        var original = File.Exists(path) ? File.ReadAllText(path) : null;
-        var root = (original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions)) as JsonObject ?? new JsonObject();
-        if (original is not null) File.WriteAllText($"{path}.bak-{DateTime.Now:yyyyMMdd-HHmmss}", original);
-        if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
-        rules[key] = approval.ToString().ToLowerInvariant();
-        var tmp = path + ".tmp";
-        File.WriteAllText(tmp, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
-        File.Move(tmp, path, overwrite: true);
+        lock (SaveLock) // two "Always" clicks at once must not lose a rule
+        {
+            var original = File.Exists(path) ? File.ReadAllText(path) : null;
+            var root = (original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions)) as JsonObject ?? new JsonObject();
+            if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
+            rules[key] = approval.ToString().ToLowerInvariant();
+            // Comments are what a rewrite loses: keep a copy of a commented file (never replacing an earlier backup).
+            if (original is not null && (original.Contains("//") || original.Contains("/*"))) WriteBackup(path, original);
+            var tmp = $"{path}.{Guid.NewGuid():N}.tmp";
+            File.WriteAllText(tmp, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            File.Move(tmp, path, overwrite: true);
+        }
+    }
+
+    private static readonly Lock SaveLock = new();
+
+    private static void WriteBackup(string path, string content)
+    {
+        var stamp = DateTime.Now.ToString("yyyyMMdd-HHmmss");
+        for (var i = 0; ; i++)
+        {
+            var backup = i == 0 ? $"{path}.bak-{stamp}" : $"{path}.bak-{stamp}-{i}";
+            try
+            {
+                using var stream = new FileStream(backup, FileMode.CreateNew);
+                using var writer = new StreamWriter(stream);
+                writer.Write(content);
+                return;
+            }
+            catch (IOException) when (File.Exists(backup) && i < 100) { /* taken: try the next name */ }
+        }
     }
 }
 
 public static class ToolPolicy
 {
-    /// <summary>Specific rule, then "server/*", then the default: read-only tools run, others ask.</summary>
+    /// <summary>
+    /// A deny (for the tool or for "server/*") always wins; otherwise the specific rule, then "server/*", then the
+    /// default: read-only tools run, others ask.
+    /// </summary>
     public static ToolApproval Decide(IReadOnlyDictionary<string, ToolApproval> approvals, string server, string tool, bool readOnly)
     {
-        if (approvals.TryGetValue($"{server}/{tool}", out var specific)) return specific;
-        if (approvals.TryGetValue($"{server}/*", out var wildcard)) return wildcard;
+        var hasSpecific = approvals.TryGetValue($"{server}/{tool}", out var specific);
+        var hasWildcard = approvals.TryGetValue($"{server}/*", out var wildcard);
+        if (hasSpecific && specific == ToolApproval.Deny || hasWildcard && wildcard == ToolApproval.Deny) return ToolApproval.Deny;
+        if (hasSpecific) return specific;
+        if (hasWildcard) return wildcard;
         return readOnly ? ToolApproval.Allow : ToolApproval.Ask;
     }
 }
 
 public static class ToolNames
 {
+    /// <summary>Names with '/' or '*' would make approval keys ("server/tool", "server/*") ambiguous.</summary>
+    public static bool IsAmbiguous(string name) => name.Contains('/') || name.Contains('*');
+
     /// <summary>
     /// A function name every API accepts (^[A-Za-z_][A-Za-z0-9_-]{0,63}$ — Gemini needs a letter or "_" first), unique
     /// within <paramref name="used"/>.

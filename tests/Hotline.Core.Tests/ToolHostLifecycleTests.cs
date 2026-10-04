@@ -140,12 +140,134 @@ public sealed class ToolHostLifecycleTests : IDisposable
     public async Task Bad_arguments_go_back_to_the_model_instead_of_running_the_tool()
     {
         var host = new ToolLoopTests.FakeToolHost();
-        var broken = await ToolLoop.CallAsync(host, "files__read_file", "{\"path\":", default);
-        var notObject = await ToolLoop.CallAsync(host, "files__read_file", "[1]", default);
+        var offered = await host.GetToolsAsync(default);
+        var broken = await ToolLoop.CallAsync(host, offered, "files__read_file", "{\"path\":", default);
+        var notObject = await ToolLoop.CallAsync(host, offered, "files__read_file", "[1]", default);
         Assert.True(broken.IsError && notObject.IsError);
         Assert.Empty(host.Calls);
-        await ToolLoop.CallAsync(host, "files__read_file", "", default); // empty = no arguments
+        await ToolLoop.CallAsync(host, offered, "files__read_file", "", default); // empty = no arguments
         Assert.Single(host.Calls);
         Assert.Equal("(no output)", ToolLoop.ResultText(new ToolResult("", false)));
+    }
+
+    [Fact]
+    public async Task Names_the_model_was_not_offered_go_nowhere()
+    {
+        var host = new ToolLoopTests.FakeToolHost();
+        var result = await ToolLoop.CallAsync(host, [], "files__read_file", "{}", default);
+        Assert.True(result.IsError);
+        Assert.Empty(host.Calls);
+    }
+
+    [Fact]
+    public void A_deny_always_wins_over_an_older_allow()
+    {
+        var rules = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase) { ["files/write"] = ToolApproval.Allow, ["files/*"] = ToolApproval.Deny };
+        Assert.Equal(ToolApproval.Deny, ToolPolicy.Decide(rules, "files", "write", false));
+        rules = new(StringComparer.OrdinalIgnoreCase) { ["files/write"] = ToolApproval.Deny, ["files/*"] = ToolApproval.Allow };
+        Assert.Equal(ToolApproval.Deny, ToolPolicy.Decide(rules, "files", "write", true));
+        rules = new(StringComparer.OrdinalIgnoreCase) { ["files/write"] = ToolApproval.Ask, ["files/*"] = ToolApproval.Allow };
+        Assert.Equal(ToolApproval.Ask, ToolPolicy.Decide(rules, "files", "write", true));
+    }
+
+    [Fact]
+    public void Unknown_approval_values_count_as_deny_with_a_warning()
+    {
+        var config = McpConfig.Parse("""{ "approvals": { "a/x": "3", "a/y": "allow, deny", "a/z": "denied", "a/ok": "ALLOW" } }""");
+        Assert.Equal(ToolApproval.Deny, config.Approvals["a/x"]);
+        Assert.Equal(ToolApproval.Deny, config.Approvals["a/y"]);
+        Assert.Equal(ToolApproval.Deny, config.Approvals["a/z"]);
+        Assert.Equal(ToolApproval.Allow, config.Approvals["a/ok"]);
+        Assert.Equal(3, config.Warnings.Count);
+    }
+
+    [Fact]
+    public async Task An_unreadable_mcp_json_keeps_the_last_good_rules_and_servers()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" } }, "approvals": { "a/secret": "deny" } }""");
+        var session = new MultiSession(("open", true), ("secret", true));
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(session),
+            (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+        Assert.Equal(["open"], (await host.GetToolsAsync(default)).Select(t => t.Tool));
+
+        File.WriteAllText(McpPath, "{ half-saved");
+        Assert.Equal(["open"], (await host.GetToolsAsync(default)).Select(t => t.Tool)); // the deny still applies
+        Assert.False(session.Disposed);                                                  // and the server kept running
+        Assert.Contains("last good", host.ConfigError);
+    }
+
+    [Fact]
+    public async Task With_no_good_mcp_json_yet_no_tools_are_offered()
+    {
+        WriteConfig("{ broken");
+        var connects = 0;
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [new McpServerConfig("windows-x", "odr", [], new Dictionary<string, string>())],
+            (_, _) => { connects++; return Task.FromResult<IMcpSession>(new CountingSession("t")); }, (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+        Assert.Empty(await host.GetToolsAsync(default));
+        Assert.Equal(0, connects);
+    }
+
+    [Fact]
+    public async Task Tools_and_servers_with_slash_or_star_names_are_skipped()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" }, "b/c": { "command": "y" } } }""");
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => Task.FromResult<IMcpSession>(new MultiSession(("*", true), ("x/y", true), ("fine", true))), (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+        var tools = await host.GetToolsAsync(default);
+        Assert.Equal([("a", "fine")], tools.Select(t => (t.Server, t.Tool)));
+        Assert.Contains(host.Status, s => s.Name == "b/c" && s.State == McpServerState.Failed);
+    }
+
+    [Fact]
+    public async Task A_dead_server_is_restarted_on_the_next_answer()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
+        var sessions = new List<MultiSession>();
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => { var s = new MultiSession(("read", true)) { Throw = sessions.Count == 0 }; sessions.Add(s); return Task.FromResult<IMcpSession>(s); },
+            (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+        var tools = await host.GetToolsAsync(default);
+        Assert.True((await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default)).IsError);
+        tools = await host.GetToolsAsync(default);
+        Assert.Equal(2, sessions.Count);
+        Assert.True(sessions[0].Disposed);
+        Assert.False((await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default)).IsError);
+    }
+
+    [Fact]
+    public async Task After_dispose_no_servers_start_again()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(new CountingSession("t")),
+            (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+        await host.DisposeAsync();
+        await Assert.ThrowsAsync<ObjectDisposedException>(() => host.GetToolsAsync(default));
+    }
+
+    [Fact]
+    public void Two_saves_in_the_same_second_keep_the_original_backup_and_both_rules()
+    {
+        const string original = "{\n  // mine\n  \"mcpServers\": {}\n}";
+        WriteConfig(original);
+        McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow);
+        File.AppendAllText(McpPath, "\n// added later\n");
+        McpConfig.SaveApproval(McpPath, "a/y", ToolApproval.Allow);
+        var backups = Directory.GetFiles(_dir, "mcp.json.bak-*").Select(File.ReadAllText).ToList();
+        Assert.Contains(original, backups);
+        Assert.Equal(2, backups.Count);
+        var approvals = McpConfig.Load(McpPath).Approvals;
+        Assert.True(approvals.ContainsKey("a/x") && approvals.ContainsKey("a/y"));
+        Assert.Empty(Directory.GetFiles(_dir, "*.tmp"));
+    }
+
+    private sealed class MultiSession(params (string Name, bool ReadOnly)[] tools) : IMcpSession
+    {
+        public bool Disposed;
+        public bool Throw;
+        public Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<McpToolInfo>>(
+            tools.Select(t => new McpToolInfo(t.Name, "", JsonDocument.Parse("""{"type":"object"}""").RootElement, t.ReadOnly)).ToList());
+        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) =>
+            Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult("ok", false));
+        public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
     }
 }

@@ -44,19 +44,22 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
         {
             var calls = new SortedDictionary<int, PendingCall>();
             var text = new StringBuilder();
+            var done = false;
+            string? finish = null;
             using (var request = Request(endpoint, key, messages, offered))
             using (var response = await ApiCommon.SendAsync(http, request, profile, ct))
             {
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
                 await foreach (var data in ApiCommon.SseData(stream, ct))
                 {
-                    if (data == "[DONE]") break;
+                    if (data == "[DONE]") { done = true; break; }
                     JsonElement root;
                     try { root = JsonDocument.Parse(data).RootElement; }
                     catch (JsonException) { continue; }
                     if (root.TryGetProperty("error", out _))
                         throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: {ApiCommon.ErrorMessage(data)}");
                     if (!root.TryGetProperty("choices", out var choices) || choices.ValueKind != JsonValueKind.Array || choices.GetArrayLength() == 0) continue;
+                    if (choices[0].TryGetProperty("finish_reason", out var fr) && fr.ValueKind == JsonValueKind.String) finish = fr.GetString();
                     if (!choices[0].TryGetProperty("delta", out var delta)) continue;
                     if (delta.TryGetProperty("content", out var content) && content.ValueKind == JsonValueKind.String && content.GetString() is { Length: > 0 } piece)
                     {
@@ -79,6 +82,11 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             }
 
             if (calls.Count == 0 || offered.Count == 0) yield break;
+            // Never run tool calls from a cut-off stream: their arguments may be incomplete.
+            if (finish is "length" or "content_filter")
+                throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)} stopped ({finish}) while asking for a tool; nothing was run.");
+            if (!done && finish is null)
+                throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: the connection ended before the tool request was complete; nothing was run.");
             // The model asked for tools: record its turn, run each call, feed the results back.
             var toolCallsJson = new JsonArray();
             foreach (var call in calls.Values)
@@ -94,7 +102,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             foreach (var call in calls.Values)
             {
                 yield return new ChatDelta(ToolLoop.Note(offered, call.Name));
-                var result = await ToolLoop.CallAsync(tools!, call.Name, call.Arguments.ToString(), ct);
+                var result = await ToolLoop.CallAsync(tools!, offered, call.Name, call.Arguments.ToString(), ct);
                 if (result.IsError) yield return new ChatDelta(ToolLoop.Failed(result));
                 messages.Add(new JsonObject { ["role"] = "tool", ["tool_call_id"] = call.Id, ["content"] = ToolLoop.ResultText(result) });
             }
