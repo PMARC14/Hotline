@@ -128,7 +128,7 @@ public sealed class AnthropicBackendTests : IDisposable
         Assert.Empty(handler.Seen);
     }
 
-    private static HttpResponseMessage ToolUseStream()
+    private static HttpResponseMessage ToolUseStream(bool blankText = false)
     {
         var sb = new StringBuilder();
         sb.Append(Event("message_start", new
@@ -143,6 +143,12 @@ public sealed class AnthropicBackendTests : IDisposable
         sb.Append(Event("content_block_delta", new { type = "content_block_delta", index = 1, delta = new { type = "input_json_delta", partial_json = "{\"path\":" } }));
         sb.Append(Event("content_block_delta", new { type = "content_block_delta", index = 1, delta = new { type = "input_json_delta", partial_json = "\"a.txt\"}" } }));
         sb.Append(Event("content_block_stop", new { type = "content_block_stop", index = 1 }));
+        if (blankText)
+        {
+            sb.Append(Event("content_block_start", new { type = "content_block_start", index = 2, content_block = new { type = "text", text = "" } }));
+            sb.Append(Event("content_block_delta", new { type = "content_block_delta", index = 2, delta = new { type = "text_delta", text = "\n\n" } }));
+            sb.Append(Event("content_block_stop", new { type = "content_block_stop", index = 2 }));
+        }
         sb.Append(Event("message_delta", new { type = "message_delta", delta = new { stop_reason = "tool_use", stop_sequence = (string?)null }, usage = new { output_tokens = 9 } }));
         sb.Append(Event("message_stop", new { type = "message_stop" }));
         return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(sb.ToString(), Encoding.UTF8, "text/event-stream") };
@@ -173,5 +179,24 @@ public sealed class AnthropicBackendTests : IDisposable
         Assert.Equal("a.txt", assistant[1].GetProperty("input").GetProperty("path").GetString());
         var result = messages[^1].GetProperty("content")[0];
         Assert.Equal(("tool_result", "toolu_1"), (result.GetProperty("type").GetString(), result.GetProperty("tool_use_id").GetString()));
+    }
+
+    [Fact]
+    public async Task Whitespace_only_text_blocks_are_not_sent_back()
+    {
+        var host = new ToolLoopTests.FakeToolHost();
+        var calls = 0;
+        var handler = new Handler(_ => ++calls == 1 ? ToolUseStream(blankText: true) : Stream(texts: ["Done."]));
+        var secrets = new InMemorySecretStore();
+        secrets.Set(SecretKeys.ApiKey("claude-api"), "sk-ant-test");
+        var profile = Claude();
+        profile.Tools = ToolMode.Inherit;
+        var b = new AnthropicBackend(profile, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")), host);
+
+        await Collect(b.StreamAsync([U("1", "read a.txt")], default));
+
+        var messages = JsonDocument.Parse(handler.Seen[1].Body).RootElement.GetProperty("messages").EnumerateArray().ToList();
+        var types = messages[^2].GetProperty("content").EnumerateArray().Select(c => c.GetProperty("type").GetString()).ToList();
+        Assert.Equal(["thinking", "tool_use"], types);
     }
 }

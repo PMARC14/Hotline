@@ -268,7 +268,7 @@ internal sealed partial class ChatPresenter
             "| Radius | Area |\n|---|---|\n| 1 | 3.14 |\n| 2 | 12.57 |\n| 3 | 28.27 |";
         try
         {
-            OnChatEvent(new ConversationReset());
+            NewChat(); // a real reset (stops any answer, clears the controller), not just the view
             popup.ShowPopup();
             OnChatEvent(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, "How do I find the area of a circle? Show it in Python.", [], DateTimeOffset.Now)));
             OnChatEvent(new AssistantStarted("demo-a", settings.Chat.Backends.FirstOrDefault()?.Name ?? "Gemini (Antigravity)"));

@@ -193,7 +193,7 @@ public partial class App : Application
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
-            onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
+            onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
             onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); if (_toolHost is not null) await _toolHost.DisposeAsync(); }).Wait(TimeSpan.FromSeconds(3)); Exit(); });
 
         _heartbeat = _popup.DispatcherQueue.CreateTimer();
@@ -312,4 +312,11 @@ public partial class App : Application
     }
 
     private bool _toolbarApplied;
+
+    /// <summary>MCP servers are started by the MCP SDK (not in the kill-on-close job): stop them before a restart.</summary>
+    private void StopToolServers()
+    {
+        try { if (_toolHost is { } host) Task.Run(async () => await host.DisposeAsync()).Wait(TimeSpan.FromSeconds(3)); }
+        catch (Exception ex) { _log?.Error("stopping MCP servers failed", ex); }
+    }
 }

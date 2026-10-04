@@ -28,7 +28,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   6. Release prep — `docs/RELEASING.md` (why MSIX, signing options, `.appinstaller` updates, checklist),
      `THIRD-PARTY-NOTICES.md`; CI ran green on GitHub (manual run; still gated by `HOTLINE_ACTIONS_ENABLED`).
   Also fixed: code-block / table Copy buttons were clipped off the right edge (now content-sized headers).
-- Tests: 499 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
+- Tests: 508 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
   the user is typing during the run — it sends a synthetic Ctrl+Alt+H).
 - Needs a human check: region capture (drag on a real screen; multi-monitor and mixed DPI).
 
@@ -38,7 +38,13 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   (`/code-review ultra 1` is the user's call — it's billed).
 - First public release checklist: `docs/RELEASING.md` (installer, trusted signing, final icon).
 - Known limit: MCP server processes are started by the MCP SDK, not `ChildProcessJob`, so a Hotline *crash* can leave
-  them running (a normal quit disposes them). Fix idea: start them through our own process factory/transport.
+  them running (Quit and Restart stop them). Fix idea: start them through our own process factory/transport.
+- Known limit: tool calls and results live only inside one answer; later turns replay the answer text (tool notes
+  stripped), so follow-ups about tool output may need the tool again. Fix idea: store tool turns in the conversation.
+- `/code-review high` (2026-10-04) findings fixed: tool host caches lists, restarts only changed servers, 30 s
+  start+list timeout, failed servers retried after 1 min / "Check servers", consistent snapshot for calls; mcp.json
+  backed up before "Always allow" rewrites it; Gemini-safe tool names; shared tool-call/result handling; whitespace
+  text blocks dropped for Anthropic; demo resets the chat properly.
 - Windows agent registry (`odr.exe`) is untested on a real build (needs 26220.7262+; the dev PC is 26200).
 
 UI follow-ups the user deferred (only fix if they become big problems): provider name shrinks very small in the bar;

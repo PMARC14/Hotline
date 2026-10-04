@@ -75,10 +75,15 @@ public sealed class McpConfig
         return new McpConfig { Servers = servers, Approvals = approvals };
     }
 
-    /// <summary>Writes one approval rule, keeping everything else in the file (comments are not preserved).</summary>
+    /// <summary>
+    /// Writes one approval rule, keeping everything else in the file. Comments can't be kept, so the previous file is
+    /// first copied to mcp.json.bak-&lt;timestamp&gt; (never overwrite a user's file without a backup).
+    /// </summary>
     public static void SaveApproval(string path, string key, ToolApproval approval)
     {
-        var root = (File.Exists(path) ? JsonNode.Parse(File.ReadAllText(path), documentOptions: ReadOptions) : null) as JsonObject ?? new JsonObject();
+        var original = File.Exists(path) ? File.ReadAllText(path) : null;
+        var root = (original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions)) as JsonObject ?? new JsonObject();
+        if (original is not null) File.WriteAllText($"{path}.bak-{DateTime.Now:yyyyMMdd-HHmmss}", original);
         if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
         rules[key] = approval.ToString().ToLowerInvariant();
         var tmp = path + ".tmp";
@@ -100,11 +105,15 @@ public static class ToolPolicy
 
 public static class ToolNames
 {
-    /// <summary>A function name every API accepts (^[A-Za-z0-9_-]{1,64}$), unique within <paramref name="used"/>.</summary>
+    /// <summary>
+    /// A function name every API accepts (^[A-Za-z_][A-Za-z0-9_-]{0,63}$ — Gemini needs a letter or "_" first), unique
+    /// within <paramref name="used"/>.
+    /// </summary>
     public static string ForApi(string server, string tool, HashSet<string> used)
     {
         static string Clean(string s) => new(s.Select(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-' ? c : '_').ToArray());
         var baseName = $"{Clean(server)}__{Clean(tool)}";
+        if (!char.IsAsciiLetter(baseName[0]) && baseName[0] != '_') baseName = "_" + baseName;
         if (baseName.Length > 60) baseName = baseName[..60];
         var name = baseName;
         for (var i = 2; !used.Add(name); i++) name = $"{baseName[..Math.Min(baseName.Length, 60 - i.ToString().Length)]}_{i}";

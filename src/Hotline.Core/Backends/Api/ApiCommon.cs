@@ -110,8 +110,9 @@ public static class ApiCommon
     public static IReadOnlyList<ChatMessage> Alternating(IReadOnlyList<ChatMessage> conversation)
     {
         var result = new List<ChatMessage>();
-        foreach (var m in conversation)
+        foreach (var original in conversation)
         {
+            var m = original.Role == ChatRole.Assistant ? original with { Text = ToolLoop.StripNotes(original.Text) } : original;
             if (result.Count > 0 && result[^1].Role == m.Role)
             {
                 var last = result[^1];

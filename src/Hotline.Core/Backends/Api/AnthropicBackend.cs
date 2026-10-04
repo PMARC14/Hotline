@@ -102,16 +102,22 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
             if (stopReason != "tool_use" || toolUses.Count == 0 || offered.Count == 0) yield break;
 
             // Send the assistant turn back exactly as streamed (thinking blocks keep their signatures), then the results.
-            messages.Add(new BetaMessageParam { Role = Role.Assistant, Content = blocks.Values.Where(b => b.Type != "other").Select(b => b.ToParam()).ToList() });
+            // Whitespace-only text blocks are dropped: the API rejects them ("text content blocks must contain non-whitespace text").
+            messages.Add(new BetaMessageParam
+            {
+                Role = Role.Assistant,
+                Content = blocks.Values.Where(b => b.Type != "other" && !(b.Type == "text" && string.IsNullOrWhiteSpace(b.Text.ToString())))
+                    .Select(b => b.ToParam()).ToList(),
+            });
             var results = new List<BetaContentBlockParam>();
             foreach (var use in toolUses)
             {
                 yield return new ChatDelta(ToolLoop.Note(offered, use.Name));
-                var result = await tools!.CallAsync(use.Name, use.Input(), ct);
+                var result = await ToolLoop.CallAsync(tools!, use.Name, use.Json.ToString(), ct);
                 if (result.IsError) yield return new ChatDelta(ToolLoop.Failed(result));
                 results.Add(BetaToolResultBlockParam.FromRawUnchecked(Raw(new JsonObject
                 {
-                    ["type"] = "tool_result", ["tool_use_id"] = use.Id, ["content"] = result.Text.Length > 0 ? result.Text : "(no output)", ["is_error"] = result.IsError,
+                    ["type"] = "tool_result", ["tool_use_id"] = use.Id, ["content"] = ToolLoop.ResultText(result), ["is_error"] = result.IsError,
                 })));
             }
             messages.Add(new BetaMessageParam { Role = Role.User, Content = results });
@@ -151,7 +157,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
                 ["type"] = "thinking", ["thinking"] = Text.ToString(), ["signature"] = Signature ?? "",
             })),
             "redacted_thinking" => BetaRedactedThinkingBlockParam.FromRawUnchecked(Raw(new JsonObject { ["type"] = "redacted_thinking", ["data"] = Data ?? "" })),
-            _ => new BetaTextBlockParam { Text = Text.Length > 0 ? Text.ToString() : " " },
+            _ => new BetaTextBlockParam { Text = Text.ToString() },
         };
     }
 

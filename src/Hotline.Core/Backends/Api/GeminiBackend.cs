@@ -84,7 +84,7 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
                 var fr = new JsonObject
                 {
                     ["name"] = name,
-                    ["response"] = result.IsError ? new JsonObject { ["error"] = result.Text } : new JsonObject { ["content"] = result.Text },
+                    ["response"] = result.IsError ? new JsonObject { ["error"] = ToolLoop.ResultText(result) } : new JsonObject { ["content"] = ToolLoop.ResultText(result) },
                 };
                 if (id is not null) fr["id"] = id;
                 responses.Add(new JsonObject { ["functionResponse"] = fr });

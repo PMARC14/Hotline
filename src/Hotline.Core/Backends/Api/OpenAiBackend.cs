@@ -94,12 +94,9 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             foreach (var call in calls.Values)
             {
                 yield return new ChatDelta(ToolLoop.Note(offered, call.Name));
-                JsonElement args;
-                try { args = JsonDocument.Parse(call.Arguments.Length > 0 ? call.Arguments.ToString() : "{}").RootElement; }
-                catch (JsonException) { args = JsonDocument.Parse("{}").RootElement; }
-                var result = await tools!.CallAsync(call.Name, args, ct);
+                var result = await ToolLoop.CallAsync(tools!, call.Name, call.Arguments.ToString(), ct);
                 if (result.IsError) yield return new ChatDelta(ToolLoop.Failed(result));
-                messages.Add(new JsonObject { ["role"] = "tool", ["tool_call_id"] = call.Id, ["content"] = result.Text });
+                messages.Add(new JsonObject { ["role"] = "tool", ["tool_call_id"] = call.Id, ["content"] = ToolLoop.ResultText(result) });
             }
             if (round + 1 >= ToolLoop.MaxRounds)
             {
