@@ -34,7 +34,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-- Merge PR #1 after review (`/code-review ultra 1` is the user's call — it's billed).
+- Final Antigravity review of Plan 5 done and fixed (a33f6a4). Merge PR #1 after the user's review
+  (`/code-review ultra 1` is the user's call — it's billed).
 - First public release checklist: `docs/RELEASING.md` (installer, trusted signing, final icon).
 - Known limit: MCP server processes are started by the MCP SDK, not `ChildProcessJob`, so a Hotline *crash* can leave
   them running (a normal quit disposes them). Fix idea: start them through our own process factory/transport.
@@ -64,6 +65,9 @@ caret visibility on all themes.
   - `Interop/` tray, Copilot fast path, hotkey, job object, Win32.
 
 ## Hard-won facts (don't relearn these)
+
+- Antigravity reviews: the agy MCP tool can return nothing; run `agy -p "$(cat prompt.txt)"` from Bash instead and start
+  the prompt with "use only file-reading tools, no shell commands" — headless agy aborts silently when a command is denied.
 
 - **WinUI `TextHighlighter` on a `RichTextBlock` crashes natively when drawn** (AV in Microsoft.UI.Xaml.dll). Removed;
   don't reintroduce. Reproduced only when actually rendered → `hotline://selftest` renders off-screen for that reason.
