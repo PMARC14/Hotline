@@ -95,6 +95,24 @@ public sealed class ToolLoopTests : IDisposable
     }
 
     [Fact]
+    public async Task OpenAi_joins_continuation_chunks_that_have_no_index()
+    {
+        var host = new FakeToolHost();
+        static string NoIndex(string? id, string? name, string args) => JsonSerializer.Serialize(new
+        {
+            choices = new[] { new { delta = new { tool_calls = new[] { new { id, type = id is null ? null : "function", function = new { name, arguments = args } } } } } },
+        });
+        var handler = new Handler((n, _) => n == 1
+            ? Sse(NoIndex("call_1", "files__read_file", "{\"pa"), NoIndex(null, null, "th\":\"a"), NoIndex(null, null, ".txt\"}"),
+                  """{"choices":[{"delta":{},"finish_reason":"tool_calls"}]}""", "[DONE]")
+            : Sse(TextChunk("ok"), "[DONE]"));
+        var b = new OpenAiBackend(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = ToolMode.Inherit },
+            new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        await Collect(b.StreamAsync([U("read a.txt")], default));
+        Assert.Equal(("files__read_file", """{"path":"a.txt"}"""), Assert.Single(host.Calls));
+    }
+
+    [Fact]
     public async Task OpenAi_does_not_run_tool_calls_from_a_cut_off_stream()
     {
         var host = new FakeToolHost();

@@ -270,4 +270,38 @@ public sealed class ToolHostLifecycleTests : IDisposable
             Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult("ok", false));
         public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
     }
+
+    [Fact]
+    public async Task A_tool_that_stopped_being_read_only_asks_even_with_an_old_spec()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
+        var readOnly = true;
+        var asked = 0;
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => Task.FromResult<IMcpSession>(new FlagSession(() => readOnly)),
+            (_, _) => { asked++; return Task.FromResult(ToolDecision.Deny); }, Log);
+        var old = (await host.GetToolsAsync(default))[0];
+        readOnly = false;
+        File.WriteAllText(McpPath, """{ "mcpServers": { "a": { "command": "x", "args": ["v2"] } } }"""); // restart → fresh list
+        await host.GetToolsAsync(default);
+        var result = await host.CallAsync(old, JsonDocument.Parse("{}").RootElement, default);
+        Assert.Equal(1, asked);
+        Assert.True(result.IsError);
+    }
+
+    [Fact]
+    public void An_approval_is_not_saved_over_a_file_that_is_not_an_object()
+    {
+        WriteConfig("""[ { "mcpServers": {} } ]""");
+        Assert.Throws<JsonException>(() => McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow));
+        Assert.Equal("""[ { "mcpServers": {} } ]""", File.ReadAllText(McpPath));
+    }
+
+    private sealed class FlagSession(Func<bool> readOnly) : IMcpSession
+    {
+        public Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<McpToolInfo>>(
+            [new McpToolInfo("t", "", JsonDocument.Parse("""{"type":"object"}""").RootElement, readOnly())]);
+        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) => Task.FromResult(new ToolResult("ran", false));
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
 }

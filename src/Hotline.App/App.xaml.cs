@@ -198,9 +198,13 @@ public partial class App : Application
             {
                 _tray?.Dispose();
                 // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
-                Task.Run(() => Task.WhenAll(
-                    _toolHost is null ? Task.CompletedTask : _toolHost.DisposeAsync().AsTask(),
-                    _backends is null ? Task.CompletedTask : _backends.DisposeAllAsync().AsTask())).Wait(TimeSpan.FromSeconds(3));
+                try
+                {
+                    Task.Run(() => Task.WhenAll(
+                        _toolHost is null ? Task.CompletedTask : _toolHost.DisposeAsync().AsTask(),
+                        _backends is null ? Task.CompletedTask : _backends.DisposeAllAsync().AsTask())).Wait(TimeSpan.FromSeconds(3));
+                }
+                catch (Exception ex) { _log?.Error("shutdown cleanup failed", ex); } // still exit
                 Exit();
             });
 

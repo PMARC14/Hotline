@@ -113,6 +113,7 @@ public sealed class McpToolHost(
             // Stop only servers that were removed, disabled, changed or died.
             await StopAsync(_running.Where(kv => !fingerprints.TryGetValue(kv.Key, out var fp) || fp != kv.Value.Fingerprint
                 || servers.First(s => Same(s.Name, kv.Key)).Disabled || _dead.ContainsKey(kv.Value.Session)).Select(kv => kv.Key).ToList());
+            foreach (var stale in _dead.Keys.Where(d => !_running.Values.Any(r => ReferenceEquals(r.Session, d))).ToList()) _dead.TryRemove(stale, out _);
             lock (_status)
                 foreach (var name in _status.Keys.Where(k => !fingerprints.ContainsKey(k) && !ToolNames.IsAmbiguous(k)).ToList()) _status.Remove(name);
             Publish(Volatile.Read(ref _snapshot).Tools.Where(t => _running.ContainsKey(t.Server)).ToList()); // calls stop using stopped servers now
@@ -184,8 +185,11 @@ public sealed class McpToolHost(
     {
         if (_disposed) return new ToolResult("Hotline's tools are shutting down.", true);
         var snapshot = Volatile.Read(ref _snapshot);
-        if (!snapshot.Tools.Any(t => Same(t.Server, tool.Server) && t.Tool == tool.Tool) || !snapshot.Sessions.TryGetValue(tool.Server, out var session))
+        // The current entry, not the caller's copy: if the server now marks the tool as not read-only, that must ask.
+        if (snapshot.Tools.FirstOrDefault(t => Same(t.Server, tool.Server) && t.Tool == tool.Tool) is not { } current
+            || !snapshot.Sessions.TryGetValue(tool.Server, out var session))
             return new ToolResult($"{tool.Server}/{tool.Tool} is no longer available.", true);
+        tool = current;
         // The policy is checked against the file as it is now (a deny added mid-answer applies to the next call).
         var config = EffectiveConfig();
         if (config is null) return new ToolResult("mcp.json can't be read, so no tools run until it's fixed.", true);
@@ -279,9 +283,10 @@ public sealed class McpToolHost(
         StatusChanged?.Invoke();
     }
 
+    /// <summary>Stops a session, but never waits more than a few seconds (a hung server must not freeze every tool).</summary>
     private static async Task SafeDispose(IMcpSession session)
     {
-        try { await session.DisposeAsync(); } catch (Exception) { /* already gone */ }
+        try { await session.DisposeAsync().AsTask().WaitAsync(TimeSpan.FromSeconds(5)); } catch (Exception) { /* already gone, or hung: abandon it */ }
     }
 
     public async ValueTask DisposeAsync()

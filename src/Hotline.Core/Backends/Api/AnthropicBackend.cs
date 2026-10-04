@@ -75,6 +75,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
                         else if (start.ContentBlock.TryPickBetaText(out var tx)) { block.Type = "text"; block.Text.Append(tx.Text); }
                         else block.Type = "other";
                         blocks[start.Index] = block;
+                        if (block.Type == "text" && block.Text.Length > 0) yield return new ChatDelta(block.Text.ToString()); // usually empty
                     }
                     else if (ev.TryPickContentBlockDelta(out var delta))
                     {
@@ -140,10 +141,16 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
         public readonly StringBuilder Text = new();
         public readonly StringBuilder Json = new();
 
+        /// <summary>The streamed input, or {} if it isn't a JSON object (the API rejects any other tool_use input on replay).</summary>
         public JsonElement Input()
         {
-            try { return JsonDocument.Parse(Json.Length > 0 ? Json.ToString() : "{}").RootElement.Clone(); }
-            catch (JsonException) { return JsonDocument.Parse("{}").RootElement.Clone(); }
+            try
+            {
+                var input = JsonDocument.Parse(Json.Length > 0 ? Json.ToString() : "{}").RootElement.Clone();
+                if (input.ValueKind == JsonValueKind.Object) return input;
+            }
+            catch (JsonException) { /* fall through */ }
+            return JsonDocument.Parse("{}").RootElement.Clone();
         }
 
         public BetaContentBlockParam ToParam() => Type switch

@@ -69,7 +69,10 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
                     if (delta.TryGetProperty("tool_calls", out var toolCalls) && toolCalls.ValueKind == JsonValueKind.Array)
                         foreach (var tc in toolCalls.EnumerateArray())
                         {
-                            var index = tc.TryGetProperty("index", out var i) && i.TryGetInt32(out var n) ? n : calls.Count;
+                            // Some servers omit "index" on continuation chunks: those belong to the current call; a new id starts the next.
+                            var newId = tc.TryGetProperty("id", out var idProp) && idProp.GetString() is { Length: > 0 } idText && !calls.Values.Any(c => c.Id == idText);
+                            var index = tc.TryGetProperty("index", out var i) && i.TryGetInt32(out var n) ? n
+                                : calls.Count == 0 || newId ? calls.Count : calls.Keys.Max();
                             if (!calls.TryGetValue(index, out var call)) calls[index] = call = new PendingCall();
                             if (tc.TryGetProperty("id", out var id) && id.GetString() is { Length: > 0 } callId) call.Id = callId;
                             if (tc.TryGetProperty("function", out var fn))

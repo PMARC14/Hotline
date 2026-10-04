@@ -91,7 +91,10 @@ public sealed class McpConfig
         lock (SaveLock) // two "Always" clicks at once must not lose a rule
         {
             var original = File.Exists(path) ? File.ReadAllText(path) : null;
-            var root = (original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions)) as JsonObject ?? new JsonObject();
+            var parsed = original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions);
+            if (original is not null && parsed is not JsonObject)
+                throw new JsonException("mcp.json isn't a JSON object, so the approval wasn't saved (the file was left as it is).");
+            var root = parsed as JsonObject ?? new JsonObject();
             if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
             rules[key] = approval.ToString().ToLowerInvariant();
             // Comments are what a rewrite loses: keep a copy of a commented file (never replacing an earlier backup).
