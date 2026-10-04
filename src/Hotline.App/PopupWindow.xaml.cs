@@ -240,7 +240,9 @@ public sealed partial class PopupWindow : Window
         finally
         {
             Activate();
-            Native.SetForegroundWindow(Hwnd);
+            // ForceForeground: a plain SetForegroundWindow can be refused once another window (e.g. the region
+            // picker) has just closed and Windows handed focus to another app; then hide-on-blur would hide us.
+            if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back after hidden work");
             Shown?.Invoke();
         }
     }

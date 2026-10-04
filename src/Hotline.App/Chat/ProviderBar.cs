@@ -70,7 +70,7 @@ internal sealed class ProviderBar(
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(e); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
         popup.Toolbar.SizeChanged += (_, _) => Layout();
-        popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(Layout);
+        popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(() => { popup.Toolbar.UpdateLayout(); Layout(); });
         Refresh();
         _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
     }

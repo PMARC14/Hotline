@@ -29,6 +29,7 @@ internal sealed class RegionSelectWindow : Window
     private readonly Rectangle _border = new() { StrokeThickness = 2, Stroke = new SolidColorBrush(Colors.White), Visibility = Visibility.Collapsed };
     private readonly int _pixelWidth, _pixelHeight;
     private Point? _start;
+    private bool _wasActive;
 
     public RegionSelectWindow(byte[] bgra, RectI monitor)
     {
@@ -69,6 +70,14 @@ internal sealed class RegionSelectWindow : Window
         _root.PointerMoved += OnMoved;
         _root.PointerReleased += OnReleased;
         _root.KeyDown += (_, e) => { if (e.Key == Windows.System.VirtualKey.Escape) Finish(null); };
+        _root.PointerCaptureLost += (_, _) => { if (_start is not null) Finish(null); }; // drag interrupted
+        _root.PointerCanceled += (_, _) => { if (_start is not null) Finish(null); };
+        // Clicking another monitor/app would leave the frozen overlay up with no way to press Esc: cancel instead.
+        Activated += (_, e) =>
+        {
+            if (e.WindowActivationState != WindowActivationState.Deactivated) _wasActive = true;
+            else if (_wasActive) Finish(null);
+        };
         Closed += (_, _) => _result.TrySetResult(null);
         AppWindow.MoveAndResize(new RectInt32(monitor.X, monitor.Y, monitor.Width, monitor.Height));
     }

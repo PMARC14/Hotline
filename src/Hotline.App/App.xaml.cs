@@ -304,7 +304,7 @@ public partial class App : Application
     private void ApplyToolbarFile(string dataDir)
     {
         var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
-        if (config.Error is { } error) _log?.Error(error);
+        if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
         if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
         _toolbarApplied = true;
         try { _popup.ApplyToolbar(config.Items); }

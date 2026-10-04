@@ -23,7 +23,7 @@ internal static class ScreenCapture
 
     public static RectI MonitorRect(nint hwnd)
     {
-        var area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(hwnd), DisplayAreaFallback.Primary) ?? DisplayArea.Primary;
+        var area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(hwnd), DisplayAreaFallback.Nearest) ?? DisplayArea.Primary;
         var b = area.OuterBounds;
         return new RectI(b.X, b.Y, b.Width, b.Height);
     }

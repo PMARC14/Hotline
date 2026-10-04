@@ -50,6 +50,16 @@ internal sealed partial class ChatPresenter
     /// <summary>Region capture: freeze the monitor under the mouse, let the user drag a rectangle, attach it.</summary>
     private async Task CaptureRegionAsync()
     {
+        if (_regionCaptureOpen) return; // one picker at a time (e.g. the key pressed again while it's up)
+        _regionCaptureOpen = true;
+        try { await CaptureRegionCoreAsync(); }
+        finally { _regionCaptureOpen = false; }
+    }
+
+    private bool _regionCaptureOpen;
+
+    private async Task CaptureRegionCoreAsync()
+    {
         var png = await popup.WithHiddenAsync(async () =>
         {
             var monitor = Capture.ScreenCapture.CursorMonitorRect();
