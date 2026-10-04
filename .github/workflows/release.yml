@@ -63,6 +63,9 @@ jobs:
           # Public certificate so users of a self-signed build can trust it before installing.
           $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("$PWD\certs\release.pfx", $env:PFX_PASSWORD)
           [IO.File]::WriteAllBytes("$PWD\artifacts\Hotline.cer", $cert.Export('Cert'))
+          # Install + automatic updates: Windows re-reads the "latest" copy of this file from the releases.
+          & .\scripts\make-appinstaller.ps1 -Version '${{ steps.ver.outputs.package }}' -Tag '${{ steps.ver.outputs.tag }}' `
+            -MsixName 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' -Out "$PWD\artifacts\Hotline.appinstaller" | Out-Null
 
       - uses: actions/upload-artifact@v4
         with:
@@ -70,6 +73,7 @@ jobs:
           path: |
             artifacts/Hotline_*.msix
             artifacts/Hotline.cer
+            artifacts/Hotline.appinstaller
 
       - name: Publish GitHub Release
         shell: pwsh
@@ -77,5 +81,5 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: >
           gh release create '${{ steps.ver.outputs.tag }}'
-          (Get-ChildItem artifacts/Hotline_*.msix).FullName artifacts/Hotline.cer
+          (Get-ChildItem artifacts/Hotline_*.msix).FullName artifacts/Hotline.cer artifacts/Hotline.appinstaller
           --target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes

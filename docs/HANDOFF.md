@@ -25,7 +25,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
      `regionSelect`.
   5. Customizable bar — `~/.hotline/toolbar.json` (`Core/Windowing/ToolbarConfig.cs`, `PopupWindow.ApplyToolbar`),
      live reload.
-  6. Release prep — `docs/RELEASING.md` (sparse-package installer design, signing, checklist),
+  6. Release prep — `docs/RELEASING.md` (why MSIX, signing options, `.appinstaller` updates, checklist),
      `THIRD-PARTY-NOTICES.md`; CI ran green on GitHub (manual run; still gated by `HOTLINE_ACTIONS_ENABLED`).
   Also fixed: code-block / table Copy buttons were clipped off the right edge (now content-sized headers).
 - Tests: 499 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
@@ -80,7 +80,7 @@ caret visibility on all themes.
   file-only tasks, e.g. a diff written to `.superpowers/review/`).
 - **Claude Code:** `--bare` never reads the OAuth login — chat-only isolation uses `--tools "" --setting-sources ""
   --strict-mcp-config`; `--no-session-persistence` keeps its resume list clean.
-- **Copilot key:** needs package identity (hence MSIX / sparse package later); cold start arrives as
+- **Copilot key:** needs package identity (hence MSIX; see docs/RELEASING.md); cold start arrives as
   `ProtocolForResults`; the fast path is a `WM_APP+1` message to the registered window.
 - **Windows on-device agent registry:** connectors run only via `odr.exe` (build 26220.7262+).
 - **Scripting edits from bash heredocs mangles `\n`** in C# strings — write Python edit scripts to a file with raw

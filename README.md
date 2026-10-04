@@ -93,7 +93,8 @@ Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status
 
 ### CI and releases
 
-`.github/workflows/ci.yml` (build + tests) and `release.yml` (signed MSIX → GitHub Release) are disabled by default;
+`.github/workflows/ci.yml` (build + tests) and `release.yml` (signed MSIX + `Hotline.appinstaller` for automatic
+updates → GitHub Release) are disabled by default;
 enable them with the repository variable `HOTLINE_ACTIONS_ENABLED=true`. Releases need the signing certificate as
 secrets (its subject must equal the manifest `Publisher`):
 
@@ -104,7 +105,8 @@ gh secret set HOTLINE_SIGNING_PFX_PASSWORD   # prompts for your certificate pass
 
 ## Roadmap
 
-A normal installer (sparse package) and trusted signing for the first public release — see
+Trusted signing (Store or Azure Trusted Signing) and one-click installs with automatic updates for the first public
+release — see
 [docs/RELEASING.md](docs/RELEASING.md) and [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## License
