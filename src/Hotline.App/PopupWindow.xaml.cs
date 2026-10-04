@@ -116,6 +116,48 @@ public sealed partial class PopupWindow : Window
         _scrollbarHide.Start();
     }
 
+    /// <summary>The bar's items in order (from toolbar.json); the provider bar reads which pickers are shown.</summary>
+    public IReadOnlyList<string> ToolbarItems { get; private set; } = Hotline.Core.Windowing.ToolbarConfig.Defaults;
+
+    /// <summary>Rebuilds the bottom bar: one column per item in order, a flexible column for each "spacer".</summary>
+    public void ApplyToolbar(IReadOnlyList<string> items)
+    {
+        ToolbarItems = items;
+        var elements = new Dictionary<string, FrameworkElement>
+        {
+            ["pin"] = PinButton, ["captureWindow"] = CaptureWindowButton, ["captureScreen"] = CaptureScreenButton,
+            ["captureRegion"] = CaptureRegionButton, ["prompt"] = PromptButton, ["recent"] = RecentButton,
+            ["newChat"] = NewChatButton, ["settings"] = SettingsButton,
+        };
+        Toolbar.Children.Clear();
+        Toolbar.ColumnDefinitions.Clear();
+        var pickersPlaced = false;
+        foreach (var item in items)
+        {
+            FrameworkElement? element;
+            var star = false;
+            if (item == "spacer") { element = new Microsoft.UI.Xaml.Controls.Border { Tag = "spacer" }; star = true; }
+            else if (item is "effort" or "model" or "provider")
+            {
+                if (pickersPlaced) continue; // the pickers sit together, in the order listed
+                pickersPlaced = true;
+                element = PickersPanel;
+                var order = items.Where(i => i is "effort" or "model" or "provider").ToList();
+                var boxes = new Dictionary<string, Microsoft.UI.Xaml.Controls.ComboBox> { ["effort"] = EffortBox, ["model"] = ModelBox, ["provider"] = ProviderBox };
+                PickersPanel.Children.Clear();
+                foreach (var name in order) PickersPanel.Children.Add(boxes[name]);
+            }
+            else if (!elements.TryGetValue(item, out element)) continue;
+            Toolbar.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = star ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
+            Microsoft.UI.Xaml.Controls.Grid.SetColumn(element, Toolbar.ColumnDefinitions.Count - 1);
+            element.Visibility = Visibility.Visible;
+            Toolbar.Children.Add(element);
+        }
+        ToolbarChanged?.Invoke();
+    }
+
+    public event Action? ToolbarChanged;
+
     public bool IsShown => AppWindow.IsVisible;
 
     public void ShowPopup()
@@ -171,6 +213,8 @@ public sealed partial class PopupWindow : Window
 
     public void RequestNewChat() => NewChatRequested?.Invoke();
     public void RequestCapture(bool window) => CaptureRequested?.Invoke(window);
+    public event Action? RegionCaptureRequested;
+    public void RequestRegionCapture() => RegionCaptureRequested?.Invoke();
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
     public void SetContentHeight(double dip)
@@ -196,7 +240,9 @@ public sealed partial class PopupWindow : Window
         finally
         {
             Activate();
-            Native.SetForegroundWindow(Hwnd);
+            // ForceForeground: a plain SetForegroundWindow can be refused once another window (e.g. the region
+            // picker) has just closed and Windows handed focus to another app; then hide-on-blur would hide us.
+            if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back after hidden work");
             Shown?.Invoke();
         }
     }

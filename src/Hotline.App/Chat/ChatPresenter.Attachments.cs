@@ -47,6 +47,33 @@ internal sealed partial class ChatPresenter
         await AddAttachmentAsync(AttachmentFactory.FromBytes(name, "image/png", png, Limits));
     }
 
+    /// <summary>Region capture: freeze the monitor under the mouse, let the user drag a rectangle, attach it.</summary>
+    private async Task CaptureRegionAsync()
+    {
+        if (_regionCaptureOpen) return; // one picker at a time (e.g. the key pressed again while it's up)
+        _regionCaptureOpen = true;
+        try { await CaptureRegionCoreAsync(); }
+        finally { _regionCaptureOpen = false; }
+    }
+
+    private bool _regionCaptureOpen;
+
+    private async Task CaptureRegionCoreAsync()
+    {
+        var png = await popup.WithHiddenAsync(async () =>
+        {
+            var monitor = Capture.ScreenCapture.CursorMonitorRect();
+            var bgra = Capture.ScreenCapture.GrabBgra(monitor);
+            var picker = new Capture.RegionSelectWindow((byte[])bgra.Clone(), monitor);
+            var selection = await picker.SelectAsync();
+            if (selection is not { } r) return null;
+            var crop = Hotline.Core.Windowing.RegionMath.CropBgra(bgra, monitor.Width, monitor.Height, r);
+            return await Capture.ImageProcessor.EncodeBgraPngAsync(crop, r.Width, r.Height, settings.Chat.MaxImagePixels);
+        });
+        if (png is null) return; // cancelled
+        await AddAttachmentAsync(AttachmentFactory.FromBytes($"region-{DateTime.Now:HHmmss}.png", "image/png", png, Limits));
+    }
+
     private partial void Input_Paste(object sender, TextControlPasteEventArgs e)
     {
         DataPackageView content;

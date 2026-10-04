@@ -36,7 +36,7 @@ public static class SettingsSchema
     private static readonly (KeyAction, string)[] KeyActions =
     [
         (KeyAction.TogglePopup, "Open / close Hotline"), (KeyAction.ShowPopup, "Open Hotline"), (KeyAction.NewChat, "Start a new chat"),
-        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.None, "Do nothing"),
+        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.RegionSelect, "Capture a region"), (KeyAction.None, "Do nothing"),
     ];
 
     public static IReadOnlyList<SettingItem> Items { get; } =

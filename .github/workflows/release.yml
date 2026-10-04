@@ -1,27 +1,32 @@
-# Builds a signed MSIX and publishes a GitHub Release. Present but DISABLED by default:
-# tag pushes (v1.2.3) only release once the repository variable HOTLINE_ACTIONS_ENABLED is 'true'.
-# Manual "Run workflow" (with a version) always works.
-#
-# Required secrets (see README → Releases):
+# Builds a signed MSIX and publishes a GitHub Release:
+#   - every push to main (code changes): version <version.txt>.<run number>, e.g. 0.2.57
+#   - a pushed tag vX.Y.Z, or "Run workflow" with a version: that version
+# Signing: with the secrets below it's a normal release. Without them the build is signed with a throwaway self-signed
+# certificate and published as a pre-release test build (testers trust the attached Hotline.cer first).
 #   HOTLINE_SIGNING_PFX_BASE64   base64 of the signing .pfx (subject must equal the manifest Publisher)
 #   HOTLINE_SIGNING_PFX_PASSWORD its password
 name: Release
 
 on:
   push:
+    branches: [main]
     tags: ['v*']
+    paths-ignore: ['docs/**', '**/*.md', '.github/workflows/ci.yml', '.github/workflows/winget.yml']
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release, e.g. 0.2.0'
-        required: true
+        description: 'Version to release, e.g. 0.2.0 (empty = version.txt + run number)'
+        required: false
 
 permissions:
   contents: write
 
+concurrency:
+  group: release
+  cancel-in-progress: false
+
 jobs:
   release:
-    if: ${{ vars.HOTLINE_ACTIONS_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4
@@ -37,32 +42,51 @@ jobs:
         id: ver
         shell: pwsh
         run: |
-          $v = if ('${{ github.event_name }}' -eq 'workflow_dispatch') { '${{ inputs.version }}' } else { '${{ github.ref_name }}'.TrimStart('v') }
+          $v = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}'.TrimStart('v') }
+               elseif ('${{ inputs.version }}') { '${{ inputs.version }}' }
+               else { "$((Get-Content version.txt -Raw).Trim()).${{ github.run_number }}" }
           if ($v -notmatch '^\d+\.\d+\.\d+$') { throw "Version '$v' must look like 1.2.3" }
           "package=$v.0" >> $env:GITHUB_OUTPUT
           "tag=v$v" >> $env:GITHUB_OUTPUT
 
-      - name: Decode signing certificate
+      - name: Signing certificate
+        id: cert
         shell: pwsh
         env:
           PFX_BASE64: ${{ secrets.HOTLINE_SIGNING_PFX_BASE64 }}
+          PFX_PASSWORD: ${{ secrets.HOTLINE_SIGNING_PFX_PASSWORD }}
         run: |
-          if (-not $env:PFX_BASE64) { throw 'Secret HOTLINE_SIGNING_PFX_BASE64 is not set (see README > Releases).' }
           New-Item -ItemType Directory -Force certs | Out-Null
-          [IO.File]::WriteAllBytes("$PWD\certs\release.pfx", [Convert]::FromBase64String($env:PFX_BASE64))
+          $pfx = "$PWD\certs\release.pfx"
+          if ($env:PFX_BASE64) {
+            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:PFX_BASE64))
+            $password = $env:PFX_PASSWORD
+            "prerelease=false" >> $env:GITHUB_OUTPUT
+          } else {
+            # No signing secrets yet: a throwaway certificate with the manifest's Publisher, for test builds.
+            [xml]$manifest = Get-Content src\Hotline.App\Package.appxmanifest -Raw
+            $cert = New-SelfSignedCertificate -Type Custom -Subject $manifest.Package.Identity.Publisher -KeyUsage DigitalSignature `
+              -CertStoreLocation 'Cert:\CurrentUser\My' -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}') -NotAfter (Get-Date).AddYears(1)
+            $password = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(24))
+            Export-PfxCertificate -Cert $cert -FilePath $pfx -Password (ConvertTo-SecureString $password -AsPlainText -Force) | Out-Null
+            "prerelease=true" >> $env:GITHUB_OUTPUT
+          }
+          "::add-mask::$password"
+          "HOTLINE_CERT_PASSWORD=$password" >> $env:GITHUB_ENV
 
       - name: Build signed MSIX
         shell: powershell
-        env:
-          PFX_PASSWORD: ${{ secrets.HOTLINE_SIGNING_PFX_PASSWORD }}
         run: |
           $ErrorActionPreference = 'Stop'
-          $msix = & .\scripts\build-msix.ps1 -Version '${{ steps.ver.outputs.package }}' -CertificatePath "$PWD\certs\release.pfx" -CertificatePassword $env:PFX_PASSWORD | Select-Object -Last 1
+          $msix = & .\scripts\build-msix.ps1 -Version '${{ steps.ver.outputs.package }}' -CertificatePath "$PWD\certs\release.pfx" | Select-Object -Last 1
           if (-not $msix) { throw 'No MSIX was produced' }
           Copy-Item $msix "$PWD\artifacts\Hotline_${{ steps.ver.outputs.package }}_x64.msix"
           # Public certificate so users of a self-signed build can trust it before installing.
-          $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("$PWD\certs\release.pfx", $env:PFX_PASSWORD)
+          $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("$PWD\certs\release.pfx", $env:HOTLINE_CERT_PASSWORD)
           [IO.File]::WriteAllBytes("$PWD\artifacts\Hotline.cer", $cert.Export('Cert'))
+          # Install + automatic updates: Windows re-reads the "latest" copy of this file from the releases.
+          & .\scripts\make-appinstaller.ps1 -Version '${{ steps.ver.outputs.package }}' -Tag '${{ steps.ver.outputs.tag }}' `
+            -MsixName 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' -Out "$PWD\artifacts\Hotline.appinstaller" | Out-Null
 
       - uses: actions/upload-artifact@v4
         with:
@@ -70,12 +94,16 @@ jobs:
           path: |
             artifacts/Hotline_*.msix
             artifacts/Hotline.cer
+            artifacts/Hotline.appinstaller
 
       - name: Publish GitHub Release
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
-        run: >
-          gh release create '${{ steps.ver.outputs.tag }}'
-          (Get-ChildItem artifacts/Hotline_*.msix).FullName artifacts/Hotline.cer
-          --target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes
+        run: |
+          $notes = if ('${{ steps.cert.outputs.prerelease }}' -eq 'true') {
+            "Test build, signed with a temporary self-signed certificate: install Hotline.cer into Local Machine > Trusted People first, then open the .msix."
+          } else { "" }
+          $flags = @('--target', '${{ github.sha }}', '--title', 'Hotline ${{ steps.ver.outputs.tag }}', '--generate-notes', '--notes', $notes)
+          if ('${{ steps.cert.outputs.prerelease }}' -eq 'true') { $flags += '--prerelease' } else { $flags += '--latest' }
+          gh release create '${{ steps.ver.outputs.tag }}' (Get-ChildItem artifacts/Hotline_*.msix).FullName artifacts/Hotline.cer artifacts/Hotline.appinstaller @flags

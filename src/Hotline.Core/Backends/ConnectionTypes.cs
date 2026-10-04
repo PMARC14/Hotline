@@ -16,7 +16,7 @@ public sealed record ConnectionTypeInfo(
 public static class ConnectionTypes
 {
     private const ConnectionField Cli = ConnectionField.CliPath | ConnectionField.ExtraArgs | ConnectionField.Tools;
-    private const ConnectionField Api = ConnectionField.Endpoint | ConnectionField.ApiKey;
+    private const ConnectionField Api = ConnectionField.Endpoint | ConnectionField.ApiKey | ConnectionField.Tools;
 
     public static IReadOnlyList<ConnectionTypeInfo> All { get; } =
     [

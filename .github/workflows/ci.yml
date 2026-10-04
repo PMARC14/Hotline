@@ -1,6 +1,4 @@
-# Build + unit tests. Present but DISABLED by default: automatic runs only happen once the
-# repository variable HOTLINE_ACTIONS_ENABLED is set to 'true' (Settings → Secrets and variables →
-# Actions → Variables). Manual "Run workflow" always works.
+# Build + unit tests on every pull request and every push to main.
 name: CI
 
 on:
@@ -9,9 +7,12 @@ on:
   pull_request:
   workflow_dispatch:
 
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build-test:
-    if: ${{ vars.HOTLINE_ACTIONS_ENABLED == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: windows-latest
     steps:
       - uses: actions/checkout@v4

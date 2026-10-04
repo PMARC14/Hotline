@@ -7,12 +7,17 @@ param(
     [string]$Configuration = 'Release',
     [string]$Version,
     [string]$CertificatePath,
+    # Default: $env:HOTLINE_CERT_PASSWORD, else the <certificate>.password file next to the .pfx (dev-cert.ps1 writes it).
     [string]$CertificatePassword
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 if (-not $CertificatePath) { $CertificatePath = Join-Path $root 'certs\hotline-dev.pfx' }
 if (-not (Test-Path $CertificatePath)) { throw "No signing cert at $CertificatePath. Run scripts\dev-cert.ps1 first." }
+if (-not $CertificatePassword) { $CertificatePassword = $env:HOTLINE_CERT_PASSWORD }
+$passwordFile = [IO.Path]::ChangeExtension($CertificatePath, '.password')
+if (-not $CertificatePassword -and (Test-Path $passwordFile)) { $CertificatePassword = [IO.File]::ReadAllText($passwordFile).Trim() }
+if (-not $CertificatePassword) { throw "No certificate password: pass -CertificatePassword, set HOTLINE_CERT_PASSWORD, or put it in $passwordFile." }
 $out = Join-Path $root 'artifacts\'
 $manifest = Join-Path $root 'src\Hotline.App\Package.appxmanifest'
 

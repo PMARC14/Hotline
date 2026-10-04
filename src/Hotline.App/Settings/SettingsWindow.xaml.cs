@@ -24,9 +24,15 @@ public sealed partial class SettingsWindow : Window
     private readonly string _logsDir;
     private readonly FileLog _log;
 
+    private Hotline.Core.Tools.McpToolHost? _toolHost;
+    private string _mcpPath = "";
+    private string? _odrPath;
+
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
-        PromptLibrary prompts, string settingsFile, string logsDir, FileLog log)
+        PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
+        string? mcpPath = null, string? odrPath = null)
     {
+        (_toolHost, _mcpPath, _odrPath) = (toolHost, mcpPath ?? "", odrPath);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
@@ -39,6 +45,18 @@ public sealed partial class SettingsWindow : Window
         _settings.Changed += OnSettingsChanged;
         Closed += (_, _) => _settings.Changed -= OnSettingsChanged;
         Nav.SelectedItem = Nav.MenuItems[0];
+    }
+
+    /// <summary>Self-test: builds every page once (hidden window) so a broken page fails the smoke test.</summary>
+    internal IReadOnlyList<string> BuildAllPages()
+    {
+        var failures = new List<string>();
+        foreach (var tag in Nav.MenuItems.OfType<NavigationViewItem>().Select(i => (string)i.Tag))
+        {
+            try { ShowPage(tag); }
+            catch (Exception ex) { failures.Add($"{tag}: {ex.Message}"); }
+        }
+        return failures;
     }
 
     private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
@@ -65,6 +83,7 @@ public sealed partial class SettingsWindow : Window
         {
             case "Connections": BuildConnectionsPage(); break;
             case "Prompts": BuildPromptsPage(); break;
+            case "Tools": BuildToolsPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
@@ -176,10 +195,65 @@ public sealed partial class SettingsWindow : Window
             else StartupRegistration.Disable();
             Refresh();
         };
-        var panel = new StackPanel { Spacing = 4, HorizontalAlignment = HorizontalAlignment.Right };
-        panel.Children.Add(toggle);
         PageHost.Children.Add(Card("Start with Windows", null, new StackPanel { Spacing = 4, Children = { toggle, status } }));
         Refresh();
+    }
+
+    /// <summary>MCP servers (mcp.json + Windows agent registry), their status and the approval rules.</summary>
+    private void BuildToolsPage()
+    {
+        Button Link(string text, Action action) { var b = new Button { Content = text }; b.Click += (_, _) => action(); return b; }
+        PageHost.Children.Add(new TextBlock
+        {
+            Text = "API connections with Tool use set to \"Use Hotline's tools\" can call the tools of these MCP servers. Read-only tools run; " +
+                   "anything else asks you in the panel (Allow once / Always / Deny).",
+            TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
+        });
+        PageHost.Children.Add(Card("MCP servers", _mcpPath + " — same \"mcpServers\" format as other MCP apps; approvals live in the same file",
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { Link("Edit mcp.json", () => CliRunner.OpenInEditor(_mcpPath)), Link("Open folder", () => CliRunner.OpenFolder(Path.GetDirectoryName(_mcpPath)!)) },
+            }));
+        PageHost.Children.Add(Card("Windows agent registry",
+            _odrPath is null ? "Not available on this Windows (needs build 26220.7262 or later). Its built-in connectors will appear here automatically."
+                             : $"Available ({_odrPath}). Its connectors are listed below as windows-…",
+            null));
+        if (_toolHost is null) return;
+        var list = new StackPanel { Spacing = 6 };
+        void Fill()
+        {
+            list.Children.Clear();
+            if (_toolHost.ConfigError is { } error)
+                list.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = error });
+            var status = _toolHost.Status;
+            if (status.Count == 0)
+                list.Children.Add(new TextBlock { Text = "No servers checked yet. Add servers to mcp.json, then press Check servers.", Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
+            foreach (var s in status.OrderBy(s => s.Name))
+                list.Children.Add(Card(s.DisplayName, s.State switch
+                {
+                    Hotline.Core.Tools.McpServerState.Ready => $"Ready — {s.ToolCount} tool(s)",
+                    Hotline.Core.Tools.McpServerState.Failed => $"Failed: {s.Error}",
+                    Hotline.Core.Tools.McpServerState.Disabled => "Disabled in mcp.json",
+                    _ => s.State.ToString(),
+                }, null));
+        }
+        var check = new Button { Content = "Check servers", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        check.Click += async (_, _) =>
+        {
+            check.IsEnabled = false;
+            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60)); // a server stuck starting can't hold the button forever
+            try
+            {
+                _toolHost.RetryFailedServers();
+                await _toolHost.GetToolsAsync(timeout.Token);
+            }
+            catch (Exception ex) { _log.Error("checking MCP servers failed", ex); }
+            finally { check.IsEnabled = true; Fill(); }
+        };
+        PageHost.Children.Add(check);
+        PageHost.Children.Add(list);
+        Fill();
     }
 
     private void BuildAdvancedExtras()

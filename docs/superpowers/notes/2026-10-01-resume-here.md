@@ -1,3 +1,5 @@
+> **Superseded (2026-10-03): start from `docs/HANDOFF.md`.** This note is kept for history.
+
 # Resume here (paused 2026-10-01)
 
 ## State

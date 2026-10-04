@@ -70,6 +70,7 @@ internal sealed class ProviderBar(
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(e); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
         popup.Toolbar.SizeChanged += (_, _) => Layout();
+        popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(() => { popup.Toolbar.UpdateLayout(); Layout(); });
         Refresh();
         _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
     }
@@ -119,11 +120,15 @@ internal sealed class ProviderBar(
     {
         var bar = popup.Toolbar;
         if (bar.ActualWidth <= 0) return;
-        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
+        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag)).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
                          + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
         var effortAvailable = popup.EffortBox.Items.Count > 0;
         var widths = ToolbarLayout.Compute(bar.ActualWidth, fixedWidth, popup.PickersPanel.Spacing,
-            [new("effort", 72, 56, effortAvailable), new("model", 150, 84), new("provider", 128, 72)], HideOrder);
+            [
+                new("effort", 72, 56, effortAvailable && popup.ToolbarItems.Contains("effort")),
+                new("model", 150, 84, popup.ToolbarItems.Contains("model")),
+                new("provider", 128, 72, popup.ToolbarItems.Contains("provider")),
+            ], HideOrder);
         Apply(popup.EffortBox, widths["effort"]);
         Apply(popup.ModelBox, widths["model"]);
         Apply(popup.ProviderBox, widths["provider"]);

@@ -108,6 +108,7 @@ try {
     Start-Process 'hotline://selftest'
     for ($i = 0; $i -lt 20 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest (rebuild ok|FAILED)'); $i++) { Start-Sleep -Milliseconds 500 }
     Expect-Log 'transcript self-test renders' $n 'selftest rebuild ok'
+    Expect-Log 'settings window pages build' $n 'selftest settings ok'
 
     # 4c. Hand edits to settings.json apply live (no restart)
     $n = Get-LogCount

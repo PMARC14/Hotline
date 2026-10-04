@@ -31,12 +31,19 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     /// <summary>hotline://selftest renders a scripted conversation in the hidden panel (no typing).</summary>
     public event Action<Uri?>? SelfTestRequested;
+    /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
+    public event Action? DemoRequested;
     public event Action? OpenSettingsRequested;
 
     public void OnActivation(ActivationRequest request)
     {
         log.Info($"activation kind={request.Kind} first={request.IsFirstLaunch}");
         log.Debug($"activation uri={request.Uri}");
+        if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
+        {
+            DemoRequested?.Invoke();
+            return;
+        }
         if (string.Equals(request.Uri?.Host, "selftest", StringComparison.OrdinalIgnoreCase))
         {
             SelfTestRequested?.Invoke(request.Uri);
@@ -80,8 +87,11 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
                 popup.ShowPopup();
                 popup.RequestCapture(window: true);
                 break;
+            case KeyAction.RegionSelect:
+                popup.ShowPopup();
+                popup.RequestRegionCapture();
+                break;
             default:
-                // ShowPopup; RegionSelect arrives in a later plan and just opens the popup for now.
                 popup.ShowPopup();
                 break;
         }

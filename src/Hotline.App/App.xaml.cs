@@ -31,6 +31,9 @@ public partial class App : Application
     private ISecretStore? _secrets;
     private readonly HashSet<string> _pendingInvalidations = [];
     private SettingsHost? _settingsHost;
+    private Hotline.Core.Tools.McpToolHost? _toolHost;
+    private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
+    private string? _odrPath;
     private FileSystemWatcher? _settingsWatcher;
 
     public App(AppActivationArguments initialActivation)
@@ -101,7 +104,7 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"),
-            _secrets, BackendFactory.CreateApiHttpClient());
+            _secrets, BackendFactory.CreateApiHttpClient(), ToolHost(dataDir));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -137,11 +140,19 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        _router.SelfTestRequested += uri => _presenter.SelfTest(uri);
+        _router.SelfTestRequested += uri =>
+        {
+            _presenter.SelfTest(uri);
+            var problems = _settingsHost?.SelfTest() ?? [];
+            if (problems.Count == 0) _log.Info("selftest settings ok");
+            else _log.Error("selftest settings FAILED: " + string.Join("; ", problems));
+        };
+        _router.DemoRequested += () => _presenter.Demo();
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
-            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log), _log);
+            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
+        ApplyToolbarFile(dataDir);
         WatchSettingsFile(store);
         _settingsService.ConnectionsChanged += ids =>
         {
@@ -182,8 +193,20 @@ public partial class App : Application
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
-            onRestart: () => { _tray?.Dispose(); AppInstance.Restart(string.Empty); },
-            onQuit: () => { _tray?.Dispose(); Task.Run(async () => { if (_backends is not null) await _backends.DisposeAllAsync(); }).Wait(TimeSpan.FromSeconds(2)); Exit(); });
+            onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
+            onQuit: () =>
+            {
+                _tray?.Dispose();
+                // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
+                try
+                {
+                    Task.Run(() => Task.WhenAll(
+                        _toolHost is null ? Task.CompletedTask : _toolHost.DisposeAsync().AsTask(),
+                        _backends is null ? Task.CompletedTask : _backends.DisposeAllAsync().AsTask())).Wait(TimeSpan.FromSeconds(3));
+                }
+                catch (Exception ex) { _log?.Error("shutdown cleanup failed", ex); } // still exit
+                Exit();
+            });
 
         _heartbeat = _popup.DispatcherQueue.CreateTimer();
         _heartbeat.Interval = TimeSpan.FromMinutes(30);
@@ -225,6 +248,7 @@ public partial class App : Application
         {
             try
             {
+                ApplyToolbarFile(dir);
                 if (store.TryRead() is not { } fromDisk) { _log?.Info("settings.json not readable yet (being edited?); keeping current settings"); return; }
                 if (_settingsService!.Reload(fromDisk)) _log?.Info("settings.json changed on disk; applied");
             }
@@ -234,7 +258,9 @@ public partial class App : Application
         {
             // settings.json and connections\*.json (one file per connection): edits, new and deleted files apply live.
             _settingsWatcher = new FileSystemWatcher(dir, "*.json") { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, IncludeSubdirectories = true };
+            var toolbarPath = Path.Combine(dir, "toolbar.json");
             bool Relevant(string? path) => path is not null && (string.Equals(path, store.FilePath, StringComparison.OrdinalIgnoreCase)
+                || string.Equals(path, toolbarPath, StringComparison.OrdinalIgnoreCase)
                 || string.Equals(Path.GetDirectoryName(path), store.ConnectionsDirectory, StringComparison.OrdinalIgnoreCase));
             void Kick(string? path) { if (Relevant(path)) _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); }); }
             _settingsWatcher.Changed += (_, e) => Kick(e.FullPath);
@@ -250,5 +276,59 @@ public partial class App : Application
     {
         var state = await StartupRegistration.GetStateAsync();
         _log?.Info($"start with Windows: {state?.ToString() ?? "n/a"}");
+    }
+
+    /// <summary>
+    /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
+    /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
+    /// </summary>
+    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir)
+    {
+        var mcpPath = Path.Combine(dataDir, "mcp.json");
+        _ = Hotline.Core.Tools.McpConfig.Load(mcpPath); // creates mcp.json with a commented example on first run
+        _odrPath = Hotline.Core.Tools.OdrDiscovery.FindOdr(File.Exists, Environment.GetEnvironmentVariable("WINDIR"), Environment.GetEnvironmentVariable("LOCALAPPDATA"));
+        _log?.Info(_odrPath is null ? "Windows agent registry: not available on this Windows" : $"Windows agent registry: {_odrPath}");
+        if (_odrPath is { } odr)
+            _ = Task.Run(async () =>
+            {
+                foreach (var args in new[] { new[] { "mcp", "list" }, new[] { "list" } })
+                {
+                    try
+                    {
+                        var json = await CliRunner.RunAsync(odr, args, TimeSpan.FromSeconds(20), CancellationToken.None);
+                        var servers = Hotline.Core.Tools.OdrDiscovery.Parse(json);
+                        if (servers.Count == 0) continue;
+                        _odrServers = servers;
+                        _log?.Info($"Windows agent registry: {servers.Count} connector(s)");
+                        return;
+                    }
+                    catch (Exception ex) { _log?.Error($"odr {string.Join(' ', args)} failed", ex); }
+                }
+            });
+        _toolHost = new Hotline.Core.Tools.McpToolHost(
+            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers, Hotline.Core.Tools.StdioMcpSession.ConnectAsync,
+            (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
+            _log!, mcpPath);
+        return _toolHost;
+    }
+
+    /// <summary>~/.hotline/toolbar.json → the bottom bar (written with the defaults on first run; applies live).</summary>
+    private void ApplyToolbarFile(string dataDir)
+    {
+        var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
+        if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
+        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
+        _toolbarApplied = true;
+        try { _popup.ApplyToolbar(config.Items); }
+        catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
+    }
+
+    private bool _toolbarApplied;
+
+    /// <summary>MCP servers are started by the MCP SDK (not in the kill-on-close job): stop them before a restart.</summary>
+    private void StopToolServers()
+    {
+        try { if (_toolHost is { } host) Task.Run(async () => await host.DisposeAsync()).Wait(TimeSpan.FromSeconds(3)); }
+        catch (Exception ex) { _log?.Error("stopping MCP servers failed", ex); }
     }
 }
