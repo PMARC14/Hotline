@@ -17,6 +17,9 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
   - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
     `Publisher`): a normal release.
   - Without them: signed with a throwaway self-signed certificate and published as a **pre-release** test build.
+    Each test build has a new certificate, so testers trust that build's `Hotline.cer` again. `.appinstaller` updates
+    don't apply to test builds, because GitHub's `releases/latest` link skips pre-releases. Automatic updates start
+    with the first trusted-signed release (first one: `v0.2.1`, 2026-10-04).
   - Assets: the `.msix`, `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.ps1`).
 - **winget** (`.github/workflows/winget.yml`): disabled until the repository variable `HOTLINE_WINGET_ENABLED=true`;
   needs trusted signing, a first manual submission (`wingetcreate new`) and a `WINGET_TOKEN` secret (details in the file).
