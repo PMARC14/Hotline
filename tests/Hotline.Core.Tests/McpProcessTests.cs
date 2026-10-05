@@ -110,8 +110,10 @@ public class McpProcessTests
         var pidFile = Path.Combine(Path.GetTempPath(), $"hotline-mcp-{Guid.NewGuid():N}.pid");
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
         // cmd → powershell that never answers; cancellation must take the whole tree down.
+        var sw = Stopwatch.StartNew();
         await Assert.ThrowsAnyAsync<Exception>(() => connect(
             Server("cmd.exe", ["/c", $"powershell.exe -NoProfile -Command Set-Content -Path '{pidFile}' -Value $PID; Start-Sleep 120"]), cts.Token));
+        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(7), $"cancelled connect took {sw.Elapsed} (5 s timeout + teardown)");
         var rootPid = Assert.Single(started);
         var childPid = int.Parse(File.ReadAllText(pidFile).Trim());
         File.Delete(pidFile);

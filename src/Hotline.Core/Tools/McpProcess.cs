@@ -105,36 +105,42 @@ public sealed class StdioMcpSession : IMcpSession
         var stderr = new StderrThrottle(server.Name, log, clock);
         var process = new Process { StartInfo = McpProcess.CreateStartInfo(server, OperatingSystem.IsWindows()), EnableRaisingEvents = true };
         process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
-        try
-        {
-            if (!process.Start()) throw new IOException($"couldn't start {server.Command}");
-        }
-        catch (Exception ex) when (ex is not IOException)
+        bool started;
+        try { started = process.Start(); }
+        catch (Exception ex)
         {
             process.Dispose();
             throw new IOException($"couldn't start {server.Command}: {ex.Message}", ex);
         }
+        if (!started)
+        {
+            process.Dispose();
+            throw new IOException($"couldn't start {server.Command}");
+        }
         McpClient? client = null;
         using var exitedOrCancelled = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        EventHandler onExited = (_, _) => { try { exitedOrCancelled.Cancel(); } catch (ObjectDisposedException) { } };
         try
         {
             onStarted?.Invoke(process);
             process.BeginErrorReadLine();
-            process.Exited += (_, _) => { try { exitedOrCancelled.Cancel(); } catch (ObjectDisposedException) { } };
+            process.Exited += onExited;
             if (process.HasExited) exitedOrCancelled.Cancel();
             client = await McpClient.CreateAsync(new StreamClientTransport(process.StandardInput.BaseStream, process.StandardOutput.BaseStream),
                 new McpClientOptions { ClientInfo = new Implementation { Name = "Hotline", Version = "1.0" } }, cancellationToken: exitedOrCancelled.Token);
+            process.Exited -= onExited;
             return new StdioMcpSession(client, process);
         }
         catch (Exception ex)
         {
-            var exited = HasExited(process);
-            if (exited)
+            process.Exited -= onExited;
+            if (!ct.IsCancellationRequested)
             {
-                // Let the last stderr lines arrive before quoting them.
+                // The SDK can see end-of-stream a moment before the exit; also lets the last stderr lines arrive.
                 using var flush = new CancellationTokenSource(TimeSpan.FromSeconds(1));
                 try { await process.WaitForExitAsync(flush.Token); } catch (OperationCanceledException) { }
             }
+            var exited = HasExited(process);
             var message = exited ? ExitMessage(process, stderr) : null;
             await ShutdownAsync(process, client, TimeSpan.Zero);
             if (message is not null && !ct.IsCancellationRequested) throw new IOException(message, ex);
@@ -164,13 +170,17 @@ public sealed class StdioMcpSession : IMcpSession
             using var cts = new CancellationTokenSource(grace);
             try { await process.WaitForExitAsync(cts.Token); } catch (OperationCanceledException) { }
         }
-        try { if (!HasExited(process)) process.Kill(entireProcessTree: true); }
-        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or NotSupportedException) { }
-        if (client is not null)
+        try
         {
-            try { await client.DisposeAsync(); } catch (Exception ex) when (ex is not OutOfMemoryException) { }
+            // AggregateException: part of the tree couldn't be killed (e.g. an elevated helper); the job still has it.
+            try { if (!HasExited(process)) process.Kill(entireProcessTree: true); }
+            catch (Exception ex) when (ex is InvalidOperationException or AggregateException or System.ComponentModel.Win32Exception or NotSupportedException) { }
+            if (client is not null)
+            {
+                try { await client.DisposeAsync(); } catch (Exception ex) when (ex is not OutOfMemoryException) { }
+            }
         }
-        process.Dispose();
+        finally { process.Dispose(); }
     }
 
     public async Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct)
