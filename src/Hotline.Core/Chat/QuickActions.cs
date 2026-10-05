@@ -34,25 +34,43 @@ public sealed partial class QuickActions(string directory)
         foreach (var (name, text) in Defaults) File.WriteAllText(Path.Combine(directory, name + ".md"), text + "\n");
     }
 
+    /// <summary>Larger files aren't actions (keeps typing "/" fast).</summary>
+    public const int MaxFileBytes = 64 * 1024;
+
+    private readonly Lock _gate = new();
+    private string? _signature;
+    private IReadOnlyList<QuickAction> _cached = [];
+
+    /// <summary>
+    /// The actions, sorted by name. Only file metadata is checked per call; the files are re-read when any name,
+    /// size or time changed, so edits apply on the next use without reading every file on each keystroke.
+    /// </summary>
     public IReadOnlyList<QuickAction> List()
     {
-        if (!System.IO.Directory.Exists(directory)) return [];
-        var list = new List<QuickAction>();
-        IEnumerable<string> files;
-        try { files = System.IO.Directory.EnumerateFiles(directory, "*.md").ToList(); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return []; }
-        foreach (var path in files)
+        List<FileInfo> files;
+        try
         {
-            var name = Path.GetFileNameWithoutExtension(path);
-            if (!SafeName().IsMatch(name)) continue;
+            var dir = new DirectoryInfo(directory);
+            if (!dir.Exists) return [];
+            files = dir.EnumerateFiles("*.md").Where(f => SafeName().IsMatch(Path.GetFileNameWithoutExtension(f.Name)) && f.Length <= MaxFileBytes)
+                .OrderBy(f => f.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return []; }
+        var signature = string.Join("|", files.Select(f => $"{f.Name}:{f.Length}:{f.LastWriteTimeUtc.Ticks}"));
+        lock (_gate) if (signature == _signature) return _cached;
+
+        var list = new List<QuickAction>();
+        foreach (var file in files)
+        {
             string text;
-            try { text = File.ReadAllText(path).Trim(); }
+            try { text = File.ReadAllText(file.FullName).Trim(); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { continue; }
             if (text.Length == 0) continue;
             var first = text.Split('\n', 2)[0].Trim();
-            list.Add(new QuickAction(name, first, text.ReplaceLineEndings("\n")));
+            list.Add(new QuickAction(Path.GetFileNameWithoutExtension(file.Name), first, text.ReplaceLineEndings("\n")));
         }
-        return list.OrderBy(a => a.Name, StringComparer.OrdinalIgnoreCase).ToList();
+        lock (_gate) (_signature, _cached) = (signature, list);
+        return list;
     }
 
     public IReadOnlyList<QuickAction> Matching(string query) =>

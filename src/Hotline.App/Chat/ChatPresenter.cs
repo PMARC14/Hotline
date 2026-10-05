@@ -161,7 +161,7 @@ internal sealed partial class ChatPresenter(
         var attachments = tray.TakeAll();
         RefreshChips();
         popup.Input.Text = "";
-        log.Info($"chat send via {chat.BackendId}: {text.Length} chars, {attachments.Count} attachment(s)");
+        log.Info($"chat send via {chat.BackendId}: {toSend.Length} chars, {attachments.Count} attachment(s)");
         await chat.SendAsync(toSend, attachments);
     }
 

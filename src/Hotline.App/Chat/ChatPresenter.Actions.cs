@@ -1,8 +1,10 @@
 using Hotline.Core.Chat;
+using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.System;
+using Windows.UI.Core;
 
 namespace Hotline.App.Chat;
 
@@ -50,20 +52,41 @@ internal sealed partial class ChatPresenter
 
     private ListViewItem SuggestionItem(QuickAction a)
     {
-        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 10 };
+        // A Grid (not a horizontal StackPanel) so the description gets a bounded width and trims with "…".
+        var row = new Grid { ColumnSpacing = 10 };
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+        row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         row.Children.Add(new TextBlock { Text = "/" + a.Name, FontWeight = FontWeights.SemiBold, FontSize = _tokens.FontSizePx });
-        row.Children.Add(new TextBlock
+        var description = new TextBlock
         {
             Text = a.Description, Foreground = _style.Muted, FontSize = Math.Max(11, _tokens.FontSizePx - 2),
-            TextTrimming = TextTrimming.CharacterEllipsis, VerticalAlignment = VerticalAlignment.Center,
-        });
-        return new ListViewItem { Content = row, Tag = a, MinHeight = 0, Padding = new Thickness(8, 4, 8, 4) };
+            TextTrimming = TextTrimming.CharacterEllipsis, TextWrapping = TextWrapping.NoWrap, VerticalAlignment = VerticalAlignment.Center,
+        };
+        Grid.SetColumn(description, 1);
+        row.Children.Add(description);
+        return new ListViewItem
+        {
+            Content = row, Tag = a, MinHeight = 0, Padding = new Thickness(8, 4, 8, 4),
+            HorizontalContentAlignment = HorizontalAlignment.Stretch, AllowFocusOnInteraction = false,
+        };
     }
 
-    /// <summary>Up/Down move, Tab/Enter pick, Esc closes the list (the panel stays open). True when handled.</summary>
+    /// <summary>
+    /// Up/Down move, Tab/Enter pick, Esc closes the list (the panel stays open). Enter on a fully typed name sends;
+    /// keys with Ctrl/Shift/Alt keep their usual meaning. True when handled.
+    /// </summary>
     private bool HandleSuggestionKey(VirtualKey key)
     {
         var list = popup.SuggestionsList;
+        static bool Down(VirtualKey k) => InputKeyboardSource.GetKeyStateForCurrentThread(k).HasFlag(CoreVirtualKeyStates.Down);
+        if (Down(VirtualKey.Control) || Down(VirtualKey.Shift) || Down(VirtualKey.Menu)) return false;
+        if (list.SelectedItem is null && list.Items.Count > 0) list.SelectedIndex = 0;
+        if (key == VirtualKey.Enter && list.SelectedItem is ListViewItem { Tag: QuickAction typed }
+            && string.Equals(QuickActions.SuggestionQuery(popup.Input.Text), typed.Name, StringComparison.OrdinalIgnoreCase))
+        {
+            list.Visibility = Visibility.Collapsed;
+            return false; // "/summarize" + Enter: send (applies to the attachments)
+        }
         switch (key)
         {
             case VirtualKey.Down:

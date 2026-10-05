@@ -72,7 +72,8 @@
             <StackPanel Spacing="4">
                 <!-- Quick actions: typing "/" lists ~/.hotline/actions/*.md (Up/Down, Tab or Enter to pick, Esc to close). -->
                 <ListView x:Name="SuggestionsList" x:FieldModifier="internal" Visibility="Collapsed" MaxHeight="200"
-                          SelectionMode="Single" IsItemClickEnabled="True" IsTabStop="False" Padding="0" />
+                          SelectionMode="Single" IsItemClickEnabled="True" IsTabStop="False" Padding="0"
+                          AllowFocusOnInteraction="False" />
                 <StackPanel x:Name="ChipsPanel" x:FieldModifier="internal" Orientation="Horizontal" Spacing="6" Visibility="Collapsed" />
                 <Grid ColumnSpacing="6">
                     <Grid.ColumnDefinitions>

@@ -108,4 +108,24 @@ public sealed class QuickActionsTests : IDisposable
         actions.EnsureDefaults();
         Assert.Null(actions.Expand(text, hasAttachments: false));
     }
+
+    [Fact]
+    public void Edits_apply_on_the_next_use_even_with_the_list_cached()
+    {
+        var actions = new QuickActions(_dir);
+        actions.EnsureDefaults();
+        _ = actions.List();
+        var path = Path.Combine(_dir, "fix.md");
+        File.WriteAllText(path, "Fix it differently.");
+        File.SetLastWriteTimeUtc(path, DateTime.UtcNow.AddMinutes(1)); // file systems with coarse timestamps
+        Assert.Equal("Fix it differently.", actions.List().Single(a => a.Name == "fix").Instruction);
+    }
+
+    [Fact]
+    public void Oversized_files_are_ignored()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, "huge.md"), new string('x', QuickActions.MaxFileBytes + 1));
+        Assert.Empty(new QuickActions(_dir).List());
+    }
 }
