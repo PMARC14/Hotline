@@ -39,7 +39,7 @@ internal sealed partial class ChatPresenter(
         {
             ThemeChoice.Dark => true,
             ThemeChoice.Light => false,
-            _ => Application.Current.RequestedTheme == ApplicationTheme.Dark,
+            _ => SystemTheme.IsDark, // live, not the theme Hotline started with
         };
         _tokens = ThemeTokens.For(dark, settings.Window);
         _style = new RenderStyle(_tokens.FontSizePx, new FontFamily(_tokens.Font), Brush(_tokens.Muted), Brush(_tokens.CodeBackground),

@@ -74,6 +74,25 @@ public sealed partial class QuickActions(string directory)
         return list;
     }
 
+    public string PathFor(string name) => Path.Combine(directory, name + ".md");
+
+    /// <summary>A new action file with a template instruction (Settings › Quick actions); returns its name.</summary>
+    public string Create()
+    {
+        System.IO.Directory.CreateDirectory(directory);
+        var name = "my-action";
+        for (var i = 2; File.Exists(PathFor(name)); i++) name = $"my-action-{i}";
+        File.WriteAllText(PathFor(name), "Describe what to do with the text below, e.g. \"Rewrite it as a short, friendly email.\"\n");
+        return name;
+    }
+
+    public bool Delete(string name)
+    {
+        if (!SafeName().IsMatch(name) || !File.Exists(PathFor(name))) return false;
+        File.Delete(PathFor(name));
+        return true;
+    }
+
     public IReadOnlyList<QuickAction> Matching(string query) =>
         List().Where(a => a.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase)).ToList();
 

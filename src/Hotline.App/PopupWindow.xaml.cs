@@ -89,12 +89,7 @@ public sealed partial class PopupWindow : Window
     {
         SystemBackdrop = Backdrops.Create(_settings);
         if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
-        Root.RequestedTheme = _settings.Theme switch
-        {
-            ThemeChoice.Light => ElementTheme.Light,
-            ThemeChoice.Dark => ElementTheme.Dark,
-            _ => ElementTheme.Default,
-        };
+        Root.RequestedTheme = SystemTheme.Resolve(_settings.Theme); // "System" follows Windows live
         if (_settings.Backdrop != BackdropKind.Solid) Root.Background = null;
         MessagesScroll.VerticalScrollBarVisibility = _settings.Scrollbar switch
         {

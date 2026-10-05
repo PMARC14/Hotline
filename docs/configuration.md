@@ -28,7 +28,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `window.hideOnBlur` / `alwaysOnTop` | `true` / `true` | Hide when you click elsewhere; keep on top |
 | `window.fontSize` / `fontFamily` | Windows default / Segoe UI Variable | Text size (10–32; empty follows Windows' text size) and font |
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
-| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition |
+| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `chat.defaultBackend` | `agy` | Connection that answers by default (its `id`) |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
@@ -96,13 +96,16 @@ goes to `logs\hotline.log` (at most 20 lines a minute per server).
 Type `/` at the start of the message to list them (↑/↓, Tab or Enter to pick, Esc to close). `/name some text` sends
 the file's text as an instruction followed by your text; `/name` alone applies it to the attachments. The first line is
 the description in the list. Add your own by dropping in a file (letters, digits, `-` and `_` in the name); delete or
-edit the defaults freely: they're written only when the folder doesn't exist yet.
+edit the defaults freely: they're written only when the folder doesn't exist yet. Settings › **Quick actions** lists,
+creates, edits and deletes them.
 
 ## toolbar.json
 
-`{ "items": ["pin", "captureWindow", "captureScreen", "spacer", "effort", "model", "provider", "prompt", "recent", "newChat", "settings"] }`
-— left to right; remove an item to hide it; `spacer` takes the free space (repeatable). Also available:
-`captureRegion`. The pickers (effort, model, provider) sit together in the order listed.
+`{ "items": ["pin", "captureWindow", "captureScreen", "captureRegion", "spacer", "effort", "model", "provider", "prompt", "recent", "newChat", "settings"] }`
+— left to right; remove an item to hide it; `spacer` takes the free space (repeatable). The pickers (effort, model,
+provider) sit together in the order listed. Settings › Appearance › **Bottom bar** edits this file (the previous version
+is kept as `toolbar.json.bak`). `captureRegion` (drag out a part of the screen) is in the default bar since Plan 6; an
+older toolbar.json keeps its own list, so add it there if you want the button.
 
 ## agy permissions
 

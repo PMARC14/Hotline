@@ -47,6 +47,17 @@ public static class ConnectionEditor
 
     public static void SetDefault(ChatSettings chat, string id) => chat.DefaultBackend = Find(chat, id).Id;
 
+    /// <summary>Moves a connection up (-1) or down (+1) in the Provider dropdown; saved as chat.order. False at either end.</summary>
+    public static bool Move(ChatSettings chat, string id, int delta)
+    {
+        var index = chat.Backends.FindIndex(b => b.Id == id);
+        var target = index + delta;
+        if (index < 0 || target < 0 || target >= chat.Backends.Count) return false;
+        (chat.Backends[index], chat.Backends[target]) = (chat.Backends[target], chat.Backends[index]);
+        chat.Order = chat.Backends.Select(b => b.Id).ToList();
+        return true;
+    }
+
     private static BackendProfile Find(ChatSettings chat, string id) =>
         chat.Backends.FirstOrDefault(b => b.Id == id) ?? throw new KeyNotFoundException($"No connection '{id}'.");
 

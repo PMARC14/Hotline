@@ -7,7 +7,11 @@ public enum SettingsPage { General, Appearance, Window, Chat, Advanced }
 public abstract record SettingItem(SettingsPage Page, string Header, string? Description, bool RequiresRestart);
 
 public sealed record ToggleItem(SettingsPage Page, string Header, string? Description, Func<HotlineSettings, bool> Get,
-    Action<HotlineSettings, bool> Set, bool RequiresRestart = false) : SettingItem(Page, Header, Description, RequiresRestart);
+    Action<HotlineSettings, bool> Set, bool RequiresRestart = false) : SettingItem(Page, Header, Description, RequiresRestart)
+{
+    /// <summary>Other controls on the page show what this one changes, so the page is rebuilt after a change.</summary>
+    public bool RefreshPage { get; init; }
+}
 
 public sealed record NumberItem(SettingsPage Page, string Header, string? Description, double Min, double Max, double Step, string? Unit,
     Func<HotlineSettings, double> Get, Action<HotlineSettings, double> Set, bool RequiresRestart = false)
@@ -44,6 +48,12 @@ public static class SettingsSchema
     [
         Choice(SettingsPage.General, "Short press of the Copilot key", null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
         Choice(SettingsPage.General, "Long press of the Copilot key", null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
+        new ToggleItem(SettingsPage.General, "Voice input", "Hold the Copilot key and talk; let go to stop (Esc cancels). Uses Windows speech " +
+            "recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. " +
+            "Turning it on sets the long press to voice; off sets it back to a new chat.",
+            s => s.Activation.Hold == KeyAction.Voice,
+            (s, v) => { if (v) s.Activation.Hold = KeyAction.Voice; else if (s.Activation.Hold == KeyAction.Voice) s.Activation.Hold = KeyAction.NewChat; })
+        { RefreshPage = true },
         new TextItem(SettingsPage.General, "Extra hotkey", "Also opens Hotline, e.g. Ctrl+Alt+H. Leave empty for none.", "Ctrl+Alt+H",
             s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true),
         new ToggleItem(SettingsPage.General, "Hide when I click elsewhere", "Pin the panel (📌) to keep it open temporarily.",

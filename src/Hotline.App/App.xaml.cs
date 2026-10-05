@@ -186,6 +186,11 @@ public partial class App : Application
             foreach (var id in ids) _ = InvalidateBackend(id).AsTask();
             if (settings.Chat.Backends.All(b => b.Id != chat.BackendId)) chat.BackendId = settings.Chat.DefaultBackend;
         };
+        SystemTheme.Changed += () => _popup.DispatcherQueue.TryEnqueue(() =>
+        {
+            try { _popup.ApplyAppearance(); _presenter.ApplyAppearance(); } // Windows switched light/dark
+            catch (Exception ex) { _log.Error("applying the Windows theme failed", ex); }
+        });
         _settingsService.Changed += () =>
         {
             try

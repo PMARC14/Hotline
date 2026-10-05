@@ -36,4 +36,35 @@ public sealed class ToolbarConfigTests : IDisposable
         File.WriteAllText(PathFor, """{ "items": [] }""");
         Assert.Equal(ToolbarConfig.Defaults, ToolbarConfig.Load(PathFor).Items);
     }
+
+    [Fact]
+    public void Region_capture_is_on_the_bar_by_default() =>
+        Assert.Equal(ToolbarConfig.Defaults.ToList().IndexOf("captureScreen") + 1, ToolbarConfig.Defaults.ToList().IndexOf("captureRegion"));
+
+    [Fact]
+    public void Save_round_trips_and_backs_up_the_previous_file()
+    {
+        _ = ToolbarConfig.Load(PathFor); // writes the defaults
+        ToolbarConfig.Save(PathFor, ["settings", "spacer", "model"]);
+        Assert.Equal(["settings", "spacer", "model"], ToolbarConfig.Load(PathFor).Items);
+        Assert.True(File.Exists(PathFor + ".bak"));
+        Assert.Contains("captureWindow", File.ReadAllText(PathFor + ".bak"));
+    }
+
+    [Fact]
+    public void Showing_an_item_puts_it_near_its_default_place()
+    {
+        var items = ToolbarConfig.Show(["pin", "captureWindow", "spacer", "model", "settings"], "captureScreen");
+        Assert.Equal(["pin", "captureWindow", "captureScreen", "spacer", "model", "settings"], items);
+        Assert.Equal(["settings", "pin"], ToolbarConfig.Show(["settings"], "pin").Reverse()); // nothing before it: goes first
+        Assert.Equal(["pin"], ToolbarConfig.Show(["pin"], "pin")); // already shown
+    }
+
+    [Fact]
+    public void Hide_and_move_edit_the_list()
+    {
+        Assert.Equal(["pin", "settings"], ToolbarConfig.Hide(["pin", "model", "settings"], "model"));
+        Assert.Equal(["model", "pin", "settings"], ToolbarConfig.Move(["pin", "model", "settings"], 1, -1));
+        Assert.Equal(["pin", "model", "settings"], ToolbarConfig.Move(["pin", "model", "settings"], 0, -1)); // at the edge: unchanged
+    }
 }

@@ -37,13 +37,16 @@ public sealed partial class SettingsWindow : Window
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
         SystemBackdrop = new MicaBackdrop();
+        ExtendsContentIntoTitleBar = true;
+        SetTitleBar(AppTitleBar);
         AppWindow.SetIcon("Assets\\Hotline.ico");
         var dpi = Native.GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(this));
         var scale = dpi == 0 ? 1.0 : dpi / 96.0;
         AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(740 * scale)));
         ApplyTheme();
         _settings.Changed += OnSettingsChanged;
-        Closed += (_, _) => _settings.Changed -= OnSettingsChanged;
+        SystemTheme.Changed += OnSettingsChanged;
+        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 
@@ -61,18 +64,20 @@ public sealed partial class SettingsWindow : Window
 
     private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
 
-    private void ApplyTheme() => Root.RequestedTheme = _settings.Current.Window.Theme switch
+    private void ApplyTheme()
     {
-        ThemeChoice.Light => ElementTheme.Light,
-        ThemeChoice.Dark => ElementTheme.Dark,
-        _ => ElementTheme.Default,
-    };
+        Root.RequestedTheme = SystemTheme.Resolve(_settings.Current.Window.Theme);
+        SystemTheme.ApplyTitleBar(AppWindow, _settings.Current.Window.Theme);
+    }
 
     private void Nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         => ShowPage(args.SelectedItemContainer?.Tag as string ?? "General");
 
+    private string _currentPage = "General";
+
     private void ShowPage(string tag)
     {
+        _currentPage = tag;
         PageHost.Children.Clear();
         PageHost.Children.Add(new TextBlock
         {
@@ -84,25 +89,35 @@ public sealed partial class SettingsWindow : Window
             case "Connections": BuildConnectionsPage(); break;
             case "Prompts": BuildPromptsPage(); break;
             case "Tools": BuildToolsPage(); break;
+            case "Actions": BuildActionsPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) BuildStartupCard();
+                if (page == SettingsPage.Appearance) BuildToolbarSection();
                 break;
         }
     }
 
     // ---- generic setting cards -------------------------------------------------------------
 
-    private Border Card(string header, string? description, UIElement? control)
+    private Border Card(string header, string? description, UIElement? control) =>
+        CardWithStatus(header, description is null ? null : new TextBlock { Text = description }, control);
+
+    /// <summary>A setting card whose description can change later (e.g. a status line).</summary>
+    private Border CardWithStatus(string header, TextBlock? descriptionBlock, UIElement? control)
     {
         var grid = new Grid { ColumnSpacing = 16 };
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
         var text = new StackPanel { Spacing = 2, VerticalAlignment = VerticalAlignment.Center };
         text.Children.Add(new TextBlock { Text = header, TextWrapping = TextWrapping.Wrap });
-        if (description is not null) text.Children.Add(new TextBlock { Text = description, FontSize = 12, Opacity = 0.7, TextWrapping = TextWrapping.Wrap });
+        if (descriptionBlock is not null)
+        {
+            (descriptionBlock.FontSize, descriptionBlock.Opacity, descriptionBlock.TextWrapping) = (12, 0.7, TextWrapping.Wrap);
+            text.Children.Add(descriptionBlock);
+        }
         grid.Children.Add(text);
         if (control is FrameworkElement fe)
         {
@@ -122,7 +137,11 @@ public sealed partial class SettingsWindow : Window
             case ToggleItem t:
             {
                 var toggle = new ToggleSwitch { IsOn = t.Get(s), OnContent = "", OffContent = "", MinWidth = 0 };
-                toggle.Toggled += (_, _) => _settings.Update(x => t.Set(x, toggle.IsOn));
+                toggle.Toggled += (_, _) =>
+                {
+                    _settings.Update(x => t.Set(x, toggle.IsOn));
+                    if (t.RefreshPage) DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
+                };
                 return Card(t.Header, description, toggle);
             }
             case NumberItem n:
@@ -171,7 +190,7 @@ public sealed partial class SettingsWindow : Window
     /// <summary>Start with Windows (the package's StartupTask; not a settings.json value — Windows owns it).</summary>
     private void BuildStartupCard()
     {
-        var status = new TextBlock { FontSize = 12, Opacity = 0.75, TextWrapping = TextWrapping.Wrap, MaxWidth = 380 };
+        var status = new TextBlock();
         var toggle = new ToggleSwitch { OnContent = "", OffContent = "", MinWidth = 0 };
         var updating = true;
         async void Refresh()
@@ -195,7 +214,7 @@ public sealed partial class SettingsWindow : Window
             else StartupRegistration.Disable();
             Refresh();
         };
-        PageHost.Children.Add(Card("Start with Windows", null, new StackPanel { Spacing = 4, Children = { toggle, status } }));
+        PageHost.Children.Add(CardWithStatus("Start with Windows", status, toggle));
         Refresh();
     }
 

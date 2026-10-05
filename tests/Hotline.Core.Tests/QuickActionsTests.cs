@@ -138,4 +138,19 @@ public sealed class QuickActionsTests : IDisposable
             Assert.DoesNotContain(actions.List(), a => a.Name == "fix");
         Assert.Contains(actions.List(), a => a.Name == "fix");
     }
+
+    [Fact]
+    public void Create_and_delete_from_settings()
+    {
+        var actions = new QuickActions(_dir);
+        actions.EnsureDefaults();
+        var name = actions.Create();
+        Assert.Equal("my-action", name);
+        Assert.Equal("my-action-2", actions.Create());
+        Assert.Contains(actions.List(), a => a.Name == "my-action");
+        Assert.True(File.Exists(actions.PathFor("my-action")));
+        Assert.True(actions.Delete("my-action"));
+        Assert.False(actions.Delete("../escape"));
+        Assert.DoesNotContain(actions.List(), a => a.Name == "my-action");
+    }
 }

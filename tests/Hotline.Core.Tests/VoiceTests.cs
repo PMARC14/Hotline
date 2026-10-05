@@ -56,4 +56,21 @@ public sealed class VoiceTests : IDisposable
         Assert.Contains(hold.Options, o => o.Value == nameof(KeyAction.Voice));
         Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == "Send after dictation");
     }
+
+    [Fact]
+    public void Voice_toggle_on_the_general_page_maps_to_the_long_press()
+    {
+        var toggle = Assert.IsType<ToggleItem>(SettingsSchema.Items.Single(i => i.Page == SettingsPage.General && i.Header == "Voice input"));
+        Assert.True(toggle.RefreshPage);
+        var s = new HotlineSettings();
+        Assert.False(toggle.Get(s));
+        toggle.Set(s, true);
+        Assert.Equal(KeyAction.Voice, s.Activation.Hold);
+        Assert.True(toggle.Get(s));
+        toggle.Set(s, false);
+        Assert.Equal(KeyAction.NewChat, s.Activation.Hold);
+        s.Activation.Hold = KeyAction.CaptureWindow;
+        toggle.Set(s, false); // off doesn't touch another long-press choice
+        Assert.Equal(KeyAction.CaptureWindow, s.Activation.Hold);
+    }
 }

@@ -65,7 +65,18 @@ public sealed partial class SettingsWindow
         };
         var makeDefault = new Button { Content = "Use by default", IsEnabled = _selectedConnection != chat.DefaultBackend };
         makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };
-        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { add, duplicate, remove, makeDefault } });
+        Button MoveButton(string glyph, string tip, int delta)
+        {
+            var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 } };
+            ToolTipService.SetToolTip(b, tip);
+            b.Click += (_, _) => { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); };
+            return b;
+        }
+        PageHost.Children.Add(new StackPanel
+        {
+            Orientation = Orientation.Horizontal, Spacing = 8,
+            Children = { add, duplicate, remove, makeDefault, MoveButton("\uE74A", "Move up in the Provider list", -1), MoveButton("\uE74B", "Move down in the Provider list", +1) },
+        });
 
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, Margin = new Thickness(0, 8, 0, 8) };
         foreach (var p in chat.Backends)
@@ -223,6 +234,12 @@ public sealed partial class SettingsWindow
             host.Children.Add(Card("Program path", "Leave empty to find it automatically.", Text(p.CliPath, "Auto-detect", v => p.CliPath = v)));
         if (info.Has(ConnectionField.Agent))
             host.Children.Add(Card("agy agent", "Used in Chat-only mode.", Text(p.Agent, "hotline", v => p.Agent = v)));
+        if (p.Type == BackendType.ClaudeCode)
+        {
+            var keep = new ToggleSwitch { IsOn = p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0 };
+            keep.Toggled += async (_, _) => await Save(x => x.KeepCliSessions = keep.IsOn);
+            host.Children.Add(Card("Keep chats in Claude Code's history", "Also list Hotline chats in claude --resume.", keep));
+        }
         if (info.Has(ConnectionField.ExtraArgs))
             host.Children.Add(Card("Extra arguments", "Passed to the program as-is (space separated).", Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
 
