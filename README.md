@@ -29,6 +29,8 @@ configurable in plain files.
   UI Automation: no keystrokes, your clipboard untouched).
 - **Quick actions** — type `/` for `/translate`, `/summarize`, `/fix`, `/explain`, or your own: each is a Markdown file
   in `actions\`.
+- **Memory** — `/remember I prefer metric units` (or "remember that…" to an API model, which asks you first) saves a
+  note to `memory.md`; every chat sees it, whichever AI you use.
 - **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
 - **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑.
 - **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits

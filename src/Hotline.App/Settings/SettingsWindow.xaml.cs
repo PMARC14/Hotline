@@ -96,6 +96,7 @@ public sealed partial class SettingsWindow : Window
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) BuildStartupCard();
                 if (page == SettingsPage.Appearance) BuildToolbarSection();
+                if (page == SettingsPage.Chat) BuildMemoryCard();
                 break;
         }
     }

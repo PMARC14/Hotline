@@ -101,10 +101,16 @@ public partial class App : Application
         var job = new ChildProcessJob(_log);
         var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
+        var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
+        try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
+        // Hotline's own tools (remember) + the MCP tools; saving a memory asks in the panel unless chat.memoryTool says otherwise.
+        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory, () => settings.Chat.MemoryTool,
+            (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
+            () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
-            p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"),
-            _secrets, BackendFactory.CreateApiHttpClient(), ToolHost(dataDir, job));
+            p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
+            home, Path.Combine(privateDir, "claude-workspace"), _secrets, BackendFactory.CreateApiHttpClient(), tools);
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)

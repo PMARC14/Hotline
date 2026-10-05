@@ -93,8 +93,15 @@ public sealed partial class QuickActions(string directory)
         return true;
     }
 
+    /// <summary>Commands Hotline handles itself (listed with the actions; a file with the same name is ignored).</summary>
+    public static readonly IReadOnlyList<QuickAction> BuiltIns =
+    [
+        new("remember", "Save a note to memory.md — every chat sees it", ""),
+    ];
+
     public IReadOnlyList<QuickAction> Matching(string query) =>
-        List().Where(a => a.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase)).ToList();
+        BuiltIns.Concat(List().Where(a => !BuiltIns.Any(b => b.Name.Equals(a.Name, StringComparison.OrdinalIgnoreCase))))
+            .Where(a => a.Name.StartsWith(query, StringComparison.OrdinalIgnoreCase)).ToList();
 
     /// <summary>The action name being typed (the text is "/" plus a partial name and nothing else), or null.</summary>
     public static string? SuggestionQuery(string text) =>
@@ -109,6 +116,7 @@ public sealed partial class QuickActions(string directory)
     {
         var m = Command().Match(text);
         if (!m.Success) return null;
+        if (BuiltIns.Any(b => b.Name.Equals(m.Groups[1].Value, StringComparison.OrdinalIgnoreCase))) return null; // handled by Hotline
         var action = List().FirstOrDefault(a => string.Equals(a.Name, m.Groups[1].Value, StringComparison.OrdinalIgnoreCase));
         if (action is null) return null;
         var rest = text[m.Length..].Trim();

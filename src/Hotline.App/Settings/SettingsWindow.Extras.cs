@@ -88,6 +88,22 @@ public sealed partial class SettingsWindow
         row.Children.Add(button);
     }
 
+    /// <summary>Chat › memory.md: what every chat sees; opened in the editor.</summary>
+    private void BuildMemoryCard()
+    {
+        var memory = new MemoryStore(Path.Combine(DataDirectory, "memory.md"));
+        var text = memory.Read();
+        var lines = text.Length == 0 ? 0 : text.Split('\n').Length;
+        var edit = new Button { Content = "Edit memory" };
+        edit.Click += (_, _) =>
+        {
+            try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
+            CliRunner.OpenInEditor(memory.Path);
+        };
+        PageHost.Children.Add(Card("memory.md", lines == 0 ? "Empty. \"/remember something\" in the message box adds a line."
+            : $"{lines} line(s). Every chat sees them while Memory is on.", edit));
+    }
+
     /// <summary>Quick actions: "/name" in the message box applies the file's instruction (actions\&lt;name&gt;.md).</summary>
     private void BuildActionsPage()
     {

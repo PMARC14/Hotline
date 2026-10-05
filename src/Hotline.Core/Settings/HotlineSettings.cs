@@ -135,6 +135,10 @@ public sealed class ChatSettings
     public OcrMode Ocr { get; set; } = OcrMode.Auto;
     /// <summary>Voice key action: send the message when the key is released (off = review it first).</summary>
     public bool VoiceAutoSend { get; set; }
+    /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
+    public bool Memory { get; set; } = true;
+    /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
+    public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
 
     public static List<BackendProfile> DefaultBackends() =>
     [
@@ -155,3 +159,5 @@ public enum AttachSelectionMode { Auto, Off, Clipboard }
 
 /// <summary>Auto = OCR images for connections that can't read them; Always = also add the text for image models; Off.</summary>
 public enum OcrMode { Auto, Always, Off }
+
+public enum MemoryToolMode { Ask, Allow, Off }

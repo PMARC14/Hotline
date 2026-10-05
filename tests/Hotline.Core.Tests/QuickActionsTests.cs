@@ -65,7 +65,7 @@ public sealed class QuickActionsTests : IDisposable
         var actions = new QuickActions(_dir);
         actions.EnsureDefaults();
         Assert.Equal(["summarize"], actions.Matching("SU").Select(a => a.Name));
-        Assert.Equal(4, actions.Matching("").Count);
+        Assert.Equal(5, actions.Matching("").Count); // the four defaults + the built-in /remember
     }
 
     [Fact]

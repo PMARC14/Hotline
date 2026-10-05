@@ -149,6 +149,8 @@ internal sealed partial class ChatPresenter(
     }
 
     private bool _preparingSend;
+    private MemoryStore? _memoryStore;
+    private MemoryStore _memory => _memoryStore ??= new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
 
     private async Task SendAsync()
     {
@@ -161,6 +163,17 @@ internal sealed partial class ChatPresenter(
         }
         var text = popup.Input.Text.Trim();
         if (text.Length == 0 && tray.Items.Count == 0) return;
+        if (MemoryStore.TryParseCommand(text, out var fact)) // "/remember …" is handled here, never sent
+        {
+            if (fact.Length == 0) Notice("Type what to remember after /remember, e.g. \"/remember I prefer metric units\".", InfoBarSeverity.Warning);
+            else if (_memory.Append(fact))
+            {
+                popup.Input.Text = "";
+                Notice("Remembered. Every chat sees it from now on (edit in Settings › Chat and history › Memory).", InfoBarSeverity.Success);
+            }
+            else Notice($"Not saved: keep it to one line of at most {MemoryStore.MaxFactChars} characters.", InfoBarSeverity.Warning);
+            return;
+        }
         if (ApplyQuickAction(text) is not { } toSend) return; // draft stays in the box
         _preparingSend = true;
         try

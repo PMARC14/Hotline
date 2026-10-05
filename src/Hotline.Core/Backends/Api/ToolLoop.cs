@@ -11,8 +11,11 @@ public static class ToolLoop
     public const int MaxRounds = 20;
 
     /// <summary>Tools for this connection: only when Tool use is "use Hotline's tools" and a host exists.</summary>
+    /// <remarks>Chat-only connections still get Hotline's own tools (remember), when the host has them.</remarks>
     public static async Task<IReadOnlyList<ToolSpec>> ToolsFor(BackendProfile profile, IToolHost? host, CancellationToken ct) =>
-        host is not null && profile.Tools == ToolMode.Inherit ? await host.GetToolsAsync(ct) : [];
+        host is null ? []
+        : profile.Tools == ToolMode.Inherit ? await host.GetToolsAsync(ct)
+        : host is HotlineToolHost hotline ? hotline.BuiltIn : [];
 
     /// <summary>The visible line in the answer when a tool runs.</summary>
     public static string Note(IReadOnlyList<ToolSpec> tools, string apiName)
