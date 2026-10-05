@@ -53,6 +53,27 @@ public static class AttachmentFactory
     }
 }
 
+/// <summary>Selected text from the app you came from, as a removable text attachment.</summary>
+public static class SelectionAttachment
+{
+    /// <summary>Longest selection attached (characters); longer ones are cut with <see cref="TruncatedNote"/>.</summary>
+    public const int MaxChars = 50_000;
+    public const string TruncatedNote = "\n[… selection cut here]";
+
+    public static Attachment? Create(string? text, string? appName)
+    {
+        text = text?.Trim();
+        if (string.IsNullOrEmpty(text)) return null;
+        if (text.Length > MaxChars)
+        {
+            var cut = char.IsHighSurrogate(text[MaxChars - 1]) ? MaxChars - 1 : MaxChars;
+            text = text[..cut] + TruncatedNote;
+        }
+        var name = string.IsNullOrWhiteSpace(appName) ? "Selected text" : $"Selected text from {appName.Trim()}";
+        return new Attachment(Ids.New(), name, AttachmentKind.Text, "text/plain", Encoding.UTF8.GetBytes(text));
+    }
+}
+
 public sealed class AttachmentTray(AttachmentLimits limits)
 {
     private readonly List<Attachment> _items = [];

@@ -272,6 +272,7 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v8: new chat options (attachSelection, …) start at their defaults; nothing to move.
         // → v7: Claude Code can chat: offer a connection for it once (removable; not re-added later).
         if (s.SchemaVersion < 7 && s.Chat.Backends.All(b => b.Type != BackendType.ClaudeCode))
             Backends.ConnectionEditor.Add(s.Chat, BackendType.ClaudeCode);

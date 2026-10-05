@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 7;
+    public const int CurrentSchemaVersion = 8;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -126,6 +126,8 @@ public sealed class ChatSettings
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
     public int MaxImagePixels { get; set; } = 2048;
+    /// <summary>Selected text in the app you came from becomes an attachment when the key opens the panel.</summary>
+    public AttachSelectionMode AttachSelection { get; set; } = AttachSelectionMode.Auto;
 
     public static List<BackendProfile> DefaultBackends() =>
     [
@@ -137,3 +139,9 @@ public sealed class ChatSettings
 public enum ScrollbarStyle { Auto, Visible, Hidden }
 
 public enum GrowMode { Grow, Full }
+
+/// <summary>
+/// Auto = read the selection through UI Automation (no keystrokes, clipboard untouched; some apps don't expose it);
+/// Off; Clipboard = also try Ctrl+C and put the clipboard back afterwards (works in more apps, briefly uses the clipboard).
+/// </summary>
+public enum AttachSelectionMode { Auto, Off, Clipboard }

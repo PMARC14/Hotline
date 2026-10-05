@@ -160,11 +160,21 @@ public sealed partial class PopupWindow : Window
 
     public bool IsShown => AppWindow.IsVisible;
 
+    /// <summary>Runs synchronously when the panel is about to open over a real app window (its handle), before focus moves.</summary>
+    public Action<nint>? BeforeShow { get; set; }
+
     public void ShowPopup()
     {
         var fg = Native.GetForegroundWindow();
         if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
+        {
             PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
+            if (!AppWindow.IsVisible)
+            {
+                try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus
+                catch (Exception ex) { _log.Error("before-show step failed", ex); }
+            }
+        }
 
         PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;

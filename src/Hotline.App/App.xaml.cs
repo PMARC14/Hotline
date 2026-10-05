@@ -114,6 +114,11 @@ public partial class App : Application
         }
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir);
+        _popup.BeforeShow = foreground =>
+        {
+            if (Interop.SelectionReader.Read(foreground, _settingsService.Current.Chat.AttachSelection, _log) is { } selection)
+                _presenter.AttachSelection(selection.Text, selection.App);
+        };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
@@ -146,6 +151,14 @@ public partial class App : Application
             var problems = _settingsHost?.SelfTest() ?? [];
             if (problems.Count == 0) _log.Info("selftest settings ok");
             else _log.Error("selftest settings FAILED: " + string.Join("; ", problems));
+            if (uri?.Query.Contains("selection", StringComparison.OrdinalIgnoreCase) == true)
+            {
+                // hotline://selftest?selection reads the foreground app's selection via UI Automation only (no keys,
+                // no clipboard) and logs its length, never its text.
+                var fg = Interop.Native.GetForegroundWindow();
+                var read = Interop.SelectionReader.Read(fg, AttachSelectionMode.Auto, _log);
+                _log.Info($"selftest selection: {(read is null ? "none" : $"{read.Text.Length} chars from {read.App}")} ({Interop.Native.ClassNameOf(fg)})");
+            }
             if (uri?.Query.Contains("tools", StringComparison.OrdinalIgnoreCase) == true && _toolHost is { } tools)
                 _ = Task.Run(async () => // hotline://selftest?tools starts the mcp.json servers (no UI) for the crash-cleanup check
                 {

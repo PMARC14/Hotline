@@ -80,6 +80,10 @@ public static class SettingsSchema
         new ToggleItem(SettingsPage.Chat, "Save chat history", "Text only, in your .hotline folder.", s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
         new NumberItem(SettingsPage.Chat, "Keep history for", null, 1, 3650, 1, "days", s => s.Chat.HistoryRetentionDays,
             (s, v) => s.Chat.HistoryRetentionDays = (int)v, RequiresRestart: true),
+        Choice(SettingsPage.Chat, "Attach selected text", "When the key opens the panel, text selected in the app you came from is attached. " +
+            "Ctrl+C also works in apps that don't share their selection, but briefly uses the clipboard (restored afterwards).",
+            [(AttachSelectionMode.Auto, "Yes"), (AttachSelectionMode.Clipboard, "Yes, also with Ctrl+C"), (AttachSelectionMode.Off, "No")],
+            s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
         new NumberItem(SettingsPage.Chat, "Image size limit", "Attached and captured images are scaled to this longest edge.", 256, 8192, 128, "px",
             s => s.Chat.MaxImagePixels, (s, v) => s.Chat.MaxImagePixels = (int)v),
 

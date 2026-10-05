@@ -174,6 +174,23 @@ internal sealed partial class ChatPresenter
         await AddAttachmentAsync(attachment);
     }
 
+    private string? _selectionId;
+
+    /// <summary>The selection from the app you came from, as a chip; replaces the previous selection chip.</summary>
+    public void AttachSelection(string text, string? app)
+    {
+        if (SelectionAttachment.Create(text, app) is not { } attachment) return;
+        if (_selectionId is { } old)
+        {
+            if (tray.Items.FirstOrDefault(a => a.Id == old) is { } previous && previous.Data.AsSpan().SequenceEqual(attachment.Data)) return;
+            tray.Remove(old);
+        }
+        try { tray.Add(attachment); }
+        catch (AttachmentRejectedException ex) { Notice(ex.Message, InfoBarSeverity.Warning); return; }
+        _selectionId = attachment.Id;
+        RefreshChips();
+    }
+
     private async Task AddAttachmentAsync(Attachment attachment)
     {
         try { tray.Add(attachment); }

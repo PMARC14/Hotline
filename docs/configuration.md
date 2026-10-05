@@ -36,6 +36,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
+| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: if that finds nothing, also send Ctrl+C and put your clipboard back afterwards (works in more apps, but the copy shows up in clipboard history, and opening can take up to about half a second). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
 
 A half-saved or broken `settings.json` is ignored while Hotline runs (your file is never overwritten without a
