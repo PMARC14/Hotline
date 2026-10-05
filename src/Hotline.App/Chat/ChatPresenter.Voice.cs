@@ -1,4 +1,5 @@
 using Hotline.Core.Chat;
+using Microsoft.UI.Dispatching;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Media.SpeechRecognition;
@@ -8,15 +9,20 @@ namespace Hotline.App.Chat;
 /// <summary>
 /// Push-to-talk (activation "voice"): hold the key to dictate into the message, let go to stop; Esc cancels. Uses
 /// Windows speech recognition (dictation), which needs the microphone permission and Windows' "Online speech
-/// recognition" privacy setting. Listening always stops when the panel hides.
+/// recognition" privacy setting. Listening always stops when the panel hides (the dictated text is kept, not sent).
+/// One explicit state, so overlapping start/stop/cancel commands can't interleave.
 /// </summary>
 internal sealed partial class ChatPresenter
 {
     private const int SpeechPrivacyDeclined = unchecked((int)0x80045509); // SPERR_SPEECH_PRIVACY_POLICY_NOT_ACCEPTED
     private const string VoiceTag = "voice";
+
+    private enum VoiceState { Idle, Starting, Listening, Stopping }
+
+    private VoiceState _voiceState;
     private SpeechRecognizer? _recognizer;
-    private Task? _voiceStart;
-    private bool _listening;
+    private Task _voiceStart = Task.CompletedTask;
+    private bool _voiceDiscard;
     private string _voiceDraft = "";
     private string _voiceCommitted = "";
 
@@ -25,43 +31,49 @@ internal sealed partial class ChatPresenter
         switch (command)
         {
             case VoiceCommand.Start:
-                Run("voice start", StartVoiceAsync);
+                Run("voice start", () => StartVoiceAsync(holding: true));
                 break;
             case VoiceCommand.Stop:
                 Run("voice stop", () => StopVoiceAsync(send: settings.Chat.VoiceAutoSend));
                 break;
             default:
-                Run("voice toggle", () => _listening ? StopVoiceAsync(send: settings.Chat.VoiceAutoSend) : StartVoiceAsync());
+                Run("voice toggle", () => _voiceState == VoiceState.Idle
+                    ? StartVoiceAsync(holding: false)
+                    : StopVoiceAsync(send: settings.Chat.VoiceAutoSend));
                 break;
         }
     }
 
-    private void InitializeVoice() => popup.Hidden += () => { if (_listening) Run("voice cancel", CancelVoiceAsync); };
+    private void InitializeVoice() =>
+        popup.Hidden += () => { if (_voiceState is VoiceState.Starting or VoiceState.Listening) Run("voice stop (hidden)", () => StopVoiceAsync(send: false)); };
 
-    private Task StartVoiceAsync()
+    private Task StartVoiceAsync(bool holding)
     {
-        if (_listening) return Task.CompletedTask;
-        _listening = true;
-        return _voiceStart = StartVoiceCoreAsync();
+        if (_voiceState != VoiceState.Idle) return Task.CompletedTask;
+        _voiceState = VoiceState.Starting;
+        return _voiceStart = StartVoiceCoreAsync(holding);
     }
 
-    private async Task StartVoiceCoreAsync()
+    private async Task StartVoiceCoreAsync(bool holding)
     {
         try
         {
-            var recognizer = _recognizer ?? await CreateRecognizerAsync();
-            if (recognizer is null) { _listening = false; return; }
-            _recognizer = recognizer;
+            _recognizer ??= await CreateRecognizerAsync();
+            if (_recognizer is null) { _voiceState = VoiceState.Idle; return; }
             _voiceDraft = popup.Input.Text;
             _voiceCommitted = "";
-            ShowListening(true);
-            await recognizer.ContinuousRecognitionSession.StartAsync();
+            _voiceDiscard = false;
+            popup.Input.IsReadOnly = true; // typing now would be overwritten by the dictation
+            ShowListening(holding ? "Let go of the key to stop. Esc cancels." : "Press the key again to stop. Esc cancels.");
+            await _recognizer.ContinuousRecognitionSession.StartAsync();
+            _voiceState = VoiceState.Listening;
             log.Info("voice: listening");
         }
         catch (Exception ex)
         {
-            _listening = false;
-            ShowListening(false);
+            _voiceState = VoiceState.Idle;
+            popup.Input.IsReadOnly = false;
+            ShowListening(null);
             VoiceFailed(ex);
         }
     }
@@ -69,36 +81,44 @@ internal sealed partial class ChatPresenter
     private async Task<SpeechRecognizer?> CreateRecognizerAsync()
     {
         var recognizer = new SpeechRecognizer();
-        recognizer.Constraints.Add(new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation"));
-        var compiled = await recognizer.CompileConstraintsAsync();
-        if (compiled.Status != SpeechRecognitionResultStatus.Success)
+        try
+        {
+            recognizer.Constraints.Add(new SpeechRecognitionTopicConstraint(SpeechRecognitionScenario.Dictation, "dictation"));
+            var compiled = await recognizer.CompileConstraintsAsync();
+            if (compiled.Status != SpeechRecognitionResultStatus.Success)
+            {
+                recognizer.Dispose();
+                log.Error($"voice: speech recognition unavailable ({compiled.Status})");
+                VoiceNotice(compiled.Status == SpeechRecognitionResultStatus.TopicLanguageNotSupported
+                    ? "Speech recognition doesn't support your Windows display language for dictation."
+                    : $"Speech recognition isn't available ({compiled.Status}).");
+                return null;
+            }
+        }
+        catch
         {
             recognizer.Dispose();
-            log.Error($"voice: speech recognition unavailable ({compiled.Status})");
-            Notice(compiled.Status == SpeechRecognitionResultStatus.TopicLanguageNotSupported
-                ? "Speech recognition doesn't support your Windows display language for dictation."
-                : $"Speech recognition isn't available ({compiled.Status}).", InfoBarSeverity.Warning);
-            return null;
+            throw;
         }
+        // Long pauses are normal while thinking; the key (or Esc) ends the session.
+        recognizer.ContinuousRecognitionSession.AutoStopSilenceTimeout = TimeSpan.FromMinutes(5);
         recognizer.HypothesisGenerated += (_, e) =>
-            popup.DispatcherQueue.TryEnqueue(() => { if (_listening) ShowDictation(e.Hypothesis.Text); });
+            popup.DispatcherQueue.TryEnqueue(() => { if (_voiceState == VoiceState.Listening) ShowDictation(e.Hypothesis.Text); });
         recognizer.ContinuousRecognitionSession.ResultGenerated += (_, e) => popup.DispatcherQueue.TryEnqueue(() =>
         {
-            if (!_listening || e.Result.Confidence == SpeechRecognitionConfidence.Rejected) return;
-            _voiceCommitted = VoiceText.Append(_voiceCommitted, e.Result.Text);
+            // Results that arrive while stopping still count (the last phrase is often finalized then).
+            if (_voiceState is not (VoiceState.Listening or VoiceState.Stopping)) return;
+            if (e.Result.Confidence != SpeechRecognitionConfidence.Rejected) _voiceCommitted = VoiceText.Append(_voiceCommitted, e.Result.Text);
             ShowDictation("");
         });
         recognizer.ContinuousRecognitionSession.Completed += (_, e) => popup.DispatcherQueue.TryEnqueue(() =>
         {
-            if (e.Status is SpeechRecognitionResultStatus.Success or SpeechRecognitionResultStatus.UserCanceled) return;
-            log.Error($"voice: session ended ({e.Status})");
-            if (_listening)
-            {
-                _listening = false;
-                ShowListening(false);
-                Notice(e.Status == SpeechRecognitionResultStatus.MicrophoneUnavailable
-                    ? "No microphone is available." : $"Voice input stopped ({e.Status}).", InfoBarSeverity.Warning);
-            }
+            if (_voiceState != VoiceState.Listening) return; // our own stop/cancel
+            // The session ended by itself (silence, device change, error): keep what was said, don't send.
+            log.Info($"voice: session ended by itself ({e.Status})");
+            FinishVoice(send: false);
+            if (e.Status is not (SpeechRecognitionResultStatus.Success or SpeechRecognitionResultStatus.TimeoutExceeded or SpeechRecognitionResultStatus.UserCanceled))
+                VoiceNotice(e.Status == SpeechRecognitionResultStatus.MicrophoneUnavailable ? "No microphone is available." : $"Voice input stopped ({e.Status}).");
         });
         return recognizer;
     }
@@ -111,57 +131,77 @@ internal sealed partial class ChatPresenter
 
     private async Task StopVoiceAsync(bool send)
     {
-        if (_voiceStart is { } starting) await starting;
-        if (!_listening || _recognizer is null) return;
-        try { await _recognizer.ContinuousRecognitionSession.StopAsync(); } // final results arrive before this completes
+        if (_voiceState == VoiceState.Starting) await _voiceStart;
+        if (_voiceState != VoiceState.Listening || _recognizer is null) return;
+        _voiceState = VoiceState.Stopping;
+        try { await _recognizer.ContinuousRecognitionSession.StopAsync(); }
         catch (Exception ex) { log.Error("voice: stop failed", ex); }
-        _listening = false;
-        ShowListening(false);
-        popup.Input.Text = VoiceText.Append(_voiceDraft, _voiceCommitted);
-        popup.Input.SelectionStart = popup.Input.Text.Length;
-        log.Info($"voice: stopped ({_voiceCommitted.Length} chars)");
-        if (send && _voiceCommitted.Length > 0 && !chat.IsBusy) await SendAsync();
+        // Results raised during the stop are queued on the dispatcher; finish after them.
+        popup.DispatcherQueue.TryEnqueue(DispatcherQueuePriority.Low, () => FinishVoice(send));
     }
 
     private async Task CancelVoiceAsync()
     {
-        if (_voiceStart is { } starting) await starting;
-        if (!_listening || _recognizer is null) return;
-        _listening = false;
+        if (_voiceState == VoiceState.Starting) await _voiceStart;
+        _voiceDiscard = true;
+        if (_voiceState != VoiceState.Listening || _recognizer is null) return; // a stop in progress now discards
+        _voiceState = VoiceState.Stopping;
         try { await _recognizer.ContinuousRecognitionSession.CancelAsync(); }
         catch (Exception ex) { log.Error("voice: cancel failed", ex); }
-        ShowListening(false);
-        popup.Input.Text = _voiceDraft;
-        log.Info("voice: cancelled");
+        FinishVoice(send: false);
     }
 
-    private void ShowListening(bool on)
+    private void FinishVoice(bool send)
+    {
+        if (_voiceState == VoiceState.Idle) return;
+        _voiceState = VoiceState.Idle;
+        popup.Input.IsReadOnly = false;
+        ShowListening(null);
+        popup.Input.Text = _voiceDiscard ? _voiceDraft : VoiceText.Append(_voiceDraft, _voiceCommitted);
+        popup.Input.SelectionStart = popup.Input.Text.Length;
+        log.Info(_voiceDiscard ? "voice: cancelled" : $"voice: stopped ({_voiceCommitted.Length} chars)");
+        if (send && !_voiceDiscard && _voiceCommitted.Length > 0 && !chat.IsBusy) Run("send", SendAsync);
+    }
+
+    /// <summary>Shows the listening bar with <paramref name="hint"/>, or removes it (and old voice notices) for null.</summary>
+    private void ShowListening(string? hint)
+    {
+        RemoveVoiceBars();
+        if (hint is null) return;
+        popup.NoticesPanel.Children.Add(new InfoBar
+        {
+            Tag = VoiceTag, IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Informational, Title = "🎙 Listening…", Message = hint,
+        });
+    }
+
+    private void RemoveVoiceBars()
     {
         foreach (var old in popup.NoticesPanel.Children.OfType<InfoBar>().Where(b => VoiceTag.Equals(b.Tag)).ToList())
             popup.NoticesPanel.Children.Remove(old);
-        if (!on) return;
-        popup.NoticesPanel.Children.Add(new InfoBar
-        {
-            Tag = VoiceTag, IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Informational,
-            Title = "🎙 Listening…", Message = "Let go of the key to stop. Esc cancels.",
-        });
     }
 
     private void VoiceFailed(Exception ex)
     {
         log.Error("voice: start failed", ex);
         if (ex.HResult == SpeechPrivacyDeclined)
-            NoticeWithLink("Voice input needs Windows' online speech recognition.", "Turn it on", "ms-settings:privacy-speech");
+            VoiceNotice("Voice input needs Windows' online speech recognition.", ("Turn it on", "ms-settings:privacy-speech"));
         else if (ex is UnauthorizedAccessException)
-            NoticeWithLink("Hotline isn't allowed to use the microphone.", "Microphone settings", "ms-settings:privacy-microphone");
+            VoiceNotice("Hotline isn't allowed to use the microphone.", ("Microphone settings", "ms-settings:privacy-microphone"));
         else
-            Notice($"Voice input couldn't start: {ex.Message}", InfoBarSeverity.Warning);
+            VoiceNotice($"Voice input couldn't start: {ex.Message}");
     }
 
-    private void NoticeWithLink(string message, string linkText, string uri)
+    /// <summary>A voice warning (replacing any earlier one), optionally with a button that opens a Settings page.</summary>
+    private void VoiceNotice(string message, (string Text, string Uri)? link = null)
     {
-        var link = new HyperlinkButton { Content = linkText, NavigateUri = new Uri(uri) };
-        var bar = new InfoBar { IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Message = message, ActionButton = link };
+        RemoveVoiceBars();
+        var bar = new InfoBar { Tag = VoiceTag, IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Message = message };
+        if (link is { } l)
+        {
+            var button = new Button { Content = l.Text };
+            button.Click += async (_, _) => await Windows.System.Launcher.LaunchUriAsync(new Uri(l.Uri));
+            bar.ActionButton = button;
+        }
         bar.Closed += (_, _) => popup.NoticesPanel.Children.Remove(bar);
         popup.NoticesPanel.Children.Add(bar);
     }
@@ -181,7 +221,7 @@ internal sealed partial class ChatPresenter
     /// <summary>Esc while listening cancels the dictation (the panel stays open). True when handled.</summary>
     private bool HandleVoiceKey(Windows.System.VirtualKey key)
     {
-        if (!_listening || key != Windows.System.VirtualKey.Escape) return false;
+        if (_voiceState == VoiceState.Idle || key != Windows.System.VirtualKey.Escape) return false;
         Run("voice cancel", CancelVoiceAsync);
         return true;
     }

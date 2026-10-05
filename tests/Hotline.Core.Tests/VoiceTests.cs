@@ -28,6 +28,9 @@ public sealed class VoiceTests : IDisposable
     [InlineData("ends with space ", "x", "ends with space x")]
     [InlineData("line\n", "next", "line\nnext")]
     [InlineData("keep", "  ", "keep")]
+    [InlineData("hello", ".", "hello.")]
+    [InlineData("hello", ", how are you", "hello, how are you")]
+    [InlineData("hello", "?", "hello?")]
     public void Dictation_is_appended_to_the_draft(string draft, string dictated, string expected) =>
         Assert.Equal(expected, VoiceText.Append(draft, dictated));
 

@@ -8,6 +8,7 @@ public static class VoiceText
         var words = dictated.Trim();
         if (words.Length == 0) return draft;
         if (draft.Length == 0) return words;
-        return char.IsWhiteSpace(draft[^1]) ? draft + words : draft + " " + words;
+        // No space before closing punctuation ("hello" + "." → "hello.").
+        return char.IsWhiteSpace(draft[^1]) || words[0] is '.' or ',' or '?' or '!' or ';' or ':' or ')' ? draft + words : draft + " " + words;
     }
 }
