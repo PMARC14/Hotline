@@ -74,6 +74,7 @@ internal sealed partial class ChatPresenter
             _voiceState = VoiceState.Idle;
             popup.Input.IsReadOnly = false;
             ShowListening(null);
+            ResetRecognizer(); // a fresh one next time (e.g. after a device change)
             VoiceFailed(ex);
         }
     }
@@ -118,9 +119,18 @@ internal sealed partial class ChatPresenter
             log.Info($"voice: session ended by itself ({e.Status})");
             FinishVoice(send: false);
             if (e.Status is not (SpeechRecognitionResultStatus.Success or SpeechRecognitionResultStatus.TimeoutExceeded or SpeechRecognitionResultStatus.UserCanceled))
+            {
+                ResetRecognizer();
                 VoiceNotice(e.Status == SpeechRecognitionResultStatus.MicrophoneUnavailable ? "No microphone is available." : $"Voice input stopped ({e.Status}).");
+            }
         });
         return recognizer;
+    }
+
+    private void ResetRecognizer()
+    {
+        try { _recognizer?.Dispose(); } catch (Exception ex) { log.Error("voice: dispose failed", ex); }
+        _recognizer = null;
     }
 
     private void ShowDictation(string hypothesis)

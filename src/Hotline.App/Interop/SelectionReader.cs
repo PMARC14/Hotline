@@ -166,11 +166,8 @@ internal static class ClipboardCopy
         {
             if (ClipboardOwner.Hwnd == 0) { log.Error("selection: no clipboard owner window; skipped Ctrl+C"); return; }
             // The key's own modifiers (Win/Shift for the Copilot key) must be up, or Ctrl+C becomes another shortcut.
-            while (ModifiersDown())
-            {
-                if (Environment.TickCount64 > deadline || stop.IsCancellationRequested) { log.Info("selection: modifiers still held; skipped Ctrl+C"); return; }
-                Thread.Sleep(10);
-            }
+            // While the key is held (push-to-talk) they stay down: skip at once instead of waiting.
+            if (ModifiersDown()) { log.Info("selection: modifiers held; skipped Ctrl+C"); return; }
             var saved = Snapshot(log);
             if (saved is null) return;
             if (stop.IsCancellationRequested || Environment.TickCount64 > deadline || Native.GetForegroundWindow() != target)
@@ -180,9 +177,9 @@ internal static class ClipboardCopy
             }
             var before = ClipboardNative.GetClipboardSequenceNumber();
             SendCtrlC();
-            // Wait for the copy even past the budget (up to 2 s), so a late copy is still undone.
-            var copyDeadline = Environment.TickCount64 + 2000;
-            while (ClipboardNative.GetClipboardSequenceNumber() == before && Environment.TickCount64 < copyDeadline) Thread.Sleep(10);
+            // Wait for the copy only until the deadline: after that the panel is open, and a clipboard change is more
+            // likely the user's own copy, which must not be "restored" away.
+            while (ClipboardNative.GetClipboardSequenceNumber() == before && Environment.TickCount64 < deadline && !stop.IsCancellationRequested) Thread.Sleep(10);
             if (ClipboardNative.GetClipboardSequenceNumber() == before) return; // nothing was copied: clipboard untouched
             Thread.Sleep(20); // let the app finish writing all of its formats
             var ours = ClipboardNative.GetClipboardSequenceNumber();

@@ -148,21 +148,34 @@ internal sealed partial class ChatPresenter(
         Run("send", SendAsync);
     }
 
+    private bool _preparingSend;
+
     private async Task SendAsync()
     {
         if (chat.IsBusy) { chat.Cancel(); return; }
+        if (_preparingSend) return; // a second Enter/click while OCR runs
+        if (_voiceState != VoiceState.Idle)
+        {
+            await StopVoiceAsync(send: true); // finish the dictation first; it sends when done
+            return;
+        }
         var text = popup.Input.Text.Trim();
         if (text.Length == 0 && tray.Items.Count == 0) return;
         if (ApplyQuickAction(text) is not { } toSend) return; // draft stays in the box
-        if (!await ApplyOcrAsync()) return;
-        if (!chat.CanAccept(tray.Items, out var reason))
+        _preparingSend = true;
+        try
         {
-            Notice(reason!, InfoBarSeverity.Warning); // draft stays in the box
-            return;
+            if (!await ApplyOcrAsync()) return;
+            if (!chat.CanAccept(tray.Items, out var reason))
+            {
+                Notice(reason!, InfoBarSeverity.Warning); // draft stays in the box
+                return;
+            }
         }
+        finally { _preparingSend = false; }
         var attachments = tray.TakeAll();
         RefreshChips();
-        popup.Input.Text = "";
+        if (popup.Input.Text.Trim() == text) popup.Input.Text = ""; // keep anything typed while OCR ran
         log.Info($"chat send via {chat.BackendId}: {toSend.Length} chars, {attachments.Count} attachment(s)");
         await chat.SendAsync(toSend, attachments);
     }

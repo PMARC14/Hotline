@@ -170,11 +170,8 @@ public sealed partial class PopupWindow : Window
         if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
         {
             PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
-            if (!AppWindow.IsVisible)
-            {
-                try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus
-                catch (Exception ex) { _log.Error("before-show step failed", ex); }
-            }
+            try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
+            catch (Exception ex) { _log.Error("before-show step failed", ex); }
         }
 
         PlaceOnActiveMonitor();

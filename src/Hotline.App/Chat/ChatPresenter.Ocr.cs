@@ -34,25 +34,40 @@ internal sealed partial class ChatPresenter
             return takesImages; // an image model still gets the image; a text-only one can't take it
         }
         var ok = true;
-        foreach (var image in images)
+        try
         {
-            if (_ocrDone.Contains(image.Id)) continue; // already read on an earlier try to send (Always keeps the image)
-            string text;
-            try { text = await RecognizeAsync(engine, image.Data); }
-            catch (Exception ex) when (ex is ArgumentException or System.Runtime.InteropServices.COMException)
+            foreach (var image in images)
             {
-                log.Error($"OCR of {image.Name} failed", ex);
-                Notice($"Couldn't read the text in {image.Name}.", InfoBarSeverity.Warning);
-                ok &= takesImages; // an image model still gets the image; carry on with the others
-                continue;
+                if (_ocrDone.Contains(image.Id))
+                {
+                    // Already read on an earlier try to send; its text is attached. A text-only model now: drop the image.
+                    if (!keepImages) { tray.Remove(image.Id); _ocrDone.Remove(image.Id); }
+                    continue;
+                }
+                string text;
+                try { text = await RecognizeAsync(engine, image.Data); }
+                catch (Exception ex) when (ex is ArgumentException or System.Runtime.InteropServices.COMException)
+                {
+                    log.Error($"OCR of {image.Name} failed", ex);
+                    Notice($"Couldn't read the text in {image.Name}.", InfoBarSeverity.Warning);
+                    ok &= takesImages; // an image model still gets the image; carry on with the others
+                    continue;
+                }
+                var textAttachment = OcrPlan.TextAttachment(image.Name, text);
+                if (!keepImages) tray.Remove(image.Id); // replacing: the count stays the same
+                try { tray.Add(textAttachment); }
+                catch (AttachmentRejectedException ex)
+                {
+                    if (!keepImages) tray.Add(image); // put it back: a rejection never loses the image
+                    Notice(ex.Message, InfoBarSeverity.Warning);
+                    ok = false;
+                    break;
+                }
+                if (keepImages) _ocrDone.Add(image.Id);
+                log.Info($"OCR: {text.Length} chars from {image.Name} ({(keepImages ? "with" : "instead of")} the image)");
             }
-            try { tray.Add(OcrPlan.TextAttachment(image.Name, text)); } // add first: a rejection never loses the image
-            catch (AttachmentRejectedException ex) { Notice(ex.Message, InfoBarSeverity.Warning); ok = false; break; }
-            if (keepImages) _ocrDone.Add(image.Id);
-            else tray.Remove(image.Id);
-            log.Info($"OCR: {text.Length} chars from {image.Name} ({(keepImages ? "with" : "instead of")} the image)");
         }
-        RefreshChips();
+        finally { RefreshChips(); }
         return ok;
     }
 

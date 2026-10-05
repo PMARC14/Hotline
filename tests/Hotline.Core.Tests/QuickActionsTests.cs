@@ -128,4 +128,14 @@ public sealed class QuickActionsTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, "huge.md"), new string('x', QuickActions.MaxFileBytes + 1));
         Assert.Empty(new QuickActions(_dir).List());
     }
+
+    [Fact]
+    public void A_file_locked_during_a_read_is_picked_up_on_the_next_use()
+    {
+        var actions = new QuickActions(_dir);
+        actions.EnsureDefaults();
+        using (new FileStream(Path.Combine(_dir, "fix.md"), FileMode.Open, FileAccess.ReadWrite, FileShare.None))
+            Assert.DoesNotContain(actions.List(), a => a.Name == "fix");
+        Assert.Contains(actions.List(), a => a.Name == "fix");
+    }
 }

@@ -184,10 +184,10 @@ internal sealed partial class ChatPresenter
         {
             if (tray.Items.FirstOrDefault(a => a.Id == old) is { } previous && previous.Data.AsSpan().SequenceEqual(attachment.Data)) return;
             tray.Remove(old);
+            _selectionId = null;
         }
-        try { tray.Add(attachment); }
-        catch (AttachmentRejectedException ex) { Notice(ex.Message, InfoBarSeverity.Warning); return; }
-        _selectionId = attachment.Id;
+        try { tray.Add(attachment); _selectionId = attachment.Id; }
+        catch (AttachmentRejectedException ex) { Notice(ex.Message, InfoBarSeverity.Warning); }
         RefreshChips();
     }
 

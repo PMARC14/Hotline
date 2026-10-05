@@ -60,16 +60,17 @@ public sealed partial class QuickActions(string directory)
         lock (_gate) if (signature == _signature) return _cached;
 
         var list = new List<QuickAction>();
+        var complete = true;
         foreach (var file in files)
         {
             string text;
             try { text = File.ReadAllText(file.FullName).Trim(); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { continue; }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { complete = false; continue; } // e.g. an editor saving it
             if (text.Length == 0) continue;
             var first = text.Split('\n', 2)[0].Trim();
             list.Add(new QuickAction(Path.GetFileNameWithoutExtension(file.Name), first, text.ReplaceLineEndings("\n")));
         }
-        lock (_gate) (_signature, _cached) = (signature, list);
+        if (complete) lock (_gate) (_signature, _cached) = (signature, list); // otherwise read again next time
         return list;
     }
 
