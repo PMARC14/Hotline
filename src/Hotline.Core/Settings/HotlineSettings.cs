@@ -133,6 +133,8 @@ public sealed class ChatSettings
     public AttachSelectionMode AttachSelection { get; set; } = AttachSelectionMode.Auto;
     /// <summary>Screenshot text for models that can't read images (Windows' built-in OCR, offline).</summary>
     public OcrMode Ocr { get; set; } = OcrMode.Auto;
+    /// <summary>Voice key action: send the message when the key is released (off = review it first).</summary>
+    public bool VoiceAutoSend { get; set; }
 
     public static List<BackendProfile> DefaultBackends() =>
     [

@@ -53,5 +53,7 @@
 
   <Capabilities>
     <rescap:Capability Name="runFullTrust" />
+    <!-- Voice input (push-to-talk); Windows asks once, and it can be turned off in Settings › Privacy › Microphone. -->
+    <DeviceCapability Name="microphone" />
   </Capabilities>
 </Package>

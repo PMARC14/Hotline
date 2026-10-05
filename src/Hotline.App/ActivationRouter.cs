@@ -34,6 +34,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
     public event Action? DemoRequested;
     public event Action? OpenSettingsRequested;
+    /// <summary>The Voice key action: start (hold), stop (release) or toggle (short press).</summary>
+    public event Action<VoiceCommand>? VoiceRequested;
 
     public void OnActivation(ActivationRequest request)
     {
@@ -65,15 +67,22 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         var action = KeyActionResolver.Resolve(e, settings);
         log.Info($"key {e} via {source} -> {action}");
         popup.SetStatus($"Last key: {e} via {source} → {action}");
-        Execute(action);
+        Execute(action, e);
     }
 
     public void TogglePopup() => popup.Toggle();
 
-    private void Execute(KeyAction action)
+    private void Execute(KeyAction action, KeyEvent e = KeyEvent.Tap)
     {
         switch (action)
         {
+            case KeyAction.Voice when e == KeyEvent.HoldStop:
+                VoiceRequested?.Invoke(VoiceCommand.Stop);
+                break;
+            case KeyAction.Voice:
+                popup.ShowPopup();
+                VoiceRequested?.Invoke(e == KeyEvent.HoldStart ? VoiceCommand.Start : VoiceCommand.Toggle);
+                break;
             case KeyAction.None:
                 break;
             case KeyAction.TogglePopup:
@@ -97,3 +106,5 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         }
     }
 }
+
+public enum VoiceCommand { Start, Stop, Toggle }

@@ -86,6 +86,7 @@ internal sealed partial class ChatPresenter(
 
         popup.Input.PreviewKeyDown += Input_PreviewKeyDown;
         InitializeActions();
+        InitializeVoice();
         var restingBorder = popup.Composer.BorderBrush;
         popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = _style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
         popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = restingBorder; popup.Composer.BorderThickness = new Thickness(1); };
@@ -127,7 +128,7 @@ internal sealed partial class ChatPresenter(
 
     private void Input_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (SuggestionsOpen && HandleSuggestionKey(e.Key))
+        if (HandleVoiceKey(e.Key) || (SuggestionsOpen && HandleSuggestionKey(e.Key)))
         {
             e.Handled = true;
             return;

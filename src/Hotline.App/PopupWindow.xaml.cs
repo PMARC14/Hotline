@@ -36,6 +36,7 @@ public sealed partial class PopupWindow : Window
     public bool Pinned { get; set; }
 
     public event Action? Shown;
+    public event Action? Hidden;
     public event Action? NewChatRequested;
     public event Action<bool>? CaptureRequested;
 
@@ -208,6 +209,7 @@ public sealed partial class PopupWindow : Window
         if (!AppWindow.IsVisible) return;
         AppWindow.Hide();
         _guard.NoteHidden();
+        Hidden?.Invoke();
     }
 
     /// <summary>Hides for a system dialog (file picker) without counting as a user dismissal.</summary>

@@ -159,6 +159,8 @@ public partial class App : Application
                 var read = Interop.SelectionReader.Read(fg, AttachSelectionMode.Auto, _log);
                 _log.Info($"selftest selection: {(read is null ? "none" : $"{read.Text.Length} chars")} ({Interop.Native.ClassNameOf(fg)})");
             }
+            if (uri?.Query.Contains("voice", StringComparison.OrdinalIgnoreCase) == true)
+                _ = _presenter.VoiceSelfTestAsync().ContinueWith(t => _log.Info($"selftest voice: {t.Result}"), TaskScheduler.Default);
             if (uri?.Query.Contains("tools", StringComparison.OrdinalIgnoreCase) == true && _toolHost is { } tools)
                 _ = Task.Run(async () => // hotline://selftest?tools starts the mcp.json servers (no UI) for the crash-cleanup check
                 {
@@ -172,6 +174,7 @@ public partial class App : Application
                 });
         };
         _router.DemoRequested += () => _presenter.Demo();
+        _router.VoiceRequested += command => _presenter.Voice(command);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };

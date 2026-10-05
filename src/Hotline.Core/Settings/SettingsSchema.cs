@@ -36,7 +36,8 @@ public static class SettingsSchema
     private static readonly (KeyAction, string)[] KeyActions =
     [
         (KeyAction.TogglePopup, "Open / close Hotline"), (KeyAction.ShowPopup, "Open Hotline"), (KeyAction.NewChat, "Start a new chat"),
-        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.RegionSelect, "Capture a region"), (KeyAction.None, "Do nothing"),
+        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.RegionSelect, "Capture a region"),
+        (KeyAction.Voice, "Voice input (hold to talk)"), (KeyAction.None, "Do nothing"),
     ];
 
     public static IReadOnlyList<SettingItem> Items { get; } =
@@ -84,6 +85,8 @@ public static class SettingsSchema
             "Ctrl+C also works in apps that don't share their selection, but briefly uses the clipboard (restored afterwards).",
             [(AttachSelectionMode.Auto, "Yes"), (AttachSelectionMode.Clipboard, "Yes, also with Ctrl+C"), (AttachSelectionMode.Off, "No")],
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
+        new ToggleItem(SettingsPage.Chat, "Send after dictation", "With the Voice key action: send the message when you let go of the key.",
+            s => s.Chat.VoiceAutoSend, (s, v) => s.Chat.VoiceAutoSend = v),
         Choice(SettingsPage.Chat, "Screenshot text (OCR)", "Windows reads the text in images (offline) for models that can't see them.",
             [(OcrMode.Auto, "For text-only models"), (OcrMode.Always, "Always add it"), (OcrMode.Off, "Off")],
             s => s.Chat.Ocr, (s, v) => s.Chat.Ocr = v),

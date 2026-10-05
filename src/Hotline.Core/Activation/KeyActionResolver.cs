@@ -8,6 +8,7 @@ public static class KeyActionResolver
     {
         KeyEvent.Tap => s.Tap,
         KeyEvent.HoldStart => s.Hold,
-        _ => KeyAction.None, // HoldStop is reserved for push-to-talk (v2)
+        KeyEvent.HoldStop when s.Hold == KeyAction.Voice => KeyAction.Voice, // release ends push-to-talk
+        _ => KeyAction.None,
     };
 }

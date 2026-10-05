@@ -7,4 +7,5 @@ public enum KeyEvent { Tap, HoldStart, HoldStop }
 public enum KeySource { Protocol, FastPath, Hotkey }
 
 /// <summary>What the app should do in response to a key event. Configurable per event in settings.</summary>
-public enum KeyAction { None, TogglePopup, ShowPopup, NewChat, CaptureWindow, RegionSelect }
+/// <summary>Voice: hold to dictate into the message, release to stop (as the long press; as the short press it toggles).</summary>
+public enum KeyAction { None, TogglePopup, ShowPopup, NewChat, CaptureWindow, RegionSelect, Voice }
