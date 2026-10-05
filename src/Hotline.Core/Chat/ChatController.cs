@@ -106,6 +106,11 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         {
             await foreach (var d in backend.StreamAsync(_messages.ToList(), cts.Token).WithCancellation(cts.Token))
             {
+                if (d.Status is { } status)
+                {
+                    Emit(new AssistantStatus(assistantId, status));
+                    continue;
+                }
                 if (d.ResetBefore) reply.Clear();
                 reply.Append(d.Text);
                 Emit(new AssistantDelta(assistantId, d.Text, d.ResetBefore));

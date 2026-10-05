@@ -185,6 +185,10 @@ internal sealed partial class ChatPresenter(
                 view.Dirty = true;
                 _renderTimer?.Start();
                 break;
+            case AssistantStatus s:
+                log.Info($"chat status: {s.Message}");
+                Notice(s.Message, InfoBarSeverity.Informational);
+                break;
             case AssistantCompleted c:
                 Finish(c.Id);
                 log.Info("chat answer completed");

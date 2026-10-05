@@ -12,7 +12,7 @@ public sealed record ConnectionTypeInfo(
     public bool Has(ConnectionField field) => (Fields & field) == field;
 }
 
-/// <summary>What each kind of AI connection needs. Effort levels are listed only where verified (agy).</summary>
+/// <summary>What each kind of AI connection needs. Effort levels are the ones each API documents (Gemini: thinking level; OpenAI: reasoning_effort).</summary>
 public static class ConnectionTypes
 {
     private const ConnectionField Cli = ConnectionField.CliPath | ConnectionField.ExtraArgs | ConnectionField.Tools;
@@ -25,11 +25,11 @@ public static class ConnectionTypes
         new(BackendType.ClaudeCode, "Claude Code CLI", "Claude (Claude Code)", Cli, null,
             ClaudeCode.ClaudeCodeProtocol.EffortLevels, false, "Your installed claude and its sign-in (your Claude plan)."),
         new(BackendType.Gemini, "Gemini API", "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",
-            [], false, "A Google AI Studio API key."),
+            ["low", "medium", "high"], false, "A Google AI Studio API key."),
         new(BackendType.Anthropic, "Anthropic API", "Claude API", Api, "https://api.anthropic.com/v1",
             Hotline.Core.Backends.Api.AnthropicBackend.EffortLevels, false, "An Anthropic Console API key. Default model: Claude Opus 5.5."),
         new(BackendType.OpenAiCompatible, "OpenAI-compatible API", "OpenAI-compatible", Api, "https://api.openai.com/v1",
-            [], false, "OpenAI, OpenRouter, Groq and other OpenAI-style APIs."),
+            ["low", "medium", "high"], false, "OpenAI, OpenRouter, Groq and other OpenAI-style APIs."),
         new(BackendType.Local, "Local endpoint", "Local model", Api, "http://127.0.0.1:8080/v1",
             [], true, "llama.cpp server, LM Studio and other local OpenAI-style servers."),
     ];

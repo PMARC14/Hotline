@@ -46,8 +46,11 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             var text = new StringBuilder();
             var done = false;
             string? finish = null;
-            using (var request = Request(endpoint, key, messages, offered))
-            using (var response = await ApiCommon.SendAsync(http, request, profile, ct))
+            HttpResponseMessage? sent = null;
+            await foreach (var step in ApiCommon.SendWithRetriesAsync(http, () => Request(endpoint, key, messages, offered), profile, ct))
+                if (step.Status is { } note) yield return ChatDelta.StatusNote(note);
+                else sent = step.Response;
+            using (var response = sent!)
             {
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
                 await foreach (var data in ApiCommon.SseData(stream, ct))

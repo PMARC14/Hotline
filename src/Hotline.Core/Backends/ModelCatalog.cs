@@ -68,6 +68,24 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
         return models;
     }
 
+    /// <summary>
+    /// Settings › AI connections › Test: lists the models afresh (proves the endpoint and key) and checks the chosen
+    /// model is among them. Throws <see cref="ModelListException"/> with the server's message on failure.
+    /// </summary>
+    public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) => Describe(await GetAsync(p, refresh: true, ct), p.Model);
+
+    /// <summary>"Connected: N models[, including X | , but X isn't one of them]."</summary>
+    public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen)
+    {
+        var count = models.Count == 1 ? "1 model" : $"{models.Count} models";
+        var model = chosen?.Trim();
+        if (model is { Length: > 0 } && model.StartsWith("models/", StringComparison.Ordinal)) model = model[7..];
+        if (string.IsNullOrEmpty(model) || models.Count == 0) return $"Connected: {count}.";
+        return models.Any(m => string.Equals(m.Id, model, StringComparison.OrdinalIgnoreCase))
+            ? $"Connected: {count}, including {model}."
+            : $"Connected: {count}, but {model} isn't one of them.";
+    }
+
     private async Task<IReadOnlyList<ModelInfo>> FetchAsync(BackendProfile p, CancellationToken ct)
     {
         switch (p.Type)
@@ -107,7 +125,10 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
             if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
                 throw new ModelListException($"{p.Name} rejected the API key.");
             if (!response.IsSuccessStatusCode)
-                throw new ModelListException($"{p.Name} answered {(int)response.StatusCode} {response.ReasonPhrase}.");
+            {
+                var detail = Api.ApiCommon.ErrorMessage(await response.Content.ReadAsStringAsync(ct));
+                throw new ModelListException($"{p.Name} answered {(int)response.StatusCode} {response.ReasonPhrase}." + (detail is { Length: > 0 } ? $" {detail}" : ""));
+            }
             return await response.Content.ReadAsStringAsync(ct);
         }
         catch (HttpRequestException ex)

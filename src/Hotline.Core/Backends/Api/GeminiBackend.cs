@@ -38,8 +38,11 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
         {
             var modelParts = new JsonArray();
             var calls = new List<(string Name, string? Id, JsonElement Args)>();
-            using (var request = Request(endpoint, model, key, contents, offered))
-            using (var response = await Send(request, ct))
+            HttpResponseMessage? sent = null;
+            await foreach (var step in ApiCommon.SendWithRetriesAsync(http, () => Request(endpoint, model, key, contents, offered), profile, ct))
+                if (step.Status is { } note) yield return ChatDelta.StatusNote(note);
+                else sent = step.Response;
+            using (var response = sent!)
             {
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
                 await foreach (var data in ApiCommon.SseData(stream, ct))
@@ -98,15 +101,6 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
         }
     }
 
-    private async Task<HttpResponseMessage> Send(HttpRequestMessage request, CancellationToken ct)
-    {
-        try { return await ApiCommon.SendAsync(http, request, profile, ct); }
-        catch (BackendException ex) when (ex.Kind == BackendErrorKind.Failed && ex.Message.Contains("API key", StringComparison.OrdinalIgnoreCase))
-        {
-            throw new BackendException(BackendErrorKind.Unauthorized, ex.Message, ex); // Google answers 400 for a bad key
-        }
-    }
-
     private HttpRequestMessage Request(string endpoint, string model, string? key, JsonArray contents, IReadOnlyList<ToolSpec> offered)
     {
         var body = new JsonObject { ["contents"] = contents.DeepClone() };
@@ -125,13 +119,27 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
                     }).ToArray()),
                 },
             };
-        log.Debug($"{profile.Id}: Gemini streamGenerateContent ({contents.Count} contents, {offered.Count} tools, model {model})");
+        if (ThinkingConfig(model, profile.Effort) is { } thinking) body["generationConfig"] = new JsonObject { ["thinkingConfig"] = thinking };
+        log.Debug($"{profile.Id}: Gemini streamGenerateContent ({contents.Count} contents, {offered.Count} tools, model {model}, effort {profile.Effort ?? "default"})");
         var request = new HttpRequestMessage(HttpMethod.Post, $"{endpoint}/models/{Uri.EscapeDataString(model)}:streamGenerateContent?alt=sse")
         {
             Content = new StringContent(body.ToJsonString(), Encoding.UTF8, "application/json"),
         };
         if (key is not null) request.Headers.TryAddWithoutValidation("x-goog-api-key", key);
         return request;
+    }
+
+    /// <summary>
+    /// Effort → generationConfig.thinkingConfig: Gemini 3+ takes thinkingLevel (low/medium/high); Gemini 2.x only a
+    /// thinkingBudget in tokens. Unknown or unset effort sends nothing (the model's default).
+    /// </summary>
+    private static JsonObject? ThinkingConfig(string model, string? effort)
+    {
+        var level = effort?.Trim().ToLowerInvariant();
+        if (level is not ("low" or "medium" or "high")) return null;
+        if (model.StartsWith("gemini-2", StringComparison.OrdinalIgnoreCase) || model.StartsWith("gemini-1", StringComparison.OrdinalIgnoreCase))
+            return new JsonObject { ["thinkingBudget"] = level switch { "low" => 1024, "medium" => 8192, _ => 24576 } };
+        return new JsonObject { ["thinkingLevel"] = level };
     }
 
     private static JsonArray Contents(IReadOnlyList<ChatMessage> conversation)

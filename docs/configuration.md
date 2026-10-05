@@ -47,7 +47,7 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `type` | all | `antigravity`, `claudeCode`, `gemini`, `anthropic`, `openAiCompatible`, `local` |
 | `name` | all | Shown in the Provider dropdown |
 | `model` | all | Model id (empty = the connection's default; Anthropic defaults to `claude-opus-5-5`) |
-| `effort` | agy, Claude Code, Anthropic | `low` … `max` (agy maps it to the nearest level the model has) |
+| `effort` | all but `local` | agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it). Empty = the model's default |
 | `prompt` | all | System prompt name (`prompts\<name>.md`); empty = `chat.defaultPrompt` |
 | `endpoint` | APIs | Base URL (defaults per type, e.g. `http://127.0.0.1:8080/v1` for `local`) |
 | `cliPath` | agy, Claude Code | Program path (empty = auto-detect) |
@@ -59,6 +59,11 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `keepCliSessions` | Claude Code | Also keep Hotline chats in Claude Code's own history (`claude --resume`) |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `refusalFallback` | Anthropic | If a safety check declines a request, the API re-serves it with a suitable model (default on) |
+
+API connections retry a rate limit or overload (HTTP 429/503/529) up to twice, waiting what the server asks
+(`Retry-After`, Gemini's `retryDelay`) or 2 s then 4 s, and say so in the panel. A wait over a minute, or an exhausted
+quota, fails at once. Settings › AI connections › **Test connection** lists the models with your key and checks the
+chosen one exists.
 
 ## mcp.json (tools for API connections)
 

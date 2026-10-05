@@ -14,8 +14,14 @@ public sealed record Attachment(string Id, string Name, AttachmentKind Kind, str
 public sealed record ChatMessage(
     string Id, ChatRole Role, string Text, IReadOnlyList<Attachment> Attachments, DateTimeOffset At, string? BackendId = null);
 
-/// <summary>A streamed piece of an answer. <paramref name="ResetBefore"/>: discard what was shown so far (the backend restarted its answer).</summary>
-public readonly record struct ChatDelta(string Text, bool ResetBefore = false);
+/// <summary>
+/// A streamed piece of an answer. <paramref name="ResetBefore"/>: discard what was shown so far (the backend restarted
+/// its answer). <paramref name="Status"/>: a passing note for the panel (e.g. "retrying in 4 s"), not part of the answer.
+/// </summary>
+public readonly record struct ChatDelta(string Text, bool ResetBefore = false, string? Status = null)
+{
+    public static ChatDelta StatusNote(string message) => new("", Status: message);
+}
 
 public enum BackendErrorKind { NotConfigured, NotInstalled, NotLoggedIn, Unauthorized, RateLimited, ServerDown, Unsupported, Failed }
 
