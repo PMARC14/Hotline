@@ -56,8 +56,11 @@ public sealed class OcrPlanTests : IDisposable
         var log = new FileLog(Path.Combine(_dir, "h.log"));
         var local = new OpenAiBackend(new BackendProfile { Id = "l", Type = BackendType.Local }, new HttpClient(), new InMemorySecretStore(), _ => "", log);
         Assert.False(local.Capabilities.Images);
-        var gemini = new GeminiBackend(new BackendProfile { Id = "g", Type = BackendType.Gemini, Images = false }, new HttpClient(), new InMemorySecretStore(), _ => "", log);
+        var profile = new BackendProfile { Id = "g", Type = BackendType.Gemini, Images = false };
+        var gemini = new GeminiBackend(profile, new HttpClient(), new InMemorySecretStore(), _ => "", log);
         Assert.False(gemini.Capabilities.Images);
+        profile.Images = null; // edited live in Settings
+        Assert.True(gemini.Capabilities.Images);
     }
 
     [Fact]

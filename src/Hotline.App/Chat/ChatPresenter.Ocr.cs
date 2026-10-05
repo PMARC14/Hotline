@@ -33,24 +33,30 @@ internal sealed partial class ChatPresenter
             _ocrMissingNoted = true;
             return takesImages; // an image model still gets the image; a text-only one can't take it
         }
+        var ok = true;
         foreach (var image in images)
         {
+            if (_ocrDone.Contains(image.Id)) continue; // already read on an earlier try to send (Always keeps the image)
             string text;
             try { text = await RecognizeAsync(engine, image.Data); }
             catch (Exception ex) when (ex is ArgumentException or System.Runtime.InteropServices.COMException)
             {
                 log.Error($"OCR of {image.Name} failed", ex);
                 Notice($"Couldn't read the text in {image.Name}.", InfoBarSeverity.Warning);
-                return takesImages;
+                ok &= takesImages; // an image model still gets the image; carry on with the others
+                continue;
             }
-            if (!keepImages) tray.Remove(image.Id);
-            try { tray.Add(OcrPlan.TextAttachment(image.Name, text)); }
-            catch (AttachmentRejectedException ex) { Notice(ex.Message, InfoBarSeverity.Warning); return false; }
+            try { tray.Add(OcrPlan.TextAttachment(image.Name, text)); } // add first: a rejection never loses the image
+            catch (AttachmentRejectedException ex) { Notice(ex.Message, InfoBarSeverity.Warning); ok = false; break; }
+            if (keepImages) _ocrDone.Add(image.Id);
+            else tray.Remove(image.Id);
             log.Info($"OCR: {text.Length} chars from {image.Name} ({(keepImages ? "with" : "instead of")} the image)");
         }
         RefreshChips();
-        return true;
+        return ok;
     }
+
+    private readonly HashSet<string> _ocrDone = [];
 
     private static async Task<string> RecognizeAsync(OcrEngine engine, byte[] data)
     {

@@ -20,7 +20,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
 {
     public string Id => profile.Id;
     public string DisplayName => profile.Name;
-    public BackendCapabilities Capabilities { get; } = new(Images: ConnectionTypes.TakesImages(profile), TextFiles: true);
+    public BackendCapabilities Capabilities => new(Images: ConnectionTypes.TakesImages(profile), TextFiles: true);
 
     private sealed class PendingCall
     {
