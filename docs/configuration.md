@@ -78,6 +78,8 @@ A connection uses these tools when its `tools` is `inherit` ("Use Hotline's tool
 Without a rule, tools the server marks read-only run and everything else asks; denied tools aren't offered at all.
 "Always allow" in the panel writes an `allow` rule here. When Windows has the on-device agent registry (`odr.exe`,
 build 26220.7262+), its connectors are added as `windows-…` servers. Settings › **Tools** shows each server's status.
+Servers start on first use and stop with Hotline, even if it crashes (they run in its kill-on-close job); their stderr
+goes to `logs\hotline.log` (at most 20 lines a minute per server).
 
 ## toolbar.json
 
@@ -96,4 +98,4 @@ curated list (and denies `Remove-Item`, `rm`, `git push`, …) after showing it 
 
 `hotline://settings` opens the settings window, `hotline://tray` starts quietly in the tray, `hotline://demo` shows an
 example conversation, `hotline://selftest` renders a scripted conversation off-screen and builds every settings page
-(used by the smoke test).
+(used by the smoke test); `hotline://selftest?tools` also starts the `mcp.json` servers and logs the result.

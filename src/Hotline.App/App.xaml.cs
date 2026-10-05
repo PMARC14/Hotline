@@ -104,7 +104,7 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"),
-            _secrets, BackendFactory.CreateApiHttpClient(), ToolHost(dataDir));
+            _secrets, BackendFactory.CreateApiHttpClient(), ToolHost(dataDir, job));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -146,6 +146,17 @@ public partial class App : Application
             var problems = _settingsHost?.SelfTest() ?? [];
             if (problems.Count == 0) _log.Info("selftest settings ok");
             else _log.Error("selftest settings FAILED: " + string.Join("; ", problems));
+            if (uri?.Query.Contains("tools", StringComparison.OrdinalIgnoreCase) == true && _toolHost is { } tools)
+                _ = Task.Run(async () => // hotline://selftest?tools starts the mcp.json servers (no UI) for the crash-cleanup check
+                {
+                    try
+                    {
+                        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
+                        var list = await tools.GetToolsAsync(timeout.Token);
+                        _log.Info($"selftest tools: {list.Count} tool(s); " + string.Join(", ", tools.Status.Select(s => $"{s.Name}={s.State}")));
+                    }
+                    catch (Exception ex) { _log.Error("selftest tools FAILED", ex); }
+                });
         };
         _router.DemoRequested += () => _presenter.Demo();
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
@@ -282,7 +293,7 @@ public partial class App : Application
     /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
     /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
     /// </summary>
-    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir)
+    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job)
     {
         var mcpPath = Path.Combine(dataDir, "mcp.json");
         _ = Hotline.Core.Tools.McpConfig.Load(mcpPath); // creates mcp.json with a commented example on first run
@@ -306,7 +317,8 @@ public partial class App : Application
                 }
             });
         _toolHost = new Hotline.Core.Tools.McpToolHost(
-            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers, Hotline.Core.Tools.StdioMcpSession.ConnectAsync,
+            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers,
+            Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}")),
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             _log!, mcpPath);
         return _toolHost;
