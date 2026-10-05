@@ -131,13 +131,14 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
 
     /// <summary>
     /// Effort → generationConfig.thinkingConfig: Gemini 3+ takes thinkingLevel (low/medium/high); Gemini 2.x only a
-    /// thinkingBudget in tokens. Unknown or unset effort sends nothing (the model's default).
+    /// thinkingBudget in tokens; 1.x has no thinking. Unknown or unset effort sends nothing (the model's default).
     /// </summary>
     private static JsonObject? ThinkingConfig(string model, string? effort)
     {
         var level = effort?.Trim().ToLowerInvariant();
         if (level is not ("low" or "medium" or "high")) return null;
-        if (model.StartsWith("gemini-2", StringComparison.OrdinalIgnoreCase) || model.StartsWith("gemini-1", StringComparison.OrdinalIgnoreCase))
+        if (model.StartsWith("gemini-1", StringComparison.OrdinalIgnoreCase)) return null; // no thinking
+        if (model.StartsWith("gemini-2", StringComparison.OrdinalIgnoreCase))
             return new JsonObject { ["thinkingBudget"] = level switch { "low" => 1024, "medium" => 8192, _ => 24576 } };
         return new JsonObject { ["thinkingLevel"] = level };
     }

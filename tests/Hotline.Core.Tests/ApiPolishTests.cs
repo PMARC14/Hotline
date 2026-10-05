@@ -108,12 +108,13 @@ public sealed class ApiPolishTests : IDisposable
     }
 
     [Theory]
-    [InlineData(null)]
-    [InlineData("max")]
-    public async Task Gemini_without_a_known_effort_sends_no_thinking_config(string? effort)
+    [InlineData("gemini-3.8-flash", null)]
+    [InlineData("gemini-3.8-flash", "max")]
+    [InlineData("gemini-1.5-pro", "high")] // no thinking at all
+    public async Task Gemini_without_a_known_effort_sends_no_thinking_config(string model, string? effort)
     {
         var handler = new Handler(_ => Sse(GeminiPart("ok")));
-        await Collect(Gemini(handler, "gemini-3.8-flash", effort).StreamAsync([User("hi")], default));
+        await Collect(Gemini(handler, model, effort).StreamAsync([User("hi")], default));
         Assert.False(JsonDocument.Parse(handler.Bodies[0]).RootElement.TryGetProperty("generationConfig", out _));
     }
 

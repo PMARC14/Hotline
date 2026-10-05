@@ -69,28 +69,30 @@ public static partial class ApiCommon
     /// <summary>One try: the response, a wait before retrying, or a BackendException with the server's message.</summary>
     private static async Task<(HttpResponseMessage? Response, TimeSpan Wait, string Reason)> TrySendAsync(HttpClient http, HttpRequestMessage request, BackendProfile p, int attempt, CancellationToken ct)
     {
+        using var _ = request; // the response doesn't need it once the headers are in
         HttpResponseMessage response;
         try { response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct); }
         catch (HttpRequestException ex)
         {
-            request.Dispose();
             throw new BackendException(BackendErrorKind.ServerDown, $"Can't reach {request.RequestUri?.GetLeftPart(UriPartial.Authority)}: {ex.Message}", ex);
         }
         catch (TaskCanceledException ex) when (!ct.IsCancellationRequested)
         {
-            request.Dispose();
             throw new BackendException(BackendErrorKind.ServerDown, $"{Name(p)} didn't answer in time.", ex);
         }
         if (response.IsSuccessStatusCode) return (response, default, "");
-        request.Dispose();
-        var body = "";
-        try { body = await response.Content.ReadAsStringAsync(ct); } catch (Exception ex) when (ex is not OperationCanceledException) { }
-        var wait = RetryDelay(response, body, attempt, DateTimeOffset.UtcNow);
         var status = response.StatusCode;
-        response.Dispose();
-        ct.ThrowIfCancellationRequested();
+        var reasonPhrase = response.ReasonPhrase;
+        TimeSpan? wait;
+        string body;
+        using (response)
+        {
+            body = "";
+            try { body = await response.Content.ReadAsStringAsync(ct); } catch (Exception ex) when (ex is not OperationCanceledException) { }
+            wait = RetryDelay(response, body, attempt, DateTimeOffset.UtcNow);
+        }
         if (wait is { } w) return (null, w, status == HttpStatusCode.TooManyRequests ? "rate limited" : "busy");
-        var message = ErrorMessage(body) ?? $"{(int)status} {response.ReasonPhrase}";
+        var message = ErrorMessage(body) ?? $"{(int)status} {reasonPhrase}";
         throw status switch
         {
             HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => new BackendException(BackendErrorKind.Unauthorized, $"{Name(p)} rejected the API key. {message}"),
