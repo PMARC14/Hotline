@@ -11,8 +11,9 @@ namespace Hotline.App.Interop;
 /// <summary>
 /// Reads the text selected in the app the key was pressed in, before the panel takes focus. UI Automation first
 /// (focused element → TextPattern.GetSelection; no keystrokes, clipboard untouched); with
-/// <see cref="AttachSelectionMode.Clipboard"/> also Ctrl+C with the clipboard put back exactly. Password fields are
-/// never read. The caller's wait is bounded, so opening the panel never waits long.
+/// <see cref="AttachSelectionMode.Clipboard"/> also Ctrl+C, but only where UI Automation answered that the focused
+/// control has no text pattern (never after a timeout, for an empty selection, in a password field or a terminal).
+/// The caller's wait is bounded, so opening the panel never waits long.
 /// </summary>
 internal static class SelectionReader
 {
@@ -20,10 +21,27 @@ internal static class SelectionReader
     private const int UIA_IsPasswordPropertyId = 30019;
     private static readonly TimeSpan UiaBudget = TimeSpan.FromMilliseconds(150);
     private static readonly TimeSpan ClipboardBudget = TimeSpan.FromMilliseconds(450);
+    private static readonly HashSet<string> ConsoleClasses = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "ConsoleWindowClass", "CASCADIA_HOSTING_WINDOW_CLASS", "PseudoConsoleWindow", "mintty", "VirtualConsoleClass",
+    };
+
+    // One UI Automation client for all reads, with short timeouts so a hung app can't hold threads for ~20 s.
+    private static readonly Lazy<IUIAutomation> Automation = new(() =>
+    {
+        var automation = new CUIAutomation8();
+        if (automation is IUIAutomation2 timed)
+        {
+            timed.ConnectionTimeout = 300;
+            timed.TransactionTimeout = 300;
+        }
+        return automation;
+    });
+    private static int _uiaBusy;
 
     public sealed record Result(string Text, string? App, string Via);
 
-    private enum UiaOutcome { Read, Nothing, Password }
+    private enum UiaOutcome { Text, NoTextPattern, Password, Nothing }
 
     /// <summary>
     /// Blocks at most ~150 ms (~600 ms with Ctrl+C; the clipboard is put back in the background afterwards). Null when
@@ -34,31 +52,41 @@ internal static class SelectionReader
         if (mode == AttachSelectionMode.Off || foreground == 0) return null;
         Native.GetWindowThreadProcessId(foreground, out var pid);
         if (pid == 0 || pid == Environment.ProcessId) return null;
+        if (Interlocked.Exchange(ref _uiaBusy, 1) == 1) { log.Info("selection: previous read still running; skipped"); return null; }
         var frameHost = IsFrameHost(pid); // UWP: the frame window's process isn't the app's
         var sw = Stopwatch.StartNew();
         string? text = null, via = null;
         var outcome = UiaOutcome.Nothing;
         // UIA calls go into the other process: run them off the UI thread (thread pool = MTA) and stop waiting in time.
-        var uia = Task.Run(() => ReadUia(pid, frameHost));
+        var uia = Task.Run(() =>
+        {
+            try { return ReadUia(pid, frameHost); }
+            finally { Volatile.Write(ref _uiaBusy, 0); }
+        });
         try
         {
             if (uia.Wait(UiaBudget)) (outcome, text, via) = (uia.Result.Outcome, uia.Result.Text, "UI Automation");
             else log.Info("selection: UI Automation didn't answer in time");
         }
         catch (AggregateException ex) { log.Debug($"selection: UI Automation failed: {ex.InnerException?.Message}"); }
-        if (outcome == UiaOutcome.Password) return null; // never copy from a password field either
 
-        if (string.IsNullOrWhiteSpace(text) && mode == AttachSelectionMode.Clipboard)
+        // Ctrl+C only where UIA positively said "no text pattern here": an empty selection would copy a whole line
+        // (editors) or interrupt a command (terminals), and a timeout can't rule out a password field.
+        if (outcome == UiaOutcome.NoTextPattern && mode == AttachSelectionMode.Clipboard && !ConsoleClasses.Contains(Native.ClassNameOf(foreground)))
         {
             var copied = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
+            using var stop = new CancellationTokenSource();
+            var deadline = Environment.TickCount64 + (long)ClipboardBudget.TotalMilliseconds;
+            var token = stop.Token;
             _ = Task.Run(() =>
             {
-                try { ClipboardCopy.CopySelection(ClipboardBudget, copied, log); }
+                try { ClipboardCopy.CopySelection(foreground, deadline, token, copied, log); }
                 catch (Exception ex) { log.Error("selection: Ctrl+C copy failed", ex); }
                 finally { copied.TrySetResult(null); }
             });
             if (copied.Task.Wait(ClipboardBudget + TimeSpan.FromMilliseconds(150))) (text, via) = (copied.Task.Result, "Ctrl+C");
             else log.Error("selection: Ctrl+C copy didn't finish in time");
+            stop.Cancel(); // never send Ctrl+C once the panel may have focus
         }
         if (string.IsNullOrWhiteSpace(text)) return null;
         log.Info($"selection: {text.Length} chars via {via} in {sw.ElapsedMilliseconds} ms");
@@ -77,16 +105,15 @@ internal static class SelectionReader
 
     private static (UiaOutcome Outcome, string? Text) ReadUia(uint pid, bool frameHost)
     {
-        var automation = new CUIAutomation8();
-        var element = automation.GetFocusedElement();
+        var element = Automation.Value.GetFocusedElement();
         if (element is null) return (UiaOutcome.Nothing, null);
         var owner = element.CurrentProcessId;
         // Focus already moved on (to us, or elsewhere). A UWP app's element lives in its own process, not the frame host's.
         if (owner == Environment.ProcessId || (owner != (int)pid && !frameHost)) return (UiaOutcome.Nothing, null);
         if (element.GetCurrentPropertyValue(UIA_IsPasswordPropertyId) is true) return (UiaOutcome.Password, null);
-        if (element.GetCurrentPattern(UIA_TextPatternId) is not IUIAutomationTextPattern pattern) return (UiaOutcome.Nothing, null);
+        if (element.GetCurrentPattern(UIA_TextPatternId) is not IUIAutomationTextPattern pattern) return (UiaOutcome.NoTextPattern, null);
         var ranges = pattern.GetSelection();
-        if (ranges is null) return (UiaOutcome.Nothing, null);
+        if (ranges is null) return (UiaOutcome.Text, null);
         var sb = new StringBuilder();
         for (var i = 0; i < ranges.Length && sb.Length <= SelectionAttachment.MaxChars; i++)
         {
@@ -95,7 +122,7 @@ internal static class SelectionReader
             if (sb.Length > 0) sb.Append('\n');
             sb.Append(piece);
         }
-        return (UiaOutcome.Read, sb.ToString());
+        return (UiaOutcome.Text, sb.ToString());
     }
 
     /// <summary>"Notepad", "Microsoft Edge", …: the program's description, else its process name, else the window title.</summary>
@@ -123,34 +150,46 @@ internal static class SelectionReader
 internal static class ClipboardCopy
 {
     private const long MaxSnapshotBytes = 64L * 1024 * 1024;
+    private static readonly SemaphoreSlim OneAtATime = new(1, 1);
 
     /// <summary>
-    /// Sends Ctrl+C, hands the copied text to <paramref name="copied"/> as soon as it's read (the panel opens then), and
-    /// then puts the previous clipboard back. Runs on a worker thread; the clipboard is opened with
-    /// <see cref="ClipboardOwner"/>'s window, whose thread keeps pumping messages (a null owner would make every
-    /// SetClipboardData fail after EmptyClipboard, and the UI thread is blocked while it waits for the text).
+    /// Sends Ctrl+C to <paramref name="target"/> (only while it's still the foreground window, before
+    /// <paramref name="deadline"/> and before <paramref name="stop"/>), hands the copied text to <paramref name="copied"/>
+    /// as soon as it's read (the panel opens then), and then puts the previous clipboard back. Runs on a worker thread;
+    /// the clipboard is opened with <see cref="ClipboardOwner"/>'s window, whose thread keeps pumping messages (a null
+    /// owner would make every SetClipboardData fail after EmptyClipboard).
     /// </summary>
-    public static void CopySelection(TimeSpan budget, TaskCompletionSource<string?> copied, FileLog log)
+    public static void CopySelection(nint target, long deadline, CancellationToken stop, TaskCompletionSource<string?> copied, FileLog log)
     {
-        var deadline = Environment.TickCount64 + (long)budget.TotalMilliseconds;
-        if (ClipboardOwner.Hwnd == 0) { log.Error("selection: no clipboard owner window; skipped Ctrl+C"); return; }
-        // The key's own modifiers (Win/Shift for the Copilot key) must be up, or Ctrl+C becomes another shortcut.
-        while (ModifiersDown())
+        if (!OneAtATime.Wait(0)) { log.Info("selection: a Ctrl+C copy is still running; skipped"); return; }
+        try
         {
-            if (Environment.TickCount64 > deadline) { log.Info("selection: modifiers still held; skipped Ctrl+C"); return; }
-            Thread.Sleep(10);
+            if (ClipboardOwner.Hwnd == 0) { log.Error("selection: no clipboard owner window; skipped Ctrl+C"); return; }
+            // The key's own modifiers (Win/Shift for the Copilot key) must be up, or Ctrl+C becomes another shortcut.
+            while (ModifiersDown())
+            {
+                if (Environment.TickCount64 > deadline || stop.IsCancellationRequested) { log.Info("selection: modifiers still held; skipped Ctrl+C"); return; }
+                Thread.Sleep(10);
+            }
+            var saved = Snapshot(log);
+            if (saved is null) return;
+            if (stop.IsCancellationRequested || Environment.TickCount64 > deadline || Native.GetForegroundWindow() != target)
+            {
+                log.Info("selection: too late or focus moved; skipped Ctrl+C");
+                return;
+            }
+            var before = ClipboardNative.GetClipboardSequenceNumber();
+            SendCtrlC();
+            // Wait for the copy even past the budget (up to 2 s), so a late copy is still undone.
+            var copyDeadline = Environment.TickCount64 + 2000;
+            while (ClipboardNative.GetClipboardSequenceNumber() == before && Environment.TickCount64 < copyDeadline) Thread.Sleep(10);
+            if (ClipboardNative.GetClipboardSequenceNumber() == before) return; // nothing was copied: clipboard untouched
+            Thread.Sleep(20); // let the app finish writing all of its formats
+            var ours = ClipboardNative.GetClipboardSequenceNumber();
+            try { copied.TrySetResult(IsWholeLineCopy() ? null : ReadText()); }
+            finally { Restore(saved, ours, log); }
         }
-        var saved = Snapshot(log);
-        if (saved is null) return;
-        var before = ClipboardNative.GetClipboardSequenceNumber();
-        SendCtrlC();
-        // Wait for the copy even past the budget (up to 2 s), so a late copy is still undone.
-        var restoreDeadline = Environment.TickCount64 + 2000;
-        while (ClipboardNative.GetClipboardSequenceNumber() == before && Environment.TickCount64 < restoreDeadline) Thread.Sleep(10);
-        if (ClipboardNative.GetClipboardSequenceNumber() == before) return; // nothing was copied: clipboard untouched
-        Thread.Sleep(20); // let the app finish writing all of its formats
-        copied.TrySetResult(ReadText());
-        Restore(saved, log);
+        finally { OneAtATime.Release(); }
     }
 
     private static bool ModifiersDown() =>
@@ -161,7 +200,7 @@ internal static class ClipboardCopy
 
     private static List<(uint Format, byte[] Data)>? Snapshot(FileLog log)
     {
-        if (!OpenWithRetry()) { log.Info("selection: clipboard busy; skipped Ctrl+C"); return null; }
+        if (!OpenWithRetry(TimeSpan.FromMilliseconds(100))) { log.Info("selection: clipboard busy; skipped Ctrl+C"); return null; }
         try
         {
             var formats = new List<(uint, byte[])>();
@@ -188,50 +227,83 @@ internal static class ClipboardCopy
         finally { ClipboardNative.CloseClipboard(); }
     }
 
-    private static string? ReadText()
+    /// <summary>Visual Studio and VS Code copy the whole line when nothing is selected; that isn't a selection.</summary>
+    private static bool IsWholeLineCopy()
     {
-        if (!OpenWithRetry()) return null;
+        if (ClipboardNative.IsClipboardFormatAvailable(ClipboardNative.RegisterClipboardFormat("MSDEVLineSelect"))
+            || ClipboardNative.IsClipboardFormatAvailable(ClipboardNative.RegisterClipboardFormat("VisualStudioEditorOperationsLineCutCopyClipboardTag")))
+            return true;
+        var vscode = ClipboardNative.RegisterClipboardFormat("vscode-editor-data");
+        if (!ClipboardNative.IsClipboardFormatAvailable(vscode)) return false;
+        var json = ReadString(vscode, unicode: false);
+        return json?.Contains("\"isFromEmptySelection\":true", StringComparison.Ordinal) == true;
+    }
+
+    private static string? ReadText() => ReadString(13, unicode: true); // CF_UNICODETEXT
+
+    /// <summary>Reads a text format, bounded by the memory block's size (some apps omit the terminating null).</summary>
+    private static string? ReadString(uint format, bool unicode)
+    {
+        if (!OpenWithRetry(TimeSpan.FromMilliseconds(200))) return null;
         try
         {
-            var h = ClipboardNative.GetClipboardData(13); // CF_UNICODETEXT
+            var h = ClipboardNative.GetClipboardData(format);
             if (h == 0) return null;
+            var size = (long)ClipboardNative.GlobalSize(h);
             var p = ClipboardNative.GlobalLock(h);
             if (p == 0) return null;
-            try { return Marshal.PtrToStringUni(p); }
+            try
+            {
+                var s = unicode ? Marshal.PtrToStringUni(p, (int)Math.Min(size / 2, int.MaxValue)) : Marshal.PtrToStringUTF8(p, (int)Math.Min(size, int.MaxValue));
+                var end = s.IndexOf('\0');
+                return end >= 0 ? s[..end] : s;
+            }
             finally { ClipboardNative.GlobalUnlock(h); }
         }
         finally { ClipboardNative.CloseClipboard(); }
     }
 
-    private static void Restore(List<(uint Format, byte[] Data)> saved, FileLog log)
+    /// <summary>
+    /// Puts the saved formats back (retrying while clipboard managers hold it open), marked so clipboard history and
+    /// cloud clipboard don't record the restore. Skipped when someone else wrote to the clipboard after our copy.
+    /// </summary>
+    private static void Restore(List<(uint Format, byte[] Data)> saved, uint ours, FileLog log)
     {
-        if (!OpenWithRetry()) { log.Error("selection: couldn't reopen the clipboard to restore it"); return; }
+        if (!OpenWithRetry(TimeSpan.FromSeconds(2))) { log.Error("selection: couldn't reopen the clipboard to restore it"); return; }
         try
         {
+            if (ClipboardNative.GetClipboardSequenceNumber() != ours) { log.Info("selection: clipboard changed again; not restored"); return; }
             ClipboardNative.EmptyClipboard();
-            foreach (var (format, data) in saved)
-            {
-                var h = ClipboardNative.GlobalAlloc(0x0002 /* GMEM_MOVEABLE */, (nuint)Math.Max(1, data.Length));
-                if (h == 0) continue;
-                var p = ClipboardNative.GlobalLock(h);
-                if (p != 0)
-                {
-                    Marshal.Copy(data, 0, p, data.Length);
-                    ClipboardNative.GlobalUnlock(h);
-                }
-                if (ClipboardNative.SetClipboardData(format, h) == 0) ClipboardNative.GlobalFree(h); // on success the system owns it
-            }
+            foreach (var (format, data) in saved) Put(format, data);
+            Put(ClipboardNative.RegisterClipboardFormat("ExcludeClipboardContentFromMonitorProcessing"), [0]);
+            Put(ClipboardNative.RegisterClipboardFormat("CanIncludeInClipboardHistory"), [0, 0, 0, 0]);
+            Put(ClipboardNative.RegisterClipboardFormat("CanUploadToCloudClipboard"), [0, 0, 0, 0]);
         }
         finally { ClipboardNative.CloseClipboard(); }
     }
 
-    private static bool OpenWithRetry()
+    private static void Put(uint format, byte[] data)
     {
-        for (var i = 0; i < 10; i++)
+        if (format == 0) return;
+        var h = ClipboardNative.GlobalAlloc(0x0002 /* GMEM_MOVEABLE */, (nuint)Math.Max(1, data.Length));
+        if (h == 0) return;
+        var p = ClipboardNative.GlobalLock(h);
+        if (p != 0)
+        {
+            Marshal.Copy(data, 0, p, data.Length);
+            ClipboardNative.GlobalUnlock(h);
+        }
+        if (ClipboardNative.SetClipboardData(format, h) == 0) ClipboardNative.GlobalFree(h); // on success the system owns it
+    }
+
+    private static bool OpenWithRetry(TimeSpan patience)
+    {
+        var until = Environment.TickCount64 + (long)patience.TotalMilliseconds;
+        do
         {
             if (ClipboardNative.OpenClipboard(ClipboardOwner.Hwnd)) return true;
             Thread.Sleep(10);
-        }
+        } while (Environment.TickCount64 < until);
         return false;
     }
 
@@ -303,6 +375,8 @@ internal static class ClipboardNative
     [DllImport("user32.dll")] public static extern uint EnumClipboardFormats(uint format);
     [DllImport("user32.dll")] public static extern nint GetClipboardData(uint format);
     [DllImport("user32.dll")] public static extern nint SetClipboardData(uint format, nint mem);
+    [DllImport("user32.dll")] public static extern bool IsClipboardFormatAvailable(uint format);
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern uint RegisterClipboardFormat(string name);
     [DllImport("user32.dll")] public static extern uint GetClipboardSequenceNumber();
     [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);
     [DllImport("kernel32.dll")] public static extern nint GlobalAlloc(uint flags, nuint bytes);
