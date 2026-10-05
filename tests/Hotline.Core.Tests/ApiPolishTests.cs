@@ -97,6 +97,17 @@ public sealed class ApiPolishTests : IDisposable
         Assert.False(config.TryGetProperty("thinkingBudget", out _));
     }
 
+    [Theory]
+    [InlineData("gemini-3.1-pro-preview")]
+    [InlineData("gemini-4-flash")]
+    public async Task Later_generations_get_a_thinking_level(string model)
+    {
+        var handler = new Handler(_ => Sse(GeminiPart("ok")));
+        await Collect(Gemini(handler, model, "medium").StreamAsync([User("hi")], default));
+        var config = JsonDocument.Parse(handler.Bodies[0]).RootElement.GetProperty("generationConfig").GetProperty("thinkingConfig");
+        Assert.Equal("medium", config.GetProperty("thinkingLevel").GetString());
+    }
+
     [Fact]
     public async Task Gemini_2_5_gets_a_thinking_budget_instead()
     {
@@ -111,6 +122,9 @@ public sealed class ApiPolishTests : IDisposable
     [InlineData("gemini-3.8-flash", null)]
     [InlineData("gemini-3.8-flash", "max")]
     [InlineData("gemini-1.5-pro", "high")] // no thinking at all
+    [InlineData("gemini-2.0-flash", "high")]
+    [InlineData("gemma-3-27b-it", "high")]
+    [InlineData("gemini-flash-latest", "high")] // alias: generation unknown
     public async Task Gemini_without_a_known_effort_sends_no_thinking_config(string model, string? effort)
     {
         var handler = new Handler(_ => Sse(GeminiPart("ok")));

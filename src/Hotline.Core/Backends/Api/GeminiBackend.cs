@@ -15,7 +15,7 @@ namespace Hotline.Core.Backends.Api;
 /// Hotline's MCP tools are offered as function declarations; the model's parts are echoed back unchanged (they may
 /// carry thought signatures) followed by the function responses.
 /// </summary>
-public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
+public sealed partial class GeminiBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
     FileLog log, IToolHost? tools = null) : IChatBackend
 {
     public string Id => profile.Id;
@@ -131,17 +131,23 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
 
     /// <summary>
     /// Effort → generationConfig.thinkingConfig: Gemini 3+ takes thinkingLevel (low/medium/high); Gemini 2.x only a
-    /// thinkingBudget in tokens; 1.x has no thinking. Unknown or unset effort sends nothing (the model's default).
+    /// thinkingBudget in tokens (2.5 only). Older models, Gemma and "-latest" aliases (generation unknown) get nothing,
+    /// as does an unknown or unset effort (the model's default).
     /// </summary>
     private static JsonObject? ThinkingConfig(string model, string? effort)
     {
         var level = effort?.Trim().ToLowerInvariant();
         if (level is not ("low" or "medium" or "high")) return null;
-        if (model.StartsWith("gemini-1", StringComparison.OrdinalIgnoreCase)) return null; // no thinking
-        if (model.StartsWith("gemini-2", StringComparison.OrdinalIgnoreCase))
+        if (model.StartsWith("gemini-2.5", StringComparison.OrdinalIgnoreCase))
             return new JsonObject { ["thinkingBudget"] = level switch { "low" => 1024, "medium" => 8192, _ => 24576 } };
-        return new JsonObject { ["thinkingLevel"] = level };
+        var generation = GeminiGeneration().Match(model);
+        return generation.Success && int.Parse(generation.Groups[1].Value, System.Globalization.CultureInfo.InvariantCulture) >= 3
+            ? new JsonObject { ["thinkingLevel"] = level }
+            : null;
     }
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"^gemini-(\d+)", System.Text.RegularExpressions.RegexOptions.IgnoreCase)]
+    private static partial System.Text.RegularExpressions.Regex GeminiGeneration();
 
     private static JsonArray Contents(IReadOnlyList<ChatMessage> conversation)
     {
