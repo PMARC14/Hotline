@@ -37,9 +37,14 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-Needs a person at the PC (not testable headless): selected text in Notepad/Edge/Word with the key (and clipboard mode
-restoring the clipboard), voice (hold the key with `activation.hold = "voice"`; first use shows the microphone
-prompt), fresh README screenshots via `hotline://demo`. Then the user does trusted signing and real-key API tests
+User-tested 2026-10-04: selected text → chip works; the settings window (dark title bar, new pages) looks good.
+Still needs a person at the PC: voice (Settings › General › Voice input, hold the key; first use shows the microphone
+prompt), fresh README screenshots via `hotline://demo`.
+
+Ideas the user is weighing (from the Copilot comparison): a memory file injected into the system prompt, live screen
+sharing via a realtime multimodal API, a wake word. File search is out of scope (Windows search / PowerToys Run).
+
+Then the user does trusted signing and real-key API tests
 before making the repo public; they flip the visibility themselves.
 
 Self-test links for headless checks: `hotline://selftest` (+ `?tools` starts the mcp.json servers, `?selection` reads
