@@ -112,6 +112,9 @@ caret visibility on all themes.
 - **agy reviews:** prompts over ~32k chars fail with "Argument list too long"; start the prompt with "answer from the
   text below only, do not call any tool" or Gemini sometimes tries a tool and headless mode aborts; Opus via agy hits
   a short per-user quota after a few big reviews (wait ~5 min and rerun).
+- **Defender vs. agy reviews:** pasting keyboard-hook / input-injection code (SetWindowsHookEx, SendInput) into an
+  agy command line got the call blocked as `Trojan:Win32/ClickFix` (a false positive on the command line). Review
+  such code without putting it on a command line.
 - **MCP SDK 2.2.0:** `StreamClientTransport(serverInput, serverOutput)` — the first stream is the one written to
   (the server's stdin).
 
