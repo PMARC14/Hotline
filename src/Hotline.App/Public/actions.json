@@ -1,0 +1,65 @@
+{
+  "version": 3,
+  "actions": [
+    {
+      "id": "Hotline.AskText",
+      "description": "Ask Hotline about this text",
+      "icon": "ms-resource://Files/Assets/StoreLogo.png",
+      "usesGenerativeAI": true,
+      "allowedAppInvokers": ["*"],
+      "inputs": [ { "name": "text", "kind": "Text" } ],
+      "inputCombinations": [ { "inputs": ["text"], "description": "Ask Hotline about '${text.ShortText}'" } ],
+      "invocation": { "type": "Uri", "uri": "hotline-action://ask", "inputData": { "text": "${text.Text}" } }
+    },
+    {
+      "id": "Hotline.AskImage",
+      "description": "Ask Hotline about this image",
+      "icon": "ms-resource://Files/Assets/StoreLogo.png",
+      "usesGenerativeAI": true,
+      "allowedAppInvokers": ["*"],
+      "inputs": [ { "name": "image", "kind": "Photo" } ],
+      "inputCombinations": [ { "inputs": ["image"], "description": "Ask Hotline about this image" } ],
+      "invocation": { "type": "Uri", "uri": "hotline-action://ask", "inputData": { "image": "${image.Path}" } }
+    },
+    {
+      "id": "Hotline.Summarize",
+      "description": "Summarize with Hotline",
+      "icon": "ms-resource://Files/Assets/StoreLogo.png",
+      "usesGenerativeAI": true,
+      "allowedAppInvokers": ["*"],
+      "inputs": [ { "name": "text", "kind": "Text" } ],
+      "inputCombinations": [ { "inputs": ["text"], "description": "Summarize with Hotline" } ],
+      "invocation": { "type": "Uri", "uri": "hotline-action://run/summarize", "inputData": { "text": "${text.Text}" } }
+    },
+    {
+      "id": "Hotline.Translate",
+      "description": "Translate with Hotline",
+      "icon": "ms-resource://Files/Assets/StoreLogo.png",
+      "usesGenerativeAI": true,
+      "allowedAppInvokers": ["*"],
+      "inputs": [ { "name": "text", "kind": "Text" } ],
+      "inputCombinations": [ { "inputs": ["text"], "description": "Translate with Hotline" } ],
+      "invocation": { "type": "Uri", "uri": "hotline-action://run/translate", "inputData": { "text": "${text.Text}" } }
+    },
+    {
+      "id": "Hotline.Fix",
+      "description": "Fix spelling and grammar with Hotline",
+      "icon": "ms-resource://Files/Assets/StoreLogo.png",
+      "usesGenerativeAI": true,
+      "allowedAppInvokers": ["*"],
+      "inputs": [ { "name": "text", "kind": "Text" } ],
+      "inputCombinations": [ { "inputs": ["text"], "description": "Fix spelling and grammar with Hotline" } ],
+      "invocation": { "type": "Uri", "uri": "hotline-action://run/fix", "inputData": { "text": "${text.Text}" } }
+    },
+    {
+      "id": "Hotline.Explain",
+      "description": "Explain with Hotline",
+      "icon": "ms-resource://Files/Assets/StoreLogo.png",
+      "usesGenerativeAI": true,
+      "allowedAppInvokers": ["*"],
+      "inputs": [ { "name": "text", "kind": "Text" } ],
+      "inputCombinations": [ { "inputs": ["text"], "description": "Explain with Hotline" } ],
+      "invocation": { "type": "Uri", "uri": "hotline-action://run/explain", "inputData": { "text": "${text.Text}" } }
+    }
+  ]
+}

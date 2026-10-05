@@ -154,36 +154,11 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        _router.SelfTestRequested += uri =>
-        {
-            _presenter.SelfTest(uri);
-            var problems = _settingsHost?.SelfTest() ?? [];
-            if (problems.Count == 0) _log.Info("selftest settings ok");
-            else _log.Error("selftest settings FAILED: " + string.Join("; ", problems));
-            if (uri?.Query.Contains("selection", StringComparison.OrdinalIgnoreCase) == true)
-            {
-                // hotline://selftest?selection reads the foreground app's selection via UI Automation only (no keys,
-                // no clipboard) and logs its length, never its text.
-                var fg = Interop.Native.GetForegroundWindow();
-                var read = Interop.SelectionReader.Read(fg, AttachSelectionMode.Auto, _log);
-                _log.Info($"selftest selection: {(read is null ? "none" : $"{read.Text.Length} chars")} ({Interop.Native.ClassNameOf(fg)})");
-            }
-            if (uri?.Query.Contains("voice", StringComparison.OrdinalIgnoreCase) == true)
-                _ = _presenter.VoiceSelfTestAsync().ContinueWith(t => _log.Info($"selftest voice: {t.Result}"), TaskScheduler.Default);
-            if (uri?.Query.Contains("tools", StringComparison.OrdinalIgnoreCase) == true && _toolHost is { } tools)
-                _ = Task.Run(async () => // hotline://selftest?tools starts the mcp.json servers (no UI) for the crash-cleanup check
-                {
-                    try
-                    {
-                        using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60));
-                        var list = await tools.GetToolsAsync(timeout.Token);
-                        _log.Info($"selftest tools: {list.Count} tool(s); " + string.Join(", ", tools.Status.Select(s => $"{s.Name}={s.State}")));
-                    }
-                    catch (Exception ex) { _log.Error("selftest tools FAILED", ex); }
-                });
-        };
+        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, _log);
+        _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += () => _presenter.Demo();
         _router.VoiceRequested += command => _presenter.Voice(command);
+        _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };

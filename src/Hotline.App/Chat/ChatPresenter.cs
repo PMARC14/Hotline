@@ -118,6 +118,24 @@ internal sealed class ChatPresenter
 
     public Task<string> VoiceSelfTestAsync() => WindowsSpeech.CheckAsync();
 
+    /// <summary>
+    /// An App Action (Click to Do, the action catalog, another app): attach its text or image, put the quick action in
+    /// the message box, and send at once only when Windows asked for it (otherwise the user presses Enter).
+    /// </summary>
+    public void RunAppAction(Hotline.Core.Activation.AppActionRequest action) => _tasks.Run("run the action", async () =>
+    {
+        if (action.Text is { } text) _attachments.AttachSelection(text, null);
+        if (action.ImagePath is { } path)
+        {
+            var bytes = await File.ReadAllBytesAsync(path);
+            await _attachments.AddBytesAsync($"image-{DateTime.Now:HHmmss}{Path.GetExtension(path)}", null, bytes);
+            if (path.StartsWith(Hotline.App.ActivationRouter.ActionImagesFolder, StringComparison.OrdinalIgnoreCase))
+                try { File.Delete(path); } catch (IOException) { } // our copy; the original stays where it was
+        }
+        if (action.QuickAction is { } name) _composer.Text = $"/{name}";
+        if (action.AutoSend) await SendAsync();
+    });
+
     public void Demo() => _selfTest.Demo();
 
     public async void SelfTest(Uri? uri) => await _selfTest.RunAsync();

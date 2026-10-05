@@ -34,6 +34,19 @@
             <uap:DisplayName>Hotline</uap:DisplayName>
           </uap:Protocol>
         </uap:Extension>
+        <!-- App Actions on Windows (Click to Do, the action catalog): Public/actions.json, launched as hotline-action://… -->
+        <uap:Extension Category="windows.protocol">
+          <uap:Protocol Name="hotline-action" ReturnResults="optional">
+            <uap:DisplayName>Hotline actions</uap:DisplayName>
+          </uap:Protocol>
+        </uap:Extension>
+        <uap3:Extension Category="windows.appExtension">
+          <uap3:AppExtension Name="com.microsoft.windows.ai.actions" Id="HotlineActions" DisplayName="Hotline" PublicFolder="Public">
+            <uap3:Properties>
+              <Registration xmlns="">actions.json</Registration>
+            </uap3:Properties>
+          </uap3:AppExtension>
+        </uap3:Extension>
         <uap3:Extension Category="windows.appExtension">
           <uap3:AppExtension Name="com.microsoft.windows.copilotkeyprovider" Id="Hotline"
             DisplayName="Hotline" Description="Open the Hotline AI popup" PublicFolder="Public">
