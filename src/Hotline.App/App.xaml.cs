@@ -157,7 +157,7 @@ public partial class App : Application
                 // no clipboard) and logs its length, never its text.
                 var fg = Interop.Native.GetForegroundWindow();
                 var read = Interop.SelectionReader.Read(fg, AttachSelectionMode.Auto, _log);
-                _log.Info($"selftest selection: {(read is null ? "none" : $"{read.Text.Length} chars from {read.App}")} ({Interop.Native.ClassNameOf(fg)})");
+                _log.Info($"selftest selection: {(read is null ? "none" : $"{read.Text.Length} chars")} ({Interop.Native.ClassNameOf(fg)})");
             }
             if (uri?.Query.Contains("tools", StringComparison.OrdinalIgnoreCase) == true && _toolHost is { } tools)
                 _ = Task.Run(async () => // hotline://selftest?tools starts the mcp.json servers (no UI) for the crash-cleanup check
