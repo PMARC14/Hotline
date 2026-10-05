@@ -9,7 +9,7 @@ namespace Hotline.Core.Tools;
 /// tools when a connection uses Hotline's tools. Saving a memory asks first unless chat.memoryTool says otherwise.
 /// </summary>
 public sealed class HotlineToolHost(IToolHost? mcp, MemoryStore memory, Func<MemoryToolMode> mode,
-    Func<ToolCallRequest, CancellationToken, Task<ToolDecision>> approve, Action alwaysAllow) : IToolHost
+    Func<ToolCallRequest, CancellationToken, Task<ToolDecision>> approve, Action alwaysAllow, Action<string>? saved = null) : IToolHost
 {
     public const string RememberApiName = "hotline_remember";
 
@@ -25,7 +25,7 @@ public sealed class HotlineToolHost(IToolHost? mcp, MemoryStore memory, Func<Mem
     public IReadOnlyList<ToolSpec> BuiltIn => mode() == MemoryToolMode.Off ? [] : [Remember];
 
     public async Task<IReadOnlyList<ToolSpec>> GetToolsAsync(CancellationToken ct) =>
-        [.. mcp is null ? [] : await mcp.GetToolsAsync(ct), .. BuiltIn];
+        [.. (mcp is null ? [] : await mcp.GetToolsAsync(ct)).Where(t => t.ApiName != RememberApiName), .. BuiltIn]; // the name is Hotline's
 
     public async Task<ToolResult> CallAsync(ToolSpec tool, JsonElement arguments, CancellationToken ct)
     {
@@ -42,8 +42,8 @@ public sealed class HotlineToolHost(IToolHost? mcp, MemoryStore memory, Func<Mem
             if (answer == ToolDecision.Deny) return new ToolResult("The user declined saving that.", true);
             if (answer == ToolDecision.AllowAlways) alwaysAllow();
         }
-        return memory.Append(fact)
-            ? new ToolResult("Saved to the user's memory.", false)
-            : new ToolResult($"Not saved: a fact must be one line of at most {MemoryStore.MaxFactChars} characters.", true);
+        if (!memory.Append(fact)) return new ToolResult($"Not saved: a fact must be one line of at most {MemoryStore.MaxFactChars} characters.", true);
+        saved?.Invoke(fact.Trim()); // always visible, also when saving without asking (a planted "fact" can't hide)
+        return new ToolResult("Saved to the user's memory.", false);
     }
 }

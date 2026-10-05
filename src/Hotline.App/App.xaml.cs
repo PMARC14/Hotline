@@ -104,9 +104,12 @@ public partial class App : Application
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
         // Hotline's own tools (remember) + the MCP tools; saving a memory asks in the panel unless chat.memoryTool says otherwise.
-        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory, () => settings.Chat.MemoryTool,
+        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
+            () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow));
+            () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
+            fact => _popup.DispatcherQueue.TryEnqueue(() =>
+                _presenter?.Notice($"Saved to memory: \"{fact}\" (Settings › Chat and history › Edit memory)", Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),

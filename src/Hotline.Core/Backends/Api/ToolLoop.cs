@@ -15,7 +15,8 @@ public static class ToolLoop
     public static async Task<IReadOnlyList<ToolSpec>> ToolsFor(BackendProfile profile, IToolHost? host, CancellationToken ct) =>
         host is null ? []
         : profile.Tools == ToolMode.Inherit ? await host.GetToolsAsync(ct)
-        : host is HotlineToolHost hotline ? hotline.BuiltIn : [];
+        // OpenAI-style servers: some models reject any request that lists tools, so only after opting into tools.
+        : host is HotlineToolHost hotline && profile.Type is BackendType.Anthropic or BackendType.Gemini ? hotline.BuiltIn : [];
 
     /// <summary>The visible line in the answer when a tool runs.</summary>
     public static string Note(IReadOnlyList<ToolSpec> tools, string apiName)
