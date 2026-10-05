@@ -38,4 +38,8 @@ finally {
     [IO.File]::WriteAllText($manifest, $original)
 }
 
+# Keep the three newest package folders; every dev build is ~90 MB and they piled up to gigabytes.
+Get-ChildItem $out -Directory -Filter 'Hotline.App_*' | Sort-Object LastWriteTime -Descending | Select-Object -Skip 3 |
+    ForEach-Object { Remove-Item $_.FullName -Recurse -Force -ErrorAction SilentlyContinue }
+
 Get-ChildItem $out -Recurse -Filter "*_$($Version)_*.msix" | Select-Object -Last 1 -ExpandProperty FullName
