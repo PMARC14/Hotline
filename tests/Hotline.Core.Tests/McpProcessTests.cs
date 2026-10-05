@@ -108,17 +108,36 @@ public class McpProcessTests
         var started = new List<int>();
         var connect = StdioMcpSession.Connector(p => started.Add(p.Id), _ => { });
         var pidFile = Path.Combine(Path.GetTempPath(), $"hotline-mcp-{Guid.NewGuid():N}.pid");
-        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        using var cts = new CancellationTokenSource();
         // cmd → powershell that never answers; cancellation must take the whole tree down.
+        var connecting = connect(
+            Server("cmd.exe", ["/c", $"powershell.exe -NoProfile -Command Set-Content -Path '{pidFile}' -Value $PID; Start-Sleep 120"]), cts.Token);
+        // Cancel only once the grandchild exists (PowerShell can take many seconds to start on CI runners).
+        var childPid = await ReadPidAsync(pidFile, TimeSpan.FromSeconds(60));
         var sw = Stopwatch.StartNew();
-        await Assert.ThrowsAnyAsync<Exception>(() => connect(
-            Server("cmd.exe", ["/c", $"powershell.exe -NoProfile -Command Set-Content -Path '{pidFile}' -Value $PID; Start-Sleep 120"]), cts.Token));
-        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(7), $"cancelled connect took {sw.Elapsed} (5 s timeout + teardown)");
+        cts.Cancel();
+        await Assert.ThrowsAnyAsync<Exception>(() => connecting);
+        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(3), $"cancelled connect took {sw.Elapsed} to tear down");
         var rootPid = Assert.Single(started);
-        var childPid = int.Parse(File.ReadAllText(pidFile).Trim());
         File.Delete(pidFile);
         await Task.Delay(500);
         Assert.Throws<ArgumentException>(() => Process.GetProcessById(rootPid));
         Assert.Throws<ArgumentException>(() => Process.GetProcessById(childPid));
+    }
+
+    /// <summary>Waits for a process to write its PID (the file can exist before its content is complete).</summary>
+    private static async Task<int> ReadPidAsync(string path, TimeSpan timeout)
+    {
+        var sw = Stopwatch.StartNew();
+        while (sw.Elapsed < timeout)
+        {
+            try
+            {
+                if (File.Exists(path) && int.TryParse(File.ReadAllText(path).Trim(), out var pid)) return pid;
+            }
+            catch (IOException) { } // still being written
+            await Task.Delay(100);
+        }
+        throw new TimeoutException($"no PID in {path} after {timeout}");
     }
 }
