@@ -10,7 +10,7 @@ configurable in plain files.
   <img src="docs/images/panel.png" width="560" alt="The Hotline panel answering a question with a formula, code and a table">
 </p>
 
-> Status: early development, personal-use quality. Windows 11 only. Apache-2.0.
+> Status: pre-1.0 — used daily, expect rough edges. Windows 11 only. Apache-2.0.
 
 ## Features
 
@@ -24,8 +24,15 @@ configurable in plain files.
 - **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
   SVG drawings, and the whole conversation selectable in one drag.
 - **Screens and files** — capture the window you were in, the whole screen, or a region you drag out; paste or drop
-  images and files.
+  images and files. Models that can't see images get the **text in the screenshot** instead (Windows' offline OCR).
+- **Selected text comes along** — text you had selected in the app you came from is attached automatically (through
+  UI Automation: no keystrokes, your clipboard untouched).
+- **Quick actions** — type `/` for `/translate`, `/summarize`, `/fix`, `/explain`, or your own: each is a Markdown file
+  in `actions\`.
+- **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
 - **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑.
+- **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits
+  are retried for you, and Settings › AI connections › *Test connection* checks a key and model.
 - **Tools, carefully** — API connections can use tools from your **MCP servers** (`mcp.json`, the same format other
   MCP apps use) and, when your Windows has it, the built-in **Windows agent connectors**. Read-only tools run; anything
   else asks you in the panel (*Allow once / Always / Deny*). CLI connections can use their own tools under their own
@@ -39,9 +46,28 @@ configurable in plain files.
   <img src="docs/images/settings.png" width="640" alt="The Hotline settings window">
 </p>
 
-## Install (from source)
+## Install
 
-Requires Windows 11 22H2+ and the [.NET SDK 10.0.401+](https://dotnet.microsoft.com/download).
+Windows 11 22H2 or later.
+
+### From Releases
+
+Download the latest `.msix` from [Releases](https://github.com/PMARC14/hotline/releases) and double-click it (Windows'
+App Installer opens with an **Install** button). To get automatic updates instead, download `Hotline.appinstaller`
+and open that.
+
+> **Test builds** (pre-releases) are signed with a throwaway self-signed certificate, so Windows refuses them until
+> you trust that build's `Hotline.cer` once (admin PowerShell, in the download folder):
+> `Import-Certificate -FilePath .\Hotline.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople`.
+> Each test build has its own certificate, and test builds don't update automatically. Trusted-signed releases
+> need none of this.
+
+Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
+Hotline**. (Windows only lets packaged apps take the Copilot key, which is why Hotline installs as a package.)
+
+### From source
+
+Requires the [.NET SDK 10.0.401+](https://dotnet.microsoft.com/download).
 
 ```powershell
 git clone https://github.com/PMARC14/hotline
@@ -50,12 +76,14 @@ powershell -File scripts\dev-cert.ps1   # once: creates a self-signed certificat
 powershell -File scripts\install.ps1    # builds, signs and installs Hotline, then starts it in the tray
 ```
 
-Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
-Hotline**. (Windows only lets packaged apps take the Copilot key, which is why Hotline installs as a package.)
+Then assign the key as above.
 
 ## Using it
 
-- **Copilot key** — open/close. **Long press** — new chat. **Esc** hides, **Ctrl+N** new chat.
+- **Copilot key** — open/close. **Long press** — new chat (or *Voice input*: talk while you hold it). **Esc** hides,
+  **Ctrl+N** new chat.
+- **/** at the start of a message — quick actions (`/translate some text`, or `/summarize` with an attachment).
+- **Selected text** in the app you came from shows up as a chip; remove it with its ✕ if you don't want it.
 - **+** / bar buttons — attach files, capture the window you were in, the whole screen, or a region. Ctrl+V pastes images.
 - **📌 Pin** keeps the panel open while you drag files in.
 - **⚙ Settings** — AI connections, prompts, appearance, window size, history, folders.

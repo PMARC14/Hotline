@@ -45,6 +45,6 @@ release (the update check compares versions).
 - [ ] **winget** (after signing): submit the first version by hand (`wingetcreate new`), add `WINGET_TOKEN`, set
       `HOTLINE_WINGET_ENABLED=true` — later releases are submitted automatically.
 - [ ] **Final icon** (the user's SVG of an upside-down phone hanging by its cord) → `scripts\make-assets.ps1 -Source`.
-- [ ] **README:** fresh screenshots (`hotline://demo`, blur anything personal), install steps for signed releases.
+- [ ] **README:** fresh screenshots (`hotline://demo`, blur anything personal). Install steps from Releases are in.
 - [x] **License check:** Apache-2.0 for Hotline; third-party components listed in `THIRD-PARTY-NOTICES.md` (licenses
       taken from the package metadata).

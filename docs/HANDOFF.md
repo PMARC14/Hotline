@@ -10,25 +10,40 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 the user picks — Claude Code CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-10-04)
+## State (2026-10-04, evening)
 
 - `main`: Plans 1–5 merged (PR #1). This adds MCP tools for API connections with approvals, region capture,
   `toolbar.json`, release automation and three review rounds of hardening. See the PR #1 description for the full list.
-- Branch **`plan6-public`**, draft PR #2: **Plan 6, the public-ready build** —
-  `docs/superpowers/plans/2026-10-04-hotline-plan6-public-release.md`. Nothing is implemented yet; start at task 1.
+- Branch **`plan6-public`**, PR #2: **Plan 6, the public-ready build**
+  (`docs/superpowers/plans/2026-10-04-hotline-plan6-public-release.md`) — all seven tasks implemented, each reviewed
+  by agy (Opus 5.5 high + Gemini 3.8 Flash high) with confirmed findings fixed:
+  1. MCP servers start in Hotline's kill-on-close job (`Tools/McpProcess.cs`: same cmd /c wrapping and escaping as
+     the SDK, `StreamClientTransport`); verified with a hard kill and a stdin-ignoring control server.
+  2. Gemini/OpenAI effort pickers, 429/503/529 retries with status notes (`ChatDelta.Status` → `AssistantStatus`),
+     Test connection says whether the chosen model exists.
+  3. Quick actions (`actions\*.md`, `/` suggestions in the composer).
+  4. Selected text → chip (`chat.attachSelection`, UI Automation; opt-in Ctrl+C with exact clipboard restore).
+     Settings schema v8.
+  5. OCR for text-only models (`chat.ocr`, connection `images`; Windows.Media.Ocr).
+  6. Push-to-talk voice (`activation.hold = "voice"`, `chat.voiceAutoSend`; Windows speech recognition, microphone
+     capability).
+  7. README/configuration/THIRD-PARTY-NOTICES updated (Interop.UIAutomationClient, MIT).
 - Release automation: every code merge to `main` publishes a release `v<version.txt>.<run number>`. These are
   self-signed pre-releases until the signing secrets exist (`docs/RELEASING.md`).
-- Tests: 521 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (the "fallback hotkey" check is flaky when
-  the user is typing during the run).
+- Tests: 610 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (now also checks OCR on the rendered
+  transcript and the `/` suggestion list; the "fallback hotkey" check is flaky when the user is typing during the run).
 - Git history was rewritten on 2026-10-04: noreply author, no personal paths, no certificate password. The dev
   certificate password now lives in `certs/hotline-dev.password` (git-ignored); `build-msix.ps1` reads it.
 
 ## Next work
 
-Plan 6 (link above), in order: MCP servers in the kill-on-close job; API polish (Gemini/OpenAI effort pickers, 429
-retries, Test connection); quick actions; selected text; OCR for text-only models; push-to-talk voice; public-ready
-README and reviews. The user does trusted signing and real-key API tests before making the repo public. They flip the
-visibility themselves.
+Needs a person at the PC (not testable headless): selected text in Notepad/Edge/Word with the key (and clipboard mode
+restoring the clipboard), voice (hold the key with `activation.hold = "voice"`; first use shows the microphone
+prompt), fresh README screenshots via `hotline://demo`. Then the user does trusted signing and real-key API tests
+before making the repo public; they flip the visibility themselves.
+
+Self-test links for headless checks: `hotline://selftest` (+ `?tools` starts the mcp.json servers, `?selection` reads
+the foreground app's selection via UIA and logs only its length, `?voice` checks dictation setup without the mic).
 
 Still open: the region capture human check (multi-monitor / mixed DPI); `odr.exe` untested (needs build 26220.7262+).
 
@@ -43,17 +58,18 @@ caret visibility on all themes.
   - `Backends/` `ConnectionTypes`, `ConnectionEditor`, `ModelCatalog`/`ModelFamilies`, `Secrets`, `BackendCatalog`
     (factory + cache), `Agy/` (stream-json CLI, workspace, permissions), `ClaudeCode/` (stream-json CLI),
     `Api/` (`ApiCommon` SSE/errors/https rule, `OpenAiBackend`, `GeminiBackend`, `AnthropicBackend`).
-  - `Chat/` `ChatController` (turns, cancel, retry, resume), `HistoryStore` (JSONL, `Recent`), `PromptLibrary`.
+  - `Chat/` `ChatController` (turns, cancel, retry, resume), `HistoryStore` (JSONL, `Recent`), `PromptLibrary`, `QuickActions`, `OcrPlan`, `VoiceText`, attachments (`SelectionAttachment`).
   - `Settings/` `HotlineSettings` (schema v7), `SettingsStore` (settings.json + `connections/*.json`, migrations,
     side-effect-free `TryRead`), `SettingsService` (live Update/Reload with merge-by-id), `SettingsSchema`.
   - `Text/` `MarkdownModel` (Markdig → block model; math, SVG, task lists), `LatexText`, `SvgSanitizer`.
-  - `Tools/` MCP (see above). `Windowing/` geometry, `ToolbarLayout`. `Processes/` line processes.
+  - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`: process start, stderr throttle). `Windowing/` geometry, `ToolbarLayout`. `Processes/` line processes.
 - `src/Hotline.App` (WinUI 3, packaged MSIX, full trust):
   - `App.xaml.cs` composition root; `PopupWindow` (sizing, eased growth, focus, off-screen mode); `ActivationRouter`.
   - `Chat/ChatPresenter*.cs` (single selectable `RichTextBlock` transcript, attachments, recent chats, self-test,
     demo), `MarkdownRenderer`, `ProviderBar`, `CliRunner`, `PasswordVaultSecretStore`.
   - `Settings/` settings window (pages generated from `SettingsSchema`, connections, prompts, agy permissions).
-  - `Interop/` tray, Copilot fast path, hotkey, job object, Win32.
+  - `Interop/` tray, Copilot fast path, hotkey, job object, Win32, `SelectionReader` (UIA + clipboard fallback).
+  - `Chat/ChatPresenter.Actions|Ocr|Voice.cs` quick actions, OCR at send, push-to-talk.
 
 ## Hard-won facts (don't relearn these)
 
@@ -78,6 +94,15 @@ caret visibility on all themes.
 - **Windows on-device agent registry:** connectors run only via `odr.exe` (build 26220.7262+).
 - **Scripting edits from bash heredocs mangles `\n`** in C# strings — write Python edit scripts to a file with raw
   strings, or use the Edit tool.
+- **Clipboard:** `OpenClipboard(NULL)` + `EmptyClipboard` leaves the clipboard ownerless and every `SetClipboardData`
+  then fails — restoring needs a real owner window (`ClipboardOwner`: message-only window on its own pumping thread,
+  so other apps' clipboard messages never wait on the UI thread). Never send Ctrl+C unless UIA confirmed "no text
+  pattern": an empty selection copies a whole line (editors) or sends SIGINT (terminals).
+- **agy reviews:** prompts over ~32k chars fail with "Argument list too long"; start the prompt with "answer from the
+  text below only, do not call any tool" or Gemini sometimes tries a tool and headless mode aborts; Opus via agy hits
+  a short per-user quota after a few big reviews (wait ~5 min and rerun).
+- **MCP SDK 2.2.0:** `StreamClientTransport(serverInput, serverOutput)` — the first stream is the one written to
+  (the server's stdin).
 
 ## Process that worked
 
