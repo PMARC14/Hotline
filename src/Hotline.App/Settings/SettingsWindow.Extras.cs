@@ -47,9 +47,9 @@ public sealed partial class SettingsWindow
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             for (var c = 0; c < 3; c++) row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             row.Children.Add(new TextBlock { Text = ToolbarNames.GetValueOrDefault(items[i], items[i]), VerticalAlignment = VerticalAlignment.Center });
-            AddIconButton(row, 1, "", "Move left", index > 0, () => Save(ToolbarConfig.Move(items, index, -1)));
-            AddIconButton(row, 2, "", "Move right", index < items.Count - 1, () => Save(ToolbarConfig.Move(items, index, +1)));
-            AddIconButton(row, 3, "", "Remove from the bar", items.Count > 1, () =>
+            AddIconButton(row, 1, "\uE76B", "Move left", index > 0, () => Save(ToolbarConfig.Move(items, index, -1)));
+            AddIconButton(row, 2, "\uE76C", "Move right", index < items.Count - 1, () => Save(ToolbarConfig.Move(items, index, +1)));
+            AddIconButton(row, 3, "\uE711", "Remove from the bar", items.Count > 1, () =>
                 Save(items.Where((_, j) => j != index).ToList()));
             list.Children.Add(row);
         }

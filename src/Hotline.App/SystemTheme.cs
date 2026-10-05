@@ -42,6 +42,8 @@ internal static class SystemTheme
     public static ElementTheme Resolve(ThemeChoice choice) => ResolveDark(choice) ? ElementTheme.Dark : ElementTheme.Light;
 
     /// <summary>Caption buttons and title bar in the same theme as the content (Windows draws them white otherwise).</summary>
-    public static void ApplyTitleBar(AppWindow window, ThemeChoice choice) =>
-        window.TitleBar.PreferredTheme = ResolveDark(choice) ? TitleBarTheme.Dark : TitleBarTheme.Light;
+    public static void ApplyTitleBar(AppWindow window, ThemeChoice choice)
+    {
+        if (window.TitleBar is { } bar) bar.PreferredTheme = ResolveDark(choice) ? TitleBarTheme.Dark : TitleBarTheme.Light;
+    }
 }
