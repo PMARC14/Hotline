@@ -109,6 +109,8 @@ try {
     for ($i = 0; $i -lt 20 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest (rebuild ok|FAILED)'); $i++) { Start-Sleep -Milliseconds 500 }
     Expect-Log 'transcript self-test renders' $n 'selftest rebuild ok'
     Expect-Log 'settings window pages build' $n 'selftest settings ok'
+    for ($i = 0; $i -lt 10 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest quick actions'); $i++) { Start-Sleep -Milliseconds 500 }
+    Check 'quick action suggestions list' ([bool](Get-NewLog $n | Select-String -Pattern 'selftest quick actions: [1-9]')) '(no suggestions for "/")'
 
     # 4c. Hand edits to settings.json apply live (no restart)
     $n = Get-LogCount

@@ -85,6 +85,7 @@ internal sealed partial class ChatPresenter(
         popup.RegionCaptureRequested += () => Run("capture region", CaptureRegionAsync);
 
         popup.Input.PreviewKeyDown += Input_PreviewKeyDown;
+        InitializeActions();
         var restingBorder = popup.Composer.BorderBrush;
         popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = _style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
         popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = restingBorder; popup.Composer.BorderThickness = new Thickness(1); };
@@ -126,6 +127,11 @@ internal sealed partial class ChatPresenter(
 
     private void Input_PreviewKeyDown(object sender, KeyRoutedEventArgs e)
     {
+        if (SuggestionsOpen && HandleSuggestionKey(e.Key))
+        {
+            e.Handled = true;
+            return;
+        }
         var ctrl = InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down);
         if (e.Key == VirtualKey.Up && ctrl && popup.Input.Text.Length == 0 && !chat.IsBusy)
         {
@@ -146,6 +152,7 @@ internal sealed partial class ChatPresenter(
         if (chat.IsBusy) { chat.Cancel(); return; }
         var text = popup.Input.Text.Trim();
         if (text.Length == 0 && tray.Items.Count == 0) return;
+        if (ApplyQuickAction(text) is not { } toSend) return; // draft stays in the box
         if (!chat.CanAccept(tray.Items, out var reason))
         {
             Notice(reason!, InfoBarSeverity.Warning); // draft stays in the box
@@ -155,7 +162,7 @@ internal sealed partial class ChatPresenter(
         RefreshChips();
         popup.Input.Text = "";
         log.Info($"chat send via {chat.BackendId}: {text.Length} chars, {attachments.Count} attachment(s)");
-        await chat.SendAsync(text, attachments);
+        await chat.SendAsync(toSend, attachments);
     }
 
     private void SetBusy(bool busy)

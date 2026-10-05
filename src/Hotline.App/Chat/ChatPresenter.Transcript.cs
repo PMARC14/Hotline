@@ -315,6 +315,13 @@ internal sealed partial class ChatPresenter
             ApplyAppearance(); // full rebuild path
             await Step("rebuild");
             log.Info($"selftest rebuild ok: {_transcript.Blocks.Count} paragraphs");
+            OnChatEvent(new AssistantStatus("st-b", "Self test is rate limited, retrying in 0 s…"));
+            await Step("status note");
+            var draft = popup.Input.Text;
+            popup.Input.Text = "/";
+            await Step("quick actions");
+            log.Info($"selftest quick actions: {popup.SuggestionsList.Items.Count} suggestion(s)");
+            popup.Input.Text = draft;
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }
         finally

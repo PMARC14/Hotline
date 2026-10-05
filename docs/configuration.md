@@ -8,6 +8,7 @@ same files). Comments and trailing commas are allowed.
 | `settings.json` | General options (window, appearance, chat, key actions), `chat.order` (Provider dropdown order) and `chat.defaultBackend` |
 | `connections\<id>.json` | One file per AI connection. Add a connection by dropping in a file; remove one by deleting it |
 | `prompts\<name>.md` | System prompts (`default.md` is created on first run) |
+| `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The bottom bar: which items, in what order |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`) |
@@ -85,6 +86,13 @@ Without a rule, tools the server marks read-only run and everything else asks; d
 build 26220.7262+), its connectors are added as `windows-…` servers. Settings › **Tools** shows each server's status.
 Servers start on first use and stop with Hotline, even if it crashes (they run in its kill-on-close job); their stderr
 goes to `logs\hotline.log` (at most 20 lines a minute per server).
+
+## Quick actions (actions\<name>.md)
+
+Type `/` at the start of the message to list them (↑/↓, Tab or Enter to pick, Esc to close). `/name some text` sends
+the file's text as an instruction followed by your text; `/name` alone applies it to the attachments. The first line is
+the description in the list. Add your own by dropping in a file (letters, digits, `-` and `_` in the name); delete or
+edit the defaults freely: they're written only when the folder doesn't exist yet.
 
 ## toolbar.json
 
