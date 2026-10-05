@@ -46,6 +46,10 @@ public static class SettingsSchema
 
     public static IReadOnlyList<SettingItem> Items { get; } =
     [
+        Choice(SettingsPage.General, "Copilot key", "As Right Ctrl, Copilot+C is Ctrl+C and the key no longer opens Hotline (use the extra hotkey " +
+            "below, or the tray icon). Works on keyboards whose Copilot key sends Win+Shift+F23 (most do).",
+            [(Activation.CopilotKeyMode.Hotline, "Opens Hotline"), (Activation.CopilotKeyMode.RightCtrl, "Acts as Right Ctrl")],
+            s => s.Activation.CopilotKey, (s, v) => s.Activation.CopilotKey = v),
         Choice(SettingsPage.General, "Short press of the Copilot key", null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
         Choice(SettingsPage.General, "Long press of the Copilot key", null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
         new ToggleItem(SettingsPage.General, "Voice input", "Hold the Copilot key and talk; let go to stop (Esc cancels). Uses Windows speech " +

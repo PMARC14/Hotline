@@ -111,6 +111,11 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     public void OnKey(KeyEvent e, KeySource source)
     {
+        if (settings.CopilotKey == CopilotKeyMode.RightCtrl && source != KeySource.Hotkey)
+        {
+            log.Info($"key {e} via {source} ignored (the Copilot key acts as Right Ctrl)");
+            return;
+        }
         if (!deduper.ShouldHandle(e, source))
         {
             log.Info($"key {e} via {source} (duplicate, ignored)");

@@ -31,6 +31,7 @@ public partial class App : Application
     private ISecretStore? _secrets;
     private readonly HashSet<string> _pendingInvalidations = [];
     private SettingsHost? _settingsHost;
+    private CopilotKeyHook? _keyHook;
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
     private string? _odrPath;
@@ -175,10 +176,13 @@ public partial class App : Application
             try { _popup.ApplyAppearance(); _presenter.ApplyAppearance(); } // Windows switched light/dark
             catch (Exception ex) { _log.Error("applying the Windows theme failed", ex); }
         });
+        _keyHook = new CopilotKeyHook(_log);
+        _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
         _settingsService.Changed += () =>
         {
             try
             {
+                _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
                 _popup.GrowMode = settings.Chat.GrowMode;
                 _popup.ApplyAppearance();
@@ -209,10 +213,11 @@ public partial class App : Application
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
-            onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
+            onRestart: () => { _tray?.Dispose(); _keyHook?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
             onQuit: () =>
             {
                 _tray?.Dispose();
+                _keyHook?.Dispose(); // lets go of Right Ctrl if it's held
                 // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
                 try
                 {

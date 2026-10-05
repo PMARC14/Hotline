@@ -25,6 +25,8 @@ public sealed class ActivationSettings
     public KeyAction Hold { get; set; } = KeyAction.NewChat;
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
     public string? FallbackHotkey { get; set; }
+    /// <summary>Hotline = the key opens Hotline (tap/hold actions above); RightCtrl = it's a plain Right Ctrl key.</summary>
+    public Activation.CopilotKeyMode CopilotKey { get; set; } = Activation.CopilotKeyMode.Hotline;
 }
 
 public enum PopupLayout { QuickView, CommandBar, SidePanel }
