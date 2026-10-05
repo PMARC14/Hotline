@@ -84,6 +84,9 @@ public static class SettingsSchema
             "Ctrl+C also works in apps that don't share their selection, but briefly uses the clipboard (restored afterwards).",
             [(AttachSelectionMode.Auto, "Yes"), (AttachSelectionMode.Clipboard, "Yes, also with Ctrl+C"), (AttachSelectionMode.Off, "No")],
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
+        Choice(SettingsPage.Chat, "Screenshot text (OCR)", "Windows reads the text in images (offline) for models that can't see them.",
+            [(OcrMode.Auto, "For text-only models"), (OcrMode.Always, "Always add it"), (OcrMode.Off, "Off")],
+            s => s.Chat.Ocr, (s, v) => s.Chat.Ocr = v),
         new NumberItem(SettingsPage.Chat, "Image size limit", "Attached and captured images are scaled to this longest edge.", 256, 8192, 128, "px",
             s => s.Chat.MaxImagePixels, (s, v) => s.Chat.MaxImagePixels = (int)v),
 

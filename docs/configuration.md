@@ -36,6 +36,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
+| `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: if that finds nothing, also send Ctrl+C and put your clipboard back afterwards (works in more apps, but the copy shows up in clipboard history, and opening can take up to about half a second). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
 
@@ -60,6 +61,7 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `extraArgs` | agy, Claude Code | Added on top, e.g. `--mcp-config C:\mcp\servers.json` |
 | `keepCliSessions` | Claude Code | Also keep Hotline chats in Claude Code's own history (`claude --resume`) |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
+| `images` | APIs | Whether the model reads images (`true`/`false`; default: `false` for `local`, `true` otherwise). With `false`, screenshots go as their text (`chat.ocr`) |
 | `refusalFallback` | Anthropic | If a safety check declines a request, the API re-serves it with a suitable model (default on) |
 
 API connections retry a rate limit or overload (HTTP 429/503/529) up to twice, waiting what the server asks

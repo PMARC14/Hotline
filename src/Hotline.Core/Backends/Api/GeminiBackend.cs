@@ -20,7 +20,7 @@ public sealed class GeminiBackend(BackendProfile profile, HttpClient http, ISecr
 {
     public string Id => profile.Id;
     public string DisplayName => profile.Name;
-    public BackendCapabilities Capabilities { get; } = new(Images: true, TextFiles: true);
+    public BackendCapabilities Capabilities { get; } = new(Images: ConnectionTypes.TakesImages(profile), TextFiles: true);
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
     {

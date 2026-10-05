@@ -275,6 +275,14 @@ public sealed partial class SettingsWindow
             host.Children.Add(Card("Refusal fallback", "If a safety check declines a request, the API re-serves it with a suitable model instead of stopping (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).", fallback));
         }
 
+        if (info.Has(ConnectionField.ApiKey))
+        {
+            var images = new ToggleSwitch { IsOn = ConnectionTypes.TakesImages(p), OnContent = "", OffContent = "", MinWidth = 0 };
+            images.Toggled += async (_, _) =>
+                await Save(x => x.Images = images.IsOn == info.ImagesByDefault ? null : images.IsOn); // default stays unset in the file
+            host.Children.Add(Card("Model reads images", "Off: screenshots are sent as their text (Settings › Chat › Screenshot text).", images));
+        }
+
         var prompt = new ComboBox { MinWidth = 220 };
         prompt.Items.Add(new ComboBoxItem { Content = $"Default ({_settings.Current.Chat.DefaultPrompt})", Tag = "" });
         foreach (var name in _prompts.List()) prompt.Items.Add(new ComboBoxItem { Content = name, Tag = name });

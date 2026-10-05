@@ -18,6 +18,8 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     public string BackendId { get; set; } = "";
     public IReadOnlyList<ChatMessage> Messages => _messages;
     public bool IsBusy => _cts is not null;
+    /// <summary>What the selected connection accepts (null when it isn't available).</summary>
+    public BackendCapabilities? CurrentCapabilities => resolveBackend(BackendId)?.Capabilities;
 
     public bool CanAccept(IReadOnlyList<Attachment> attachments, out string? reason)
     {

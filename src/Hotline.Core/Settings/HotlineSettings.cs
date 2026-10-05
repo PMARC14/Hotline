@@ -105,6 +105,9 @@ public sealed class BackendProfile
     public string? WorkingDirectory { get; set; }
     /// <summary>System prompt name (file ~/.hotline/prompts/&lt;name&gt;.md). Null = chat.defaultPrompt.</summary>
     public string? Prompt { get; set; }
+    /// <summary>Whether the model reads images. Null = the type's default (local: no; others: yes).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Images { get; set; }
 }
 
 public sealed class ChatSettings
@@ -128,6 +131,8 @@ public sealed class ChatSettings
     public int MaxImagePixels { get; set; } = 2048;
     /// <summary>Selected text in the app you came from becomes an attachment when the key opens the panel.</summary>
     public AttachSelectionMode AttachSelection { get; set; } = AttachSelectionMode.Auto;
+    /// <summary>Screenshot text for models that can't read images (Windows' built-in OCR, offline).</summary>
+    public OcrMode Ocr { get; set; } = OcrMode.Auto;
 
     public static List<BackendProfile> DefaultBackends() =>
     [
@@ -145,3 +150,6 @@ public enum GrowMode { Grow, Full }
 /// Off; Clipboard = also try Ctrl+C and put the clipboard back afterwards (works in more apps, briefly uses the clipboard).
 /// </summary>
 public enum AttachSelectionMode { Auto, Off, Clipboard }
+
+/// <summary>Auto = OCR images for connections that can't read them; Always = also add the text for image models; Off.</summary>
+public enum OcrMode { Auto, Always, Off }

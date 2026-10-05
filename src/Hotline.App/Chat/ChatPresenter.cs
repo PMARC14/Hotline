@@ -153,6 +153,7 @@ internal sealed partial class ChatPresenter(
         var text = popup.Input.Text.Trim();
         if (text.Length == 0 && tray.Items.Count == 0) return;
         if (ApplyQuickAction(text) is not { } toSend) return; // draft stays in the box
+        if (!await ApplyOcrAsync()) return;
         if (!chat.CanAccept(tray.Items, out var reason))
         {
             Notice(reason!, InfoBarSeverity.Warning); // draft stays in the box

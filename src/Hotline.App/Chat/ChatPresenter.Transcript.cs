@@ -306,6 +306,7 @@ internal sealed partial class ChatPresenter
             }
             OnChatEvent(new AssistantCompleted("st-a"));
             await Step("completed");
+            await SelfTestOcrAsync();
             OnChatEvent(new AssistantStarted("st-b", "Self test"));
             OnChatEvent(new AssistantFailed("st-b", BackendErrorKind.Failed, "simulated failure"));
             await Step("failed answer");

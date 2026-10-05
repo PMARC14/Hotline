@@ -7,7 +7,7 @@ public enum ConnectionField { None = 0, Endpoint = 1, ApiKey = 2, CliPath = 4, A
 
 public sealed record ConnectionTypeInfo(
     BackendType Type, string DisplayName, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
-    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string Description, bool EffortInModelId = false)
+    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string Description, bool EffortInModelId = false, bool ImagesByDefault = true)
 {
     public bool Has(ConnectionField field) => (Fields & field) == field;
 }
@@ -31,8 +31,11 @@ public static class ConnectionTypes
         new(BackendType.OpenAiCompatible, "OpenAI-compatible API", "OpenAI-compatible", Api, "https://api.openai.com/v1",
             ["low", "medium", "high"], false, "OpenAI, OpenRouter, Groq and other OpenAI-style APIs."),
         new(BackendType.Local, "Local endpoint", "Local model", Api, "http://127.0.0.1:8080/v1",
-            [], true, "llama.cpp server, LM Studio and other local OpenAI-style servers."),
+            [], true, "llama.cpp server, LM Studio and other local OpenAI-style servers.", ImagesByDefault: false),
     ];
 
     public static ConnectionTypeInfo Of(BackendType type) => All.First(t => t.Type == type);
+
+    /// <summary>Whether this connection's model reads images: its "images" setting, else the type's default.</summary>
+    public static bool TakesImages(BackendProfile p) => p.Images ?? Of(p.Type).ImagesByDefault;
 }
