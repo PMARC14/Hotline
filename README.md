@@ -105,6 +105,22 @@ Keys are only ever sent over https (plain http only to this PC).
 
 All options, the file layout and the agy permission setup: **[docs/configuration.md](docs/configuration.md)**.
 
+## What leaves your PC
+
+Hotline has no server of its own and collects nothing. When you send a message, it goes to **the AI connection you
+picked** (Anthropic, Google, OpenAI-style service, a local server, or your Claude Code / agy sign-in), together with:
+
+- **attachments** in the message box — files, screenshots, and the **text you had selected** in the app you came from
+  (it appears as a chip; remove it with ✕, or turn it off: Settings › Chat and history › Attach selected text);
+- the **system prompt** and your **memory.md** notes (Settings › Chat and history › Memory);
+- the **earlier messages** of the conversation, for context;
+- **tool results**, when an API connection uses tools you allowed.
+
+Nothing is sent until you press Enter (an App Action from Click to Do or a quick action from Windows sends at once, as
+you asked it to). Voice uses Windows' own speech recognition (Microsoft's online service). OCR runs on your PC.
+Chat history, settings and memory stay in `%USERPROFILE%\.hotline`; API keys stay in Windows Credential Locker and
+only travel over https (plain http only to this PC). What each AI provider does with your data is set by its terms.
+
 ## Development
 
 ```powershell
@@ -120,6 +136,7 @@ Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status
 - **Layout:** `src/Hotline.Core` (UI-free logic: backends, settings, markdown, tools — fully unit-tested),
   `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/` (design spec, plans, handoff notes).
 - **Contributors / new sessions:** start with [docs/HANDOFF.md](docs/HANDOFF.md).
+- **Testing everything by hand:** [docs/TESTING.md](docs/TESTING.md).
 
 ### CI and releases
 

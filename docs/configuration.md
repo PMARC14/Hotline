@@ -31,6 +31,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
 | `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
+| `activation.copilotKey` | `hotline` | `hotline`: the key opens Hotline (tap/hold above). `rightCtrl`: the key is a plain Right Ctrl (Copilot+C = Ctrl+C) and no longer opens Hotline — use the extra hotkey or the tray. Works on keyboards whose Copilot key sends Win+Shift+F23 (most do) |
 | `chat.defaultBackend` | `agy` | Connection that answers by default (its `id`) |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
@@ -116,6 +117,14 @@ In *inherit* mode agy works under **its own** rules (`~/.gemini/antigravity-cli/
 deny / ask`, e.g. `command(git status)`, `read_file(C:/path)`). Hotline runs agy in the background, where anything that
 would ask is denied, so shell commands need allow rules. Settings › AI connections › **Allow read-only commands** adds a
 curated list (and denies `Remove-Item`, `rm`, `git push`, …) after showing it to you.
+
+## App Actions (Click to Do)
+
+Hotline registers App Actions on Windows: **Ask Hotline about this text / this image**, and **Summarize / Translate /
+Fix / Explain with Hotline**. Click to Do (Win+click on Copilot+ PCs) and other apps that use the Windows action catalog
+list them for selected text or images. The panel opens with the content attached; the four quick actions run at once
+when Windows asked for them (another app launching the same link only fills the box — any app can open a link).
+Developers: `hotline-action://ask?text=…` or `hotline-action://run/summarize?text=…` (`Public/actions.json` in the package).
 
 ## Links
 
