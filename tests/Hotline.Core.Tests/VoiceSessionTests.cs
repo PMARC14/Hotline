@@ -154,6 +154,27 @@ public sealed class VoiceSessionTests
     }
 
     [Fact]
+    public async Task A_failed_stop_keeps_the_text_never_sends_and_reports_after_finishing()
+    {
+        var order = new List<string>();
+        var speech = new FailingStop();
+        var voice = new VoiceSession(() => Task.FromResult<ISpeechSession?>(speech));
+        voice.Finished += o => order.Add($"finished send={o.Send} text={o.Text}");
+        voice.Failed += _ => order.Add("failed");
+        await voice.StartAsync("");
+        voice.OnResult("spoken", rejected: false);
+        await voice.StopAsync(send: true);
+        Assert.Equal(["finished send=False text=spoken", "failed"], order); // the warning comes last, so it stays up
+    }
+
+    private sealed class FailingStop : ISpeechSession
+    {
+        public Task StartAsync() => Task.CompletedTask;
+        public Task StopAsync() => Task.FromException(new InvalidOperationException("device gone"));
+        public Task CancelAsync() => Task.CompletedTask;
+    }
+
+    [Fact]
     public async Task Punctuation_joins_without_a_space()
     {
         var (voice, _, _, outcomes) = New();

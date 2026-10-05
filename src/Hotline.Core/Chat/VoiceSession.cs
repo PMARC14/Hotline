@@ -68,9 +68,11 @@ public sealed class VoiceSession(Func<Task<ISpeechSession?>> createSpeech)
         if (State == VoiceState.Starting) await _starting;
         if (State != VoiceState.Listening) return;
         (State, _send) = (VoiceState.Stopping, send);
+        Exception? failure = null;
         try { await _speech!.StopAsync(); }
-        catch (Exception ex) { Failed?.Invoke(ex); }
+        catch (Exception ex) { failure = ex; _send = false; } // keep what was heard, but don't send after a failure
         Finish();
+        if (failure is not null) Failed?.Invoke(failure); // after finishing, so its warning isn't cleared
     }
 
     /// <summary>Ends the dictation and puts the draft back (also during a stop that's still finishing).</summary>
@@ -80,9 +82,11 @@ public sealed class VoiceSession(Func<Task<ISpeechSession?>> createSpeech)
         if (State == VoiceState.Stopping) { _discard = true; return; }
         if (State != VoiceState.Listening) return;
         (State, _discard) = (VoiceState.Stopping, true);
+        Exception? failure = null;
         try { await _speech!.CancelAsync(); }
-        catch (Exception ex) { Failed?.Invoke(ex); }
+        catch (Exception ex) { failure = ex; }
         Finish();
+        if (failure is not null) Failed?.Invoke(failure);
     }
 
     public void OnHypothesis(string text)

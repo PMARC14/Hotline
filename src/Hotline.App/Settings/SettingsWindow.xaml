@@ -35,6 +35,7 @@
                 <NavigationViewItem Content="Chat and history" Tag="Chat"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Tools" Tag="Tools"><NavigationViewItem.Icon><FontIcon Glyph="&#xE90F;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Advanced" Tag="Advanced"><NavigationViewItem.Icon><FontIcon Glyph="&#xE9F5;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="About" Tag="About"><NavigationViewItem.Icon><FontIcon Glyph="&#xE946;" /></NavigationViewItem.Icon></NavigationViewItem>
             </NavigationView.MenuItems>
             <ScrollViewer Padding="28,20,28,28">
                 <StackPanel x:Name="PageHost" x:FieldModifier="internal" Spacing="8" MaxWidth="860" HorizontalAlignment="Stretch" />

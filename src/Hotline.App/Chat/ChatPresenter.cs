@@ -34,6 +34,7 @@ internal sealed class ChatPresenter
     private readonly MemoryStore _memory;
     private readonly PanelSelfTest _selfTest;
     private readonly FirstRunNote _firstRun;
+    private readonly SupportNote _support;
     private string? _lastLook;
     private bool _preparingSend;
 
@@ -64,6 +65,7 @@ internal sealed class ChatPresenter
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
+        _support = new SupportNote(_notices, dataDirectory);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat);
     }
 
@@ -219,6 +221,8 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(c.Id);
                 SetBusy(false);
                 _log.Info("chat answer completed");
+                if (!c.Id.StartsWith("st-", StringComparison.Ordinal) && !c.Id.StartsWith("demo-", StringComparison.Ordinal))
+                    _support.AnswerCompleted(); // a real answer, not the self-test or demo
                 break;
             case AssistantCancelled c:
                 _transcript.FinishAnswer(c.Id);

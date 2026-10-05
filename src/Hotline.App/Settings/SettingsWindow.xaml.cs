@@ -90,6 +90,7 @@ public sealed partial class SettingsWindow : Window
             case "Prompts": BuildPromptsPage(); break;
             case "Tools": BuildToolsPage(); break;
             case "Actions": BuildActionsPage(); break;
+            case "About": BuildAboutPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));

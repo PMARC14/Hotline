@@ -93,7 +93,11 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Appearance › Bottom bar: add, remove, move items, Reset → the panel's bar follows.
 - [ ] AI connections: move a connection up/down → the Provider picker order follows.
 
-### First run
+### First run and support
 - [ ] Delete `%USERPROFILE%\.hotline\.first-run-shown`, open the panel → the "Welcome to Hotline" note with "What's sent".
+- [ ] Delete `.support-note-shown`, ask something → after the answer, "Enjoying Hotline?" with "Support Hotline"; it
+      doesn't come back on the next answer or after a restart.
+- [ ] Settings › About: version, and the GitHub Sponsors / Ko-fi / GitHub / License links open the right pages.
+- [ ] On GitHub, the repository shows a **Sponsor** button listing GitHub Sponsors and Ko-fi (after you've enrolled).
 
 When you're done, leave Hotline running in the tray with the panel closed.

@@ -88,6 +88,43 @@ public sealed partial class SettingsWindow
         row.Children.Add(button);
     }
 
+    /// <summary>About: version, license, where Hotline lives, and how to support it.</summary>
+    private void BuildAboutPage()
+    {
+        string version;
+        try
+        {
+            var v = Windows.ApplicationModel.Package.Current.Id.Version;
+            version = $"{v.Major}.{v.Minor}.{v.Build}";
+        }
+        catch (InvalidOperationException) { version = "development build"; } // not packaged
+        PageHost.Children.Add(new TextBlock
+        {
+            Text = $"Hotline {version} — your AI on the Copilot key. Free and open source (Apache-2.0).",
+            TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
+        });
+        HyperlinkButton Link(string text, Uri uri) => new() { Content = text, NavigateUri = uri, Padding = new Thickness(4, 2, 4, 2) };
+        PageHost.Children.Add(Card("Support Hotline",
+            "Hotline is made by one person and has no ads or tracking. If it saves you time, a donation keeps it going.",
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { Link("GitHub Sponsors", SupportLinks.GitHubSponsors), Link("Ko-fi", SupportLinks.KoFi) },
+            }));
+        PageHost.Children.Add(Card("Project", "Source code, releases, and the place to report problems or ask for features.",
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { Link("GitHub", SupportLinks.Repository), Link("Report a problem", SupportLinks.Issues) },
+            }));
+        PageHost.Children.Add(Card("License", "Apache-2.0, plus the licenses of the components Hotline uses.",
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { Link("License", SupportLinks.License), Link("Third-party notices", SupportLinks.ThirdPartyNotices) },
+            }));
+    }
+
     /// <summary>Chat › memory.md: what every chat sees; opened in the editor.</summary>
     private void BuildMemoryCard()
     {

@@ -41,8 +41,11 @@ User-tested 2026-10-04: selected text → chip works; the settings window (dark 
 Still needs a person at the PC: voice (Settings › General › Voice input, hold the key; first use shows the microphone
 prompt), fresh README screenshots via `hotline://demo`.
 
-Ideas the user is weighing (from the Copilot comparison): a memory file injected into the system prompt, live screen
-sharing via a realtime multimodal API, a wake word. File search is out of scope (Windows search / PowerToys Run).
+Plan 7 (`docs/superpowers/plans/2026-10-05-hotline-plan7-structure-actions.md`, same branch): memory (`memory.md`,
+`/remember`, remember tool), ChatPresenter split into single-purpose parts, SendRouter + VoiceSession in Core, App
+Actions (`Public/actions.json`, `hotline-action:` protocol), Copilot key as Right Ctrl (`activation.copilotKey`,
+low-level hook), privacy section + first-run note, `docs/TESTING.md` (hands-on checklist). Still needs hands-on:
+voice, App Actions (Testing Playground app), Right Ctrl mode — see docs/TESTING.md.
 
 Then the user does trusted signing and real-key API tests
 before making the repo public; they flip the visibility themselves.
@@ -74,7 +77,10 @@ caret visibility on all themes.
     demo), `MarkdownRenderer`, `ProviderBar`, `CliRunner`, `PasswordVaultSecretStore`.
   - `Settings/` settings window (pages generated from `SettingsSchema`, connections, prompts, agy permissions).
   - `Interop/` tray, Copilot fast path, hotkey, job object, Win32, `SelectionReader` (UIA + clipboard fallback).
-  - `Chat/ChatPresenter.Actions|Ocr|Voice.cs` quick actions, OCR at send, push-to-talk.
+  - `Chat/` one job per class: `ChatPresenter` (coordinator, send flow), `Composer`, `AttachmentPanel`,
+    `AttachmentVisuals`, `TranscriptView`, `NoticeArea`, `VoiceInput` + `WindowsSpeech`, `RecentChatsMenu`,
+    `PanelSelfTest`, `FirstRunNote`, `PanelTheme`, `UiTasks`, `OcrReader`. `SelfTestLinks` (hotline://selftest),
+    `Interop/CopilotKeyHook` (Right Ctrl mode).
 
 ## Hard-won facts (don't relearn these)
 

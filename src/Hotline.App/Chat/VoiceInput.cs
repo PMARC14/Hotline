@@ -71,10 +71,12 @@ internal sealed class VoiceInput
     {
         if (Active) return;
         _composer.IsReadOnly = true; // typing now would be overwritten by the dictation
-        _notices.ShowTagged(Tag, "🎙 Listening…", _holding ? "Let go of the key to stop. Esc cancels." : "Press the key again to stop. Esc cancels.",
-            InfoBarSeverity.Informational);
+        var hint = _holding ? "Let go of the key to stop. Esc cancels." : "Press the key again to stop. Esc cancels.";
+        _notices.ShowTagged(Tag, "🎙 Starting the microphone…", hint, InfoBarSeverity.Informational);
         await _session.StartAsync(_composer.Text);
-        if (_session.State == VoiceState.Listening) _log.Info("voice: listening");
+        if (_session.State != VoiceState.Listening) return;
+        _notices.ShowTagged(Tag, "🎙 Listening…", hint, InfoBarSeverity.Informational); // now words are heard
+        _log.Info("voice: listening");
     }
 
     private async Task<ISpeechSession?> CreateSpeechAsync()
@@ -94,9 +96,9 @@ internal sealed class VoiceInput
         {
             if (_session.State != VoiceState.Listening) return; // our own stop or cancel
             _log.Info($"voice: session ended by itself ({status})");
+            DropRecognizer(); // a fresh recognizer next time, whatever ended this one
             if (status is not (SpeechRecognitionResultStatus.Success or SpeechRecognitionResultStatus.TimeoutExceeded or SpeechRecognitionResultStatus.UserCanceled))
             {
-                DropRecognizer(); // a fresh one next time (e.g. after a device change)
                 _session.OnEndedByItself();
                 _notices.ShowTagged(Tag, null, status == SpeechRecognitionResultStatus.MicrophoneUnavailable ? "No microphone is available."
                     : $"Voice input stopped ({status}).", InfoBarSeverity.Warning, closable: true);
