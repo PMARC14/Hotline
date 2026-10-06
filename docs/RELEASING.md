@@ -40,8 +40,37 @@ release (the update check compares versions).
       Local Machine → Trusted People first, fine for a few testers only). Pick one:
   - **Microsoft Store:** Microsoft signs it, Store installs and updates. Needs a Partner Center developer account and
     certification (expect questions about full trust and the Copilot key extension).
-  - **Azure Trusted Signing** (or a regular code-signing certificate): set the manifest `Publisher` to the
-    certificate subject, update the two secrets; ship via GitHub Releases + `.appinstaller`.
+  - **Azure Artifact Signing** (formerly Trusted Signing; $9.99/month): automated in `release.yml`, see below.
+  - A regular code-signing certificate (.pfx): the two `HOTLINE_SIGNING_PFX_*` secrets.
+
+## Azure Artifact Signing (automatic signing in GitHub Actions)
+
+Individuals can sign up only in the **US and Canada** (identity checked with Microsoft Entra Verified ID: a government
+ID and a selfie); elsewhere it takes an organization with a verifiable business history. One-time setup, in the
+[Azure portal](https://portal.azure.com):
+
+1. **Subscription:** a pay-as-you-go Azure subscription. Under *Resource providers*, register `Microsoft.CodeSigning`.
+2. **Account:** create an *Artifact Signing* account (Basic tier) in a nearby region. Its *Account URI* is the endpoint
+   (e.g. `https://eus.codesigning.azure.net/`).
+3. **Identity validation:** give yourself the *Artifact Signing Identity Verifier* role on the account, then
+   *Identity validations → New → Public → Individual* and complete the Verified ID check (can take a few days).
+4. **Certificate profile:** *Certificate profiles → New → Public Trust*, using that validation. Copy the certificate
+   **subject** exactly (`CN=Your Name, O=Your Name, L=City, S=Province, C=CA`) — it becomes the package `Publisher`.
+5. **GitHub access without secrets:** *Microsoft Entra ID → App registrations → New* (e.g. "hotline-signing"); under
+   *Certificates & secrets → Federated credentials* add *GitHub Actions*: organization `PMARC14`, repository
+   `hotline`, entity *Branch* `main` (add *Tag* `v*` too if you release from tags). Then on the signing account (or the
+   profile) give that app the **Artifact Signing Certificate Profile Signer** role.
+6. **Repository variables** (GitHub → Settings → Secrets and variables → Actions → *Variables*; none are secret):
+   `ARTIFACT_SIGNING_ENDPOINT`, `ARTIFACT_SIGNING_ACCOUNT`, `ARTIFACT_SIGNING_PROFILE`, `HOTLINE_PUBLISHER` (the
+   subject from step 4), `AZURE_CLIENT_ID` (the app), `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`.
+
+From then on every release is built unsigned with that `Publisher`, signed by Azure (`azure/artifact-signing-action`),
+timestamped, and published as a normal release — no `Hotline.cer`, and `.appinstaller` updates work. Check a release
+with `Get-AuthenticodeSignature Hotline_*.msix` (Status *Valid*, signer = your name).
+
+**Identity change:** the `Publisher` is part of the package identity, so the first trusted build installs *next to* a
+self-signed one rather than updating it. Uninstall the old Hotline first (settings in `%USERPROFILE%\.hotline` stay)
+and pick Hotline for the Copilot key again. Local dev builds keep the dev publisher (`CN=pmarc14 Hotline Dev`).
 - [ ] **winget** (after signing): submit the first version by hand (`wingetcreate new`), add `WINGET_TOKEN`, set
       `HOTLINE_WINGET_ENABLED=true` — later releases are submitted automatically.
 - [ ] **Final icon** (the user's SVG of an upside-down phone hanging by its cord) → `scripts\make-assets.ps1 -Source`.

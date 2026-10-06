@@ -7,12 +7,15 @@ param(
     [Parameter(Mandatory)] [string]$Tag,
     [Parameter(Mandatory)] [string]$MsixName,
     [Parameter(Mandatory)] [string]$Out,
-    [string]$Repository = 'PMARC14/hotline'
+    [string]$Repository = 'PMARC14/hotline',
+    # The signing certificate's subject when it differs from the manifest (build-msix.ps1 -Publisher).
+    [string]$Publisher
 )
 $ErrorActionPreference = 'Stop'
 $root = Split-Path $PSScriptRoot -Parent
 [xml]$manifest = Get-Content (Join-Path $root 'src\Hotline.App\Package.appxmanifest') -Raw
 $identity = $manifest.Package.Identity
+if ($Publisher) { $identity.Publisher = $Publisher }
 if (-not $identity.Name -or -not $identity.Publisher) { throw 'Package.appxmanifest has no Identity Name/Publisher' }
 if ($Version -notmatch '^\d+\.\d+\.\d+\.\d+$') { throw "Version '$Version' must look like 1.2.3.0" }
 
