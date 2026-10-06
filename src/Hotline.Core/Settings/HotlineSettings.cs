@@ -137,6 +137,8 @@ public sealed class ChatSettings
     public OcrMode Ocr { get; set; } = OcrMode.Auto;
     /// <summary>Voice key action: send the message when the key is released (off = review it first).</summary>
     public bool VoiceAutoSend { get; set; }
+    /// <summary>Stops a streaming answer: a key alone ("Esc") or a combo ("Ctrl+."). Enter never stops an answer.</summary>
+    public string StopShortcut { get; set; } = "Esc";
     /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
     public bool Memory { get; set; } = true;
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>

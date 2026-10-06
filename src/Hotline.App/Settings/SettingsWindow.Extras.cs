@@ -104,7 +104,7 @@ public sealed partial class SettingsWindow
             TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
         });
         HyperlinkButton Link(string text, Uri uri) => new() { Content = text, NavigateUri = uri, Padding = new Thickness(4, 2, 4, 2) };
-        PageHost.Children.Add(Card("Support Hotline",
+        if (SupportLinks.DonationsLive) PageHost.Children.Add(Card("Support Hotline",
             "Hotline is made by one person and has no ads or tracking. If it saves you time, a donation keeps it going.",
             new StackPanel
             {

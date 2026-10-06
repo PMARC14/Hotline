@@ -41,7 +41,8 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.
-- [ ] Stop button while answering stops it; Retry on an error retries.
+- [ ] While answering: Enter doesn't stop it (a note says how); Esc stops it; the Stop button stops it; Retry on an
+      error retries. Settings › Chat › Stop an answer → `Ctrl+.` → now Ctrl+. stops and Esc hides the panel.
 - [ ] Effort picker: change it for Claude / Gemini / OpenAI; the next answer uses it (no error).
 - [ ] Settings › AI connections › Test connection: "Connected: N models, including …"; a wrong key shows the server's message.
 - [ ] 🕘 Recent chats reopens a chat; Ctrl+↑ in an empty box reopens the last one.

@@ -16,7 +16,7 @@ internal sealed class SupportNote(NoticeArea notices, string dataDirectory)
     /// <summary>Call when an answer completes; shows the note the first time ever.</summary>
     public void AnswerCompleted()
     {
-        if (_done) return;
+        if (_done || !SupportLinks.DonationsLive) return;
         _done = true;
         if (File.Exists(Marker)) return;
         try { File.WriteAllText(Marker, DateTimeOffset.Now.ToString("O")); }

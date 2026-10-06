@@ -25,7 +25,13 @@ public sealed record ChoiceItem(SettingsPage Page, string Header, string? Descri
 
 public sealed record TextItem(SettingsPage Page, string Header, string? Description, string? Placeholder,
     Func<HotlineSettings, string?> Get, Action<HotlineSettings, string?> Set, bool RequiresRestart = false)
-    : SettingItem(Page, Header, Description, RequiresRestart);
+    : SettingItem(Page, Header, Description, RequiresRestart)
+{
+    /// <summary>Rejects a value before it's saved (the settings window shows the problem instead).</summary>
+    public Func<string, bool>? Validate { get; init; }
+    /// <summary>What to say when <see cref="Validate"/> rejects a value.</summary>
+    public string? Invalid { get; init; }
+}
 
 /// <summary>Every user-facing setting, described once; the settings window is generated from this list.</summary>
 public static class SettingsSchema
@@ -59,7 +65,8 @@ public static class SettingsSchema
             (s, v) => { if (v) s.Activation.Hold = KeyAction.Voice; else if (s.Activation.Hold == KeyAction.Voice) s.Activation.Hold = KeyAction.NewChat; })
         { RefreshPage = true },
         new TextItem(SettingsPage.General, "Extra hotkey", "Also opens Hotline, e.g. Ctrl+Alt+H. Leave empty for none.", "Ctrl+Alt+H",
-            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true),
+            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true)
+        { Validate = v => Activation.Hotkey.TryParse(v, out _), Invalid = "Not a valid hotkey (example: Ctrl+Alt+H)" },
         new ToggleItem(SettingsPage.General, "Hide when I click elsewhere", "Pin the panel (📌) to keep it open temporarily.",
             s => s.Window.HideOnBlur, (s, v) => s.Window.HideOnBlur = v),
         new ToggleItem(SettingsPage.General, "Keep on top of other windows", null, s => s.Window.AlwaysOnTop, (s, v) => s.Window.AlwaysOnTop = v),
@@ -99,6 +106,10 @@ public static class SettingsSchema
             "Ctrl+C also works in apps that don't share their selection, but briefly uses the clipboard (restored afterwards).",
             [(AttachSelectionMode.Auto, "Yes"), (AttachSelectionMode.Clipboard, "Yes, also with Ctrl+C"), (AttachSelectionMode.Off, "No")],
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
+        new TextItem(SettingsPage.Chat, "Stop an answer", "The key that stops an answer while it's being written (Enter never does; " +
+            "the Send button does too). A key alone (Esc) or a combo like Ctrl+. — when nothing is being answered, Esc hides the panel.",
+            "Esc", s => s.Chat.StopShortcut, (s, v) => s.Chat.StopShortcut = string.IsNullOrWhiteSpace(v) ? "Esc" : v.Trim())
+        { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = "Not a valid shortcut (examples: Esc, Ctrl+., Ctrl+Shift+Backspace)" },
         new ToggleItem(SettingsPage.Chat, "Memory", "Every chat sees memory.md in your .hotline folder (\"/remember something\" adds a line).",
             s => s.Chat.Memory, (s, v) => s.Chat.Memory = v),
         Choice(SettingsPage.Chat, "Let the AI save memories", "API connections can save a fact when you ask them to remember something.",

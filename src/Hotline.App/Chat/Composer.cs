@@ -15,7 +15,10 @@ namespace Hotline.App.Chat;
 /// </summary>
 internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions actions, UiTasks tasks)
 {
+    /// <summary>Enter (send what's typed). Never a stop: see <see cref="SendButtonClicked"/>.</summary>
     public event Action? SendRequested;
+    /// <summary>The Send button, which is the Stop button while an answer is being written.</summary>
+    public event Action? SendButtonClicked;
     public event Action? PreviousChatRequested;
 
     /// <summary>Gets the first look at every key (e.g. Esc cancels dictation); true when it handled the key.</summary>
@@ -42,7 +45,7 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.Input.PreviewKeyDown += OnPreviewKeyDown;
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
         popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: QuickAction a }) Complete(a); };
-        popup.SendButton.Click += (_, _) => SendRequested?.Invoke();
+        popup.SendButton.Click += (_, _) => SendButtonClicked?.Invoke();
         var restingBorder = popup.Composer.BorderBrush;
         popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = theme.Style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
         popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = restingBorder; popup.Composer.BorderThickness = new Thickness(1); };

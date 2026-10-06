@@ -174,9 +174,9 @@ public sealed partial class SettingsWindow : Window
                 var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder ?? "", Width = 240 };
                 box.LostFocus += (_, _) =>
                 {
-                    if (tx.Header == "Extra hotkey" && !string.IsNullOrWhiteSpace(box.Text) && !Hotkey.TryParse(box.Text, out _))
+                    if (tx.Validate is { } valid && !string.IsNullOrWhiteSpace(box.Text) && !valid(box.Text.Trim()))
                     {
-                        box.Header = "Not a valid hotkey (example: Ctrl+Alt+H)";
+                        box.Header = tx.Invalid ?? "Not a valid value";
                         return;
                     }
                     box.Header = null;

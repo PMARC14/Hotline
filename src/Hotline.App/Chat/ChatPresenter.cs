@@ -80,7 +80,9 @@ internal sealed class ChatPresenter
         _firstRun.Initialize();
 
         _chat.Event += e => _tasks.Guard("chat event", () => OnChatEvent(e));
-        _composer.SendRequested += () => _tasks.Run("send", SendAsync);
+        _composer.SendRequested += OnEnter;
+        _composer.SendButtonClicked += () => { if (_chat.IsBusy) _chat.Cancel(); else _tasks.Run("send", SendAsync); }; // Stop while answering
+        _popup.Root.PreviewKeyDown += OnPanelKey;
         _composer.PreviousChatRequested += () => { if (!_chat.IsBusy) _recent.ResumeLast(); };
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
@@ -147,9 +149,42 @@ internal sealed class ChatPresenter
 
     // ---- sending ----------------------------------------------------------------------------------
 
+    /// <summary>Enter sends, but never stops an answer (that's the stop shortcut or the Stop button).</summary>
+    private void OnEnter()
+    {
+        if (_chat.IsBusy)
+        {
+            _notices.ShowTagged("stop-hint", null, $"Still answering. {_settings.Chat.StopShortcut} or the Stop button stops it; your message waits in the box.",
+                InfoBarSeverity.Informational, closable: true);
+            return;
+        }
+        _tasks.Run("send", SendAsync);
+    }
+
+    /// <summary>chat.stopShortcut stops the answer being written, wherever the focus is in the panel.</summary>
+    private void OnPanelKey(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
+    {
+        if (!_chat.IsBusy || !Hotline.Core.Activation.Hotkey.TryParseShortcut(_settings.Chat.StopShortcut, out var stop)) return;
+        if (!stop.Matches((uint)e.Key, HeldModifiers())) return;
+        _chat.Cancel();
+        _notices.Remove("stop-hint");
+        e.Handled = true; // e.g. Esc stops instead of hiding the panel
+    }
+
+    private static Hotline.Core.Activation.HotkeyModifiers HeldModifiers()
+    {
+        static bool Down(VirtualKey k) => Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(k).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+        var held = Hotline.Core.Activation.HotkeyModifiers.None;
+        if (Down(VirtualKey.Control)) held |= Hotline.Core.Activation.HotkeyModifiers.Control;
+        if (Down(VirtualKey.Shift)) held |= Hotline.Core.Activation.HotkeyModifiers.Shift;
+        if (Down(VirtualKey.Menu)) held |= Hotline.Core.Activation.HotkeyModifiers.Alt;
+        if (Down(VirtualKey.LeftWindows) || Down(VirtualKey.RightWindows)) held |= Hotline.Core.Activation.HotkeyModifiers.Win;
+        return held;
+    }
+
     private async Task SendAsync()
     {
-        if (_chat.IsBusy) { _chat.Cancel(); return; }
+        if (_chat.IsBusy) return; // stopping is the Stop button's or the stop shortcut's job, never a send's
         if (_preparingSend) return; // a second Enter/click while OCR runs
         if (_voice.Active) { await _voice.FinishAndSendAsync(); return; } // it sends once the dictation is final
         var typed = _composer.Text;
@@ -253,6 +288,7 @@ internal sealed class ChatPresenter
     private void SetBusy(bool busy)
     {
         _composer.SetBusy(busy);
+        if (!busy) _notices.Remove("stop-hint");
         if (IsBusy == busy) return;
         IsBusy = busy;
         BusyChanged?.Invoke(busy);

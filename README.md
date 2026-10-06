@@ -151,11 +151,13 @@ Trusted signing (Store or Azure Trusted Signing) and one-click installs with aut
 release — see
 [docs/RELEASING.md](docs/RELEASING.md) and [docs/HANDOFF.md](docs/HANDOFF.md).
 
+<!-- Un-hide once GitHub Sponsors and Ko-fi are set up (see .github/FUNDING.yml).
 ## Support Hotline
 
 Hotline is free, open source and made by one person, with no ads or tracking. If it saves you time, a donation keeps
 it going: [GitHub Sponsors](https://github.com/sponsors/PMARC14) or [Ko-fi](https://ko-fi.com/pmarc14) (also in
 Settings › About).
+-->
 
 ## License
 
