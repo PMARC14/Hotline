@@ -13,7 +13,7 @@ namespace Hotline.App;
 /// UI Automation (logs its length only), ?voice checks dictation can be set up (never opens the microphone),
 /// ?tools starts the mcp.json servers.
 /// </summary>
-internal sealed class SelfTestLinks(ChatPresenter presenter, Func<SettingsHost?> settingsHost, Func<McpToolHost?> tools, FileLog log)
+internal sealed class SelfTestLinks(ChatPresenter presenter, Func<SettingsHost?> settingsHost, Func<McpToolHost?> tools, Func<string?> odrPath, FileLog log)
 {
     public void Run(Uri? uri)
     {
@@ -21,9 +21,20 @@ internal sealed class SelfTestLinks(ChatPresenter presenter, Func<SettingsHost?>
         var problems = settingsHost()?.SelfTest() ?? [];
         if (problems.Count == 0) log.Info("selftest settings ok");
         else log.Error("selftest settings FAILED: " + string.Join("; ", problems));
+        _ = LogThisPcAsync();
         if (Has(uri, "selection")) CheckSelection();
         if (Has(uri, "voice")) _ = CheckVoiceAsync();
         if (Has(uri, "tools") && tools() is { } host) _ = Task.Run(() => CheckToolsAsync(host));
+    }
+
+    private async Task LogThisPcAsync()
+    {
+        try
+        {
+            foreach (var f in await ThisPc.CheckAsync(odrPath()))
+                log.Info($"selftest this PC: {f.Name}: {(f.Available ? "yes" : "no")} ({f.Detail})");
+        }
+        catch (Exception ex) { log.Error("selftest this PC FAILED", ex); }
     }
 
     private static bool Has(Uri? uri, string option) => uri?.Query.Contains(option, StringComparison.OrdinalIgnoreCase) == true;

@@ -102,6 +102,17 @@ public class McpProcessTests
     }
 
     [Fact]
+    public async Task A_command_that_isnt_installed_fails_with_a_clear_message_without_starting_anything()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+        var started = new List<int>();
+        var connect = StdioMcpSession.Connector(p => started.Add(p.Id), _ => { });
+        var ex = await Assert.ThrowsAsync<IOException>(() => connect(Server("hotline-no-such-tool", ["--x"]), CancellationToken.None));
+        Assert.Contains("isn't installed", ex.Message);
+        Assert.Empty(started);
+    }
+
+    [Fact]
     public async Task A_failed_connect_kills_the_server_and_its_children()
     {
         if (!OperatingSystem.IsWindows()) return;

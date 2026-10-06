@@ -155,7 +155,7 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, _log);
+        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
         _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += () => _presenter.Demo();
         _router.VoiceRequested += command => _presenter.Voice(command);

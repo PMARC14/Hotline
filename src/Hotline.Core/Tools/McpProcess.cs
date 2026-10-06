@@ -103,7 +103,13 @@ public sealed class StdioMcpSession : IMcpSession
     private static async Task<IMcpSession> ConnectAsync(McpServerConfig server, Action<Process>? onStarted, Action<string> log, TimeProvider clock, CancellationToken ct)
     {
         var stderr = new StderrThrottle(server.Name, log, clock);
-        var process = new Process { StartInfo = McpProcess.CreateStartInfo(server, OperatingSystem.IsWindows()), EnableRaisingEvents = true };
+        var startInfo = McpProcess.CreateStartInfo(server, OperatingSystem.IsWindows());
+        // Not on this PC (no Node.js for npx, …): say what to install, rather than start cmd for "is not recognized".
+        if (OperatingSystem.IsWindows() && !string.Equals(Path.GetFileName(server.Command), "cmd.exe", StringComparison.OrdinalIgnoreCase)
+            && Platform.CommandResolver.Find(server.Command, server.WorkingDirectory, startInfo.Environment.TryGetValue("PATH", out var path) ? path : null,
+                startInfo.Environment.TryGetValue("PATHEXT", out var ext) ? ext : null, File.Exists) is null)
+            throw new IOException(Platform.CommandResolver.MissingMessage(server.Name, server.Command));
+        var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
         process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
         bool started;
         try { started = process.Start(); }

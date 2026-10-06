@@ -98,6 +98,9 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Delete `%USERPROFILE%\.hotline\.first-run-shown`, open the panel → the "Welcome to Hotline" note with "What's sent".
 - [ ] Delete `.support-note-shown`, ask something → after the answer, "Enjoying Hotline?" with "Support Hotline"; it
       doesn't come back on the next answer or after a restart.
+- [ ] Settings › About › This PC: each feature shows ✓ or ✗ with what to do (e.g. agent connectors ✗ until 26H2).
+- [ ] An `mcp.json` server whose command isn't installed (e.g. `"command": "nosuchtool"`) → Settings › Tools shows
+      "\"nosuchtool\" isn't installed or isn't on PATH…"; for `npx` without Node.js it says to install Node.js.
 - [ ] Settings › About: version, and the GitHub Sponsors / Ko-fi / GitHub / License links open the right pages.
 - [ ] On GitHub, the repository shows a **Sponsor** button listing GitHub Sponsors and Ko-fi (after you've enrolled).
 

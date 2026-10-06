@@ -117,12 +117,42 @@ public sealed partial class SettingsWindow
                 Orientation = Orientation.Horizontal, Spacing = 8,
                 Children = { Link("GitHub", SupportLinks.Repository), Link("Report a problem", SupportLinks.Issues) },
             }));
+        var report = new StackPanel { Spacing = 4 };
+        report.Children.Add(new TextBlock { Text = "Checking…", Opacity = 0.7 });
+        PageHost.Children.Add(new Border
+        {
+            Style = (Style)Root.Resources["CardStyle"],
+            Child = new StackPanel { Spacing = 6, Children = { new TextBlock { Text = "This PC" }, report } },
+        });
+        _ = FillReportAsync(report);
         PageHost.Children.Add(Card("License", "Apache-2.0, plus the licenses of the components Hotline uses.",
             new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,
                 Children = { Link("License", SupportLinks.License), Link("Third-party notices", SupportLinks.ThirdPartyNotices) },
             }));
+    }
+
+    /// <summary>"This PC": which Windows features Hotline can use here, and what to do about the missing ones.</summary>
+    private async Task FillReportAsync(StackPanel host)
+    {
+        IReadOnlyList<PcFeature> features;
+        try { features = await ThisPc.CheckAsync(_odrPath); }
+        catch (Exception ex) { _log.Error("this-PC report failed", ex); host.Children.Clear(); host.Children.Add(new TextBlock { Text = "Couldn't check this PC." }); return; }
+        host.Children.Clear();
+        foreach (var f in features)
+        {
+            var row = new Grid { ColumnSpacing = 10 };
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            row.Children.Add(new TextBlock { Text = f.Available ? "✓" : "✗", Opacity = f.Available ? 1 : 0.6, VerticalAlignment = VerticalAlignment.Top });
+            var text = new TextBlock { TextWrapping = TextWrapping.Wrap };
+            text.Inlines.Add(new Microsoft.UI.Xaml.Documents.Run { Text = f.Name + "  " });
+            text.Inlines.Add(new Microsoft.UI.Xaml.Documents.Run { Text = f.Detail, FontSize = 12 });
+            Grid.SetColumn(text, 1);
+            row.Children.Add(text);
+            host.Children.Add(row);
+        }
     }
 
     /// <summary>Chat › memory.md: what every chat sees; opened in the editor.</summary>
