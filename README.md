@@ -120,6 +120,7 @@ Nothing is sent until you press Enter (an App Action from Click to Do or a quick
 you asked it to). Voice uses Windows' own speech recognition (Microsoft's online service). OCR runs on your PC.
 Chat history, settings and memory stay in `%USERPROFILE%\.hotline`; API keys stay in Windows Credential Locker and
 only travel over https (plain http only to this PC). What each AI provider does with your data is set by its terms.
+Full details: [PRIVACY.md](PRIVACY.md).
 
 ## Development
 
