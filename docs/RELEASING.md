@@ -36,6 +36,11 @@ release (the update check compares versions).
 
 ## Before the first public release
 
+- [ ] **Protect `main`** right after making the repository public (rulesets on a private repo need GitHub Pro):
+      `powershell -File scriptspply-rulesets.ps1` applies `.github/rulesets/main.json` — changes only through a
+      pull request whose CI check (`build-test`) passed, no force pushes, no deleting `main`; review threads must be
+      resolved; no approval needed (you're the only maintainer). Edit the JSON and re-run to change it.
+
 - [ ] **Trusted signing** (the one real blocker — today's self-signed build makes each user trust `Hotline.cer` in
       Local Machine → Trusted People first, fine for a few testers only). Pick one:
   - **Microsoft Store:** Microsoft signs it, Store installs and updates. Needs a Partner Center developer account and
