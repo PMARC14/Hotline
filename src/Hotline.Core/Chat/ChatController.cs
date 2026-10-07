@@ -101,7 +101,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
 
         _messages.Add(user);
         _lastFailed = null;
-        Emit(new AssistantStarted(assistantId, backend.DisplayName));
+        Emit(new AssistantStarted(assistantId, backend.DisplayName, BackendId));
         var cts = _cts = new CancellationTokenSource();
         var reply = new StringBuilder();
         try
