@@ -71,11 +71,11 @@ Hotline**. (Windows only lets packaged apps take the Copilot key, which is why H
 
 Requires the [.NET SDK 10.0.401+](https://dotnet.microsoft.com/download).
 
-```powershell
+```bash
 git clone https://github.com/PMARC14/hotline
 cd hotline
-powershell -File scripts\dev-cert.ps1   # once: creates a self-signed certificate and trusts it for sideloading (UAC)
-powershell -File scripts\install.ps1    # builds, signs and installs Hotline, then starts it in the tray
+scripts/dev-cert.sh   # once: creates a self-signed certificate and trusts it for sideloading (UAC)
+scripts/install.sh    # builds, signs and installs Hotline, then starts it in the tray
 ```
 
 Then assign the key as above.
@@ -131,8 +131,8 @@ powershell -File tests\smoke\smoke.ps1 [-Install]                         # end-
 
 The smoke test drives the same inputs Windows uses (protocol links, Copilot key messages, the hotkey), renders a
 scripted conversation off-screen and builds every settings page, then checks the log. It restores your settings.
-Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status line). Crash dumps (opt-in, admin):
-`scripts\enable-crash-dumps.ps1`.
+Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status line). Crash dumps (opt-in, admin):
+`scripts/enable-crash-dumps.sh`.
 
 - **Layout:** `src/Hotline.Core` (UI-free logic: backends, settings, markdown, tools — fully unit-tested),
   `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/` (design spec, plans, handoff notes).

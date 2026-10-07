@@ -1,12 +1,13 @@
 # End-to-end smoke test against the INSTALLED Hotline package. Windows PowerShell 5.1.
 #   powershell -File tests\smoke\smoke.ps1            # test what's installed
-#   powershell -File tests\smoke\smoke.ps1 -Install   # build + install first (needs scripts\dev-cert.ps1 once)
+#   powershell -File tests\smoke\smoke.ps1 -Install   # build + install first (needs scripts/dev-cert.sh once)
 # Drives the same inputs Windows uses (protocol URIs, Copilot fast-path window messages, fallback hotkey)
 # and asserts on the app log. Exit code = number of failed checks. Restores settings.json afterwards.
 param([switch]$Install, [switch]$WithAgy)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-if ($Install) { & (Join-Path $root 'scripts\install.ps1') | Out-Host }
+# Git's bash (not WSL's bash.exe) runs the install script.
+if ($Install) { & (Join-Path (Split-Path (Split-Path (Get-Command git).Source -Parent) -Parent) 'binash.exe') (Join-Path $root 'scripts/install.sh') | Out-Host }
 
 Add-Type @"
 using System; using System.Runtime.InteropServices; using System.Text;

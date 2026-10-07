@@ -33,7 +33,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - Tests: 610 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (now also checks OCR on the rendered
   transcript and the `/` suggestion list; the "fallback hotkey" check is flaky when the user is typing during the run).
 - Git history was rewritten on 2026-10-04: noreply author, no personal paths, no certificate password. The dev
-  certificate password now lives in `certs/hotline-dev.password` (git-ignored); `build-msix.ps1` reads it.
+  certificate password now lives in `certs/hotline-dev.password` (git-ignored); `build-msix.sh` reads it.
 
 ## Next work
 

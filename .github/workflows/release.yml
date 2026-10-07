@@ -20,6 +20,10 @@ on:
       version:
         description: 'Version to release, e.g. 0.2.0 (empty = version.txt + run number)'
         required: false
+      publish:
+        description: 'Publish the GitHub Release (off = build and upload the files only, e.g. to test a branch)'
+        type: boolean
+        default: true
 
 permissions:
   contents: write
@@ -32,6 +36,9 @@ concurrency:
 jobs:
   release:
     runs-on: windows-latest
+    defaults:
+      run:
+        shell: bash # Git Bash on the Windows runner; the scripts are bash (scripts/*.sh)
     steps:
       - uses: actions/checkout@v4
 
@@ -44,32 +51,27 @@ jobs:
 
       - name: Resolve version
         id: ver
-        shell: pwsh
         run: |
-          $v = if ('${{ github.ref_type }}' -eq 'tag') { '${{ github.ref_name }}'.TrimStart('v') }
-               elseif ('${{ inputs.version }}') { '${{ inputs.version }}' }
-               else { "$((Get-Content version.txt -Raw).Trim()).${{ github.run_number }}" }
-          if ($v -notmatch '^\d+\.\d+\.\d+$') { throw "Version '$v' must look like 1.2.3" }
-          "package=$v.0" >> $env:GITHUB_OUTPUT
-          "tag=v$v" >> $env:GITHUB_OUTPUT
+          if [ "${{ github.ref_type }}" = tag ]; then v="${{ github.ref_name }}"; v=${v#v}
+          elif [ -n "${{ inputs.version }}" ]; then v="${{ inputs.version }}"
+          else v="$(tr -d '\r\n' < version.txt).${{ github.run_number }}"; fi
+          [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version '$v' must look like 1.2.3"; exit 1; }
+          echo "package=$v.0" >> "$GITHUB_OUTPUT"
+          echo "tag=v$v" >> "$GITHUB_OUTPUT"
 
       - name: Signing mode
         id: mode
-        shell: pwsh
         run: |
-          if ('${{ vars.ARTIFACT_SIGNING_ACCOUNT }}' -and '${{ vars.HOTLINE_PUBLISHER }}') { "artifact=true" >> $env:GITHUB_OUTPUT }
-          else { "artifact=false" >> $env:GITHUB_OUTPUT }
+          if [ -n "${{ vars.ARTIFACT_SIGNING_ACCOUNT }}" ] && [ -n "${{ vars.HOTLINE_PUBLISHER }}" ]; then echo "artifact=true" >> "$GITHUB_OUTPUT"
+          else echo "artifact=false" >> "$GITHUB_OUTPUT"; fi
 
       # ---- 1. Azure Artifact Signing --------------------------------------------------------------------
       - name: Build unsigned MSIX (Artifact Signing signs it)
         if: steps.mode.outputs.artifact == 'true'
-        shell: powershell
         run: |
-          $ErrorActionPreference = 'Stop'
-          $msix = & ./scripts/build-msix.ps1 -Version '${{ steps.ver.outputs.package }}' -Unsigned -Publisher '${{ vars.HOTLINE_PUBLISHER }}' | Select-Object -Last 1
-          if (-not $msix) { throw 'No MSIX was produced' }
-          New-Item -ItemType Directory -Force "$PWD/artifacts/to-sign" | Out-Null
-          Copy-Item $msix "$PWD/artifacts/to-sign/Hotline_${{ steps.ver.outputs.package }}_x64.msix"
+          msix=$(scripts/build-msix.sh --version '${{ steps.ver.outputs.package }}' --unsigned --publisher '${{ vars.HOTLINE_PUBLISHER }}' | tail -1)
+          mkdir -p artifacts/to-sign
+          cp "$msix" "artifacts/to-sign/Hotline_${{ steps.ver.outputs.package }}_x64.msix"
 
       - name: Azure login (OIDC)
         if: steps.mode.outputs.artifact == 'true'
@@ -94,55 +96,49 @@ jobs:
 
       - name: Release files (Artifact Signing)
         if: steps.mode.outputs.artifact == 'true'
-        shell: powershell
         run: |
-          $ErrorActionPreference = 'Stop'
-          Move-Item "$PWD/artifacts/to-sign/Hotline_*.msix" "$PWD/artifacts/"
+          mv artifacts/to-sign/Hotline_*.msix artifacts/
           # Trusted signing: users need no Hotline.cer, and updates through the .appinstaller just work.
-          & ./scripts/make-appinstaller.ps1 -Version '${{ steps.ver.outputs.package }}' -Tag '${{ steps.ver.outputs.tag }}' `
-            -MsixName 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' -Out "$PWD/artifacts/Hotline.appinstaller" -Publisher '${{ vars.HOTLINE_PUBLISHER }}' | Out-Null
+          scripts/make-appinstaller.sh --version '${{ steps.ver.outputs.package }}' --tag '${{ steps.ver.outputs.tag }}' \
+            --msix-name 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' --out artifacts/Hotline.appinstaller \
+            --publisher '${{ vars.HOTLINE_PUBLISHER }}' >/dev/null
 
       # ---- 2./3. .pfx or throwaway certificate ------------------------------------------------------------
       - name: Signing certificate
         id: cert
         if: steps.mode.outputs.artifact != 'true'
-        shell: pwsh
         env:
           PFX_BASE64: ${{ secrets.HOTLINE_SIGNING_PFX_BASE64 }}
           PFX_PASSWORD: ${{ secrets.HOTLINE_SIGNING_PFX_PASSWORD }}
         run: |
-          New-Item -ItemType Directory -Force certs | Out-Null
-          $pfx = "$PWD\certs\release.pfx"
-          if ($env:PFX_BASE64) {
-            [IO.File]::WriteAllBytes($pfx, [Convert]::FromBase64String($env:PFX_BASE64))
-            $password = $env:PFX_PASSWORD
-            "prerelease=false" >> $env:GITHUB_OUTPUT
-          } else {
+          mkdir -p certs
+          if [ -n "$PFX_BASE64" ]; then
+            printf '%s' "$PFX_BASE64" | base64 -d > certs/release.pfx
+            password=$PFX_PASSWORD
+            echo "prerelease=false" >> "$GITHUB_OUTPUT"
+          else
             # No signing secrets yet: a throwaway certificate with the manifest's Publisher, for test builds.
-            [xml]$manifest = Get-Content src\Hotline.App\Package.appxmanifest -Raw
-            $cert = New-SelfSignedCertificate -Type Custom -Subject $manifest.Package.Identity.Publisher -KeyUsage DigitalSignature `
-              -CertStoreLocation 'Cert:\CurrentUser\My' -TextExtension @('2.5.29.37={text}1.3.6.1.5.5.7.3.3', '2.5.29.19={text}') -NotAfter (Get-Date).AddYears(1)
-            $password = [Convert]::ToBase64String([Security.Cryptography.RandomNumberGenerator]::GetBytes(24))
-            Export-PfxCertificate -Cert $cert -FilePath $pfx -Password (ConvertTo-SecureString $password -AsPlainText -Force) | Out-Null
-            "prerelease=true" >> $env:GITHUB_OUTPUT
-          }
-          "::add-mask::$password"
-          "HOTLINE_CERT_PASSWORD=$password" >> $env:GITHUB_ENV
+            scripts/dev-cert.sh --dir certs --no-trust
+            mv certs/hotline-dev.pfx certs/release.pfx
+            password=$(cat certs/hotline-dev.password)
+            echo "prerelease=true" >> "$GITHUB_OUTPUT"
+          fi
+          echo "::add-mask::$password"
+          echo "HOTLINE_CERT_PASSWORD=$password" >> "$GITHUB_ENV"
 
       - name: Build signed MSIX
         if: steps.mode.outputs.artifact != 'true'
-        shell: powershell
         run: |
-          $ErrorActionPreference = 'Stop'
-          $msix = & .\scripts\build-msix.ps1 -Version '${{ steps.ver.outputs.package }}' -CertificatePath "$PWD\certs\release.pfx" | Select-Object -Last 1
-          if (-not $msix) { throw 'No MSIX was produced' }
-          Copy-Item $msix "$PWD\artifacts\Hotline_${{ steps.ver.outputs.package }}_x64.msix"
-          # Public certificate so users of a self-signed build can trust it before installing.
-          $cert = New-Object System.Security.Cryptography.X509Certificates.X509Certificate2("$PWD\certs\release.pfx", $env:HOTLINE_CERT_PASSWORD)
-          [IO.File]::WriteAllBytes("$PWD\artifacts\Hotline.cer", $cert.Export('Cert'))
+          msix=$(scripts/build-msix.sh --version '${{ steps.ver.outputs.package }}' --certificate certs/release.pfx | tail -1)
+          cp "$msix" "artifacts/Hotline_${{ steps.ver.outputs.package }}_x64.msix"
+          # Public certificate so users of a self-signed build can trust it before installing
+          # (-legacy reads .pfx files exported by older Windows tools).
+          { openssl pkcs12 -in certs/release.pfx -nokeys -clcerts -passin env:HOTLINE_CERT_PASSWORD 2>/dev/null ||
+            openssl pkcs12 -legacy -in certs/release.pfx -nokeys -clcerts -passin env:HOTLINE_CERT_PASSWORD; } |
+            openssl x509 -outform der -out artifacts/Hotline.cer
           # Install + automatic updates: Windows re-reads the "latest" copy of this file from the releases.
-          & .\scripts\make-appinstaller.ps1 -Version '${{ steps.ver.outputs.package }}' -Tag '${{ steps.ver.outputs.tag }}' `
-            -MsixName 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' -Out "$PWD\artifacts\Hotline.appinstaller" | Out-Null
+          scripts/make-appinstaller.sh --version '${{ steps.ver.outputs.package }}' --tag '${{ steps.ver.outputs.tag }}' \
+            --msix-name 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' --out artifacts/Hotline.appinstaller >/dev/null
 
       - uses: actions/upload-artifact@v4
         with:
@@ -154,15 +150,14 @@ jobs:
           if-no-files-found: warn
 
       - name: Publish GitHub Release
-        shell: pwsh
+        if: github.event_name != 'workflow_dispatch' || inputs.publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          $notes = if ('${{ steps.cert.outputs.prerelease }}' -eq 'true') {
-            "Test build, signed with a temporary self-signed certificate: install Hotline.cer into Local Machine > Trusted People first, then open the .msix."
-          } else { "" }
-          $flags = @('--target', '${{ github.sha }}', '--title', 'Hotline ${{ steps.ver.outputs.tag }}', '--generate-notes', '--notes', $notes)
-          if ('${{ steps.cert.outputs.prerelease }}' -eq 'true') { $flags += '--prerelease' } else { $flags += '--latest' }
-          $files = @((Get-ChildItem artifacts/Hotline_*.msix).FullName, 'artifacts/Hotline.appinstaller')
-          if (Test-Path artifacts/Hotline.cer) { $files += 'artifacts/Hotline.cer' } # only self-signed/.pfx builds need it
-          gh release create '${{ steps.ver.outputs.tag }}' @files @flags
+          flags=(--target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes)
+          if [ '${{ steps.cert.outputs.prerelease }}' = true ]; then
+            flags+=(--prerelease --notes "Test build, signed with a temporary self-signed certificate: install Hotline.cer into Local Machine > Trusted People first, then open the .msix.")
+          else flags+=(--latest --notes ""); fi
+          files=(artifacts/Hotline_*.msix artifacts/Hotline.appinstaller)
+          [ -f artifacts/Hotline.cer ] && files+=(artifacts/Hotline.cer) # only self-signed/.pfx builds need it
+          gh release create '${{ steps.ver.outputs.tag }}' "${files[@]}" "${flags[@]}"
