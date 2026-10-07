@@ -37,18 +37,17 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-User-tested 2026-10-04: selected text → chip works; the settings window (dark title bar, new pages) looks good.
-Still needs a person at the PC: voice (Settings › General › Voice input, hold the key; first use shows the microphone
-prompt), fresh README screenshots via `hotline://demo`.
+User-tested 2026-10-07: everything in `docs/TESTING.md` works. Next: merge PR #2 (Plans 6 + 7), make the repo public,
+then apply the `main` ruleset (`scriptspply-rulesets.ps1`; see docs/RELEASING.md).
 
-Plan 7 (`docs/superpowers/plans/2026-10-05-hotline-plan7-structure-actions.md`, same branch): memory (`memory.md`,
-`/remember`, remember tool), ChatPresenter split into single-purpose parts, SendRouter + VoiceSession in Core, App
-Actions (`Public/actions.json`, `hotline-action:` protocol), Copilot key as Right Ctrl (`activation.copilotKey`,
-low-level hook), privacy section + first-run note, `docs/TESTING.md` (hands-on checklist). Still needs hands-on:
-voice, App Actions (Testing Playground app), Right Ctrl mode — see docs/TESTING.md.
+**Future: OpenAI Codex support.** Add Codex as a connection the same way Claude Code and agy are: drive the user's
+logged-in `codex` CLI (non-interactive `codex exec` with JSON output, session resume), plus the API path for
+OpenAI keys if that's still missing. Check the current Codex CLI flags first; they change often.
 
-Then the user does trusted signing and real-key API tests
-before making the repo public; they flip the visibility themselves.
+Plan 7 (`docs/superpowers/plans/2026-10-05-hotline-plan7-structure-actions.md`) is done: memory, the ChatPresenter
+split, SendRouter + VoiceSession in Core, App Actions, the Copilot key as Right Ctrl, privacy notes, `docs/TESTING.md`.
+Release signing: the user won't pay for signing, so plan on the Microsoft Store (free, Microsoft signs; `winget install
+-s msstore`). GitHub releases stay self-signed test builds; the winget-pkgs workflow stays off.
 
 Self-test links for headless checks: `hotline://selftest` (+ `?tools` starts the mcp.json servers, `?selection` reads
 the foreground app's selection via UIA and logs only its length, `?voice` checks dictation setup without the mic).
