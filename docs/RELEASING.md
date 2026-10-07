@@ -54,7 +54,9 @@ Partner Center › your app › Product management › Product identity gives fo
 unsigned because the Store signs it, and Store versions must end in `.0`:
 
 ```bash
-scripts/build-msix.sh --store --version 0.2.3.0 \n  --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \n  --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
+scripts/build-msix.sh --store --version 0.2.3.0 \
+  --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \
+  --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
 ```
 
 Upload the `.msix` it prints on the submission's **Packages** page. Each new submission needs a higher version than
