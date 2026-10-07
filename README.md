@@ -1,8 +1,8 @@
 # Hotline
 
-**Turn the Windows Copilot key into a fast, native AI popup that talks to the AI *you* choose.**
+**You are stuck with the key might as well use it. Gives you an option to replace the Windows Copilot key with your own fast, native AI popup that talks to the AI *you* choose.**
 
-Press the key, ask, get a streamed answer — then it's gone. Hotline uses the AI tools you already have (your
+Hotline uses the AI tools you already have (your
 installed Claude Code or Antigravity CLI and their sign-ins) or any API key you bring, and keeps everything
 configurable in plain files.
 
@@ -14,13 +14,13 @@ configurable in plain files.
 
 ## Features
 
-- **The Copilot key, reclaimed** — short press opens/closes, long press starts a new chat (both configurable), plus an
+- **The Copilot key** — short press opens/closes, long press starts a new chat (both configurable), plus an
   optional extra hotkey. Opens on the monitor you're working on, focused and ready to type.
 - **Your choice of AI** — pick *Effort → Model → Provider* in the bar:
   - **Claude Code** (your Claude plan, no API key) and **Antigravity CLI / agy** (Gemini with your Google sign-in)
-  - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, Groq, …)
+  - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, …)
   - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
-- **Native and light** — WinUI 3 with acrylic, no embedded browser. Answers stream in and the panel grows smoothly.
+- **Native and light** — WinUI 3 with acrylic, no embedded webview2.
 - **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
   SVG drawings, and the whole conversation selectable in one drag.
 - **Screens and files** — capture the window you were in, the whole screen, or a region you drag out; paste or drop
