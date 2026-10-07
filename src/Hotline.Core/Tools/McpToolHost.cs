@@ -1,7 +1,5 @@
 using System.Text.Json;
 using Hotline.Core.Diagnostics;
-using ModelContextProtocol.Client;
-using ModelContextProtocol.Protocol;
 
 namespace Hotline.Core.Tools;
 
@@ -301,48 +299,4 @@ public sealed class McpToolHost(
         }
         finally { _gate.Release(); }
     }
-}
-
-/// <summary>A real MCP server over stdio through the official ModelContextProtocol SDK.</summary>
-public sealed class StdioMcpSession : IMcpSession
-{
-    private readonly McpClient _client;
-    private StdioMcpSession(McpClient client) => _client = client;
-
-    public static async Task<IMcpSession> ConnectAsync(McpServerConfig server, CancellationToken ct)
-    {
-        var transport = new StdioClientTransport(new StdioClientTransportOptions
-        {
-            Name = server.Name,
-            Command = server.Command,
-            Arguments = server.Args.ToList(),
-            WorkingDirectory = server.WorkingDirectory,
-            EnvironmentVariables = server.Env.ToDictionary(kv => kv.Key, kv => (string?)kv.Value),
-        });
-        var client = await McpClient.CreateAsync(transport, new McpClientOptions { ClientInfo = new Implementation { Name = "Hotline", Version = "1.0" } }, cancellationToken: ct);
-        return new StdioMcpSession(client);
-    }
-
-    public async Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct)
-    {
-        var tools = await _client.ListToolsAsync(cancellationToken: ct);
-        return tools.Select(t => new McpToolInfo(t.Name, t.Description ?? "", t.JsonSchema, t.ProtocolTool.Annotations?.ReadOnlyHint == true)).ToList();
-    }
-
-    public async Task<ToolResult> CallAsync(string tool, JsonElement arguments, CancellationToken ct)
-    {
-        var args = arguments.ValueKind == JsonValueKind.Object
-            ? arguments.EnumerateObject().ToDictionary(p => p.Name, p => (object?)p.Value.Clone())
-            : new Dictionary<string, object?>();
-        var result = await _client.CallToolAsync(tool, args, cancellationToken: ct);
-        var text = string.Join("\n", result.Content.Select(c => c switch
-        {
-            TextContentBlock t => t.Text,
-            _ => $"[{c.Type} content]",
-        }));
-        if (text.Length == 0 && result.StructuredContent is { } structured) text = structured.ToString();
-        return new ToolResult(text, result.IsError == true);
-    }
-
-    public ValueTask DisposeAsync() => _client.DisposeAsync();
 }

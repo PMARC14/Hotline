@@ -7,15 +7,19 @@ public enum ActivationKind { Launch, Protocol, ProtocolForResults, StartupTask, 
 /// Plain snapshot of an activation. Windows activation args for a redirected launch are proxies into the
 /// short-lived redirecting process; read them once, immediately, and work from this copy.
 /// </summary>
-public sealed record ActivationRequest(ActivationKind Kind, Uri? Uri, bool IsFirstLaunch);
+public sealed record ActivationRequest(ActivationKind Kind, Uri? Uri, bool IsFirstLaunch,
+    IReadOnlyDictionary<string, string>? Inputs = null, string? CallerPackageFamily = null);
 
 /// <summary>What to do: route a key event, show the popup, or (neither) stay in the tray.</summary>
-public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false);
+public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false, AppActionRequest? AppAction = null);
 
 public static class ActivationPlanner
 {
     public static ActivationPlan Plan(ActivationRequest r) => r.Kind switch
     {
+        // App Actions (Click to Do and other apps): the content arrives as inputs; an unusable one does nothing.
+        ActivationKind.Protocol or ActivationKind.ProtocolForResults when string.Equals(r.Uri?.Scheme, AppActionRequest.Scheme, StringComparison.OrdinalIgnoreCase) =>
+            AppActionRequest.Parse(r.Uri, r.Inputs, r.CallerPackageFamily) is { } action ? new ActivationPlan(null, false, AppAction: action) : new ActivationPlan(null, false),
         // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
         ActivationKind.Protocol or ActivationKind.ProtocolForResults =>
             ActivationParser.ParseUri(r.Uri) is { } key ? new ActivationPlan(key, false)

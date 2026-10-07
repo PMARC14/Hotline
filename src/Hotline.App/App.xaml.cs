@@ -31,6 +31,7 @@ public partial class App : Application
     private ISecretStore? _secrets;
     private readonly HashSet<string> _pendingInvalidations = [];
     private SettingsHost? _settingsHost;
+    private CopilotKeyHook? _keyHook;
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
     private string? _odrPath;
@@ -101,10 +102,19 @@ public partial class App : Application
         var job = new ChildProcessJob(_log);
         var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
+        var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
+        try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
+        // Hotline's own tools (remember) + the MCP tools; saving a memory asks in the panel unless chat.memoryTool says otherwise.
+        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
+            () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
+            (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
+            () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
+            fact => _popup.DispatcherQueue.TryEnqueue(() =>
+                _presenter?.Notice($"Saved to memory: \"{fact}\" (Settings › Chat and history › Edit memory)", Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
-            p => prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), home, Path.Combine(privateDir, "claude-workspace"),
-            _secrets, BackendFactory.CreateApiHttpClient(), ToolHost(dataDir));
+            p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
+            home, Path.Combine(privateDir, "claude-workspace"), _secrets, BackendFactory.CreateApiHttpClient(), tools);
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -114,6 +124,11 @@ public partial class App : Application
         }
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir);
+        _popup.BeforeShow = foreground =>
+        {
+            if (Interop.SelectionReader.Read(foreground, _settingsService.Current.Chat.AttachSelection, _log) is { } selection)
+                _presenter.AttachSelection(selection.Text, selection.App);
+        };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
@@ -140,14 +155,11 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        _router.SelfTestRequested += uri =>
-        {
-            _presenter.SelfTest(uri);
-            var problems = _settingsHost?.SelfTest() ?? [];
-            if (problems.Count == 0) _log.Info("selftest settings ok");
-            else _log.Error("selftest settings FAILED: " + string.Join("; ", problems));
-        };
+        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
+        _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += () => _presenter.Demo();
+        _router.VoiceRequested += command => _presenter.Voice(command);
+        _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
@@ -159,10 +171,18 @@ public partial class App : Application
             foreach (var id in ids) _ = InvalidateBackend(id).AsTask();
             if (settings.Chat.Backends.All(b => b.Id != chat.BackendId)) chat.BackendId = settings.Chat.DefaultBackend;
         };
+        SystemTheme.Changed += () => _popup.DispatcherQueue.TryEnqueue(() =>
+        {
+            try { _popup.ApplyAppearance(); _presenter.ApplyAppearance(); } // Windows switched light/dark
+            catch (Exception ex) { _log.Error("applying the Windows theme failed", ex); }
+        });
+        _keyHook = new CopilotKeyHook(_log);
+        _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
         _settingsService.Changed += () =>
         {
             try
             {
+                _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
                 _popup.GrowMode = settings.Chat.GrowMode;
                 _popup.ApplyAppearance();
@@ -193,10 +213,11 @@ public partial class App : Application
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
-            onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
+            onRestart: () => { _tray?.Dispose(); _keyHook?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
             onQuit: () =>
             {
                 _tray?.Dispose();
+                _keyHook?.Dispose(); // lets go of Right Ctrl if it's held
                 // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
                 try
                 {
@@ -282,7 +303,7 @@ public partial class App : Application
     /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
     /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
     /// </summary>
-    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir)
+    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job)
     {
         var mcpPath = Path.Combine(dataDir, "mcp.json");
         _ = Hotline.Core.Tools.McpConfig.Load(mcpPath); // creates mcp.json with a commented example on first run
@@ -306,7 +327,8 @@ public partial class App : Application
                 }
             });
         _toolHost = new Hotline.Core.Tools.McpToolHost(
-            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers, Hotline.Core.Tools.StdioMcpSession.ConnectAsync,
+            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers,
+            Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}")),
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             _log!, mcpPath);
         return _toolHost;

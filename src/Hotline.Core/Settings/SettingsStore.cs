@@ -272,6 +272,7 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v8: new chat options (attachSelection, …) start at their defaults; nothing to move.
         // → v7: Claude Code can chat: offer a connection for it once (removable; not re-added later).
         if (s.SchemaVersion < 7 && s.Chat.Backends.All(b => b.Type != BackendType.ClaudeCode))
             Backends.ConnectionEditor.Add(s.Chat, BackendType.ClaudeCode);
@@ -299,6 +300,7 @@ public sealed class SettingsStore(string directory)
         if (!s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
+        if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";
         if (s.Window.FontSize is { } fontSize) s.Window.FontSize = Math.Clamp(fontSize, 10, 32);
         s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);

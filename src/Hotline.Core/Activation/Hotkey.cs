@@ -8,7 +8,26 @@ public readonly record struct Hotkey(HotkeyModifiers Modifiers, uint VirtualKey)
 {
     private const uint VkF1 = 0x70, VkF13 = 0x7C, VkF24 = 0x87;
 
-    public static bool TryParse(string? text, out Hotkey hotkey)
+    /// <summary>A global hotkey: needs a modifier (or F13–F24), since it's taken from every app.</summary>
+    public static bool TryParse(string? text, out Hotkey hotkey) => TryParse(text, allowBare: false, out hotkey);
+
+    /// <summary>
+    /// A shortcut inside the panel (e.g. chat.stopShortcut): a bare key like Esc is fine there. Enter is reserved
+    /// (it sends and makes new lines).
+    /// </summary>
+    public static bool TryParseShortcut(string? text, out Hotkey hotkey)
+    {
+        if (TryParse(text, allowBare: true, out hotkey) && hotkey.VirtualKey != VkEnter) return true;
+        hotkey = default;
+        return false;
+    }
+
+    private const uint VkEnter = 0x0D;
+
+    /// <summary>True for exactly this key with exactly these modifiers held.</summary>
+    public bool Matches(uint virtualKey, HotkeyModifiers held) => virtualKey == VirtualKey && held == Modifiers;
+
+    private static bool TryParse(string? text, bool allowBare, out Hotkey hotkey)
     {
         hotkey = default;
         if (string.IsNullOrWhiteSpace(text))
@@ -36,7 +55,7 @@ public readonly record struct Hotkey(HotkeyModifiers Modifiers, uint VirtualKey)
         if (key is null)
             return false;
         // A bare key (no modifier) would swallow normal typing; only F13–F24 are allowed alone.
-        if (mods == HotkeyModifiers.None && key is < VkF13 or > VkF24)
+        if (!allowBare && mods == HotkeyModifiers.None && key is < VkF13 or > VkF24)
             return false;
 
         hotkey = new Hotkey(mods, key.Value);
@@ -66,6 +85,9 @@ public readonly record struct Hotkey(HotkeyModifiers Modifiers, uint VirtualKey)
             "enter" => 0x0Du,
             "tab" => 0x09u,
             "esc" or "escape" => 0x1Bu,
+            "backspace" => 0x08u,
+            "." or "period" => 0xBEu,
+            "," or "comma" => 0xBCu,
             _ => null,
         };
     }
@@ -78,6 +100,9 @@ public readonly record struct Hotkey(HotkeyModifiers Modifiers, uint VirtualKey)
         0x0D => "Enter",
         0x09 => "Tab",
         0x1B => "Esc",
+        0x08 => "Backspace",
+        0xBE => ".",
+        0xBC => ",",
         _ => $"0x{vk:X2}",
     };
 }

@@ -66,4 +66,17 @@ public class ConnectionEditorTests
         Assert.Equal(local.Id, chat.DefaultBackend);
         Assert.Throws<KeyNotFoundException>(() => ConnectionEditor.SetDefault(chat, "nope"));
     }
+
+    [Fact]
+    public void Move_reorders_the_dropdown_and_records_the_order()
+    {
+        var chat = new ChatSettings();
+        var b = ConnectionEditor.Add(chat, BackendType.Gemini);
+        var c = ConnectionEditor.Add(chat, BackendType.Anthropic);
+        Assert.True(ConnectionEditor.Move(chat, c.Id, -1));
+        Assert.Equal(["agy", c.Id, b.Id], chat.Backends.Select(x => x.Id));
+        Assert.Equal(["agy", c.Id, b.Id], chat.Order);
+        Assert.False(ConnectionEditor.Move(chat, "agy", -1)); // already first
+        Assert.False(ConnectionEditor.Move(chat, b.Id, +1));   // already last
+    }
 }

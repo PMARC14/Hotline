@@ -11,3 +11,6 @@ TestResults/
 
 # Machine-specific / private notes (handoff)
 docs/local/
+
+# Local working rules for Claude Code (kept out of the public repo for now)
+CLAUDE.md

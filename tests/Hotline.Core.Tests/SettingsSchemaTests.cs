@@ -57,7 +57,7 @@ public class SettingsSchemaTests
     }
 
     [Fact]
-    public void Text_items_round_trip_and_blank_becomes_null()
+    public void Text_items_round_trip_and_blank_resets_to_the_default()
     {
         foreach (var t in SettingsSchema.Items.OfType<TextItem>())
         {
@@ -65,7 +65,8 @@ public class SettingsSchemaTests
             t.Set(s, "Ctrl+Alt+H");
             Assert.Equal("Ctrl+Alt+H", t.Get(s));
             t.Set(s, "  ");
-            Assert.Null(t.Get(s));
+            // Unset, or (for settings that always need a value) the default shown as the placeholder.
+            Assert.True(t.Get(s) is null || t.Get(s) == t.Placeholder, $"{t.Header}: {t.Get(s)}");
         }
     }
 }

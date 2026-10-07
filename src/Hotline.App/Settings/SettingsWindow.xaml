@@ -13,17 +13,29 @@
                 <Setter Property="Padding" Value="16,12" />
             </Style>
         </Grid.Resources>
-        <NavigationView x:Name="Nav" PaneDisplayMode="Left" IsBackButtonVisible="Collapsed" IsSettingsVisible="False"
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <!-- The window's own title bar, drawn over Mica in the app's theme (Windows' default bar stays white in dark mode). -->
+        <TitleBar x:Name="AppTitleBar" Title="Hotline settings">
+            <TitleBar.IconSource>
+                <ImageIconSource ImageSource="ms-appx:///Assets/Square44x44Logo.targetsize-24_altform-unplated.png" />
+            </TitleBar.IconSource>
+        </TitleBar>
+        <NavigationView x:Name="Nav" Grid.Row="1" PaneDisplayMode="Left" IsBackButtonVisible="Collapsed" IsSettingsVisible="False"
                         IsPaneToggleButtonVisible="False" OpenPaneLength="210" SelectionChanged="Nav_SelectionChanged">
             <NavigationView.MenuItems>
                 <NavigationViewItem Content="General" Tag="General"><NavigationViewItem.Icon><FontIcon Glyph="&#xE713;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="AI connections" Tag="Connections"><NavigationViewItem.Icon><FontIcon Glyph="&#xE703;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Prompts" Tag="Prompts"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8A5;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="Quick actions" Tag="Actions"><NavigationViewItem.Icon><FontIcon Glyph="&#xE945;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Appearance" Tag="Appearance"><NavigationViewItem.Icon><FontIcon Glyph="&#xE790;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Window" Tag="Window"><NavigationViewItem.Icon><FontIcon Glyph="&#xE737;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Chat and history" Tag="Chat"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Tools" Tag="Tools"><NavigationViewItem.Icon><FontIcon Glyph="&#xE90F;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="Advanced" Tag="Advanced"><NavigationViewItem.Icon><FontIcon Glyph="&#xE9F5;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="About" Tag="About"><NavigationViewItem.Icon><FontIcon Glyph="&#xE946;" /></NavigationViewItem.Icon></NavigationViewItem>
             </NavigationView.MenuItems>
             <ScrollViewer Padding="28,20,28,28">
                 <StackPanel x:Name="PageHost" x:FieldModifier="internal" Spacing="8" MaxWidth="860" HorizontalAlignment="Stretch" />

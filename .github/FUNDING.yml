@@ -1,0 +1,5 @@
+# The Sponsor button on the repository page. Ready, but off until the accounts exist:
+# uncomment both lines once GitHub Sponsors (github.com/sponsors) and Ko-fi are set up, and set
+# SupportLinks.DonationsLive = true in src/Hotline.App/SupportLinks.cs (README: un-hide "Support Hotline").
+# github: [PMARC14]
+# ko_fi: pmarc14

@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 7;
+    public const int CurrentSchemaVersion = 8;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
@@ -25,6 +25,8 @@ public sealed class ActivationSettings
     public KeyAction Hold { get; set; } = KeyAction.NewChat;
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
     public string? FallbackHotkey { get; set; }
+    /// <summary>Hotline = the key opens Hotline (tap/hold actions above); RightCtrl = it's a plain Right Ctrl key.</summary>
+    public Activation.CopilotKeyMode CopilotKey { get; set; } = Activation.CopilotKeyMode.Hotline;
 }
 
 public enum PopupLayout { QuickView, CommandBar, SidePanel }
@@ -105,6 +107,9 @@ public sealed class BackendProfile
     public string? WorkingDirectory { get; set; }
     /// <summary>System prompt name (file ~/.hotline/prompts/&lt;name&gt;.md). Null = chat.defaultPrompt.</summary>
     public string? Prompt { get; set; }
+    /// <summary>Whether the model reads images. Null = the type's default (local: no; others: yes).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public bool? Images { get; set; }
 }
 
 public sealed class ChatSettings
@@ -126,6 +131,18 @@ public sealed class ChatSettings
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
     public int MaxImagePixels { get; set; } = 2048;
+    /// <summary>Selected text in the app you came from becomes an attachment when the key opens the panel.</summary>
+    public AttachSelectionMode AttachSelection { get; set; } = AttachSelectionMode.Auto;
+    /// <summary>Screenshot text for models that can't read images (Windows' built-in OCR, offline).</summary>
+    public OcrMode Ocr { get; set; } = OcrMode.Auto;
+    /// <summary>Voice key action: send the message when the key is released (off = review it first).</summary>
+    public bool VoiceAutoSend { get; set; }
+    /// <summary>Stops a streaming answer: a key alone ("Esc") or a combo ("Ctrl+."). Enter never stops an answer.</summary>
+    public string StopShortcut { get; set; } = "Esc";
+    /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
+    public bool Memory { get; set; } = true;
+    /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
+    public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
 
     public static List<BackendProfile> DefaultBackends() =>
     [
@@ -137,3 +154,14 @@ public sealed class ChatSettings
 public enum ScrollbarStyle { Auto, Visible, Hidden }
 
 public enum GrowMode { Grow, Full }
+
+/// <summary>
+/// Auto = read the selection through UI Automation (no keystrokes, clipboard untouched; some apps don't expose it);
+/// Off; Clipboard = also try Ctrl+C and put the clipboard back afterwards (works in more apps, briefly uses the clipboard).
+/// </summary>
+public enum AttachSelectionMode { Auto, Off, Clipboard }
+
+/// <summary>Auto = OCR images for connections that can't read them; Always = also add the text for image models; Off.</summary>
+public enum OcrMode { Auto, Always, Off }
+
+public enum MemoryToolMode { Ask, Allow, Off }

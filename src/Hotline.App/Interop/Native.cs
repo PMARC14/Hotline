@@ -64,6 +64,14 @@ internal static class Native
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(nint hWnd, System.Text.StringBuilder name, int max);
     [DllImport("shell32.dll")] public static extern int SHGetPropertyStoreForWindow(nint hWnd, ref Guid riid, [MarshalAs(UnmanagedType.Interface)] out IPropertyStore store);
 
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetWindowText(nint hWnd, System.Text.StringBuilder text, int max);
+
+    public static string? WindowTitle(nint hWnd)
+    {
+        var sb = new System.Text.StringBuilder(256);
+        return GetWindowText(hWnd, sb, sb.Capacity) > 0 ? sb.ToString() : null;
+    }
+
     public static string ClassNameOf(nint hWnd)
     {
         var sb = new System.Text.StringBuilder(256);

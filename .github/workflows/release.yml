@@ -1,10 +1,13 @@
 # Builds a signed MSIX and publishes a GitHub Release:
 #   - every push to main (code changes): version <version.txt>.<run number>, e.g. 0.2.57
 #   - a pushed tag vX.Y.Z, or "Run workflow" with a version: that version
-# Signing: with the secrets below it's a normal release. Without them the build is signed with a throwaway self-signed
-# certificate and published as a pre-release test build (testers trust the attached Hotline.cer first).
-#   HOTLINE_SIGNING_PFX_BASE64   base64 of the signing .pfx (subject must equal the manifest Publisher)
-#   HOTLINE_SIGNING_PFX_PASSWORD its password
+# Signing, first match wins (details: docs/RELEASING.md):
+#   1. Azure Artifact Signing (formerly Trusted Signing) — repository variables ARTIFACT_SIGNING_ENDPOINT,
+#      ARTIFACT_SIGNING_ACCOUNT, ARTIFACT_SIGNING_PROFILE, HOTLINE_PUBLISHER (the certificate subject, exactly) and
+#      AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID (an Entra app with a GitHub OIDC federated
+#      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored). A normal release.
+#   2. A .pfx — secrets HOTLINE_SIGNING_PFX_BASE64 / HOTLINE_SIGNING_PFX_PASSWORD (subject = manifest Publisher).
+#   3. Neither: a throwaway self-signed certificate; published as a pre-release test build (trust Hotline.cer first).
 name: Release
 
 on:
@@ -20,6 +23,7 @@ on:
 
 permissions:
   contents: write
+  id-token: write # OIDC login for Azure Artifact Signing
 
 concurrency:
   group: release
@@ -49,8 +53,59 @@ jobs:
           "package=$v.0" >> $env:GITHUB_OUTPUT
           "tag=v$v" >> $env:GITHUB_OUTPUT
 
+      - name: Signing mode
+        id: mode
+        shell: pwsh
+        run: |
+          if ('${{ vars.ARTIFACT_SIGNING_ACCOUNT }}' -and '${{ vars.HOTLINE_PUBLISHER }}') { "artifact=true" >> $env:GITHUB_OUTPUT }
+          else { "artifact=false" >> $env:GITHUB_OUTPUT }
+
+      # ---- 1. Azure Artifact Signing --------------------------------------------------------------------
+      - name: Build unsigned MSIX (Artifact Signing signs it)
+        if: steps.mode.outputs.artifact == 'true'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $msix = & ./scripts/build-msix.ps1 -Version '${{ steps.ver.outputs.package }}' -Unsigned -Publisher '${{ vars.HOTLINE_PUBLISHER }}' | Select-Object -Last 1
+          if (-not $msix) { throw 'No MSIX was produced' }
+          New-Item -ItemType Directory -Force "$PWD/artifacts/to-sign" | Out-Null
+          Copy-Item $msix "$PWD/artifacts/to-sign/Hotline_${{ steps.ver.outputs.package }}_x64.msix"
+
+      - name: Azure login (OIDC)
+        if: steps.mode.outputs.artifact == 'true'
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Sign with Azure Artifact Signing
+        if: steps.mode.outputs.artifact == 'true'
+        uses: azure/artifact-signing-action@v2
+        with:
+          endpoint: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
+          signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
+          certificate-profile-name: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
+          files-folder: ${{ github.workspace }}/artifacts/to-sign
+          files-folder-filter: msix
+          file-digest: SHA256
+          timestamp-rfc3161: http://timestamp.acs.microsoft.com
+          timestamp-digest: SHA256
+
+      - name: Release files (Artifact Signing)
+        if: steps.mode.outputs.artifact == 'true'
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          Move-Item "$PWD/artifacts/to-sign/Hotline_*.msix" "$PWD/artifacts/"
+          # Trusted signing: users need no Hotline.cer, and updates through the .appinstaller just work.
+          & ./scripts/make-appinstaller.ps1 -Version '${{ steps.ver.outputs.package }}' -Tag '${{ steps.ver.outputs.tag }}' `
+            -MsixName 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' -Out "$PWD/artifacts/Hotline.appinstaller" -Publisher '${{ vars.HOTLINE_PUBLISHER }}' | Out-Null
+
+      # ---- 2./3. .pfx or throwaway certificate ------------------------------------------------------------
       - name: Signing certificate
         id: cert
+        if: steps.mode.outputs.artifact != 'true'
         shell: pwsh
         env:
           PFX_BASE64: ${{ secrets.HOTLINE_SIGNING_PFX_BASE64 }}
@@ -75,6 +130,7 @@ jobs:
           "HOTLINE_CERT_PASSWORD=$password" >> $env:GITHUB_ENV
 
       - name: Build signed MSIX
+        if: steps.mode.outputs.artifact != 'true'
         shell: powershell
         run: |
           $ErrorActionPreference = 'Stop'
@@ -95,6 +151,7 @@ jobs:
             artifacts/Hotline_*.msix
             artifacts/Hotline.cer
             artifacts/Hotline.appinstaller
+          if-no-files-found: warn
 
       - name: Publish GitHub Release
         shell: pwsh
@@ -106,4 +163,6 @@ jobs:
           } else { "" }
           $flags = @('--target', '${{ github.sha }}', '--title', 'Hotline ${{ steps.ver.outputs.tag }}', '--generate-notes', '--notes', $notes)
           if ('${{ steps.cert.outputs.prerelease }}' -eq 'true') { $flags += '--prerelease' } else { $flags += '--latest' }
-          gh release create '${{ steps.ver.outputs.tag }}' (Get-ChildItem artifacts/Hotline_*.msix).FullName artifacts/Hotline.cer artifacts/Hotline.appinstaller @flags
+          $files = @((Get-ChildItem artifacts/Hotline_*.msix).FullName, 'artifacts/Hotline.appinstaller')
+          if (Test-Path artifacts/Hotline.cer) { $files += 'artifacts/Hotline.cer' } # only self-signed/.pfx builds need it
+          gh release create '${{ steps.ver.outputs.tag }}' @files @flags

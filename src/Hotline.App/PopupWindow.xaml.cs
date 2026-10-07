@@ -36,6 +36,7 @@ public sealed partial class PopupWindow : Window
     public bool Pinned { get; set; }
 
     public event Action? Shown;
+    public event Action? Hidden;
     public event Action? NewChatRequested;
     public event Action<bool>? CaptureRequested;
 
@@ -88,12 +89,7 @@ public sealed partial class PopupWindow : Window
     {
         SystemBackdrop = Backdrops.Create(_settings);
         if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
-        Root.RequestedTheme = _settings.Theme switch
-        {
-            ThemeChoice.Light => ElementTheme.Light,
-            ThemeChoice.Dark => ElementTheme.Dark,
-            _ => ElementTheme.Default,
-        };
+        Root.RequestedTheme = SystemTheme.Resolve(_settings.Theme); // "System" follows Windows live
         if (_settings.Backdrop != BackdropKind.Solid) Root.Background = null;
         MessagesScroll.VerticalScrollBarVisibility = _settings.Scrollbar switch
         {
@@ -160,11 +156,22 @@ public sealed partial class PopupWindow : Window
 
     public bool IsShown => AppWindow.IsVisible;
 
-    public void ShowPopup()
+    /// <summary>Runs synchronously when the panel is about to open over a real app window (its handle), before focus moves.</summary>
+    public Action<nint>? BeforeShow { get; set; }
+
+    /// <param name="readSelection">False when the caller brings the content itself (an App Action).</param>
+    public void ShowPopup(bool readSelection = true)
     {
         var fg = Native.GetForegroundWindow();
         if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
+        {
             PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
+            if (readSelection)
+            {
+                try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
+                catch (Exception ex) { _log.Error("before-show step failed", ex); }
+            }
+        }
 
         PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;
@@ -198,6 +205,7 @@ public sealed partial class PopupWindow : Window
         if (!AppWindow.IsVisible) return;
         AppWindow.Hide();
         _guard.NoteHidden();
+        Hidden?.Invoke();
     }
 
     /// <summary>Hides for a system dialog (file picker) without counting as a user dismissal.</summary>

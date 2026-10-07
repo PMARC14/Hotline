@@ -131,4 +131,39 @@ public class ModelCatalogTests
         secrets.Set(SecretKeys.ApiKey("l"), "sk");
         await catalog.GetAsync(new BackendProfile { Id = "l", Type = BackendType.Local, Endpoint = "http://127.0.0.1:8080/v1" }, false, default); // loopback ok
     }
+
+    // ---- Test connection (Settings › AI connections) ------------------------------------------
+
+    [Fact]
+    public async Task Test_connection_reports_the_model_count_and_the_chosen_model()
+    {
+        var (catalog, _, secrets, _) = New(_ => Json("""{"data":[{"id":"gpt-x"},{"id":"gpt-y"}]}"""));
+        secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
+        BackendProfile P(string? model) => new() { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = model };
+        Assert.Equal("Connected: 2 models, including gpt-y.", await catalog.TestAsync(P("gpt-y"), default));
+        Assert.Equal("Connected: 2 models, but gpt-z isn't one of them.", await catalog.TestAsync(P("gpt-z"), default));
+        Assert.Equal("Connected: 2 models.", await catalog.TestAsync(P(null), default));
+    }
+
+    [Fact]
+    public async Task Test_connection_never_uses_a_cached_list()
+    {
+        var calls = 0;
+        var (catalog, _, secrets, _) = New(_ => { calls++; return Json("""{"data":[]}"""); });
+        secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
+        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible };
+        await catalog.GetAsync(p, refresh: false, default);
+        await catalog.TestAsync(p, default);
+        Assert.Equal(2, calls);
+    }
+
+    [Fact]
+    public async Task Errors_carry_the_servers_message_but_never_the_key()
+    {
+        var (catalog, _, secrets, _) = New(_ => Json("""{"error":{"code":400,"message":"API key not valid. Please pass a valid API key."}}""", HttpStatusCode.BadRequest));
+        secrets.Set(SecretKeys.ApiKey("g"), "AIza-secret");
+        var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.TestAsync(new BackendProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini }, default));
+        Assert.Contains("API key not valid", ex.Message);
+        Assert.DoesNotContain("AIza-secret", ex.Message);
+    }
 }

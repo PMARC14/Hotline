@@ -7,7 +7,11 @@ public enum SettingsPage { General, Appearance, Window, Chat, Advanced }
 public abstract record SettingItem(SettingsPage Page, string Header, string? Description, bool RequiresRestart);
 
 public sealed record ToggleItem(SettingsPage Page, string Header, string? Description, Func<HotlineSettings, bool> Get,
-    Action<HotlineSettings, bool> Set, bool RequiresRestart = false) : SettingItem(Page, Header, Description, RequiresRestart);
+    Action<HotlineSettings, bool> Set, bool RequiresRestart = false) : SettingItem(Page, Header, Description, RequiresRestart)
+{
+    /// <summary>Other controls on the page show what this one changes, so the page is rebuilt after a change.</summary>
+    public bool RefreshPage { get; init; }
+}
 
 public sealed record NumberItem(SettingsPage Page, string Header, string? Description, double Min, double Max, double Step, string? Unit,
     Func<HotlineSettings, double> Get, Action<HotlineSettings, double> Set, bool RequiresRestart = false)
@@ -21,7 +25,13 @@ public sealed record ChoiceItem(SettingsPage Page, string Header, string? Descri
 
 public sealed record TextItem(SettingsPage Page, string Header, string? Description, string? Placeholder,
     Func<HotlineSettings, string?> Get, Action<HotlineSettings, string?> Set, bool RequiresRestart = false)
-    : SettingItem(Page, Header, Description, RequiresRestart);
+    : SettingItem(Page, Header, Description, RequiresRestart)
+{
+    /// <summary>Rejects a value before it's saved (the settings window shows the problem instead).</summary>
+    public Func<string, bool>? Validate { get; init; }
+    /// <summary>What to say when <see cref="Validate"/> rejects a value.</summary>
+    public string? Invalid { get; init; }
+}
 
 /// <summary>Every user-facing setting, described once; the settings window is generated from this list.</summary>
 public static class SettingsSchema
@@ -36,15 +46,27 @@ public static class SettingsSchema
     private static readonly (KeyAction, string)[] KeyActions =
     [
         (KeyAction.TogglePopup, "Open / close Hotline"), (KeyAction.ShowPopup, "Open Hotline"), (KeyAction.NewChat, "Start a new chat"),
-        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.RegionSelect, "Capture a region"), (KeyAction.None, "Do nothing"),
+        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.RegionSelect, "Capture a region"),
+        (KeyAction.Voice, "Voice input (hold to talk)"), (KeyAction.None, "Do nothing"),
     ];
 
     public static IReadOnlyList<SettingItem> Items { get; } =
     [
+        Choice(SettingsPage.General, "Copilot key", "As Right Ctrl, Copilot+C is Ctrl+C and the key no longer opens Hotline (use the extra hotkey " +
+            "below, or the tray icon). Works on keyboards whose Copilot key sends Win+Shift+F23 (most do).",
+            [(Activation.CopilotKeyMode.Hotline, "Opens Hotline"), (Activation.CopilotKeyMode.RightCtrl, "Acts as Right Ctrl")],
+            s => s.Activation.CopilotKey, (s, v) => s.Activation.CopilotKey = v),
         Choice(SettingsPage.General, "Short press of the Copilot key", null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
         Choice(SettingsPage.General, "Long press of the Copilot key", null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
+        new ToggleItem(SettingsPage.General, "Voice input", "Hold the Copilot key and talk; let go to stop (Esc cancels). Uses Windows speech " +
+            "recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. " +
+            "Turning it on sets the long press to voice; off sets it back to a new chat.",
+            s => s.Activation.Hold == KeyAction.Voice,
+            (s, v) => { if (v) s.Activation.Hold = KeyAction.Voice; else if (s.Activation.Hold == KeyAction.Voice) s.Activation.Hold = KeyAction.NewChat; })
+        { RefreshPage = true },
         new TextItem(SettingsPage.General, "Extra hotkey", "Also opens Hotline, e.g. Ctrl+Alt+H. Leave empty for none.", "Ctrl+Alt+H",
-            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true),
+            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true)
+        { Validate = v => Activation.Hotkey.TryParse(v, out _), Invalid = "Not a valid hotkey (example: Ctrl+Alt+H)" },
         new ToggleItem(SettingsPage.General, "Hide when I click elsewhere", "Pin the panel (📌) to keep it open temporarily.",
             s => s.Window.HideOnBlur, (s, v) => s.Window.HideOnBlur = v),
         new ToggleItem(SettingsPage.General, "Keep on top of other windows", null, s => s.Window.AlwaysOnTop, (s, v) => s.Window.AlwaysOnTop = v),
@@ -80,6 +102,24 @@ public static class SettingsSchema
         new ToggleItem(SettingsPage.Chat, "Save chat history", "Text only, in your .hotline folder.", s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
         new NumberItem(SettingsPage.Chat, "Keep history for", null, 1, 3650, 1, "days", s => s.Chat.HistoryRetentionDays,
             (s, v) => s.Chat.HistoryRetentionDays = (int)v, RequiresRestart: true),
+        Choice(SettingsPage.Chat, "Attach selected text", "When the key opens the panel, text selected in the app you came from is attached. " +
+            "Ctrl+C also works in apps that don't share their selection, but briefly uses the clipboard (restored afterwards).",
+            [(AttachSelectionMode.Auto, "Yes"), (AttachSelectionMode.Clipboard, "Yes, also with Ctrl+C"), (AttachSelectionMode.Off, "No")],
+            s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
+        new TextItem(SettingsPage.Chat, "Stop an answer", "The key that stops an answer while it's being written (Enter never does; " +
+            "the Send button does too). A key alone (Esc) or a combo like Ctrl+. — when nothing is being answered, Esc hides the panel.",
+            "Esc", s => s.Chat.StopShortcut, (s, v) => s.Chat.StopShortcut = string.IsNullOrWhiteSpace(v) ? "Esc" : v.Trim())
+        { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = "Not a valid shortcut (examples: Esc, Ctrl+., Ctrl+Shift+Backspace)" },
+        new ToggleItem(SettingsPage.Chat, "Memory", "Every chat sees memory.md in your .hotline folder (\"/remember something\" adds a line).",
+            s => s.Chat.Memory, (s, v) => s.Chat.Memory = v),
+        Choice(SettingsPage.Chat, "Let the AI save memories", "API connections can save a fact when you ask them to remember something.",
+            [(MemoryToolMode.Ask, "Ask me each time"), (MemoryToolMode.Allow, "Yes, without asking"), (MemoryToolMode.Off, "No")],
+            s => s.Chat.MemoryTool, (s, v) => s.Chat.MemoryTool = v),
+        new ToggleItem(SettingsPage.Chat, "Send after dictation", "With the Voice key action: send the message when you let go of the key.",
+            s => s.Chat.VoiceAutoSend, (s, v) => s.Chat.VoiceAutoSend = v),
+        Choice(SettingsPage.Chat, "Screenshot text (OCR)", "Windows reads the text in images (offline) for models that can't see them.",
+            [(OcrMode.Auto, "For text-only models"), (OcrMode.Always, "Always add it"), (OcrMode.Off, "Off")],
+            s => s.Chat.Ocr, (s, v) => s.Chat.Ocr = v),
         new NumberItem(SettingsPage.Chat, "Image size limit", "Attached and captured images are scaled to this longest edge.", 256, 8192, 128, "px",
             s => s.Chat.MaxImagePixels, (s, v) => s.Chat.MaxImagePixels = (int)v),
 
