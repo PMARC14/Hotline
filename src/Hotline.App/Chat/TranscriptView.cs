@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Text;
 using Microsoft.UI.Xaml;
@@ -26,6 +27,8 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private sealed class AssistantView : Entry
     {
         public required string BackendName { get; init; }
+        /// <summary>The provider's report page, offered in the answer's ⋯ menu (null: no menu).</summary>
+        public ReportTarget? Report { get; init; }
         public IReadOnlyList<MdBlock> Blocks { get; set; } = [];
         /// <summary>Per rendered markdown block: how many paragraphs it added.</summary>
         public List<int> Rendered { get; } = [];
@@ -119,9 +122,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         }
     }
 
-    public void StartAnswer(string id, string backendName)
+    public void StartAnswer(string id, string backendName, ReportTarget? report = null)
     {
-        var view = new AssistantView { BackendName = backendName, Dirty = true };
+        var view = new AssistantView { BackendName = backendName, Report = report, Dirty = true };
         _assistants[id] = view;
         _entries.Add(view);
         AppendHeader(view);
@@ -139,9 +142,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     }
 
     /// <summary>A saved answer from history (complete, no streaming).</summary>
-    public void RestoreAnswer(ChatMessage message, string backendName)
+    public void RestoreAnswer(ChatMessage message, string backendName, ReportTarget? report = null)
     {
-        var view = new AssistantView { BackendName = backendName, Text = message.Text, Streaming = false };
+        var view = new AssistantView { BackendName = backendName, Report = report, Text = message.Text, Streaming = false };
         _assistants[message.Id] = view;
         _entries.Add(view);
         AppendHeader(view);
@@ -183,6 +186,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         {
             var p = new Paragraph { Margin = new Thickness(0, 0, 0, 2) };
             p.Inlines.Add(new InlineUIContainer { Child = CopyButton(() => view.Text, "Copy response") });
+            if (view.Report is { } report) p.Inlines.Add(new InlineUIContainer { Child = MoreButton(report) });
             _block.Blocks.Add(p);
         }
         if (withError && view.Error is not null) AppendError(view);
@@ -309,6 +313,21 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         };
         ToolTipService.SetToolTip(button, tooltip);
         button.Click += (_, _) => { if (ClipboardText.TrySet(text())) notices.Show("Copied.", InfoBarSeverity.Success); else notices.Show("The clipboard is busy; try again.", InfoBarSeverity.Warning); };
+        return button;
+    }
+
+    /// <summary>The answer's "⋯" menu, kept out of the way: today it only holds "Report this answer" (opens the provider's page).</summary>
+    private static Button MoreButton(ReportTarget report)
+    {
+        var item = new MenuFlyoutItem { Text = $"Report this answer to {report.Provider}…", Icon = new FontIcon { Glyph = Glyphs.Flag } };
+        item.Click += (_, _) => _ = Windows.System.Launcher.LaunchUriAsync(report.Page);
+        var button = new Button
+        {
+            Content = new FontIcon { Glyph = Glyphs.More, FontSize = 12 },
+            Padding = new Thickness(8, 3, 8, 3), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
+            Opacity = 0.75, Flyout = new MenuFlyout { Items = { item } },
+        };
+        ToolTipService.SetToolTip(button, "More");
         return button;
     }
 

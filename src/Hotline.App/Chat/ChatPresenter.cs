@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
@@ -234,6 +235,9 @@ internal sealed class ChatPresenter
 
     // ---- chat events ------------------------------------------------------------------------------
 
+    private ReportTarget? ReportFor(string? backendId) =>
+        _settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } profile ? ReportLinks.For(profile.Type) : null;
+
     private void OnChatEvent(ChatEvent e)
     {
         switch (e)
@@ -242,7 +246,7 @@ internal sealed class ChatPresenter
                 _transcript.AddUser(u.Message);
                 break;
             case AssistantStarted s:
-                _transcript.StartAnswer(s.Id, s.BackendName);
+                _transcript.StartAnswer(s.Id, s.BackendName, ReportFor(s.BackendId));
                 SetBusy(true);
                 break;
             case AssistantDelta d:
@@ -275,7 +279,7 @@ internal sealed class ChatPresenter
                 break;
             case MessageRestored r:
                 var name = _settings.Chat.Backends.FirstOrDefault(b => b.Id == r.Message.BackendId)?.Name ?? r.Message.BackendId ?? "";
-                _transcript.RestoreAnswer(r.Message, name);
+                _transcript.RestoreAnswer(r.Message, name, ReportFor(r.Message.BackendId));
                 break;
             case ConversationReset:
                 _transcript.Clear();

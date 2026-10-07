@@ -10,4 +10,6 @@ internal static class Glyphs
     public static readonly string Stop = char.ConvertFromUtf32(0xE71A);
     public static readonly string Pinned = char.ConvertFromUtf32(0xE840);
     public static readonly string Pin = char.ConvertFromUtf32(0xE718);
+    public static readonly string More = char.ConvertFromUtf32(0xE712);
+    public static readonly string Flag = char.ConvertFromUtf32(0xE7C1);
 }
