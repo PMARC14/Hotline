@@ -48,6 +48,20 @@ release (the update check compares versions).
   - **Azure Artifact Signing** (formerly Trusted Signing; $9.99/month): automated in `release.yml`, see below.
   - A regular code-signing certificate (.pfx): the two `HOTLINE_SIGNING_PFX_*` secrets.
 
+## Microsoft Store (by hand, until a submission workflow exists)
+
+Partner Center › your app › Product management › Product identity gives four values. Build with them; the package is
+unsigned because the Store signs it, and Store versions must end in `.0`:
+
+```powershell
+powershell -File scriptsuild-msix.ps1 -Store -Version 0.2.3.0 `
+  -IdentityName "<Package/Identity/Name>" -Publisher "<Package/Identity/Publisher>" `
+  -PublisherDisplayName "<Package/Properties/PublisherDisplayName>" -DisplayName "Hotline AI"
+```
+
+Upload the `.msix` it prints on the submission's **Packages** page. Each new submission needs a higher version than
+the last one. `-DisplayName` must be a name reserved for the app; the panel and tray still say "Hotline".
+
 ## Azure Artifact Signing (automatic signing in GitHub Actions)
 
 Individuals can sign up only in the **US and Canada** (identity checked with Microsoft Entra Verified ID: a government
