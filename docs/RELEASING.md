@@ -20,7 +20,7 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
     Each test build has a new certificate, so testers trust that build's `Hotline.cer` again. `.appinstaller` updates
     don't apply to test builds, because GitHub's `releases/latest` link skips pre-releases. Automatic updates start
     with the first trusted-signed release (first one: `v0.2.1`, 2026-10-04).
-  - Assets: the `.msix`, `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.ps1`).
+  - Assets: the `.msix`, `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
 - **winget** (`.github/workflows/winget.yml`): disabled until the repository variable `HOTLINE_WINGET_ENABLED=true`;
   needs trusted signing, a first manual submission (`wingetcreate new`) and a `WINGET_TOKEN` secret (details in the file).
 
@@ -37,7 +37,7 @@ release (the update check compares versions).
 ## Before the first public release
 
 - [ ] **Protect `main`** right after making the repository public (rulesets on a private repo need GitHub Pro):
-      `powershell -File scriptspply-rulesets.ps1` applies `.github/rulesets/main.json` — changes only through a
+      `scripts/apply-rulesets.sh` applies `.github/rulesets/main.json` — changes only through a
       pull request whose CI check (`build-test`) passed, no force pushes, no deleting `main`; review threads must be
       resolved; no approval needed (you're the only maintainer). Edit the JSON and re-run to change it.
 
@@ -53,14 +53,14 @@ release (the update check compares versions).
 Partner Center › your app › Product management › Product identity gives four values. Build with them; the package is
 unsigned because the Store signs it, and Store versions must end in `.0`:
 
-```powershell
-powershell -File scriptsuild-msix.ps1 -Store -Version 0.2.3.0 `
-  -IdentityName "<Package/Identity/Name>" -Publisher "<Package/Identity/Publisher>" `
-  -PublisherDisplayName "<Package/Properties/PublisherDisplayName>" -DisplayName "Hotline AI"
+```bash
+scripts/build-msix.sh --store --version 0.2.3.0 \
+  --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \
+  --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
 ```
 
 Upload the `.msix` it prints on the submission's **Packages** page. Each new submission needs a higher version than
-the last one. `-DisplayName` must be a name reserved for the app; the panel and tray still say "Hotline".
+the last one. `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
 
 ## Azure Artifact Signing (automatic signing in GitHub Actions)
 
