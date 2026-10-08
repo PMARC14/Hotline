@@ -43,6 +43,7 @@ signing=(-p:AppxPackageSigningEnabled=false)
 if ! $unsigned; then
     [ -n "$certificate" ] || certificate="$ROOT/certs/hotline-dev.pfx"
     [ -f "$certificate" ] || die "no signing certificate at $certificate; run scripts/dev-cert.sh first"
+    certificate="$(cd "$(dirname "$certificate")" && pwd)/$(basename "$certificate")" # MSBuild resolves relative paths from the project
     password_file="${certificate%.*}.password"
     if [ -z "$password" ] && [ -f "$password_file" ]; then password=$(tr -d '\r\n' < "$password_file"); fi
     [ -n "$password" ] || die "no certificate password: pass --certificate-password, set HOTLINE_CERT_PASSWORD, or put it in $password_file"
