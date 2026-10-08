@@ -21,6 +21,7 @@ public partial class App : Application
     private PopupWindow? _popup;
     private ActivationRouter? _router;
     private TrayIcon? _tray;
+    private GeminiWebWindow? _geminiWeb;
     private ChatPresenter? _presenter;
     private BackendCache? _backends;
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _heartbeat;
@@ -164,6 +165,7 @@ public partial class App : Application
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
+        _router.GeminiWebRequested += ShowGeminiWeb;
         ApplyToolbarFile(dataDir);
         WatchSettingsFile(store);
         _settingsService.ConnectionsChanged += ids =>
@@ -213,6 +215,7 @@ public partial class App : Application
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
+            onGeminiWeb: ShowGeminiWeb,
             onRestart: () => { _tray?.Dispose(); _keyHook?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
             onQuit: () =>
             {
@@ -353,4 +356,7 @@ public partial class App : Application
         try { if (_toolHost is { } host) Task.Run(async () => await host.DisposeAsync()).Wait(TimeSpan.FromSeconds(3)); }
         catch (Exception ex) { _log?.Error("stopping MCP servers failed", ex); }
     }
+
+    /// <summary>Personal Gemini web window (branch personal/gemini-web): created on first use, then shown/hidden.</summary>
+    private void ShowGeminiWeb() => (_geminiWeb ??= new GeminiWebWindow(_log)).Show();
 }

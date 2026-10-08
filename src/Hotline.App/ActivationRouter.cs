@@ -79,6 +79,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
     public event Action? DemoRequested;
     public event Action? OpenSettingsRequested;
+    /// <summary>hotline://gemini: the personal Gemini web window (branch personal/gemini-web).</summary>
+    public event Action? GeminiWebRequested;
     /// <summary>The Voice key action: start (hold), stop (release) or toggle (short press).</summary>
     public event Action<VoiceCommand>? VoiceRequested;
 
@@ -89,6 +91,11 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
         {
             DemoRequested?.Invoke();
+            return;
+        }
+        if (string.Equals(request.Uri?.Host, "gemini", StringComparison.OrdinalIgnoreCase))
+        {
+            GeminiWebRequested?.Invoke();
             return;
         }
         if (string.Equals(request.Uri?.Host, "selftest", StringComparison.OrdinalIgnoreCase))

@@ -6,16 +6,17 @@ namespace Hotline.App.Interop;
 internal sealed class TrayIcon : IDisposable
 {
     private const uint WM_TRAY = Native.WM_APP + 2;
-    private const uint CmdOpen = 1, CmdSettings = 2, CmdRestart = 3, CmdQuit = 4;
+    private const uint CmdOpen = 1, CmdSettings = 2, CmdRestart = 3, CmdQuit = 4, CmdGeminiWeb = 5;
 
     private readonly WindowMessageHook _hook;
     private readonly Dictionary<uint, Action> _commands;
     private Native.NOTIFYICONDATA _data;
 
-    public TrayIcon(WindowMessageHook hook, string iconPath, Action onToggle, Action onOpenSettings, Action onRestart, Action onQuit)
+    public TrayIcon(WindowMessageHook hook, string iconPath, Action onToggle, Action onOpenSettings, Action onRestart, Action onQuit, Action? onGeminiWeb = null)
     {
         _hook = hook;
         _commands = new() { [CmdOpen] = onToggle, [CmdSettings] = onOpenSettings, [CmdRestart] = onRestart, [CmdQuit] = onQuit };
+        if (onGeminiWeb is not null) _commands[CmdGeminiWeb] = onGeminiWeb;
         _data = new Native.NOTIFYICONDATA
         {
             cbSize = Marshal.SizeOf<Native.NOTIFYICONDATA>(),
@@ -67,6 +68,7 @@ internal sealed class TrayIcon : IDisposable
     {
         var menu = Native.CreatePopupMenu();
         Native.AppendMenu(menu, Native.MF_STRING, CmdOpen, "Open Hotline");
+        if (_commands.ContainsKey(CmdGeminiWeb)) Native.AppendMenu(menu, Native.MF_STRING, CmdGeminiWeb, "Gemini (web)");
         Native.AppendMenu(menu, Native.MF_STRING, CmdSettings, "Settings…");
         Native.AppendMenu(menu, Native.MF_STRING, CmdRestart, "Restart (apply settings)");
         Native.AppendMenu(menu, Native.MF_SEPARATOR, 0, null);
