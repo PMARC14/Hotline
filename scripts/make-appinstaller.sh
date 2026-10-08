@@ -3,11 +3,11 @@
 # "latest" copy of this file for updates (once a day, in the background, without blocking launch).
 # Identity (Name, Publisher) comes from the manifest so it always matches the signed package.
 #   scripts/make-appinstaller.sh --version 1.2.3.0 --tag v1.2.3 --msix-name Hotline_1.2.3.0_x64.msix --out artifacts/Hotline.appinstaller
-#   --repository OWNER/REPO   default PMARC14/hotline
+#   --repository OWNER/REPO   default PMARC14/Hotline
 #   --publisher "CN=…"        the signing certificate's subject when it differs from the manifest (build-msix.sh --publisher)
 source "$(dirname "$0")/lib/common.sh"
 
-version="" tag="" msix_name="" out="" repository=PMARC14/hotline publisher=""
+version="" tag="" msix_name="" out="" repository=PMARC14/Hotline publisher=""
 while [ $# -gt 0 ]; do
     case $1 in
         --version) version=$2; shift 2 ;;
