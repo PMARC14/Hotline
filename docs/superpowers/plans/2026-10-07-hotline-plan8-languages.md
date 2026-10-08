@@ -1,9 +1,9 @@
-# Hotline Plan 8 — multi-language support and Windows 11 26H2
+# Hotline Plan 8 — multi-language support
 
-**Status: planned, not started.** Draft PR. The two parts are independent; the 26H2 part waits until this PC is on
-26H2 (build 26300). Read `docs/HANDOFF.md` and the local `CLAUDE.md` first.
+**Status: planned, not started.** Draft PR. Windows 11 26H2 follow-ups and native ARM64 builds are separate PRs.
+Read `docs/HANDOFF.md` and the local `CLAUDE.md` first. Default language: follow Windows (`general.language = system`).
 
-## Part A — multi-language support
+## Scope
 
 ### Already works in any language
 - Chat: models answer in the language you write in; `/translate` exists.
@@ -27,21 +27,6 @@ written directly in code.
 
 **Order:** extract strings in small PRs (one area at a time) → add the setting → pseudo-loc pass → first extra language.
 
-## Part B — Windows 11 26H2 (when this PC has it)
-
-Research first, on the 26H2 PC, before changing code:
-1. **Settings › About › This PC:** do agent connectors (`odr.exe`, needs 26220.7262+) turn ✓? If so, test Hotline's
-   MCP tools registered as Windows agent connectors, as planned in Plan 7.
-2. **App Actions / Click to Do:** re-run the TESTING.md App Actions section and note any catalog or schema changes.
-3. **Copilot key:** check the key still sends Win+Shift+F23, that the Settings "Customize Copilot key" choice of
-   Hotline survives the upgrade, and that Right Ctrl mode still works.
-4. **The rest of TESTING.md** after the upgrade: OCR, voice, selection, theme following.
-5. Read Microsoft's 26H2 release notes for new developer APIs relevant to a popup assistant (on-device AI APIs,
-   agent features, screen and selection access) and write down which are worth adopting, with the minimum build for
-   each. Gate every new feature with `PlatformSupport` and show it in This PC, so older Windows keeps working.
-
 ## Done when
-- Part A: every interface string comes from resources, `general.language` works, the pseudo-loc build has no leftover
-  English, and one extra language ships.
-- Part B: the TESTING.md pass on 26H2 is recorded in HANDOFF, agent connectors are working or their blocker is written
-  down, and adopted 26H2 APIs fall back cleanly on 25H2.
+- Every interface string comes from resources, `general.language` works (default: follow Windows), the pseudo-loc
+  build shows no leftover English, and one extra language ships.
