@@ -67,7 +67,8 @@ internal sealed class ChatPresenter
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(_notices, dataDirectory);
-        _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat);
+        _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
+            (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll());
     }
 
     public void Initialize()
@@ -144,7 +145,7 @@ internal sealed class ChatPresenter
         if (action.AutoSend) await SendAsync();
     });
 
-    public void Demo() => _selfTest.Demo();
+    public void Demo(string? scene) => _ = _selfTest.DemoAsync(scene);
 
     public async void SelfTest(Uri? uri) => await _selfTest.RunAsync();
 

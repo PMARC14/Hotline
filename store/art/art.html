@@ -1,6 +1,8 @@
 <!doctype html>
 <!-- Store artwork, rendered by scripts/make-store-art.sh with headless Edge at the exact pixel size.
      ?kind=poster (9:16) | box (1:1) | tile (icon only, transparent) | card (1920x1080 trailer title card)
+     | bg (empty backdrop shown full-screen behind the panel while capturing screenshots and the trailer)
+     | shot (Store screenshot: &caption=...&img=<captured panel PNG, relative to this file>)
      &title=...&sub=...  (card text) -->
 <html>
 <head>
@@ -29,6 +31,22 @@
   body.tile { background: transparent; }
   body.tile .icon { width: 84vmin; height: 84vmin; filter: none; }
   body.card { --icon: 30vmin; --title: 11vmin; --sub: 4.6vmin; gap: 3vmin; }
+  /* bg: the backdrop behind the real panel for screenshots and the recording (full-screen in Edge) */
+  body.bg { --glow-y: 50%; --glow: rgba(255, 92, 140, .55);
+    background: radial-gradient(70vmin 70vmin at 50% 50%, var(--glow), transparent 70%),
+                radial-gradient(120vmax 90vmax at 50% 0%, #4a2d9e 0%, #2a1866 45%, #120b2a 100%); }
+  body.bg > * { display: none; }
+  /* shot: a Store screenshot, 1920x1080 — caption on the left, the captured panel on the right */
+  body.shot { flex-direction: row; justify-content: center; gap: 4vw; padding: 0 5vw; box-sizing: border-box; }
+  body.shot > :not(.text):not(.panel) { display: none; }
+  .text { display: none; flex: 0 0 34vw; flex-direction: column; gap: 2vw; }
+  body.shot .text { display: flex; }
+  .text h2 { margin: 0; font-size: 3.6vw; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; }
+  .text .brand { display: flex; align-items: center; gap: .8vw; color: var(--muted); font-size: 1.5vw; }
+  .text .brand img { width: 2.4vw; height: 2.4vw; }
+  .panel { display: none; max-height: 86vh; max-width: 52vw; border-radius: .8vw;
+           box-shadow: 0 2vw 5vw rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); }
+  body.shot .panel { display: block; }
 </style>
 </head>
 <body>
@@ -36,11 +54,17 @@
   <h1 id="title">Hotline AI</h1>
   <p id="sub">Your AI on the Copilot key</p>
   <div class="key" id="key">Claude · Gemini · OpenAI · Local models</div>
+  <div class="text"><div class="brand"><img src="../../assets/source/telephone_receiver_color.svg" alt="">Hotline AI</div><h2 id="caption"></h2></div>
+  <img class="panel" id="panel" alt="">
   <script>
     const q = new URLSearchParams(location.search), kind = q.get('kind') || 'box';
     document.body.className = kind;
     if (q.get('title')) document.getElementById('title').textContent = q.get('title');
     if (q.get('sub')) document.getElementById('sub').textContent = q.get('sub');
+    if (kind === 'shot') {
+      document.getElementById('caption').textContent = q.get('caption') || '';
+      document.getElementById('panel').src = q.get('img');
+    }
     if (kind === 'tile') ['title', 'sub', 'key'].forEach(id => document.getElementById(id).remove());
     if (kind === 'box' || kind === 'card') document.getElementById('key').remove();
   </script>

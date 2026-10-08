@@ -1,7 +1,8 @@
 # Microsoft Store listing — Hotline AI
 
 Copy each field into Partner Center › your app › the submission › **Store listings** › English. Limits are Partner
-Center's. Images: run `scripts/make-store-art.sh` (output in `artifacts/store/`).
+Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
+and trailer, captured from the installed app); output in `artifacts/store/`.
 
 ---
 
@@ -88,13 +89,16 @@ First release on the Microsoft Store. Native on both x64 and ARM64 (Windows on A
 19. The Copilot key can act as Right Ctrl instead
 20. Native on x64 and ARM64 PCs
 
-## Screenshot captions (200 characters each)
+## Screenshot captions (200 characters each; same text as on the images)
 
 1. Press the Copilot key: ask anything, answers stream in.
-2. Use the AI you already have: Claude, Gemini, OpenAI-compatible APIs or a local model.
-3. Selected text and screenshots come along with your question.
-4. Quick actions with /: translate, summarize, fix, explain.
-5. Everything is configurable, and it follows your Windows theme.
+2. Selected text comes along with your question.
+3. Quick actions with /: translate, summarize, fix, explain.
+4. Use the AI you already have, and set everything your way.
+
+## Trailer
+
+`trailer.mp4` (1920x1080, 38 s, no audio) with `trailer-thumbnail.png`. Title: "Hotline AI in 30 seconds".
 
 ## Search terms (up to 7)
 

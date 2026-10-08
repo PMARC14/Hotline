@@ -77,7 +77,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     /// <summary>hotline://selftest renders a scripted conversation in the hidden panel (no typing).</summary>
     public event Action<Uri?>? SelfTestRequested;
     /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
-    public event Action? DemoRequested;
+    /// <summary>hotline://demo[?scene=…]: the scene name, or null.</summary>
+    public event Action<string?>? DemoRequested;
     public event Action? OpenSettingsRequested;
     /// <summary>The Voice key action: start (hold), stop (release) or toggle (short press).</summary>
     public event Action<VoiceCommand>? VoiceRequested;
@@ -88,7 +89,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         log.Debug($"activation uri={request.Uri}");
         if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
         {
-            DemoRequested?.Invoke();
+            DemoRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["scene"]);
             return;
         }
         if (string.Equals(request.Uri?.Host, "selftest", StringComparison.OrdinalIgnoreCase))

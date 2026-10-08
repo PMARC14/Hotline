@@ -157,7 +157,7 @@ public partial class App : Application
         };
         var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
         _router.SelfTestRequested += selfTests.Run;
-        _router.DemoRequested += () => _presenter.Demo();
+        _router.DemoRequested += scene => _presenter.Demo(scene);
         _router.VoiceRequested += command => _presenter.Voice(command);
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
