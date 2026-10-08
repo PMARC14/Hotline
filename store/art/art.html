@@ -1,0 +1,48 @@
+<!doctype html>
+<!-- Store artwork, rendered by scripts/make-store-art.sh with headless Edge at the exact pixel size.
+     ?kind=poster (9:16) | box (1:1) | tile (icon only, transparent) | card (1920x1080 trailer title card)
+     &title=...&sub=...  (card text) -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --ink: #f5f3ff; --muted: #b9b3d6; --glow: rgba(255, 92, 92, .38); }
+  html, body { margin: 0; width: 100vw; height: 100vh; overflow: hidden; }
+  body {
+    font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif; color: var(--ink);
+    background:
+      radial-gradient(60vmin 60vmin at 50% var(--glow-y, 38%), var(--glow), transparent 70%),
+      radial-gradient(120vmax 90vmax at 50% 0%, #2a1a5e 0%, #140d2e 45%, #08070f 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .icon { width: var(--icon, 46vmin); height: var(--icon, 46vmin); filter: drop-shadow(0 2vmin 4vmin rgba(0,0,0,.45)); }
+  h1 { margin: 0; font-weight: 600; letter-spacing: -.02em; font-size: var(--title, 13vmin); line-height: 1; }
+  p { margin: 0; color: var(--muted); font-weight: 400; font-size: var(--sub, 4.6vmin); }
+  .key {
+    display: inline-flex; align-items: center; gap: 1.2vmin; padding: 1.2vmin 2.6vmin; border-radius: 1.6vmin;
+    border: .3vmin solid rgba(255,255,255,.22); background: rgba(255,255,255,.07); color: var(--ink);
+    font-size: var(--key, 3.4vmin); font-weight: 500;
+  }
+  body.poster { --icon: 62vw; --title: 15vw; --sub: 5.6vw; --key: 4.4vw; --glow-y: 33%; gap: 4.5vw; }
+  body.poster .icon { margin-bottom: 4vw; }
+  body.box { --icon: 50vmin; --title: 14vmin; --sub: 4.8vmin; gap: 3.6vmin; --glow-y: 40%; }
+  body.tile { background: transparent; }
+  body.tile .icon { width: 84vmin; height: 84vmin; filter: none; }
+  body.card { --icon: 30vmin; --title: 11vmin; --sub: 4.6vmin; gap: 3vmin; }
+</style>
+</head>
+<body>
+  <img class="icon" src="../../assets/source/telephone_receiver_color.svg" alt="">
+  <h1 id="title">Hotline AI</h1>
+  <p id="sub">Your AI on the Copilot key</p>
+  <div class="key" id="key">Claude · Gemini · OpenAI · Local models</div>
+  <script>
+    const q = new URLSearchParams(location.search), kind = q.get('kind') || 'box';
+    document.body.className = kind;
+    if (q.get('title')) document.getElementById('title').textContent = q.get('title');
+    if (q.get('sub')) document.getElementById('sub').textContent = q.get('sub');
+    if (kind === 'tile') ['title', 'sub', 'key'].forEach(id => document.getElementById(id).remove());
+    if (kind === 'box' || kind === 'card') document.getElementById('key').remove();
+  </script>
+</body>
+</html>
