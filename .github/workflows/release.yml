@@ -69,9 +69,9 @@ jobs:
       - name: Build unsigned MSIX (Artifact Signing signs it)
         if: steps.mode.outputs.artifact == 'true'
         run: |
-          msix=$(scripts/build-msix.sh --version '${{ steps.ver.outputs.package }}' --unsigned --publisher '${{ vars.HOTLINE_PUBLISHER }}' | tail -1)
+          msix=$(scripts/build-msix.sh --arch all --version '${{ steps.ver.outputs.package }}' --unsigned --publisher '${{ vars.HOTLINE_PUBLISHER }}' | tail -1)
           mkdir -p artifacts/to-sign
-          cp "$msix" "artifacts/to-sign/Hotline_${{ steps.ver.outputs.package }}_x64.msix"
+          mv "$msix" artifacts/to-sign/
 
       - name: Azure login (OIDC)
         if: steps.mode.outputs.artifact == 'true'
@@ -89,7 +89,7 @@ jobs:
           signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
           certificate-profile-name: ${{ vars.ARTIFACT_SIGNING_PROFILE }}
           files-folder: ${{ github.workspace }}/artifacts/to-sign
-          files-folder-filter: msix
+          files-folder-filter: msixbundle
           file-digest: SHA256
           timestamp-rfc3161: http://timestamp.acs.microsoft.com
           timestamp-digest: SHA256
@@ -97,10 +97,10 @@ jobs:
       - name: Release files (Artifact Signing)
         if: steps.mode.outputs.artifact == 'true'
         run: |
-          mv artifacts/to-sign/Hotline_*.msix artifacts/
+          mv artifacts/to-sign/Hotline_*.msixbundle artifacts/
           # Trusted signing: users need no Hotline.cer, and updates through the .appinstaller just work.
           scripts/make-appinstaller.sh --version '${{ steps.ver.outputs.package }}' --tag '${{ steps.ver.outputs.tag }}' \
-            --msix-name 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' --out artifacts/Hotline.appinstaller \
+            --msix-name 'Hotline_${{ steps.ver.outputs.package }}.msixbundle' --out artifacts/Hotline.appinstaller \
             --publisher '${{ vars.HOTLINE_PUBLISHER }}' >/dev/null
 
       # ---- 2./3. .pfx or throwaway certificate ------------------------------------------------------------
@@ -129,8 +129,8 @@ jobs:
       - name: Build signed MSIX
         if: steps.mode.outputs.artifact != 'true'
         run: |
-          msix=$(scripts/build-msix.sh --version '${{ steps.ver.outputs.package }}' --certificate certs/release.pfx | tail -1)
-          cp "$msix" "artifacts/Hotline_${{ steps.ver.outputs.package }}_x64.msix"
+          # x64 + ARM64 in one .msixbundle (artifacts/Hotline_<version>.msixbundle); Windows installs the right one.
+          scripts/build-msix.sh --arch all --version '${{ steps.ver.outputs.package }}' --certificate certs/release.pfx >/dev/null
           # Public certificate so users of a self-signed build can trust it before installing
           # (-legacy reads .pfx files exported by older Windows tools).
           { openssl pkcs12 -in certs/release.pfx -nokeys -clcerts -passin env:HOTLINE_CERT_PASSWORD 2>/dev/null ||
@@ -138,13 +138,13 @@ jobs:
             openssl x509 -outform der -out artifacts/Hotline.cer
           # Install + automatic updates: Windows re-reads the "latest" copy of this file from the releases.
           scripts/make-appinstaller.sh --version '${{ steps.ver.outputs.package }}' --tag '${{ steps.ver.outputs.tag }}' \
-            --msix-name 'Hotline_${{ steps.ver.outputs.package }}_x64.msix' --out artifacts/Hotline.appinstaller >/dev/null
+            --msix-name 'Hotline_${{ steps.ver.outputs.package }}.msixbundle' --out artifacts/Hotline.appinstaller >/dev/null
 
       - uses: actions/upload-artifact@v4
         with:
           name: hotline-${{ steps.ver.outputs.tag }}
           path: |
-            artifacts/Hotline_*.msix
+            artifacts/Hotline_*.msixbundle
             artifacts/Hotline.cer
             artifacts/Hotline.appinstaller
           if-no-files-found: warn
@@ -156,8 +156,8 @@ jobs:
         run: |
           flags=(--target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes)
           if [ '${{ steps.cert.outputs.prerelease }}' = true ]; then
-            flags+=(--prerelease --notes "Test build, signed with a temporary self-signed certificate: install Hotline.cer into Local Machine > Trusted People first, then open the .msix.")
+            flags+=(--prerelease --notes "Test build, signed with a temporary self-signed certificate: install Hotline.cer into Local Machine > Trusted People first, then open the .msixbundle (x64 and ARM64).")
           else flags+=(--latest --notes ""); fi
-          files=(artifacts/Hotline_*.msix artifacts/Hotline.appinstaller)
+          files=(artifacts/Hotline_*.msixbundle artifacts/Hotline.appinstaller)
           [ -f artifacts/Hotline.cer ] && files+=(artifacts/Hotline.cer) # only self-signed/.pfx builds need it
           gh release create '${{ steps.ver.outputs.tag }}' "${files[@]}" "${flags[@]}"

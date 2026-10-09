@@ -50,11 +50,11 @@ configurable in plain files.
 
 ## Install
 
-Windows 11 22H2 or later.
+Windows 11 22H2 or later, on x64 or ARM64 (Windows on ARM runs the native ARM64 build).
 
 ### From Releases
 
-Download the latest `.msix` from [Releases](https://github.com/PMARC14/hotline/releases) and double-click it (Windows'
+Download the latest `.msixbundle` from [Releases](https://github.com/PMARC14/Hotline/releases) and double-click it (Windows'
 App Installer opens with an **Install** button). To get automatic updates instead, download `Hotline.appinstaller`
 and open that.
 
@@ -142,7 +142,7 @@ Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status
 ### CI and releases
 
 Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
-to `main` publishes a release with the `.msix`, `Hotline.cer` and `Hotline.appinstaller`
+to `main` publishes a release with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
 (`.github/workflows/release.yml`); until the signing secrets are set these are self-signed pre-release test builds.
 Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 

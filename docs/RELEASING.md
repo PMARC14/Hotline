@@ -20,11 +20,11 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
     Each test build has a new certificate, so testers trust that build's `Hotline.cer` again. `.appinstaller` updates
     don't apply to test builds, because GitHub's `releases/latest` link skips pre-releases. Automatic updates start
     with the first trusted-signed release (first one: `v0.2.1`, 2026-10-04).
-  - Assets: the `.msix`, `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
+  - Assets: the `.msixbundle` (x64 and ARM64; Windows installs the right one), `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
 - **winget** (`.github/workflows/winget.yml`): disabled until the repository variable `HOTLINE_WINGET_ENABLED=true`;
   needs trusted signing, a first manual submission (`wingetcreate new`) and a `WINGET_TOKEN` secret (details in the file).
 
-Users then either double-click the `.msix`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
+Users then either double-click the `.msixbundle`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
 checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background. Updates keep
 settings (`%USERPROFILE%\.hotline`) and the Copilot key choice. After installing: Settings → Personalization → Text
 input → Customize Copilot key → Custom → Hotline.
@@ -54,12 +54,12 @@ Partner Center › your app › Product management › Product identity gives fo
 unsigned because the Store signs it, and Store versions must end in `.0`:
 
 ```bash
-scripts/build-msix.sh --store --version 0.2.3.0 \
+scripts/build-msix.sh --store --arch all --version 0.2.4.0 \
   --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \
   --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
 ```
 
-Upload the `.msix` it prints on the submission's **Packages** page. Each new submission needs a higher version than
+Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page. Each new submission needs a higher version than
 the last one. `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
 
 ## Azure Artifact Signing (automatic signing in GitHub Actions)
@@ -85,7 +85,7 @@ ID and a selfie); elsewhere it takes an organization with a verifiable business 
 
 From then on every release is built unsigned with that `Publisher`, signed by Azure (`azure/artifact-signing-action`),
 timestamped, and published as a normal release — no `Hotline.cer`, and `.appinstaller` updates work. Check a release
-with `Get-AuthenticodeSignature Hotline_*.msix` (Status *Valid*, signer = your name).
+with `Get-AuthenticodeSignature Hotline_*.msixbundle` (Status *Valid*, signer = your name).
 
 **Identity change:** the `Publisher` is part of the package identity, so the first trusted build installs *next to* a
 self-signed one rather than updating it. Uninstall the old Hotline first (settings in `%USERPROFILE%\.hotline` stay)
