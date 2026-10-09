@@ -1,0 +1,72 @@
+<!doctype html>
+<!-- Store artwork, rendered by scripts/make-store-art.sh with headless Edge at the exact pixel size.
+     ?kind=poster (9:16) | box (1:1) | tile (icon only, transparent) | card (1920x1080 trailer title card)
+     | bg (empty backdrop shown full-screen behind the panel while capturing screenshots and the trailer)
+     | shot (Store screenshot: &caption=...&img=<captured panel PNG, relative to this file>)
+     &title=...&sub=...  (card text) -->
+<html>
+<head>
+<meta charset="utf-8">
+<style>
+  :root { --ink: #f5f3ff; --muted: #b9b3d6; --glow: rgba(255, 92, 92, .38); }
+  html, body { margin: 0; width: 100vw; height: 100vh; overflow: hidden; }
+  body {
+    font-family: "Segoe UI Variable Display", "Segoe UI", sans-serif; color: var(--ink);
+    background:
+      radial-gradient(60vmin 60vmin at 50% var(--glow-y, 38%), var(--glow), transparent 70%),
+      radial-gradient(120vmax 90vmax at 50% 0%, #2a1a5e 0%, #140d2e 45%, #08070f 100%);
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+  }
+  .icon { width: var(--icon, 46vmin); height: var(--icon, 46vmin); filter: drop-shadow(0 2vmin 4vmin rgba(0,0,0,.45)); }
+  h1 { margin: 0; font-weight: 600; letter-spacing: -.02em; font-size: var(--title, 13vmin); line-height: 1; }
+  p { margin: 0; color: var(--muted); font-weight: 400; font-size: var(--sub, 4.6vmin); }
+  .key {
+    display: inline-flex; align-items: center; gap: 1.2vmin; padding: 1.2vmin 2.6vmin; border-radius: 1.6vmin;
+    border: .3vmin solid rgba(255,255,255,.22); background: rgba(255,255,255,.07); color: var(--ink);
+    font-size: var(--key, 3.4vmin); font-weight: 500;
+  }
+  body.poster { --icon: 62vw; --title: 15vw; --sub: 5.6vw; --key: 4.4vw; --glow-y: 33%; gap: 4.5vw; }
+  body.poster .icon { margin-bottom: 4vw; }
+  body.box { --icon: 50vmin; --title: 14vmin; --sub: 4.8vmin; gap: 3.6vmin; --glow-y: 40%; }
+  body.tile { background: transparent; }
+  body.tile .icon { width: 84vmin; height: 84vmin; filter: none; }
+  body.card { --icon: 30vmin; --title: 11vmin; --sub: 4.6vmin; gap: 3vmin; }
+  /* bg: the backdrop behind the real panel for screenshots and the recording (full-screen in Edge) */
+  body.bg { --glow-y: 50%; --glow: rgba(255, 92, 140, .55);
+    background: radial-gradient(70vmin 70vmin at 50% 50%, var(--glow), transparent 70%),
+                radial-gradient(120vmax 90vmax at 50% 0%, #4a2d9e 0%, #2a1866 45%, #120b2a 100%); }
+  body.bg > * { display: none; }
+  /* shot: a Store screenshot, 1920x1080 — caption on the left, the captured panel on the right */
+  body.shot { flex-direction: row; justify-content: center; gap: 4vw; padding: 0 5vw; box-sizing: border-box; }
+  body.shot > :not(.text):not(.panel) { display: none; }
+  .text { display: none; flex: 0 0 34vw; flex-direction: column; gap: 2vw; }
+  body.shot .text { display: flex; }
+  .text h2 { margin: 0; font-size: 3.6vw; font-weight: 600; line-height: 1.1; letter-spacing: -.01em; }
+  .text .brand { display: flex; align-items: center; gap: .8vw; color: var(--muted); font-size: 1.5vw; }
+  .text .brand img { width: 2.4vw; height: 2.4vw; }
+  .panel { display: none; max-height: 86vh; max-width: 52vw; border-radius: .8vw;
+           box-shadow: 0 2vw 5vw rgba(0,0,0,.55), 0 0 0 1px rgba(255,255,255,.08); }
+  body.shot .panel { display: block; }
+</style>
+</head>
+<body>
+  <img class="icon" src="../../assets/source/telephone_receiver_color.svg" alt="">
+  <h1 id="title">Hotline AI</h1>
+  <p id="sub">Your AI on the Copilot key</p>
+  <div class="key" id="key">Claude · Gemini · OpenAI · Local models</div>
+  <div class="text"><div class="brand"><img src="../../assets/source/telephone_receiver_color.svg" alt="">Hotline AI</div><h2 id="caption"></h2></div>
+  <img class="panel" id="panel" alt="">
+  <script>
+    const q = new URLSearchParams(location.search), kind = q.get('kind') || 'box';
+    document.body.className = kind;
+    if (q.get('title')) document.getElementById('title').textContent = q.get('title');
+    if (q.get('sub')) document.getElementById('sub').textContent = q.get('sub');
+    if (kind === 'shot') {
+      document.getElementById('caption').textContent = q.get('caption') || '';
+      document.getElementById('panel').src = q.get('img');
+    }
+    if (kind === 'tile') ['title', 'sub', 'key'].forEach(id => document.getElementById(id).remove());
+    if (kind === 'box' || kind === 'card') document.getElementById('key').remove();
+  </script>
+</body>
+</html>
