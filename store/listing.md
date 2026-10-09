@@ -110,7 +110,7 @@ AI chat, Copilot key, Claude, Gemini, AI assistant, LLM, local AI
 
 ## Additional license terms
 
-MIT License: https://github.com/PMARC14/Hotline/blob/main/LICENSE
+Apache License 2.0: https://github.com/PMARC14/Hotline/blob/main/LICENSE
 
 ## Developed by
 
