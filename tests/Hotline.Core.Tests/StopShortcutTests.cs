@@ -1,5 +1,6 @@
 using Hotline.Core.Activation;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -40,7 +41,7 @@ public sealed class StopShortcutTests
     public void Defaults_to_esc_and_is_editable_in_settings()
     {
         Assert.Equal("Esc", new ChatSettings().StopShortcut);
-        var item = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == "Stop an answer"));
+        var item = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Stop)));
         Assert.NotNull(item.Validate);
         Assert.True(item.Validate!("Ctrl+."));
         Assert.False(item.Validate!("Enter"));

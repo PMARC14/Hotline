@@ -156,7 +156,7 @@ internal sealed class ChatPresenter
     {
         if (_chat.IsBusy)
         {
-            _notices.ShowTagged("stop-hint", null, $"Still answering. {_settings.Chat.StopShortcut} or the Stop button stops it; your message waits in the box.",
+            _notices.ShowTagged("stop-hint", null, L.F(Strings.Chat_StillAnswering, _settings.Chat.StopShortcut),
                 InfoBarSeverity.Informational, closable: true);
             return;
         }
@@ -195,18 +195,18 @@ internal sealed class ChatPresenter
             case SendRoute.Nothing:
                 return;
             case SendRoute.Remember { Fact: "" }:
-                _notices.Show("Type what to remember after /remember, e.g. \"/remember I prefer metric units\".", InfoBarSeverity.Warning);
+                _notices.Show(Strings.Chat_RememberWhat, InfoBarSeverity.Warning);
                 return;
             case SendRoute.Remember r:
                 if (_memory.Append(r.Fact))
                 {
                     _composer.Text = "";
-                    _notices.Show("Remembered. Every chat sees it from now on (edit in Settings › Chat and history › Memory).", InfoBarSeverity.Success);
+                    _notices.Show(Strings.Chat_Remembered, InfoBarSeverity.Success);
                 }
-                else _notices.Show($"Not saved: keep it to one line of at most {MemoryStore.MaxFactChars} characters.", InfoBarSeverity.Warning);
+                else _notices.Show(L.F(Strings.Chat_NotRemembered, MemoryStore.MaxFactChars), InfoBarSeverity.Warning);
                 return;
             case SendRoute.NeedsText n:
-                _notices.Show($"Type the text for /{n.Action} after it, or attach something.", InfoBarSeverity.Warning);
+                _notices.Show(L.F(Strings.Chat_ActionNeedsText, n.Action), InfoBarSeverity.Warning);
                 return;
             case SendRoute.Message m:
                 await SendMessageAsync(typed, m);
@@ -317,7 +317,7 @@ internal sealed class ChatPresenter
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
         {
-            _notices.Show($"Could not open the settings folder ({_dataDirectory}): {ex.Message}", InfoBarSeverity.Error);
+            _notices.Show(L.F(Strings.Chat_FolderFailed, _dataDirectory, ex.Message), InfoBarSeverity.Error);
         }
     }
 

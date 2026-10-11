@@ -94,7 +94,7 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         var bar = new InfoBar
         {
             IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning, Tag = ApprovalTag,
-            Title = $"Allow {request.Tool.Server} › {request.Tool.Tool}?",
+            Title = L.F(Strings.Tool_AllowTitle, request.Tool.Server, request.Tool.Tool),
         };
         var timer = popup.DispatcherQueue.CreateTimer();
         void Answer(ToolDecision d)
@@ -113,7 +113,7 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         details.Children.Add(new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 8),
-            Children = { B("Allow once", ToolDecision.AllowOnce, accent: true), B("Always allow", ToolDecision.AllowAlways), B("Deny", ToolDecision.Deny) },
+            Children = { B(Strings.Tool_AllowOnce, ToolDecision.AllowOnce, accent: true), B(Strings.Tool_AllowAlways, ToolDecision.AllowAlways), B(Strings.Tool_Deny, ToolDecision.Deny) },
         });
         bar.Content = details;
         Panel.Children.Add(bar);

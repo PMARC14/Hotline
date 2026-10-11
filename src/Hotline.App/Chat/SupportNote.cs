@@ -21,9 +21,7 @@ internal sealed class SupportNote(NoticeArea notices, string dataDirectory)
         if (File.Exists(Marker)) return;
         try { File.WriteAllText(Marker, DateTimeOffset.Now.ToString("O")); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return; } // can't remember it: don't nag
-        notices.ShowTagged(Tag, "Enjoying Hotline?",
-            "It's free and open source, made by one person. If it helps you, a donation keeps it going (GitHub Sponsors or " +
-            "Ko-fi; links stay in Settings › About). This note won't show again.",
-            InfoBarSeverity.Informational, closable: true, ("Support Hotline", () => _ = Launcher.LaunchUriAsync(SupportLinks.GitHubSponsors)));
+        notices.ShowTagged(Tag, Strings.SupportNote_Title, Strings.SupportNote_Body,
+            InfoBarSeverity.Informational, closable: true, (Strings.About_Support, () => _ = Launcher.LaunchUriAsync(SupportLinks.GitHubSponsors)));
     }
 }

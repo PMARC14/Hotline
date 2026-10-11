@@ -106,7 +106,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     {
         _block.Blocks.Add(Spacer());
         var label = new Paragraph { TextAlignment = TextAlignment.Right, FontSize = 11, Foreground = theme.Style.Accent, Margin = new Thickness(80, 0, 0, 2) };
-        label.Inlines.Add(new Run { Text = "You" });
+        label.Inlines.Add(new Run { Text = Strings.Transcript_You });
         _block.Blocks.Add(label);
         if (message.Text.Length > 0)
         {
@@ -185,7 +185,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         if (view.Text.Length > 0)
         {
             var p = new Paragraph { Margin = new Thickness(0, 0, 0, 2) };
-            p.Inlines.Add(new InlineUIContainer { Child = CopyButton(() => view.Text, "Copy response") });
+            p.Inlines.Add(new InlineUIContainer { Child = CopyButton(() => view.Text, Strings.Transcript_CopyResponse) });
             if (view.Report is { } report) p.Inlines.Add(new InlineUIContainer { Child = MoreButton(report) });
             _block.Blocks.Add(p);
         }
@@ -195,7 +195,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private void AppendError(AssistantView view)
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = view.Error, Width = ContentWidth };
-        var retry = new Button { Content = "Retry" };
+        var retry = new Button { Content = Strings.Transcript_Retry };
         retry.Click += (_, _) =>
         {
             view.Error = null;
@@ -307,19 +307,19 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     {
         var button = new Button
         {
-            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { new FontIcon { Glyph = Glyphs.Copy, FontSize = 12 }, new TextBlock { Text = "Copy", FontSize = 12 } } },
+            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { new FontIcon { Glyph = Glyphs.Copy, FontSize = 12 }, new TextBlock { Text = Strings.Common_Copy, FontSize = 12 } } },
             Padding = new Thickness(8, 3, 8, 3), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
             Opacity = 0.75,
         };
         ToolTipService.SetToolTip(button, tooltip);
-        button.Click += (_, _) => { if (ClipboardText.TrySet(text())) notices.Show("Copied.", InfoBarSeverity.Success); else notices.Show("The clipboard is busy; try again.", InfoBarSeverity.Warning); };
+        button.Click += (_, _) => { if (ClipboardText.TrySet(text())) notices.Show(Strings.Transcript_Copied, InfoBarSeverity.Success); else notices.Show(Strings.Transcript_ClipboardBusy, InfoBarSeverity.Warning); };
         return button;
     }
 
     /// <summary>The answer's "⋯" menu, kept out of the way: today it only holds "Report this answer" (opens the provider's page).</summary>
     private static Button MoreButton(ReportTarget report)
     {
-        var item = new MenuFlyoutItem { Text = $"Report this answer to {report.Provider}…", Icon = new FontIcon { Glyph = Glyphs.Flag } };
+        var item = new MenuFlyoutItem { Text = L.F(Strings.Transcript_Report, report.Provider), Icon = new FontIcon { Glyph = Glyphs.Flag } };
         item.Click += (_, _) => _ = Windows.System.Launcher.LaunchUriAsync(report.Page);
         var button = new Button
         {
@@ -327,7 +327,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
             Padding = new Thickness(8, 3, 8, 3), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
             Opacity = 0.75, Flyout = new MenuFlyout { Items = { item } },
         };
-        ToolTipService.SetToolTip(button, "More");
+        ToolTipService.SetToolTip(button, Strings.Transcript_More);
         return button;
     }
 

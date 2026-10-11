@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.ClaudeCode;
 
@@ -109,11 +110,11 @@ public static class ClaudeErrors
     {
         bool Has(params string[] words) => words.Any(w => error.Contains(w, StringComparison.OrdinalIgnoreCase));
         if (Has("/login", "not logged in", "invalid api key", "oauth token", "authentication"))
-            return new(BackendErrorKind.NotLoggedIn, "Claude Code isn't signed in. Run `claude` once in a terminal and sign in, then try again.");
+            return new(BackendErrorKind.NotLoggedIn, Strings.Claude_NotSignedIn);
         if (Has("usage limit", "rate limit", "rate_limit", "429"))
-            return new(BackendErrorKind.RateLimited, "Claude usage limit reached for now. " + error.Split('|')[0].Trim());
+            return new(BackendErrorKind.RateLimited, L.F(Strings.Claude_Limit, error.Split('|')[0].Trim()));
         if (Has("overloaded", "529", "service unavailable"))
-            return new(BackendErrorKind.ServerDown, "Claude is overloaded right now; try again in a moment.");
+            return new(BackendErrorKind.ServerDown, Strings.Claude_Overloaded);
         return new(BackendErrorKind.Failed, error);
     }
 }

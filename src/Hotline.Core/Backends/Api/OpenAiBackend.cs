@@ -7,6 +7,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Hotline.Core.Tools;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Api;
 
@@ -35,7 +36,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
         var key = ApiCommon.Key(profile, secrets);
         var local = profile.Type == BackendType.Local;
         if (string.IsNullOrWhiteSpace(profile.Model) && !local)
-            throw new BackendException(BackendErrorKind.NotConfigured, $"Pick a model for {ApiCommon.Name(profile)} (the Model dropdown lists them).");
+            throw new BackendException(BackendErrorKind.NotConfigured, L.F(Strings.Api_PickModel, ApiCommon.Name(profile)));
         ApiCommon.RequireSafeTransport(profile, endpoint, key);
 
         var offered = await ToolLoop.ToolsFor(profile, tools, ct);
@@ -90,9 +91,9 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             if (calls.Count == 0 || offered.Count == 0) yield break;
             // Never run tool calls from a cut-off stream: their arguments may be incomplete.
             if (finish is "length" or "content_filter")
-                throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)} stopped ({finish}) while asking for a tool; nothing was run.");
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_ToolStopped, ApiCommon.Name(profile), finish));
             if (!done && finish is null)
-                throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: the connection ended before the tool request was complete; nothing was run.");
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_ToolCut, ApiCommon.Name(profile)));
             // The model asked for tools: record its turn, run each call, feed the results back.
             var toolCallsJson = new JsonArray();
             foreach (var call in calls.Values)

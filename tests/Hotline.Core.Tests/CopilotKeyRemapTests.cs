@@ -1,5 +1,6 @@
 using Hotline.Core.Activation;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -56,7 +57,7 @@ public sealed class CopilotKeyRemapTests
     public void Setting_defaults_to_opening_hotline_and_is_offered_on_the_general_page()
     {
         Assert.Equal(CopilotKeyMode.Hotline, new ActivationSettings().CopilotKey);
-        var choice = Assert.IsType<ChoiceItem>(SettingsSchema.Items.Single(i => i.Page == SettingsPage.General && i.Header == "Copilot key"));
+        var choice = Assert.IsType<ChoiceItem>(SettingsSchema.Items.Single(i => i.Page == SettingsPage.General && i.Header == nameof(Strings.Set_CopilotKey)));
         Assert.Contains(choice.Options, o => o.Value == nameof(CopilotKeyMode.RightCtrl));
     }
 }

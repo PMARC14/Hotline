@@ -71,11 +71,11 @@ internal sealed class VoiceInput
     {
         if (Active) return;
         _composer.IsReadOnly = true; // typing now would be overwritten by the dictation
-        var hint = _holding ? "Let go of the key to stop. Esc cancels." : "Press the key again to stop. Esc cancels.";
-        _notices.ShowTagged(Tag, "🎙 Starting the microphone…", hint, InfoBarSeverity.Informational);
+        var hint = _holding ? Strings.Voice_HintHold : Strings.Voice_HintTap;
+        _notices.ShowTagged(Tag, Strings.Voice_Starting, hint, InfoBarSeverity.Informational);
         await _session.StartAsync(_composer.Text);
         if (_session.State != VoiceState.Listening) return;
-        _notices.ShowTagged(Tag, "🎙 Listening…", hint, InfoBarSeverity.Informational); // now words are heard
+        _notices.ShowTagged(Tag, Strings.Voice_Listening, hint, InfoBarSeverity.Informational); // now words are heard
         _log.Info("voice: listening");
     }
 
@@ -100,8 +100,8 @@ internal sealed class VoiceInput
             if (status is not (SpeechRecognitionResultStatus.Success or SpeechRecognitionResultStatus.TimeoutExceeded or SpeechRecognitionResultStatus.UserCanceled))
             {
                 _session.OnEndedByItself();
-                _notices.ShowTagged(Tag, null, status == SpeechRecognitionResultStatus.MicrophoneUnavailable ? "No microphone is available."
-                    : $"Voice input stopped ({status}).", InfoBarSeverity.Warning, closable: true);
+                _notices.ShowTagged(Tag, null, status == SpeechRecognitionResultStatus.MicrophoneUnavailable ? Strings.Voice_NoMic
+                    : L.F(Strings.Voice_Stopped, status), InfoBarSeverity.Warning, closable: true);
                 return;
             }
             _session.OnEndedByItself();
@@ -123,13 +123,13 @@ internal sealed class VoiceInput
         Reset();
         DropRecognizer();
         if (ex.HResult == WindowsSpeech.PrivacyDeclined)
-            _notices.ShowTagged(Tag, null, "Voice input needs Windows' online speech recognition.", InfoBarSeverity.Warning, closable: true,
-                ("Turn it on", () => _ = Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-speech"))));
+            _notices.ShowTagged(Tag, null, Strings.Voice_NeedsOnline, InfoBarSeverity.Warning, closable: true,
+                (Strings.Voice_TurnOn, () => _ = Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-speech"))));
         else if (ex is UnauthorizedAccessException)
-            _notices.ShowTagged(Tag, null, "Hotline isn't allowed to use the microphone.", InfoBarSeverity.Warning, closable: true,
-                ("Microphone settings", () => _ = Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-microphone"))));
+            _notices.ShowTagged(Tag, null, Strings.Voice_MicDenied, InfoBarSeverity.Warning, closable: true,
+                (Strings.Voice_MicSettings, () => _ = Launcher.LaunchUriAsync(new Uri("ms-settings:privacy-microphone"))));
         else
-            _notices.ShowTagged(Tag, null, $"Voice input couldn't start: {ex.Message}", InfoBarSeverity.Warning, closable: true);
+            _notices.ShowTagged(Tag, null, L.F(Strings.Voice_StartFailed, ex.Message), InfoBarSeverity.Warning, closable: true);
     }
 
     /// <summary>Back to typing: the box is editable and the voice bar is gone (warnings are shown after this).</summary>

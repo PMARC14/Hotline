@@ -43,8 +43,8 @@ internal sealed class WindowsSpeech : ISpeechSession, IDisposable
             if (compiled.Status == SpeechRecognitionResultStatus.Success) return (new WindowsSpeech(recognizer, ui), null);
             recognizer.Dispose();
             return (null, compiled.Status == SpeechRecognitionResultStatus.TopicLanguageNotSupported
-                ? "Speech recognition doesn't support your Windows display language for dictation."
-                : $"Speech recognition isn't available ({compiled.Status}).");
+                ? Strings.Voice_LanguageUnsupported
+                : L.F(Strings.Voice_Unavailable, compiled.Status));
         }
         catch
         {

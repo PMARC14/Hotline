@@ -1,14 +1,20 @@
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends;
 
 [Flags]
 public enum ConnectionField { None = 0, Endpoint = 1, ApiKey = 2, CliPath = 4, Agent = 8, ExtraArgs = 16, Tools = 32 }
 
+/// <param name="DisplayNameKey">Resource key of the type's name (shown as <see cref="DisplayName"/>).</param>
+/// <param name="DefaultName">A new connection's name (saved in its file, so not translated).</param>
+/// <param name="DescriptionKey">Resource key of the one-line description (shown as <see cref="Description"/>).</param>
 public sealed record ConnectionTypeInfo(
-    BackendType Type, string DisplayName, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
-    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string Description, bool EffortInModelId = false, bool ImagesByDefault = true)
+    BackendType Type, string DisplayNameKey, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
+    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true)
 {
+    public string DisplayName => L.Get(DisplayNameKey);
+    public string Description => L.Get(DescriptionKey);
     public bool Has(ConnectionField field) => (Fields & field) == field;
 }
 
@@ -20,18 +26,18 @@ public static class ConnectionTypes
 
     public static IReadOnlyList<ConnectionTypeInfo> All { get; } =
     [
-        new(BackendType.Antigravity, "Antigravity CLI (agy)", "Gemini (Antigravity)", Cli | ConnectionField.Agent, null,
-            ["low", "medium", "high"], false, "Your installed agy and its Google sign-in.", EffortInModelId: true),
-        new(BackendType.ClaudeCode, "Claude Code CLI", "Claude (Claude Code)", Cli, null,
-            ClaudeCode.ClaudeCodeProtocol.EffortLevels, false, "Your installed claude and its sign-in (your Claude plan)."),
-        new(BackendType.Gemini, "Gemini API", "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",
-            ["low", "medium", "high"], false, "A Google AI Studio API key."),
-        new(BackendType.Anthropic, "Anthropic API", "Claude API", Api, "https://api.anthropic.com/v1",
-            Hotline.Core.Backends.Api.AnthropicBackend.EffortLevels, false, "An Anthropic Console API key. Default model: Claude Opus 5.5."),
-        new(BackendType.OpenAiCompatible, "OpenAI-compatible API", "OpenAI-compatible", Api, "https://api.openai.com/v1",
-            ["low", "medium", "high"], false, "OpenAI, OpenRouter, Groq and other OpenAI-style APIs."),
-        new(BackendType.Local, "Local endpoint", "Local model", Api, "http://127.0.0.1:8080/v1",
-            [], true, "llama.cpp server, LM Studio and other local OpenAI-style servers.", ImagesByDefault: false),
+        new(BackendType.Antigravity, nameof(Strings.Type_Agy), "Gemini (Antigravity)", Cli | ConnectionField.Agent, null,
+            ["low", "medium", "high"], false, nameof(Strings.Type_Agy_Desc), EffortInModelId: true),
+        new(BackendType.ClaudeCode, nameof(Strings.Type_ClaudeCode), "Claude (Claude Code)", Cli, null,
+            ClaudeCode.ClaudeCodeProtocol.EffortLevels, false, nameof(Strings.Type_ClaudeCode_Desc)),
+        new(BackendType.Gemini, nameof(Strings.Type_Gemini), "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",
+            ["low", "medium", "high"], false, nameof(Strings.Type_Gemini_Desc)),
+        new(BackendType.Anthropic, nameof(Strings.Type_Anthropic), "Claude API", Api, "https://api.anthropic.com/v1",
+            Hotline.Core.Backends.Api.AnthropicBackend.EffortLevels, false, nameof(Strings.Type_Anthropic_Desc)),
+        new(BackendType.OpenAiCompatible, nameof(Strings.Type_OpenAi), "OpenAI-compatible", Api, "https://api.openai.com/v1",
+            ["low", "medium", "high"], false, nameof(Strings.Type_OpenAi_Desc)),
+        new(BackendType.Local, nameof(Strings.Type_Local), "Local model", Api, "http://127.0.0.1:8080/v1",
+            [], true, nameof(Strings.Type_Local_Desc), ImagesByDefault: false),
     ];
 
     public static ConnectionTypeInfo Of(BackendType type) => All.First(t => t.Type == type);

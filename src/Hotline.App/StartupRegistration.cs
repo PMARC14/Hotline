@@ -36,10 +36,10 @@ internal static class StartupRegistration
 
     public static string Describe(StartupTaskState? state) => state switch
     {
-        StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy => "On — Hotline starts in the tray when you sign in.",
-        StartupTaskState.DisabledByUser => "Off (turned off in Windows Settings › Apps › Startup). Turn Hotline on there.",
-        StartupTaskState.DisabledByPolicy => "Off (blocked by your organization's policy).",
-        StartupTaskState.Disabled => "Off.",
-        _ => "Not available in this build.",
+        StartupTaskState.Enabled or StartupTaskState.EnabledByPolicy => Strings.Startup_On,
+        StartupTaskState.DisabledByUser => Strings.Startup_OffByUser,
+        StartupTaskState.DisabledByPolicy => Strings.Startup_OffByPolicy,
+        StartupTaskState.Disabled => Strings.Startup_Off,
+        _ => Strings.Startup_Unavailable,
     };
 }

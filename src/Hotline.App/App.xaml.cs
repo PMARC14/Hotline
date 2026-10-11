@@ -73,6 +73,20 @@ public partial class App : Application
     /// <summary>User-visible data folder: %USERPROFILE%\.hotline (settings.json, logs, history).</summary>
     internal static string DataDirectory => HotlinePaths.DataDirectory(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
+    /// <summary>
+    /// general.language: "system" follows the Windows display language; a tag picks one (Languages.Supported). Sets
+    /// .NET's interface culture (Hotline's own text) and the app's MRT language (the Start menu description and
+    /// WinUI's built-in control text). Takes effect at start, so the setting says "applies after restarting".
+    /// </summary>
+    private void ApplyLanguage(string? setting)
+    {
+        var culture = Languages.Apply(setting);
+        try { Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = culture?.Name ?? ""; }
+        catch (Exception ex) when (ex is InvalidOperationException or System.Runtime.InteropServices.COMException or UnauthorizedAccessException)
+        { /* unpackaged dev run: .NET's culture alone still switches Hotline's text */ }
+        _log?.Info($"interface language: {(culture?.Name ?? "Windows (" + System.Globalization.CultureInfo.CurrentUICulture.Name + ")")}");
+    }
+
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var dataDir = DataDirectory;
@@ -85,6 +99,7 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
+        ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
@@ -110,7 +125,7 @@ public partial class App : Application
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
-                _presenter?.Notice($"Saved to memory: \"{fact}\" (Settings › Chat and history › Edit memory)", Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
+                _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
@@ -136,7 +151,7 @@ public partial class App : Application
         _models = new ModelCatalog(new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) }, _secrets, (p, ct) =>
         {
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
-                      ?? throw new ModelListException("The Antigravity CLI (agy) isn't installed.");
+                      ?? throw new ModelListException(Strings.Agy_NotInstalled);
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);

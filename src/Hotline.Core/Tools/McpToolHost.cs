@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Hotline.Core.Diagnostics;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tools;
 
@@ -101,7 +102,7 @@ public sealed class McpToolHost(
             {
                 if (ToolNames.IsAmbiguous(server.Name))
                 {
-                    SetStatus(new(server.Name, server.DisplayName ?? server.Name, McpServerState.Failed, 0, "A server name can't contain '/' or '*'."));
+                    SetStatus(new(server.Name, server.DisplayName ?? server.Name, McpServerState.Failed, 0, Strings.Mcp_BadName));
                     continue;
                 }
                 servers.Add(server);
@@ -175,7 +176,7 @@ public sealed class McpToolHost(
             if (session is not null) await SafeDispose(session);
             if (ct.IsCancellationRequested) return (server, null, "cancelled");
             log.Error($"MCP server {server.Name} failed", ex);
-            return (server, null, ex is OperationCanceledException ? $"didn't start within {StartTimeout.TotalSeconds:0} s" : ex.Message);
+            return (server, null, ex is OperationCanceledException ? L.F(Strings.Mcp_StartTimeout, StartTimeout.TotalSeconds) : ex.Message);
         }
     }
 
@@ -226,7 +227,7 @@ public sealed class McpToolHost(
             return loaded;
         }
         var good = Volatile.Read(ref _lastGood);
-        Volatile.Write(ref _configError, good is null ? $"{loaded.Error} No tools run until it's fixed." : $"{loaded.Error} The last good version stays in force.");
+        Volatile.Write(ref _configError, L.F(good is null ? Strings.Mcp_ConfigBroken : Strings.Mcp_ConfigBrokenKept, loaded.Error));
         return good;
     }
 
