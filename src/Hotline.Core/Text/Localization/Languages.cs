@@ -10,14 +10,18 @@ public static class Languages
 {
     public const string System = "system";
 
+    /// <summary>Not offered in the picker: scripts/pseudo-loc.sh builds it for checking the interface by eye.</summary>
+    public const string PseudoLocale = "qps-ploc";
+
     /// <summary>English first (the fallback), then the translations (Strings.&lt;tag&gt;.resx).</summary>
     public static IReadOnlyList<string> Supported { get; } =
-        ["en-US", "es", "fr", "de", "it", "pt-BR", "nl", "pl", "ru", "uk", "tr", "ja", "ko", "zh-Hans", "zh-Hant", "hi", "id", "vi"];
+        ["en-US", "es", "fr", "de", "it", "pt-BR", "nl", "pl", "uk", "tr", "ja", "ko", "zh-Hans", "zh-Hant", "hi", "id", "vi"];
 
     /// <summary>The culture a setting asks for, or null to follow Windows (also for an unknown tag).</summary>
     public static CultureInfo? Resolve(string? setting)
     {
         if (string.IsNullOrWhiteSpace(setting) || setting.Trim().Equals(System, StringComparison.OrdinalIgnoreCase)) return null;
+        if (setting.Trim().Equals(PseudoLocale, StringComparison.OrdinalIgnoreCase)) return CultureInfo.GetCultureInfo(PseudoLocale);
         var tag = Supported.FirstOrDefault(t => t.Equals(setting.Trim(), StringComparison.OrdinalIgnoreCase));
         return tag is null ? null : CultureInfo.GetCultureInfo(tag);
     }

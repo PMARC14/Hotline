@@ -14,3 +14,6 @@ docs/local/
 
 # Local working rules for Claude Code (kept out of the public repo for now)
 CLAUDE.md
+
+# scripts/pseudo-loc.sh output (pseudo-language for checking the interface by eye)
+src/Hotline.Core/Text/Localization/Strings.qps-ploc.resx

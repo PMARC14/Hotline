@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>Lingua</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>La lingua di menu, impostazioni e messaggi di Hotline. Le risposte dell'IA seguono la lingua in cui scrivi.</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Usa la lingua di Windows</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Apri / chiudi Hotline</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Apri Hotline</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>Inizia una nuova chat</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>Cattura la finestra corrente</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Cattura un'area</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>Input vocale (tieni premuto per parlare)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>Non fare nulla</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Tasto Copilot</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Come Ctrl destro, Copilot+C equivale a Ctrl+C e il tasto non apre più Hotline (usa il tasto di scelta rapida aggiuntivo qui sotto o l'icona nell'area di notifica). Funziona con le tastiere il cui tasto Copilot invia Win+Maiusc+F23 (la maggior parte).</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Apre Hotline</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Funziona come Ctrl destro</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Pressione breve del tasto Copilot</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Pressione prolungata del tasto Copilot</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>Input vocale</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Tieni premuto il tasto Copilot e parla; rilascialo per fermarti (Esc annulla). Usa il riconoscimento vocale di Windows: consenti il microfono e attiva Impostazioni › Privacy e sicurezza › Voce › Riconoscimento vocale online. Attivarlo assegna la pressione prolungata alla voce; disattivarlo la riporta a una nuova chat.</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>Tasto di scelta rapida aggiuntivo</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Apre anch'esso Hotline, ad es. Ctrl+Alt+H. Lascia vuoto per nessuno.</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Tasto di scelta rapida non valido (esempio: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>Nascondi quando faccio clic altrove</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>Aggancia il pannello (📌) per tenerlo aperto temporaneamente.</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>Mantieni sopra le altre finestre</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Usa l'impostazione di Windows</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>Chiaro</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>Scuro</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>Sfondo</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Acrilico è traslucido; Tinta unita è opaco.</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Acrilico</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>Acrilico (sottile)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>Tinta unita</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>Tinta dell'acrilico</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = trasparente, 1 = molto colorato.</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>Luminosità dell'acrilico</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>Più basso = più trasparente.</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>Dimensioni del testo</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>Per impostazione predefinita segue Windows (Impostazioni › Accessibilità › Dimensioni testo).</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>Tipo di carattere</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>Qualsiasi tipo di carattere installato, ad es. Cascadia Code. Vuoto = Segoe UI Variable.</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>Barra di scorrimento</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>Mostra durante lo scorrimento</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Sempre</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Mai</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>Larghezza</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Quota della larghezza dello schermo.</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>Larghezza minima</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>Larghezza massima</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>Altezza minima</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = solo la barra dei messaggi; il pannello cresce verso l'alto mentre scrivi e chatti.</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>Altezza massima</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>Quanto dello schermo può occupare.</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>Posizione verticale</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = in alto, 0,5 = al centro, 1 = in basso.</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>Crescita</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>Adatta alla conversazione</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Passa subito all'altezza massima</value></data>
+  <data name="Set_History" xml:space="preserve"><value>Salva la cronologia delle chat</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>Solo testo, nella tua cartella .hotline.</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>Conserva la cronologia per</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>giorni</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>Allega il testo selezionato</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>Quando il tasto apre il pannello, viene allegato il testo selezionato nell'app da cui arrivi. Ctrl+C funziona anche nelle app che non condividono la selezione, ma usa brevemente gli Appunti (ripristinati subito dopo).</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>Sì</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Sì, anche con Ctrl+C</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>No</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>Interrompi una risposta</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>Il tasto che interrompe una risposta mentre viene scritta (Invio non lo fa mai; anche il pulsante Invia la interrompe). Un tasto singolo (Esc) o una combinazione come Ctrl+. — quando non c'è nessuna risposta in corso, Esc nasconde il pannello.</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>Tasto di scelta rapida non valido (esempi: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>Memoria</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>Ogni chat vede memory.md nella tua cartella .hotline («/remember qualcosa» aggiunge una riga).</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>Consenti all'IA di salvare ricordi</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>Le connessioni API possono salvare un'informazione quando chiedi loro di ricordare qualcosa.</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>Chiedimelo ogni volta</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>Sì, senza chiedere</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>No</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>Invia dopo la dettatura</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Con l'azione Voce del tasto: invia il messaggio quando rilasci il tasto.</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>Testo degli screenshot (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows legge il testo nelle immagini (offline) per i modelli che non possono vederle.</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Per i modelli solo testo</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>Aggiungilo sempre</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>Disattivato</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>Limite dimensioni immagine</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Le immagini allegate e catturate vengono ridimensionate a questo lato più lungo.</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>Registrazione dettagliata</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>Scrive informazioni diagnostiche aggiuntive nel registro.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Impostazioni di Hotline</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>Generale</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>Connessioni IA</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>Prompt</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>Azioni rapide</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>Aspetto</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>Finestra</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>Chat e cronologia</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Strumenti</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>Avanzate</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Informazioni</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Si applica dopo il riavvio di Hotline.)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>Valore non valido</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Avvia con Windows</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Le connessioni API con Uso degli strumenti impostato su «Usa gli strumenti di Hotline» possono richiamare gli strumenti di questi server MCP. Gli strumenti di sola lettura vengono eseguiti; per tutto il resto ti viene chiesto nel pannello (Consenti una volta / Sempre / Nega).</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>Server MCP</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — stesso formato «mcpServers» delle altre app MCP; le approvazioni si trovano nello stesso file</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>Modifica mcp.json</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>Apri cartella</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Registro degli agenti di Windows</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>Non disponibile in questa versione di Windows (serve la build 26220.7262 o successiva). I suoi connettori integrati compariranno qui automaticamente.</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>Disponibile ({0}). I suoi connettori sono elencati qui sotto come windows-…</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>Nessun server ancora controllato. Aggiungi i server a mcp.json, poi premi Controlla server.</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>Pronto — {0} strumento/i</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>Non riuscito: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>Disattivato in mcp.json</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>Controlla server</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>File delle impostazioni</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>Modifica settings.json</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — un file per connessione; «chat.order» in settings.json stabilisce l'ordine dell'elenco</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>Apri la cartella delle connessioni</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>Registri</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>Apri la cartella dei registri</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>I prompt di sistema sono file Markdown. Il prompt predefinito viene usato da ogni connessione che non ne sceglie uno proprio.</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Modifica</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>Rendi predefinito</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Elimina</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>Prompt predefinito</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>Nuovo prompt</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>Apri la cartella dei prompt</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>Aggiungi connessione</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>Duplica</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>Rimuovi</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Annulla</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>Rimuovere questa connessione?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>Usa come predefinita</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>Sposta su nell'elenco dei provider</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>Sposta giù nell'elenco dei provider</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · predefinita</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>Impossibile leggere le impostazioni di agy in questo momento.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>Regole di agy: {0} consentite, {1} negate. La lettura dei file nella cartella di lavoro è consentita per impostazione predefinita; i comandi della shell richiedono una regola di consenso.</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Consenti comandi di sola lettura</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>Aggiunge regole come command(Get-ChildItem), command(git status) all'elenco consentito di agy e nega Remove-Item, rm, git push...</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>Consentire comandi della shell di sola lettura per agy?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>Questo modifica le impostazioni di agy ({0}), quindi vale anche quando usi agy direttamente.
+
+Consenti:
+{1}
+
+Nega:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>Aggiungi regole</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>Impossibile modificare le impostazioni di agy: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>Modifica le regole di agy</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>Autorizzazioni di agy</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Approvare tutto? (pericoloso)</value></data>
+  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy eseguirà QUALSIASI comando della shell e modificherà o eliminerà QUALSIASI file a sua scelta, senza chiedere. Una risposta sbagliata o una pagina web o un file dannosi possono causare danni reali. Usalo solo con una cartella di lavoro che puoi permetterti di perdere.</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Ho capito, attiva</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Approva tutto (pericoloso)</value></data>
+  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Salta tutti i controlli delle autorizzazioni di agy (--dangerously-skip-permissions). Solo in modalità «usa gli strumenti del programma».</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Nome</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>URL di base dell'API.</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>Salvata; digita per sostituirla</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Facoltativa</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>Obbligatoria</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Impossibile salvare la chiave</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>Chiave API</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>Salvata in Gestione credenziali di Windows, non in settings.json.</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>Percorso del programma</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>Lascia vuoto per trovarlo automaticamente.</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>Rilevamento automatico</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>Agente agy</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Usato in modalità Solo chat.</value></data>
+  <data name="Conn_KeepClaude" xml:space="preserve"><value>Conserva le chat nella cronologia di Claude Code</value></data>
+  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Elenca le chat di Hotline anche in claude --resume.</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>Argomenti aggiuntivi</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Passati al programma così come sono (separati da spazi).</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>Solo chat</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Usa gli strumenti di Hotline (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>Uso degli strumenti</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>Consente a questa IA di usare gli strumenti dei tuoi server MCP (Impostazioni › Strumenti). Gli strumenti di sola lettura vengono eseguiti; per tutto il resto ti viene chiesto prima nel pannello.</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>Solo chat (può leggere i tuoi allegati)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>Usa gli strumenti e le autorizzazioni del programma</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Sfoglia…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Eredita consente al programma di eseguire i suoi strumenti (file, comandi, web) secondo le proprie regole di autorizzazione.</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>Cartella di lavoro</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Dove agiscono gli strumenti del programma in modalità Eredita.</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>Ripiego in caso di rifiuto</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Se un controllo di sicurezza rifiuta una richiesta, l'API la ripropone con un modello adatto invece di fermarsi (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>Il modello legge le immagini</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Disattivato: gli screenshot vengono inviati come testo (Impostazioni › Chat › Testo degli screenshot).</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Predefinito ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>Prompt di sistema</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>Predefinito</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>Modello predefinito</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Impegno predefinito</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>Verifica connessione</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>Minimo</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>Basso</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>Medio</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>Alto</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>Molto alto</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>Massimo</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>Aggancia</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>Cattura finestra</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>Cattura schermo</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>Cattura area</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>Spazio</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Selettore dell'impegno</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>Selettore del modello</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>Selettore del provider</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>Selettore del prompt</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>Chat recenti</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>Nuova chat</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>Impostazioni</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>Barra inferiore</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json contiene un errore</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} Correggi il file o reimposta la barra.</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>Sposta a sinistra</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>Sposta a destra</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>Rimuovi dalla barra</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>Aggiungi alla barra</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>Reimposta la barra</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>build di sviluppo</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — la tua IA sul tasto Copilot. Gratuito e open source (Apache-2.0).</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Sostieni Hotline</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline è realizzato da una sola persona e non ha pubblicità né tracciamento. Se ti fa risparmiare tempo, una donazione lo tiene in vita.</value></data>
+  <data name="About_Project" xml:space="preserve"><value>Progetto</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>Codice sorgente, versioni e il posto dove segnalare problemi o chiedere funzionalità.</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>Segnala un problema</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>Verifica in corso…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>Questo PC</value></data>
+  <data name="About_License" xml:space="preserve"><value>Licenza</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0, più le licenze dei componenti usati da Hotline.</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>Note di terze parti</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>Impossibile verificare questo PC.</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>Modifica la memoria</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>Vuota. «/remember qualcosa» nella casella del messaggio aggiunge una riga.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} riga/e. Ogni chat le vede finché Memoria è attiva.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Digita / all'inizio di un messaggio per usarne una: «/translate un testo» oppure «/summarize» con un allegato. Ogni azione è un file Markdown; la sua prima riga è la descrizione mostrata nell'elenco. I nomi possono contenere lettere, cifre, - e _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Nuova azione</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Apri la cartella delle azioni</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} lingua/e OCR</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>Nessuna lingua OCR: Impostazioni › Data/ora e lingua › Lingua e area geografica › aggiungi una lingua con il riconoscimento ottico dei caratteri</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>La dettatura di Windows è disponibile</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Impostazioni › Privacy e sicurezza › Voce › Riconoscimento vocale online, e un microfono</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Connettori degli agenti di Windows</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe trovato; i suoi connettori compaiono come server di strumenti windows-…</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe non trovato (non ancora attivato su questo PC)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>richiede la build di Windows 26220.7262 o successiva (ad es. 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>Azioni app (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>registrate; Click to Do stesso richiede un PC Copilot+</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>richiede Windows 11 24H2 (build 26100) o successivo</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>Attivato — Hotline si avvia nell'area di notifica all'accesso.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Disattivato (in Impostazioni di Windows › App › Avvio). Attiva Hotline da lì.</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>Disattivato (bloccato da un criterio della tua organizzazione).</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>Disattivato.</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>Non disponibile in questa build.</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>Salvato in memoria: «{0}» (Impostazioni › Chat e cronologia › Modifica la memoria)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>L'interfaccia della riga di comando di Antigravity (agy) non è installata.</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Apri Hotline</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>Impostazioni…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>Riavvia (applica le impostazioni)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>Esci</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>Trascina per catturare un'area  ·  Esc per annullare</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>Quella finestra non è disponibile (chiusa o ridotta a icona), quindi è stato catturato l'intero schermo.</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Allega a Hotline</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>Le cartelle non possono essere allegate ({0}).</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} è troppo grande ({1} MB; max {2} MB).</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>Impossibile leggere {0}.</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>Impossibile leggere {0} come immagine.</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>In Windows non è installata alcuna lingua OCR, quindi il testo nelle immagini non può essere letto. Aggiungine una in Impostazioni › Data/ora e lingua › Lingua e area geografica (una lingua con «Riconoscimento ottico dei caratteri»).</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>Impossibile leggere il testo in {0}.</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>Copia immagine</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>Immagine copiata.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Risposta ancora in corso. {0} o il pulsante Interrompi la ferma; il tuo messaggio aspetta nella casella.</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>Scrivi cosa ricordare dopo /remember, ad es. «/remember preferisco le unità metriche».</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>Ricordato. D'ora in poi lo vede ogni chat (modificalo in Impostazioni › Chat e cronologia › Memoria).</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Non salvato: al massimo una riga di {0} caratteri.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Scrivi il testo per /{0} dopo il comando, oppure allega qualcosa.</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>Impossibile aprire la cartella delle impostazioni ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>Interrompi</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>Invia (Invio)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Benvenuto in Hotline</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>Ciò che invii — il tuo messaggio, gli allegati e il testo selezionato nell'app da cui arrivi (mostrato come un'etichetta che puoi rimuovere) — va solo alla connessione IA che hai scelto. Suggerimenti: digita / per le azioni rapide e /remember per salvare una nota.</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>Cosa viene inviato</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Ti piace Hotline?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>È gratuito e open source, realizzato da una sola persona. Se ti è utile, una donazione lo tiene in vita (GitHub Sponsors o Ko-fi; i link restano in Impostazioni › Informazioni). Questo avviso non comparirà più.</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>Copia</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>Copia codice</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>codice</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>Copia tabella</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>Copia tabella (si incolla nei fogli di calcolo)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>Disegno di un'immagine…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(un disegno che non è stato possibile mostrare in sicurezza)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>Apri immagine</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>Apri il disegno completo (con le etichette) nel visualizzatore predefinito</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>Consentire {0} › {1}?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>Consenti una volta</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>Consenti sempre</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>Nega</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>n/d</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Impegno di ragionamento</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} si può configurare nelle Impostazioni, ma chattare con esso arriverà in un aggiornamento successivo.</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>Prompt di sistema: {0} (vale dal prossimo messaggio)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>Modifica «{0}»…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>Nuovo prompt…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>Attendi che la risposta finisca (o interrompila) prima.</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>Impossibile aprire quella conversazione.</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>La cronologia delle chat è disattivata</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>Nessuna chat salvata</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} messaggi, ultimo {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>Apri la cartella della cronologia</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>proprio ora</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} min fa</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} h fa</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} g fa</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>Tu</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>Copia risposta</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>Riprova</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>Copiato.</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>Gli Appunti sono occupati; riprova.</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>Segnala questa risposta a {0}…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>Altro</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>Non ha funzionato: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>Rilascia il tasto per fermarti. Esc annulla.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>Premi di nuovo il tasto per fermarti. Esc annulla.</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 Avvio del microfono…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 In ascolto…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>Nessun microfono disponibile.</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>Input vocale interrotto ({0}).</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>L'input vocale richiede il riconoscimento vocale online di Windows.</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>Attivalo</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline non è autorizzato a usare il microfono.</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>Impostazioni del microfono</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>Impossibile avviare l'input vocale: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>Il riconoscimento vocale non supporta la lingua di visualizzazione di Windows per la dettatura.</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>Il riconoscimento vocale non è disponibile ({0}).</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>Vai all'ultimo messaggio</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>Aggiungi file o cattura</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>Allega file…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Tieni agganciato (resta aperto quando fai clic altrove, così puoi trascinarvi dei file)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>Cattura la finestra in cui eri</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>Cattura l'intero schermo</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>Modello (digita un nome o scegline uno)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>Chi risponde</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>Chat recenti (Ctrl+Su riapre l'ultima)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>Nuova chat (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>CLI di Antigravity (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>Il tuo agy installato e il tuo accesso Google.</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>CLI di Claude Code</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>Il tuo claude installato e il tuo accesso (il tuo piano Claude).</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>API Gemini</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Una chiave API di Google AI Studio.</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>API Anthropic</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Una chiave API della console Anthropic. Modello predefinito: Claude Opus 5.5.</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>API compatibile con OpenAI</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq e altre API in stile OpenAI.</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>Endpoint locale</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>Server llama.cpp, LM Studio e altri server locali in stile OpenAI.</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>L'elenco dei modelli del server non era nel formato previsto.</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 modello</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>{0} modelli</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>Connesso: {0}.</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>Connesso: {0}, incluso {1}.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>Connesso: {0}, ma {1} non è tra questi.</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>Aggiungi prima una chiave API per {0}.</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} ha rifiutato la chiave API.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} ha risposto {1}.</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>Impossibile raggiungere {0}: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} non ha risposto in tempo.</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>Aggiungi una chiave API per {0} in Impostazioni › Connessioni IA.</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>L'endpoint di {0} non è un indirizzo http(s) valido: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} ha raggiunto il limite di richieste, nuovo tentativo tra {1} s…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} è occupato, nuovo tentativo tra {1} s…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ha rifiutato la chiave API. {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0}: limite di richieste o quota raggiunti. {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} ha avuto un errore del server (o è sovraccarico). {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} ha rifiutato di rispondere a questa richiesta (rifiuto per sicurezza).</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>Scegli un modello per {0} (l'elenco Modello li mostra).</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} ha bloccato questa richiesta ({1}).</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} ha interrotto la risposta ({1}).</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} si è fermato ({1}) mentre chiedeva uno strumento; non è stato eseguito nulla.</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: la connessione si è chiusa prima che la richiesta dello strumento fosse completa; non è stato eseguito nulla.</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} si è arrestato in modo imprevisto.</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>La cartella di lavoro di {0} non esiste: {1}. Scegline un'altra in Impostazioni › Connessioni IA.</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code non è installato. Installalo da claude.com/claude-code, esegui `claude` una volta per accedere, poi riprova.</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy non ha effettuato l'accesso. Esegui `agy` una volta in un terminale per accedere, poi riprova.</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>La tua quota di Antigravity per ora è esaurita. Riprova più tardi.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy non considera ancora attendibile l'area di lavoro di Hotline. Esegui `agy` una volta in un terminale e consideralo attendibile.</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code non ha effettuato l'accesso. Esegui `claude` una volta in un terminale, accedi, poi riprova.</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>Limite di utilizzo di Claude raggiunto per ora. {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude è sovraccarico in questo momento; riprova tra poco.</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0} supera {1} MB.</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0} supera {1} KB.</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: tipo di file non supportato.</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>Testo selezionato</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>Testo selezionato da {0}</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>Puoi allegare fino a {0} file.</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Testo in {0}</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} non può leggere le immagini.</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} non può leggere i file.</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>Il backend «{0}» non è ancora disponibile.</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>«{0}» non è installato, quindi il server {1} non può avviarsi. Installa {2}, poi riavvia Hotline.</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>«{0}» non è installato o non è nel PATH, quindi il server {1} non può avviarsi. Controlla «command» in mcp.json.</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>Impossibile leggere mcp.json: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>L'approvazione «{0}» ha un valore sconosciuto, quindi viene trattata come «deny».</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>Il nome di un server non può contenere «/» o «*».</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>non si è avviato entro {0:0} s</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Nessuno strumento viene eseguito finché non viene corretto.</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Resta in vigore l'ultima versione valida.</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>il server è terminato (codice di uscita {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>impossibile avviare {0}</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>Impossibile leggere toolbar.json: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Il settings.json di agy non è un oggetto JSON; non viene modificato.</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» nel settings.json di agy non è un oggetto; non viene modificato.</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» nel settings.json di agy non è un elenco; non viene modificato.</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Cattura area di Hotline</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>L'interfaccia della riga di comando di Antigravity (agy) non è installata. Installala da antigravity.google/cli, poi riprova.</value></data>
+</root>

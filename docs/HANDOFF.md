@@ -58,6 +58,11 @@ UI follow-ups the user deferred (only fix if they become big problems): provider
 full-fidelity SVG (Windows' renderer drops text); code blocks wrap instead of scrolling; panel-growth smoothness;
 caret visibility on all themes.
 
+**Languages (Plan 8, PR #4):** interface text is in `Hotline.Core/Text/Localization/Strings*.resx` (17 languages,
+generated `Strings` class; schema text is keys looked up at render time; XAML uses `{local:Loc Key=…}`);
+`general.language` (schema v9) picks one or follows Windows. See docs/TRANSLATING.md. Right-to-left languages are a
+follow-up (needs a visual check of the mirrored panel).
+
 ## Architecture map
 
 - `src/Hotline.Core` (net10.0, no UI, unit-tested):
