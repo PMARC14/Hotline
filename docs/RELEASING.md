@@ -48,7 +48,7 @@ release (the update check compares versions).
   - **Azure Artifact Signing** (formerly Trusted Signing; $9.99/month): automated in `release.yml`, see below.
   - A regular code-signing certificate (.pfx): the two `HOTLINE_SIGNING_PFX_*` secrets.
 
-## Microsoft Store (by hand, until a submission workflow exists)
+## Microsoft Store
 
 Partner Center › your app › Product management › Product identity gives four values. Build with them; the package is
 unsigned because the Store signs it, and Store versions must end in `.0`:
@@ -61,6 +61,28 @@ scripts/build-msix.sh --store --arch all --version 0.2.4.0 \
 
 Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page. Each new submission needs a higher version than
 the last one. `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
+
+### Store workflow (`.github/workflows/store.yml`)
+
+Runs on a pushed tag `vX.Y.Z` or **Actions › Store › Run workflow** with a version (`0.2.60` → package `0.2.60.0`). It
+always builds the Store `.msixbundle` with the identity above and attaches it to the run (download it from the run's
+*Artifacts* to upload by hand). Submitting automatically needs a one-time setup, and only works once the app is live
+(msstore updates a published app; it can't submit while another submission is in certification):
+
+1. **Entra app:** [Entra admin center](https://entra.microsoft.com) › *App registrations › New registration* (e.g.
+   "hotline-store"). Copy the *Application (client) ID* and the *Directory (tenant) ID*. Under *Certificates & secrets*
+   create a client secret and copy its **value** (shown once; it expires, so note the date).
+2. **Partner Center:** *Account settings › User management › Microsoft Entra applications › Add* that app with the
+   **Manager** role. *Account settings › Legal info / Developer settings* shows the **Seller ID**. The app's **Store ID**
+   (`9N…`) is under *Product identity*. (If Partner Center has no tenant yet, associate one first: *Account settings ›
+   Tenants*.)
+3. **GitHub:** repository *Settings › Secrets and variables › Actions*: secrets `AZURE_AD_TENANT_ID`,
+   `AZURE_AD_APPLICATION_CLIENT_ID`, `AZURE_AD_APPLICATION_SECRET`, `SELLER_ID`; variables `STORE_PRODUCT_ID` (the Store
+   ID) and `HOTLINE_STORE_SUBMIT` = `true`.
+
+The submission copies the live listing and only replaces the package. For an update that also changes the listing
+(text, screenshots, "What's new") or the declarations, e.g. the first update with donations on, run the workflow with
+*Submit* off and upload the artifact by hand in a Partner Center submission where you make those changes too.
 
 ## Azure Artifact Signing (automatic signing in GitHub Actions)
 
