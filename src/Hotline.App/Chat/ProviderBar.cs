@@ -191,7 +191,7 @@ internal sealed class ProviderBar(
     {
         var profile = Current;
         if (profile is null) return;
-        if (level == "n/a") return;
+        if (level == Strings.Effort_NA) return; // the placeholder item for models without effort levels
         if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
         {
             var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
