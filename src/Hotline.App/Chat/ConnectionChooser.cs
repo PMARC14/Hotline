@@ -23,15 +23,21 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
 
     public void Initialize()
     {
+        notices.Sticky.Add(Tag);
         popup.Shown += () => { if (!Chosen(settings.Current)) Show(); };
         if (popup.IsShown && !Chosen(settings.Current)) Show(); // already open when this was set up
         settings.Changed += () => popup.DispatcherQueue.TryEnqueue(() => { if (Chosen(settings.Current)) notices.Remove(Tag); });
     }
 
-    /// <summary>Shows (or refreshes) the card.</summary>
-    public void Show()
+    /// <summary>Shows (or refreshes) the card. The installed-CLI lookup (file checks over PATH) runs off the UI thread.</summary>
+    public void Show() => _ = ShowAsync();
+
+    private async Task ShowAsync()
     {
-        var installed = Installed();
+        List<BackendType> installed;
+        try { installed = await Task.Run(Installed); }
+        catch (Exception ex) { log.Error("looking for installed CLIs failed", ex); installed = []; }
+        if (Chosen(settings.Current)) return; // picked meanwhile
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         foreach (var type in installed)
         {
@@ -94,8 +100,8 @@ internal static class CopilotKeySettings
     {
         try
         {
-            if (await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:personalization-textinput-copilot-hardwarekey"))) return;
-            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:personalization-textinput")); // the page above it
+            // Windows builds without this page open Settings on its home page (LaunchUriAsync still reports success).
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:personalization-textinput-copilot-hardwarekey"));
         }
         catch (Exception ex) { log.Error("could not open the Copilot key setting", ex); }
     }

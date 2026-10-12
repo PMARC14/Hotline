@@ -206,6 +206,9 @@ public partial class App : Application
             try
             {
                 _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
+                // First run: a default chosen in Settings › Connections or settings.json connects the panel too.
+                if (string.IsNullOrEmpty(chat.BackendId) && settings.Chat.Backends.Any(b => b.Id == settings.Chat.DefaultBackend))
+                    chat.BackendId = settings.Chat.DefaultBackend;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
                 _popup.GrowMode = settings.Chat.GrowMode;
                 _popup.ApplyAppearance();

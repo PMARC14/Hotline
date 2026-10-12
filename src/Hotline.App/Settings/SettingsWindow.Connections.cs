@@ -25,8 +25,9 @@ public sealed partial class SettingsWindow
     private void BuildConnectionsPage()
     {
         var chat = _settings.Current.Chat;
-        _selectedConnection ??= chat.DefaultBackend;
-        if (chat.Backends.All(b => b.Id != _selectedConnection)) _selectedConnection = chat.DefaultBackend;
+        // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
+        if (chat.Backends.All(b => b.Id != _selectedConnection))
+            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends[0].Id;
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
         var addMenu = new MenuFlyout();
