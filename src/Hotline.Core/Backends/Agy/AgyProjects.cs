@@ -18,7 +18,7 @@ public sealed class AgyProjects(string projectsDirectory)
     /// <summary>Flags for a new conversation run in <paramref name="folder"/>.</summary>
     public IReadOnlyList<string> ArgsFor(string folder)
     {
-        if (Find(folder) is { } id) return ["--project", id];
+        if (Find(folder) is { } id && Chat.CliSession.IsValidId(id)) return ["--project", id];
         if (_created) return []; // asked agy to create it once and still can't see it: don't make one per chat
         _created = true;
         return ["--new-project"];
@@ -41,7 +41,7 @@ public sealed class AgyProjects(string projectsDirectory)
                 foreach (var r in list.EnumerateArray())
                     if (r.TryGetProperty("folderUri", out var uri) && uri.GetString() is { } u && Normalize(FromUri(u)) == wanted) return id;
             }
-            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException) { }
+            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException) { }
         }
         return null;
     }

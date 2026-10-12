@@ -32,9 +32,11 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
             {
                 await stopBackend(profile.Id); // one process per conversation: Hotline lets go before the terminal takes it
                 Launch(command);
+                chat.NewChat(); // the conversation now lives in the terminal; Hotline must not write into it as well
             }));
         }
-        if (chat.Messages.Count == 0) return targets;
+        // Another CLI reads the chat from a file: only when the panel has all of it (not a chat reopened from a record).
+        if (chat.Messages.Count == 0 || !chat.HasWholeTranscript) return targets;
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity })
         {
             if (type == own) continue;
@@ -71,7 +73,8 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
     {
         Directory.CreateDirectory(handoffDirectory);
         foreach (var old in Directory.EnumerateFiles(handoffDirectory, "*.md"))
-            if (File.GetLastWriteTimeUtc(old) < DateTime.UtcNow.AddDays(-1)) try { File.Delete(old); } catch (IOException) { }
+            if (File.GetLastWriteTimeUtc(old) < DateTime.UtcNow.AddDays(-1))
+                try { File.Delete(old); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         var title = HistoryStore.TitleOf(chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User)?.Text ?? "");
         var file = Path.Combine(handoffDirectory, $"hotline-chat-{chat.ConversationId}.md");
         File.WriteAllText(file, CliHandoff.Markdown(title, chat.Messages));

@@ -74,6 +74,18 @@ public sealed class CliResumeTests : IDisposable
     }
 
     [Fact]
+    public async Task Claude_resumes_in_its_folder_even_if_it_was_removed()
+    {
+        var folder = Path.Combine(_dir, "gone", "Hotline");
+        _factory.Create = () => new FakeLineProcess { Respond = _ => ClaudeAnswer(SessionA, "ok") };
+        var backend = Claude();
+        backend.Resume = new CliSession(SessionA, folder);
+        await Collect(backend.StreamAsync([U("1", "hi")], default));
+        Assert.Equal(folder, _factory.Started[0].Cwd);
+        Assert.True(Directory.Exists(folder));
+    }
+
+    [Fact]
     public async Task Claude_with_an_unknown_session_starts_over_and_replays()
     {
         var calls = 0;
@@ -156,11 +168,11 @@ public sealed class CliResumeTests : IDisposable
         Directory.CreateDirectory(ProjectsDir);
         var folder = new Uri(Path.Combine(_dir, "agy", "Hotline")).AbsoluteUri.Replace("file:///", "file://");
         File.WriteAllText(Path.Combine(ProjectsDir, "p1.json"),
-            "{\"id\":\"p1\",\"name\":\"Hotline\",\"projectResources\":{\"resources\":[{\"folderUri\":\"" + folder + "\"}]}}");
+            "{\"id\":\"0f6c2d1e-aaaa-4bbb-8ccc-123456789abc\",\"name\":\"Hotline\",\"projectResources\":{\"resources\":[{\"folderUri\":\"" + folder + "\"}]}}");
         backend.Resume = null;
         await Collect(backend.StreamAsync([U("9", "another")], default));
         var args = _factory.Started[1].Args;
-        Assert.Equal(["--project", "p1"], args.Skip(args.ToList().IndexOf("--project")).Take(2));
+        Assert.Equal(["--project", "0f6c2d1e-aaaa-4bbb-8ccc-123456789abc"], args.Skip(args.ToList().IndexOf("--project")).Take(2));
     }
 
     [Fact]

@@ -141,6 +141,35 @@ public sealed class CliSessionTests : IDisposable
         Assert.False(New(new FakeCli(), history).Resume("abc"));
     }
 
+    [Fact]
+    public async Task A_chat_reopened_from_a_record_is_partial_until_a_new_chat()
+    {
+        var history = History();
+        var first = New(new FakeCli(), history, keepTranscript: false);
+        await first.SendAsync("remember pelican", []);
+        var c = New(new FakeCli(), history, keepTranscript: false);
+        Assert.True(c.HasWholeTranscript);
+        c.Resume(first.ConversationId);
+        Assert.False(c.HasWholeTranscript);
+        c.NewChat();
+        Assert.True(c.HasWholeTranscript);
+    }
+
+    [Fact]
+    public void A_chats_transcript_and_record_expire_together()
+    {
+        var clock = new ManualTimeProvider();
+        var dir = Path.Combine(_dir, "history");
+        var history = new HistoryStore(dir, clock);
+        history.Append("old", new ChatMessage("1", ChatRole.User, "hi", [], DateTimeOffset.UnixEpoch));
+        history.SaveMeta("old", new HistoryStore.Meta("hi", DateTimeOffset.UnixEpoch, "cli", "session-0001", @"C:\w", 1));
+        File.SetLastWriteTimeUtc(history.PathFor("old"), clock.GetUtcNow().UtcDateTime.AddDays(-40));
+        Assert.Equal(0, history.Prune(30)); // the record is recent: keep both
+        File.SetLastWriteTimeUtc(Path.Combine(dir, "old.meta.json"), clock.GetUtcNow().UtcDateTime.AddDays(-40));
+        Assert.Equal(2, history.Prune(30));
+        Assert.Empty(Directory.EnumerateFiles(dir));
+    }
+
     [Theory]
     [InlineData("6a8b2362-20cc-4208-bd05-cf9b25fe01c9", true)]
     [InlineData("thread_0123456789", true)]

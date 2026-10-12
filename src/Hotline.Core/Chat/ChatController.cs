@@ -17,6 +17,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     private readonly List<ChatMessage> _messages = [];
     private CliSession? _session;
     private string? _sessionBackendId;
+    private bool _partial; // reopened from a record only: the earlier messages are in the CLI, not here
     private CancellationTokenSource? _cts;
     private (string Text, IReadOnlyList<Attachment> Attachments)? _lastFailed;
 
@@ -27,6 +28,8 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     public bool IsBusy => _cts is not null;
     /// <summary>The CLI conversation this chat lives in, and its connection (null: none yet, or not a CLI chat).</summary>
     public (CliSession Session, string BackendId)? CurrentSession => _session is { } s && _sessionBackendId is { } b ? (s, b) : null;
+    /// <summary>False when the chat was reopened from a record only (its earlier messages are in the CLI's history).</summary>
+    public bool HasWholeTranscript => !_partial;
     /// <summary>What the selected connection accepts (null when it isn't available).</summary>
     public BackendCapabilities? CurrentCapabilities => resolveBackend(BackendId)?.Capabilities;
 
@@ -56,6 +59,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         _lastFailed = null;
         _session = null; // a new chat is a new conversation for every connection, CLIs included
         _sessionBackendId = null;
+        _partial = false;
         ConversationId = Ids.New();
         Emit(new ConversationReset());
     }
@@ -91,6 +95,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         ConversationId = conversationId;
         _session = session;
         _sessionBackendId = session is null ? null : meta!.BackendId;
+        _partial = entries.Count == 0;
         if (_sessionBackendId is not null) BackendId = _sessionBackendId; // the CLI that holds the conversation
         Emit(new ConversationReset());
         foreach (var e in entries)

@@ -96,12 +96,12 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
                     answered |= delta.Text.Length > 0;
                     yield return delta;
                 }
-                if (parser.SessionId is { } sid && sid != _sessionId)
+                if (parser.SessionId is { } sid && sid != _sessionId && CliSession.IsValidId(sid))
                 {
                     // An unknown ID makes agy start a new conversation (with a warning): no context, so don't use it.
                     if (resuming && sid != resume!.Id) { resumeFailed = true; break; }
                     _sessionId = sid;
-                    if (CliSession.IsValidId(sid)) yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
+                    yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
                 }
             }
             if (!resumeFailed && resuming && parser.Error is not null && !answered) resumeFailed = true;

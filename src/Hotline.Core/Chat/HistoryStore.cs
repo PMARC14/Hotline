@@ -115,11 +115,11 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         if (!Directory.Exists(directory)) return 0;
         var cutoff = clock.GetUtcNow().UtcDateTime.AddDays(-retentionDays);
         var deleted = 0;
-        foreach (var file in Directory.EnumerateFiles(directory))
+        // A chat's transcript and record go together, judged by the newer of the two.
+        foreach (var chat in Directory.EnumerateFiles(directory).Where(f => IdOf(Path.GetFileName(f)) is not null).GroupBy(f => IdOf(Path.GetFileName(f))))
         {
-            if (IdOf(Path.GetFileName(file)) is null || File.GetLastWriteTimeUtc(file) >= cutoff) continue;
-            File.Delete(file);
-            deleted++;
+            if (chat.Max(File.GetLastWriteTimeUtc) >= cutoff) continue;
+            foreach (var file in chat) { File.Delete(file); deleted++; }
         }
         return deleted;
     }

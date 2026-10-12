@@ -86,10 +86,10 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
                     answered |= delta.Text.Length > 0;
                     yield return delta;
                 }
-                if (parser.SessionId is { } sid && sid != _sessionId)
+                if (parser.SessionId is { } sid && sid != _sessionId && CliSession.IsValidId(sid))
                 {
                     _sessionId = sid;
-                    if (CliSession.IsValidId(sid)) yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
+                    yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
                 }
             }
             if (!resumeFailed && resuming && parser.Error is { } resumeError && !answered
@@ -122,7 +122,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
         await StopAsync();
         var inherit = profile.Tools == ToolMode.Inherit;
         var cwd = inherit ? WorkingDirectory() : workspace;
-        if (resume is { WorkingDirectory: { Length: > 0 } was } && Directory.Exists(was)) cwd = was; // Claude Code finds sessions by folder
+        if (resume is { WorkingDirectory: { Length: > 0 } was } && Path.IsPathFullyQualified(was)) cwd = was; // Claude Code finds sessions by folder (recreated below if gone)
         Directory.CreateDirectory(cwd);
         var args = ClaudeCodeProtocol.BuildArgs(profile, prompt).ToList();
         if (resume is not null) args.AddRange(["--resume", resume.Id]);

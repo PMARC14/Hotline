@@ -237,9 +237,17 @@ public sealed partial class SettingsWindow
             // Chats live in the CLI's own history (resumable there and from Recent chats); Hotline can keep them too.
             var cliName = ConnectionTypes.Of(p.Type).DisplayName;
             var keep = new ToggleSwitch { IsOn = p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0 };
-            var alsoHotline = new ToggleSwitch { IsOn = p.KeepInHotline, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.KeepCliSessions };
-            keep.Toggled += async (_, _) => { alsoHotline.IsEnabled = keep.IsOn; await Save(x => x.KeepCliSessions = keep.IsOn); };
-            alsoHotline.Toggled += async (_, _) => await Save(x => x.KeepInHotline = alsoHotline.IsOn);
+            var alsoHotline = new ToggleSwitch { IsOn = p.KeepInHotline || !p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.KeepCliSessions };
+            var updating = false;
+            keep.Toggled += async (_, _) =>
+            {
+                updating = true;
+                alsoHotline.IsEnabled = keep.IsOn;
+                alsoHotline.IsOn = !keep.IsOn || p.KeepInHotline; // the CLI not keeping it means Hotline does
+                updating = false;
+                await Save(x => x.KeepCliSessions = keep.IsOn);
+            };
+            alsoHotline.Toggled += async (_, _) => { if (!updating && keep.IsOn) await Save(x => x.KeepInHotline = alsoHotline.IsOn); };
             host.Children.Add(Card(L.F(Strings.Conn_KeepCli, cliName), Strings.Conn_KeepCli_Desc, keep));
             host.Children.Add(Card(Strings.Conn_KeepInHotline, Strings.Conn_KeepInHotline_Desc, alsoHotline));
         }
