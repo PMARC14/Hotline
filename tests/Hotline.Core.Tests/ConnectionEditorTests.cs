@@ -53,6 +53,7 @@ public class ConnectionEditorTests
     {
         var chat = Chat();
         var local = ConnectionEditor.Add(chat, BackendType.Local);
+        ConnectionEditor.SetDefault(chat, "agy");
         Assert.True(ConnectionEditor.Remove(chat, "agy"));
         Assert.Equal(local.Id, chat.DefaultBackend);
     }

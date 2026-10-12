@@ -71,7 +71,9 @@ and open that.
 > need none of this.
 
 Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
-Hotline**. (Windows only lets packaged apps take the Copilot key, which is why Hotline installs as a package.)
+Hotline**, or use the **Open Copilot key settings** button in Hotline (Settings › General). (Windows only lets packaged
+apps take the Copilot key, which is why Hotline installs as a package.) Step by step and troubleshooting:
+[docs/copilot-key.md](docs/copilot-key.md).
 
 ### From source
 

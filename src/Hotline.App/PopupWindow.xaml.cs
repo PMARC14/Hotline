@@ -267,8 +267,20 @@ public sealed partial class PopupWindow : Window
             DispatcherQueue.TryEnqueue(() => { if (AppWindow.IsVisible && !Native.ForceForeground(Hwnd)) _log.Error("could not take focus back"); });
             return;
         }
+        // A console/terminal window that appears just after Hotline started a CLI is that CLI (or a child of it), not the
+        // user clicking away: keep the panel and take focus back.
+        if (Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(10)) && Native.GetForegroundWindow() is var fg and not 0
+            && IsConsole(Native.ClassNameOf(fg)))
+        {
+            _log.Info($"a console window ({Native.ClassNameOf(fg)}) took focus right after a CLI started; keeping the panel");
+            DispatcherQueue.TryEnqueue(() => { if (AppWindow.IsVisible && !Native.ForceForeground(Hwnd)) _log.Error("could not take focus back"); });
+            return;
+        }
         HidePopup();
     }
+
+    private static bool IsConsole(string? windowClass) =>
+        windowClass is "ConsoleWindowClass" or "CASCADIA_HOSTING_WINDOW_CLASS" or "PseudoConsoleWindow";
 
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
     {

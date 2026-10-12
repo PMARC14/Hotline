@@ -15,10 +15,10 @@ public sealed class ChatSettingsTests : IDisposable
     }
 
     [Fact]
-    public void Defaults_to_agy_backend()
+    public void New_install_offers_agy_but_has_no_connection_chosen_yet()
     {
         var s = new SettingsStore(_dir).Load();
-        Assert.Equal("agy", s.Chat.DefaultBackend);
+        Assert.Equal("", s.Chat.DefaultBackend); // the panel asks on first open
         var agy = Assert.Single(s.Chat.Backends);
         Assert.Equal(BackendType.Antigravity, agy.Type);
         Assert.Equal("hotline", agy.Agent);
@@ -43,5 +43,13 @@ public sealed class ChatSettingsTests : IDisposable
 
     [Fact]
     public void Null_chat_section_gets_defaults()
-        => Assert.Equal("agy", LoadJson("""{ "chat": null }""").Chat.DefaultBackend);
+        => Assert.Equal("agy", Assert.Single(LoadJson("""{ "chat": null }""").Chat.Backends).Id);
+
+    [Fact]
+    public void Older_settings_keep_a_connection_chosen()
+        => Assert.Equal("agy", LoadJson("""{ "schemaVersion": 9, "chat": { "defaultBackend": "" } }""").Chat.DefaultBackend);
+
+    [Fact]
+    public void Blank_default_stays_unchosen_on_current_settings()
+        => Assert.Equal("", LoadJson("""{ "schemaVersion": 10, "chat": { "defaultBackend": "  " } }""").Chat.DefaultBackend);
 }

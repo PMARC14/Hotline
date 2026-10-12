@@ -430,4 +430,14 @@ Zabroń:
   <data name="Agy_ListNotList" xml:space="preserve"><value>„permissions.{0}” w pliku settings.json agy nie jest listą; plik nie zostanie zmieniony.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Przechwytywanie obszaru Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) nie jest zainstalowany. Zainstaluj go z antigravity.google/cli i spróbuj ponownie.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Wybierz, jak Hotline ma się łączyć</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Wybierz AI, której ma używać Hotline. Do tego czasu nic nie jest wysyłane ani uruchamiane.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Na tym komputerze nie ma Claude Code ani Antigravity. Zainstaluj jedno z nich i zaloguj się albo użyj klucza API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Użyj {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Użyj klucza API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Ustaw Hotline jako aplikację klawisza Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Wybierz połączenie</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Używaj Hotline z klawiszem Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>W Ustawieniach systemu Windows › Personalizacja › Wprowadzanie tekstu › Dostosuj klawisz Copilot na klawiaturze wybierz Niestandardowe, a potem Hotline. Wymaga klawiatury z klawiszem Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Otwórz ustawienia klawisza Copilot</value></data>
 </root>

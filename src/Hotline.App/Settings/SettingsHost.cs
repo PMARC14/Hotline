@@ -21,7 +21,8 @@ internal sealed class SettingsHost(Func<SettingsWindow> create, FileLog log)
         catch (Exception ex) { return [$"window: {ex.Message}"]; }
     }
 
-    public void Show()
+    /// <summary>Opens the window, on <paramref name="page"/> (a navigation tag such as "Connections") when given.</summary>
+    public void Show(string? page = null)
     {
         try
         {
@@ -31,6 +32,7 @@ internal sealed class SettingsHost(Func<SettingsWindow> create, FileLog log)
                 _window.Closed += (_, _) => _window = null;
                 log.Info("settings window opened");
             }
+            if (page is not null) _window.OpenPage(page);
             _window.Activate();
         }
         catch (Exception ex)

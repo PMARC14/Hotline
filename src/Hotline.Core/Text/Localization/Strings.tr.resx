@@ -430,4 +430,14 @@ Reddet:
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions.{0}" bir liste değil; değiştirilmiyor.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline bölge yakalama</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) yüklü değil. antigravity.google/cli adresinden yükleyin ve yeniden deneyin.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Hotline'ın nasıl bağlanacağını seçin</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Hotline'ın kullanacağı yapay zekâyı seçin. Siz seçene kadar hiçbir şey gönderilmez ve çalıştırılmaz.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Bu bilgisayarda Claude Code veya Antigravity yüklü değil. Birini yükleyip oturum açın veya bir API anahtarı kullanın.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>{0} kullan</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>API anahtarı kullan…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline'ı Copilot tuşu uygulaması yap</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Bir bağlantı seçin</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot tuşu için Hotline'ı kullan</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows Ayarlar › Kişiselleştirme › Metin girişi › Klavyedeki Copilot tuşunu özelleştir bölümünde Özel'i, ardından Hotline'ı seçin. Copilot tuşlu bir klavye gerekir.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot tuşu ayarlarını aç</value></data>
 </root>

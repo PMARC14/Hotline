@@ -127,6 +127,11 @@ internal sealed class ChatPresenter
 
     internal void Notice(string message, InfoBarSeverity severity) => _notices.Show(message, severity);
 
+    internal NoticeArea Notices => _notices;
+
+    /// <summary>A send with no connection chosen yet (first run): App shows the connection chooser.</summary>
+    public Action? ConnectionMissing { get; set; }
+
     internal Task<ToolDecision> AskToolApprovalAsync(ToolCallRequest request, CancellationToken ct) => _notices.AskToolApprovalAsync(request, ct);
 
     public void AttachSelection(string text, string? app) => _attachments.AttachSelection(text, app);
@@ -197,6 +202,7 @@ internal sealed class ChatPresenter
         if (_chat.IsBusy) return; // stopping is the Stop button's or the stop shortcut's job, never a send's
         if (_preparingSend) return; // a second Enter/click while OCR runs
         if (_voice.Active) { await _voice.FinishAndSendAsync(); return; } // it sends once the dictation is final
+        if (string.IsNullOrEmpty(_chat.BackendId)) { ConnectionMissing?.Invoke(); return; } // the text stays in the box
         var typed = _composer.Text;
         switch (_router.Route(typed, _attachments.Items.Count > 0))
         {

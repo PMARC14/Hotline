@@ -76,6 +76,12 @@ public sealed partial class SettingsWindow : Window
 
     private string _currentPage = "General";
 
+    /// <summary>Selects a page by its navigation tag (ignored if there is none).</summary>
+    internal void OpenPage(string tag)
+    {
+        if (Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => (string)i.Tag == tag) is { } item) Nav.SelectedItem = item;
+    }
+
     private void ShowPage(string tag)
     {
         _currentPage = tag;
@@ -96,7 +102,7 @@ public sealed partial class SettingsWindow : Window
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
-                if (page == SettingsPage.General) BuildStartupCard();
+                if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
                 if (page == SettingsPage.Appearance) BuildToolbarSection();
                 if (page == SettingsPage.Chat) BuildMemoryCard();
                 break;
@@ -194,6 +200,14 @@ public sealed partial class SettingsWindow : Window
     }
 
     /// <summary>Start with Windows (the package's StartupTask; not a settings.json value — Windows owns it).</summary>
+    /// <summary>Choosing Hotline for the Copilot key happens in Windows Settings; this explains it and opens the page.</summary>
+    private void BuildCopilotKeyCard()
+    {
+        var open = new Button { Content = Strings.Set_CopilotKeyApp_Open };
+        open.Click += (_, _) => _ = Chat.CopilotKeySettings.OpenAsync(_log);
+        PageHost.Children.Add(Card(Strings.Set_CopilotKeyApp, Strings.Set_CopilotKeyApp_Desc, open));
+    }
+
     private void BuildStartupCard()
     {
         var status = new TextBlock();

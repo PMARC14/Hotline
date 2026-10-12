@@ -430,4 +430,14 @@ Deny:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in agy's settings.json isn't a list; not changing it.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline region capture</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>The Antigravity CLI (agy) isn't installed. Install it from antigravity.google/cli, then try again.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Choose how Hotline connects</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Pick the AI Hotline should use. Nothing is sent and nothing runs until you do.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code or Antigravity isn't installed on this PC. Install one and sign in to it, or use an API key.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Use {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Use an API key…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Set Hotline as the Copilot key app</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Choose a connection</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Use Hotline for the Copilot key</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>In Windows Settings › Personalization › Text input › Customize Copilot key on keyboard, choose Custom, then pick Hotline. Needs a keyboard with a Copilot key.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Open Copilot key settings</value></data>
 </root>

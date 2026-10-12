@@ -430,4 +430,14 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy의 settings.json에 있는 "permissions.{0}"이(가) 목록이 아니므로 변경하지 않습니다.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline 영역 캡처</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI(agy)가 설치되어 있지 않습니다. antigravity.google/cli에서 설치한 다음 다시 시도하세요.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Hotline 연결 방법 선택</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Hotline이 사용할 AI를 고르세요. 고르기 전에는 아무것도 보내거나 실행하지 않습니다.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>이 PC에 Claude Code나 Antigravity가 설치되어 있지 않습니다. 하나를 설치하고 로그인하거나 API 키를 사용하세요.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>{0} 사용</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>API 키 사용…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline을 Copilot 키 앱으로 설정</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>연결 선택</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot 키로 Hotline 사용</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows 설정 › 개인 설정 › 텍스트 입력 › 키보드의 Copilot 키 사용자 지정에서 사용자 지정을 선택한 다음 Hotline을 고르세요. Copilot 키가 있는 키보드가 필요합니다.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot 키 설정 열기</value></data>
 </root>

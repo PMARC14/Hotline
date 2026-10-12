@@ -108,6 +108,7 @@ internal sealed class ProviderBar(
                 popup.ProviderBox.Items.Add(label);
             }
             popup.ProviderBox.SelectedItem = _providerIds.FirstOrDefault(kv => kv.Value == chat.BackendId).Key;
+            popup.ProviderBox.PlaceholderText = Strings.Bar_ChooseConnection; // first run: nothing chosen yet
 
             var current = Current;
             FillModels(current);
@@ -149,6 +150,15 @@ internal sealed class ProviderBar(
         }
     }
 
+    /// <summary>Switches to a connection and saves it as the default (also used by the first-run chooser).</summary>
+    public void Select(string id)
+    {
+        chat.BackendId = id;
+        settings.Update(s => s.Chat.DefaultBackend = id); // Changed → Refresh
+        _ = LoadModelsAsync(quiet: true);
+        log.Info($"provider switched to {id}");
+    }
+
     private void OnProviderChanged()
     {
         if (popup.ProviderBox.SelectedItem is not string label || !_providerIds.TryGetValue(label, out var id) || id == chat.BackendId) return;
@@ -158,10 +168,7 @@ internal sealed class ProviderBar(
             popup.DispatcherQueue.TryEnqueue(Refresh); // back to the current connection, after this SelectionChanged
             return;
         }
-        chat.BackendId = id;
-        settings.Update(s => s.Chat.DefaultBackend = id); // Changed → Refresh
-        _ = LoadModelsAsync(quiet: true);
-        log.Info($"provider switched to {id}");
+        Select(id);
     }
 
     private async Task SetModelAsync(string text)
