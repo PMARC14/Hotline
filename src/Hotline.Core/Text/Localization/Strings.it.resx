@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Passa subito all'altezza massima</value></data>
   <data name="Set_History" xml:space="preserve"><value>Salva la cronologia delle chat</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Solo testo, nella tua cartella .hotline.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Avvisa quando una risposta termina in background</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Una notifica di Windows quando una risposta termina mentre il pannello è nascosto o un'altra app è in primo piano. Fai clic per aprire la risposta.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} ha risposto</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} non è riuscito a completare la risposta</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Conserva la cronologia per</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>giorni</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Allega il testo selezionato</value></data>

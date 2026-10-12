@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>直接展开至最大高度</value></data>
   <data name="Set_History" xml:space="preserve"><value>保存聊天记录</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>仅文本,保存在你的 .hotline 文件夹中。</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>回答在后台完成时通知</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>面板隐藏或其他应用在前台时,回答完成后显示 Windows 通知。点击即可打开回答。</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} 已回答</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} 无法完成回答</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>聊天记录保留时间</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>附加所选文本</value></data>

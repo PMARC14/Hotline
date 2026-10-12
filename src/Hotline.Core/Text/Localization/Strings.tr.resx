@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Doğrudan en büyük yüksekliğe geç</value></data>
   <data name="Set_History" xml:space="preserve"><value>Sohbet geçmişini kaydet</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Yalnızca metin, .hotline klasörünüzde.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Bir yanıt arka planda bitince bildir</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Panel gizliyken veya önde başka bir uygulama varken bir yanıt bittiğinde Windows bildirimi gösterir. Yanıtı açmak için tıklayın.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} yanıtladı</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} yanıtı tamamlayamadı</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Geçmişi şu süre sakla</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>gün</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Seçili metni ekle</value></data>

@@ -36,6 +36,8 @@ internal sealed class ChatPresenter
     private readonly PanelSelfTest _selfTest;
     private readonly FirstRunNote _firstRun;
     private readonly SupportNote _support;
+    private readonly AnswerNotifier _notifier;
+    private readonly Dictionary<string, string> _answerBackends = [];
     private string? _lastLook;
     private bool _preparingSend;
 
@@ -70,6 +72,7 @@ internal sealed class ChatPresenter
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
+        _notifier = new AnswerNotifier(popup, settings, log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
             (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll());
     }
@@ -84,6 +87,7 @@ internal sealed class ChatPresenter
         _recent.Initialize();
         _firstRun.Initialize();
         _support.Initialize();
+        _notifier.Initialize();
 
         _chat.Event += e => _tasks.Guard("chat event", () => OnChatEvent(e));
         _composer.SendRequested += OnEnter;
@@ -243,6 +247,11 @@ internal sealed class ChatPresenter
     private ReportTarget? ReportFor(string? backendId) =>
         _settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } profile ? ReportLinks.For(profile.Type) : null;
 
+    /// <summary>Not the self-test or demo.</summary>
+    private static bool IsRealAnswer(string id) => !id.StartsWith("st-", StringComparison.Ordinal) && !id.StartsWith("demo-", StringComparison.Ordinal);
+
+    private string BackendOf(string answerId) => _answerBackends.Remove(answerId, out var name) ? name : "";
+
     private void OnChatEvent(ChatEvent e)
     {
         switch (e)
@@ -252,6 +261,7 @@ internal sealed class ChatPresenter
                 break;
             case AssistantStarted s:
                 _transcript.StartAnswer(s.Id, s.BackendName, ReportFor(s.BackendId));
+                _answerBackends[s.Id] = s.BackendName;
                 SetBusy(true);
                 break;
             case AssistantDelta d:
@@ -265,11 +275,16 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(c.Id);
                 SetBusy(false);
                 _log.Info("chat answer completed");
-                if (!c.Id.StartsWith("st-", StringComparison.Ordinal) && !c.Id.StartsWith("demo-", StringComparison.Ordinal))
-                    _support.AnswerCompleted(); // a real answer, not the self-test or demo
+                var answeredBy = BackendOf(c.Id);
+                if (IsRealAnswer(c.Id))
+                {
+                    _support.AnswerCompleted();
+                    _notifier.Finished(answeredBy, _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
+                }
                 break;
             case AssistantCancelled c:
                 _transcript.FinishAnswer(c.Id);
+                _answerBackends.Remove(c.Id);
                 SetBusy(false);
                 break;
             case AssistantFailed f:
@@ -278,6 +293,8 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(f.Id);
                 _transcript.ShowError(f.Id, f.Message);
                 SetBusy(false);
+                var failedOn = BackendOf(f.Id);
+                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, f.Message, failed: true);
                 break;
             case MessageRestored r when r.Message.Role == ChatRole.User:
                 _transcript.AddUser(r.Message);

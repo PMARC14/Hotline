@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Od razu do maksymalnej wysokości</value></data>
   <data name="Set_History" xml:space="preserve"><value>Zapisuj historię czatów</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Tylko tekst, w folderze .hotline.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Powiadamiaj, gdy odpowiedź skończy się w tle</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Powiadomienie systemu Windows, gdy odpowiedź się zakończy, a panel jest ukryty lub na wierzchu jest inna aplikacja. Kliknij je, aby otworzyć odpowiedź.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} odpowiedział</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} nie mógł dokończyć odpowiedzi</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Przechowuj historię przez</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>dni</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Dołączaj zaznaczony tekst</value></data>

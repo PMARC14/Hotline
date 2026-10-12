@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Одразу до максимальної висоти</value></data>
   <data name="Set_History" xml:space="preserve"><value>Зберігати історію чатів</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Лише текст, у вашій папці .hotline.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Сповіщати, коли відповідь завершується у фоні</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Сповіщення Windows, коли відповідь завершується, а панель прихована або попереду інша програма. Клацніть його, щоб відкрити відповідь.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} відповів</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} не вдалося завершити відповідь</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Зберігати історію протягом</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>днів</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Додавати виділений текст</value></data>
