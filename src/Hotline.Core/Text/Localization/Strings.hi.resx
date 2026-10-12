@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>अपने-आप पहचानें</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy एजेंट</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>केवल-चैट मोड में उपयोग होता है।</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>चैट को Claude Code इतिहास में रखें</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline चैट को claude --resume में भी दिखाएँ।</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>अतिरिक्त आर्ग्युमेंट</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>प्रोग्राम को जैसे के तैसे भेजे जाते हैं (स्पेस से अलग)।</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>केवल चैट</value></data>
@@ -440,4 +438,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot कुंजी के लिए Hotline का उपयोग करें</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows सेटिंग्स › वैयक्तिकरण › टेक्स्ट इनपुट › कीबोर्ड पर Copilot कुंजी कस्टमाइज़ करें में कस्टम चुनें, फिर Hotline चुनें। Copilot कुंजी वाला कीबोर्ड चाहिए।</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot कुंजी सेटिंग्स खोलें</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>चैट को {0} के इतिहास में रखें</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>हर Hotline चैट वहाँ एक बातचीत होती है, Hotline के तहत समूहित, ताकि आप उसे हाल की चैट से या CLI में ही फिर से शुरू कर सकें। बंद: चैट Hotline रखता है।</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>संदेश Hotline में भी रखें</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>हाल की चैट इन चैट को हमेशा दिखाती है; यह उनके संदेश Hotline के इतिहास फ़ोल्डर में भी सहेजता है।</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>“{0}” जारी है। पिछले संदेश {1} के इतिहास में हैं।</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} इस बातचीत को फिर से नहीं खोल सका। जारी रखने के लिए नई चैट शुरू करें।</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>यह चैट यहाँ जारी रखें</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} नहीं खुल सका: {1}</value></data>
 </root>

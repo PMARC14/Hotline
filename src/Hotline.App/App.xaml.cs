@@ -116,7 +116,12 @@ public partial class App : Application
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
         var job = new ChildProcessJob(_log);
         _popup.IsOurProcess = job.Owns;
-        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
+        // Chat-only CLI chats run in folders named "Hotline": Claude Code and Codex list sessions by folder, agy names its
+        // project after it (Plan 9). The older folders held only the agent file and temporary attachments.
+        foreach (var old in new[] { "agy-workspace", "claude-workspace" })
+            try { if (Directory.Exists(Path.Combine(privateDir, old))) Directory.Delete(Path.Combine(privateDir, old), recursive: true); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error($"could not remove the old {old} folder", ex); }
+        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy", "Hotline"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
@@ -130,7 +135,8 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
-            home, Path.Combine(privateDir, "claude-workspace"), _secrets, BackendFactory.CreateApiHttpClient(), tools);
+            home, Path.Combine(privateDir, "claude", "Hotline"), _secrets, BackendFactory.CreateApiHttpClient(), tools,
+            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home)));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -138,7 +144,10 @@ public partial class App : Application
             history = new HistoryStore(Path.Combine(dataDir, "history"), TimeProvider.System);
             try { history.Prune(settings.Chat.HistoryRetentionDays); } catch (IOException ex) { _log.Error("history prune failed", ex); }
         }
-        var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
+        // CLI chats live in the CLI's own history; Hotline keeps the messages too only for API/local connections or when asked.
+        var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log,
+            id => settings.Chat.Backends.FirstOrDefault(b => b.Id == id) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
+        { BackendId = settings.Chat.DefaultBackend };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
         {
             UpdateSettings = change => _settingsService!.Update(change),
@@ -149,6 +158,7 @@ public partial class App : Application
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 
@@ -159,6 +169,7 @@ public partial class App : Application
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
+        chat.Event += e => { if (e is ConversationResumed) _providerBar.Refresh(); }; // a CLI chat brings its connection back
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
         var chooser = new Chat.ConnectionChooser(_popup, _presenter.Notices, _settingsService, _providerBar.Select,
             () => { _popup.HidePopup(); _settingsHost?.Show("Connections"); }, _log);

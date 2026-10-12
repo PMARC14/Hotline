@@ -181,8 +181,6 @@ Zabroń:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Wykryj automatycznie</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Agent agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Używany w trybie Tylko czat.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Zachowuj czaty w historii Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Pokazuj czaty Hotline także w claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Dodatkowe argumenty</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Przekazywane do programu bez zmian (oddzielone spacjami).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Tylko czat</value></data>
@@ -440,4 +438,12 @@ Zabroń:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Używaj Hotline z klawiszem Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>W Ustawieniach systemu Windows › Personalizacja › Wprowadzanie tekstu › Dostosuj klawisz Copilot na klawiaturze wybierz Niestandardowe, a potem Hotline. Wymaga klawiatury z klawiszem Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Otwórz ustawienia klawisza Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Zachowuj czaty w historii {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Każdy czat Hotline jest tam jedną rozmową, zgrupowaną w Hotline, więc możesz ją wznowić z Ostatnich czatów lub w samym CLI. Wyłączone: czat zachowuje Hotline.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Zachowuj wiadomości także w Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Ostatnie czaty zawsze pokazują te czaty; to dodatkowo zapisuje ich wiadomości w folderze historii Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Kontynuacja „{0}”. Wcześniejsze wiadomości są w historii {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} nie może ponownie otworzyć tej rozmowy. Rozpocznij nowy czat, aby kontynuować.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Kontynuuj ten czat w</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Nie można otworzyć {0}: {1}</value></data>
 </root>

@@ -181,8 +181,6 @@ Deny:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Auto-detect</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy agent</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Used in Chat-only mode.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Keep chats in Claude Code's history</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Also list Hotline chats in claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Extra arguments</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Passed to the program as-is (space separated).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Chat only</value></data>
@@ -440,4 +438,12 @@ Deny:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Use Hotline for the Copilot key</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>In Windows Settings › Personalization › Text input › Customize Copilot key on keyboard, choose Custom, then pick Hotline. Needs a keyboard with a Copilot key.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Open Copilot key settings</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Keep chats in {0}'s history</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Each Hotline chat is one conversation there, grouped under Hotline, so you can resume it from Recent chats or in the CLI itself. Off: Hotline keeps the chat instead.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Also keep the messages in Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Recent chats always lists these chats; this also saves their messages in Hotline's history folder.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Continuing “{0}”. The earlier messages are in {1}'s history.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} couldn't reopen this conversation. Start a new chat to continue.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Continue this chat in</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Couldn't open {0}: {1}</value></data>
 </root>

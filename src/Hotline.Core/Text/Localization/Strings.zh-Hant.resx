@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>自動偵測</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy 代理程式</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>在僅聊天模式中使用。</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>在 Claude Code 記錄中保留聊天</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>也在 claude --resume 中列出 Hotline 聊天。</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>額外引數</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>原樣傳給程式 (以空格分隔)。</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>僅聊天</value></data>
@@ -440,4 +438,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>用 Copilot 鍵開啟 Hotline</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>在 Windows 設定 › 個人化 › 文字輸入 › 自訂鍵盤上的 Copilot 鍵中選擇「自訂」,然後選擇 Hotline。需要有 Copilot 鍵的鍵盤。</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>開啟 Copilot 鍵設定</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>在 {0} 的記錄中保留聊天</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>每個 Hotline 聊天在那裡都是一個對話,歸在 Hotline 之下,可以從「最近的聊天」或在 CLI 中繼續。關閉:由 Hotline 保留聊天。</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>同時在 Hotline 中保留訊息</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>「最近的聊天」一律列出這些聊天;此選項還會把訊息儲存到 Hotline 的記錄資料夾中。</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>繼續「{0}」。之前的訊息在 {1} 的記錄中。</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} 無法重新開啟此對話。請開始新的聊天以繼續。</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置繼續此聊天</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>無法開啟 {0}:{1}</value></data>
 </root>

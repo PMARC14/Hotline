@@ -181,8 +181,6 @@ Từ chối:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Tự động phát hiện</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Tác tử agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Dùng trong chế độ Chỉ trò chuyện.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Giữ cuộc trò chuyện trong lịch sử Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Liệt kê cả các cuộc trò chuyện Hotline trong claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Đối số bổ sung</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Được truyền nguyên văn cho chương trình (cách nhau bằng dấu cách).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Chỉ trò chuyện</value></data>
@@ -440,4 +438,12 @@ Từ chối:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Dùng Hotline cho phím Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Trong Cài đặt Windows › Cá nhân hóa › Nhập văn bản › Tùy chỉnh phím Copilot trên bàn phím, chọn Tùy chỉnh rồi chọn Hotline. Cần bàn phím có phím Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Mở cài đặt phím Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Giữ cuộc trò chuyện trong lịch sử {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Mỗi cuộc trò chuyện Hotline là một cuộc hội thoại ở đó, nhóm trong Hotline, để bạn tiếp tục từ Trò chuyện gần đây hoặc ngay trong CLI. Tắt: Hotline giữ cuộc trò chuyện.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Giữ cả tin nhắn trong Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Trò chuyện gần đây luôn liệt kê các cuộc trò chuyện này; tùy chọn này lưu thêm tin nhắn vào thư mục lịch sử của Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Đang tiếp tục “{0}”. Các tin nhắn trước nằm trong lịch sử của {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} không thể mở lại cuộc hội thoại này. Hãy bắt đầu cuộc trò chuyện mới để tiếp tục.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Tiếp tục cuộc trò chuyện này trong</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Không thể mở {0}: {1}</value></data>
 </root>

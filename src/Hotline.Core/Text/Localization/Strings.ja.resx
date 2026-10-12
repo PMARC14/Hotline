@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>自動検出</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy エージェント</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>チャットのみモードで使用します。</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>チャットを Claude Code の履歴にも残す</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline のチャットを claude --resume にも表示します。</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>追加の引数</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>そのままプログラムに渡されます (スペース区切り)。</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>チャットのみ</value></data>
@@ -440,4 +438,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot キーで Hotline を使う</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows の設定 › 個人用設定 › テキスト入力 › キーボードの Copilot キーをカスタマイズする で「カスタム」を選び、Hotline を選択します。Copilot キーのあるキーボードが必要です。</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot キーの設定を開く</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>チャットを {0} の履歴に残す</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Hotline の各チャットは向こうで 1 つの会話になり、Hotline にまとめられます。最近のチャットや CLI 自体から再開できます。オフ: チャットは Hotline が保持します。</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>メッセージを Hotline にも保存する</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>最近のチャットには常にこれらのチャットが表示されます。オンにすると、メッセージも Hotline の履歴フォルダーに保存します。</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>「{0}」の続きです。以前のメッセージは {1} の履歴にあります。</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} はこの会話を再び開けませんでした。続けるには新しいチャットを始めてください。</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>このチャットを続ける場所</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} を開けませんでした: {1}</value></data>
 </root>

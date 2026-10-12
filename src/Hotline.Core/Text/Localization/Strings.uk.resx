@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Визначити автоматично</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Агент agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Використовується в режимі «Лише чат».</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Зберігати чати в історії Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Показувати чати Hotline також у claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Додаткові аргументи</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Передаються програмі як є (через пробіл).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Лише чат</value></data>
@@ -440,4 +438,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Використовувати Hotline для клавіші Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>У Параметрах Windows › Персоналізація › Введення тексту › Налаштувати клавішу Copilot на клавіатурі виберіть «Настроюване», а потім Hotline. Потрібна клавіатура з клавішею Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Відкрити параметри клавіші Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Зберігати чати в історії {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Кожен чат Hotline стає там однією розмовою, згрупованою в Hotline, тож її можна продовжити з «Останніх чатів» або в самому CLI. Вимкнено: чат зберігає Hotline.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Також зберігати повідомлення в Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>«Останні чати» завжди показують ці чати; це ще й зберігає їхні повідомлення в папці історії Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Продовження «{0}». Попередні повідомлення — в історії {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} не вдалося знову відкрити цю розмову. Почніть новий чат, щоб продовжити.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Продовжити цей чат у</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Не вдалося відкрити {0}: {1}</value></data>
 </root>
