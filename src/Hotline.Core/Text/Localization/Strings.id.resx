@@ -430,4 +430,14 @@ Tolak:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" di settings.json milik agy bukan daftar; tidak diubah.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Tangkapan area Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) tidak terpasang. Pasang dari antigravity.google/cli, lalu coba lagi.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Pilih cara Hotline terhubung</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Pilih AI yang akan digunakan Hotline. Tidak ada yang dikirim atau dijalankan sebelum Anda memilih.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code atau Antigravity belum terpasang di PC ini. Pasang salah satunya dan masuk, atau gunakan kunci API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Gunakan {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Gunakan kunci API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Jadikan Hotline aplikasi tombol Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Pilih koneksi</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Gunakan Hotline untuk tombol Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Di Pengaturan Windows › Personalisasi › Input teks › Sesuaikan tombol Copilot pada keyboard, pilih Kustom, lalu pilih Hotline. Memerlukan keyboard dengan tombol Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Buka pengaturan tombol Copilot</value></data>
 </root>

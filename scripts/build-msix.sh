@@ -115,7 +115,7 @@ case $arch in
 esac
 
 # Keep the newest package folders; every build is ~90 MB per processor and they piled up to gigabytes.
-ls -dt "$out"/Hotline.App_*/ 2>/dev/null | tail -n +5 | while read -r old; do rm -rf "$old"; done
-ls -t "$out"/Hotline_*.msixbundle 2>/dev/null | tail -n +3 | while read -r old; do rm -f "$old"; done
+ls -dt "$out"/Hotline.App_*/ 2>/dev/null | tail -n +5 | while read -r old; do rm -rf "$old"; done || true # none yet: ls fails, which pipefail would turn into an exit
+ls -t "$out"/Hotline_*.msixbundle 2>/dev/null | tail -n +3 | while read -r old; do rm -f "$old"; done || true
 
 printf '%s\n' "$result"

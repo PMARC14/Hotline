@@ -430,4 +430,14 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» у settings.json agy не є списком; файл не змінено.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Знімок області Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) не встановлено. Установіть його з antigravity.google/cli і спробуйте ще раз.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Виберіть, як підключається Hotline</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Виберіть ШІ, яким користуватиметься Hotline. Доти нічого не надсилається й не запускається.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>На цьому ПК не встановлено Claude Code чи Antigravity. Установіть один із них і ввійдіть або скористайтеся ключем API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Використовувати {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Використати ключ API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Зробити Hotline програмою для клавіші Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Виберіть підключення</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Використовувати Hotline для клавіші Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>У Параметрах Windows › Персоналізація › Введення тексту › Налаштувати клавішу Copilot на клавіатурі виберіть «Настроюване», а потім Hotline. Потрібна клавіатура з клавішею Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Відкрити параметри клавіші Copilot</value></data>
 </root>

@@ -115,6 +115,7 @@ public partial class App : Application
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
         var job = new ChildProcessJob(_log);
+        _popup.IsOurProcess = job.Owns;
         var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
@@ -159,6 +160,10 @@ public partial class App : Application
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
+        var chooser = new Chat.ConnectionChooser(_popup, _presenter.Notices, _settingsService, _providerBar.Select,
+            () => { _popup.HidePopup(); _settingsHost?.Show("Connections"); }, _log);
+        chooser.Initialize();
+        _presenter.ConnectionMissing = chooser.Show;
         // Don't keep an idle CLI session (claude/agy) around after New chat or switching provider.
         var lastBackend = chat.BackendId;
         chat.Event += e => { if (e is ConversationReset) _ = InvalidateBackend(chat.BackendId).AsTask(); };

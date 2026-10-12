@@ -430,4 +430,14 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy 的 settings.json 中的“permissions.{0}”不是列表;不做更改。</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline 区域截图</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>未安装 Antigravity CLI(agy)。请从 antigravity.google/cli 安装,然后重试。</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>选择 Hotline 的连接方式</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>选择 Hotline 要使用的 AI。在你选择之前,不会发送或运行任何内容。</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>此电脑未安装 Claude Code 或 Antigravity。请安装其中一个并登录,或使用 API 密钥。</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>使用 {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>使用 API 密钥…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>将 Hotline 设为 Copilot 键应用</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>选择连接</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>用 Copilot 键打开 Hotline</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>在 Windows 设置 › 个性化 › 文本输入 › 自定义键盘上的 Copilot 键中选择“自定义”,然后选择 Hotline。需要带 Copilot 键的键盘。</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>打开 Copilot 键设置</value></data>
 </root>

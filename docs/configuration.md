@@ -34,7 +34,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `activation.copilotKey` | `hotline` | `hotline`: the key opens Hotline (tap/hold above). `rightCtrl`: the key is a plain Right Ctrl (Copilot+C = Ctrl+C) and no longer opens Hotline — use the extra hotkey or the tray. Works on keyboards whose Copilot key sends Win+Shift+F23 (most do) |
-| `chat.defaultBackend` | `agy` | Connection that answers by default (its `id`) |
+| `chat.defaultBackend` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |

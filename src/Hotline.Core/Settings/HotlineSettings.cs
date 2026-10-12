@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 9;
+    public const int CurrentSchemaVersion = 10;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -124,7 +124,8 @@ public sealed class BackendProfile
 
 public sealed class ChatSettings
 {
-    public string DefaultBackend { get; set; } = "agy";
+    /// <summary>The connection the panel uses. Empty = not chosen yet: a new install asks on first open (and runs no CLI before).</summary>
+    public string DefaultBackend { get; set; } = "";
     /// <summary>System prompt used by connections that don't pick their own.</summary>
     public string DefaultPrompt { get; set; } = "default";
     /// <summary>

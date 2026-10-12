@@ -430,4 +430,14 @@ Nega:
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» nel settings.json di agy non è un elenco; non viene modificato.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Cattura area di Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>L'interfaccia della riga di comando di Antigravity (agy) non è installata. Installala da antigravity.google/cli, poi riprova.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Scegli come si connette Hotline</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Scegli l'IA che Hotline deve usare. Finché non lo fai, non viene inviato né eseguito nulla.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code o Antigravity non è installato su questo PC. Installane uno ed esegui l'accesso, oppure usa una chiave API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Usa {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Usa una chiave API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Imposta Hotline come app del tasto Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Scegli una connessione</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Usa Hotline per il tasto Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>In Impostazioni di Windows › Personalizzazione › Input testo › Personalizza il tasto Copilot sulla tastiera, scegli Personalizzato e poi Hotline. Richiede una tastiera con tasto Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Apri le impostazioni del tasto Copilot</value></data>
 </root>

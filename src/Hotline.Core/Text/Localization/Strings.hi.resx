@@ -430,4 +430,14 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy की settings.json में "permissions.{0}" एक सूची नहीं है; इसे नहीं बदला जा रहा।</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline क्षेत्र कैप्चर</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) इंस्टॉल नहीं है। इसे antigravity.google/cli से इंस्टॉल करें, फिर से प्रयास करें।</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>चुनें कि Hotline कैसे कनेक्ट हो</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>वह AI चुनें जिसे Hotline उपयोग करे। आपके चुनने तक कुछ भी भेजा या चलाया नहीं जाता।</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>इस PC पर Claude Code या Antigravity इंस्टॉल नहीं है। इनमें से एक इंस्टॉल करके साइन इन करें, या API कुंजी का उपयोग करें।</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>{0} का उपयोग करें</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>API कुंजी का उपयोग करें…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline को Copilot कुंजी ऐप के रूप में सेट करें</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>कनेक्शन चुनें</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot कुंजी के लिए Hotline का उपयोग करें</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows सेटिंग्स › वैयक्तिकरण › टेक्स्ट इनपुट › कीबोर्ड पर Copilot कुंजी कस्टमाइज़ करें में कस्टम चुनें, फिर Hotline चुनें। Copilot कुंजी वाला कीबोर्ड चाहिए।</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot कुंजी सेटिंग्स खोलें</value></data>
 </root>

@@ -15,6 +15,7 @@ internal static class CliRunner
             StandardOutputEncoding = Encoding.UTF8,
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
+        Hotline.Core.Processes.ProcessLaunches.Noted();
         using var process = Process.Start(psi) ?? throw new InvalidOperationException($"Could not start {exe}");
         adopt?.Invoke(process);
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);

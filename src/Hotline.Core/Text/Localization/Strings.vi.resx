@@ -430,4 +430,14 @@ Từ chối:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" trong settings.json của agy không phải danh sách; sẽ không được thay đổi.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Chụp vùng Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Chưa cài đặt Antigravity CLI (agy). Hãy cài từ antigravity.google/cli, rồi thử lại.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Chọn cách Hotline kết nối</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Chọn AI mà Hotline sẽ dùng. Không có gì được gửi hay chạy cho đến khi bạn chọn.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>PC này chưa cài Claude Code hoặc Antigravity. Hãy cài một trong hai và đăng nhập, hoặc dùng khóa API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Dùng {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Dùng khóa API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Đặt Hotline làm ứng dụng cho phím Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Chọn kết nối</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Dùng Hotline cho phím Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Trong Cài đặt Windows › Cá nhân hóa › Nhập văn bản › Tùy chỉnh phím Copilot trên bàn phím, chọn Tùy chỉnh rồi chọn Hotline. Cần bàn phím có phím Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Mở cài đặt phím Copilot</value></data>
 </root>

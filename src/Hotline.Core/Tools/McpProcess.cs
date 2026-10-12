@@ -113,6 +113,7 @@ public sealed class StdioMcpSession : IMcpSession
         var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
         process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
         bool started;
+        Processes.ProcessLaunches.Noted();
         try { started = process.Start(); }
         catch (Exception ex)
         {

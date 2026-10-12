@@ -430,4 +430,14 @@ Negar:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" no settings.json do agy não é uma lista; ele não será alterado.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Captura de região do Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>A CLI do Antigravity (agy) não está instalada. Instale-a em antigravity.google/cli e tente de novo.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Escolha como o Hotline se conecta</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Escolha a IA que o Hotline deve usar. Nada é enviado nem executado até você escolher.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>O Claude Code ou o Antigravity não está instalado neste PC. Instale um e entre nele, ou use uma chave de API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Usar {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Usar uma chave de API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Definir o Hotline como app da tecla Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Escolha uma conexão</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Usar o Hotline na tecla Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Em Configurações do Windows › Personalização › Entrada de texto › Personalizar a tecla Copilot no teclado, escolha Personalizado e depois Hotline. Requer um teclado com tecla Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Abrir configurações da tecla Copilot</value></data>
 </root>

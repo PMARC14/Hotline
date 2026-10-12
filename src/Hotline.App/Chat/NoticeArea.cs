@@ -51,6 +51,15 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         Panel.Children.Add(bar);
     }
 
+    /// <summary>A tagged bar with its own controls under the message, placed first (it's what the panel waits for).</summary>
+    public void ShowTagged(string tag, string? title, string message, InfoBarSeverity severity, UIElement content)
+    {
+        Remove(tag);
+        var bar = new InfoBar { Tag = tag, IsOpen = true, IsClosable = true, Severity = severity, Title = title ?? "", Message = message, Content = content };
+        bar.Closed += (_, _) => Panel.Children.Remove(bar);
+        Panel.Children.Insert(0, bar);
+    }
+
     public void Remove(string tag)
     {
         foreach (var old in Panel.Children.OfType<InfoBar>().Where(b => tag.Equals(b.Tag)).ToList()) Panel.Children.Remove(old);
