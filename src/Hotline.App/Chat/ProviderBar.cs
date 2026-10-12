@@ -13,7 +13,10 @@ internal sealed class ProviderBar(
     PopupWindow popup, SettingsService settings, ChatController chat, Func<string, ValueTask> invalidate, ModelCatalog models,
     PromptLibrary prompts, Action<string, InfoBarSeverity> notify, FileLog log)
 {
-    private const string DefaultLabel = "Default";
+    private static string DefaultLabel => Strings.Common_Default;
+
+    /// <summary>Effort picker: shown (translated) label → effort level.</summary>
+    private readonly Dictionary<string, string> _effortByLabel = [];
     private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = [];
     private readonly Dictionary<string, string> _providerIds = [];
 
@@ -47,14 +50,20 @@ internal sealed class ProviderBar(
         var located = info.EffortInModelId ? ModelFamilies.Locate(Families(profile), profile.Model) : null;
         if (located is { } hit && !hit.Family.HasLevels)
         {
-            popup.EffortBox.Items.Add("n/a");
+            popup.EffortBox.Items.Add(Strings.Effort_NA);
             popup.EffortBox.SelectedIndex = 0;
             return;
         }
+        _effortByLabel.Clear();
         popup.EffortBox.Items.Add(DefaultLabel);
-        foreach (var level in levels) popup.EffortBox.Items.Add(level);
+        foreach (var level in levels)
+        {
+            var label = L.Effort(level);
+            _effortByLabel[label] = level;
+            popup.EffortBox.Items.Add(label);
+        }
         var current = located is { } h ? h.Level : profile.Effort;
-        popup.EffortBox.SelectedItem = current is { Length: > 0 } c && levels.Contains(c) ? c : DefaultLabel;
+        popup.EffortBox.SelectedItem = current is { Length: > 0 } c && levels.Contains(c) ? L.Effort(c) : DefaultLabel;
     }
 
     private bool _updating;
@@ -67,7 +76,7 @@ internal sealed class ProviderBar(
         popup.ProviderBox.SelectionChanged += (_, _) => { if (!_updating) OnProviderChanged(); };
         popup.ModelBox.SelectionChanged += (_, _) => { if (!_updating && popup.ModelBox.SelectedItem is string m) _ = SetModelAsync(m); };
         popup.ModelBox.DropDownOpened += (_, _) => _ = LoadModelsAsync();
-        popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(e); };
+        popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(_effortByLabel.GetValueOrDefault(e, e)); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
         popup.Toolbar.SizeChanged += (_, _) => Layout();
         popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(() => { popup.Toolbar.UpdateLayout(); Layout(); });
@@ -93,7 +102,7 @@ internal sealed class ProviderBar(
             _providerIds.Clear();
             foreach (var p in settings.Current.Chat.Backends)
             {
-                var label = BackendFactory.IsAvailable(p.Type) ? p.Name : $"{p.Name} (soon)";
+                var label = p.Name;
                 while (_providerIds.ContainsKey(label)) label += " ";
                 _providerIds[label] = p.Id;
                 popup.ProviderBox.Items.Add(label);
@@ -103,7 +112,7 @@ internal sealed class ProviderBar(
             var current = Current;
             FillModels(current);
             FillEffort(current);
-            ToolTipService.SetToolTip(popup.EffortBox, "Reasoning effort");
+            ToolTipService.SetToolTip(popup.EffortBox, Strings.Bar_EffortTip);
             SetEnabled(_enabled);
         }
         finally { _updating = false; }
@@ -145,7 +154,7 @@ internal sealed class ProviderBar(
         if (popup.ProviderBox.SelectedItem is not string label || !_providerIds.TryGetValue(label, out var id) || id == chat.BackendId) return;
         if (settings.Current.Chat.Backends.FirstOrDefault(b => b.Id == id) is { } target && !BackendFactory.IsAvailable(target.Type))
         {
-            notify($"{target.Name} can be set up in Settings, but chatting with it arrives in a later update.", InfoBarSeverity.Informational);
+            notify(L.F(Strings.Bar_NotYet, target.Name), InfoBarSeverity.Informational);
             popup.DispatcherQueue.TryEnqueue(Refresh); // back to the current connection, after this SelectionChanged
             return;
         }
@@ -182,7 +191,7 @@ internal sealed class ProviderBar(
     {
         var profile = Current;
         if (profile is null) return;
-        if (level == "n/a") return;
+        if (level == Strings.Effort_NA) return; // the placeholder item for models without effort levels
         if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
         {
             var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
@@ -234,16 +243,16 @@ internal sealed class ProviderBar(
                 if (profile is null) return;
                 settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name);
                 await invalidate(profile.Id);
-                notify($"System prompt: {name} (applies to the next message)", InfoBarSeverity.Informational);
+                notify(L.F(Strings.Bar_PromptChosen, name), InfoBarSeverity.Informational);
             };
             popup.PromptMenu.Items.Add(item);
         }
         popup.PromptMenu.Items.Add(new MenuFlyoutSeparator());
-        var edit = new MenuFlyoutItem { Text = $"Edit \"{active}\"…" };
+        var edit = new MenuFlyoutItem { Text = L.F(Strings.Bar_EditPrompt, active) };
         edit.Click += (_, _) => { popup.HidePopup(); CliRunner.OpenInEditor(prompts.PathFor(active)); };
-        var create = new MenuFlyoutItem { Text = "New prompt…" };
+        var create = new MenuFlyoutItem { Text = Strings.Bar_NewPrompt };
         create.Click += (_, _) => { popup.HidePopup(); CliRunner.OpenInEditor(prompts.PathFor(prompts.Create())); };
-        var folder = new MenuFlyoutItem { Text = "Open prompts folder" };
+        var folder = new MenuFlyoutItem { Text = Strings.Prompts_OpenFolder };
         folder.Click += (_, _) => { popup.HidePopup(); CliRunner.OpenFolder(prompts.Directory); };
         popup.PromptMenu.Items.Add(edit);
         popup.PromptMenu.Items.Add(create);

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>Taal</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>De taal van de menu's, instellingen en berichten van Hotline. AI-antwoorden volgen de taal waarin je schrijft.</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Windows-taal gebruiken</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Hotline openen / sluiten</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Hotline openen</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>Een nieuwe chat starten</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>Het huidige venster vastleggen</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Een gebied vastleggen</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>Spraakinvoer (ingedrukt houden om te praten)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>Niets doen</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot-toets</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Als rechter Ctrl is Copilot+C gelijk aan Ctrl+C en opent de toets Hotline niet meer (gebruik de extra sneltoets hieronder of het pictogram in het systeemvak). Werkt op toetsenborden waarvan de Copilot-toets Win+Shift+F23 verstuurt (de meeste).</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Opent Hotline</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Werkt als rechter Ctrl</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Kort drukken op de Copilot-toets</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Lang drukken op de Copilot-toets</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>Spraakinvoer</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Houd de Copilot-toets ingedrukt en praat; laat los om te stoppen (Esc annuleert). Gebruikt de spraakherkenning van Windows: sta de microfoon toe en schakel Instellingen › Privacy en beveiliging › Spraak › Online spraakherkenning in. Inschakelen zet lang drukken op spraak; uitschakelen zet het terug op een nieuwe chat.</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>Extra sneltoets</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Opent Hotline ook, bijv. Ctrl+Alt+H. Laat leeg voor geen.</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Geen geldige sneltoets (voorbeeld: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>Verbergen als ik ergens anders klik</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>Maak het paneel vast (📌) om het tijdelijk open te houden.</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>Boven andere vensters houden</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>Thema</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Windows-instelling gebruiken</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>Licht</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>Donker</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>Achtergrond</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Acryl is doorschijnend; Effen is ondoorzichtig.</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Acryl</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>Acryl (dun)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>Effen</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>Acryltint</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = helder, 1 = sterk getint.</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>Acrylhelderheid</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>Lager is doorzichtiger.</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>Tekstgrootte</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>Standaard volgt Windows (Instellingen › Toegankelijkheid › Tekstgrootte).</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>Lettertype</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>Elk geïnstalleerd lettertype, bijv. Cascadia Code. Leeg = Segoe UI Variable.</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>Schuifbalk</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>Tonen tijdens scrollen</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Altijd</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Nooit</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>Breedte</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Deel van de schermbreedte.</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>Minimale breedte</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>Maximale breedte</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>Minimale hoogte</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = alleen de berichtenbalk; het paneel groeit naar boven terwijl je typt en chat.</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>Maximale hoogte</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>Hoeveel van het scherm het mag innemen.</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>Verticale positie</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = boven, 0,5 = midden, 1 = onder.</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>Groei</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>Aanpassen aan het gesprek</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Direct naar maximale hoogte</value></data>
+  <data name="Set_History" xml:space="preserve"><value>Chatgeschiedenis opslaan</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>Alleen tekst, in je .hotline-map.</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>Geschiedenis bewaren gedurende</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>dagen</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>Geselecteerde tekst bijvoegen</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>Als de toets het paneel opent, wordt de tekst die je in de vorige app had geselecteerd bijgevoegd. Ctrl+C werkt ook in apps die hun selectie niet delen, maar gebruikt kort het klembord (daarna hersteld).</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>Ja</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Ja, ook met Ctrl+C</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>Nee</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>Een antwoord stoppen</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>De toets die een antwoord stopt terwijl het wordt geschreven (Enter doet dat nooit; de knop Verzenden stopt het ook). Eén toets (Esc) of een combinatie zoals Ctrl+. — als er niets wordt beantwoord, verbergt Esc het paneel.</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>Geen geldige sneltoets (voorbeelden: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>Geheugen</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>Elke chat ziet memory.md in je .hotline-map ("/remember iets" voegt een regel toe).</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>AI herinneringen laten opslaan</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>API-verbindingen kunnen een feit opslaan als je ze vraagt iets te onthouden.</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>Elke keer vragen</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>Ja, zonder te vragen</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>Nee</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>Verzenden na dicteren</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Met de toetsactie Spraak: verstuur het bericht als je de toets loslaat.</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>Tekst in schermafbeeldingen (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows leest de tekst in afbeeldingen (offline) voor modellen die ze niet kunnen zien.</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Voor modellen die alleen tekst lezen</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>Altijd toevoegen</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>Uit</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>Limiet voor afbeeldingsgrootte</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Bijgevoegde en vastgelegde afbeeldingen worden geschaald naar deze langste zijde.</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>Uitgebreide logboekregistratie</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>Schrijft extra diagnostische gegevens naar het logboek.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Hotline-instellingen</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>Algemeen</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>Prompts</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>Snelle acties</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>Weergave</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>Venster</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>Chat en geschiedenis</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Hulpmiddelen</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>Geavanceerd</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Over</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Geldt na het opnieuw starten van Hotline.)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>Geen geldige waarde</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Starten met Windows</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>API-verbindingen waarvoor Hulpmiddelen gebruiken op "Hotline-hulpmiddelen gebruiken" staat, kunnen de hulpmiddelen van deze MCP-servers aanroepen. Alleen-lezen hulpmiddelen worden uitgevoerd; voor al het andere wordt het je in het paneel gevraagd (Eenmaal toestaan / Altijd / Weigeren).</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>MCP-servers</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — hetzelfde "mcpServers"-formaat als andere MCP-apps; goedkeuringen staan in hetzelfde bestand</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json bewerken</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>Map openen</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Windows-agentregister</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>Niet beschikbaar op deze Windows (vereist build 26220.7262 of later). De ingebouwde connectors verschijnen dan automatisch hier.</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>Beschikbaar ({0}). De connectors staan hieronder als windows-…</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>Nog geen servers gecontroleerd. Voeg servers toe aan mcp.json en klik dan op Servers controleren.</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>Gereed — {0} hulpmiddel(en)</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>Mislukt: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>Uitgeschakeld in mcp.json</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>Servers controleren</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>Instellingenbestand</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>settings.json bewerken</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — één bestand per verbinding; "chat.order" in settings.json bepaalt de volgorde van de lijst</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>Map met verbindingen openen</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>Logboeken</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>Map met logboeken openen</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>Systeemprompts zijn Markdown-bestanden. De standaardprompt wordt gebruikt door elke verbinding die geen eigen prompt kiest.</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Bewerken</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>Als standaard instellen</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>Standaardprompt</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>Nieuwe prompt</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>Map met prompts openen</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>Verbinding toevoegen</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>Dupliceren</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>Verwijderen</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Annuleren</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>Deze verbinding verwijderen?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>Standaard gebruiken</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>Omhoog in de lijst met providers</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>Omlaag in de lijst met providers</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · standaard</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>De instellingen van agy kunnen nu niet worden gelezen.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy-regels: {0} toegestaan, {1} geweigerd. Bestanden in de werkmap lezen is standaard toegestaan; shellopdrachten hebben een toestemmingsregel nodig.</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Alleen-lezen opdrachten toestaan</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>Voegt regels zoals command(Get-ChildItem), command(git status) toe aan de lijst met toegestane opdrachten van agy en weigert Remove-Item, rm, git push...</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>Alleen-lezen shellopdrachten toestaan voor agy?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>Dit wijzigt de eigen instellingen van agy ({0}), dus het geldt ook als je agy zelf gebruikt.
+
+Toestaan:
+{1}
+
+Weigeren:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>Regels toevoegen</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>De instellingen van agy konden niet worden gewijzigd: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>agy-regels bewerken</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>agy-machtigingen</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Alles goedkeuren? (gevaarlijk)</value></data>
+  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy voert dan ELKE shellopdracht uit en bewerkt of verwijdert ELK bestand dat het wil, zonder te vragen. Een verkeerd antwoord of een kwaadaardige webpagina of bestand kan echte schade aanrichten. Gebruik dit alleen met een werkmap die je kunt missen.</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Ik begrijp het, inschakelen</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Alles goedkeuren (gevaarlijk)</value></data>
+  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Slaat alle machtigingscontroles van agy over (--dangerously-skip-permissions). Alleen in de modus "eigen hulpmiddelen van het programma gebruiken".</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Naam</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>Eindpunt</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Basis-URL van de API.</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>Opgeslagen; typ om te vervangen</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Optioneel</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>Vereist</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>De sleutel kon niet worden opgeslagen</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>API-sleutel</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>Opgeslagen in Windows Referentiebeheer, niet in settings.json.</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>Programmapad</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>Laat leeg om het automatisch te vinden.</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>Automatisch detecteren</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>agy-agent</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Gebruikt in de modus Alleen chatten.</value></data>
+  <data name="Conn_KeepClaude" xml:space="preserve"><value>Chats bewaren in de geschiedenis van Claude Code</value></data>
+  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline-chats ook tonen in claude --resume.</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>Extra argumenten</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Ongewijzigd doorgegeven aan het programma (gescheiden door spaties).</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>Alleen chatten</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Hotline-hulpmiddelen gebruiken (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>Hulpmiddelen gebruiken</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>Laat deze AI de hulpmiddelen van je MCP-servers gebruiken (Instellingen › Hulpmiddelen). Alleen-lezen hulpmiddelen worden uitgevoerd; voor al het andere wordt het je eerst in het paneel gevraagd.</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>Alleen chatten (kan je bijlagen lezen)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>Eigen hulpmiddelen en machtigingen van het programma gebruiken</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Bladeren…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Overnemen laat het programma zijn hulpmiddelen (bestanden, opdrachten, web) uitvoeren volgens zijn eigen machtigingsregels.</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>Werkmap</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Waar de hulpmiddelen van het programma werken in de modus Overnemen.</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>Terugval bij weigering</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Als een veiligheidscontrole een verzoek weigert, beantwoordt de API het opnieuw met een geschikt model in plaats van te stoppen (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>Model leest afbeeldingen</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Uit: schermafbeeldingen worden als hun tekst verstuurd (Instellingen › Chat › Tekst in schermafbeeldingen).</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Standaard ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>Systeemprompt</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>Standaard</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>Standaardmodel</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Standaardinspanning</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>Verbinding testen</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>Minimaal</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>Laag</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>Gemiddeld</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>Hoog</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>Zeer hoog</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>Maximaal</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>Vastmaken</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>Venster vastleggen</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>Scherm vastleggen</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>Gebied vastleggen</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>Ruimte</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Inspanningskeuze</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>Modelkeuze</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>Providerkeuze</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>Promptkeuze</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>Recente chats</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>Nieuwe chat</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>Onderbalk</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json bevat een fout</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} Herstel het bestand of zet de balk terug.</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>Naar links</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>Naar rechts</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>Uit de balk verwijderen</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>Aan de balk toevoegen</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>Balk terugzetten</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>ontwikkelversie</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — je AI op de Copilot-toets. Gratis en open source (Apache-2.0).</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Hotline steunen</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline wordt door één persoon gemaakt en heeft geen advertenties of tracking. Als het je tijd bespaart, houdt een donatie het draaiende.</value></data>
+  <data name="About_Project" xml:space="preserve"><value>Project</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>Broncode, releases en de plek om problemen te melden of functies te vragen.</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>Een probleem melden</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>Controleren…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>Deze pc</value></data>
+  <data name="About_License" xml:space="preserve"><value>Licentie</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0, plus de licenties van de onderdelen die Hotline gebruikt.</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>Kennisgevingen van derden</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>Deze pc kon niet worden gecontroleerd.</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>Geheugen bewerken</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>Leeg. "/remember iets" in het berichtvak voegt een regel toe.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} regel(s). Elke chat ziet ze zolang Geheugen aan staat.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Typ / aan het begin van een bericht om er een te gebruiken: "/translate een tekst", of "/summarize" met een bijlage. Elke actie is een Markdown-bestand; de eerste regel is de beschrijving in de lijst. Namen mogen letters, cijfers, - en _ bevatten.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Nieuwe actie</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Map met acties openen</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR-taal/talen</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>Geen OCR-taal: Instellingen › Tijd en taal › Taal en regio › voeg een taal toe met optische tekenherkenning</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows-dicteren is beschikbaar</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Instellingen › Privacy en beveiliging › Spraak › Online spraakherkenning, en een microfoon</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Windows-agentconnectors</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe gevonden; de connectors verschijnen als hulpmiddelservers windows-…</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe niet gevonden (nog niet ingeschakeld op deze pc)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>vereist Windows-build 26220.7262 of later (bijv. 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>App-acties (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>geregistreerd; Click to Do zelf vereist een Copilot+ pc</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>vereist Windows 11 24H2 (build 26100) of later</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>Aan — Hotline start in het systeemvak wanneer je je aanmeldt.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Uit (uitgeschakeld in Windows-instellingen › Apps › Opstarten). Schakel Hotline daar in.</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>Uit (geblokkeerd door een beleid van je organisatie).</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>Uit.</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>Niet beschikbaar in deze build.</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>Opgeslagen in het geheugen: "{0}" (Instellingen › Chat en geschiedenis › Geheugen bewerken)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>De Antigravity CLI (agy) is niet geïnstalleerd.</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Hotline openen</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>Instellingen…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>Opnieuw starten (instellingen toepassen)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>Afsluiten</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>Sleep om een gebied vast te leggen  ·  Esc om te annuleren</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>Dat venster is niet beschikbaar (gesloten of geminimaliseerd), dus het hele scherm is vastgelegd.</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Bijvoegen bij Hotline</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>Mappen kunnen niet worden bijgevoegd ({0}).</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} is te groot ({1} MB; max. {2} MB).</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>{0} kon niet worden gelezen.</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>{0} kon niet als afbeelding worden gelezen.</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>In Windows is geen OCR-taal geïnstalleerd, dus tekst in afbeeldingen kan niet worden gelezen. Voeg er een toe via Instellingen › Tijd en taal › Taal en regio (een taal met "Optische tekenherkenning").</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>De tekst in {0} kon niet worden gelezen.</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>Afbeelding kopiëren</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>Afbeelding gekopieerd.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Er wordt nog geantwoord. {0} of de knop Stoppen stopt het; je bericht wacht in het vak.</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>Typ na /remember wat er onthouden moet worden, bijv. "/remember ik gebruik liever metrische eenheden".</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>Onthouden. Elke chat ziet het vanaf nu (bewerken via Instellingen › Chat en geschiedenis › Geheugen).</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Niet opgeslagen: houd het bij één regel van maximaal {0} tekens.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Typ de tekst voor /{0} erachter, of voeg iets bij.</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>De instellingenmap kon niet worden geopend ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>Stoppen</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>Verzenden (Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Welkom bij Hotline</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>Wat je verstuurt — je bericht, bijlagen en tekst die je had geselecteerd in de app waar je vandaan kwam (getoond als label dat je kunt verwijderen) — gaat alleen naar de AI-verbinding die je hebt gekozen. Tips: typ / voor snelle acties en /remember om een notitie op te slaan.</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>Wat er wordt verstuurd</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Bevalt Hotline je?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Het is gratis en open source, gemaakt door één persoon. Als het je helpt, houdt een donatie het draaiende (GitHub Sponsors of Ko-fi; de links blijven in Instellingen › Over). Deze melding verschijnt niet meer.</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>Kopiëren</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>Code kopiëren</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>code</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>Tabel kopiëren</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>Tabel kopiëren (plakt in spreadsheets)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>Afbeelding wordt getekend…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(een tekening die niet veilig kon worden getoond)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>Afbeelding openen</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>De volledige tekening (met labels) openen in je standaardviewer</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>{0} › {1} toestaan?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>Eenmaal toestaan</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>Altijd toestaan</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>Weigeren</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>n.v.t.</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Denkinspanning</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} kan in Instellingen worden ingesteld, maar chatten ermee komt in een latere update.</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>Systeemprompt: {0} (geldt voor het volgende bericht)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>"{0}" bewerken…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>Nieuwe prompt…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>Wacht eerst tot het antwoord klaar is (of stop het).</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>Dat gesprek kon niet worden geopend.</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>Chatgeschiedenis is uitgeschakeld</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>Nog geen opgeslagen chats</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} berichten, laatste {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>Map met geschiedenis openen</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>zojuist</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} min geleden</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} u geleden</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} d geleden</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>Jij</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>Antwoord kopiëren</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>Opnieuw proberen</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>Gekopieerd.</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>Het klembord is bezet; probeer het opnieuw.</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>Dit antwoord melden bij {0}…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>Meer</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>Dat is niet gelukt: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>Laat de toets los om te stoppen. Esc annuleert.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>Druk nogmaals op de toets om te stoppen. Esc annuleert.</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 Microfoon wordt gestart…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 Luistert…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>Er is geen microfoon beschikbaar.</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>Spraakinvoer gestopt ({0}).</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>Spraakinvoer heeft de online spraakherkenning van Windows nodig.</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>Inschakelen</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline mag de microfoon niet gebruiken.</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>Microfooninstellingen</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>Spraakinvoer kon niet starten: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>Spraakherkenning ondersteunt je Windows-weergavetaal niet voor dicteren.</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>Spraakherkenning is niet beschikbaar ({0}).</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>Naar het nieuwste bericht</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>Bestanden toevoegen of vastleggen</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>Bestanden bijvoegen…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Vastgemaakt houden (blijft open als je ergens anders klikt, zodat je bestanden erin kunt slepen)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>Het venster vastleggen waarin je was</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>Het hele scherm vastleggen</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>Model (typ een naam of kies er een)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>Wie antwoordt</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>Recente chats (Ctrl+Pijl-omhoog heropent de laatste)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>Nieuwe chat (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>Je geïnstalleerde agy en je Google-aanmelding.</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>Je geïnstalleerde claude en je aanmelding (je Claude-abonnement).</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Een Google AI Studio-API-sleutel.</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Een API-sleutel van de Anthropic Console. Standaardmodel: Claude Opus 5.5.</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>OpenAI-compatibele API</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq en andere API's in OpenAI-stijl.</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>Lokaal eindpunt</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>llama.cpp-server, LM Studio en andere lokale servers in OpenAI-stijl.</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>De modellenlijst van de server had niet het verwachte formaat.</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 model</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>{0} modellen</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>Verbonden: {0}.</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>Verbonden: {0}, waaronder {1}.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>Verbonden: {0}, maar {1} zit er niet bij.</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>Voeg eerst een API-sleutel toe voor {0}.</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} heeft de API-sleutel geweigerd.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} antwoordde {1}.</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>{0} is niet bereikbaar: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} heeft niet op tijd geantwoord.</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>Voeg een API-sleutel toe voor {0} via Instellingen › AI-verbindingen.</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>Het eindpunt voor {0} is geen geldig http(s)-adres: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} heeft de aanvraaglimiet bereikt, nieuwe poging over {1} s…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} is bezet, nieuwe poging over {1} s…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} heeft de API-sleutel geweigerd. {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0}: aanvraaglimiet of quotum bereikt. {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} had een serverfout (of is overbelast). {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} weigerde dit verzoek te beantwoorden (veiligheidsweigering).</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>Kies een model voor {0} (de lijst Model toont ze).</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} heeft dit verzoek geblokkeerd ({1}).</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} heeft het antwoord gestopt ({1}).</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} stopte ({1}) tijdens het vragen om een hulpmiddel; er is niets uitgevoerd.</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: de verbinding eindigde voordat het hulpmiddelverzoek compleet was; er is niets uitgevoerd.</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} is onverwacht gestopt.</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>De werkmap voor {0} bestaat niet: {1}. Kies een andere via Instellingen › AI-verbindingen.</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code is niet geïnstalleerd. Installeer het via claude.com/claude-code, voer `claude` eenmaal uit om je aan te melden en probeer het opnieuw.</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy is niet aangemeld. Voer `agy` eenmaal uit in een terminal om je aan te melden en probeer het opnieuw.</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>Je Antigravity-quotum is voorlopig op. Probeer het later opnieuw.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy vertrouwt de werkruimte van Hotline nog niet. Voer `agy` eenmaal uit in een terminal en vertrouw de werkruimte.</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code is niet aangemeld. Voer `claude` eenmaal uit in een terminal, meld je aan en probeer het opnieuw.</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>Gebruikslimiet van Claude voorlopig bereikt. {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude is op dit moment overbelast; probeer het zo opnieuw.</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0} is groter dan {1} MB.</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0} is groter dan {1} KB.</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: niet-ondersteund bestandstype.</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>Geselecteerde tekst</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>Geselecteerde tekst uit {0}</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>Je kunt maximaal {0} bestanden bijvoegen.</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Tekst in {0}</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} kan geen afbeeldingen lezen.</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} kan geen bestanden lezen.</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>De backend '{0}' is nog niet beschikbaar.</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>"{0}" is niet geïnstalleerd, dus de server {1} kan niet starten. Installeer {2} en start Hotline daarna opnieuw.</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" is niet geïnstalleerd of staat niet in PATH, dus de server {1} kan niet starten. Controleer "command" in mcp.json.</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json kon niet worden gelezen: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>Goedkeuring "{0}" heeft een onbekende waarde en wordt daarom als "deny" behandeld.</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>Een servernaam mag geen '/' of '*' bevatten.</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>is niet binnen {0:0} s gestart</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Er worden geen hulpmiddelen uitgevoerd tot dit is hersteld.</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} De laatste goede versie blijft van kracht.</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>de server is gestopt (afsluitcode {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>De settings.json van agy is geen JSON-object; er wordt niets gewijzigd.</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" in de settings.json van agy is geen object; er wordt niets gewijzigd.</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in de settings.json van agy is geen lijst; er wordt niets gewijzigd.</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Hotline-gebied vastleggen</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>De Antigravity CLI (agy) is niet geïnstalleerd. Installeer hem via antigravity.google/cli en probeer het opnieuw.</value></data>
+</root>

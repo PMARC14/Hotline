@@ -1,5 +1,6 @@
 using System.Text;
 using Hotline.Core.Diagnostics;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Chat;
 
@@ -27,9 +28,9 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         var backend = resolveBackend(BackendId);
         if (backend is null) return true; // SendAsync reports the missing backend
         if (!backend.Capabilities.Images && attachments.Any(a => a.Kind == AttachmentKind.Image))
-            reason = $"{backend.DisplayName} can't read images.";
+            reason = L.F(Strings.Chat_NoImages, backend.DisplayName);
         else if (!backend.Capabilities.TextFiles && attachments.Any(a => a.Kind == AttachmentKind.Text))
-            reason = $"{backend.DisplayName} can't read files.";
+            reason = L.F(Strings.Chat_NoFiles, backend.DisplayName);
         return reason is null;
     }
 
@@ -95,7 +96,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         if (backend is null)
         {
             _lastFailed = (text, attachments);
-            Emit(new AssistantFailed(assistantId, BackendErrorKind.NotConfigured, $"The '{BackendId}' backend isn't available yet."));
+            Emit(new AssistantFailed(assistantId, BackendErrorKind.NotConfigured, L.F(Strings.Chat_NoBackend, BackendId)));
             return;
         }
 

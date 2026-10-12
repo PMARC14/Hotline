@@ -81,7 +81,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             return await ImageProcessor.EncodeBgraPngAsync(bgra, rect.Width, rect.Height, settings.Chat.MaxImagePixels);
         });
         if (window && !usedWindow)
-            notices.Show("That window isn't available (closed or minimized), so the whole screen was captured.", InfoBarSeverity.Informational);
+            notices.Show(Strings.Attach_WindowGone, InfoBarSeverity.Informational);
         var name = usedWindow ? $"window-{DateTime.Now:HHmmss}.png" : $"screen-{DateTime.Now:HHmmss}.png";
         Add(AttachmentFactory.FromBytes(name, "image/png", png, Limits));
     }
@@ -141,7 +141,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
     {
         if (!e.DataView.Contains(StandardDataFormats.StorageItems) && !e.DataView.Contains(StandardDataFormats.Bitmap)) return;
         e.AcceptedOperation = DataPackageOperation.Copy;
-        e.DragUIOverride.Caption = "Attach to Hotline";
+        e.DragUIOverride.Caption = Strings.Attach_DropCaption;
     }
 
     private async void Root_Drop(object sender, DragEventArgs e)
@@ -158,7 +158,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
     private async Task AddStorageItemsAsync(IReadOnlyList<IStorageItem> items)
     {
         var folders = items.OfType<StorageFolder>().Select(f => f.Name).ToList();
-        if (folders.Count > 0) notices.Show($"Folders can't be attached ({string.Join(", ", folders)}).", InfoBarSeverity.Warning);
+        if (folders.Count > 0) notices.Show(L.F(Strings.Attach_NoFolders, string.Join(", ", folders)), InfoBarSeverity.Warning);
         await AddFilesAsync(items.OfType<StorageFile>().ToList());
     }
 
@@ -171,7 +171,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
                 var size = (await file.GetBasicPropertiesAsync()).Size;
                 if (size > (ulong)Limits.MaxImageBytes)
                 {
-                    notices.Show($"{file.Name} is too large ({size / (1024 * 1024)} MB; max {Limits.MaxImageBytes / (1024 * 1024)} MB).", InfoBarSeverity.Warning);
+                    notices.Show(L.F(Strings.Attach_TooLarge, file.Name, size / (1024 * 1024), Limits.MaxImageBytes / (1024 * 1024)), InfoBarSeverity.Warning);
                     continue;
                 }
                 var buffer = await FileIO.ReadBufferAsync(file);
@@ -180,7 +180,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or COMException)
             {
                 log.Error($"could not read {file.Name}", ex);
-                notices.Show($"{file.Name} couldn't be read.", InfoBarSeverity.Warning);
+                notices.Show(L.F(Strings.Attach_Unreadable, file.Name), InfoBarSeverity.Warning);
             }
         }
     }
@@ -199,7 +199,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             }
         }
         catch (AttachmentRejectedException ex) { notices.Show(ex.Message, InfoBarSeverity.Warning); return; }
-        catch (Exception ex) when (ex is ArgumentException or COMException) { notices.Show($"{name} couldn't be read as an image.", InfoBarSeverity.Warning); return; }
+        catch (Exception ex) when (ex is ArgumentException or COMException) { notices.Show(L.F(Strings.Attach_NotImage, name), InfoBarSeverity.Warning); return; }
         Add(attachment);
     }
 
@@ -241,7 +241,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
                 Content = new FontIcon { Glyph = Glyphs.Close, FontSize = 10 }, Padding = new Thickness(4), BorderThickness = new Thickness(0),
                 Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent),
             };
-            ToolTipService.SetToolTip(remove, "Remove");
+            ToolTipService.SetToolTip(remove, Strings.Common_Remove);
             var id = a.Id;
             remove.Click += (_, _) => { tray.Remove(id); Refresh(); };
             chip.Children.Add(remove);
@@ -269,8 +269,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
         if (OcrReader.TryCreateEngine() is not { } engine)
         {
             if (!_ocrMissingNoted || !takesImages)
-                notices.Show("Windows has no OCR language installed, so text in images can't be read. Add one in Settings › Time & language › " +
-                             "Language & region (a language with \"Optical character recognition\").", InfoBarSeverity.Warning);
+                notices.Show(Strings.Attach_NoOcr, InfoBarSeverity.Warning);
             _ocrMissingNoted = true;
             return takesImages; // an image model still gets the image; a text-only one can't take it
         }
@@ -290,7 +289,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
                 catch (Exception ex) when (ex is ArgumentException or COMException)
                 {
                     log.Error($"OCR of {image.Name} failed", ex);
-                    notices.Show($"Couldn't read the text in {image.Name}.", InfoBarSeverity.Warning);
+                    notices.Show(L.F(Strings.Attach_OcrFailed, image.Name), InfoBarSeverity.Warning);
                     ok &= takesImages; // an image model still gets the image; carry on with the others
                     continue;
                 }

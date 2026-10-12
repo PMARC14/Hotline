@@ -4,12 +4,19 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 8;
+    public const int CurrentSchemaVersion = 9;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
+    public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
     public DiagnosticsSettings Diagnostics { get; set; } = new();
     public ChatSettings Chat { get; set; } = new();
+}
+
+public sealed class GeneralSettings
+{
+    /// <summary>Interface language: "system" follows Windows, or a tag from Languages.Supported (e.g. "de"). Applies on restart.</summary>
+    public string Language { get; set; } = Text.Localization.Languages.System;
 }
 
 public sealed class DiagnosticsSettings

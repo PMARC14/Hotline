@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Json;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Agy;
 
@@ -91,11 +92,11 @@ public static class AgyErrors
     {
         bool Has(params string[] words) => words.Any(w => error.Contains(w, StringComparison.OrdinalIgnoreCase));
         if (Has("unauthenticated", "sign in", "signed in", "log in", "logged in", "login"))
-            return new(BackendErrorKind.NotLoggedIn, "agy isn't signed in. Run `agy` once in a terminal to sign in, then try again.");
+            return new(BackendErrorKind.NotLoggedIn, Strings.Agy_NotSignedIn);
         if (Has("resource_exhausted", "quota", "rate limit"))
-            return new(BackendErrorKind.RateLimited, "Your Antigravity quota is used up for now. Try again later.");
+            return new(BackendErrorKind.RateLimited, Strings.Agy_Quota);
         if (Has("not trusted", "trust"))
-            return new(BackendErrorKind.NotConfigured, "agy doesn't trust Hotline's workspace yet. Run `agy` once in a terminal and trust it.");
+            return new(BackendErrorKind.NotConfigured, Strings.Agy_NotTrusted);
         if (Has("wasn't allowed", "denied"))
             return new(BackendErrorKind.Unsupported, error);
         return new(BackendErrorKind.Failed, $"agy: {error}");

@@ -1,6 +1,7 @@
 using System.Text;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -66,18 +67,17 @@ public sealed class SelectionTests : IDisposable
     }
 
     [Fact]
-    public void Schema_7_files_migrate_to_8_with_the_new_chat_defaults()
+    public void Schema_7_files_migrate_with_the_new_chat_defaults()
     {
-        Assert.Equal(8, HotlineSettings.CurrentSchemaVersion);
         Directory.CreateDirectory(_dir);
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 7, "chat": { "saveHistory": false } }""");
         var s = new SettingsStore(_dir).Load();
-        Assert.Equal(8, s.SchemaVersion);
+        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
         Assert.Equal(AttachSelectionMode.Auto, s.Chat.AttachSelection);
         Assert.False(s.Chat.SaveHistory);
     }
 
     [Fact]
     public void Settings_window_offers_the_option_on_the_chat_page() =>
-        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == "Attach selected text");
+        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == nameof(Strings.Set_Selection));
 }

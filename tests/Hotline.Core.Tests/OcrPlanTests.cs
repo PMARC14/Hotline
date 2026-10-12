@@ -3,6 +3,7 @@ using Hotline.Core.Backends.Api;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -81,7 +82,7 @@ public sealed class OcrPlanTests : IDisposable
     public void Ocr_defaults_to_auto_and_is_on_the_chat_settings_page()
     {
         Assert.Equal(OcrMode.Auto, new ChatSettings().Ocr);
-        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == "Screenshot text (OCR)");
+        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == nameof(Strings.Set_Ocr));
     }
 
     [Fact]

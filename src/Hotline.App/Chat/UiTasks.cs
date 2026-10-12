@@ -14,7 +14,7 @@ internal sealed class UiTasks(FileLog log, NoticeArea notices)
         catch (Exception ex)
         {
             log.Error($"{what} failed", ex);
-            notices.Show($"Couldn't {what}: {ex.Message}", InfoBarSeverity.Error);
+            notices.Show(L.F(Strings.Task_Failed, ex.Message), InfoBarSeverity.Error); // what: for the log only (English)
         }
     }
 

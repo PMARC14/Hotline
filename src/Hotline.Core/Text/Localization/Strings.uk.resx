@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>Мова</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Мова меню, налаштувань і повідомлень Hotline. Відповіді ШІ надходять мовою, якою ви пишете.</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Використовувати мову Windows</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Відкрити / закрити Hotline</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Відкрити Hotline</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>Почати новий чат</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>Знімок поточного вікна</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Знімок області</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>Голосове введення (утримуйте, щоб говорити)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>Нічого не робити</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Клавіша Copilot</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>У режимі правого Ctrl комбінація Copilot+C працює як Ctrl+C, і клавіша більше не відкриває Hotline (скористайтеся додатковою комбінацією нижче або піктограмою в області сповіщень). Працює з клавіатурами, клавіша Copilot яких надсилає Win+Shift+F23 (більшість).</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Відкриває Hotline</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Працює як правий Ctrl</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Коротке натискання клавіші Copilot</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Довге натискання клавіші Copilot</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>Голосове введення</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Утримуйте клавішу Copilot і говоріть; відпустіть, щоб зупинити (Esc скасовує). Використовує розпізнавання мовлення Windows: дозвольте мікрофон і ввімкніть Настройки › Конфіденційність і захист › Мовлення › Онлайнове розпізнавання мовлення. Увімкнення призначає довге натискання голосу; вимкнення повертає новий чат.</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>Додаткова комбінація клавіш</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Також відкриває Hotline, наприклад Ctrl+Alt+H. Залиште порожнім, щоб не використовувати.</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Неприпустима комбінація клавіш (приклад: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>Ховати, коли я клацаю деінде</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>Закріпіть панель (📌), щоб тимчасово залишити її відкритою.</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>Поверх інших вікон</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>Тема</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Як у Windows</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>Світла</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>Темна</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>Фон</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Акрил напівпрозорий; Суцільний — непрозорий.</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Акрил</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>Акрил (тонкий)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>Суцільний</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>Відтінок акрилу</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = прозорий, 1 = сильно тонований.</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>Яскравість акрилу</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>Менше значення — прозоріше.</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>Розмір тексту</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>За замовчуванням як у Windows (Настройки › Спеціальні можливості › Розмір тексту).</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>Шрифт</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>Будь-який встановлений шрифт, наприклад Cascadia Code. Порожньо = Segoe UI Variable.</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>Смуга прокручування</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>Показувати під час прокручування</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Завжди</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Ніколи</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>Ширина</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Частка ширини екрана.</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>Мінімальна ширина</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>Максимальна ширина</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>Мінімальна висота</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = лише рядок повідомлення; панель росте вгору, коли ви пишете і спілкуєтеся.</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>Максимальна висота</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>Яку частину екрана вона може займати.</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>Положення по вертикалі</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = угорі, 0,5 = посередині, 1 = унизу.</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>Збільшення</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>Під розмір розмови</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Одразу до максимальної висоти</value></data>
+  <data name="Set_History" xml:space="preserve"><value>Зберігати історію чатів</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>Лише текст, у вашій папці .hotline.</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>Зберігати історію протягом</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>днів</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>Додавати виділений текст</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>Коли клавіша відкриває панель, додається текст, виділений у програмі, з якої ви перейшли. Ctrl+C також працює в програмах, які не надають своє виділення, але ненадовго використовує буфер обміну (потім його відновлено).</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>Так</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Так, також через Ctrl+C</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>Ні</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>Зупинка відповіді</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>Клавіша, що зупиняє відповідь під час її написання (Enter ніколи цього не робить; кнопка «Надіслати» теж зупиняє). Окрема клавіша (Esc) або комбінація, наприклад Ctrl+. — коли нічого не генерується, Esc ховає панель.</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>Неприпустима комбінація клавіш (приклади: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>Пам'ять</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>Кожен чат бачить memory.md у вашій папці .hotline («/remember щось» додає рядок).</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>Дозволити ШІ зберігати спогади</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>Підключення API можуть зберегти факт, коли ви просите їх щось запам'ятати.</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>Питати щоразу</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>Так, без запитань</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>Ні</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>Надсилати після диктування</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>З дією клавіші «Голос»: надсилає повідомлення, коли ви відпускаєте клавішу.</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>Текст зі знімків екрана (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows читає текст на зображеннях (офлайн) для моделей, які їх не бачать.</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Для текстових моделей</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>Завжди додавати</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>Вимкнуто</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>Обмеження розміру зображення</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Додані та зняті зображення масштабуються до цієї довжини довшої сторони.</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>Детальний журнал</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>Записує додаткові діагностичні дані до журналу.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Настройки Hotline</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>Загальні</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>Підключення ШІ</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>Промпти</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>Швидкі дії</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>Вигляд</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>Вікно</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>Чат та історія</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Інструменти</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>Додатково</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Про програму</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Застосується після перезапуску Hotline.)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>Неприпустиме значення</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Запускати разом із Windows</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Підключення API, для яких «Використання інструментів» має значення «Використовувати інструменти Hotline», можуть викликати інструменти цих серверів MCP. Інструменти лише для читання виконуються; про все інше вас запитають на панелі (Дозволити один раз / Завжди / Відхилити).</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>Сервери MCP</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — той самий формат «mcpServers», що й в інших програмах MCP; дозволи зберігаються в тому самому файлі</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>Редагувати mcp.json</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>Відкрити папку</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Реєстр агентів Windows</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>Недоступно в цій Windows (потрібна збірка 26220.7262 або новіша). Його вбудовані конектори з'являться тут автоматично.</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>Доступно ({0}). Його конектори наведено нижче як windows-…</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>Сервери ще не перевірено. Додайте сервери до mcp.json, а потім натисніть «Перевірити сервери».</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>Готово — інструментів: {0}</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>Помилка: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>Вимкнуто в mcp.json</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>Перевірити сервери</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>Файл настройок</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>Редагувати settings.json</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — один файл на підключення; «chat.order» у settings.json задає порядок у списку</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>Відкрити папку підключень</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>Журнали</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>Відкрити папку журналів</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>Системні промпти — це файли Markdown. Промпт за замовчуванням використовує кожне підключення, що не вибирає власний.</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Редагувати</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>Зробити основним</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Видалити</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>Промпт за замовчуванням</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>Новий промпт</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>Відкрити папку промптів</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>Додати підключення</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>Дублювати</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>Вилучити</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Скасувати</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>Вилучити це підключення?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>Використовувати за замовчуванням</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>Вище у списку постачальників</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>Нижче у списку постачальників</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · за замовчуванням</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>Зараз не вдалося прочитати настройки agy.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>Правила agy: дозволено {0}, заборонено {1}. Читання файлів у робочій папці дозволено за замовчуванням; командам оболонки потрібне правило дозволу.</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Дозволити команди лише для читання</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>Додає правила на зразок command(Get-ChildItem), command(git status) до списку дозволів agy і забороняє Remove-Item, rm, git push...</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>Дозволити agy команди оболонки лише для читання?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>Це змінює власні настройки agy ({0}), тож діє й тоді, коли ви користуєтеся agy самостійно.
+
+Дозволити:
+{1}
+
+Заборонити:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>Додати правила</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>Не вдалося змінити настройки agy: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>Редагувати правила agy</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>Дозволи agy</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Схвалювати все? (небезпечно)</value></data>
+  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy виконуватиме БУДЬ-ЯКУ команду оболонки й змінюватиме чи видалятиме БУДЬ-ЯКИЙ файл на власний розсуд, не питаючи. Хибна відповідь або шкідлива вебсторінка чи файл можуть завдати реальної шкоди. Використовуйте це лише з робочою папкою, втрату якої можете собі дозволити.</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Зрозуміло, увімкнути</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Схвалювати все (небезпечно)</value></data>
+  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Пропускає всі перевірки дозволів agy (--dangerously-skip-permissions). Лише в режимі «власні інструменти програми».</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Назва</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>Кінцева точка</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Базова URL-адреса API.</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>Збережено; введіть, щоб замінити</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Необов'язково</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>Обов'язково</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Не вдалося зберегти ключ</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>Ключ API</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>Зберігається в диспетчері облікових даних Windows, а не в settings.json.</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>Шлях до програми</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>Залиште порожнім, щоб знайти автоматично.</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>Визначити автоматично</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>Агент agy</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Використовується в режимі «Лише чат».</value></data>
+  <data name="Conn_KeepClaude" xml:space="preserve"><value>Зберігати чати в історії Claude Code</value></data>
+  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Показувати чати Hotline також у claude --resume.</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>Додаткові аргументи</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Передаються програмі як є (через пробіл).</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>Лише чат</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Використовувати інструменти Hotline (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>Використання інструментів</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>Дозволяє цьому ШІ використовувати інструменти ваших серверів MCP (Настройки › Інструменти). Інструменти лише для читання виконуються; про все інше спершу запитають на панелі.</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>Лише чат (може читати ваші вкладення)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>Використовувати власні інструменти й дозволи програми</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Огляд…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Режим «Успадкувати» дозволяє програмі запускати свої інструменти (файли, команди, веб) за власними правилами дозволів.</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>Робоча папка</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Де діють інструменти програми в режимі «Успадкувати».</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>Резервна модель у разі відмови</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Якщо перевірка безпеки відхиляє запит, API повторно обробляє його відповідною моделлю замість зупинки (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>Модель читає зображення</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Вимкнуто: знімки екрана надсилаються як їхній текст (Настройки › Чат › Текст зі знімків екрана).</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>За замовчуванням ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>Системний промпт</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>За замовчуванням</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>Модель за замовчуванням</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Зусилля за замовчуванням</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>Перевірити підключення</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>Мінімальне</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>Низьке</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>Середнє</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>Високе</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>Дуже високе</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>Максимальне</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>Закріпити</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>Знімок вікна</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>Знімок екрана</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>Знімок області</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>Проміжок</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Вибір зусилля</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>Вибір моделі</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>Вибір постачальника</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>Вибір промпту</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>Останні чати</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>Новий чат</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>Настройки</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>Нижня панель</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>У toolbar.json є помилка</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} Виправте файл або скиньте панель.</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>Перемістити ліворуч</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>Перемістити праворуч</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>Вилучити з панелі</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>Додати на панель</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>Скинути панель</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>збірка для розробки</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — ваш ШІ на клавіші Copilot. Безкоштовна програма з відкритим кодом (Apache-2.0).</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Підтримати Hotline</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline створює одна людина, без реклами й стеження. Якщо програма заощаджує ваш час, пожертва допомагає їй жити.</value></data>
+  <data name="About_Project" xml:space="preserve"><value>Проєкт</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>Вихідний код, випуски та місце, щоб повідомити про проблеми або запропонувати функції.</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>Повідомити про проблему</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>Перевірка…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>Цей ПК</value></data>
+  <data name="About_License" xml:space="preserve"><value>Ліцензія</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0, а також ліцензії компонентів, які використовує Hotline.</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>Відомості про сторонні компоненти</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>Не вдалося перевірити цей ПК.</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>Редагувати пам'ять</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>Порожньо. «/remember щось» у полі повідомлення додає рядок.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>Рядків: {0}. Кожен чат бачить їх, поки пам'ять увімкнено.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Введіть / на початку повідомлення, щоб скористатися дією: «/translate якийсь текст» або «/summarize» із вкладенням. Кожна дія — це файл Markdown; його перший рядок — опис у списку. Назви можуть містити літери, цифри, - і _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Нова дія</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Відкрити папку дій</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>збірка {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>Мов OCR: {0}</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>Немає мови OCR: Настройки › Час і мова › Мова й регіон › додайте мову з оптичним розпізнаванням символів</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Диктування Windows доступне</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Настройки › Конфіденційність і захист › Мовлення › Онлайнове розпізнавання мовлення, а також мікрофон</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Конектори агентів Windows</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>знайдено odr.exe; його конектори з'являються як сервери інструментів windows-…</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe не знайдено (на цьому ПК ще не ввімкнено)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>потрібна збірка Windows 26220.7262 або новіша (наприклад 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>Дії програм (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>зареєстровано; саме Click to Do потребує ПК Copilot+</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>потрібна Windows 11 24H2 (збірка 26100) або новіша</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>Увімкнуто — Hotline запускається в області сповіщень після входу.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Вимкнуто (у Настройках Windows › Програми › Автозавантаження). Увімкніть Hotline там.</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>Вимкнуто (заблоковано політикою вашої організації).</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>Вимкнуто.</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>Недоступно в цій збірці.</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>Збережено в пам'яті: «{0}» (Настройки › Чат та історія › Редагувати пам'ять)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>Antigravity CLI (agy) не встановлено.</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Відкрити Hotline</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>Настройки…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>Перезапустити (застосувати настройки)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>Вийти</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>Перетягніть, щоб зняти область  ·  Esc — скасувати</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>Це вікно недоступне (закрите чи згорнуте), тому знято весь екран.</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Додати до Hotline</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>Папки не можна додавати ({0}).</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} завеликий ({1} МБ; макс. {2} МБ).</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>Не вдалося прочитати {0}.</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>Не вдалося прочитати {0} як зображення.</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>У Windows не встановлено жодної мови OCR, тож текст на зображеннях не можна прочитати. Додайте її в Настройки › Час і мова › Мова й регіон (мову з «Оптичним розпізнаванням символів»).</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>Не вдалося прочитати текст у {0}.</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>Копіювати зображення</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>Зображення скопійовано.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Відповідь ще триває. {0} або кнопка «Зупинити» перериває її; ваше повідомлення чекає в полі.</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>Напишіть після /remember, що запам'ятати, наприклад «/remember я віддаю перевагу метричним одиницям».</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>Запам'ятовано. Відтепер це бачить кожен чат (редагування: Настройки › Чат та історія › Пам'ять).</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Не збережено: один рядок завдовжки не більше {0} символів.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Напишіть текст для /{0} після команди або додайте вкладення.</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>Не вдалося відкрити папку настройок ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>Зупинити</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>Надіслати (Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Вітаємо в Hotline</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>Те, що ви надсилаєте, — повідомлення, вкладення й текст, виділений у програмі, з якої ви перейшли (показано як мітку, яку можна прибрати), — потрапляє лише до вибраного підключення ШІ. Поради: введіть / для швидких дій і /remember, щоб зберегти нотатку.</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>Що надсилається</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Подобається Hotline?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Програма безкоштовна й з відкритим кодом, її створює одна людина. Якщо вона вам допомагає, пожертва підтримує розробку (GitHub Sponsors або Ko-fi; посилання залишаться в Настройки › Про програму). Це повідомлення більше не з'явиться.</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>Копіювати</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>Копіювати код</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>код</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>Копіювати таблицю</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>Копіювати таблицю (вставляється в електронні таблиці)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>Малювання зображення…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(малюнок, який не вдалося безпечно показати)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>Відкрити зображення</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>Відкрити повний малюнок (з підписами) у переглядачі за замовчуванням</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>Дозволити {0} › {1}?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>Дозволити один раз</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>Завжди дозволяти</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>Відхилити</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>н/д</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Зусилля міркування</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} можна налаштувати в Настройках, але чат із ним з'явиться в одному з наступних оновлень.</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>Системний промпт: {0} (діє з наступного повідомлення)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>Редагувати «{0}»…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>Новий промпт…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>Спершу дочекайтеся завершення відповіді (або зупиніть її).</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>Не вдалося відкрити цю розмову.</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>Історію чатів вимкнуто</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>Збережених чатів поки немає</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>Повідомлень: {0}, останнє {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>Відкрити папку історії</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>щойно</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} хв тому</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} год тому</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} дн. тому</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>Ви</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>Копіювати відповідь</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>Повторити</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>Скопійовано.</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>Буфер обміну зайнятий; спробуйте ще раз.</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>Поскаржитися на цю відповідь у {0}…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>Більше</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>Не вдалося: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>Відпустіть клавішу, щоб зупинити. Esc скасовує.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>Натисніть клавішу ще раз, щоб зупинити. Esc скасовує.</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 Запуск мікрофона…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 Слухаю…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>Немає доступного мікрофона.</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>Голосове введення зупинено ({0}).</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>Для голосового введення потрібне онлайнове розпізнавання мовлення Windows.</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>Увімкнути</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline не має дозволу на використання мікрофона.</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>Настройки мікрофона</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>Не вдалося запустити голосове введення: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>Розпізнавання мовлення не підтримує диктування мовою інтерфейсу Windows.</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>Розпізнавання мовлення недоступне ({0}).</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>До останнього повідомлення</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>Додати файли або зробити знімок</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>Вкласти файли…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Закріпити (залишається відкритим, коли ви клацаєте деінде, щоб можна було перетягнути файли)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>Знімок вікна, у якому ви були</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>Знімок усього екрана</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>Модель (введіть назву або виберіть)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>Хто відповідає</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>Останні чати (Ctrl+Стрілка вгору відкриває останній)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>Новий чат (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>Ваш установлений agy і вхід через Google.</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>Ваш установлений claude і вхід (ваш план Claude).</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Ключ API Google AI Studio.</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Ключ API Anthropic Console. Модель за замовчуванням: Claude Opus 5.5.</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>API, сумісний з OpenAI</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq та інші API у стилі OpenAI.</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>Локальна кінцева точка</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>Сервер llama.cpp, LM Studio та інші локальні сервери у стилі OpenAI.</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>Список моделей сервера мав неочікуваний формат.</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 модель</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>моделей: {0}</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>Підключено: {0}.</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>Підключено: {0}, зокрема {1}.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>Підключено: {0}, але {1} серед них немає.</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>Спершу додайте ключ API для {0}.</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} відхилив ключ API.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} відповів: {1}.</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>Не вдається зв'язатися з {0}: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} не відповів вчасно.</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>Додайте ключ API для {0} у Настройки › Підключення ШІ.</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>Кінцева точка для {0} не є дійсною адресою http(s): {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} досяг ліміту запитів, повторна спроба через {1} с…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} зайнятий, повторна спроба через {1} с…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} відхилив ключ API. {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0}: досягнуто ліміту запитів або квоти. {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} має помилку сервера (або перевантажений). {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} відмовився відповідати на цей запит (відмова з міркувань безпеки).</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>Виберіть модель для {0} (їх показує список «Модель»).</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} заблокував цей запит ({1}).</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} зупинив відповідь ({1}).</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} зупинився ({1}) під час запиту інструмента; нічого не виконано.</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: з'єднання обірвалося до завершення запиту інструмента; нічого не виконано.</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} несподівано зупинився.</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>Робочої папки для {0} не існує: {1}. Виберіть іншу в Настройки › Підключення ШІ.</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code не встановлено. Установіть його з claude.com/claude-code, один раз запустіть `claude`, щоб увійти, і спробуйте ще раз.</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy не виконав вхід. Один раз запустіть `agy` у терміналі, щоб увійти, і спробуйте ще раз.</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>Вашу квоту Antigravity поки вичерпано. Спробуйте пізніше.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy ще не довіряє робочій області Hotline. Один раз запустіть `agy` у терміналі й позначте її як довірену.</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code не виконав вхід. Один раз запустіть `claude` у терміналі, увійдіть і спробуйте ще раз.</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>Ліміт використання Claude поки вичерпано. {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude зараз перевантажений; спробуйте за мить.</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0} більший за {1} МБ.</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0} більший за {1} КБ.</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: непідтримуваний тип файлу.</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>Виділений текст</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>Виділений текст із {0}</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>Можна вкласти щонайбільше {0} файлів.</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Текст у {0}</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} не може читати зображення.</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} не може читати файли.</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>Серверна частина «{0}» ще недоступна.</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>«{0}» не встановлено, тож сервер {1} не може запуститися. Установіть {2}, а потім перезапустіть Hotline.</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>«{0}» не встановлено або його немає в PATH, тож сервер {1} не може запуститися. Перевірте «command» у mcp.json.</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>Не вдалося прочитати mcp.json: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>Дозвіл «{0}» має невідоме значення, тому вважається «deny».</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>Назва сервера не може містити «/» або «*».</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>не запустився протягом {0:0} с</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Жоден інструмент не працюватиме, доки це не виправлено.</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Діє остання справна версія.</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>сервер завершив роботу (код виходу {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>не вдалося запустити {0}</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json agy не є об'єктом JSON; файл не змінено.</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» у settings.json agy не є об'єктом; файл не змінено.</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» у settings.json agy не є списком; файл не змінено.</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Знімок області Hotline</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) не встановлено. Установіть його з antigravity.google/cli і спробуйте ще раз.</value></data>
+</root>

@@ -1,0 +1,427 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>भाषा</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline के मेनू, सेटिंग्स और संदेशों की भाषा। AI के उत्तर उसी भाषा में आते हैं जिसमें आप लिखते हैं।</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Windows की भाषा का उपयोग करें</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Hotline खोलें / बंद करें</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Hotline खोलें</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>नई चैट शुरू करें</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>वर्तमान विंडो कैप्चर करें</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>कोई क्षेत्र कैप्चर करें</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>वॉइस इनपुट (बोलने के लिए दबाए रखें)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>कुछ न करें</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot कुंजी</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>दाएँ Ctrl के रूप में, Copilot+C, Ctrl+C बन जाता है और कुंजी अब Hotline नहीं खोलती (नीचे की अतिरिक्त हॉटकी या सिस्टम ट्रे आइकन का उपयोग करें)। उन कीबोर्ड पर काम करता है जिनकी Copilot कुंजी Win+Shift+F23 भेजती है (अधिकांश)।</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline खोलती है</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>दाएँ Ctrl की तरह काम करती है</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Copilot कुंजी को कुछ पल दबाना</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Copilot कुंजी को देर तक दबाना</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>वॉइस इनपुट</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot कुंजी दबाए रखें और बोलें; रोकने के लिए छोड़ दें (Esc रद्द करता है)। Windows वाक् पहचान का उपयोग करता है: माइक्रोफ़ोन की अनुमति दें और सेटिंग्स › गोपनीयता और सुरक्षा › वाक् › ऑनलाइन वाक् पहचान चालू करें। इसे चालू करने पर देर तक दबाना वॉइस के लिए हो जाता है; बंद करने पर फिर से नई चैट।</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>अतिरिक्त हॉटकी</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>यह भी Hotline खोलती है, जैसे Ctrl+Alt+H। कोई नहीं चाहिए तो खाली छोड़ें।</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>मान्य हॉटकी नहीं है (उदाहरण: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>कहीं और क्लिक करने पर छिपाएँ</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>पैनल को कुछ समय खुला रखने के लिए पिन करें (📌)।</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>दूसरी विंडो के ऊपर रखें</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>थीम</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Windows सेटिंग का उपयोग करें</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>हल्की</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>गहरी</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>पृष्ठभूमि</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>ऐक्रेलिक पारभासी है; ठोस अपारदर्शी है।</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>ऐक्रेलिक</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>ऐक्रेलिक (पतला)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>ठोस</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>ऐक्रेलिक रंगत</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = साफ़, 1 = गहरी रंगत।</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>ऐक्रेलिक चमक</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>कम मान अधिक पारदर्शी है।</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>टेक्स्ट का आकार</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>डिफ़ॉल्ट रूप से Windows के अनुसार (सेटिंग्स › पहुँच-योग्यता › टेक्स्ट का आकार)।</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>फ़ॉन्ट</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>कोई भी इंस्टॉल फ़ॉन्ट, जैसे Cascadia Code। खाली = Segoe UI Variable।</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>स्क्रॉलबार</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>स्क्रॉल करते समय दिखाएँ</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>हमेशा</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>कभी नहीं</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>चौड़ाई</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>स्क्रीन की चौड़ाई का हिस्सा।</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>न्यूनतम चौड़ाई</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>अधिकतम चौड़ाई</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>न्यूनतम ऊँचाई</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = केवल संदेश बार; जैसे-जैसे आप टाइप और चैट करते हैं, पैनल ऊपर की ओर बढ़ता है।</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>अधिकतम ऊँचाई</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>यह स्क्रीन का कितना हिस्सा ले सकता है।</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>ऊर्ध्वाधर स्थिति</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = ऊपर, 0.5 = बीच में, 1 = नीचे।</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>बढ़ना</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>बातचीत के अनुसार</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>सीधे अधिकतम ऊँचाई तक बढ़ाएँ</value></data>
+  <data name="Set_History" xml:space="preserve"><value>चैट इतिहास सहेजें</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>केवल टेक्स्ट, आपके .hotline फ़ोल्डर में।</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>इतिहास इतने समय रखें</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>दिन</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>चयनित टेक्स्ट संलग्न करें</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>जब कुंजी पैनल खोलती है, तो जिस ऐप से आप आए उसमें चयनित टेक्स्ट संलग्न हो जाता है। Ctrl+C उन ऐप में भी काम करता है जो अपना चयन साझा नहीं करते, लेकिन थोड़ी देर के लिए क्लिपबोर्ड का उपयोग करता है (बाद में बहाल)।</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>हाँ</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>हाँ, Ctrl+C के साथ भी</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>नहीं</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>उत्तर रोकें</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>वह कुंजी जो लिखे जा रहे उत्तर को रोकती है (Enter कभी नहीं रोकता; भेजें बटन भी रोकता है)। अकेली कुंजी (Esc) या Ctrl+. जैसा संयोजन — जब कोई उत्तर नहीं लिखा जा रहा हो, तो Esc पैनल छिपाता है।</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>मान्य शॉर्टकट नहीं है (उदाहरण: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>मेमोरी</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>हर चैट आपके .hotline फ़ोल्डर में memory.md देखती है ("/remember कुछ" एक पंक्ति जोड़ता है)।</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>AI को यादें सहेजने दें</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>जब आप API कनेक्शन से कुछ याद रखने को कहते हैं, तो वे कोई तथ्य सहेज सकते हैं।</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>हर बार पूछें</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>हाँ, बिना पूछे</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>नहीं</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>डिक्टेशन के बाद भेजें</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>वॉइस कुंजी क्रिया के साथ: कुंजी छोड़ने पर संदेश भेजें।</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>स्क्रीनशॉट टेक्स्ट (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>जो मॉडल चित्र नहीं देख सकते, उनके लिए Windows चित्रों का टेक्स्ट (ऑफ़लाइन) पढ़ता है।</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>केवल-टेक्स्ट मॉडल के लिए</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>हमेशा जोड़ें</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>बंद</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>चित्र आकार सीमा</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>संलग्न और कैप्चर की गई छवियों को इस सबसे लंबे किनारे के अनुसार स्केल किया जाता है।</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>विस्तृत लॉगिंग</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>लॉग में अतिरिक्त डायग्नोस्टिक्स लिखता है।</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Hotline सेटिंग्स</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>सामान्य</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>त्वरित क्रियाएँ</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>रूप</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>विंडो</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>चैट और इतिहास</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>टूल</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>उन्नत</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>के बारे में</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline को फिर से शुरू करने के बाद लागू होता है।)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>मान्य मान नहीं है</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Windows के साथ शुरू करें</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>जिन API कनेक्शनों में टूल उपयोग "Hotline के टूल का उपयोग करें" पर सेट है, वे इन MCP सर्वरों के टूल कॉल कर सकते हैं। केवल-पढ़ने वाले टूल चलते हैं; बाकी सब के लिए पैनल में पूछा जाता है (एक बार अनुमति दें / हमेशा / अस्वीकार करें)।</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>MCP सर्वर</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — दूसरे MCP ऐप जैसा ही "mcpServers" प्रारूप; स्वीकृतियाँ भी इसी फ़ाइल में रहती हैं</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json संपादित करें</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>फ़ोल्डर खोलें</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Windows एजेंट रजिस्ट्री</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>इस Windows पर उपलब्ध नहीं (बिल्ड 26220.7262 या बाद का चाहिए)। इसके बिल्ट-इन कनेक्टर यहाँ अपने-आप दिखेंगे।</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>उपलब्ध ({0})। इसके कनेक्टर नीचे windows-… के रूप में सूचीबद्ध हैं</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>अभी तक कोई सर्वर जाँचा नहीं गया। mcp.json में सर्वर जोड़ें, फिर सर्वर जाँचें दबाएँ।</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>तैयार — {0} टूल</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>विफल: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>mcp.json में अक्षम</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>सर्वर जाँचें</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>सेटिंग्स फ़ाइल</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>settings.json संपादित करें</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — हर कनेक्शन के लिए एक फ़ाइल; settings.json में "chat.order" ड्रॉपडाउन का क्रम तय करता है</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>कनेक्शन फ़ोल्डर खोलें</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>लॉग</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>लॉग फ़ोल्डर खोलें</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>सिस्टम प्रॉम्प्ट Markdown फ़ाइलें हैं। डिफ़ॉल्ट प्रॉम्प्ट हर उस कनेक्शन में उपयोग होता है जो अपना प्रॉम्प्ट नहीं चुनता।</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>संपादित करें</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>डिफ़ॉल्ट बनाएँ</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>हटाएँ</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>डिफ़ॉल्ट प्रॉम्प्ट</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>नया प्रॉम्प्ट</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>प्रॉम्प्ट फ़ोल्डर खोलें</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>कनेक्शन जोड़ें</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>डुप्लिकेट बनाएँ</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>निकालें</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>रद्द करें</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>यह कनेक्शन निकालें?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>डिफ़ॉल्ट रूप से उपयोग करें</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>प्रदाता सूची में ऊपर ले जाएँ</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>प्रदाता सूची में नीचे ले जाएँ</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · डिफ़ॉल्ट</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>अभी agy की सेटिंग्स नहीं पढ़ी जा सकीं।</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy नियम: {0} अनुमत, {1} अस्वीकृत। कार्य फ़ोल्डर की फ़ाइलें पढ़ना डिफ़ॉल्ट रूप से अनुमत है; शेल कमांड के लिए अनुमति नियम चाहिए।</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>केवल-पढ़ने वाले कमांड की अनुमति दें</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>command(Get-ChildItem), command(git status) जैसे नियम agy की अनुमति सूची में जोड़ता है, और Remove-Item, rm, git push... को अस्वीकार करता है</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>agy के लिए केवल-पढ़ने वाले शेल कमांड की अनुमति दें?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>यह agy की अपनी सेटिंग्स ({0}) बदलता है, इसलिए जब आप स्वयं agy का उपयोग करते हैं तब भी लागू होता है।
+
+अनुमति दें:
+{1}
+
+अस्वीकार करें:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>नियम जोड़ें</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>agy की सेटिंग्स नहीं बदली जा सकीं: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>agy नियम संपादित करें</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>agy अनुमतियाँ</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>सब कुछ स्वीकृत करें? (खतरनाक)</value></data>
+  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy बिना पूछे कोई भी शेल कमांड चलाएगा और कोई भी फ़ाइल संपादित या हटाएगा। गलत उत्तर या दुर्भावनापूर्ण वेब पेज या फ़ाइल वास्तविक नुकसान कर सकती है। इसे केवल ऐसे कार्य फ़ोल्डर के साथ उपयोग करें जिसे खोना आपको स्वीकार्य हो।</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>मैं समझता/समझती हूँ, चालू करें</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ सब कुछ स्वीकृत करें (खतरनाक)</value></data>
+  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>agy की सभी अनुमति जाँच छोड़ देता है (--dangerously-skip-permissions)। केवल "प्रोग्राम के अपने टूल का उपयोग करें" मोड में।</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>नाम</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>एंडपॉइंट</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API का आधार URL।</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>सहेजी गई; बदलने के लिए टाइप करें</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>वैकल्पिक</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>आवश्यक</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>कुंजी सहेजी नहीं जा सकी</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>API कुंजी</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>Windows क्रेडेंशियल मैनेजर में संग्रहीत, settings.json में नहीं।</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>प्रोग्राम पथ</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>अपने-आप ढूँढने के लिए खाली छोड़ें।</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>अपने-आप पहचानें</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>agy एजेंट</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>केवल-चैट मोड में उपयोग होता है।</value></data>
+  <data name="Conn_KeepClaude" xml:space="preserve"><value>चैट को Claude Code इतिहास में रखें</value></data>
+  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline चैट को claude --resume में भी दिखाएँ।</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>अतिरिक्त आर्ग्युमेंट</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>प्रोग्राम को जैसे के तैसे भेजे जाते हैं (स्पेस से अलग)।</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>केवल चैट</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Hotline के टूल का उपयोग करें (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>टूल उपयोग</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>यह AI आपके MCP सर्वरों के टूल उपयोग कर सके (सेटिंग्स › टूल)। केवल-पढ़ने वाले टूल चलते हैं; बाकी सब के लिए पहले पैनल में पूछा जाता है।</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>केवल चैट (आपके अनुलग्नक पढ़ सकता है)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>प्रोग्राम के अपने टूल और अनुमतियों का उपयोग करें</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>ब्राउज़ करें…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>इनहेरिट मोड में प्रोग्राम अपने टूल (फ़ाइलें, कमांड, वेब) अपने अनुमति नियमों के अनुसार चलाता है।</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>कार्य फ़ोल्डर</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>इनहेरिट मोड में प्रोग्राम के टूल कहाँ काम करते हैं।</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>अस्वीकृति पर वैकल्पिक मॉडल</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>यदि कोई सुरक्षा जाँच अनुरोध अस्वीकार करती है, तो API रुकने के बजाय उपयुक्त मॉडल से फिर उत्तर देता है (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5)।</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>मॉडल चित्र पढ़ता है</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>बंद: स्क्रीनशॉट उनके टेक्स्ट के रूप में भेजे जाते हैं (सेटिंग्स › चैट › स्क्रीनशॉट टेक्स्ट)।</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>डिफ़ॉल्ट ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>सिस्टम प्रॉम्प्ट</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>डिफ़ॉल्ट</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>डिफ़ॉल्ट मॉडल</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>डिफ़ॉल्ट प्रयास</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>कनेक्शन जाँचें</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>न्यूनतम</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>कम</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>मध्यम</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>उच्च</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>बहुत उच्च</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>अधिकतम</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>पिन करें</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>विंडो कैप्चर करें</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>स्क्रीन कैप्चर करें</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>क्षेत्र कैप्चर करें</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>रिक्त स्थान</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>प्रयास चुनें</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>मॉडल चुनें</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>प्रदाता चुनें</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>प्रॉम्प्ट चुनें</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>हाल की चैट</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>नई चैट</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>सेटिंग्स</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>निचला बार</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json में त्रुटि है</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} फ़ाइल ठीक करें, या बार रीसेट करें।</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>बाएँ ले जाएँ</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>दाएँ ले जाएँ</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>बार से निकालें</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>बार में जोड़ें</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>बार रीसेट करें</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>डेवलपमेंट बिल्ड</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot कुंजी पर आपका AI। निःशुल्क और ओपन सोर्स (Apache-2.0)।</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Hotline का समर्थन करें</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline एक व्यक्ति बनाता है, इसमें न विज्ञापन हैं न ट्रैकिंग। अगर यह आपका समय बचाता है, तो एक दान इसे चलाए रखता है।</value></data>
+  <data name="About_Project" xml:space="preserve"><value>प्रोजेक्ट</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>सोर्स कोड, रिलीज़, और समस्याएँ रिपोर्ट करने या सुविधाएँ माँगने की जगह।</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>समस्या रिपोर्ट करें</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>जाँच हो रही है…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>यह PC</value></data>
+  <data name="About_License" xml:space="preserve"><value>लाइसेंस</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0, साथ में Hotline द्वारा उपयोग किए गए घटकों के लाइसेंस।</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>तृतीय-पक्ष सूचनाएँ</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>यह PC जाँचा नहीं जा सका।</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>मेमोरी संपादित करें</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>खाली। संदेश बॉक्स में "/remember कुछ" एक पंक्ति जोड़ता है।</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} पंक्ति(याँ)। मेमोरी चालू रहने तक हर चैट इन्हें देखती है।</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>किसी का उपयोग करने के लिए संदेश की शुरुआत में / टाइप करें: "/translate कोई टेक्स्ट", या अनुलग्नक के साथ "/summarize"। हर क्रिया एक Markdown फ़ाइल है; उसकी पहली पंक्ति सूची में दिखने वाला विवरण है। नामों में अक्षर, अंक, - और _ हो सकते हैं।</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>नई क्रिया</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>क्रिया फ़ोल्डर खोलें</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>बिल्ड {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR भाषा(एँ)</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>कोई OCR भाषा नहीं: सेटिंग्स › समय और भाषा › भाषा और क्षेत्र › ऑप्टिकल वर्ण पहचान वाली भाषा जोड़ें</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows डिक्टेशन उपलब्ध है</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — सेटिंग्स › गोपनीयता और सुरक्षा › वाक् › ऑनलाइन वाक् पहचान, और एक माइक्रोफ़ोन</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Windows एजेंट कनेक्टर</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe मिला; इसके कनेक्टर windows-… टूल सर्वर के रूप में दिखते हैं</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe नहीं मिला (इस PC पर अभी चालू नहीं)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows बिल्ड 26220.7262 या बाद का चाहिए (जैसे 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>ऐप क्रियाएँ (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>पंजीकृत; Click to Do के लिए स्वयं Copilot+ PC चाहिए</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (बिल्ड 26100) या बाद का चाहिए</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>चालू — साइन इन करने पर Hotline सिस्टम ट्रे में शुरू होता है।</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>बंद (Windows सेटिंग्स › ऐप्स › स्टार्टअप में बंद किया गया)। वहाँ Hotline चालू करें।</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>बंद (आपके संगठन की नीति द्वारा अवरुद्ध)।</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>बंद।</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>इस बिल्ड में उपलब्ध नहीं।</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>मेमोरी में सहेजा गया: "{0}" (सेटिंग्स › चैट और इतिहास › मेमोरी संपादित करें)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>Antigravity CLI (agy) इंस्टॉल नहीं है।</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Hotline खोलें</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>सेटिंग्स…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>फिर से शुरू करें (सेटिंग्स लागू करें)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>बाहर निकलें</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>कोई क्षेत्र कैप्चर करने के लिए खींचें  ·  रद्द करने के लिए Esc</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>वह विंडो उपलब्ध नहीं है (बंद या छोटी की गई), इसलिए पूरी स्क्रीन कैप्चर की गई।</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Hotline में संलग्न करें</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>फ़ोल्डर संलग्न नहीं किए जा सकते ({0})।</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} बहुत बड़ी है ({1} MB; अधिकतम {2} MB)।</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>{0} पढ़ी नहीं जा सकी।</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>{0} को चित्र के रूप में पढ़ा नहीं जा सका।</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows में कोई OCR भाषा इंस्टॉल नहीं है, इसलिए चित्रों का टेक्स्ट पढ़ा नहीं जा सकता। सेटिंग्स › समय और भाषा › भाषा और क्षेत्र में एक जोड़ें ("ऑप्टिकल वर्ण पहचान" वाली भाषा)।</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>{0} का टेक्स्ट पढ़ा नहीं जा सका।</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>चित्र कॉपी करें</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>चित्र कॉपी किया गया।</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>अभी उत्तर दे रहा है। {0} या रोकें बटन इसे रोकता है; आपका संदेश बॉक्स में ही रहेगा।</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>/remember के बाद टाइप करें कि क्या याद रखना है, जैसे "/remember मुझे मीट्रिक इकाइयाँ पसंद हैं"।</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>याद रखा गया। अब से हर चैट इसे देखती है (सेटिंग्स › चैट और इतिहास › मेमोरी में संपादित करें)।</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>सहेजा नहीं गया: इसे अधिकतम {0} वर्णों की एक पंक्ति में रखें।</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>/{0} के बाद टेक्स्ट टाइप करें, या कुछ संलग्न करें।</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>सेटिंग्स फ़ोल्डर नहीं खोला जा सका ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>रोकें</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>भेजें (Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Hotline में आपका स्वागत है</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>आप जो भेजते हैं — आपका संदेश, अनुलग्नक, और जिस ऐप से आप आए उसमें चयनित टेक्स्ट (हटाने योग्य चिप के रूप में दिखता है) — वह केवल आपके चुने AI कनेक्शन तक जाता है। सुझाव: त्वरित क्रियाओं के लिए / टाइप करें, और नोट सहेजने के लिए /remember।</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>क्या भेजा जाता है</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Hotline पसंद आ रहा है?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>यह निःशुल्क और ओपन सोर्स है, एक व्यक्ति द्वारा बनाया गया। अगर यह आपकी मदद करता है, तो एक दान इसे चलाए रखता है (GitHub Sponsors या Ko-fi; लिंक सेटिंग्स › के बारे में में रहते हैं)। यह सूचना फिर नहीं दिखेगी।</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>कॉपी करें</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>कोड कॉपी करें</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>कोड</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>तालिका कॉपी करें</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>तालिका कॉपी करें (स्प्रेडशीट में चिपकती है)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>चित्र बनाया जा रहा है…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(ऐसा चित्र जिसे सुरक्षित रूप से दिखाया नहीं जा सका)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>चित्र खोलें</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>पूरा चित्र (लेबल सहित) अपने डिफ़ॉल्ट व्यूअर में खोलें</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>{0} › {1} की अनुमति दें?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>एक बार अनुमति दें</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>हमेशा अनुमति दें</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>अस्वीकार करें</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>लागू नहीं</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>तर्क प्रयास</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} को सेटिंग्स में सेट किया जा सकता है, लेकिन इससे चैट बाद के किसी अपडेट में आएगी।</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>सिस्टम प्रॉम्प्ट: {0} (अगले संदेश पर लागू)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>"{0}" संपादित करें…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>नया प्रॉम्प्ट…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>पहले उत्तर पूरा होने दें (या उसे रोकें)।</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>वह बातचीत खोली नहीं जा सकी।</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>चैट इतिहास बंद है</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>अभी तक कोई सहेजी गई चैट नहीं</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} संदेश, अंतिम {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>इतिहास फ़ोल्डर खोलें</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>अभी-अभी</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} मिनट पहले</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} घंटे पहले</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} दिन पहले</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>आप</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>उत्तर कॉपी करें</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>फिर से प्रयास करें</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>कॉपी किया गया।</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>क्लिपबोर्ड व्यस्त है; फिर से प्रयास करें।</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>यह उत्तर {0} को रिपोर्ट करें…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>अधिक</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>यह काम नहीं हुआ: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>रोकने के लिए कुंजी छोड़ें। Esc रद्द करता है।</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>रोकने के लिए कुंजी फिर से दबाएँ। Esc रद्द करता है।</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 माइक्रोफ़ोन शुरू हो रहा है…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 सुन रहा है…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>कोई माइक्रोफ़ोन उपलब्ध नहीं है।</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>वॉइस इनपुट रुक गया ({0})।</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>वॉइस इनपुट के लिए Windows की ऑनलाइन वाक् पहचान चाहिए।</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>चालू करें</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline को माइक्रोफ़ोन का उपयोग करने की अनुमति नहीं है।</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>माइक्रोफ़ोन सेटिंग्स</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>वॉइस इनपुट शुरू नहीं हो सका: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>वाक् पहचान आपकी Windows प्रदर्शन भाषा में डिक्टेशन का समर्थन नहीं करती।</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>वाक् पहचान उपलब्ध नहीं है ({0})।</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>नवीनतम संदेश पर जाएँ</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>फ़ाइलें जोड़ें या कैप्चर करें</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>फ़ाइलें संलग्न करें…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>पिन करके खुला रखें (कहीं और क्लिक करने पर भी खुला रहता है, ताकि आप फ़ाइलें खींचकर डाल सकें)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>जिस विंडो में आप थे उसे कैप्चर करें</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>पूरी स्क्रीन कैप्चर करें</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>मॉडल (नाम टाइप करें या चुनें)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>कौन उत्तर देता है</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>हाल की चैट (Ctrl+Up पिछली चैट फिर खोलता है)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>नई चैट (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>आपका इंस्टॉल किया गया agy और उसका Google साइन-इन।</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>आपका इंस्टॉल किया गया claude और उसका साइन-इन (आपका Claude प्लान)।</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Google AI Studio API कुंजी।</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Anthropic Console API कुंजी। डिफ़ॉल्ट मॉडल: Claude Opus 5.5।</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>OpenAI-संगत API</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq और अन्य OpenAI-शैली API।</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>स्थानीय एंडपॉइंट</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>llama.cpp सर्वर, LM Studio और अन्य स्थानीय OpenAI-शैली सर्वर।</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>सर्वर की मॉडल सूची अपेक्षित प्रारूप में नहीं थी।</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 मॉडल</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>{0} मॉडल</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>कनेक्ट हुआ: {0}।</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>कनेक्ट हुआ: {0}, जिनमें {1} शामिल है।</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>कनेक्ट हुआ: {0}, लेकिन {1} उनमें नहीं है।</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>पहले {0} के लिए API कुंजी जोड़ें।</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} ने API कुंजी अस्वीकार कर दी।</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} ने उत्तर दिया: {1}।</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>{0} तक नहीं पहुँच सके: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} ने समय पर उत्तर नहीं दिया।</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>सेटिंग्स › AI कनेक्शन में {0} के लिए API कुंजी जोड़ें।</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} का एंडपॉइंट मान्य http(s) पता नहीं है: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} की दर सीमा पूरी हो गई है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} व्यस्त है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ने API कुंजी अस्वीकार कर दी। {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0} की दर सीमा या कोटा पूरा हो गया। {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} में सर्वर त्रुटि हुई (या ओवरलोड है)। {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} ने इस अनुरोध का उत्तर देने से इनकार किया (सुरक्षा कारणों से)।</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>{0} के लिए मॉडल चुनें (मॉडल ड्रॉपडाउन में सूचीबद्ध हैं)।</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} ने यह अनुरोध रोक दिया ({1})।</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} ने उत्तर रोक दिया ({1})।</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} टूल का अनुरोध करते समय रुक गया ({1}); कुछ नहीं चलाया गया।</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: टूल अनुरोध पूरा होने से पहले कनेक्शन समाप्त हो गया; कुछ नहीं चलाया गया।</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} अप्रत्याशित रूप से रुक गया।</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>{0} का कार्य फ़ोल्डर मौजूद नहीं है: {1}। सेटिंग्स › AI कनेक्शन में कोई दूसरा चुनें।</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code इंस्टॉल नहीं है। इसे claude.com/claude-code से इंस्टॉल करें, साइन इन करने के लिए एक बार `claude` चलाएँ, फिर से प्रयास करें।</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy साइन इन नहीं है। साइन इन करने के लिए टर्मिनल में एक बार `agy` चलाएँ, फिर से प्रयास करें।</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>आपका Antigravity कोटा अभी के लिए समाप्त हो गया है। बाद में फिर से प्रयास करें।</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy अभी Hotline के कार्यक्षेत्र पर भरोसा नहीं करता। टर्मिनल में एक बार `agy` चलाएँ और उस पर भरोसा करें।</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code साइन इन नहीं है। टर्मिनल में एक बार `claude` चलाएँ और साइन इन करें, फिर से प्रयास करें।</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>अभी के लिए Claude उपयोग सीमा पूरी हो गई। {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude अभी ओवरलोड है; थोड़ी देर में फिर से प्रयास करें।</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0}, {1} MB से बड़ी है।</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0}, {1} KB से बड़ी है।</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: असमर्थित फ़ाइल प्रकार।</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>चयनित टेक्स्ट</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} से चयनित टेक्स्ट</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>आप अधिकतम {0} फ़ाइलें संलग्न कर सकते हैं।</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} में टेक्स्ट</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} चित्र नहीं पढ़ सकता।</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} फ़ाइलें नहीं पढ़ सकता।</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>'{0}' बैकएंड अभी उपलब्ध नहीं है।</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>"{0}" इंस्टॉल नहीं है, इसलिए {1} सर्वर शुरू नहीं हो सकता। {2} इंस्टॉल करें, फिर Hotline फिर से शुरू करें।</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" इंस्टॉल नहीं है या PATH में नहीं है, इसलिए {1} सर्वर शुरू नहीं हो सकता। mcp.json में "command" जाँचें।</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json पढ़ी नहीं जा सकी: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>स्वीकृति "{0}" का मान अज्ञात है, इसलिए इसे "deny" माना गया है।</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>सर्वर के नाम में '/' या '*' नहीं हो सकता।</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} सेकंड में शुरू नहीं हुआ</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} इसे ठीक किए जाने तक कोई टूल नहीं चलेगा।</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} अंतिम सही संस्करण लागू रहता है।</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>सर्वर बंद हो गया (निकास कोड {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy की settings.json एक JSON ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy की settings.json में "permissions" एक ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>agy की settings.json में "permissions.{0}" एक सूची नहीं है; इसे नहीं बदला जा रहा।</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Hotline क्षेत्र कैप्चर</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) इंस्टॉल नहीं है। इसे antigravity.google/cli से इंस्टॉल करें, फिर से प्रयास करें।</value></data>
+</root>

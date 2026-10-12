@@ -1,4 +1,5 @@
 using System.Text;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Chat;
 
@@ -29,7 +30,7 @@ public static class AttachmentFactory
         if (ImageTypes.TryGetValue(ext, out var imageMime) || isImageMime)
         {
             if (data.LongLength > limits.MaxImageBytes)
-                throw new AttachmentRejectedException($"{name} is larger than {limits.MaxImageBytes / (1024 * 1024)} MB.");
+                throw new AttachmentRejectedException(L.F(Strings.Attach_LargerMb, name, limits.MaxImageBytes / (1024 * 1024)));
             return new Attachment(Ids.New(), name, AttachmentKind.Image, imageMime ?? mimeType!, data);
         }
 
@@ -37,13 +38,13 @@ public static class AttachmentFactory
         if (TextExtensions.Contains(ext) || isTextMime)
         {
             if (data.LongLength > limits.MaxTextBytes)
-                throw new AttachmentRejectedException($"{name} is larger than {limits.MaxTextBytes / 1024} KB.");
+                throw new AttachmentRejectedException(L.F(Strings.Attach_LargerKb, name, limits.MaxTextBytes / 1024));
             if (!IsUtf8(data))
                 throw new AttachmentRejectedException($"{name} isn't UTF-8 text.");
             return new Attachment(Ids.New(), name, AttachmentKind.Text, "text/plain", data);
         }
 
-        throw new AttachmentRejectedException($"{name}: unsupported file type.");
+        throw new AttachmentRejectedException(L.F(Strings.Attach_Unsupported, name));
     }
 
     private static bool IsUtf8(byte[] data)
@@ -69,7 +70,7 @@ public static class SelectionAttachment
             var cut = char.IsHighSurrogate(text[MaxChars - 1]) ? MaxChars - 1 : MaxChars;
             text = text[..cut] + TruncatedNote;
         }
-        var name = string.IsNullOrWhiteSpace(appName) ? "Selected text" : $"Selected text from {appName.Trim()}";
+        var name = string.IsNullOrWhiteSpace(appName) ? Strings.Attach_Selection : L.F(Strings.Attach_SelectionFrom, appName.Trim());
         return new Attachment(Ids.New(), name, AttachmentKind.Text, "text/plain", Encoding.UTF8.GetBytes(text));
     }
 }
@@ -83,7 +84,7 @@ public sealed class AttachmentTray(AttachmentLimits limits)
     public void Add(Attachment attachment)
     {
         if (_items.Count >= limits.MaxCount)
-            throw new AttachmentRejectedException($"You can attach up to {limits.MaxCount} files.");
+            throw new AttachmentRejectedException(L.F(Strings.Attach_TooMany, limits.MaxCount));
         _items.Add(attachment);
     }
 

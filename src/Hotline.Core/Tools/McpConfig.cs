@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tools;
 
@@ -50,7 +51,7 @@ public sealed class McpConfig
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException)
         {
-            return new McpConfig { Error = $"mcp.json couldn't be read: {ex.Message}" };
+            return new McpConfig { Error = L.F(Strings.Mcp_Unreadable, ex.Message) };
         }
     }
 
@@ -77,7 +78,7 @@ public sealed class McpConfig
                 // Only the exact words count; anything else (a typo, "3", "allow, deny") is treated as "deny".
                 var text = value is JsonValue v && v.TryGetValue<string>(out var t) ? t.Trim().ToLowerInvariant() : null;
                 approvals[key] = text switch { "allow" => ToolApproval.Allow, "ask" => ToolApproval.Ask, "deny" => ToolApproval.Deny, _ => ToolApproval.Deny };
-                if (text is not ("allow" or "ask" or "deny")) warnings.Add($"Approval \"{key}\" has an unknown value, so it's treated as \"deny\".");
+                if (text is not ("allow" or "ask" or "deny")) warnings.Add(L.F(Strings.Mcp_BadApproval, key));
             }
         return new McpConfig { Servers = servers, Approvals = approvals, Warnings = warnings };
     }

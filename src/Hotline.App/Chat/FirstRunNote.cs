@@ -21,9 +21,7 @@ internal sealed class FirstRunNote(PopupWindow popup, NoticeArea notices, string
         if (File.Exists(Marker)) return;
         try { File.WriteAllText(Marker, DateTimeOffset.Now.ToString("O")); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return; } // can't remember it: don't nag every time
-        notices.ShowTagged(Tag, "Welcome to Hotline",
-            "What you send — your message, attachments, and text you had selected in the app you came from (shown as a chip you " +
-            "can remove) — goes only to the AI connection you picked. Tips: type / for quick actions, and /remember to save a note.",
-            InfoBarSeverity.Informational, closable: true, ("What's sent", () => _ = Launcher.LaunchUriAsync(Details)));
+        notices.ShowTagged(Tag, Strings.Welcome_Title, Strings.Welcome_Body,
+            InfoBarSeverity.Informational, closable: true, (Strings.Welcome_WhatsSent, () => _ = Launcher.LaunchUriAsync(Details)));
     }
 }

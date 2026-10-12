@@ -3,6 +3,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Processes;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.ClaudeCode;
 
@@ -28,7 +29,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));
         var exe = locateExe() ?? throw new BackendException(BackendErrorKind.NotInstalled,
-            "Claude Code isn't installed. Install it from claude.com/claude-code, run `claude` once to sign in, then try again.");
+            Strings.Claude_NotInstalled);
 
         var user = conversation[^1];
         var prior = conversation.Take(conversation.Count - 1).ToList();
@@ -72,7 +73,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
                 var tail = process.StandardErrorTail;
                 await StopAsync();
                 if (tail.Length > 0 && ClaudeErrors.Map(tail) is { Kind: not BackendErrorKind.Failed } mapped) throw mapped;
-                throw new BackendException(BackendErrorKind.Failed, "Claude Code stopped unexpectedly." + (tail.Length > 0 ? " " + tail : ""));
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_Stopped, "Claude Code") + (tail.Length > 0 ? " " + tail : ""));
             }
             foreach (var delta in parser.Feed(output)) yield return delta;
         }
@@ -99,6 +100,6 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
         return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
-            $"The working folder for {profile.Name} doesn't exist: {dir}. Pick another one in Settings › AI connections.");
+            L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

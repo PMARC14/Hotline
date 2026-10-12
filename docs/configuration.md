@@ -21,6 +21,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 
 | Key | Default | Meaning |
 |---|---|---|
+| `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the free space |

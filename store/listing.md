@@ -1,6 +1,7 @@
 # Microsoft Store listing — Hotline AI
 
-Copy each field into Partner Center › your app › the submission › **Store listings** › English. Limits are Partner
+Copy each field into Partner Center › your app › the submission › **Store listings** › English. The other languages'
+text is in `store/listings/<language>.md` (model-drafted; add those listings in Partner Center with *Add languages*). Limits are Partner
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
 and trailer, captured from the installed app); output in `artifacts/store/`.
 

@@ -21,6 +21,9 @@ configurable in plain files.
   - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, …)
   - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
 - **Native and light** — WinUI 3 with acrylic, no embedded webview2.
+- **In your language** — follows Windows, or pick one in Settings › General: English, Español, Français, Deutsch,
+  Italiano, Português (Brasil), Nederlands, Polski, Українська, Türkçe, 日本語, 한국어, 简体中文, 繁體中文, हिन्दी,
+  Bahasa Indonesia, Tiếng Việt. The translations are machine-drafted; fixes are welcome ([TRANSLATING.md](docs/TRANSLATING.md)).
 - **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
   SVG drawings, and the whole conversation selectable in one drag.
 - **Screens and files** — capture the window you were in, the whole screen, or a region you drag out; paste or drop
