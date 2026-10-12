@@ -231,6 +231,8 @@ Từ chối:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — AI của bạn trên phím Copilot. Miễn phí và mã nguồn mở (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Ủng hộ Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline do một người phát triển, không quảng cáo và không theo dõi. Nếu nó giúp bạn tiết kiệm thời gian, một khoản ủng hộ sẽ giúp nó tiếp tục.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Nhắc ủng hộ</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Hiển thị "Bạn thích Hotline chứ?" một lần ở đầu bảng, vào lần tới bạn mở bảng sau một câu trả lời. Sau đó tự tắt; bật lại tại đây.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Dự án</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Mã nguồn, các bản phát hành, và nơi báo cáo sự cố hoặc đề xuất tính năng.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Báo cáo sự cố</value></data>
@@ -292,7 +294,7 @@ Từ chối:
   <data name="Welcome_Body" xml:space="preserve"><value>Những gì bạn gửi — tin nhắn, tệp đính kèm và văn bản bạn đã chọn trong ứng dụng trước đó (hiển thị dưới dạng thẻ có thể gỡ bỏ) — chỉ được gửi đến kết nối AI bạn đã chọn. Mẹo: gõ / để dùng thao tác nhanh, và /remember để lưu ghi chú.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Những gì được gửi</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Bạn thích Hotline chứ?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Hotline miễn phí và mã nguồn mở, do một người phát triển. Nếu nó giúp ích cho bạn, một khoản ủng hộ sẽ giúp nó tiếp tục (GitHub Sponsors hoặc Ko-fi; liên kết luôn có trong Cài đặt › Giới thiệu). Thông báo này sẽ không hiện lại.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Hotline miễn phí và mã nguồn mở, do một người phát triển. Nếu nó giúp ích cho bạn, một khoản ủng hộ sẽ giúp nó tiếp tục. Thông báo này hiện một lần (có thể bật lại trong Cài đặt › Giới thiệu).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Sao chép</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Sao chép mã</value></data>
   <data name="Md_Code" xml:space="preserve"><value>mã</value></data>

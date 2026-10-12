@@ -231,6 +231,8 @@ Weigeren:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — je AI op de Copilot-toets. Gratis en open source (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Hotline steunen</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline wordt door één persoon gemaakt en heeft geen advertenties of tracking. Als het je tijd bespaart, houdt een donatie het draaiende.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Donatieherinnering</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Toont "Bevalt Hotline?" één keer boven in het paneel, de volgende keer dat je het na een antwoord opent. Daarna schakelt het zichzelf uit; zet het hier weer aan.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Project</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Broncode, releases en de plek om problemen te melden of functies te vragen.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Een probleem melden</value></data>
@@ -292,7 +294,7 @@ Weigeren:
   <data name="Welcome_Body" xml:space="preserve"><value>Wat je verstuurt — je bericht, bijlagen en tekst die je had geselecteerd in de app waar je vandaan kwam (getoond als label dat je kunt verwijderen) — gaat alleen naar de AI-verbinding die je hebt gekozen. Tips: typ / voor snelle acties en /remember om een notitie op te slaan.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Wat er wordt verstuurd</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Bevalt Hotline je?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Het is gratis en open source, gemaakt door één persoon. Als het je helpt, houdt een donatie het draaiende (GitHub Sponsors of Ko-fi; de links blijven in Instellingen › Over). Deze melding verschijnt niet meer.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Het is gratis en open source, gemaakt door één persoon. Als het je helpt, houdt een donatie het draaiende. Dit verschijnt één keer (Instellingen › Over kan het weer aanzetten).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Kopiëren</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Code kopiëren</value></data>
   <data name="Md_Code" xml:space="preserve"><value>code</value></data>

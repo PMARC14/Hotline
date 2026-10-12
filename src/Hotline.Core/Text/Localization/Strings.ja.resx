@@ -231,6 +231,8 @@
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot キーで呼び出す AI。無料のオープンソース (Apache-2.0)。</value></data>
   <data name="About_Support" xml:space="preserve"><value>Hotline を支援する</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline は 1 人で開発しており、広告やトラッキングはありません。時間の節約に役立っているなら、寄付で開発を支えてください。</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>寄付のお知らせ</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>回答の後に次にパネルを開いたとき、パネル上部に「Hotline はいかがですか?」を一度だけ表示します。その後は自動でオフになります。ここで再びオンにできます。</value></data>
   <data name="About_Project" xml:space="preserve"><value>プロジェクト</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>ソース コード、リリース、問題の報告や機能の要望はこちら。</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>問題を報告</value></data>
@@ -292,7 +294,7 @@
   <data name="Welcome_Body" xml:space="preserve"><value>送信する内容 — メッセージ、添付ファイル、直前のアプリで選択していたテキスト (削除できるチップとして表示) — は、選んだ AI 接続にのみ送られます。ヒント: / でクイック アクション、/remember でメモを保存できます。</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>送信される内容</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Hotline を気に入っていただけましたか?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>無料のオープンソースで、1 人で開発しています。役に立っているなら、寄付で開発を支えてください (GitHub Sponsors または Ko-fi。リンクは [設定] › [バージョン情報] にあります)。このお知らせは再表示されません。</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>無料のオープンソースで、一人で開発しています。役に立っていれば、寄付が開発の支えになります。この表示は一度だけです (設定 › バージョン情報 で再びオンにできます)。</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>コピー</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>コードをコピー</value></data>
   <data name="Md_Code" xml:space="preserve"><value>コード</value></data>

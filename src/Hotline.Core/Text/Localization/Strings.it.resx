@@ -231,6 +231,8 @@ Nega:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — la tua IA sul tasto Copilot. Gratuito e open source (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Sostieni Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline è realizzato da una sola persona e non ha pubblicità né tracciamento. Se ti fa risparmiare tempo, una donazione lo tiene in vita.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Promemoria per le donazioni</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Mostra «Ti piace Hotline?» una volta in cima al pannello, la prossima volta che lo apri dopo una risposta. Poi si disattiva; riattivalo qui.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Progetto</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Codice sorgente, versioni e il posto dove segnalare problemi o chiedere funzionalità.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Segnala un problema</value></data>
@@ -292,7 +294,7 @@ Nega:
   <data name="Welcome_Body" xml:space="preserve"><value>Ciò che invii — il tuo messaggio, gli allegati e il testo selezionato nell'app da cui arrivi (mostrato come un'etichetta che puoi rimuovere) — va solo alla connessione IA che hai scelto. Suggerimenti: digita / per le azioni rapide e /remember per salvare una nota.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Cosa viene inviato</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Ti piace Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>È gratuito e open source, realizzato da una sola persona. Se ti è utile, una donazione lo tiene in vita (GitHub Sponsors o Ko-fi; i link restano in Impostazioni › Informazioni). Questo avviso non comparirà più.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>È gratuito e open source, realizzato da una sola persona. Se ti è utile, una donazione lo mantiene vivo. Viene mostrato una volta (Impostazioni › Informazioni può riattivarlo).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Copia</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Copia codice</value></data>
   <data name="Md_Code" xml:space="preserve"><value>codice</value></data>

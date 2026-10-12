@@ -42,6 +42,9 @@ internal sealed class ChatPresenter
     /// <summary>Raised when an answer starts or finishes streaming (the bottom-bar pickers lock meanwhile).</summary>
     public event Action<bool>? BusyChanged;
     public event Action? SettingsRequested;
+
+    /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
+    public Action<Action<HotlineSettings>>? UpdateSettings { set => _support.UpdateSettings = value; }
     public bool IsBusy { get; private set; }
 
     /// <summary>Recent conversations from the history (set by the app; null when history is off).</summary>
@@ -66,7 +69,7 @@ internal sealed class ChatPresenter
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
-        _support = new SupportNote(_notices, dataDirectory);
+        _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
             (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll());
     }
@@ -80,6 +83,7 @@ internal sealed class ChatPresenter
         _voice.Initialize();
         _recent.Initialize();
         _firstRun.Initialize();
+        _support.Initialize();
 
         _chat.Event += e => _tasks.Guard("chat event", () => OnChatEvent(e));
         _composer.SendRequested += OnEnter;

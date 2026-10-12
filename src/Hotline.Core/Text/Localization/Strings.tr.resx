@@ -231,6 +231,8 @@ Reddet:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot tuşundaki yapay zekânız. Ücretsiz ve açık kaynak (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Hotline'ı destekleyin</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline tek bir kişi tarafından geliştirilir; reklam ve izleme içermez. Size zaman kazandırıyorsa bir bağış onu ayakta tutar.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Bağış hatırlatıcısı</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Bir yanıttan sonra paneli bir sonraki açışınızda, panelin üstünde bir kez "Hotline'ı beğendiniz mi?" gösterir. Sonra kendini kapatır; buradan yeniden açabilirsiniz.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Proje</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Kaynak kodu, sürümler ve sorun bildirmek ya da özellik istemek için yer.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Sorun bildir</value></data>
@@ -292,7 +294,7 @@ Reddet:
   <data name="Welcome_Body" xml:space="preserve"><value>Gönderdikleriniz — iletiniz, ekler ve geldiğiniz uygulamada seçili olan metin (kaldırabileceğiniz bir etiket olarak gösterilir) — yalnızca seçtiğiniz yapay zekâ bağlantısına gider. İpuçları: hızlı eylemler için / yazın, not kaydetmek için /remember kullanın.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Neler gönderilir</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Hotline'ı beğendiniz mi?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Ücretsiz ve açık kaynaktır, tek bir kişi tarafından geliştirilir. İşinize yarıyorsa bir bağış onu ayakta tutar (GitHub Sponsors veya Ko-fi; bağlantılar Ayarlar › Hakkında'da kalır). Bu not bir daha gösterilmeyecek.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Ücretsiz ve açık kaynaklıdır, tek bir kişi tarafından geliştirilir. İşinize yarıyorsa bir bağış onu ayakta tutar. Bu bir kez gösterilir (Ayarlar › Hakkında bölümünden yeniden açabilirsiniz).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Kopyala</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Kodu kopyala</value></data>
   <data name="Md_Code" xml:space="preserve"><value>kod</value></data>

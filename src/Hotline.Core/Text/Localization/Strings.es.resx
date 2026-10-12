@@ -231,6 +231,8 @@ Denegar:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — tu IA en la tecla Copilot. Gratuito y de código abierto (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Apoyar a Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline lo hace una sola persona y no tiene anuncios ni rastreo. Si te ahorra tiempo, una donación lo mantiene en marcha.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Recordatorio de donación</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Muestra «¿Te gusta Hotline?» una vez en la parte superior del panel, la próxima vez que lo abras después de una respuesta. Luego se desactiva; vuelve a activarlo aquí.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Proyecto</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Código fuente, versiones y el lugar para informar de problemas o pedir funciones.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Informar de un problema</value></data>
@@ -292,7 +294,7 @@ Denegar:
   <data name="Welcome_Body" xml:space="preserve"><value>Lo que envías — tu mensaje, los adjuntos y el texto que tenías seleccionado en la aplicación de la que vienes (mostrado como una etiqueta que puedes quitar) — va solo a la conexión de IA que elegiste. Consejos: escribe / para las acciones rápidas y /remember para guardar una nota.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Qué se envía</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>¿Te gusta Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Es gratuito y de código abierto, hecho por una sola persona. Si te ayuda, una donación lo mantiene en marcha (GitHub Sponsors o Ko-fi; los enlaces siguen en Configuración › Acerca de). Este aviso no volverá a aparecer.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Es gratuito y de código abierto, hecho por una persona. Si te ayuda, una donación lo mantiene en marcha. Esto se muestra una vez (Configuración › Acerca de puede volver a activarlo).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Copiar</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Copiar código</value></data>
   <data name="Md_Code" xml:space="preserve"><value>código</value></data>

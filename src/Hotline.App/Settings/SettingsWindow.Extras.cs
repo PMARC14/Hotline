@@ -100,12 +100,25 @@ public sealed partial class SettingsWindow
             TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
         });
         HyperlinkButton Link(string text, Uri uri) => new() { Content = text, NavigateUri = uri, Padding = new Thickness(4, 2, 4, 2) };
-        if (SupportLinks.DonationsLive) PageHost.Children.Add(Card(Strings.About_Support, Strings.About_Support_Desc,
-            new StackPanel
+        if (SupportLinks.DonationsLive)
+        {
+            Button Donate(string text, Uri uri, bool accent)
             {
-                Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { Link("GitHub Sponsors", SupportLinks.GitHubSponsors), Link("Ko-fi", SupportLinks.KoFi) },
-            }));
+                var button = new Button { Content = text };
+                if (accent) button.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
+                button.Click += (_, _) => _ = Windows.System.Launcher.LaunchUriAsync(uri);
+                return button;
+            }
+            var reminder = new ToggleSwitch { IsOn = _settings.Current.General.SupportReminder, OnContent = "", OffContent = "", MinWidth = 0 };
+            reminder.Toggled += (_, _) => _settings.Update(s => s.General.SupportReminder = reminder.IsOn);
+            PageHost.Children.Add(Card(Strings.About_Support, Strings.About_Support_Desc,
+                new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 8,
+                    Children = { Donate("GitHub Sponsors", SupportLinks.GitHubSponsors, accent: true), Donate("Ko-fi", SupportLinks.KoFi, accent: false) },
+                }));
+            PageHost.Children.Add(Card(Strings.About_SupportReminder, Strings.About_SupportReminder_Desc, reminder));
+        }
         PageHost.Children.Add(Card(Strings.About_Project, Strings.About_Project_Desc,
             new StackPanel
             {

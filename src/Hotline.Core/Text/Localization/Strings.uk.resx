@@ -231,6 +231,8 @@
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — ваш ШІ на клавіші Copilot. Безкоштовна програма з відкритим кодом (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Підтримати Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline створює одна людина, без реклами й стеження. Якщо програма заощаджує ваш час, пожертва допомагає їй жити.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Нагадування про пожертву</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Показує «Подобається Hotline?» один раз угорі панелі, коли ви наступного разу відкриєте її після відповіді. Потім вимикається; увімкніть його знову тут.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Проєкт</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Вихідний код, випуски та місце, щоб повідомити про проблеми або запропонувати функції.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Повідомити про проблему</value></data>
@@ -292,7 +294,7 @@
   <data name="Welcome_Body" xml:space="preserve"><value>Те, що ви надсилаєте, — повідомлення, вкладення й текст, виділений у програмі, з якої ви перейшли (показано як мітку, яку можна прибрати), — потрапляє лише до вибраного підключення ШІ. Поради: введіть / для швидких дій і /remember, щоб зберегти нотатку.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Що надсилається</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Подобається Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Програма безкоштовна й з відкритим кодом, її створює одна людина. Якщо вона вам допомагає, пожертва підтримує розробку (GitHub Sponsors або Ko-fi; посилання залишаться в Настройки › Про програму). Це повідомлення більше не з'явиться.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Програма безкоштовна й з відкритим кодом, її створює одна людина. Якщо вона вам допомагає, пожертва підтримує її розвиток. Це показується один раз (у Настройки › Про програму можна ввімкнути знову).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Копіювати</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Копіювати код</value></data>
   <data name="Md_Code" xml:space="preserve"><value>код</value></data>

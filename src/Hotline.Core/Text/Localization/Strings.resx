@@ -231,6 +231,8 @@ Deny:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — your AI on the Copilot key. Free and open source (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Support Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline is made by one person and has no ads or tracking. If it saves you time, a donation keeps it going.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Donation reminder</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Shows "Enjoying Hotline?" once at the top of the panel, the next time you open it after an answer. It turns itself off after that; switch it back on here.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Project</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Source code, releases, and the place to report problems or ask for features.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Report a problem</value></data>
@@ -292,7 +294,7 @@ Deny:
   <data name="Welcome_Body" xml:space="preserve"><value>What you send — your message, attachments, and text you had selected in the app you came from (shown as a chip you can remove) — goes only to the AI connection you picked. Tips: type / for quick actions, and /remember to save a note.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>What's sent</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Enjoying Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>It's free and open source, made by one person. If it helps you, a donation keeps it going (GitHub Sponsors or Ko-fi; links stay in Settings › About). This note won't show again.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>It's free and open source, made by one person. If it helps you, a donation keeps it going. This shows once (Settings › About can turn it back on).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Copy</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Copy code</value></data>
   <data name="Md_Code" xml:space="preserve"><value>code</value></data>

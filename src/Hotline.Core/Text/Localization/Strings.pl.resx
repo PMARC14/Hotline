@@ -231,6 +231,8 @@ Zabroń:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Twoja AI pod klawiszem Copilot. Bezpłatny i open source (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Wesprzyj Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline tworzy jedna osoba; nie ma reklam ani śledzenia. Jeśli oszczędza Ci czas, darowizna pozwala go rozwijać.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Przypomnienie o darowiźnie</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Pokazuje „Podoba ci się Hotline?” raz u góry panelu, gdy następnym razem otworzysz go po odpowiedzi. Potem samo się wyłącza; tutaj możesz je włączyć ponownie.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Projekt</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Kod źródłowy, wydania i miejsce, w którym można zgłaszać problemy lub prosić o funkcje.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Zgłoś problem</value></data>
@@ -292,7 +294,7 @@ Zabroń:
   <data name="Welcome_Body" xml:space="preserve"><value>To, co wysyłasz — wiadomość, załączniki i tekst zaznaczony w aplikacji, z której przechodzisz (pokazany jako etykieta, którą możesz usunąć) — trafia tylko do wybranego połączenia AI. Wskazówki: wpisz /, aby wyświetlić szybkie akcje, i /remember, aby zapisać notatkę.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Co jest wysyłane</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Podoba Ci się Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Jest bezpłatny i open source, tworzony przez jedną osobę. Jeśli Ci pomaga, darowizna pozwala go rozwijać (GitHub Sponsors lub Ko-fi; linki są w Ustawienia › Informacje). Ta informacja już się nie pojawi.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Jest darmowy i open source, tworzony przez jedną osobę. Jeśli ci pomaga, darowizna pozwala go rozwijać. To pojawia się raz (w Ustawienia › Informacje możesz to włączyć ponownie).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Kopiuj</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Kopiuj kod</value></data>
   <data name="Md_Code" xml:space="preserve"><value>kod</value></data>
