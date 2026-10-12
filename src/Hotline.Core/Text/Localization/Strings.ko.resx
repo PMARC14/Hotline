@@ -231,6 +231,8 @@
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot 키로 부르는 AI. 무료 오픈 소스(Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Hotline 후원하기</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline은 한 사람이 만들며 광고나 추적이 없습니다. 시간을 아껴 주었다면 후원으로 개발을 이어가게 해 주세요.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>후원 알림</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>답변 후 다음에 패널을 열 때 패널 위쪽에 "Hotline이 마음에 드세요?"를 한 번 표시합니다. 그 후에는 자동으로 꺼지며, 여기에서 다시 켤 수 있습니다.</value></data>
   <data name="About_Project" xml:space="preserve"><value>프로젝트</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>소스 코드, 릴리스, 문제 보고 및 기능 요청.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>문제 보고</value></data>
@@ -292,7 +294,7 @@
   <data name="Welcome_Body" xml:space="preserve"><value>보내는 내용(메시지, 첨부 파일, 이전 앱에서 선택한 텍스트 — 제거할 수 있는 칩으로 표시)은 선택한 AI 연결로만 전송됩니다. 팁: 빠른 동작은 /, 메모 저장은 /remember를 입력하세요.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>전송되는 내용</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Hotline이 마음에 드시나요?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>무료 오픈 소스이며 한 사람이 만듭니다. 도움이 되었다면 후원으로 개발을 이어가게 해 주세요(GitHub Sponsors 또는 Ko-fi. 링크는 설정 › 정보에 있습니다). 이 안내는 다시 표시되지 않습니다.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>무료 오픈 소스이며 한 사람이 만듭니다. 도움이 된다면 후원이 계속 개발하는 힘이 됩니다. 이 알림은 한 번만 표시됩니다(설정 › 정보에서 다시 켤 수 있음).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>복사</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>코드 복사</value></data>
   <data name="Md_Code" xml:space="preserve"><value>코드</value></data>

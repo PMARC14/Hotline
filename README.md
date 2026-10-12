@@ -1,5 +1,8 @@
 # Hotline
 
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/PMARC14)
+[![Support on Ko-fi](https://img.shields.io/badge/Support-Ko--fi-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/pmarc14)
+
 **You are stuck with the key might as well use it. Gives you an option to replace the Windows Copilot key with your own fast, native AI popup that talks to the AI *you* choose.**
 
 Hotline uses the AI tools you already have (your
@@ -160,6 +163,9 @@ release — see
 Hotline is free, open source and made by one person, with no ads or tracking. If it saves you time, a donation keeps
 it going: [GitHub Sponsors](https://github.com/sponsors/PMARC14) or [Ko-fi](https://ko-fi.com/pmarc14) (also in
 Settings › About).
+
+<a href="https://github.com/sponsors/PMARC14"><img src="https://img.shields.io/badge/Sponsor_on_GitHub-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub" height="36"></a>
+<a href="https://ko-fi.com/pmarc14"><img src="https://img.shields.io/badge/Support_on_Ko--fi-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white" alt="Support on Ko-fi" height="36"></a>
 
 ## License
 

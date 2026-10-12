@@ -231,6 +231,8 @@ Verweigern:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — deine KI auf der Copilot-Taste. Kostenlos und Open Source (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Hotline unterstützen</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline wird von einer Person entwickelt und hat weder Werbung noch Tracking. Wenn es dir Zeit spart, hält eine Spende es am Laufen.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Spendenerinnerung</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Zeigt „Gefällt dir Hotline?“ einmal oben im Panel, wenn du es nach einer Antwort das nächste Mal öffnest. Danach schaltet sie sich aus; hier kannst du sie wieder einschalten.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Projekt</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Quellcode, Releases und der Ort, um Probleme zu melden oder Funktionen vorzuschlagen.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Problem melden</value></data>
@@ -292,7 +294,7 @@ Verweigern:
   <data name="Welcome_Body" xml:space="preserve"><value>Was du sendest — deine Nachricht, Anhänge und Text, den du in der vorherigen App markiert hattest (als entfernbarer Chip angezeigt) — geht nur an die KI-Verbindung, die du gewählt hast. Tipps: Tippe / für Schnellaktionen und /remember, um eine Notiz zu speichern.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Was gesendet wird</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Gefällt dir Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Es ist kostenlos und Open Source, entwickelt von einer Person. Wenn es dir hilft, hält eine Spende es am Laufen (GitHub Sponsors oder Ko-fi; die Links bleiben unter Einstellungen › Info). Dieser Hinweis erscheint nicht wieder.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Hotline ist kostenlos und Open Source, entwickelt von einer Person. Wenn es dir hilft, hält eine Spende es am Leben. Dieser Hinweis erscheint einmal (Einstellungen › Info kann ihn wieder einschalten).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Kopieren</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Code kopieren</value></data>
   <data name="Md_Code" xml:space="preserve"><value>Code</value></data>

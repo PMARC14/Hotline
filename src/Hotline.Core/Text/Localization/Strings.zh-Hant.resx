@@ -231,6 +231,8 @@
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} —— Copilot 鍵上的 AI 助理。免費且開放原始碼 (Apache-2.0)。</value></data>
   <data name="About_Support" xml:space="preserve"><value>支持 Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline 由一個人開發,沒有廣告,也不追蹤你。如果它幫你節省了時間,贊助能讓它繼續下去。</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>贊助提醒</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>在回答之後下次開啟面板時,於面板頂端顯示一次「喜歡 Hotline 嗎?」。之後會自動關閉;可在此重新開啟。</value></data>
   <data name="About_Project" xml:space="preserve"><value>專案</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>原始程式碼、版本發行,以及回報問題或提出功能需求的地方。</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>回報問題</value></data>
@@ -292,7 +294,7 @@
   <data name="Welcome_Body" xml:space="preserve"><value>你傳送的內容——訊息、附件,以及你在先前應用程式中選取的文字 (顯示為可移除的標籤)——只會傳送到你選擇的 AI 連線。提示:輸入 / 使用快速動作,輸入 /remember 儲存筆記。</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>會傳送什麼</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>喜歡 Hotline 嗎?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>它免費且開放原始碼,由一個人開發。如果它對你有幫助,贊助能讓它繼續下去 (GitHub Sponsors 或 Ko-fi;連結保留在 [設定] › [關於] 中)。此提示不會再出現。</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>它免費且開放原始碼,由一個人開發。如果它對你有幫助,贊助能讓它持續下去。此提示只顯示一次 (可在「設定 › 關於」中重新開啟)。</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>複製</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>複製程式碼</value></data>
   <data name="Md_Code" xml:space="preserve"><value>程式碼</value></data>

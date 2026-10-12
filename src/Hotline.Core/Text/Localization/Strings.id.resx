@@ -231,6 +231,8 @@ Tolak:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — AI Anda di tombol Copilot. Gratis dan sumber terbuka (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Dukung Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline dibuat oleh satu orang dan tidak memiliki iklan atau pelacakan. Jika Hotline menghemat waktu Anda, donasi membuatnya terus berjalan.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Pengingat donasi</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Menampilkan "Suka Hotline?" sekali di bagian atas panel, saat Anda membukanya lagi setelah ada jawaban. Setelah itu akan mati sendiri; aktifkan lagi di sini.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Proyek</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Kode sumber, rilis, dan tempat untuk melaporkan masalah atau meminta fitur.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Laporkan masalah</value></data>
@@ -292,7 +294,7 @@ Tolak:
   <data name="Welcome_Body" xml:space="preserve"><value>Yang Anda kirim — pesan, lampiran, dan teks yang Anda pilih di aplikasi asal (ditampilkan sebagai chip yang bisa dihapus) — hanya dikirim ke koneksi AI yang Anda pilih. Tips: ketik / untuk aksi cepat, dan /remember untuk menyimpan catatan.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Apa yang dikirim</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Menyukai Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Hotline gratis dan sumber terbuka, dibuat oleh satu orang. Jika membantu Anda, donasi membuatnya terus berjalan (GitHub Sponsors atau Ko-fi; tautannya tetap ada di Pengaturan › Tentang). Catatan ini tidak akan muncul lagi.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Gratis dan sumber terbuka, dibuat oleh satu orang. Jika bermanfaat bagi Anda, donasi membuatnya terus berjalan. Ini muncul sekali (Pengaturan › Tentang dapat mengaktifkannya lagi).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Salin</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Salin kode</value></data>
   <data name="Md_Code" xml:space="preserve"><value>kode</value></data>

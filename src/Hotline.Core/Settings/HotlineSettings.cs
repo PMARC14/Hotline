@@ -17,6 +17,9 @@ public sealed class GeneralSettings
 {
     /// <summary>Interface language: "system" follows Windows, or a tag from Languages.Supported (e.g. "de"). Applies on restart.</summary>
     public string Language { get; set; } = Text.Localization.Languages.System;
+
+    /// <summary>Show the "Enjoying Hotline?" donation note once, the next time the panel opens after an answer (then it turns itself off).</summary>
+    public bool SupportReminder { get; set; } = true;
 }
 
 public sealed class DiagnosticsSettings

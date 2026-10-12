@@ -231,6 +231,8 @@ Negar:
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — sua IA na tecla Copilot. Gratuito e de código aberto (Apache-2.0).</value></data>
   <data name="About_Support" xml:space="preserve"><value>Apoiar o Hotline</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>O Hotline é feito por uma pessoa e não tem anúncios nem rastreamento. Se ele economiza seu tempo, uma doação o mantém vivo.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Lembrete de doação</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Mostra "Curtindo o Hotline?" uma vez no topo do painel, na próxima vez que você abri-lo depois de uma resposta. Depois disso ele se desativa; reative aqui.</value></data>
   <data name="About_Project" xml:space="preserve"><value>Projeto</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>Código-fonte, versões e o lugar para relatar problemas ou pedir recursos.</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>Relatar um problema</value></data>
@@ -292,7 +294,7 @@ Negar:
   <data name="Welcome_Body" xml:space="preserve"><value>O que você envia — sua mensagem, os anexos e o texto que você tinha selecionado no app de onde veio (mostrado como um chip que você pode remover) — vai somente para a conexão de IA que você escolheu. Dicas: digite / para ações rápidas e /remember para salvar uma anotação.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>O que é enviado</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Está gostando do Hotline?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Ele é gratuito e de código aberto, feito por uma pessoa. Se ele ajuda você, uma doação o mantém vivo (GitHub Sponsors ou Ko-fi; os links ficam em Configurações › Sobre). Este aviso não aparecerá de novo.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>É gratuito e de código aberto, feito por uma pessoa. Se ele ajuda você, uma doação o mantém vivo. Isto aparece uma vez (Configurações › Sobre pode reativá-lo).</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Copiar</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Copiar código</value></data>
   <data name="Md_Code" xml:space="preserve"><value>código</value></data>

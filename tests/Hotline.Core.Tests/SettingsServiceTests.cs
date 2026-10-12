@@ -37,6 +37,19 @@ public sealed class SettingsServiceTests : IDisposable
 
 
     [Fact]
+    public void Reload_takes_in_hand_edits_to_the_general_section()
+    {
+        var service = New(out var store);
+        var general = service.Current.General;
+        Assert.True(general.SupportReminder); // on for new installs: the donation note shows once
+        Assert.True(service.Reload(store.Load().Also(s => { s.General.SupportReminder = false; s.General.Language = "ja"; })));
+        Assert.False(general.SupportReminder);
+        Assert.Equal("ja", general.Language);
+        service.Update(s => s.General.SupportReminder = true);
+        Assert.True(store.Load().General.SupportReminder);
+    }
+
+    [Fact]
     public void Reload_copies_hand_edits_into_the_live_objects_once()
     {
         var service = New(out var store);

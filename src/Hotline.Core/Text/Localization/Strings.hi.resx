@@ -231,6 +231,8 @@
   <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot कुंजी पर आपका AI। निःशुल्क और ओपन सोर्स (Apache-2.0)।</value></data>
   <data name="About_Support" xml:space="preserve"><value>Hotline का समर्थन करें</value></data>
   <data name="About_Support_Desc" xml:space="preserve"><value>Hotline एक व्यक्ति बनाता है, इसमें न विज्ञापन हैं न ट्रैकिंग। अगर यह आपका समय बचाता है, तो एक दान इसे चलाए रखता है।</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>दान रिमाइंडर</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>किसी उत्तर के बाद अगली बार पैनल खोलने पर पैनल के ऊपर एक बार "Hotline पसंद आ रहा है?" दिखाता है। उसके बाद यह अपने आप बंद हो जाता है; इसे यहाँ फिर से चालू करें।</value></data>
   <data name="About_Project" xml:space="preserve"><value>प्रोजेक्ट</value></data>
   <data name="About_Project_Desc" xml:space="preserve"><value>सोर्स कोड, रिलीज़, और समस्याएँ रिपोर्ट करने या सुविधाएँ माँगने की जगह।</value></data>
   <data name="About_ReportProblem" xml:space="preserve"><value>समस्या रिपोर्ट करें</value></data>
@@ -292,7 +294,7 @@
   <data name="Welcome_Body" xml:space="preserve"><value>आप जो भेजते हैं — आपका संदेश, अनुलग्नक, और जिस ऐप से आप आए उसमें चयनित टेक्स्ट (हटाने योग्य चिप के रूप में दिखता है) — वह केवल आपके चुने AI कनेक्शन तक जाता है। सुझाव: त्वरित क्रियाओं के लिए / टाइप करें, और नोट सहेजने के लिए /remember।</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>क्या भेजा जाता है</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Hotline पसंद आ रहा है?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>यह निःशुल्क और ओपन सोर्स है, एक व्यक्ति द्वारा बनाया गया। अगर यह आपकी मदद करता है, तो एक दान इसे चलाए रखता है (GitHub Sponsors या Ko-fi; लिंक सेटिंग्स › के बारे में में रहते हैं)। यह सूचना फिर नहीं दिखेगी।</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>यह मुफ़्त और ओपन सोर्स है, जिसे एक व्यक्ति बनाता है। अगर यह आपकी मदद करता है, तो दान इसे चलते रहने में मदद करता है। यह एक बार दिखता है (सेटिंग्स › के बारे में में इसे फिर से चालू कर सकते हैं)।</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>कॉपी करें</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>कोड कॉपी करें</value></data>
   <data name="Md_Code" xml:space="preserve"><value>कोड</value></data>

@@ -27,6 +27,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         CopyInto(fromDisk.Activation, Current.Activation);
         CopyInto(fromDisk.Diagnostics, Current.Diagnostics);
         CopyInto(fromDisk.Window, Current.Window);
+        CopyInto(fromDisk.General, Current.General);
         MergeChat(fromDisk.Chat, Current.Chat);
         Current.SchemaVersion = fromDisk.SchemaVersion;
         var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id == kv.Key) is not { } now
