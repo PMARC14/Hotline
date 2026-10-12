@@ -18,4 +18,17 @@ public class NotificationTextTests
         Assert.Equal("short", NotificationText.Snippet("short", max: 4 + 1));
         Assert.Equal("", NotificationText.Snippet(""));
     }
+
+    [Fact]
+    public void Snippet_keeps_underscores_inside_words_but_drops_emphasis()
+    {
+        Assert.Equal("set notify_when_done in config_file.json, it matters", NotificationText.Snippet("set `notify_when_done` in config_file.json, _it matters_"));
+    }
+
+    [Fact]
+    public void Snippet_never_cuts_an_emoji_in_half_or_keeps_control_characters()
+    {
+        Assert.Equal("ab…", NotificationText.Snippet("ab\U0001F600cd", max: 3));
+        Assert.Equal("a b", NotificationText.Snippet("a\u001b[0m b\u0000"));
+    }
 }

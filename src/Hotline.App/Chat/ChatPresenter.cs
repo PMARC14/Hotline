@@ -247,6 +247,9 @@ internal sealed class ChatPresenter
     private ReportTarget? ReportFor(string? backendId) =>
         _settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } profile ? ReportLinks.For(profile.Type) : null;
 
+    /// <summary>Not the self-test or demo.</summary>
+    private static bool IsRealAnswer(string id) => !id.StartsWith("st-", StringComparison.Ordinal) && !id.StartsWith("demo-", StringComparison.Ordinal);
+
     private string BackendOf(string answerId) => _answerBackends.Remove(answerId, out var name) ? name : "";
 
     private void OnChatEvent(ChatEvent e)
@@ -272,10 +275,11 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(c.Id);
                 SetBusy(false);
                 _log.Info("chat answer completed");
-                if (!c.Id.StartsWith("st-", StringComparison.Ordinal) && !c.Id.StartsWith("demo-", StringComparison.Ordinal))
+                var answeredBy = BackendOf(c.Id);
+                if (IsRealAnswer(c.Id))
                 {
-                    _support.AnswerCompleted(); // a real answer, not the self-test or demo
-                    _notifier.Finished(BackendOf(c.Id), _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
+                    _support.AnswerCompleted();
+                    _notifier.Finished(answeredBy, _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
                 }
                 break;
             case AssistantCancelled c:
@@ -289,7 +293,8 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(f.Id);
                 _transcript.ShowError(f.Id, f.Message);
                 SetBusy(false);
-                if (!f.Id.StartsWith("st-", StringComparison.Ordinal)) _notifier.Finished(BackendOf(f.Id), f.Message, failed: true);
+                var failedOn = BackendOf(f.Id);
+                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, f.Message, failed: true);
                 break;
             case MessageRestored r when r.Message.Role == ChatRole.User:
                 _transcript.AddUser(r.Message);

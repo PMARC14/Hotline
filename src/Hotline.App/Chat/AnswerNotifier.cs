@@ -18,13 +18,18 @@ internal sealed class AnswerNotifier(PopupWindow popup, HotlineSettings settings
     private const string Tag = "answer";
     private const string Group = "hotline";
 
-    public void Initialize() => popup.Shown += Clear;
+    public void Initialize()
+    {
+        popup.Shown += Clear;
+        // Also when a pinned panel that was behind another app comes back to the front.
+        popup.Activated += (_, e) => { if (e.WindowActivationState != Microsoft.UI.Xaml.WindowActivationState.Deactivated) Clear(); };
+    }
 
     public void Finished(string backendName, string text, bool failed)
     {
         if (!settings.Chat.NotifyWhenDone) return;
         if (popup.IsShown && Native.GetForegroundWindow() == popup.Hwnd) return; // they're looking at it
-        var title = L.F(failed ? Strings.Notify_Failed : Strings.Notify_Answered, string.IsNullOrWhiteSpace(backendName) ? "Hotline" : backendName);
+        var title = NotificationText.Snippet(L.F(failed ? Strings.Notify_Failed : Strings.Notify_Answered, string.IsNullOrWhiteSpace(backendName) ? "Hotline" : backendName), max: 80);
         var body = NotificationText.Snippet(text);
         try
         {
