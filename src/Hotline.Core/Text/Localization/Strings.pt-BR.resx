@@ -18,7 +18,7 @@
   <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Como Ctrl direito, Copilot+C vira Ctrl+C e a tecla não abre mais o Hotline (use o atalho extra abaixo ou o ícone da área de notificação). Funciona em teclados cuja tecla Copilot envia Win+Shift+F23 (a maioria).</value></data>
   <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Abre o Hotline</value></data>
   <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Funciona como Ctrl direito</value></data>
-  <data name="Set_Tap" xml:space="preserve"><value>Toque curto na tecla Copilot</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Pressionamento curto da tecla Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Pressionamento longo da tecla Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Entrada de voz</value></data>
   <data name="Set_Voice_Desc" xml:space="preserve"><value>Segure a tecla Copilot e fale; solte para parar (Esc cancela). Usa o reconhecimento de fala do Windows: permita o microfone e ative Configurações › Privacidade e segurança › Fala › Reconhecimento de fala online. Ativar define o pressionamento longo como voz; desativar volta para um novo chat.</value></data>
@@ -107,7 +107,7 @@
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Aplica-se ao reiniciar o Hotline.)</value></data>
   <data name="Settings_InvalidValue" xml:space="preserve"><value>Valor inválido</value></data>
   <data name="Settings_Startup" xml:space="preserve"><value>Iniciar com o Windows</value></data>
-  <data name="Tools_Intro" xml:space="preserve"><value>Conexões de API com Uso de ferramentas em "Usar as ferramentas do Hotline" podem chamar as ferramentas destes servidores MCP. Ferramentas somente leitura são executadas; todo o resto pergunta a você no painel (Permitir uma vez / Sempre / Negar).</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Conexões de API com Uso de ferramentas em "Usar as ferramentas do Hotline" podem chamar as ferramentas destes servidores MCP. Ferramentas somente leitura são executadas; para qualquer outra, o painel pergunta a você (Permitir uma vez / Sempre / Negar).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>Servidores MCP</value></data>
   <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — mesmo formato "mcpServers" de outros apps MCP; as aprovações ficam no mesmo arquivo</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>Editar mcp.json</value></data>
@@ -280,7 +280,7 @@ Negar:
   <data name="Attach_OcrFailed" xml:space="preserve"><value>Não foi possível ler o texto de {0}.</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>Copiar imagem</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>Imagem copiada.</value></data>
-  <data name="Chat_StillAnswering" xml:space="preserve"><value>Ainda respondendo. {0} ou o botão Parar interrompe; sua mensagem espera na caixa.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Ainda respondendo. {0} ou o botão Parar a interrompe; sua mensagem aguarda na caixa de texto.</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>Digite o que lembrar depois de /remember, por exemplo "/remember prefiro unidades métricas".</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>Lembrado. Todo chat vê isso a partir de agora (edite em Configurações › Chat e histórico › Memória).</value></data>
   <data name="Chat_NotRemembered" xml:space="preserve"><value>Não salvo: use uma linha com no máximo {0} caracteres.</value></data>
@@ -308,7 +308,7 @@ Negar:
   <data name="Tool_Deny" xml:space="preserve"><value>Negar</value></data>
   <data name="Effort_NA" xml:space="preserve"><value>n/d</value></data>
   <data name="Bar_EffortTip" xml:space="preserve"><value>Esforço de raciocínio</value></data>
-  <data name="Bar_NotYet" xml:space="preserve"><value>{0} pode ser configurado em Configurações, mas conversar com ele chegará em uma atualização futura.</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} pode ser configurado em Configurações, mas você poderá conversar com ele em uma atualização futura.</value></data>
   <data name="Bar_PromptChosen" xml:space="preserve"><value>Prompt de sistema: {0} (vale para a próxima mensagem)</value></data>
   <data name="Bar_EditPrompt" xml:space="preserve"><value>Editar "{0}"…</value></data>
   <data name="Bar_NewPrompt" xml:space="preserve"><value>Novo prompt…</value></data>
@@ -413,7 +413,7 @@ Negar:
   <data name="Mcp_Unreadable" xml:space="preserve"><value>Não foi possível ler o mcp.json: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>A aprovação "{0}" tem um valor desconhecido, então é tratada como "deny".</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>O nome de um servidor não pode conter "/" nem "*".</value></data>
-  <data name="Mcp_StartTimeout" xml:space="preserve"><value>não iniciou em {0:0} s</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>não iniciou em até {0:0} s</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Nenhuma ferramenta roda até que isso seja corrigido.</value></data>
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} A última versão válida continua em vigor.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>o servidor foi encerrado (código de saída {0})</value></data>

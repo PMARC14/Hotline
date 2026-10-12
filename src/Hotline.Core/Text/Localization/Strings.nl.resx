@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Kort drukken op de Copilot-toets</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Lang drukken op de Copilot-toets</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Spraakinvoer</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Houd de Copilot-toets ingedrukt en praat; laat los om te stoppen (Esc annuleert). Gebruikt de spraakherkenning van Windows: sta de microfoon toe en schakel Instellingen › Privacy en beveiliging › Spraak › Online spraakherkenning in. Inschakelen zet lang drukken op spraak; uitschakelen zet het terug op een nieuwe chat.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Houd de Copilot-toets ingedrukt en praat; laat los om te stoppen (Esc annuleert). Gebruikt de spraakherkenning van Windows: geef toegang tot de microfoon en schakel Instellingen › Privacy en beveiliging › Spraak › Online spraakherkenning in. Inschakelen stelt lang indrukken in op spraakinvoer; uitschakelen zet het terug op een nieuwe chat.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Extra sneltoets</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Opent Hotline ook, bijv. Ctrl+Alt+H. Laat leeg voor geen.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Geen geldige sneltoets (voorbeeld: Ctrl+Alt+H)</value></data>
@@ -86,7 +86,7 @@
   <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Met de toetsactie Spraak: verstuur het bericht als je de toets loslaat.</value></data>
   <data name="Set_Ocr" xml:space="preserve"><value>Tekst in schermafbeeldingen (OCR)</value></data>
   <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows leest de tekst in afbeeldingen (offline) voor modellen die ze niet kunnen zien.</value></data>
-  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Voor modellen die alleen tekst lezen</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Voor modellen die alleen tekst ondersteunen</value></data>
   <data name="Set_Ocr_Always" xml:space="preserve"><value>Altijd toevoegen</value></data>
   <data name="Set_Ocr_Off" xml:space="preserve"><value>Uit</value></data>
   <data name="Set_ImageSize" xml:space="preserve"><value>Limiet voor afbeeldingsgrootte</value></data>
@@ -107,7 +107,7 @@
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Geldt na het opnieuw starten van Hotline.)</value></data>
   <data name="Settings_InvalidValue" xml:space="preserve"><value>Geen geldige waarde</value></data>
   <data name="Settings_Startup" xml:space="preserve"><value>Starten met Windows</value></data>
-  <data name="Tools_Intro" xml:space="preserve"><value>API-verbindingen waarvoor Hulpmiddelen gebruiken op "Hotline-hulpmiddelen gebruiken" staat, kunnen de hulpmiddelen van deze MCP-servers aanroepen. Alleen-lezen hulpmiddelen worden uitgevoerd; voor al het andere wordt het je in het paneel gevraagd (Eenmaal toestaan / Altijd / Weigeren).</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>API-verbindingen waarvoor Hulpmiddelen gebruiken op "Hotline-hulpmiddelen gebruiken" staat, kunnen de hulpmiddelen van deze MCP-servers aanroepen. Alleen-lezen hulpmiddelen worden uitgevoerd; voor al het andere vraagt het paneel om toestemming (Eenmaal toestaan / Altijd / Weigeren).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP-servers</value></data>
   <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — hetzelfde "mcpServers"-formaat als andere MCP-apps; goedkeuringen staan in hetzelfde bestand</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json bewerken</value></data>
@@ -194,7 +194,7 @@ Weigeren:
   <data name="Conn_RefusalFallback" xml:space="preserve"><value>Terugval bij weigering</value></data>
   <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Als een veiligheidscontrole een verzoek weigert, beantwoordt de API het opnieuw met een geschikt model in plaats van te stoppen (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
   <data name="Conn_Images" xml:space="preserve"><value>Model leest afbeeldingen</value></data>
-  <data name="Conn_Images_Desc" xml:space="preserve"><value>Uit: schermafbeeldingen worden als hun tekst verstuurd (Instellingen › Chat › Tekst in schermafbeeldingen).</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Uit: schermafbeeldingen worden als tekst verstuurd (Instellingen › Chat › Tekst in schermafbeeldingen).</value></data>
   <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Standaard ({0})</value></data>
   <data name="Conn_SystemPrompt" xml:space="preserve"><value>Systeemprompt</value></data>
   <data name="Common_Default" xml:space="preserve"><value>Standaard</value></data>

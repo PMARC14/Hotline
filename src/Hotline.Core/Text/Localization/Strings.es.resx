@@ -12,7 +12,7 @@
   <data name="Set_Key_NewChat" xml:space="preserve"><value>Empezar un chat nuevo</value></data>
   <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>Capturar la ventana actual</value></data>
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Capturar una región</value></data>
-  <data name="Set_Key_Voice" xml:space="preserve"><value>Entrada de voz (mantener para hablar)</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>Entrada de voz (mantener pulsado para hablar)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>No hacer nada</value></data>
   <data name="Set_CopilotKey" xml:space="preserve"><value>Tecla Copilot</value></data>
   <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Como Ctrl derecho, Copilot+C equivale a Ctrl+C y la tecla ya no abre Hotline (usa el atajo adicional de abajo o el icono del área de notificación). Funciona con teclados cuya tecla Copilot envía Win+Mayús+F23 (la mayoría).</value></data>
@@ -62,7 +62,7 @@
   <data name="Set_Position_Desc" xml:space="preserve"><value>0 = arriba, 0,5 = centro, 1 = abajo.</value></data>
   <data name="Set_Growth" xml:space="preserve"><value>Crecimiento</value></data>
   <data name="Set_Growth_Fit" xml:space="preserve"><value>Ajustarse a la conversación</value></data>
-  <data name="Set_Growth_Full" xml:space="preserve"><value>Ir directamente al alto máximo</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Ir directamente a la altura máxima</value></data>
   <data name="Set_History" xml:space="preserve"><value>Guardar el historial de chats</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Solo texto, en tu carpeta .hotline.</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Conservar el historial durante</value></data>
@@ -280,11 +280,11 @@ Denegar:
   <data name="Attach_OcrFailed" xml:space="preserve"><value>No se pudo leer el texto de {0}.</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>Copiar imagen</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>Imagen copiada.</value></data>
-  <data name="Chat_StillAnswering" xml:space="preserve"><value>Todavía está respondiendo. {0} o el botón Detener la para; tu mensaje espera en el cuadro.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Todavía está respondiendo. {0} o el botón Detener detienen la respuesta; tu mensaje espera en el cuadro.</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>Escribe lo que quieres recordar después de /remember, p. ej. «/remember prefiero las unidades métricas».</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>Recordado. Desde ahora lo ve cada chat (edítalo en Configuración › Chat e historial › Memoria).</value></data>
   <data name="Chat_NotRemembered" xml:space="preserve"><value>No se guardó: debe ser una sola línea de {0} caracteres como máximo.</value></data>
-  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Escribe el texto para /{0} detrás o adjunta algo.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Escribe el texto para /{0} a continuación o adjunta algo.</value></data>
   <data name="Chat_FolderFailed" xml:space="preserve"><value>No se pudo abrir la carpeta de configuración ({0}): {1}</value></data>
   <data name="Composer_Stop" xml:space="preserve"><value>Detener</value></data>
   <data name="Composer_Send" xml:space="preserve"><value>Enviar (Entrar)</value></data>
@@ -308,7 +308,7 @@ Denegar:
   <data name="Tool_Deny" xml:space="preserve"><value>Denegar</value></data>
   <data name="Effort_NA" xml:space="preserve"><value>n/d</value></data>
   <data name="Bar_EffortTip" xml:space="preserve"><value>Esfuerzo de razonamiento</value></data>
-  <data name="Bar_NotYet" xml:space="preserve"><value>{0} se puede configurar en Configuración, pero chatear con él llegará en una actualización posterior.</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} se puede configurar en Configuración, pero la opción de chatear con él llegará en una actualización posterior.</value></data>
   <data name="Bar_PromptChosen" xml:space="preserve"><value>Prompt del sistema: {0} (se aplica al siguiente mensaje)</value></data>
   <data name="Bar_EditPrompt" xml:space="preserve"><value>Editar «{0}»…</value></data>
   <data name="Bar_NewPrompt" xml:space="preserve"><value>Nuevo prompt…</value></data>
@@ -346,7 +346,7 @@ Denegar:
   <data name="Popup_JumpLatest" xml:space="preserve"><value>Ir al último mensaje</value></data>
   <data name="Popup_AddMenu" xml:space="preserve"><value>Añadir archivos o capturar</value></data>
   <data name="Popup_AttachFiles" xml:space="preserve"><value>Adjuntar archivos…</value></data>
-  <data name="Popup_Pin" xml:space="preserve"><value>Anclar abierto (sigue abierto aunque hagas clic en otro sitio, para que puedas arrastrar archivos)</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Mantener anclado (sigue abierto aunque hagas clic en otro sitio, para que puedas arrastrar archivos)</value></data>
   <data name="Popup_CaptureWindow" xml:space="preserve"><value>Capturar la ventana en la que estabas</value></data>
   <data name="Popup_CaptureScreen" xml:space="preserve"><value>Capturar toda la pantalla</value></data>
   <data name="Popup_Model" xml:space="preserve"><value>Modelo (escribe un nombre o elige uno)</value></data>
@@ -370,7 +370,7 @@ Denegar:
   <data name="Models_Many" xml:space="preserve"><value>{0} modelos</value></data>
   <data name="Models_Connected" xml:space="preserve"><value>Conectado: {0}.</value></data>
   <data name="Models_Including" xml:space="preserve"><value>Conectado: {0}, incluido {1}.</value></data>
-  <data name="Models_NotIncluded" xml:space="preserve"><value>Conectado: {0}, pero {1} no está entre ellos.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>Conectado: {0}, pero {1} no está incluido.</value></data>
   <data name="Models_NeedKey" xml:space="preserve"><value>Añade primero una clave de API para {0}.</value></data>
   <data name="Models_KeyRejected" xml:space="preserve"><value>{0} rechazó la clave de API.</value></data>
   <data name="Models_HttpError" xml:space="preserve"><value>{0} respondió {1}.</value></data>

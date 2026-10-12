@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Tekan singkat tombol Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Tekan lama tombol Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Input suara</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Tahan tombol Copilot dan berbicara; lepaskan untuk berhenti (Esc membatalkan). Menggunakan pengenalan ucapan Windows: izinkan mikrofon dan aktifkan Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan online. Mengaktifkannya menjadikan tekan lama untuk suara; menonaktifkannya mengembalikan ke obrolan baru.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Tahan tombol Copilot dan berbicara; lepaskan untuk berhenti (Esc membatalkan). Menggunakan pengenalan ucapan Windows: izinkan mikrofon dan aktifkan Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan daring. Mengaktifkannya akan mengatur tekan lama untuk suara; menonaktifkannya mengembalikan ke obrolan baru.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Tombol pintas tambahan</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Juga membuka Hotline, mis. Ctrl+Alt+H. Kosongkan jika tidak perlu.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Bukan tombol pintas yang valid (contoh: Ctrl+Alt+H)</value></data>
@@ -192,7 +192,7 @@ Tolak:
   <data name="Conn_WorkingFolder" xml:space="preserve"><value>Folder kerja</value></data>
   <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Tempat alat program bekerja dalam mode Warisi.</value></data>
   <data name="Conn_RefusalFallback" xml:space="preserve"><value>Cadangan saat ditolak</value></data>
-  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Jika pemeriksaan keamanan menolak permintaan, API menjawabnya ulang dengan model yang sesuai alih-alih berhenti (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Jika pemeriksaan keamanan menolak permintaan, API menyajikannya ulang dengan model yang sesuai alih-alih berhenti (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
   <data name="Conn_Images" xml:space="preserve"><value>Model membaca gambar</value></data>
   <data name="Conn_Images_Desc" xml:space="preserve"><value>Nonaktif: tangkapan layar dikirim sebagai teksnya (Pengaturan › Obrolan › Teks tangkapan layar).</value></data>
   <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Default ({0})</value></data>
@@ -212,7 +212,7 @@ Tolak:
   <data name="Bar_captureScreen" xml:space="preserve"><value>Tangkap layar</value></data>
   <data name="Bar_captureRegion" xml:space="preserve"><value>Tangkap area</value></data>
   <data name="Bar_spacer" xml:space="preserve"><value>Spasi</value></data>
-  <data name="Bar_effort" xml:space="preserve"><value>Pemilih upaya</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Pemilih tingkat penalaran</value></data>
   <data name="Bar_model" xml:space="preserve"><value>Pemilih model</value></data>
   <data name="Bar_provider" xml:space="preserve"><value>Pemilih penyedia</value></data>
   <data name="Bar_prompt" xml:space="preserve"><value>Pemilih prompt</value></data>
@@ -250,7 +250,7 @@ Tolak:
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} bahasa OCR</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Tidak ada bahasa OCR: Pengaturan › Waktu &amp; bahasa › Bahasa &amp; wilayah › tambahkan bahasa dengan Pengenalan karakter optik</value></data>
   <data name="Pc_VoiceOk" xml:space="preserve"><value>Dikte Windows tersedia</value></data>
-  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan online, dan mikrofon</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan daring, dan mikrofon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Konektor agen Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe ditemukan; konektornya muncul sebagai server alat windows-…</value></data>
   <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe tidak ditemukan (belum diaktifkan di PC ini)</value></data>
@@ -336,7 +336,7 @@ Tolak:
   <data name="Voice_Listening" xml:space="preserve"><value>🎙 Mendengarkan…</value></data>
   <data name="Voice_NoMic" xml:space="preserve"><value>Tidak ada mikrofon yang tersedia.</value></data>
   <data name="Voice_Stopped" xml:space="preserve"><value>Input suara berhenti ({0}).</value></data>
-  <data name="Voice_NeedsOnline" xml:space="preserve"><value>Input suara memerlukan pengenalan ucapan online Windows.</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>Input suara memerlukan pengenalan ucapan daring Windows.</value></data>
   <data name="Voice_TurnOn" xml:space="preserve"><value>Aktifkan</value></data>
   <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline tidak diizinkan memakai mikrofon.</value></data>
   <data name="Voice_MicSettings" xml:space="preserve"><value>Pengaturan mikrofon</value></data>
@@ -373,7 +373,7 @@ Tolak:
   <data name="Models_NotIncluded" xml:space="preserve"><value>Terhubung: {0}, tetapi {1} tidak termasuk.</value></data>
   <data name="Models_NeedKey" xml:space="preserve"><value>Tambahkan kunci API untuk {0} terlebih dulu.</value></data>
   <data name="Models_KeyRejected" xml:space="preserve"><value>{0} menolak kunci API.</value></data>
-  <data name="Models_HttpError" xml:space="preserve"><value>{0} menjawab {1}.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} merespons {1}.</value></data>
   <data name="Api_Unreachable" xml:space="preserve"><value>Tidak dapat menjangkau {0}: {1}</value></data>
   <data name="Api_Timeout" xml:space="preserve"><value>{0} tidak menjawab tepat waktu.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Tambahkan kunci API untuk {0} di Pengaturan › Koneksi AI.</value></data>

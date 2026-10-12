@@ -5,7 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Set_Language" xml:space="preserve"><value>語言</value></data>
-  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline 功能表、設定和訊息的語言。AI 的回答會使用你書寫的語言。</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline 功能表、設定和訊息的語言。AI 的回答會使用你輸入的語言。</value></data>
   <data name="Set_Language_System" xml:space="preserve"><value>使用 Windows 語言</value></data>
   <data name="Set_Key_Toggle" xml:space="preserve"><value>開啟 / 關閉 Hotline</value></data>
   <data name="Set_Key_Open" xml:space="preserve"><value>開啟 Hotline</value></data>
@@ -68,12 +68,12 @@
   <data name="Set_Retention" xml:space="preserve"><value>聊天記錄保留期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>附加選取的文字</value></data>
-  <data name="Set_Selection_Desc" xml:space="preserve"><value>用此鍵開啟面板時,會附加你先前所在應用程式中選取的文字。不分享選取範圍的應用程式也能使用 Ctrl+C,但會短暫使用剪貼簿 (之後會還原)。</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>用此鍵開啟面板時,會附加你先前所在應用程式中選取的文字。未共用選取範圍的應用程式也能使用 Ctrl+C,但會短暫使用剪貼簿 (之後會還原)。</value></data>
   <data name="Set_Selection_Auto" xml:space="preserve"><value>是</value></data>
   <data name="Set_Selection_Clipboard" xml:space="preserve"><value>是,也使用 Ctrl+C</value></data>
   <data name="Set_Selection_Off" xml:space="preserve"><value>否</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>停止回答</value></data>
-  <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答產生期間停止它的按鍵 (Enter 永遠不會停止;[傳送] 按鈕也可停止)。單一按鍵 (Esc) 或組合鍵,例如 Ctrl+. —— 沒有回答在進行時,Esc 會隱藏面板。</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答產生時用來停止的按鍵 (Enter 永遠不會停止;[傳送] 按鈕也可停止)。單一按鍵 (Esc) 或組合鍵,例如 Ctrl+. —— 未在產生回答時,Esc 會隱藏面板。</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>快速鍵無效 (範例:Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>記憶</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>每個聊天都會讀取 .hotline 資料夾中的 memory.md (「/remember 某件事」會新增一行)。</value></data>
@@ -143,10 +143,10 @@
   <data name="Conn_MoveDown" xml:space="preserve"><value>在提供者清單中下移</value></data>
   <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · 預設</value></data>
   <data name="Agy_ReadFailed" xml:space="preserve"><value>目前無法讀取 agy 的設定。</value></data>
-  <data name="Agy_Summary" xml:space="preserve"><value>agy 規則:允許 {0} 條,拒絕 {1} 條。預設允許讀取工作資料夾中的檔案;殼層命令需要允許規則。</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy 規則:允許 {0} 條,拒絕 {1} 條。預設允許讀取工作資料夾中的檔案;Shell 命令需要允許規則。</value></data>
   <data name="Agy_AllowReadOnly" xml:space="preserve"><value>允許唯讀命令</value></data>
   <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>將 command(Get-ChildItem)、command(git status) 等規則新增到 agy 的允許清單,並拒絕 Remove-Item、rm、git push 等</value></data>
-  <data name="Agy_AllowTitle" xml:space="preserve"><value>要允許 agy 使用唯讀殼層命令嗎?</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>要允許 agy 使用唯讀Shell 命令嗎?</value></data>
   <data name="Agy_AllowBody" xml:space="preserve"><value>這會變更 agy 自己的設定 ({0}),因此你自行使用 agy 時也會生效。
 
 允許:
@@ -159,7 +159,7 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>編輯 agy 規則</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy 權限</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>要核准所有動作嗎?(危險)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy 會不經詢問就執行它決定的任何殼層命令,並編輯或刪除任何檔案。錯誤的回答或惡意網頁、檔案都可能造成實際損害。請只在可以承受遺失的工作資料夾中使用。</value></data>
+  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy 會不經詢問就執行它決定執行的任何 Shell 命令,並編輯或刪除任何檔案。錯誤的回答或惡意網頁、檔案都可能造成實際損害。請只在能承受資料損失的工作資料夾中使用。</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>我了解,開啟</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ 核准所有動作 (危險)</value></data>
   <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>略過 agy 的所有權限檢查 (--dangerously-skip-permissions)。僅限「使用程式本身的工具」模式。</value></data>
@@ -327,7 +327,7 @@
   <data name="Transcript_Retry" xml:space="preserve"><value>重試</value></data>
   <data name="Transcript_Copied" xml:space="preserve"><value>已複製。</value></data>
   <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>剪貼簿忙碌中,請再試一次。</value></data>
-  <data name="Transcript_Report" xml:space="preserve"><value>向 {0} 檢舉此回答…</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>向 {0} 回報此回答…</value></data>
   <data name="Transcript_More" xml:space="preserve"><value>更多</value></data>
   <data name="Task_Failed" xml:space="preserve"><value>操作失敗:{0}</value></data>
   <data name="Voice_HintHold" xml:space="preserve"><value>放開按鍵即停止。Esc 取消。</value></data>

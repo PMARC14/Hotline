@@ -15,13 +15,13 @@
   <data name="Set_Key_Voice" xml:space="preserve"><value>Input vocale (tieni premuto per parlare)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Non fare nulla</value></data>
   <data name="Set_CopilotKey" xml:space="preserve"><value>Tasto Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Come Ctrl destro, Copilot+C equivale a Ctrl+C e il tasto non apre più Hotline (usa il tasto di scelta rapida aggiuntivo qui sotto o l'icona nell'area di notifica). Funziona con le tastiere il cui tasto Copilot invia Win+Maiusc+F23 (la maggior parte).</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Come Ctrl destro, Copilot+C equivale a Ctrl+C e il tasto non apre più Hotline (usa il tasto di scelta rapida aggiuntivo qui sotto o l'icona nell'area di notifica). Funziona con le tastiere il cui tasto Copilot invia Win+Shift+F23 (la maggior parte).</value></data>
   <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Apre Hotline</value></data>
   <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Funziona come Ctrl destro</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Pressione breve del tasto Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Pressione prolungata del tasto Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Input vocale</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Tieni premuto il tasto Copilot e parla; rilascialo per fermarti (Esc annulla). Usa il riconoscimento vocale di Windows: consenti il microfono e attiva Impostazioni › Privacy e sicurezza › Voce › Riconoscimento vocale online. Attivarlo assegna la pressione prolungata alla voce; disattivarlo la riporta a una nuova chat.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Tieni premuto il tasto Copilot e parla; rilascialo per terminare (Esc annulla). Usa il riconoscimento vocale di Windows: consenti il microfono e attiva Impostazioni › Privacy e sicurezza › Comandi vocali › Riconoscimento vocale online. Attivarlo assegna la pressione prolungata all'input vocale; disattivarlo la riporta a una nuova chat.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Tasto di scelta rapida aggiuntivo</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Apre anch'esso Hotline, ad es. Ctrl+Alt+H. Lascia vuoto per nessuno.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Tasto di scelta rapida non valido (esempio: Ctrl+Alt+H)</value></data>
@@ -143,7 +143,7 @@
   <data name="Conn_MoveDown" xml:space="preserve"><value>Sposta giù nell'elenco dei provider</value></data>
   <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · predefinita</value></data>
   <data name="Agy_ReadFailed" xml:space="preserve"><value>Impossibile leggere le impostazioni di agy in questo momento.</value></data>
-  <data name="Agy_Summary" xml:space="preserve"><value>Regole di agy: {0} consentite, {1} negate. La lettura dei file nella cartella di lavoro è consentita per impostazione predefinita; i comandi della shell richiedono una regola di consenso.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>Regole di agy: {0} consentite, {1} negate. La lettura dei file nella cartella di lavoro è consentita per impostazione predefinita; i comandi della shell richiedono una regola di autorizzazione.</value></data>
   <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Consenti comandi di sola lettura</value></data>
   <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>Aggiunge regole come command(Get-ChildItem), command(git status) all'elenco consentito di agy e nega Remove-Item, rm, git push...</value></data>
   <data name="Agy_AllowTitle" xml:space="preserve"><value>Consentire comandi della shell di sola lettura per agy?</value></data>
@@ -199,7 +199,7 @@ Nega:
   <data name="Conn_SystemPrompt" xml:space="preserve"><value>Prompt di sistema</value></data>
   <data name="Common_Default" xml:space="preserve"><value>Predefinito</value></data>
   <data name="Conn_DefaultModel" xml:space="preserve"><value>Modello predefinito</value></data>
-  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Impegno predefinito</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Sforzo predefinito</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>Verifica connessione</value></data>
   <data name="Effort_minimal" xml:space="preserve"><value>Minimo</value></data>
   <data name="Effort_low" xml:space="preserve"><value>Basso</value></data>
@@ -212,7 +212,7 @@ Nega:
   <data name="Bar_captureScreen" xml:space="preserve"><value>Cattura schermo</value></data>
   <data name="Bar_captureRegion" xml:space="preserve"><value>Cattura area</value></data>
   <data name="Bar_spacer" xml:space="preserve"><value>Spazio</value></data>
-  <data name="Bar_effort" xml:space="preserve"><value>Selettore dell'impegno</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Selettore dello sforzo</value></data>
   <data name="Bar_model" xml:space="preserve"><value>Selettore del modello</value></data>
   <data name="Bar_provider" xml:space="preserve"><value>Selettore del provider</value></data>
   <data name="Bar_prompt" xml:space="preserve"><value>Selettore del prompt</value></data>
@@ -242,7 +242,7 @@ Nega:
   <data name="About_CheckFailed" xml:space="preserve"><value>Impossibile verificare questo PC.</value></data>
   <data name="Memory_Edit" xml:space="preserve"><value>Modifica la memoria</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Vuota. «/remember qualcosa» nella casella del messaggio aggiunge una riga.</value></data>
-  <data name="Memory_Lines" xml:space="preserve"><value>{0} riga/e. Ogni chat le vede finché Memoria è attiva.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} riga/righe. Ogni chat le vede finché Memoria è attiva.</value></data>
   <data name="Actions_Intro" xml:space="preserve"><value>Digita / all'inizio di un messaggio per usarne una: «/translate un testo» oppure «/summarize» con un allegato. Ogni azione è un file Markdown; la sua prima riga è la descrizione mostrata nell'elenco. I nomi possono contenere lettere, cifre, - e _.</value></data>
   <data name="Actions_New" xml:space="preserve"><value>Nuova azione</value></data>
   <data name="Actions_OpenFolder" xml:space="preserve"><value>Apri la cartella delle azioni</value></data>
@@ -250,7 +250,7 @@ Nega:
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} lingua/e OCR</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Nessuna lingua OCR: Impostazioni › Data/ora e lingua › Lingua e area geografica › aggiungi una lingua con il riconoscimento ottico dei caratteri</value></data>
   <data name="Pc_VoiceOk" xml:space="preserve"><value>La dettatura di Windows è disponibile</value></data>
-  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Impostazioni › Privacy e sicurezza › Voce › Riconoscimento vocale online, e un microfono</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Impostazioni › Privacy e sicurezza › Comandi vocali › Riconoscimento vocale online, e un microfono</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Connettori degli agenti di Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe trovato; i suoi connettori compaiono come server di strumenti windows-…</value></data>
   <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe non trovato (non ancora attivato su questo PC)</value></data>
@@ -307,8 +307,8 @@ Nega:
   <data name="Tool_AllowAlways" xml:space="preserve"><value>Consenti sempre</value></data>
   <data name="Tool_Deny" xml:space="preserve"><value>Nega</value></data>
   <data name="Effort_NA" xml:space="preserve"><value>n/d</value></data>
-  <data name="Bar_EffortTip" xml:space="preserve"><value>Impegno di ragionamento</value></data>
-  <data name="Bar_NotYet" xml:space="preserve"><value>{0} si può configurare nelle Impostazioni, ma chattare con esso arriverà in un aggiornamento successivo.</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Sforzo di ragionamento</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} si può configurare nelle Impostazioni, ma potrai chattarci in un aggiornamento successivo.</value></data>
   <data name="Bar_PromptChosen" xml:space="preserve"><value>Prompt di sistema: {0} (vale dal prossimo messaggio)</value></data>
   <data name="Bar_EditPrompt" xml:space="preserve"><value>Modifica «{0}»…</value></data>
   <data name="Bar_NewPrompt" xml:space="preserve"><value>Nuovo prompt…</value></data>
@@ -330,8 +330,8 @@ Nega:
   <data name="Transcript_Report" xml:space="preserve"><value>Segnala questa risposta a {0}…</value></data>
   <data name="Transcript_More" xml:space="preserve"><value>Altro</value></data>
   <data name="Task_Failed" xml:space="preserve"><value>Non ha funzionato: {0}</value></data>
-  <data name="Voice_HintHold" xml:space="preserve"><value>Rilascia il tasto per fermarti. Esc annulla.</value></data>
-  <data name="Voice_HintTap" xml:space="preserve"><value>Premi di nuovo il tasto per fermarti. Esc annulla.</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>Rilascia il tasto per terminare. Esc annulla.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>Premi di nuovo il tasto per terminare. Esc annulla.</value></data>
   <data name="Voice_Starting" xml:space="preserve"><value>🎙 Avvio del microfono…</value></data>
   <data name="Voice_Listening" xml:space="preserve"><value>🎙 In ascolto…</value></data>
   <data name="Voice_NoMic" xml:space="preserve"><value>Nessun microfono disponibile.</value></data>
@@ -394,7 +394,7 @@ Nega:
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code non è installato. Installalo da claude.com/claude-code, esegui `claude` una volta per accedere, poi riprova.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy non ha effettuato l'accesso. Esegui `agy` una volta in un terminale per accedere, poi riprova.</value></data>
   <data name="Agy_Quota" xml:space="preserve"><value>La tua quota di Antigravity per ora è esaurita. Riprova più tardi.</value></data>
-  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy non considera ancora attendibile l'area di lavoro di Hotline. Esegui `agy` una volta in un terminale e consideralo attendibile.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy non considera ancora attendibile l'area di lavoro di Hotline. Esegui `agy` una volta in un terminale e considerala attendibile.</value></data>
   <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code non ha effettuato l'accesso. Esegui `claude` una volta in un terminale, accedi, poi riprova.</value></data>
   <data name="Claude_Limit" xml:space="preserve"><value>Limite di utilizzo di Claude raggiunto per ora. {0}</value></data>
   <data name="Claude_Overloaded" xml:space="preserve"><value>Claude è sovraccarico in questo momento; riprova tra poco.</value></data>

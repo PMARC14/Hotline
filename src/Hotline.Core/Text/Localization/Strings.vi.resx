@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Nhấn nhanh phím Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Nhấn giữ phím Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Nhập bằng giọng nói</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Giữ phím Copilot và nói; thả ra để dừng (Esc để hủy). Dùng tính năng nhận dạng giọng nói của Windows: cho phép micrô và bật Cài đặt › Quyền riêng tư &amp; bảo mật › Giọng nói › Nhận dạng giọng nói trực tuyến. Bật lên sẽ đặt nhấn giữ thành giọng nói; tắt đi sẽ trả về cuộc trò chuyện mới.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Giữ phím Copilot và nói; thả ra để dừng (Esc để hủy). Dùng tính năng nhận dạng giọng nói của Windows: cho phép micrô và bật Cài đặt › Quyền riêng tư &amp; bảo mật › Giọng nói › Nhận dạng giọng nói trực tuyến. Bật lên sẽ đặt thao tác nhấn giữ thành giọng nói; tắt đi sẽ chuyển lại thành cuộc trò chuyện mới.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Phím tắt bổ sung</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Cũng mở Hotline, ví dụ Ctrl+Alt+H. Để trống nếu không dùng.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Phím tắt không hợp lệ (ví dụ: Ctrl+Alt+H)</value></data>
@@ -62,7 +62,7 @@
   <data name="Set_Position_Desc" xml:space="preserve"><value>0 = trên cùng, 0,5 = giữa, 1 = dưới cùng.</value></data>
   <data name="Set_Growth" xml:space="preserve"><value>Cách mở rộng</value></data>
   <data name="Set_Growth_Fit" xml:space="preserve"><value>Vừa với cuộc trò chuyện</value></data>
-  <data name="Set_Growth_Full" xml:space="preserve"><value>Lên ngay chiều cao tối đa</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Chuyển ngay sang chiều cao tối đa</value></data>
   <data name="Set_History" xml:space="preserve"><value>Lưu lịch sử trò chuyện</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Chỉ văn bản, trong thư mục .hotline của bạn.</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Giữ lịch sử trong</value></data>
@@ -73,7 +73,7 @@
   <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Có, cả với Ctrl+C</value></data>
   <data name="Set_Selection_Off" xml:space="preserve"><value>Không</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Dừng câu trả lời</value></data>
-  <data name="Set_Stop_Desc" xml:space="preserve"><value>Phím dừng câu trả lời trong khi đang được viết (Enter không bao giờ dừng; nút Gửi cũng dừng được). Một phím đơn (Esc) hoặc tổ hợp như Ctrl+. — khi không có gì đang trả lời, Esc sẽ ẩn bảng.</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>Phím dừng câu trả lời trong khi đang được viết (Enter không bao giờ dừng; nút Gửi cũng dừng được). Một phím đơn (Esc) hoặc tổ hợp như Ctrl+. — khi không có câu trả lời nào đang được tạo, Esc sẽ ẩn bảng.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Phím tắt không hợp lệ (ví dụ: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Bộ nhớ</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Mọi cuộc trò chuyện đều thấy memory.md trong thư mục .hotline của bạn ("/remember điều gì đó" thêm một dòng).</value></data>
@@ -86,7 +86,7 @@
   <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Với thao tác phím Giọng nói: gửi tin nhắn khi bạn thả phím.</value></data>
   <data name="Set_Ocr" xml:space="preserve"><value>Văn bản trong ảnh chụp màn hình (OCR)</value></data>
   <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows đọc văn bản trong ảnh (ngoại tuyến) cho các mô hình không xem được ảnh.</value></data>
-  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Cho mô hình chỉ đọc văn bản</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Cho mô hình chỉ dùng văn bản</value></data>
   <data name="Set_Ocr_Always" xml:space="preserve"><value>Luôn thêm vào</value></data>
   <data name="Set_Ocr_Off" xml:space="preserve"><value>Tắt</value></data>
   <data name="Set_ImageSize" xml:space="preserve"><value>Giới hạn kích thước ảnh</value></data>
@@ -192,7 +192,7 @@ Từ chối:
   <data name="Conn_WorkingFolder" xml:space="preserve"><value>Thư mục làm việc</value></data>
   <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Nơi công cụ của chương trình hoạt động ở chế độ Kế thừa.</value></data>
   <data name="Conn_RefusalFallback" xml:space="preserve"><value>Dự phòng khi bị từ chối</value></data>
-  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Nếu bước kiểm tra an toàn từ chối yêu cầu, API sẽ trả lời lại bằng một mô hình phù hợp thay vì dừng (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Nếu bước kiểm tra an toàn từ chối yêu cầu, API sẽ gửi lại yêu cầu với một mô hình phù hợp thay vì dừng (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
   <data name="Conn_Images" xml:space="preserve"><value>Mô hình đọc được ảnh</value></data>
   <data name="Conn_Images_Desc" xml:space="preserve"><value>Tắt: ảnh chụp màn hình được gửi dưới dạng văn bản (Cài đặt › Trò chuyện › Văn bản trong ảnh chụp màn hình).</value></data>
   <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Mặc định ({0})</value></data>
@@ -283,7 +283,7 @@ Từ chối:
   <data name="Chat_StillAnswering" xml:space="preserve"><value>Vẫn đang trả lời. {0} hoặc nút Dừng sẽ dừng nó; tin nhắn của bạn vẫn chờ trong ô.</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>Gõ điều cần ghi nhớ sau /remember, ví dụ "/remember tôi thích đơn vị hệ mét".</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>Đã ghi nhớ. Từ giờ mọi cuộc trò chuyện đều thấy điều này (sửa trong Cài đặt › Trò chuyện và lịch sử › Bộ nhớ).</value></data>
-  <data name="Chat_NotRemembered" xml:space="preserve"><value>Chưa lưu: chỉ một dòng, tối đa {0} ký tự.</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Không lưu được: chỉ một dòng, tối đa {0} ký tự.</value></data>
   <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Hãy gõ văn bản cho /{0} phía sau, hoặc đính kèm thứ gì đó.</value></data>
   <data name="Chat_FolderFailed" xml:space="preserve"><value>Không thể mở thư mục cài đặt ({0}): {1}</value></data>
   <data name="Composer_Stop" xml:space="preserve"><value>Dừng</value></data>
@@ -292,7 +292,7 @@ Từ chối:
   <data name="Welcome_Body" xml:space="preserve"><value>Những gì bạn gửi — tin nhắn, tệp đính kèm và văn bản bạn đã chọn trong ứng dụng trước đó (hiển thị dưới dạng thẻ có thể gỡ bỏ) — chỉ được gửi đến kết nối AI bạn đã chọn. Mẹo: gõ / để dùng thao tác nhanh, và /remember để lưu ghi chú.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Những gì được gửi</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Bạn thích Hotline chứ?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>Hotline miễn phí và mã nguồn mở, do một người phát triển. Nếu nó giúp ích cho bạn, một khoản ủng hộ sẽ giúp nó tiếp tục (GitHub Sponsors hoặc Ko-fi; liên kết vẫn ở Cài đặt › Giới thiệu). Thông báo này sẽ không hiện lại.</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Hotline miễn phí và mã nguồn mở, do một người phát triển. Nếu nó giúp ích cho bạn, một khoản ủng hộ sẽ giúp nó tiếp tục (GitHub Sponsors hoặc Ko-fi; liên kết luôn có trong Cài đặt › Giới thiệu). Thông báo này sẽ không hiện lại.</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>Sao chép</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>Sao chép mã</value></data>
   <data name="Md_Code" xml:space="preserve"><value>mã</value></data>
@@ -346,7 +346,7 @@ Từ chối:
   <data name="Popup_JumpLatest" xml:space="preserve"><value>Đến tin nhắn mới nhất</value></data>
   <data name="Popup_AddMenu" xml:space="preserve"><value>Thêm tệp hoặc chụp màn hình</value></data>
   <data name="Popup_AttachFiles" xml:space="preserve"><value>Đính kèm tệp…</value></data>
-  <data name="Popup_Pin" xml:space="preserve"><value>Ghim mở (vẫn mở khi bạn bấm chỗ khác, để bạn kéo tệp vào)</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Ghim để luôn mở (vẫn mở khi bạn nhấp ra ngoài, để bạn kéo tệp vào)</value></data>
   <data name="Popup_CaptureWindow" xml:space="preserve"><value>Chụp cửa sổ bạn vừa dùng</value></data>
   <data name="Popup_CaptureScreen" xml:space="preserve"><value>Chụp toàn màn hình</value></data>
   <data name="Popup_Model" xml:space="preserve"><value>Mô hình (gõ tên hoặc chọn)</value></data>
@@ -373,7 +373,7 @@ Từ chối:
   <data name="Models_NotIncluded" xml:space="preserve"><value>Đã kết nối: {0}, nhưng không có {1}.</value></data>
   <data name="Models_NeedKey" xml:space="preserve"><value>Hãy thêm khóa API cho {0} trước.</value></data>
   <data name="Models_KeyRejected" xml:space="preserve"><value>{0} đã từ chối khóa API.</value></data>
-  <data name="Models_HttpError" xml:space="preserve"><value>{0} trả lời {1}.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} phản hồi {1}.</value></data>
   <data name="Api_Unreachable" xml:space="preserve"><value>Không thể kết nối tới {0}: {1}</value></data>
   <data name="Api_Timeout" xml:space="preserve"><value>{0} không trả lời kịp thời.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Hãy thêm khóa API cho {0} trong Cài đặt › Kết nối AI.</value></data>
