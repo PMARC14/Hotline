@@ -5,7 +5,7 @@
   <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
   <data name="Set_Language" xml:space="preserve"><value>Dil</value></data>
-  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline'ın menülerinin, ayarlarının ve iletilerinin dili. Yapay zekâ yanıtları yazdığınız dili izler.</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline'ın menülerinin, ayarlarının ve iletilerinin dili. Yapay zekâ yanıtları yazdığınız dilde verilir.</value></data>
   <data name="Set_Language_System" xml:space="preserve"><value>Windows dilini kullan</value></data>
   <data name="Set_Key_Toggle" xml:space="preserve"><value>Hotline'ı aç / kapat</value></data>
   <data name="Set_Key_Open" xml:space="preserve"><value>Hotline'ı aç</value></data>
@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Copilot tuşuna kısa basma</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Copilot tuşuna uzun basma</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Sesle giriş</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot tuşunu basılı tutup konuşun; durdurmak için bırakın (Esc iptal eder). Windows konuşma tanımayı kullanır: mikrofona izin verin ve Ayarlar › Gizlilik ve güvenlik › Konuşma › Çevrimiçi konuşma tanıma'yı açın. Açmak uzun basmayı sese atar; kapatmak yeniden yeni sohbete döndürür.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot tuşunu basılı tutup konuşun; durdurmak için bırakın (Esc iptal eder). Windows konuşma tanımayı kullanır: mikrofona izin verin ve Ayarlar › Gizlilik ve güvenlik › Konuşma › Çevrimiçi konuşma tanıma'yı açın. Bu ayar açıldığında uzun basma sesli girişe ayarlanır; kapatıldığında ise yeni sohbete döner.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Ek kısayol tuşu</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Hotline'ı da açar, ör. Ctrl+Alt+H. Kullanmamak için boş bırakın.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Geçerli bir kısayol değil (örnek: Ctrl+Alt+H)</value></data>
@@ -78,7 +78,7 @@
   <data name="Set_Memory" xml:space="preserve"><value>Bellek</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Her sohbet .hotline klasörünüzdeki memory.md dosyasını görür ("/remember bir şey" bir satır ekler).</value></data>
   <data name="Set_MemoryTool" xml:space="preserve"><value>Yapay zekânın anı kaydetmesine izin ver</value></data>
-  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>API bağlantıları, bir şeyi hatırlamalarını istediğinizde bir bilgiyi kaydedebilir.</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>API bağlantıları, bir şeyi akılda tutmalarını istediğinizde bir bilgiyi kaydedebilir.</value></data>
   <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>Her seferinde sor</value></data>
   <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>Evet, sormadan</value></data>
   <data name="Set_MemoryTool_Off" xml:space="preserve"><value>Hayır</value></data>
@@ -248,7 +248,7 @@ Reddet:
   <data name="Actions_OpenFolder" xml:space="preserve"><value>Eylemler klasörünü aç</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>derleme {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR dili</value></data>
-  <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR dili yok: Ayarlar › Saat ve dil › Dil ve bölge › optik karakter tanıma içeren bir dil ekleyin</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR dili yok: Ayarlar › Zaman ve dil › Dil ve bölge › optik karakter tanıma içeren bir dil ekleyin</value></data>
   <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows dikte özelliği kullanılabilir</value></data>
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Ayarlar › Gizlilik ve güvenlik › Konuşma › Çevrimiçi konuşma tanıma ve bir mikrofon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows aracı bağlayıcıları</value></data>
@@ -276,7 +276,7 @@ Reddet:
   <data name="Attach_TooLarge" xml:space="preserve"><value>{0} çok büyük ({1} MB; en fazla {2} MB).</value></data>
   <data name="Attach_Unreadable" xml:space="preserve"><value>{0} okunamadı.</value></data>
   <data name="Attach_NotImage" xml:space="preserve"><value>{0} görüntü olarak okunamadı.</value></data>
-  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows'ta yüklü OCR dili yok, bu nedenle görüntülerdeki metin okunamıyor. Ayarlar › Saat ve dil › Dil ve bölge'den bir dil ekleyin ("Optik karakter tanıma" içeren bir dil).</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows'ta yüklü OCR dili yok, bu nedenle görüntülerdeki metin okunamıyor. Ayarlar › Zaman ve dil › Dil ve bölge'den bir dil ekleyin ("Optik karakter tanıma" içeren bir dil).</value></data>
   <data name="Attach_OcrFailed" xml:space="preserve"><value>{0} içindeki metin okunamadı.</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>Görüntüyü kopyala</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>Görüntü kopyalandı.</value></data>
@@ -308,7 +308,7 @@ Reddet:
   <data name="Tool_Deny" xml:space="preserve"><value>Reddet</value></data>
   <data name="Effort_NA" xml:space="preserve"><value>yok</value></data>
   <data name="Bar_EffortTip" xml:space="preserve"><value>Akıl yürütme eforu</value></data>
-  <data name="Bar_NotYet" xml:space="preserve"><value>{0} Ayarlar'da kurulabilir, ancak onunla sohbet sonraki bir güncellemede gelecek.</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} Ayarlar'da yapılandırılabilir, ancak onunla sohbet özelliği sonraki bir güncellemede sunulacak.</value></data>
   <data name="Bar_PromptChosen" xml:space="preserve"><value>Sistem istemi: {0} (sonraki iletiye uygulanır)</value></data>
   <data name="Bar_EditPrompt" xml:space="preserve"><value>"{0}" düzenle…</value></data>
   <data name="Bar_NewPrompt" xml:space="preserve"><value>Yeni istem…</value></data>
@@ -327,7 +327,7 @@ Reddet:
   <data name="Transcript_Retry" xml:space="preserve"><value>Yeniden dene</value></data>
   <data name="Transcript_Copied" xml:space="preserve"><value>Kopyalandı.</value></data>
   <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>Pano meşgul; yeniden deneyin.</value></data>
-  <data name="Transcript_Report" xml:space="preserve"><value>Bu yanıtı {0} için bildir…</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>Bu yanıtı {0} tarafına bildir…</value></data>
   <data name="Transcript_More" xml:space="preserve"><value>Diğer</value></data>
   <data name="Task_Failed" xml:space="preserve"><value>Bu işe yaramadı: {0}</value></data>
   <data name="Voice_HintHold" xml:space="preserve"><value>Durdurmak için tuşu bırakın. Esc iptal eder.</value></data>

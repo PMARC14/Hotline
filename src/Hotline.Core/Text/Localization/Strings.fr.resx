@@ -73,7 +73,7 @@
   <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Oui, aussi avec Ctrl+C</value></data>
   <data name="Set_Selection_Off" xml:space="preserve"><value>Non</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Arrêter une réponse</value></data>
-  <data name="Set_Stop_Desc" xml:space="preserve"><value>La touche qui arrête une réponse en cours d'écriture (Entrée ne le fait jamais ; le bouton Envoyer aussi l'arrête). Une touche seule (Échap) ou une combinaison comme Ctrl+. — quand rien n'est en cours, Échap masque le panneau.</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>La touche qui arrête une réponse en cours d'écriture (Entrée ne le fait jamais ; le bouton Envoyer l'arrête aussi). Une touche seule (Échap) ou une combinaison comme Ctrl+. — quand rien n'est en cours, Échap masque le panneau.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Raccourci non valide (exemples : Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Mémoire</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Chaque conversation voit memory.md dans votre dossier .hotline (« /remember quelque chose » ajoute une ligne).</value></data>
@@ -90,7 +90,7 @@
   <data name="Set_Ocr_Always" xml:space="preserve"><value>Toujours l'ajouter</value></data>
   <data name="Set_Ocr_Off" xml:space="preserve"><value>Désactivé</value></data>
   <data name="Set_ImageSize" xml:space="preserve"><value>Taille d'image maximale</value></data>
-  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Les images jointes et capturées sont mises à l'échelle à ce plus grand côté.</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Les images jointes et capturées sont redimensionnées selon ce côté le plus long.</value></data>
   <data name="Set_Logging" xml:space="preserve"><value>Journalisation détaillée</value></data>
   <data name="Set_Logging_Desc" xml:space="preserve"><value>Écrit des diagnostics supplémentaires dans le journal.</value></data>
   <data name="Settings_Title" xml:space="preserve"><value>Paramètres de Hotline</value></data>
@@ -107,7 +107,7 @@
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(S'applique après le redémarrage de Hotline.)</value></data>
   <data name="Settings_InvalidValue" xml:space="preserve"><value>Valeur non valide</value></data>
   <data name="Settings_Startup" xml:space="preserve"><value>Démarrer avec Windows</value></data>
-  <data name="Tools_Intro" xml:space="preserve"><value>Les connexions API dont l'utilisation des outils est réglée sur « Utiliser les outils de Hotline » peuvent appeler les outils de ces serveurs MCP. Les outils en lecture seule s'exécutent ; tout le reste vous est demandé dans le panneau (Autoriser une fois / Toujours / Refuser).</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Les connexions API dont l'utilisation des outils est réglée sur « Utiliser les outils de Hotline » peuvent appeler les outils de ces serveurs MCP. Les outils en lecture seule s'exécutent ; pour tout le reste, le panneau vous demande confirmation (Autoriser une fois / Toujours / Refuser).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>Serveurs MCP</value></data>
   <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — même format « mcpServers » que les autres applications MCP ; les autorisations sont dans le même fichier</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>Modifier mcp.json</value></data>

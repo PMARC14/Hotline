@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Krótkie naciśnięcie klawisza Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Długie naciśnięcie klawisza Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Wprowadzanie głosowe</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Przytrzymaj klawisz Copilot i mów; puść, aby zakończyć (Esc anuluje). Używa rozpoznawania mowy systemu Windows: zezwól na mikrofon i włącz Ustawienia › Prywatność i zabezpieczenia › Mowa › Rozpoznawanie mowy online. Włączenie przypisuje długie naciśnięcie do głosu; wyłączenie przywraca nowy czat.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Przytrzymaj klawisz Copilot i mów; puść, aby zakończyć (Esc anuluje). Używa rozpoznawania mowy systemu Windows: zezwól na dostęp do mikrofonu i włącz Ustawienia › Prywatność i zabezpieczenia › Mowa › Rozpoznawanie mowy online. Włączenie przypisuje długie naciśnięcie do wprowadzania głosowego; wyłączenie przywraca nowy czat.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Dodatkowy skrót klawiszowy</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Również otwiera Hotline, np. Ctrl+Alt+H. Pozostaw puste, aby nie używać.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>To nie jest prawidłowy skrót (przykład: Ctrl+Alt+H)</value></data>
@@ -107,7 +107,7 @@
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Obowiązuje po ponownym uruchomieniu Hotline.)</value></data>
   <data name="Settings_InvalidValue" xml:space="preserve"><value>Nieprawidłowa wartość</value></data>
   <data name="Settings_Startup" xml:space="preserve"><value>Uruchamiaj z systemem Windows</value></data>
-  <data name="Tools_Intro" xml:space="preserve"><value>Połączenia API z ustawieniem Używanie narzędzi „Używaj narzędzi Hotline” mogą wywoływać narzędzia tych serwerów MCP. Narzędzia tylko do odczytu są uruchamiane; o wszystko inne zostaniesz zapytany w panelu (Zezwól raz / Zawsze / Odmów).</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Połączenia API z opcją Używanie narzędzi ustawioną na „Używaj narzędzi Hotline” mogą wywoływać narzędzia tych serwerów MCP. Narzędzia tylko do odczytu są uruchamiane; o wszystko inne zostaniesz zapytany w panelu (Zezwól raz / Zawsze / Odmów).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>Serwery MCP</value></data>
   <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — ten sam format „mcpServers” co w innych aplikacjach MCP; zgody są zapisywane w tym samym pliku</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>Edytuj mcp.json</value></data>
@@ -188,7 +188,7 @@ Zabroń:
   <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>Tylko czat (może czytać załączniki)</value></data>
   <data name="Conn_UseOwnTools" xml:space="preserve"><value>Używaj własnych narzędzi i uprawnień programu</value></data>
   <data name="Common_Browse" xml:space="preserve"><value>Przeglądaj…</value></data>
-  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Tryb Dziedzicz pozwala programowi uruchamiać jego narzędzia (pliki, polecenia, sieć) według jego własnych reguł uprawnień.</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Tryb dziedziczenia pozwala programowi uruchamiać jego narzędzia (pliki, polecenia, sieć) według jego własnych reguł uprawnień.</value></data>
   <data name="Conn_WorkingFolder" xml:space="preserve"><value>Folder roboczy</value></data>
   <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Gdzie działają narzędzia programu w trybie Dziedzicz.</value></data>
   <data name="Conn_RefusalFallback" xml:space="preserve"><value>Model zapasowy przy odmowie</value></data>
@@ -199,7 +199,7 @@ Zabroń:
   <data name="Conn_SystemPrompt" xml:space="preserve"><value>Prompt systemowy</value></data>
   <data name="Common_Default" xml:space="preserve"><value>Domyślny</value></data>
   <data name="Conn_DefaultModel" xml:space="preserve"><value>Domyślny model</value></data>
-  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Domyślny wysiłek</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Domyślna intensywność rozumowania</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>Testuj połączenie</value></data>
   <data name="Effort_minimal" xml:space="preserve"><value>Minimalny</value></data>
   <data name="Effort_low" xml:space="preserve"><value>Niski</value></data>
@@ -212,7 +212,7 @@ Zabroń:
   <data name="Bar_captureScreen" xml:space="preserve"><value>Przechwyć ekran</value></data>
   <data name="Bar_captureRegion" xml:space="preserve"><value>Przechwyć obszar</value></data>
   <data name="Bar_spacer" xml:space="preserve"><value>Odstęp</value></data>
-  <data name="Bar_effort" xml:space="preserve"><value>Wybór wysiłku</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Wybór intensywności rozumowania</value></data>
   <data name="Bar_model" xml:space="preserve"><value>Wybór modelu</value></data>
   <data name="Bar_provider" xml:space="preserve"><value>Wybór dostawcy</value></data>
   <data name="Bar_prompt" xml:space="preserve"><value>Wybór promptu</value></data>
@@ -259,7 +259,7 @@ Zabroń:
   <data name="Pc_ActionsOk" xml:space="preserve"><value>zarejestrowane; samo Click to Do wymaga komputera Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>wymaga systemu Windows 11 24H2 (kompilacja 26100) lub nowszego</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Włączone — Hotline uruchamia się w zasobniku po zalogowaniu.</value></data>
-  <data name="Startup_OffByUser" xml:space="preserve"><value>Wyłączone (w Ustawieniach systemu Windows › Aplikacje › Uruchamianie). Włącz tam Hotline.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Wyłączone (wyłączono w Ustawienia systemu Windows › Aplikacje › Autostart). Włącz tam Hotline.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Wyłączone (zablokowane przez zasady organizacji).</value></data>
   <data name="Startup_Off" xml:space="preserve"><value>Wyłączone.</value></data>
   <data name="Startup_Unavailable" xml:space="preserve"><value>Niedostępne w tej kompilacji.</value></data>
@@ -283,13 +283,13 @@ Zabroń:
   <data name="Chat_StillAnswering" xml:space="preserve"><value>Odpowiedź wciąż trwa. {0} lub przycisk Zatrzymaj ją przerywa; Twoja wiadomość czeka w polu.</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>Wpisz po /remember, co zapamiętać, np. „/remember wolę jednostki metryczne”.</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>Zapamiętano. Każdy czat widzi to od teraz (edycja w Ustawienia › Czat i historia › Pamięć).</value></data>
-  <data name="Chat_NotRemembered" xml:space="preserve"><value>Nie zapisano: maksymalnie jeden wiersz o długości {0} znaków.</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Nie zapisano: tekst musi być w jednym wierszu o długości maksymalnie {0} znaków.</value></data>
   <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Wpisz tekst dla /{0} po poleceniu lub coś dołącz.</value></data>
   <data name="Chat_FolderFailed" xml:space="preserve"><value>Nie można otworzyć folderu ustawień ({0}): {1}</value></data>
   <data name="Composer_Stop" xml:space="preserve"><value>Zatrzymaj</value></data>
   <data name="Composer_Send" xml:space="preserve"><value>Wyślij (Enter)</value></data>
   <data name="Welcome_Title" xml:space="preserve"><value>Witamy w Hotline</value></data>
-  <data name="Welcome_Body" xml:space="preserve"><value>To, co wysyłasz — wiadomość, załączniki i tekst zaznaczony w aplikacji, z której przechodzisz (pokazany jako etykieta, którą możesz usunąć) — trafia tylko do wybranego połączenia AI. Wskazówki: wpisz / dla szybkich akcji i /remember, aby zapisać notatkę.</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>To, co wysyłasz — wiadomość, załączniki i tekst zaznaczony w aplikacji, z której przechodzisz (pokazany jako etykieta, którą możesz usunąć) — trafia tylko do wybranego połączenia AI. Wskazówki: wpisz /, aby wyświetlić szybkie akcje, i /remember, aby zapisać notatkę.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>Co jest wysyłane</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Podoba Ci się Hotline?</value></data>
   <data name="SupportNote_Body" xml:space="preserve"><value>Jest bezpłatny i open source, tworzony przez jedną osobę. Jeśli Ci pomaga, darowizna pozwala go rozwijać (GitHub Sponsors lub Ko-fi; linki są w Ustawienia › Informacje). Ta informacja już się nie pojawi.</value></data>
@@ -307,7 +307,7 @@ Zabroń:
   <data name="Tool_AllowAlways" xml:space="preserve"><value>Zawsze zezwalaj</value></data>
   <data name="Tool_Deny" xml:space="preserve"><value>Odmów</value></data>
   <data name="Effort_NA" xml:space="preserve"><value>nd.</value></data>
-  <data name="Bar_EffortTip" xml:space="preserve"><value>Wysiłek rozumowania</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Intensywność rozumowania</value></data>
   <data name="Bar_NotYet" xml:space="preserve"><value>{0} można skonfigurować w Ustawieniach, ale czat z nim pojawi się w późniejszej aktualizacji.</value></data>
   <data name="Bar_PromptChosen" xml:space="preserve"><value>Prompt systemowy: {0} (obowiązuje od następnej wiadomości)</value></data>
   <data name="Bar_EditPrompt" xml:space="preserve"><value>Edytuj „{0}”…</value></data>

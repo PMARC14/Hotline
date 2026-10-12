@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Коротке натискання клавіші Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Довге натискання клавіші Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Голосове введення</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Утримуйте клавішу Copilot і говоріть; відпустіть, щоб зупинити (Esc скасовує). Використовує розпізнавання мовлення Windows: дозвольте мікрофон і ввімкніть Настройки › Конфіденційність і захист › Мовлення › Онлайнове розпізнавання мовлення. Увімкнення призначає довге натискання голосу; вимкнення повертає новий чат.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Утримуйте клавішу Copilot і говоріть; відпустіть, щоб зупинити (Esc скасовує). Використовує розпізнавання мовлення Windows: дозвольте доступ до мікрофона й увімкніть Параметри › Конфіденційність і безпека › Мовлення › Онлайнове розпізнавання мовлення. Увімкнення призначає довге натискання на голосове введення; вимкнення повертає створення нового чату.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Додаткова комбінація клавіш</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Також відкриває Hotline, наприклад Ctrl+Alt+H. Залиште порожнім, щоб не використовувати.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Неприпустима комбінація клавіш (приклад: Ctrl+Alt+H)</value></data>
@@ -43,7 +43,7 @@
   <data name="Set_Luminosity" xml:space="preserve"><value>Яскравість акрилу</value></data>
   <data name="Set_Luminosity_Desc" xml:space="preserve"><value>Менше значення — прозоріше.</value></data>
   <data name="Set_TextSize" xml:space="preserve"><value>Розмір тексту</value></data>
-  <data name="Set_TextSize_Desc" xml:space="preserve"><value>За замовчуванням як у Windows (Настройки › Спеціальні можливості › Розмір тексту).</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>За замовчуванням як у Windows (Параметри › Спеціальні можливості › Розмір тексту).</value></data>
   <data name="Set_Font" xml:space="preserve"><value>Шрифт</value></data>
   <data name="Set_Font_Desc" xml:space="preserve"><value>Будь-який встановлений шрифт, наприклад Cascadia Code. Порожньо = Segoe UI Variable.</value></data>
   <data name="Set_Scrollbar" xml:space="preserve"><value>Смуга прокручування</value></data>
@@ -68,7 +68,7 @@
   <data name="Set_Retention" xml:space="preserve"><value>Зберігати історію протягом</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>днів</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Додавати виділений текст</value></data>
-  <data name="Set_Selection_Desc" xml:space="preserve"><value>Коли клавіша відкриває панель, додається текст, виділений у програмі, з якої ви перейшли. Ctrl+C також працює в програмах, які не надають своє виділення, але ненадовго використовує буфер обміну (потім його відновлено).</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>Коли клавіша відкриває панель, додається текст, виділений у програмі, з якої ви перейшли. Ctrl+C також працює в програмах, які не передають своє виділення, але ненадовго використовує буфер обміну (який потім відновлюється).</value></data>
   <data name="Set_Selection_Auto" xml:space="preserve"><value>Так</value></data>
   <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Так, також через Ctrl+C</value></data>
   <data name="Set_Selection_Off" xml:space="preserve"><value>Ні</value></data>
@@ -248,9 +248,9 @@
   <data name="Actions_OpenFolder" xml:space="preserve"><value>Відкрити папку дій</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>збірка {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>Мов OCR: {0}</value></data>
-  <data name="Pc_OcrMissing" xml:space="preserve"><value>Немає мови OCR: Настройки › Час і мова › Мова й регіон › додайте мову з оптичним розпізнаванням символів</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>Немає мови OCR: Параметри › Час і мова › Мова та регіон › додайте мову з оптичним розпізнаванням символів</value></data>
   <data name="Pc_VoiceOk" xml:space="preserve"><value>Диктування Windows доступне</value></data>
-  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Настройки › Конфіденційність і захист › Мовлення › Онлайнове розпізнавання мовлення, а також мікрофон</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Параметри › Конфіденційність і безпека › Мовлення › Онлайнове розпізнавання мовлення, а також мікрофон</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Конектори агентів Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>знайдено odr.exe; його конектори з'являються як сервери інструментів windows-…</value></data>
   <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe не знайдено (на цьому ПК ще не ввімкнено)</value></data>
@@ -259,7 +259,7 @@
   <data name="Pc_ActionsOk" xml:space="preserve"><value>зареєстровано; саме Click to Do потребує ПК Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>потрібна Windows 11 24H2 (збірка 26100) або новіша</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Увімкнуто — Hotline запускається в області сповіщень після входу.</value></data>
-  <data name="Startup_OffByUser" xml:space="preserve"><value>Вимкнуто (у Настройках Windows › Програми › Автозавантаження). Увімкніть Hotline там.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Вимкнуто (у Параметрах Windows › Програми › Автозавантаження). Увімкніть Hotline там.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Вимкнуто (заблоковано політикою вашої організації).</value></data>
   <data name="Startup_Off" xml:space="preserve"><value>Вимкнуто.</value></data>
   <data name="Startup_Unavailable" xml:space="preserve"><value>Недоступно в цій збірці.</value></data>
@@ -269,14 +269,14 @@
   <data name="Tray_Settings" xml:space="preserve"><value>Настройки…</value></data>
   <data name="Tray_Restart" xml:space="preserve"><value>Перезапустити (застосувати настройки)</value></data>
   <data name="Tray_Quit" xml:space="preserve"><value>Вийти</value></data>
-  <data name="Region_Hint" xml:space="preserve"><value>Перетягніть, щоб зняти область  ·  Esc — скасувати</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>Перетягніть, щоб захопити область  ·  Esc — скасувати</value></data>
   <data name="Attach_WindowGone" xml:space="preserve"><value>Це вікно недоступне (закрите чи згорнуте), тому знято весь екран.</value></data>
   <data name="Attach_DropCaption" xml:space="preserve"><value>Додати до Hotline</value></data>
   <data name="Attach_NoFolders" xml:space="preserve"><value>Папки не можна додавати ({0}).</value></data>
   <data name="Attach_TooLarge" xml:space="preserve"><value>{0} завеликий ({1} МБ; макс. {2} МБ).</value></data>
   <data name="Attach_Unreadable" xml:space="preserve"><value>Не вдалося прочитати {0}.</value></data>
   <data name="Attach_NotImage" xml:space="preserve"><value>Не вдалося прочитати {0} як зображення.</value></data>
-  <data name="Attach_NoOcr" xml:space="preserve"><value>У Windows не встановлено жодної мови OCR, тож текст на зображеннях не можна прочитати. Додайте її в Настройки › Час і мова › Мова й регіон (мову з «Оптичним розпізнаванням символів»).</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>У Windows не встановлено жодної мови OCR, тож текст на зображеннях не можна прочитати. Додайте її в Параметри › Час і мова › Мова та регіон (мову з «Оптичним розпізнаванням символів»).</value></data>
   <data name="Attach_OcrFailed" xml:space="preserve"><value>Не вдалося прочитати текст у {0}.</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>Копіювати зображення</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>Зображення скопійовано.</value></data>

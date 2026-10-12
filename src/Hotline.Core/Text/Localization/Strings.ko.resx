@@ -62,7 +62,7 @@
   <data name="Set_Position_Desc" xml:space="preserve"><value>0 = 위, 0.5 = 가운데, 1 = 아래.</value></data>
   <data name="Set_Growth" xml:space="preserve"><value>커지는 방식</value></data>
   <data name="Set_Growth_Fit" xml:space="preserve"><value>대화에 맞추기</value></data>
-  <data name="Set_Growth_Full" xml:space="preserve"><value>바로 최대 높이로</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>최대 높이로 바로 확장</value></data>
   <data name="Set_History" xml:space="preserve"><value>채팅 기록 저장</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>텍스트만, .hotline 폴더에 저장합니다.</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>기록 보관 기간</value></data>
@@ -76,9 +76,9 @@
   <data name="Set_Stop_Desc" xml:space="preserve"><value>답변이 작성되는 동안 이를 멈추는 키입니다(Enter로는 멈추지 않으며, 보내기 단추로도 멈출 수 있습니다). 단일 키(Esc) 또는 Ctrl+. 같은 조합 — 답변 중이 아닐 때 Esc는 패널을 숨깁니다.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>올바른 바로 가기 키가 아닙니다(예: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>메모리</value></data>
-  <data name="Set_Memory_Desc" xml:space="preserve"><value>모든 채팅이 .hotline 폴더의 memory.md를 봅니다("/remember 내용"으로 한 줄 추가).</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>모든 대화에서 .hotline 폴더의 memory.md를 참조합니다("/remember 내용"으로 한 줄 추가).</value></data>
   <data name="Set_MemoryTool" xml:space="preserve"><value>AI가 기억을 저장하도록 허용</value></data>
-  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>기억해 달라고 요청하면 API 연결이 사실을 저장할 수 있습니다.</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>기억해 달라고 요청하면 API 연결이 관련 정보를 저장할 수 있습니다.</value></data>
   <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>매번 묻기</value></data>
   <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>예, 묻지 않고</value></data>
   <data name="Set_MemoryTool_Off" xml:space="preserve"><value>아니요</value></data>
@@ -242,7 +242,7 @@
   <data name="About_CheckFailed" xml:space="preserve"><value>이 PC를 확인할 수 없습니다.</value></data>
   <data name="Memory_Edit" xml:space="preserve"><value>메모리 편집</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>비어 있습니다. 메시지 상자에 "/remember 내용"을 입력하면 한 줄이 추가됩니다.</value></data>
-  <data name="Memory_Lines" xml:space="preserve"><value>{0}줄. 메모리가 켜져 있는 동안 모든 채팅이 이를 봅니다.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0}줄. 메모리가 켜져 있는 동안 모든 대화에서 이 내용을 참조합니다.</value></data>
   <data name="Actions_Intro" xml:space="preserve"><value>메시지 맨 앞에 /를 입력해 사용합니다: "/translate 텍스트" 또는 첨부 파일과 함께 "/summarize". 각 동작은 Markdown 파일이며 첫 줄이 목록에 표시되는 설명입니다. 이름에는 영문자, 숫자, -, _를 쓸 수 있습니다.</value></data>
   <data name="Actions_New" xml:space="preserve"><value>새 동작</value></data>
   <data name="Actions_OpenFolder" xml:space="preserve"><value>동작 폴더 열기</value></data>
@@ -280,7 +280,7 @@
   <data name="Attach_OcrFailed" xml:space="preserve"><value>{0}의 텍스트를 읽을 수 없습니다.</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>이미지 복사</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>이미지를 복사했습니다.</value></data>
-  <data name="Chat_StillAnswering" xml:space="preserve"><value>아직 답변 중입니다. {0} 또는 중지 단추로 멈출 수 있으며, 메시지는 입력 상자에서 기다립니다.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>아직 답변 중입니다. {0} 또는 중지 단추로 멈출 수 있으며, 작성한 메시지는 입력 상자에 그대로 유지됩니다.</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>/remember 뒤에 기억할 내용을 입력하세요(예: "/remember 미터법 단위를 선호함").</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>기억했습니다. 이제 모든 채팅이 이를 봅니다(설정 › 채팅 및 기록 › 메모리에서 편집).</value></data>
   <data name="Chat_NotRemembered" xml:space="preserve"><value>저장 안 됨: 최대 {0}자의 한 줄로 작성하세요.</value></data>
@@ -289,7 +289,7 @@
   <data name="Composer_Stop" xml:space="preserve"><value>중지</value></data>
   <data name="Composer_Send" xml:space="preserve"><value>보내기(Enter)</value></data>
   <data name="Welcome_Title" xml:space="preserve"><value>Hotline에 오신 것을 환영합니다</value></data>
-  <data name="Welcome_Body" xml:space="preserve"><value>보내는 내용 — 메시지, 첨부 파일, 이전 앱에서 선택한 텍스트(제거할 수 있는 칩으로 표시) — 은 선택한 AI 연결로만 전송됩니다. 팁: 빠른 동작은 /, 메모 저장은 /remember를 입력하세요.</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>보내는 내용(메시지, 첨부 파일, 이전 앱에서 선택한 텍스트 — 제거할 수 있는 칩으로 표시)은 선택한 AI 연결로만 전송됩니다. 팁: 빠른 동작은 /, 메모 저장은 /remember를 입력하세요.</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>전송되는 내용</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Hotline이 마음에 드시나요?</value></data>
   <data name="SupportNote_Body" xml:space="preserve"><value>무료 오픈 소스이며 한 사람이 만듭니다. 도움이 되었다면 후원으로 개발을 이어가게 해 주세요(GitHub Sponsors 또는 Ko-fi. 링크는 설정 › 정보에 있습니다). 이 안내는 다시 표시되지 않습니다.</value></data>
@@ -316,7 +316,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>해당 대화를 열 수 없습니다.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>채팅 기록이 꺼져 있습니다</value></data>
   <data name="Recent_None" xml:space="preserve"><value>저장된 채팅이 아직 없습니다</value></data>
-  <data name="Recent_Tip" xml:space="preserve"><value>메시지 {0}개, 마지막 {1:g}</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>메시지 {0}개, 최근: {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>기록 폴더 열기</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>방금</value></data>
   <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0}분 전</value></data>
@@ -383,7 +383,7 @@
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0}에서 API 키를 거부했습니다. {1}</value></data>
   <data name="Api_RateLimited" xml:space="preserve"><value>{0} 요청 한도 또는 할당량에 도달했습니다. {1}</value></data>
   <data name="Api_ServerError" xml:space="preserve"><value>{0}에서 서버 오류가 발생했습니다(또는 과부하 상태). {1}</value></data>
-  <data name="Api_Refused" xml:space="preserve"><value>{0}이(가) 이 요청에 대한 답변을 거부했습니다(안전 거부).</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0}이(가) 이 요청에 대한 답변을 거부했습니다(안전 정책상 거부).</value></data>
   <data name="Api_PickModel" xml:space="preserve"><value>{0}의 모델을 선택하세요(모델 목록에 표시됨).</value></data>
   <data name="Api_Blocked" xml:space="preserve"><value>{0}이(가) 이 요청을 차단했습니다({1}).</value></data>
   <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0}이(가) 답변을 중단했습니다({1}).</value></data>
