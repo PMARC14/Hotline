@@ -16,22 +16,26 @@ internal sealed class SupportNote(PopupWindow popup, NoticeArea notices, Hotline
     private string OldMarker => Path.Combine(dataDirectory, ".support-note-shown");
     private bool _due;
 
-    /// <summary>Saves a settings change; set by App.</summary>
-    public Action<Action<HotlineSettings>>? UpdateSettings { get; set; }
+    /// <summary>Saves a settings change; set by App (once set, an old marker file is carried over into the setting).</summary>
+    public Action<Action<HotlineSettings>>? UpdateSettings
+    {
+        get => _update;
+        set
+        {
+            _update = value;
+            if (value is null || !File.Exists(OldMarker)) return;
+            try { File.Delete(OldMarker); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return; }
+            TurnOff(); // already shown before this setting existed
+        }
+    }
+    private Action<Action<HotlineSettings>>? _update;
 
     public void Initialize() => popup.Shown += ShowIfDue;
 
     /// <summary>Call when a real answer completes: the note may show the next time the panel opens.</summary>
     public void AnswerCompleted()
     {
-        if (!Armed) return;
-        if (File.Exists(OldMarker))
-        {
-            TurnOff();
-            try { File.Delete(OldMarker); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-            return;
-        }
-        _due = true;
+        if (Armed) _due = true;
     }
 
     private bool Armed => SupportLinks.DonationsLive && settings.General.SupportReminder;

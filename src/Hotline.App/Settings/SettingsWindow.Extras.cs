@@ -105,7 +105,7 @@ public sealed partial class SettingsWindow
             Button Donate(string text, Uri uri, bool accent)
             {
                 var button = new Button { Content = text };
-                if (accent) button.Style = (Style)Application.Current.Resources["AccentButtonStyle"];
+                if (accent && Application.Current.Resources.TryGetValue("AccentButtonStyle", out var style) && style is Style s) button.Style = s;
                 button.Click += (_, _) => _ = Windows.System.Launcher.LaunchUriAsync(uri);
                 return button;
             }

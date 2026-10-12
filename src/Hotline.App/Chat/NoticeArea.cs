@@ -41,11 +41,11 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         Button Make((string Text, Action Click) a)
         {
             var button = new Button { Content = a.Text };
-            button.Click += (_, _) => a.Click();
+            button.Click += (_, _) => { a.Click(); if (second is not null) Panel.Children.Remove(bar); }; // a choice between links: done once one is picked
             return button;
         }
         if (action is { } first && second is { } other) // two buttons: a row under the message (ActionButton holds one)
-            bar.Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 0, 0, 12), Children = { Make(first), Make(other) } };
+            bar.Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 12), Children = { Make(first), Make(other) } };
         else if (action is { } only) bar.ActionButton = Make(only);
         bar.Closed += (_, _) => Panel.Children.Remove(bar);
         Panel.Children.Add(bar);
