@@ -6,6 +6,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Hotline.Core.Tools;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Api;
 
@@ -26,7 +27,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
     {
         var endpoint = ApiCommon.Endpoint(profile);
         if (string.IsNullOrWhiteSpace(profile.Model))
-            throw new BackendException(BackendErrorKind.NotConfigured, $"Pick a model for {ApiCommon.Name(profile)} (the Model dropdown lists them).");
+            throw new BackendException(BackendErrorKind.NotConfigured, L.F(Strings.Api_PickModel, ApiCommon.Name(profile)));
         var key = ApiCommon.Key(profile, secrets);
         ApiCommon.RequireSafeTransport(profile, endpoint, key);
         var model = profile.Model.Trim();
@@ -53,7 +54,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                     if (root.TryGetProperty("error", out _))
                         throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: {ApiCommon.ErrorMessage(data)}");
                     if (root.TryGetProperty("promptFeedback", out var feedback) && feedback.TryGetProperty("blockReason", out var reason))
-                        throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)} blocked this request ({reason.GetString()}).");
+                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_Blocked, ApiCommon.Name(profile), reason.GetString()));
                     if (!root.TryGetProperty("candidates", out var candidates) || candidates.GetArrayLength() == 0) continue;
                     var candidate = candidates[0];
                     if (candidate.TryGetProperty("content", out var content) && content.TryGetProperty("parts", out var parts))
@@ -72,7 +73,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                             if (part.TryGetProperty("text", out var text) && text.GetString() is { Length: > 0 } piece) yield return new ChatDelta(piece);
                         }
                     if (candidate.TryGetProperty("finishReason", out var finish) && finish.GetString() is "SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST")
-                        throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)} stopped the answer ({finish.GetString()}).");
+                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish.GetString()));
                 }
             }
 

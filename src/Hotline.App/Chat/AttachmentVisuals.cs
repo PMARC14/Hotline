@@ -23,7 +23,7 @@ internal sealed class AttachmentVisuals(PanelTheme theme, NoticeArea notices, Fi
             {
                 tile = new Border { Child = Thumbnail(a.Data, thumbSize), CornerRadius = new CornerRadius(6) };
                 var png = a.Data;
-                var copyImage = new MenuFlyoutItem { Text = "Copy image", Icon = new FontIcon { Glyph = Glyphs.Copy } };
+                var copyImage = new MenuFlyoutItem { Text = Strings.Attach_CopyImage, Icon = new FontIcon { Glyph = Glyphs.Copy } };
                 copyImage.Click += (_, _) => CopyImage(png);
                 tile.ContextFlyout = new MenuFlyout { Items = { copyImage } };
             }
@@ -81,8 +81,8 @@ internal sealed class AttachmentVisuals(PanelTheme theme, NoticeArea notices, Fi
             var package = new DataPackage();
             package.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));
             Clipboard.SetContent(package);
-            notices.Show("Image copied.", InfoBarSeverity.Success);
+            notices.Show(Strings.Attach_ImageCopied, InfoBarSeverity.Success);
         }
-        catch (Exception ex) { log.Error("copy image failed", ex); notices.Show("The clipboard is busy; try again.", InfoBarSeverity.Warning); }
+        catch (Exception ex) { log.Error("copy image failed", ex); notices.Show(Strings.Transcript_ClipboardBusy, InfoBarSeverity.Warning); }
     }
 }

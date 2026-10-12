@@ -1,5 +1,8 @@
 # Hotline
 
+[![Sponsor on GitHub](https://img.shields.io/badge/Sponsor-GitHub-ea4aaa?logo=githubsponsors&logoColor=white)](https://github.com/sponsors/PMARC14)
+[![Support on Ko-fi](https://img.shields.io/badge/Support-Ko--fi-ff5e5b?logo=kofi&logoColor=white)](https://ko-fi.com/pmarc14)
+
 **You are stuck with the key might as well use it. Gives you an option to replace the Windows Copilot key with your own fast, native AI popup that talks to the AI *you* choose.**
 
 Hotline uses the AI tools you already have (your
@@ -21,6 +24,9 @@ configurable in plain files.
   - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, …)
   - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
 - **Native and light** — WinUI 3 with acrylic, no embedded webview2.
+- **In your language** — follows Windows, or pick one in Settings › General: English, Español, Français, Deutsch,
+  Italiano, Português (Brasil), Nederlands, Polski, Українська, Türkçe, 日本語, 한국어, 简体中文, 繁體中文, हिन्दी,
+  Bahasa Indonesia, Tiếng Việt. The translations are machine-drafted; fixes are welcome ([TRANSLATING.md](docs/TRANSLATING.md)).
 - **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
   SVG drawings, and the whole conversation selectable in one drag.
 - **Screens and files** — capture the window you were in, the whole screen, or a region you drag out; paste or drop
@@ -50,11 +56,11 @@ configurable in plain files.
 
 ## Install
 
-Windows 11 22H2 or later.
+Windows 11 22H2 or later, on x64 or ARM64 (Windows on ARM runs the native ARM64 build).
 
 ### From Releases
 
-Download the latest `.msix` from [Releases](https://github.com/PMARC14/hotline/releases) and double-click it (Windows'
+Download the latest `.msixbundle` from [Releases](https://github.com/PMARC14/Hotline/releases) and double-click it (Windows'
 App Installer opens with an **Install** button). To get automatic updates instead, download `Hotline.appinstaller`
 and open that.
 
@@ -65,17 +71,19 @@ and open that.
 > need none of this.
 
 Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
-Hotline**. (Windows only lets packaged apps take the Copilot key, which is why Hotline installs as a package.)
+Hotline**, or use the **Open Copilot key settings** button in Hotline (Settings › General). (Windows only lets packaged
+apps take the Copilot key, which is why Hotline installs as a package.) Step by step and troubleshooting:
+[docs/copilot-key.md](docs/copilot-key.md).
 
 ### From source
 
 Requires the [.NET SDK 10.0.401+](https://dotnet.microsoft.com/download).
 
-```powershell
+```bash
 git clone https://github.com/PMARC14/hotline
 cd hotline
-powershell -File scripts\dev-cert.ps1   # once: creates a self-signed certificate and trusts it for sideloading (UAC)
-powershell -File scripts\install.ps1    # builds, signs and installs Hotline, then starts it in the tray
+scripts/dev-cert.sh   # once: creates a self-signed certificate and trusts it for sideloading (UAC)
+scripts/install.sh    # builds, signs and installs Hotline, then starts it in the tray
 ```
 
 Then assign the key as above.
@@ -131,8 +139,8 @@ powershell -File tests\smoke\smoke.ps1 [-Install]                         # end-
 
 The smoke test drives the same inputs Windows uses (protocol links, Copilot key messages, the hotkey), renders a
 scripted conversation off-screen and builds every settings page, then checks the log. It restores your settings.
-Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status line). Crash dumps (opt-in, admin):
-`scripts\enable-crash-dumps.ps1`.
+Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status line). Crash dumps (opt-in, admin):
+`scripts/enable-crash-dumps.sh`.
 
 - **Layout:** `src/Hotline.Core` (UI-free logic: backends, settings, markdown, tools — fully unit-tested),
   `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/` (design spec, plans, handoff notes).
@@ -142,7 +150,7 @@ Debug build: `scripts\install.ps1 -Configuration Debug` (verbose log, key-status
 ### CI and releases
 
 Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
-to `main` publishes a release with the `.msix`, `Hotline.cer` and `Hotline.appinstaller`
+to `main` publishes a release with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
 (`.github/workflows/release.yml`); until the signing secrets are set these are self-signed pre-release test builds.
 Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
@@ -152,13 +160,14 @@ Trusted signing (Store or Azure Trusted Signing) and one-click installs with aut
 release — see
 [docs/RELEASING.md](docs/RELEASING.md) and [docs/HANDOFF.md](docs/HANDOFF.md).
 
-<!-- Un-hide once GitHub Sponsors and Ko-fi are set up (see .github/FUNDING.yml).
 ## Support Hotline
 
 Hotline is free, open source and made by one person, with no ads or tracking. If it saves you time, a donation keeps
 it going: [GitHub Sponsors](https://github.com/sponsors/PMARC14) or [Ko-fi](https://ko-fi.com/pmarc14) (also in
 Settings › About).
--->
+
+<a href="https://github.com/sponsors/PMARC14"><img src="https://img.shields.io/badge/Sponsor_on_GitHub-ea4aaa?style=for-the-badge&logo=githubsponsors&logoColor=white" alt="Sponsor on GitHub" height="36"></a>
+<a href="https://ko-fi.com/pmarc14"><img src="https://img.shields.io/badge/Support_on_Ko--fi-ff5e5b?style=for-the-badge&logo=kofi&logoColor=white" alt="Support on Ko-fi" height="36"></a>
 
 ## License
 

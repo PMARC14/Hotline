@@ -74,6 +74,20 @@ public partial class App : Application
     /// <summary>User-visible data folder: %USERPROFILE%\.hotline (settings.json, logs, history).</summary>
     internal static string DataDirectory => HotlinePaths.DataDirectory(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
+    /// <summary>
+    /// general.language: "system" follows the Windows display language; a tag picks one (Languages.Supported). Sets
+    /// .NET's interface culture (Hotline's own text) and the app's MRT language (the Start menu description and
+    /// WinUI's built-in control text). Takes effect at start, so the setting says "applies after restarting".
+    /// </summary>
+    private void ApplyLanguage(string? setting)
+    {
+        var culture = Languages.Apply(setting);
+        try { Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = culture?.Name ?? ""; }
+        catch (Exception ex) when (ex is InvalidOperationException or System.Runtime.InteropServices.COMException or UnauthorizedAccessException)
+        { /* unpackaged dev run: .NET's culture alone still switches Hotline's text */ }
+        _log?.Info($"interface language: {(culture?.Name ?? "Windows (" + System.Globalization.CultureInfo.CurrentUICulture.Name + ")")}");
+    }
+
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var dataDir = DataDirectory;
@@ -86,6 +100,7 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
+        ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
@@ -101,6 +116,7 @@ public partial class App : Application
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
         var job = new ChildProcessJob(_log);
+        _popup.IsOurProcess = job.Owns;
         var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
@@ -111,7 +127,7 @@ public partial class App : Application
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
-                _presenter?.Notice($"Saved to memory: \"{fact}\" (Settings › Chat and history › Edit memory)", Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
+                _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
@@ -124,7 +140,10 @@ public partial class App : Application
             try { history.Prune(settings.Chat.HistoryRetentionDays); } catch (IOException ex) { _log.Error("history prune failed", ex); }
         }
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
-        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir);
+        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
+        {
+            UpdateSettings = change => _settingsService!.Update(change),
+        };
         _popup.BeforeShow = foreground =>
         {
             if (Interop.SelectionReader.Read(foreground, _settingsService.Current.Chat.AttachSelection, _log) is { } selection)
@@ -137,11 +156,15 @@ public partial class App : Application
         _models = new ModelCatalog(new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) }, _secrets, (p, ct) =>
         {
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
-                      ?? throw new ModelListException("The Antigravity CLI (agy) isn't installed.");
+                      ?? throw new ModelListException(Strings.Agy_NotInstalled);
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
+        var chooser = new Chat.ConnectionChooser(_popup, _presenter.Notices, _settingsService, _providerBar.Select,
+            () => { _popup.HidePopup(); _settingsHost?.Show("Connections"); }, _log);
+        chooser.Initialize();
+        _presenter.ConnectionMissing = chooser.Show;
         // Don't keep an idle CLI session (claude/agy) around after New chat or switching provider.
         var lastBackend = chat.BackendId;
         chat.Event += e => { if (e is ConversationReset) _ = InvalidateBackend(chat.BackendId).AsTask(); };
@@ -158,7 +181,7 @@ public partial class App : Application
         };
         var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
         _router.SelfTestRequested += selfTests.Run;
-        _router.DemoRequested += () => _presenter.Demo();
+        _router.DemoRequested += scene => _presenter.Demo(scene);
         _router.VoiceRequested += command => _presenter.Voice(command);
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,

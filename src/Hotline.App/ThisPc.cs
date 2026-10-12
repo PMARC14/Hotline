@@ -34,26 +34,25 @@ internal static class ThisPc
     public static async Task<IReadOnlyList<PcFeature>> CheckAsync(string? odrPath)
     {
         var build = Build;
-        var features = new List<PcFeature> { new("Windows", true, $"build {build}") };
+        var features = new List<PcFeature> { new("Windows", true, L.F(Strings.Pc_Build, build)) };
 
         var ocrLanguages = SafeCount(() => OcrEngine.AvailableRecognizerLanguages.Count);
         features.Add(ocrLanguages > 0
-            ? new PcFeature("Screenshot text (OCR)", true, $"{ocrLanguages} OCR language(s)")
-            : new PcFeature("Screenshot text (OCR)", false, "No OCR language: Settings › Time & language › Language & region › add a language with Optical character recognition"));
+            ? new PcFeature(Strings.Set_Ocr, true, L.F(Strings.Pc_OcrLanguages, ocrLanguages))
+            : new PcFeature(Strings.Set_Ocr, false, Strings.Pc_OcrMissing));
 
         var speech = await WindowsSpeech.CheckAsync();
         features.Add(speech == "Success"
-            ? new PcFeature("Voice input", true, "Windows dictation is available")
-            : new PcFeature("Voice input", false, $"{speech} — Settings › Privacy & security › Speech › Online speech recognition, and a microphone"));
+            ? new PcFeature(Strings.Set_Voice, true, Strings.Pc_VoiceOk)
+            : new PcFeature(Strings.Set_Voice, false, L.F(Strings.Pc_VoiceMissing, speech)));
 
         features.Add(odrPath is not null
-            ? new PcFeature("Windows agent connectors", true, "found odr.exe; its connectors appear as windows-… tool servers")
-            : new PcFeature("Windows agent connectors", false, PlatformSupport.AgentConnectors(build)
-                ? "odr.exe not found (not turned on for this PC yet)" : "needs Windows build 26220.7262 or later (e.g. 26H2)"));
+            ? new PcFeature(Strings.Pc_Agents, true, Strings.Pc_AgentsOk)
+            : new PcFeature(Strings.Pc_Agents, false, PlatformSupport.AgentConnectors(build) ? Strings.Pc_AgentsNotOn : Strings.Pc_AgentsBuild));
 
         features.Add(PlatformSupport.AppActions(build)
-            ? new PcFeature("App Actions (Click to Do)", true, "registered; Click to Do itself needs a Copilot+ PC")
-            : new PcFeature("App Actions (Click to Do)", false, "needs Windows 11 24H2 (build 26100) or later"));
+            ? new PcFeature(Strings.Pc_Actions, true, Strings.Pc_ActionsOk)
+            : new PcFeature(Strings.Pc_Actions, false, Strings.Pc_ActionsBuild));
         return features;
     }
 

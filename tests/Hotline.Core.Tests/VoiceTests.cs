@@ -1,6 +1,7 @@
 using Hotline.Core.Activation;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -52,15 +53,15 @@ public sealed class VoiceTests : IDisposable
     [Fact]
     public void Settings_window_offers_voice_for_the_long_press_and_auto_send()
     {
-        var hold = Assert.IsType<ChoiceItem>(SettingsSchema.Items.Single(i => i.Header == "Long press of the Copilot key"));
+        var hold = Assert.IsType<ChoiceItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Hold)));
         Assert.Contains(hold.Options, o => o.Value == nameof(KeyAction.Voice));
-        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == "Send after dictation");
+        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == nameof(Strings.Set_VoiceSend));
     }
 
     [Fact]
     public void Voice_toggle_on_the_general_page_maps_to_the_long_press()
     {
-        var toggle = Assert.IsType<ToggleItem>(SettingsSchema.Items.Single(i => i.Page == SettingsPage.General && i.Header == "Voice input"));
+        var toggle = Assert.IsType<ToggleItem>(SettingsSchema.Items.Single(i => i.Page == SettingsPage.General && i.Header == nameof(Strings.Set_Voice)));
         Assert.True(toggle.RefreshPage);
         var s = new HotlineSettings();
         Assert.False(toggle.Get(s));

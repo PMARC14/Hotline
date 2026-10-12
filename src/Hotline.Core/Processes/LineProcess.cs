@@ -47,6 +47,7 @@ public sealed class SystemLineProcess : ILineProcess
             StandardErrorEncoding = Encoding.UTF8,
         };
         foreach (var a in args) psi.ArgumentList.Add(a);
+        ProcessLaunches.Noted();
         _process = Process.Start(psi) ?? throw new InvalidOperationException($"Could not start {exe}");
         onStarted?.Invoke(_process);
         _process.ErrorDataReceived += (_, e) =>

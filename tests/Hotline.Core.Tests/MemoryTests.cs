@@ -3,6 +3,7 @@ using Hotline.Core.Backends.Api;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
 using Hotline.Core.Tools;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -228,7 +229,7 @@ public sealed class MemoryTests : IDisposable
     {
         Assert.True(new ChatSettings().Memory);
         Assert.Equal(MemoryToolMode.Ask, new ChatSettings().MemoryTool);
-        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == "Memory");
-        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == "Let the AI save memories");
+        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == nameof(Strings.Set_Memory));
+        Assert.Contains(SettingsSchema.Items, i => i.Page == SettingsPage.Chat && i.Header == nameof(Strings.Set_MemoryTool));
     }
 }

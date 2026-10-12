@@ -36,6 +36,7 @@ public sealed partial class SettingsWindow : Window
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
+        Title = AppTitleBar.Title = Strings.Settings_Title;
         SystemBackdrop = new MicaBackdrop();
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
@@ -75,6 +76,14 @@ public sealed partial class SettingsWindow : Window
 
     private string _currentPage = "General";
 
+    /// <summary>Selects a page by its navigation tag (ignored if there is none).</summary>
+    internal void OpenPage(string tag)
+    {
+        if (Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => i.Tag as string == tag) is not { } item) return;
+        if (ReferenceEquals(Nav.SelectedItem, item)) ShowPage(tag); // no SelectionChanged when it's already selected
+        else Nav.SelectedItem = item;
+    }
+
     private void ShowPage(string tag)
     {
         _currentPage = tag;
@@ -95,7 +104,7 @@ public sealed partial class SettingsWindow : Window
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
-                if (page == SettingsPage.General) BuildStartupCard();
+                if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
                 if (page == SettingsPage.Appearance) BuildToolbarSection();
                 if (page == SettingsPage.Chat) BuildMemoryCard();
                 break;
@@ -132,7 +141,10 @@ public sealed partial class SettingsWindow : Window
 
     private Border BuildItem(SettingItem item)
     {
-        var description = item.RequiresRestart ? $"{item.Description} (Applies after restarting Hotline.)".TrimStart() : item.Description;
+        // Schema text is resource keys (SettingsSchema); look them up now, in the interface language.
+        var header = L.Get(item.Header);
+        var description = item.Description is null ? null : L.Get(item.Description);
+        if (item.RequiresRestart) description = description is null ? Strings.Settings_AppliesAfterRestart : $"{description} {Strings.Settings_AppliesAfterRestart}";
         var s = _settings.Current;
         switch (item)
         {
@@ -144,7 +156,7 @@ public sealed partial class SettingsWindow : Window
                     _settings.Update(x => t.Set(x, toggle.IsOn));
                     if (t.RefreshPage) DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
                 };
-                return Card(t.Header, description, toggle);
+                return Card(header, description, toggle);
             }
             case NumberItem n:
             {
@@ -157,39 +169,47 @@ public sealed partial class SettingsWindow : Window
                 var label = n.Unit is null ? (UIElement)box : new StackPanel
                 {
                     Orientation = Orientation.Horizontal, Spacing = 8,
-                    Children = { box, new TextBlock { Text = n.Unit, VerticalAlignment = VerticalAlignment.Center, Opacity = 0.7 } },
+                    Children = { box, new TextBlock { Text = L.Get(n.Unit), VerticalAlignment = VerticalAlignment.Center, Opacity = 0.7 } },
                 };
-                return Card(n.Header, description, label);
+                return Card(header, description, label);
             }
             case ChoiceItem c:
             {
                 var combo = new ComboBox { MinWidth = 200 };
-                foreach (var o in c.Options) combo.Items.Add(new ComboBoxItem { Content = o.Label, Tag = o.Value });
+                foreach (var o in c.Options) combo.Items.Add(new ComboBoxItem { Content = L.Get(o.Label), Tag = o.Value });
                 combo.SelectedItem = combo.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == c.Get(s));
                 combo.SelectionChanged += (_, _) => { if (combo.SelectedItem is ComboBoxItem { Tag: string v }) _settings.Update(x => c.Set(x, v)); };
-                return Card(c.Header, description, combo);
+                return Card(header, description, combo);
             }
             case TextItem tx:
             {
-                var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder ?? "", Width = 240 };
+                var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder is null ? "" : L.Get(tx.Placeholder), Width = 240 };
                 box.LostFocus += (_, _) =>
                 {
                     if (tx.Validate is { } valid && !string.IsNullOrWhiteSpace(box.Text) && !valid(box.Text.Trim()))
                     {
-                        box.Header = tx.Invalid ?? "Not a valid value";
+                        box.Header = tx.Invalid is null ? Strings.Settings_InvalidValue : L.Get(tx.Invalid);
                         return;
                     }
                     box.Header = null;
                     if ((tx.Get(_settings.Current) ?? "") != box.Text.Trim()) _settings.Update(x => tx.Set(x, box.Text));
                 };
-                return Card(tx.Header, description, box);
+                return Card(header, description, box);
             }
             default:
-                return Card(item.Header, description, null);
+                return Card(header, description, null);
         }
     }
 
     /// <summary>Start with Windows (the package's StartupTask; not a settings.json value — Windows owns it).</summary>
+    /// <summary>Choosing Hotline for the Copilot key happens in Windows Settings; this explains it and opens the page.</summary>
+    private void BuildCopilotKeyCard()
+    {
+        var open = new Button { Content = Strings.Set_CopilotKeyApp_Open };
+        open.Click += (_, _) => _ = Chat.CopilotKeySettings.OpenAsync(_log);
+        PageHost.Children.Add(Card(Strings.Set_CopilotKeyApp, Strings.Set_CopilotKeyApp_Desc, open));
+    }
+
     private void BuildStartupCard()
     {
         var status = new TextBlock();
@@ -216,7 +236,7 @@ public sealed partial class SettingsWindow : Window
             else StartupRegistration.Disable();
             Refresh();
         };
-        PageHost.Children.Add(CardWithStatus("Start with Windows", status, toggle));
+        PageHost.Children.Add(CardWithStatus(Strings.Settings_Startup, status, toggle));
         Refresh();
     }
 
@@ -226,19 +246,17 @@ public sealed partial class SettingsWindow : Window
         Button Link(string text, Action action) { var b = new Button { Content = text }; b.Click += (_, _) => action(); return b; }
         PageHost.Children.Add(new TextBlock
         {
-            Text = "API connections with Tool use set to \"Use Hotline's tools\" can call the tools of these MCP servers. Read-only tools run; " +
-                   "anything else asks you in the panel (Allow once / Always / Deny).",
+            Text = Strings.Tools_Intro,
             TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
         });
-        PageHost.Children.Add(Card("MCP servers", _mcpPath + " — same \"mcpServers\" format as other MCP apps; approvals live in the same file",
+        PageHost.Children.Add(Card(Strings.Tools_Servers, L.F(Strings.Tools_Servers_Desc, _mcpPath),
             new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { Link("Edit mcp.json", () => CliRunner.OpenInEditor(_mcpPath)), Link("Open folder", () => CliRunner.OpenFolder(Path.GetDirectoryName(_mcpPath)!)) },
+                Children = { Link(Strings.Tools_EditMcp, () => CliRunner.OpenInEditor(_mcpPath)), Link(Strings.Common_OpenFolder, () => CliRunner.OpenFolder(Path.GetDirectoryName(_mcpPath)!)) },
             }));
-        PageHost.Children.Add(Card("Windows agent registry",
-            _odrPath is null ? "Not available on this Windows (needs build 26220.7262 or later). Its built-in connectors will appear here automatically."
-                             : $"Available ({_odrPath}). Its connectors are listed below as windows-…",
+        PageHost.Children.Add(Card(Strings.Tools_Odr,
+            _odrPath is null ? Strings.Tools_Odr_Missing : L.F(Strings.Tools_Odr_Available, _odrPath),
             null));
         if (_toolHost is null) return;
         var list = new StackPanel { Spacing = 6 };
@@ -249,17 +267,17 @@ public sealed partial class SettingsWindow : Window
                 list.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = error });
             var status = _toolHost.Status;
             if (status.Count == 0)
-                list.Children.Add(new TextBlock { Text = "No servers checked yet. Add servers to mcp.json, then press Check servers.", Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
+                list.Children.Add(new TextBlock { Text = Strings.Tools_NoneChecked, Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
             foreach (var s in status.OrderBy(s => s.Name))
                 list.Children.Add(Card(s.DisplayName, s.State switch
                 {
-                    Hotline.Core.Tools.McpServerState.Ready => $"Ready — {s.ToolCount} tool(s)",
-                    Hotline.Core.Tools.McpServerState.Failed => $"Failed: {s.Error}",
-                    Hotline.Core.Tools.McpServerState.Disabled => "Disabled in mcp.json",
+                    Hotline.Core.Tools.McpServerState.Ready => L.F(Strings.Tools_Ready, s.ToolCount),
+                    Hotline.Core.Tools.McpServerState.Failed => L.F(Strings.Tools_Failed, s.Error),
+                    Hotline.Core.Tools.McpServerState.Disabled => Strings.Tools_Disabled,
                     _ => s.State.ToString(),
                 }, null));
         }
-        var check = new Button { Content = "Check servers", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        var check = new Button { Content = Strings.Tools_Check, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
         check.Click += async (_, _) =>
         {
             check.IsEnabled = false;
@@ -286,15 +304,15 @@ public sealed partial class SettingsWindow : Window
             return b;
         }
         var folder = Path.GetDirectoryName(_settingsFile)!;
-        PageHost.Children.Add(Card("Settings file", _settingsFile, new StackPanel
+        PageHost.Children.Add(Card(Strings.Advanced_SettingsFile, _settingsFile, new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
-            Children = { Link("Open folder", () => CliRunner.OpenFolder(folder)), Link("Edit settings.json", () => CliRunner.OpenInEditor(_settingsFile)) },
+            Children = { Link(Strings.Common_OpenFolder, () => CliRunner.OpenFolder(folder)), Link(Strings.Advanced_EditSettings, () => CliRunner.OpenInEditor(_settingsFile)) },
         }));
         var connections = Path.Combine(folder, Hotline.Core.Settings.SettingsStore.ConnectionsFolder);
-        PageHost.Children.Add(Card("AI connections", connections + " — one file per connection; settings.json \"chat.order\" sets the dropdown order",
-            Link("Open connections folder", () => CliRunner.OpenFolder(connections))));
-        PageHost.Children.Add(Card("Logs", _logsDir, Link("Open logs folder", () => CliRunner.OpenFolder(_logsDir))));
+        PageHost.Children.Add(Card(Strings.Nav_Connections, L.F(Strings.Advanced_Connections_Desc, connections),
+            Link(Strings.Advanced_OpenConnections, () => CliRunner.OpenFolder(connections))));
+        PageHost.Children.Add(Card(Strings.Advanced_Logs, _logsDir, Link(Strings.Advanced_OpenLogs, () => CliRunner.OpenFolder(_logsDir))));
     }
 
     // ---- prompts page ----------------------------------------------------------------------
@@ -303,25 +321,25 @@ public sealed partial class SettingsWindow : Window
     {
         PageHost.Children.Add(new TextBlock
         {
-            Text = "System prompts are Markdown files. The default prompt is used by every connection that doesn't pick its own.",
+            Text = Strings.Prompts_Intro,
             TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
         });
         var chat = _settings.Current.Chat;
         foreach (var name in _prompts.List())
         {
             var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            var edit = new Button { Content = "Edit" };
+            var edit = new Button { Content = Strings.Common_Edit };
             edit.Click += (_, _) => CliRunner.OpenInEditor(_prompts.PathFor(name));
             buttons.Children.Add(edit);
             if (name != chat.DefaultPrompt)
             {
-                var makeDefault = new Button { Content = "Make default" };
+                var makeDefault = new Button { Content = Strings.Prompts_MakeDefault };
                 makeDefault.Click += (_, _) => { _settings.Update(s => s.Chat.DefaultPrompt = name); ShowPage("Prompts"); };
                 buttons.Children.Add(makeDefault);
             }
             if (name != PromptLibrary.DefaultName)
             {
-                var delete = new Button { Content = "Delete" };
+                var delete = new Button { Content = Strings.Common_Delete };
                 delete.Click += (_, _) =>
                 {
                     _prompts.Delete(name);
@@ -330,11 +348,11 @@ public sealed partial class SettingsWindow : Window
                 };
                 buttons.Children.Add(delete);
             }
-            PageHost.Children.Add(Card(name, name == chat.DefaultPrompt ? "Default prompt" : null, buttons));
+            PageHost.Children.Add(Card(name, name == chat.DefaultPrompt ? Strings.Prompts_Default : null, buttons));
         }
-        var create = new Button { Content = "New prompt", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        var create = new Button { Content = Strings.Prompts_New, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
         create.Click += (_, _) => { CliRunner.OpenInEditor(_prompts.PathFor(_prompts.Create())); ShowPage("Prompts"); };
-        var open = new Button { Content = "Open prompts folder" };
+        var open = new Button { Content = Strings.Prompts_OpenFolder };
         open.Click += (_, _) => CliRunner.OpenFolder(_prompts.Directory);
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { create, open } });
     }

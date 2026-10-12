@@ -4,12 +4,22 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 8;
+    public const int CurrentSchemaVersion = 10;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
+    public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
     public DiagnosticsSettings Diagnostics { get; set; } = new();
     public ChatSettings Chat { get; set; } = new();
+}
+
+public sealed class GeneralSettings
+{
+    /// <summary>Interface language: "system" follows Windows, or a tag from Languages.Supported (e.g. "de"). Applies on restart.</summary>
+    public string Language { get; set; } = Text.Localization.Languages.System;
+
+    /// <summary>Show the "Enjoying Hotline?" donation note once, the next time the panel opens after an answer (then it turns itself off).</summary>
+    public bool SupportReminder { get; set; } = true;
 }
 
 public sealed class DiagnosticsSettings
@@ -114,7 +124,8 @@ public sealed class BackendProfile
 
 public sealed class ChatSettings
 {
-    public string DefaultBackend { get; set; } = "agy";
+    /// <summary>The connection the panel uses. Empty = not chosen yet: a new install asks on first open (and runs no CLI before).</summary>
+    public string DefaultBackend { get; set; } = "";
     /// <summary>System prompt used by connections that don't pick their own.</summary>
     public string DefaultPrompt { get; set; } = "default";
     /// <summary>
@@ -128,6 +139,8 @@ public sealed class ChatSettings
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
     public GrowMode GrowMode { get; set; } = GrowMode.Grow;
     public bool SaveHistory { get; set; } = true;
+    /// <summary>A Windows notification when an answer finishes while the panel is hidden or another app is in front.</summary>
+    public bool NotifyWhenDone { get; set; } = true;
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
     public int MaxImagePixels { get; set; } = 2048;

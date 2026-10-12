@@ -26,7 +26,7 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 ## 2. Hands-on checklist
 
 ### Install and start
-- [ ] Install the `.msix` from Releases (test builds: trust `Hotline.cer` first, see README). Hotline appears in Start.
+- [ ] Install the `.msixbundle` from Releases (test builds: trust `Hotline.cer` first, see README). Hotline appears in Start.
 - [ ] Settings → Personalization → Text input → Customize Copilot key → Custom → Hotline.
 - [ ] Settings › General › Start with Windows: on → sign out/in → Hotline is in the tray, panel closed.
 - [ ] Uninstall and reinstall: settings in `.hotline` survive; the Copilot key choice needs setting again only after uninstall.

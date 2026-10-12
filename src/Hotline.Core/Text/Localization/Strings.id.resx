@@ -1,0 +1,443 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>Bahasa</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Bahasa menu, pengaturan, dan pesan Hotline. Jawaban AI mengikuti bahasa yang Anda tulis.</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Gunakan bahasa Windows</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Buka / tutup Hotline</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Buka Hotline</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>Mulai obrolan baru</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>Tangkap jendela saat ini</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Tangkap area</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>Input suara (tahan untuk berbicara)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>Tidak melakukan apa pun</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Tombol Copilot</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Sebagai Ctrl Kanan, Copilot+C menjadi Ctrl+C dan tombol tidak lagi membuka Hotline (gunakan tombol pintas tambahan di bawah, atau ikon baki sistem). Berfungsi pada keyboard yang tombol Copilot-nya mengirim Win+Shift+F23 (sebagian besar).</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Membuka Hotline</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Berfungsi sebagai Ctrl Kanan</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Tekan singkat tombol Copilot</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Tekan lama tombol Copilot</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>Input suara</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Tahan tombol Copilot dan berbicara; lepaskan untuk berhenti (Esc membatalkan). Menggunakan pengenalan ucapan Windows: izinkan mikrofon dan aktifkan Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan daring. Mengaktifkannya akan mengatur tekan lama untuk suara; menonaktifkannya mengembalikan ke obrolan baru.</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>Tombol pintas tambahan</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Juga membuka Hotline, mis. Ctrl+Alt+H. Kosongkan jika tidak perlu.</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Bukan tombol pintas yang valid (contoh: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>Sembunyikan saat saya mengeklik di tempat lain</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>Sematkan panel (📌) agar tetap terbuka sementara.</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>Tetap di atas jendela lain</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Gunakan pengaturan Windows</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>Terang</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>Gelap</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>Latar belakang</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Akrilik tembus cahaya; Solid buram.</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Akrilik</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>Akrilik (tipis)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>Solid</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>Warna akrilik</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = bening, 1 = berwarna pekat.</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>Kecerahan akrilik</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>Makin rendah makin tembus pandang.</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>Ukuran teks</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>Default mengikuti Windows (Pengaturan › Aksesibilitas › Ukuran teks).</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>Font</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>Font apa pun yang terpasang, mis. Cascadia Code. Kosong = Segoe UI Variable.</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>Bilah gulir</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>Tampilkan saat menggulir</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Selalu</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Tidak pernah</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>Lebar</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Porsi dari lebar layar.</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>Lebar minimum</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>Lebar maksimum</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>Tinggi minimum</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = hanya bilah pesan; panel memanjang ke atas saat Anda mengetik dan mengobrol.</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>Tinggi maksimum</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>Seberapa banyak layar yang boleh dipakai.</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>Posisi vertikal</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = atas, 0,5 = tengah, 1 = bawah.</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>Pertumbuhan</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>Sesuaikan dengan percakapan</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Langsung ke tinggi maksimum</value></data>
+  <data name="Set_History" xml:space="preserve"><value>Simpan riwayat obrolan</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>Hanya teks, di folder .hotline Anda.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Beri tahu saat jawaban selesai di latar belakang</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Notifikasi Windows saat jawaban selesai ketika panel tersembunyi atau aplikasi lain berada di depan. Klik untuk membuka jawabannya.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} sudah menjawab</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} tidak dapat menyelesaikan jawaban</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>Simpan riwayat selama</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>hari</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>Lampirkan teks yang dipilih</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>Saat tombol membuka panel, teks yang dipilih di aplikasi asal Anda ikut dilampirkan. Ctrl+C juga berfungsi di aplikasi yang tidak membagikan pilihannya, tetapi memakai papan klip sebentar (dipulihkan setelahnya).</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>Ya</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Ya, juga dengan Ctrl+C</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>Tidak</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>Hentikan jawaban</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>Tombol yang menghentikan jawaban saat sedang ditulis (Enter tidak pernah; tombol Kirim juga menghentikannya). Satu tombol (Esc) atau kombinasi seperti Ctrl+. — saat tidak ada yang sedang dijawab, Esc menyembunyikan panel.</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>Bukan pintasan yang valid (contoh: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>Memori</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>Setiap obrolan melihat memory.md di folder .hotline Anda ("/remember sesuatu" menambahkan satu baris).</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>Izinkan AI menyimpan memori</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>Koneksi API dapat menyimpan fakta saat Anda memintanya mengingat sesuatu.</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>Tanya setiap kali</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>Ya, tanpa bertanya</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>Tidak</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>Kirim setelah dikte</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Dengan aksi tombol Suara: kirim pesan saat Anda melepas tombol.</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>Teks tangkapan layar (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows membaca teks dalam gambar (offline) untuk model yang tidak bisa melihatnya.</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Untuk model teks saja</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>Selalu tambahkan</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>Nonaktif</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>Batas ukuran gambar</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Gambar yang dilampirkan dan ditangkap diskalakan ke sisi terpanjang ini.</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>Pencatatan terperinci</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>Menulis diagnostik tambahan ke log.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Pengaturan Hotline</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>Umum</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>Koneksi AI</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>Prompt</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>Aksi cepat</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>Tampilan</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>Jendela</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>Obrolan dan riwayat</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Alat</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>Lanjutan</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Tentang</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Berlaku setelah Hotline dimulai ulang.)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>Bukan nilai yang valid</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Mulai bersama Windows</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Koneksi API dengan Penggunaan alat diatur ke "Gunakan alat Hotline" dapat memanggil alat dari server MCP ini. Alat hanya-baca langsung berjalan; selain itu Anda akan ditanya di panel (Izinkan sekali / Selalu / Tolak).</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>Server MCP</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — format "mcpServers" yang sama dengan aplikasi MCP lain; persetujuan disimpan di file yang sama</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>Edit mcp.json</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>Buka folder</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Registri agen Windows</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>Tidak tersedia di Windows ini (perlu build 26220.7262 atau yang lebih baru). Konektor bawaannya akan muncul di sini secara otomatis.</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>Tersedia ({0}). Konektornya tercantum di bawah sebagai windows-…</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>Belum ada server yang diperiksa. Tambahkan server ke mcp.json, lalu tekan Periksa server.</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>Siap — {0} alat</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>Gagal: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>Dinonaktifkan di mcp.json</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>Periksa server</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>File pengaturan</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>Edit settings.json</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — satu file per koneksi; "chat.order" di settings.json mengatur urutan daftar</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>Buka folder koneksi</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>Log</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>Buka folder log</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>Prompt sistem adalah file Markdown. Prompt default dipakai oleh setiap koneksi yang tidak memilih prompt sendiri.</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Edit</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>Jadikan default</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Hapus</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>Prompt default</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>Prompt baru</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>Buka folder prompt</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>Tambah koneksi</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>Duplikat</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>Hapus</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>Batal</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>Hapus koneksi ini?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>Gunakan sebagai default</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>Naikkan di daftar penyedia</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>Turunkan di daftar penyedia</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · default</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>Pengaturan agy tidak dapat dibaca saat ini.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>Aturan agy: {0} diizinkan, {1} ditolak. Membaca file di folder kerja diizinkan secara default; perintah shell memerlukan aturan izin.</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Izinkan perintah hanya-baca</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>Menambahkan aturan seperti command(Get-ChildItem), command(git status) ke daftar izin agy, dan menolak Remove-Item, rm, git push...</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>Izinkan perintah shell hanya-baca untuk agy?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>Ini mengubah pengaturan agy sendiri ({0}), jadi juga berlaku saat Anda memakai agy secara langsung.
+
+Izinkan:
+{1}
+
+Tolak:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>Tambah aturan</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>Pengaturan agy tidak dapat diubah: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>Edit aturan agy</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>Izin agy</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Setujui semuanya? (berbahaya)</value></data>
+  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy akan menjalankan perintah shell APA PUN dan mengedit atau menghapus file APA PUN yang diputuskannya, tanpa bertanya. Jawaban yang salah atau halaman web maupun file berbahaya dapat menimbulkan kerusakan nyata. Gunakan ini hanya dengan folder kerja yang rela Anda hilangkan.</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Saya mengerti, aktifkan</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Setujui semuanya (berbahaya)</value></data>
+  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Melewati semua pemeriksaan izin agy (--dangerously-skip-permissions). Hanya dalam mode "gunakan alat milik program".</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Nama</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>Titik akhir</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>URL dasar API.</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>Tersimpan; ketik untuk mengganti</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Opsional</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>Wajib</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Kunci tidak dapat disimpan</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>Kunci API</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>Disimpan di Manajer Kredensial Windows, bukan di settings.json.</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>Jalur program</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>Kosongkan untuk menemukannya secara otomatis.</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>Deteksi otomatis</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>Agen agy</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Dipakai dalam mode Hanya obrolan.</value></data>
+  <data name="Conn_KeepClaude" xml:space="preserve"><value>Simpan obrolan di riwayat Claude Code</value></data>
+  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Tampilkan juga obrolan Hotline di claude --resume.</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>Argumen tambahan</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Diteruskan ke program apa adanya (dipisahkan spasi).</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>Hanya obrolan</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Gunakan alat Hotline (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>Penggunaan alat</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>Mengizinkan AI ini memakai alat dari server MCP Anda (Pengaturan › Alat). Alat hanya-baca langsung berjalan; selain itu Anda akan ditanya dulu di panel.</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>Hanya obrolan (dapat membaca lampiran Anda)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>Gunakan alat dan izin milik program</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Telusuri…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Mode Warisi membiarkan program menjalankan alatnya (file, perintah, web) sesuai aturan izinnya sendiri.</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>Folder kerja</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Tempat alat program bekerja dalam mode Warisi.</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>Cadangan saat ditolak</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Jika pemeriksaan keamanan menolak permintaan, API menyajikannya ulang dengan model yang sesuai alih-alih berhenti (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>Model membaca gambar</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Nonaktif: tangkapan layar dikirim sebagai teksnya (Pengaturan › Obrolan › Teks tangkapan layar).</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Default ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>Prompt sistem</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>Default</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>Model default</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Upaya default</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>Uji koneksi</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>Minimal</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>Rendah</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>Sedang</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>Tinggi</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>Sangat tinggi</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>Maksimal</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>Sematkan</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>Tangkap jendela</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>Tangkap layar</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>Tangkap area</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>Spasi</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Pemilih tingkat penalaran</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>Pemilih model</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>Pemilih penyedia</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>Pemilih prompt</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>Obrolan terbaru</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>Obrolan baru</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>Pengaturan</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>Bilah bawah</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json berisi kesalahan</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} Perbaiki file, atau atur ulang bilah.</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>Pindah ke kiri</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>Pindah ke kanan</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>Hapus dari bilah</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>Tambahkan ke bilah</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>Atur ulang bilah</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>build pengembangan</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — AI Anda di tombol Copilot. Gratis dan sumber terbuka (Apache-2.0).</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Dukung Hotline</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline dibuat oleh satu orang dan tidak memiliki iklan atau pelacakan. Jika Hotline menghemat waktu Anda, donasi membuatnya terus berjalan.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Pengingat donasi</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Menampilkan "Suka Hotline?" sekali di bagian atas panel, saat Anda membukanya lagi setelah ada jawaban. Setelah itu akan mati sendiri; aktifkan lagi di sini.</value></data>
+  <data name="About_Project" xml:space="preserve"><value>Proyek</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>Kode sumber, rilis, dan tempat untuk melaporkan masalah atau meminta fitur.</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>Laporkan masalah</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>Memeriksa…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>PC ini</value></data>
+  <data name="About_License" xml:space="preserve"><value>Lisensi</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0, ditambah lisensi komponen yang dipakai Hotline.</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>Pemberitahuan pihak ketiga</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>PC ini tidak dapat diperiksa.</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>Edit memori</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>Kosong. "/remember sesuatu" di kotak pesan menambahkan satu baris.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} baris. Setiap obrolan melihatnya selama Memori aktif.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Ketik / di awal pesan untuk memakainya: "/translate suatu teks", atau "/summarize" dengan lampiran. Setiap aksi adalah file Markdown; baris pertamanya adalah deskripsi yang ditampilkan di daftar. Nama boleh berisi huruf, angka, - dan _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Aksi baru</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Buka folder aksi</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} bahasa OCR</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>Tidak ada bahasa OCR: Pengaturan › Waktu &amp; bahasa › Bahasa &amp; wilayah › tambahkan bahasa dengan Pengenalan karakter optik</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Dikte Windows tersedia</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan daring, dan mikrofon</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Konektor agen Windows</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe ditemukan; konektornya muncul sebagai server alat windows-…</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe tidak ditemukan (belum diaktifkan di PC ini)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>perlu build Windows 26220.7262 atau yang lebih baru (mis. 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>Aksi Aplikasi (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>terdaftar; Click to Do sendiri memerlukan PC Copilot+</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>perlu Windows 11 24H2 (build 26100) atau yang lebih baru</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>Aktif — Hotline dimulai di baki sistem saat Anda masuk.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Nonaktif (dimatikan di Pengaturan Windows › Aplikasi › Startup). Aktifkan Hotline di sana.</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>Nonaktif (diblokir oleh kebijakan organisasi Anda).</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>Nonaktif.</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>Tidak tersedia di build ini.</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>Disimpan ke memori: "{0}" (Pengaturan › Obrolan dan riwayat › Edit memori)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>Antigravity CLI (agy) tidak terpasang.</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Buka Hotline</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>Pengaturan…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>Mulai ulang (terapkan pengaturan)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>Keluar</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>Seret untuk menangkap area  ·  Esc untuk membatalkan</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>Jendela itu tidak tersedia (ditutup atau diminimalkan), jadi seluruh layar yang ditangkap.</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Lampirkan ke Hotline</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>Folder tidak dapat dilampirkan ({0}).</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} terlalu besar ({1} MB; maks. {2} MB).</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>{0} tidak dapat dibaca.</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>{0} tidak dapat dibaca sebagai gambar.</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows tidak memiliki bahasa OCR yang terpasang, jadi teks dalam gambar tidak dapat dibaca. Tambahkan satu di Pengaturan › Waktu &amp; bahasa › Bahasa &amp; wilayah (bahasa dengan "Pengenalan karakter optik").</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>Teks dalam {0} tidak dapat dibaca.</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>Salin gambar</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>Gambar disalin.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Masih menjawab. {0} atau tombol Hentikan akan menghentikannya; pesan Anda menunggu di kotak.</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>Ketik apa yang perlu diingat setelah /remember, mis. "/remember saya lebih suka satuan metrik".</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>Diingat. Mulai sekarang setiap obrolan melihatnya (edit di Pengaturan › Obrolan dan riwayat › Memori).</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Tidak disimpan: cukup satu baris, paling banyak {0} karakter.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>Ketik teks untuk /{0} setelahnya, atau lampirkan sesuatu.</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>Folder pengaturan tidak dapat dibuka ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>Hentikan</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>Kirim (Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Selamat datang di Hotline</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>Yang Anda kirim — pesan, lampiran, dan teks yang Anda pilih di aplikasi asal (ditampilkan sebagai chip yang bisa dihapus) — hanya dikirim ke koneksi AI yang Anda pilih. Tips: ketik / untuk aksi cepat, dan /remember untuk menyimpan catatan.</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>Apa yang dikirim</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Menyukai Hotline?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Gratis dan sumber terbuka, dibuat oleh satu orang. Jika bermanfaat bagi Anda, donasi membuatnya terus berjalan. Ini muncul sekali (Pengaturan › Tentang dapat mengaktifkannya lagi).</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>Salin</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>Salin kode</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>kode</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>Salin tabel</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>Salin tabel (bisa ditempel ke spreadsheet)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>Menggambar…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(gambar yang tidak dapat ditampilkan dengan aman)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>Buka gambar</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>Buka gambar lengkap (dengan label) di penampil default Anda</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>Izinkan {0} › {1}?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>Izinkan sekali</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>Selalu izinkan</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>Tolak</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>t/a</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Upaya penalaran</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} dapat diatur di Pengaturan, tetapi mengobrol dengannya hadir di pembaruan berikutnya.</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>Prompt sistem: {0} (berlaku untuk pesan berikutnya)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>Edit "{0}"…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>Prompt baru…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>Tunggu jawaban selesai (atau hentikan) terlebih dulu.</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>Percakapan itu tidak dapat dibuka.</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>Riwayat obrolan dinonaktifkan</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>Belum ada obrolan yang disimpan</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} pesan, terakhir {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>Buka folder riwayat</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>baru saja</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} mnt lalu</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} j lalu</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} h lalu</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>Anda</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>Salin jawaban</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>Coba lagi</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>Disalin.</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>Papan klip sedang dipakai; coba lagi.</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>Laporkan jawaban ini ke {0}…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>Lainnya</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>Tidak berhasil: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>Lepaskan tombol untuk berhenti. Esc membatalkan.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>Tekan tombol lagi untuk berhenti. Esc membatalkan.</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 Menyalakan mikrofon…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 Mendengarkan…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>Tidak ada mikrofon yang tersedia.</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>Input suara berhenti ({0}).</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>Input suara memerlukan pengenalan ucapan daring Windows.</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>Aktifkan</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline tidak diizinkan memakai mikrofon.</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>Pengaturan mikrofon</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>Input suara tidak dapat dimulai: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>Pengenalan ucapan tidak mendukung dikte dalam bahasa tampilan Windows Anda.</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>Pengenalan ucapan tidak tersedia ({0}).</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>Lompat ke pesan terbaru</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>Tambahkan file atau tangkap layar</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>Lampirkan file…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Sematkan (tetap terbuka saat Anda mengeklik di tempat lain, jadi Anda bisa menyeret file ke dalamnya)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>Tangkap jendela tempat Anda tadi</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>Tangkap seluruh layar</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>Model (ketik nama atau pilih salah satu)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>Siapa yang menjawab</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>Obrolan terbaru (Ctrl+Atas membuka kembali yang terakhir)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>Obrolan baru (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>agy yang terpasang dan akun Google Anda.</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>claude yang terpasang dan akun Anda (paket Claude Anda).</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Kunci API Google AI Studio.</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Kunci API Anthropic Console. Model default: Claude Opus 5.5.</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>API yang kompatibel dengan OpenAI</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq, dan API bergaya OpenAI lainnya.</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>Titik akhir lokal</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>Server llama.cpp, LM Studio, dan server lokal bergaya OpenAI lainnya.</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>Daftar model dari server tidak dalam format yang diharapkan.</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 model</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>{0} model</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>Terhubung: {0}.</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>Terhubung: {0}, termasuk {1}.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>Terhubung: {0}, tetapi {1} tidak termasuk.</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>Tambahkan kunci API untuk {0} terlebih dulu.</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} menolak kunci API.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} merespons {1}.</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>Tidak dapat menjangkau {0}: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} tidak menjawab tepat waktu.</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>Tambahkan kunci API untuk {0} di Pengaturan › Koneksi AI.</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>Titik akhir untuk {0} bukan alamat http(s) yang valid: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} mencapai batas permintaan, mencoba lagi dalam {1} dtk…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} sedang sibuk, mencoba lagi dalam {1} dtk…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} menolak kunci API. {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>Batas permintaan atau kuota {0} tercapai. {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} mengalami kesalahan server (atau kelebihan beban). {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} menolak menjawab permintaan ini (penolakan keamanan).</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>Pilih model untuk {0} (daftar Model menampilkannya).</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} memblokir permintaan ini ({1}).</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} menghentikan jawaban ({1}).</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} berhenti ({1}) saat meminta alat; tidak ada yang dijalankan.</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: koneksi berakhir sebelum permintaan alat lengkap; tidak ada yang dijalankan.</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} berhenti secara tak terduga.</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>Folder kerja untuk {0} tidak ada: {1}. Pilih yang lain di Pengaturan › Koneksi AI.</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code tidak terpasang. Pasang dari claude.com/claude-code, jalankan `claude` sekali untuk masuk, lalu coba lagi.</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy belum masuk. Jalankan `agy` sekali di terminal untuk masuk, lalu coba lagi.</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>Kuota Antigravity Anda habis untuk saat ini. Coba lagi nanti.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy belum memercayai ruang kerja Hotline. Jalankan `agy` sekali di terminal dan percayai ruang kerja itu.</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code belum masuk. Jalankan `claude` sekali di terminal dan masuk, lalu coba lagi.</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>Batas penggunaan Claude tercapai untuk saat ini. {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude sedang kelebihan beban; coba lagi sebentar lagi.</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0} lebih besar dari {1} MB.</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0} lebih besar dari {1} KB.</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: jenis file tidak didukung.</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>Teks yang dipilih</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>Teks yang dipilih dari {0}</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>Anda dapat melampirkan hingga {0} file.</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Teks di {0}</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} tidak dapat membaca gambar.</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} tidak dapat membaca file.</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>Backend '{0}' belum tersedia.</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>"{0}" tidak terpasang, jadi server {1} tidak dapat dimulai. Pasang {2}, lalu mulai ulang Hotline.</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" tidak terpasang atau tidak ada di PATH, jadi server {1} tidak dapat dimulai. Periksa "command" di mcp.json.</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json tidak dapat dibaca: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>Persetujuan "{0}" memiliki nilai yang tidak dikenal, jadi diperlakukan sebagai "deny".</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>Nama server tidak boleh berisi '/' atau '*'.</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>tidak dimulai dalam {0:0} dtk</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Tidak ada alat yang berjalan sampai ini diperbaiki.</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Versi baik terakhir tetap berlaku.</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>server berhenti (kode keluar {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json milik agy bukan objek JSON; tidak diubah.</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" di settings.json milik agy bukan objek; tidak diubah.</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" di settings.json milik agy bukan daftar; tidak diubah.</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Tangkapan area Hotline</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) tidak terpasang. Pasang dari antigravity.google/cli, lalu coba lagi.</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Pilih cara Hotline terhubung</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Pilih AI yang akan digunakan Hotline. Tidak ada yang dikirim atau dijalankan sebelum Anda memilih.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code atau Antigravity belum terpasang di PC ini. Pasang salah satunya dan masuk, atau gunakan kunci API.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>Gunakan {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>Gunakan kunci API…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Jadikan Hotline aplikasi tombol Copilot</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Pilih koneksi</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Gunakan Hotline untuk tombol Copilot</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Di Pengaturan Windows › Personalisasi › Input teks › Sesuaikan tombol Copilot pada keyboard, pilih Kustom, lalu pilih Hotline. Memerlukan keyboard dengan tombol Copilot.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Buka pengaturan tombol Copilot</value></data>
+</root>

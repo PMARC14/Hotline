@@ -33,18 +33,31 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
     }
 
     /// <summary>A bar that stays until <see cref="Remove"/> with the same tag (replaces an earlier one with that tag).</summary>
-    public void ShowTagged(string tag, string? title, string message, InfoBarSeverity severity, bool closable = false, (string Text, Action Click)? action = null)
+    public void ShowTagged(string tag, string? title, string message, InfoBarSeverity severity, bool closable = false,
+        (string Text, Action Click)? action = null, (string Text, Action Click)? second = null)
     {
         Remove(tag);
         var bar = new InfoBar { Tag = tag, IsOpen = true, IsClosable = closable, Severity = severity, Title = title ?? "", Message = message };
-        if (action is { } a)
+        Button Make((string Text, Action Click) a)
         {
             var button = new Button { Content = a.Text };
-            button.Click += (_, _) => a.Click();
-            bar.ActionButton = button;
+            button.Click += (_, _) => { a.Click(); if (second is not null) Panel.Children.Remove(bar); }; // a choice between links: done once one is picked
+            return button;
         }
+        if (action is { } first && second is { } other) // two buttons: a row under the message (ActionButton holds one)
+            bar.Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 12), Children = { Make(first), Make(other) } };
+        else if (action is { } only) bar.ActionButton = Make(only);
         bar.Closed += (_, _) => Panel.Children.Remove(bar);
         Panel.Children.Add(bar);
+    }
+
+    /// <summary>A tagged bar with its own controls under the message, placed first (it's what the panel waits for).</summary>
+    public void ShowTagged(string tag, string? title, string message, InfoBarSeverity severity, UIElement content)
+    {
+        Remove(tag);
+        var bar = new InfoBar { Tag = tag, IsOpen = true, IsClosable = true, Severity = severity, Title = title ?? "", Message = message, Content = content };
+        bar.Closed += (_, _) => Panel.Children.Remove(bar);
+        Panel.Children.Insert(0, bar);
     }
 
     public void Remove(string tag)
@@ -94,7 +107,7 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         var bar = new InfoBar
         {
             IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning, Tag = ApprovalTag,
-            Title = $"Allow {request.Tool.Server} › {request.Tool.Tool}?",
+            Title = L.F(Strings.Tool_AllowTitle, request.Tool.Server, request.Tool.Tool),
         };
         var timer = popup.DispatcherQueue.CreateTimer();
         void Answer(ToolDecision d)
@@ -113,7 +126,7 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         details.Children.Add(new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 8),
-            Children = { B("Allow once", ToolDecision.AllowOnce, accent: true), B("Always allow", ToolDecision.AllowAlways), B("Deny", ToolDecision.Deny) },
+            Children = { B(Strings.Tool_AllowOnce, ToolDecision.AllowOnce, accent: true), B(Strings.Tool_AllowAlways, ToolDecision.AllowAlways), B(Strings.Tool_Deny, ToolDecision.Deny) },
         });
         bar.Content = details;
         Panel.Children.Add(bar);

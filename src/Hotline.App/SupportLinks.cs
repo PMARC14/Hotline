@@ -4,10 +4,10 @@ namespace Hotline.App;
 internal static class SupportLinks
 {
     /// <summary>
-    /// Off until the GitHub Sponsors and Ko-fi accounts exist: hides the About page's Support card and the one-time
-    /// "Enjoying Hotline?" note. Turn on together with .github/FUNDING.yml and the README section.
+    /// Shows the About page's Support card and the one-time "Enjoying Hotline?" note. Switch off (with
+    /// .github/FUNDING.yml and the README section) if the GitHub Sponsors or Ko-fi account ever goes away.
     /// </summary>
-    public const bool DonationsLive = false;
+    public const bool DonationsLive = true;
 
     public static readonly Uri Repository = new("https://github.com/PMARC14/hotline");
     public static readonly Uri GitHubSponsors = new("https://github.com/sponsors/PMARC14");

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Agy;
 
@@ -39,9 +40,9 @@ public static class AgyPermissions
         {
             CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true,
         });
-        var root = (parsed ?? new JsonObject()) as JsonObject ?? throw new InvalidDataException("agy's settings.json isn't a JSON object; not changing it.");
+        var root = (parsed ?? new JsonObject()) as JsonObject ?? throw new InvalidDataException(Strings.Agy_SettingsNotObject);
         if (root["permissions"] is null) root["permissions"] = new JsonObject();
-        if (root["permissions"] is not JsonObject permissions) throw new InvalidDataException("\"permissions\" in agy's settings.json isn't an object; not changing it.");
+        if (root["permissions"] is not JsonObject permissions) throw new InvalidDataException(Strings.Agy_PermissionsNotObject);
         Merge(permissions, "allow", allow);
         Merge(permissions, "deny", deny);
         return root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
@@ -61,7 +62,7 @@ public static class AgyPermissions
     private static void Merge(JsonObject permissions, string name, IEnumerable<string> rules)
     {
         if (permissions[name] is null) permissions[name] = new JsonArray();
-        if (permissions[name] is not JsonArray list) throw new InvalidDataException($"\"permissions.{name}\" in agy's settings.json isn't a list; not changing it.");
+        if (permissions[name] is not JsonArray list) throw new InvalidDataException(L.F(Strings.Agy_ListNotList, name));
         var existing = list.Select(n => n is JsonValue v && v.TryGetValue<string>(out var t) ? t : null).OfType<string>().ToHashSet(StringComparer.Ordinal);
         foreach (var rule in rules)
             if (existing.Add(rule)) list.Add(rule);

@@ -21,6 +21,16 @@ internal sealed class ChildProcessJob
             log.Error($"child process job setup failed (error {Marshal.GetLastWin32Error()}); agy may outlive a crash");
     }
 
+    /// <summary>Whether a process is in the job: one Hotline started (a CLI) or something that CLI started.</summary>
+    public bool Owns(uint processId)
+    {
+        if (_job == 0 || processId == 0) return false;
+        var process = Native.OpenProcess(Native.PROCESS_QUERY_LIMITED_INFORMATION, false, processId);
+        if (process == 0) return false;
+        try { return Native.IsProcessInJob(process, _job, out var inJob) && inJob; }
+        finally { Native.CloseHandle(process); }
+    }
+
     public void Add(Process process)
     {
         if (_job != 0 && !Native.AssignProcessToJobObject(_job, process.Handle))

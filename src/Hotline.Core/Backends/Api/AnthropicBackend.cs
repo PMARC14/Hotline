@@ -9,6 +9,7 @@ using Hotline.Core.Tools;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Api;
 
@@ -93,7 +94,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
                     {
                         stopReason = stop.Raw();
                         if (stopReason == "refusal")
-                            throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)} declined to answer this request (safety refusal).");
+                            throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_Refused, ApiCommon.Name(profile)));
                     }
                 }
             }
@@ -221,10 +222,10 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
         BackendException => null,
         OperationCanceledException => null,
         AnthropicUnauthorizedException or AnthropicForbiddenException
-            => new(BackendErrorKind.Unauthorized, $"{ApiCommon.Name(profile)} rejected the API key. {ex.Message}", ex),
-        AnthropicRateLimitException => new(BackendErrorKind.RateLimited, $"{ApiCommon.Name(profile)} rate limit or quota reached. {ex.Message}", ex),
-        Anthropic5xxException => new(BackendErrorKind.ServerDown, $"{ApiCommon.Name(profile)} had a server error (or is overloaded). {ex.Message}", ex),
-        AnthropicIOException => new(BackendErrorKind.ServerDown, $"Can't reach {ApiCommon.Endpoint(profile)}: {ex.Message}", ex),
+            => new(BackendErrorKind.Unauthorized, L.F(Strings.Api_KeyRejected, ApiCommon.Name(profile), ex.Message), ex),
+        AnthropicRateLimitException => new(BackendErrorKind.RateLimited, L.F(Strings.Api_RateLimited, ApiCommon.Name(profile), ex.Message), ex),
+        Anthropic5xxException => new(BackendErrorKind.ServerDown, L.F(Strings.Api_ServerError, ApiCommon.Name(profile), ex.Message), ex),
+        AnthropicIOException => new(BackendErrorKind.ServerDown, L.F(Strings.Api_Unreachable, ApiCommon.Endpoint(profile), ex.Message), ex),
         AnthropicApiException => new(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: {ex.Message}", ex),
         _ => null,
     };

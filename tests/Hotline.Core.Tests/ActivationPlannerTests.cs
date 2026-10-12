@@ -50,4 +50,9 @@ public class ActivationPlannerTests
     public void Settings_uri_opens_settings_without_popup()
         => Assert.Equal(new ActivationPlan(null, ShowPopup: false, OpenSettings: true),
             ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://settings"), false)));
+
+    [Fact]
+    public void Answer_notification_click_shows_the_panel_without_reading_a_selection() =>
+        Assert.Equal(new ActivationPlan(null, true, ReadSelection: false),
+            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://answer"), IsFirstLaunch: false)));
 }

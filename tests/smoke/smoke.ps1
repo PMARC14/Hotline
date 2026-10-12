@@ -1,12 +1,19 @@
 # End-to-end smoke test against the INSTALLED Hotline package. Windows PowerShell 5.1.
 #   powershell -File tests\smoke\smoke.ps1            # test what's installed
-#   powershell -File tests\smoke\smoke.ps1 -Install   # build + install first (needs scripts\dev-cert.ps1 once)
+#   powershell -File tests\smoke\smoke.ps1 -Install   # build + install first (needs scripts/dev-cert.sh once)
 # Drives the same inputs Windows uses (protocol URIs, Copilot fast-path window messages, fallback hotkey)
 # and asserts on the app log. Exit code = number of failed checks. Restores settings.json afterwards.
 param([switch]$Install, [switch]$WithAgy)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-if ($Install) { & (Join-Path $root 'scripts\install.ps1') | Out-Host }
+if ($Install) {
+    # Git's bash (not WSL's bash.exe): git.exe lives in Git\cmd or Git\mingw64\bin, bash.exe in Git\bin.
+    $gitDir = Split-Path (Get-Command git).Source -Parent
+    $bash = @('..\bin\bash.exe', '..\..\bin\bash.exe') | ForEach-Object { Join-Path $gitDir $_ } | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if (-not $bash) { Write-Error "Git's bash.exe not found next to $gitDir"; exit 1 }
+    & $bash (Join-Path $root 'scripts/install.sh') | Out-Host
+    if ($LASTEXITCODE -ne 0) { Write-Error 'install failed'; exit 1 }
+}
 
 Add-Type @"
 using System; using System.Runtime.InteropServices; using System.Text;

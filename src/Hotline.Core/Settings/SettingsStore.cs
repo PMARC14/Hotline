@@ -272,6 +272,10 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v10: an empty defaultBackend means "not chosen yet" (new installs ask). Older files always had one chosen.
+        if (s.SchemaVersion < 10 && string.IsNullOrWhiteSpace(s.Chat.DefaultBackend) && s.Chat.Backends.Count > 0)
+            s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
+        // → v9: general.language (interface language) starts at "system"; nothing to move.
         // → v8: new chat options (attachSelection, …) start at their defaults; nothing to move.
         // → v7: Claude Code can chat: offer a connection for it once (removable; not re-added later).
         if (s.SchemaVersion < 7 && s.Chat.Backends.All(b => b.Type != BackendType.ClaudeCode))
@@ -290,6 +294,8 @@ public sealed class SettingsStore(string directory)
 
     public static HotlineSettings Normalize(HotlineSettings s)
     {
+        s.General ??= new GeneralSettings();
+        if (string.IsNullOrWhiteSpace(s.General.Language)) s.General.Language = Text.Localization.Languages.System;
         s.Activation ??= new ActivationSettings();
         s.Window ??= new WindowSettings();
         s.Diagnostics ??= new DiagnosticsSettings();
@@ -297,7 +303,8 @@ public sealed class SettingsStore(string directory)
         s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).ToList();
         if (s.Chat.Backends.Count == 0) s.Chat.Backends = ChatSettings.DefaultBackends();
         foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
-        if (!s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
+        s.Chat.DefaultBackend = s.Chat.DefaultBackend?.Trim() ?? "";
+        if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
         if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";

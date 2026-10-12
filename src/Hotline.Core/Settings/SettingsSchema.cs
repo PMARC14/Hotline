@@ -1,4 +1,5 @@
 using Hotline.Core.Activation;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Settings;
 
@@ -33,7 +34,6 @@ public sealed record TextItem(SettingsPage Page, string Header, string? Descript
     public string? Invalid { get; init; }
 }
 
-/// <summary>Every user-facing setting, described once; the settings window is generated from this list.</summary>
 public static class SettingsSchema
 {
     private static ChoiceItem Choice<T>(SettingsPage page, string header, string? description, (T Value, string Label)[] options,
@@ -45,85 +45,97 @@ public static class SettingsSchema
 
     private static readonly (KeyAction, string)[] KeyActions =
     [
-        (KeyAction.TogglePopup, "Open / close Hotline"), (KeyAction.ShowPopup, "Open Hotline"), (KeyAction.NewChat, "Start a new chat"),
-        (KeyAction.CaptureWindow, "Capture the current window"), (KeyAction.RegionSelect, "Capture a region"),
-        (KeyAction.Voice, "Voice input (hold to talk)"), (KeyAction.None, "Do nothing"),
+        (KeyAction.TogglePopup, nameof(Strings.Set_Key_Toggle)), (KeyAction.ShowPopup, nameof(Strings.Set_Key_Open)),
+        (KeyAction.NewChat, nameof(Strings.Set_Key_NewChat)), (KeyAction.CaptureWindow, nameof(Strings.Set_Key_CaptureWindow)),
+        (KeyAction.RegionSelect, nameof(Strings.Set_Key_CaptureRegion)), (KeyAction.Voice, nameof(Strings.Set_Key_Voice)),
+        (KeyAction.None, nameof(Strings.Set_Key_None)),
     ];
 
+    /// <summary>"Use Windows language", then each shipped language under its own name (never translated).</summary>
+    private static List<ChoiceOption> LanguageOptions() =>
+        [new(Languages.System, nameof(Strings.Set_Language_System)), .. Languages.Supported.Select(t => new ChoiceOption(t, Languages.NativeName(t)))];
+
+    /// <summary>
+    /// Every user-facing setting, described once; the settings window is generated from this list. Header, Description,
+    /// option labels, Placeholder, Invalid and Unit are resource keys (Strings.resx), looked up when a page is drawn
+    /// (<see cref="L.Get"/>; text that isn't a key, like a language's own name or "px", is shown as is).
+    /// </summary>
     public static IReadOnlyList<SettingItem> Items { get; } =
     [
-        Choice(SettingsPage.General, "Copilot key", "As Right Ctrl, Copilot+C is Ctrl+C and the key no longer opens Hotline (use the extra hotkey " +
-            "below, or the tray icon). Works on keyboards whose Copilot key sends Win+Shift+F23 (most do).",
-            [(Activation.CopilotKeyMode.Hotline, "Opens Hotline"), (Activation.CopilotKeyMode.RightCtrl, "Acts as Right Ctrl")],
+        new ChoiceItem(SettingsPage.General, nameof(Strings.Set_Language), nameof(Strings.Set_Language_Desc), LanguageOptions(),
+            s => Languages.Resolve(s.General.Language) is null ? Languages.System : s.General.Language.Trim(),
+            (s, v) => s.General.Language = v, RequiresRestart: true),
+        Choice(SettingsPage.General, nameof(Strings.Set_CopilotKey), nameof(Strings.Set_CopilotKey_Desc),
+            [(Activation.CopilotKeyMode.Hotline, nameof(Strings.Set_CopilotKey_Hotline)), (Activation.CopilotKeyMode.RightCtrl, nameof(Strings.Set_CopilotKey_RightCtrl))],
             s => s.Activation.CopilotKey, (s, v) => s.Activation.CopilotKey = v),
-        Choice(SettingsPage.General, "Short press of the Copilot key", null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
-        Choice(SettingsPage.General, "Long press of the Copilot key", null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
-        new ToggleItem(SettingsPage.General, "Voice input", "Hold the Copilot key and talk; let go to stop (Esc cancels). Uses Windows speech " +
-            "recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. " +
-            "Turning it on sets the long press to voice; off sets it back to a new chat.",
+        Choice(SettingsPage.General, nameof(Strings.Set_Tap), null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
+        Choice(SettingsPage.General, nameof(Strings.Set_Hold), null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
+        new ToggleItem(SettingsPage.General, nameof(Strings.Set_Voice), nameof(Strings.Set_Voice_Desc),
             s => s.Activation.Hold == KeyAction.Voice,
             (s, v) => { if (v) s.Activation.Hold = KeyAction.Voice; else if (s.Activation.Hold == KeyAction.Voice) s.Activation.Hold = KeyAction.NewChat; })
         { RefreshPage = true },
-        new TextItem(SettingsPage.General, "Extra hotkey", "Also opens Hotline, e.g. Ctrl+Alt+H. Leave empty for none.", "Ctrl+Alt+H",
+        new TextItem(SettingsPage.General, nameof(Strings.Set_Hotkey), nameof(Strings.Set_Hotkey_Desc), "Ctrl+Alt+H",
             s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true)
-        { Validate = v => Activation.Hotkey.TryParse(v, out _), Invalid = "Not a valid hotkey (example: Ctrl+Alt+H)" },
-        new ToggleItem(SettingsPage.General, "Hide when I click elsewhere", "Pin the panel (📌) to keep it open temporarily.",
+        { Validate = v => Activation.Hotkey.TryParse(v, out _), Invalid = nameof(Strings.Set_Hotkey_Invalid) },
+        new ToggleItem(SettingsPage.General, nameof(Strings.Set_HideOnBlur), nameof(Strings.Set_HideOnBlur_Desc),
             s => s.Window.HideOnBlur, (s, v) => s.Window.HideOnBlur = v),
-        new ToggleItem(SettingsPage.General, "Keep on top of other windows", null, s => s.Window.AlwaysOnTop, (s, v) => s.Window.AlwaysOnTop = v),
+        new ToggleItem(SettingsPage.General, nameof(Strings.Set_OnTop), null, s => s.Window.AlwaysOnTop, (s, v) => s.Window.AlwaysOnTop = v),
 
-        Choice(SettingsPage.Appearance, "Theme", null, [(ThemeChoice.System, "Use Windows setting"), (ThemeChoice.Light, "Light"), (ThemeChoice.Dark, "Dark")],
+        Choice(SettingsPage.Appearance, nameof(Strings.Set_Theme), null,
+            [(ThemeChoice.System, nameof(Strings.Set_Theme_System)), (ThemeChoice.Light, nameof(Strings.Set_Theme_Light)), (ThemeChoice.Dark, nameof(Strings.Set_Theme_Dark))],
             s => s.Window.Theme, (s, v) => s.Window.Theme = v),
-        Choice(SettingsPage.Appearance, "Background", "Acrylic is translucent; Solid is opaque.",
-            [(BackdropKind.Acrylic, "Acrylic"), (BackdropKind.AcrylicThin, "Acrylic (thin)"), (BackdropKind.Mica, "Mica"), (BackdropKind.Solid, "Solid")],
+        Choice(SettingsPage.Appearance, nameof(Strings.Set_Backdrop), nameof(Strings.Set_Backdrop_Desc),
+            [(BackdropKind.Acrylic, nameof(Strings.Set_Backdrop_Acrylic)), (BackdropKind.AcrylicThin, nameof(Strings.Set_Backdrop_AcrylicThin)),
+             (BackdropKind.Mica, nameof(Strings.Set_Backdrop_Mica)), (BackdropKind.Solid, nameof(Strings.Set_Backdrop_Solid))],
             s => s.Window.Backdrop, (s, v) => s.Window.Backdrop = v),
-        new NumberItem(SettingsPage.Appearance, "Acrylic tint", "0 = clear, 1 = strongly tinted.", 0, 1, 0.05, null,
+        new NumberItem(SettingsPage.Appearance, nameof(Strings.Set_Tint), nameof(Strings.Set_Tint_Desc), 0, 1, 0.05, null,
             s => s.Window.TintOpacity, (s, v) => s.Window.TintOpacity = v),
-        new NumberItem(SettingsPage.Appearance, "Acrylic luminosity", "Lower is more see-through.", 0, 1, 0.05, null,
+        new NumberItem(SettingsPage.Appearance, nameof(Strings.Set_Luminosity), nameof(Strings.Set_Luminosity_Desc), 0, 1, 0.05, null,
             s => s.Window.LuminosityOpacity, (s, v) => s.Window.LuminosityOpacity = v),
-        new NumberItem(SettingsPage.Appearance, "Text size", "Default follows Windows (Settings › Accessibility › Text size).", 10, 32, 1, "px",
+        new NumberItem(SettingsPage.Appearance, nameof(Strings.Set_TextSize), nameof(Strings.Set_TextSize_Desc), 10, 32, 1, "px",
             s => s.Window.FontSize ?? Theming.ThemeTokens.DefaultFontSize, (s, v) => s.Window.FontSize = (int)v == Theming.ThemeTokens.DefaultFontSize ? null : (int)v),
-        new TextItem(SettingsPage.Appearance, "Font", "Any installed font, e.g. Cascadia Code. Empty = Segoe UI Variable.", "Segoe UI Variable",
+        new TextItem(SettingsPage.Appearance, nameof(Strings.Set_Font), nameof(Strings.Set_Font_Desc), "Segoe UI Variable",
             s => s.Window.FontFamily, (s, v) => s.Window.FontFamily = Blank(v)),
-        Choice(SettingsPage.Appearance, "Scrollbar", null, [(ScrollbarStyle.Auto, "Show when scrolling"), (ScrollbarStyle.Visible, "Always"), (ScrollbarStyle.Hidden, "Never")],
+        Choice(SettingsPage.Appearance, nameof(Strings.Set_Scrollbar), null,
+            [(ScrollbarStyle.Auto, nameof(Strings.Set_Scrollbar_Auto)), (ScrollbarStyle.Visible, nameof(Strings.Set_Scrollbar_Always)), (ScrollbarStyle.Hidden, nameof(Strings.Set_Scrollbar_Never))],
             s => s.Window.Scrollbar, (s, v) => s.Window.Scrollbar = v),
 
-        new NumberItem(SettingsPage.Window, "Width", "Share of the screen width.", 20, 90, 1, "%", s => s.Window.WidthPercent, (s, v) => s.Window.WidthPercent = v),
-        new NumberItem(SettingsPage.Window, "Minimum width", null, 320, 4000, 10, "DIP", s => s.Window.MinWidth, (s, v) => s.Window.MinWidth = (int)v),
-        new NumberItem(SettingsPage.Window, "Maximum width", null, 320, 4000, 10, "DIP", s => s.Window.MaxWidth, (s, v) => s.Window.MaxWidth = (int)v),
-        new NumberItem(SettingsPage.Window, "Minimum height", "0 = just the message bar; the panel grows upward as you type and chat.", 0, 4000, 10, "DIP",
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_Width), nameof(Strings.Set_Width_Desc), 20, 90, 1, "%", s => s.Window.WidthPercent, (s, v) => s.Window.WidthPercent = v),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinWidth), null, 320, 4000, 10, "DIP", s => s.Window.MinWidth, (s, v) => s.Window.MinWidth = (int)v),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxWidth), null, 320, 4000, 10, "DIP", s => s.Window.MaxWidth, (s, v) => s.Window.MaxWidth = (int)v),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinHeight), nameof(Strings.Set_MinHeight_Desc), 0, 4000, 10, "DIP",
             s => s.Window.Height, (s, v) => s.Window.Height = (int)v),
-        new NumberItem(SettingsPage.Window, "Maximum height", "How much of the screen it may grow to.", 30, 95, 1, "%",
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxHeight), nameof(Strings.Set_MaxHeight_Desc), 30, 95, 1, "%",
             s => s.Window.MaxHeightPercent, (s, v) => s.Window.MaxHeightPercent = v),
-        new NumberItem(SettingsPage.Window, "Vertical position", "0 = top, 0.5 = centre, 1 = bottom.", 0, 1, 0.05, null,
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_Position), nameof(Strings.Set_Position_Desc), 0, 1, 0.05, null,
             s => s.Window.VerticalPosition, (s, v) => s.Window.VerticalPosition = v),
-        Choice(SettingsPage.Window, "Growth", null, [(GrowMode.Grow, "Fit the conversation"), (GrowMode.Full, "Jump to maximum height")],
+        Choice(SettingsPage.Window, nameof(Strings.Set_Growth), null, [(GrowMode.Grow, nameof(Strings.Set_Growth_Fit)), (GrowMode.Full, nameof(Strings.Set_Growth_Full))],
             s => s.Chat.GrowMode, (s, v) => s.Chat.GrowMode = v),
 
-        new ToggleItem(SettingsPage.Chat, "Save chat history", "Text only, in your .hotline folder.", s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
-        new NumberItem(SettingsPage.Chat, "Keep history for", null, 1, 3650, 1, "days", s => s.Chat.HistoryRetentionDays,
+        new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_NotifyDone), nameof(Strings.Set_NotifyDone_Desc), s => s.Chat.NotifyWhenDone, (s, v) => s.Chat.NotifyWhenDone = v),
+        new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_History), nameof(Strings.Set_History_Desc), s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
+        new NumberItem(SettingsPage.Chat, nameof(Strings.Set_Retention), null, 1, 3650, 1, nameof(Strings.Set_Unit_Days), s => s.Chat.HistoryRetentionDays,
             (s, v) => s.Chat.HistoryRetentionDays = (int)v, RequiresRestart: true),
-        Choice(SettingsPage.Chat, "Attach selected text", "When the key opens the panel, text selected in the app you came from is attached. " +
-            "Ctrl+C also works in apps that don't share their selection, but briefly uses the clipboard (restored afterwards).",
-            [(AttachSelectionMode.Auto, "Yes"), (AttachSelectionMode.Clipboard, "Yes, also with Ctrl+C"), (AttachSelectionMode.Off, "No")],
+        Choice(SettingsPage.Chat, nameof(Strings.Set_Selection), nameof(Strings.Set_Selection_Desc),
+            [(AttachSelectionMode.Auto, nameof(Strings.Set_Selection_Auto)), (AttachSelectionMode.Clipboard, nameof(Strings.Set_Selection_Clipboard)), (AttachSelectionMode.Off, nameof(Strings.Set_Selection_Off))],
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
-        new TextItem(SettingsPage.Chat, "Stop an answer", "The key that stops an answer while it's being written (Enter never does; " +
-            "the Send button does too). A key alone (Esc) or a combo like Ctrl+. — when nothing is being answered, Esc hides the panel.",
+        new TextItem(SettingsPage.Chat, nameof(Strings.Set_Stop), nameof(Strings.Set_Stop_Desc),
             "Esc", s => s.Chat.StopShortcut, (s, v) => s.Chat.StopShortcut = string.IsNullOrWhiteSpace(v) ? "Esc" : v.Trim())
-        { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = "Not a valid shortcut (examples: Esc, Ctrl+., Ctrl+Shift+Backspace)" },
-        new ToggleItem(SettingsPage.Chat, "Memory", "Every chat sees memory.md in your .hotline folder (\"/remember something\" adds a line).",
+        { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = nameof(Strings.Set_Stop_Invalid) },
+        new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Memory), nameof(Strings.Set_Memory_Desc),
             s => s.Chat.Memory, (s, v) => s.Chat.Memory = v),
-        Choice(SettingsPage.Chat, "Let the AI save memories", "API connections can save a fact when you ask them to remember something.",
-            [(MemoryToolMode.Ask, "Ask me each time"), (MemoryToolMode.Allow, "Yes, without asking"), (MemoryToolMode.Off, "No")],
+        Choice(SettingsPage.Chat, nameof(Strings.Set_MemoryTool), nameof(Strings.Set_MemoryTool_Desc),
+            [(MemoryToolMode.Ask, nameof(Strings.Set_MemoryTool_Ask)), (MemoryToolMode.Allow, nameof(Strings.Set_MemoryTool_Allow)), (MemoryToolMode.Off, nameof(Strings.Set_MemoryTool_Off))],
             s => s.Chat.MemoryTool, (s, v) => s.Chat.MemoryTool = v),
-        new ToggleItem(SettingsPage.Chat, "Send after dictation", "With the Voice key action: send the message when you let go of the key.",
+        new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_VoiceSend), nameof(Strings.Set_VoiceSend_Desc),
             s => s.Chat.VoiceAutoSend, (s, v) => s.Chat.VoiceAutoSend = v),
-        Choice(SettingsPage.Chat, "Screenshot text (OCR)", "Windows reads the text in images (offline) for models that can't see them.",
-            [(OcrMode.Auto, "For text-only models"), (OcrMode.Always, "Always add it"), (OcrMode.Off, "Off")],
+        Choice(SettingsPage.Chat, nameof(Strings.Set_Ocr), nameof(Strings.Set_Ocr_Desc),
+            [(OcrMode.Auto, nameof(Strings.Set_Ocr_Auto)), (OcrMode.Always, nameof(Strings.Set_Ocr_Always)), (OcrMode.Off, nameof(Strings.Set_Ocr_Off))],
             s => s.Chat.Ocr, (s, v) => s.Chat.Ocr = v),
-        new NumberItem(SettingsPage.Chat, "Image size limit", "Attached and captured images are scaled to this longest edge.", 256, 8192, 128, "px",
+        new NumberItem(SettingsPage.Chat, nameof(Strings.Set_ImageSize), nameof(Strings.Set_ImageSize_Desc), 256, 8192, 128, "px",
             s => s.Chat.MaxImagePixels, (s, v) => s.Chat.MaxImagePixels = (int)v),
 
-        new ToggleItem(SettingsPage.Advanced, "Detailed logging", "Writes extra diagnostics to the log.", s => s.Diagnostics.VerboseLogging,
+        new ToggleItem(SettingsPage.Advanced, nameof(Strings.Set_Logging), nameof(Strings.Set_Logging_Desc), s => s.Diagnostics.VerboseLogging,
             (s, v) => s.Diagnostics.VerboseLogging = v),
     ];
 }

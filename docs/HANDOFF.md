@@ -33,7 +33,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - Tests: 610 Core unit tests green; `tests/smoke/smoke.ps1 -Install` green (now also checks OCR on the rendered
   transcript and the `/` suggestion list; the "fallback hotkey" check is flaky when the user is typing during the run).
 - Git history was rewritten on 2026-10-04: noreply author, no personal paths, no certificate password. The dev
-  certificate password now lives in `certs/hotline-dev.password` (git-ignored); `build-msix.ps1` reads it.
+  certificate password now lives in `certs/hotline-dev.password` (git-ignored); `build-msix.sh` reads it.
 
 ## Next work
 
@@ -57,6 +57,11 @@ Still open: the region capture human check (multi-monitor / mixed DPI); `odr.exe
 UI follow-ups the user deferred (only fix if they become big problems): provider name shrinks very small in the bar;
 full-fidelity SVG (Windows' renderer drops text); code blocks wrap instead of scrolling; panel-growth smoothness;
 caret visibility on all themes.
+
+**Languages (Plan 8, PR #4):** interface text is in `Hotline.Core/Text/Localization/Strings*.resx` (17 languages,
+generated `Strings` class; schema text is keys looked up at render time; XAML uses `{local:Loc Key=…}`);
+`general.language` (schema v9) picks one or follows Windows. See docs/TRANSLATING.md. Right-to-left languages are a
+follow-up (needs a visual check of the mirrored panel).
 
 ## Architecture map
 

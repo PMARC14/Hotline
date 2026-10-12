@@ -73,7 +73,7 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     public void SetBusy(bool busy)
     {
         popup.SendButton.Content = busy ? Glyphs.Stop : Glyphs.Send;
-        ToolTipService.SetToolTip(popup.SendButton, busy ? "Stop" : "Send (Enter)");
+        ToolTipService.SetToolTip(popup.SendButton, busy ? Strings.Composer_Stop : Strings.Composer_Send);
     }
 
     private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)

@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using ModelContextProtocol.Client;
 using ModelContextProtocol.Protocol;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tools;
 
@@ -112,16 +113,17 @@ public sealed class StdioMcpSession : IMcpSession
         var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
         process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
         bool started;
+        Processes.ProcessLaunches.Noted();
         try { started = process.Start(); }
         catch (Exception ex)
         {
             process.Dispose();
-            throw new IOException($"couldn't start {server.Command}: {ex.Message}", ex);
+            throw new IOException(L.F(Strings.Mcp_StartFailed, server.Command) + ": " + ex.Message, ex);
         }
         if (!started)
         {
             process.Dispose();
-            throw new IOException($"couldn't start {server.Command}");
+            throw new IOException(L.F(Strings.Mcp_StartFailed, server.Command));
         }
         McpClient? client = null;
         using var exitedOrCancelled = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -159,7 +161,7 @@ public sealed class StdioMcpSession : IMcpSession
         string code;
         try { code = process.ExitCode.ToString(System.Globalization.CultureInfo.InvariantCulture); } catch (InvalidOperationException) { code = "?"; }
         var tail = stderr.Tail;
-        return $"the server exited (exit code {code})" + (tail.Length > 0 ? ": " + tail.Replace("\n", " / ") : "");
+        return L.F(Strings.Mcp_Exited, code) + (tail.Length > 0 ? ": " + tail.Replace("\n", " / ") : "");
     }
 
     private static bool HasExited(Process process)

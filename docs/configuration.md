@@ -21,6 +21,8 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 
 | Key | Default | Meaning |
 |---|---|---|
+| `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
+| `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
 | `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the free space |
@@ -32,11 +34,12 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `activation.copilotKey` | `hotline` | `hotline`: the key opens Hotline (tap/hold above). `rightCtrl`: the key is a plain Right Ctrl (Copilot+C = Ctrl+C) and no longer opens Hotline — use the extra hotkey or the tray. Works on keyboards whose Copilot key sends Win+Shift+F23 (most do) |
-| `chat.defaultBackend` | `agy` | Connection that answers by default (its `id`) |
+| `chat.defaultBackend` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
+| `chat.notifyWhenDone` | `true` | A Windows notification when an answer finishes while the panel is hidden or another app is in front; clicking it opens the answer |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |

@@ -19,8 +19,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
 
     private void Resume(string id)
     {
-        if (chat.IsBusy) { notices.Show("Wait for the answer to finish (or stop it) first.", InfoBarSeverity.Informational); return; }
-        if (!chat.Resume(id)) notices.Show("That conversation couldn't be opened.", InfoBarSeverity.Warning);
+        if (chat.IsBusy) { notices.Show(Strings.Recent_Busy, InfoBarSeverity.Informational); return; }
+        if (!chat.Resume(id)) notices.Show(Strings.Recent_OpenFailed, InfoBarSeverity.Warning);
     }
 
     private void Build()
@@ -29,18 +29,18 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         var recent = Source?.Invoke(10) ?? [];
         if (recent.Count == 0)
         {
-            popup.RecentMenu.Items.Add(new MenuFlyoutItem { Text = Source is null ? "Chat history is turned off" : "No saved chats yet", IsEnabled = false });
+            popup.RecentMenu.Items.Add(new MenuFlyoutItem { Text = Source is null ? Strings.Recent_HistoryOff : Strings.Recent_None, IsEnabled = false });
             return;
         }
         foreach (var c in recent)
         {
             var item = new MenuFlyoutItem { Text = $"{c.Title}   ·   {Ago(c.LastAt)}", IsEnabled = c.Id != chat.ConversationId };
-            ToolTipService.SetToolTip(item, $"{c.MessageCount} messages, last {c.LastAt.ToLocalTime():g}");
+            ToolTipService.SetToolTip(item, L.F(Strings.Recent_Tip, c.MessageCount, c.LastAt.ToLocalTime()));
             item.Click += (_, _) => Resume(c.Id);
             popup.RecentMenu.Items.Add(item);
         }
         popup.RecentMenu.Items.Add(new MenuFlyoutSeparator());
-        var folder = new MenuFlyoutItem { Text = "Open history folder" };
+        var folder = new MenuFlyoutItem { Text = Strings.Recent_OpenFolder };
         folder.Click += (_, _) => { popup.HidePopup(); CliRunner.OpenFolder(Path.Combine(dataDirectory, "history")); };
         popup.RecentMenu.Items.Add(folder);
     }
@@ -48,10 +48,10 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private static string Ago(DateTimeOffset at)
     {
         var span = DateTimeOffset.Now - at;
-        return span.TotalMinutes < 1 ? "just now"
-            : span.TotalHours < 1 ? $"{(int)span.TotalMinutes} min ago"
-            : span.TotalDays < 1 ? $"{(int)span.TotalHours} h ago"
-            : span.TotalDays < 7 ? $"{(int)span.TotalDays} d ago"
-            : at.ToLocalTime().ToString("d MMM");
+        return span.TotalMinutes < 1 ? Strings.Recent_JustNow
+            : span.TotalHours < 1 ? L.F(Strings.Recent_MinutesAgo, (int)span.TotalMinutes)
+            : span.TotalDays < 1 ? L.F(Strings.Recent_HoursAgo, (int)span.TotalHours)
+            : span.TotalDays < 7 ? L.F(Strings.Recent_DaysAgo, (int)span.TotalDays)
+            : at.ToLocalTime().ToString(System.Globalization.CultureInfo.CurrentCulture.DateTimeFormat.MonthDayPattern, System.Globalization.CultureInfo.CurrentCulture);
     }
 }

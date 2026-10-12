@@ -20,11 +20,11 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
     Each test build has a new certificate, so testers trust that build's `Hotline.cer` again. `.appinstaller` updates
     don't apply to test builds, because GitHub's `releases/latest` link skips pre-releases. Automatic updates start
     with the first trusted-signed release (first one: `v0.2.1`, 2026-10-04).
-  - Assets: the `.msix`, `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.ps1`).
+  - Assets: the `.msixbundle` (x64 and ARM64; Windows installs the right one), `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
 - **winget** (`.github/workflows/winget.yml`): disabled until the repository variable `HOTLINE_WINGET_ENABLED=true`;
   needs trusted signing, a first manual submission (`wingetcreate new`) and a `WINGET_TOKEN` secret (details in the file).
 
-Users then either double-click the `.msix`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
+Users then either double-click the `.msixbundle`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
 checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background. Updates keep
 settings (`%USERPROFILE%\.hotline`) and the Copilot key choice. After installing: Settings → Personalization → Text
 input → Customize Copilot key → Custom → Hotline.
@@ -37,7 +37,7 @@ release (the update check compares versions).
 ## Before the first public release
 
 - [ ] **Protect `main`** right after making the repository public (rulesets on a private repo need GitHub Pro):
-      `powershell -File scriptspply-rulesets.ps1` applies `.github/rulesets/main.json` — changes only through a
+      `scripts/apply-rulesets.sh` applies `.github/rulesets/main.json` — changes only through a
       pull request whose CI check (`build-test`) passed, no force pushes, no deleting `main`; review threads must be
       resolved; no approval needed (you're the only maintainer). Edit the JSON and re-run to change it.
 
@@ -48,19 +48,41 @@ release (the update check compares versions).
   - **Azure Artifact Signing** (formerly Trusted Signing; $9.99/month): automated in `release.yml`, see below.
   - A regular code-signing certificate (.pfx): the two `HOTLINE_SIGNING_PFX_*` secrets.
 
-## Microsoft Store (by hand, until a submission workflow exists)
+## Microsoft Store
 
 Partner Center › your app › Product management › Product identity gives four values. Build with them; the package is
 unsigned because the Store signs it, and Store versions must end in `.0`:
 
-```powershell
-powershell -File scriptsuild-msix.ps1 -Store -Version 0.2.3.0 `
-  -IdentityName "<Package/Identity/Name>" -Publisher "<Package/Identity/Publisher>" `
-  -PublisherDisplayName "<Package/Properties/PublisherDisplayName>" -DisplayName "Hotline AI"
+```bash
+scripts/build-msix.sh --store --arch all --version 0.2.4.0 \
+  --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \
+  --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
 ```
 
-Upload the `.msix` it prints on the submission's **Packages** page. Each new submission needs a higher version than
-the last one. `-DisplayName` must be a name reserved for the app; the panel and tray still say "Hotline".
+Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page. Each new submission needs a higher version than
+the last one. `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
+
+### Store workflow (`.github/workflows/store.yml`)
+
+Runs on a pushed tag `vX.Y.Z` or **Actions › Store › Run workflow** with a version (`0.2.60` → package `0.2.60.0`). It
+always builds the Store `.msixbundle` with the identity above and attaches it to the run (download it from the run's
+*Artifacts* to upload by hand). Submitting automatically needs a one-time setup, and only works once the app is live
+(msstore updates a published app; it can't submit while another submission is in certification):
+
+1. **Entra app:** [Entra admin center](https://entra.microsoft.com) › *App registrations › New registration* (e.g.
+   "hotline-store"). Copy the *Application (client) ID* and the *Directory (tenant) ID*. Under *Certificates & secrets*
+   create a client secret and copy its **value** (shown once; it expires, so note the date).
+2. **Partner Center:** *Account settings › User management › Microsoft Entra applications › Add* that app with the
+   **Manager** role. *Account settings › Legal info / Developer settings* shows the **Seller ID**. The app's **Store ID**
+   (`9N…`) is under *Product identity*. (If Partner Center has no tenant yet, associate one first: *Account settings ›
+   Tenants*.)
+3. **GitHub:** repository *Settings › Secrets and variables › Actions*: secrets `AZURE_AD_TENANT_ID`,
+   `AZURE_AD_APPLICATION_CLIENT_ID`, `AZURE_AD_APPLICATION_SECRET`, `SELLER_ID`; variables `STORE_PRODUCT_ID` (the Store
+   ID) and `HOTLINE_STORE_SUBMIT` = `true`.
+
+The submission copies the live listing and only replaces the package. For an update that also changes the listing
+(text, screenshots, "What's new") or the declarations, e.g. the first update with donations on, run the workflow with
+*Submit* off and upload the artifact by hand in a Partner Center submission where you make those changes too.
 
 ## Azure Artifact Signing (automatic signing in GitHub Actions)
 
@@ -85,7 +107,7 @@ ID and a selfie); elsewhere it takes an organization with a verifiable business 
 
 From then on every release is built unsigned with that `Publisher`, signed by Azure (`azure/artifact-signing-action`),
 timestamped, and published as a normal release — no `Hotline.cer`, and `.appinstaller` updates work. Check a release
-with `Get-AuthenticodeSignature Hotline_*.msix` (Status *Valid*, signer = your name).
+with `Get-AuthenticodeSignature Hotline_*.msixbundle` (Status *Valid*, signer = your name).
 
 **Identity change:** the `Publisher` is part of the package identity, so the first trusted build installs *next to* a
 self-signed one rather than updating it. Uninstall the old Hotline first (settings in `%USERPROFILE%\.hotline` stay)

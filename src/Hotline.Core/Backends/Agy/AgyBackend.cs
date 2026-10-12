@@ -3,6 +3,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Processes;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Agy;
 
@@ -29,7 +30,7 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));
         var exe = locateExe() ?? throw new BackendException(BackendErrorKind.NotInstalled,
-            "The Antigravity CLI (agy) isn't installed. Install it from antigravity.google/cli, then try again.");
+            Strings.Agy_NotInstalledBackend);
 
         var user = conversation[^1];
         var prior = conversation.Take(conversation.Count - 1).ToList();
@@ -82,7 +83,7 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
                 await StopAsync();
                 var mapped = tail.Length > 0 ? AgyErrors.Map(tail) : null;
                 if (mapped is { Kind: not BackendErrorKind.Failed }) throw mapped;
-                throw new BackendException(BackendErrorKind.Failed, "agy stopped unexpectedly." + (tail.Length > 0 ? " " + tail : ""));
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_Stopped, "agy") + (tail.Length > 0 ? " " + tail : ""));
             }
             foreach (var delta in parser.Feed(line)) yield return delta;
         }
@@ -111,6 +112,6 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
         return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
-            $"The working folder for {profile.Name} doesn't exist: {dir}. Pick another one in Settings › AI connections.");
+            L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

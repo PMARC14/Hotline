@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Windowing;
 
@@ -83,7 +84,7 @@ public sealed class ToolbarConfig
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException)
         {
-            return new ToolbarConfig { Error = $"toolbar.json couldn't be read: {ex.Message}" };
+            return new ToolbarConfig { Error = L.F(Strings.Bar_Unreadable, ex.Message) };
         }
     }
 }

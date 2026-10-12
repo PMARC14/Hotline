@@ -1,5 +1,6 @@
 using System.Text;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Chat;
 
@@ -20,7 +21,7 @@ public static class OcrPlan
     public static Attachment TextAttachment(string imageName, string? text)
     {
         var body = string.IsNullOrWhiteSpace(text) ? "(no text found)" : text.Trim();
-        return new Attachment(Ids.New(), $"Text in {imageName}", AttachmentKind.Text, "text/plain",
+        return new Attachment(Ids.New(), L.F(Strings.Attach_TextIn, imageName), AttachmentKind.Text, "text/plain",
             Encoding.UTF8.GetBytes("Text in screenshot:\n" + body));
     }
 }
