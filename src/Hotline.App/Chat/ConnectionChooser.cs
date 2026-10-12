@@ -24,6 +24,7 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
     public void Initialize()
     {
         popup.Shown += () => { if (!Chosen(settings.Current)) Show(); };
+        if (popup.IsShown && !Chosen(settings.Current)) Show(); // already open when this was set up
         settings.Changed += () => popup.DispatcherQueue.TryEnqueue(() => { if (Chosen(settings.Current)) notices.Remove(Tag); });
     }
 

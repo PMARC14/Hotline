@@ -175,7 +175,7 @@ public sealed partial class PopupWindow : Window
 
         PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;
-        _reclaimed = false;
+        _reclaimed = 0;
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
@@ -183,7 +183,7 @@ public sealed partial class PopupWindow : Window
 
     private bool _offscreen;
     private long _shownAtMs;
-    private bool _reclaimed;
+    private int _reclaimed;
 
     /// <summary>Self-test only: shows the panel far outside every monitor, without activation or focus, so the
     /// conversation is really drawn (composition) without the user seeing anything.</summary>
@@ -260,27 +260,56 @@ public sealed partial class PopupWindow : Window
         if (e.WindowActivationState != WindowActivationState.Deactivated || !_settings.HideOnBlur || _modal != 0 || Pinned) return;
         // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
         // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show).
-        if (Environment.TickCount64 - _shownAtMs < 1500 && !_reclaimed)
+        if (Environment.TickCount64 - _shownAtMs < 1500 && _reclaimed < 3) // focus can bounce more than once on a cold start
         {
-            _reclaimed = true;
+            _reclaimed++;
             _log.Info("lost focus right after opening; taking it back");
             DispatcherQueue.TryEnqueue(() => { if (AppWindow.IsVisible && !Native.ForceForeground(Hwnd)) _log.Error("could not take focus back"); });
             return;
         }
-        // A console/terminal window that appears just after Hotline started a CLI is that CLI (or a child of it), not the
-        // user clicking away: keep the panel and take focus back.
-        if (Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(10)) && Native.GetForegroundWindow() is var fg and not 0
-            && IsConsole(Native.ClassNameOf(fg)))
+        ConsiderBlur(retried: false);
+    }
+
+    /// <summary>Whether a process is one Hotline started (a CLI, or something it started); set by App.</summary>
+    public Func<uint, bool>? IsOurProcess { get; set; }
+
+    /// <summary>
+    /// Focus went elsewhere: hide, unless the window that took it belongs to a program Hotline started (a CLI opening a
+    /// console on its first run). That isn't the user clicking away: keep the panel and take focus back.
+    /// </summary>
+    private void ConsiderBlur(bool retried)
+    {
+        if (!AppWindow.IsVisible) return;
+        var fg = Native.GetForegroundWindow();
+        if (fg == Hwnd) return; // it came back
+        if (fg == 0 && !retried)
         {
-            _log.Info($"a console window ({Native.ClassNameOf(fg)}) took focus right after a CLI started; keeping the panel");
-            DispatcherQueue.TryEnqueue(() => { if (AppWindow.IsVisible && !Native.ForceForeground(Hwnd)) _log.Error("could not take focus back"); });
+            // Mid-switch there may be no foreground window yet: look again in a moment.
+            var timer = DispatcherQueue.CreateTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(150);
+            timer.IsRepeating = false;
+            timer.Tick += (_, _) => ConsiderBlur(retried: true);
+            timer.Start();
+            return;
+        }
+        if (fg != 0 && IsOurs(fg))
+        {
+            _log.Info($"a window from a program Hotline started ({Native.ClassNameOf(fg)}) took focus; keeping the panel");
+            if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back");
             return;
         }
         HidePopup();
     }
 
-    private static bool IsConsole(string? windowClass) =>
-        windowClass is "ConsoleWindowClass" or "CASCADIA_HOSTING_WINDOW_CLASS" or "PseudoConsoleWindow";
+    private bool IsOurs(nint window)
+    {
+        Native.GetWindowThreadProcessId(window, out var pid);
+        if (IsOurProcess?.Invoke(pid) == true) return true;
+        // With Windows Terminal as the default terminal, a console a CLI opens is owned by WindowsTerminal.exe, not the
+        // CLI: count a terminal window that appears right after Hotline started a program.
+        return Native.ClassNameOf(window) is "CASCADIA_HOSTING_WINDOW_CLASS" or "ConsoleWindowClass" or "PseudoConsoleWindow"
+               && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(3));
+    }
 
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
     {

@@ -142,6 +142,10 @@ internal static class Native
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] public static extern nint CreateJobObject(nint attrs, string? name);
     [DllImport("kernel32.dll")] public static extern bool SetInformationJobObject(nint job, int cls, ref JOBOBJECT_EXTENDED_LIMIT_INFORMATION info, int size);
     [DllImport("kernel32.dll")] public static extern bool AssignProcessToJobObject(nint job, nint process);
+    [DllImport("kernel32.dll")] public static extern bool IsProcessInJob(nint process, nint job, out bool result);
+    [DllImport("kernel32.dll", SetLastError = true)] public static extern nint OpenProcess(uint access, bool inherit, uint processId);
+    [DllImport("kernel32.dll")] public static extern bool CloseHandle(nint handle);
+    public const uint PROCESS_QUERY_LIMITED_INFORMATION = 0x1000;
 
     [StructLayout(LayoutKind.Sequential)]
     public struct RECT { public int Left, Top, Right, Bottom; }

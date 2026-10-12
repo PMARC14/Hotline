@@ -79,7 +79,9 @@ public sealed partial class SettingsWindow : Window
     /// <summary>Selects a page by its navigation tag (ignored if there is none).</summary>
     internal void OpenPage(string tag)
     {
-        if (Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => (string)i.Tag == tag) is { } item) Nav.SelectedItem = item;
+        if (Nav.MenuItems.OfType<NavigationViewItem>().FirstOrDefault(i => i.Tag as string == tag) is not { } item) return;
+        if (ReferenceEquals(Nav.SelectedItem, item)) ShowPage(tag); // no SelectionChanged when it's already selected
+        else Nav.SelectedItem = item;
     }
 
     private void ShowPage(string tag)
