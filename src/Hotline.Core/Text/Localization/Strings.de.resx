@@ -21,7 +21,7 @@
   <data name="Set_Tap" xml:space="preserve"><value>Kurzes Drücken der Copilot-Taste</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Langes Drücken der Copilot-Taste</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Spracheingabe</value></data>
-  <data name="Set_Voice_Desc" xml:space="preserve"><value>Halte die Copilot-Taste gedrückt und sprich; loslassen beendet (Esc bricht ab). Nutzt die Windows-Spracherkennung: Erlaube das Mikrofon und aktiviere Einstellungen › Datenschutz und Sicherheit › Spracherkennung › Online-Spracherkennung. Einschalten legt das lange Drücken auf Spracheingabe; Ausschalten setzt es wieder auf einen neuen Chat.</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Halte die Copilot-Taste gedrückt und sprich; loslassen beendet (Esc bricht ab). Nutzt die Windows-Spracherkennung: Erlaube das Mikrofon und aktiviere Einstellungen › Datenschutz und Sicherheit › Spracherkennung › Online-Spracherkennung. Einschalten belegt das lange Drücken mit Spracheingabe; Ausschalten stellt es wieder auf einen neuen Chat zurück.</value></data>
   <data name="Set_Hotkey" xml:space="preserve"><value>Zusätzliche Tastenkombination</value></data>
   <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Öffnet Hotline ebenfalls, z. B. Strg+Alt+H. Leer lassen für keine.</value></data>
   <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Keine gültige Tastenkombination (Beispiel: Ctrl+Alt+H)</value></data>
@@ -84,7 +84,7 @@
   <data name="Set_MemoryTool_Off" xml:space="preserve"><value>Nein</value></data>
   <data name="Set_VoiceSend" xml:space="preserve"><value>Nach dem Diktat senden</value></data>
   <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Mit der Tastenaktion „Spracheingabe“: die Nachricht senden, wenn du die Taste loslässt.</value></data>
-  <data name="Set_Ocr" xml:space="preserve"><value>Bildschirmtext (OCR)</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>Screenshot-Text (OCR)</value></data>
   <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows liest den Text in Bildern (offline) für Modelle, die keine Bilder sehen.</value></data>
   <data name="Set_Ocr_Auto" xml:space="preserve"><value>Für reine Textmodelle</value></data>
   <data name="Set_Ocr_Always" xml:space="preserve"><value>Immer hinzufügen</value></data>
@@ -143,7 +143,7 @@
   <data name="Conn_MoveDown" xml:space="preserve"><value>In der Anbieterliste nach unten</value></data>
   <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · Standard</value></data>
   <data name="Agy_ReadFailed" xml:space="preserve"><value>Die Einstellungen von agy konnten gerade nicht gelesen werden.</value></data>
-  <data name="Agy_Summary" xml:space="preserve"><value>agy-Regeln: {0} erlaubt, {1} verweigert. Dateien im Arbeitsordner lesen ist standardmäßig erlaubt; Shell-Befehle brauchen eine Erlaubnisregel.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy-Regeln: {0} erlaubt, {1} verweigert. Dateien im Arbeitsordner lesen ist standardmäßig erlaubt; Shell-Befehle brauchen eine Freigaberegel.</value></data>
   <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Schreibgeschützte Befehle erlauben</value></data>
   <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>Fügt Regeln wie command(Get-ChildItem), command(git status) zur Erlaubnisliste von agy hinzu und verweigert Remove-Item, rm, git push …</value></data>
   <data name="Agy_AllowTitle" xml:space="preserve"><value>Schreibgeschützte Shell-Befehle für agy erlauben?</value></data>
@@ -166,7 +166,7 @@ Verweigern:
   <data name="Conn_Name" xml:space="preserve"><value>Name</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Endpunkt</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Basis-URL der API.</value></data>
-  <data name="Conn_KeySaved" xml:space="preserve"><value>Gespeichert; tippen zum Ersetzen</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>Gespeichert; zum Ersetzen neu eingeben</value></data>
   <data name="Conn_Optional" xml:space="preserve"><value>Optional</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>Erforderlich</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Der Schlüssel konnte nicht gespeichert werden</value></data>
@@ -194,7 +194,7 @@ Verweigern:
   <data name="Conn_RefusalFallback" xml:space="preserve"><value>Ausweichmodell bei Ablehnung</value></data>
   <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Lehnt eine Sicherheitsprüfung eine Anfrage ab, beantwortet die API sie mit einem passenden Modell, statt abzubrechen (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
   <data name="Conn_Images" xml:space="preserve"><value>Modell liest Bilder</value></data>
-  <data name="Conn_Images_Desc" xml:space="preserve"><value>Aus: Screenshots werden als ihr Text gesendet (Einstellungen › Chat › Bildschirmtext).</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Aus: Screenshots werden als Text gesendet (Einstellungen › Chat › Screenshot-Text).</value></data>
   <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Standard ({0})</value></data>
   <data name="Conn_SystemPrompt" xml:space="preserve"><value>Systemprompt</value></data>
   <data name="Common_Default" xml:space="preserve"><value>Standard</value></data>
@@ -243,7 +243,7 @@ Verweigern:
   <data name="Memory_Edit" xml:space="preserve"><value>Gedächtnis bearbeiten</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Leer. „/remember etwas“ im Eingabefeld fügt eine Zeile hinzu.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} Zeile(n). Jeder Chat sieht sie, solange das Gedächtnis aktiv ist.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Tippe / am Anfang einer Nachricht, um eine zu verwenden: „/translate ein Text“ oder „/summarize“ mit einem Anhang. Jede Aktion ist eine Markdown-Datei; ihre erste Zeile ist die Beschreibung in der Liste. Namen dürfen Buchstaben, Ziffern, - und _ enthalten.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Tippe / am Anfang einer Nachricht, um eine zu verwenden: „/translate Text“ oder „/summarize“ mit einem Anhang. Jede Aktion ist eine Markdown-Datei; ihre erste Zeile ist die Beschreibung in der Liste. Namen dürfen Buchstaben, Ziffern, - und _ enthalten.</value></data>
   <data name="Actions_New" xml:space="preserve"><value>Neue Aktion</value></data>
   <data name="Actions_OpenFolder" xml:space="preserve"><value>Aktionsordner öffnen</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>Build {0}</value></data>
@@ -373,7 +373,7 @@ Verweigern:
   <data name="Models_NotIncluded" xml:space="preserve"><value>Verbunden: {0}, aber {1} ist nicht dabei.</value></data>
   <data name="Models_NeedKey" xml:space="preserve"><value>Füge zuerst einen API-Schlüssel für {0} hinzu.</value></data>
   <data name="Models_KeyRejected" xml:space="preserve"><value>{0} hat den API-Schlüssel abgelehnt.</value></data>
-  <data name="Models_HttpError" xml:space="preserve"><value>{0} antwortete {1}.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} meldete {1}.</value></data>
   <data name="Api_Unreachable" xml:space="preserve"><value>{0} ist nicht erreichbar: {1}</value></data>
   <data name="Api_Timeout" xml:space="preserve"><value>{0} hat nicht rechtzeitig geantwortet.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Füge unter Einstellungen › KI-Verbindungen einen API-Schlüssel für {0} hinzu.</value></data>

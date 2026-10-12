@@ -78,7 +78,7 @@
   <data name="Set_Memory" xml:space="preserve"><value>メモリ</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>すべてのチャットが .hotline フォルダーの memory.md を参照します (「/remember 内容」で 1 行追加)。</value></data>
   <data name="Set_MemoryTool" xml:space="preserve"><value>AI にメモリの保存を許可</value></data>
-  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>覚えておくよう頼むと、API 接続が事実を保存できます。</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>覚えておくよう指示すると、API 接続が情報を保存できます。</value></data>
   <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>毎回確認する</value></data>
   <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>はい (確認しない)</value></data>
   <data name="Set_MemoryTool_Off" xml:space="preserve"><value>いいえ</value></data>
@@ -166,7 +166,7 @@
   <data name="Conn_Name" xml:space="preserve"><value>名前</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>エンドポイント</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API のベース URL。</value></data>
-  <data name="Conn_KeySaved" xml:space="preserve"><value>保存済み。入力すると置き換えます</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>保存済み。入力すると上書きされます</value></data>
   <data name="Conn_Optional" xml:space="preserve"><value>省略可能</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>必須</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>キーを保存できませんでした</value></data>
@@ -280,7 +280,7 @@
   <data name="Attach_OcrFailed" xml:space="preserve"><value>{0} のテキストを読み取れませんでした。</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>画像をコピー</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>画像をコピーしました。</value></data>
-  <data name="Chat_StillAnswering" xml:space="preserve"><value>まだ回答中です。{0} または停止ボタンで止まります。メッセージはボックスで待機しています。</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>まだ回答中です。{0} または停止ボタンで止まります。メッセージは入力欄に保持されます。</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>/remember の後に覚える内容を入力してください (例: 「/remember メートル法を使いたい」)。</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>覚えました。今後すべてのチャットで参照されます ([設定] › [チャットと履歴] › [メモリ] で編集)。</value></data>
   <data name="Chat_NotRemembered" xml:space="preserve"><value>保存されませんでした: {0} 文字以内の 1 行にしてください。</value></data>
@@ -316,7 +316,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>その会話を開けませんでした。</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>チャット履歴はオフになっています</value></data>
   <data name="Recent_None" xml:space="preserve"><value>保存されたチャットはまだありません</value></data>
-  <data name="Recent_Tip" xml:space="preserve"><value>{0} 件のメッセージ、最終 {1:g}</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} 件のメッセージ、最終更新: {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>履歴フォルダーを開く</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>たった今</value></data>
   <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} 分前</value></data>

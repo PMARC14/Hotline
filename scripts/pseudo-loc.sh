@@ -35,7 +35,7 @@ function pseudo(v,    out, rest, pos, len, n) {
 }
 BEGIN { plain = "aeiouyAEIOUYcnsCNSz"; fancy = "àéîõüýÀÉÎÕÜÝçñšÇÑŠž" }
 buffer != "" { buffer = buffer "\n" $0; if (index($0, "</value>")) { emit(buffer); buffer = "" } next }
-/<value>/ { if (index($0, "</value>")) emit($0); else buffer = $0; next } # a value may span lines (\n in the text)
+/<data / && /<value>/ { if (index($0, "</value>")) emit($0); else buffer = $0; next } # texts only (not <resheader>); may span lines
 { print }
 function emit(line,    pre, val, post) {
     pre = substr(line, 1, index(line, "<value>") + 6)

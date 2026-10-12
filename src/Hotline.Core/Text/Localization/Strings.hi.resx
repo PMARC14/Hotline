@@ -18,7 +18,7 @@
   <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>दाएँ Ctrl के रूप में, Copilot+C, Ctrl+C बन जाता है और कुंजी अब Hotline नहीं खोलती (नीचे की अतिरिक्त हॉटकी या सिस्टम ट्रे आइकन का उपयोग करें)। उन कीबोर्ड पर काम करता है जिनकी Copilot कुंजी Win+Shift+F23 भेजती है (अधिकांश)।</value></data>
   <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline खोलती है</value></data>
   <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>दाएँ Ctrl की तरह काम करती है</value></data>
-  <data name="Set_Tap" xml:space="preserve"><value>Copilot कुंजी को थोड़ा दबाना</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Copilot कुंजी को कुछ पल दबाना</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Copilot कुंजी को देर तक दबाना</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>वॉइस इनपुट</value></data>
   <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot कुंजी दबाए रखें और बोलें; रोकने के लिए छोड़ दें (Esc रद्द करता है)। Windows वाक् पहचान का उपयोग करता है: माइक्रोफ़ोन की अनुमति दें और सेटिंग्स › गोपनीयता और सुरक्षा › वाक् › ऑनलाइन वाक् पहचान चालू करें। इसे चालू करने पर देर तक दबाना वॉइस के लिए हो जाता है; बंद करने पर फिर से नई चैट।</value></data>
@@ -62,7 +62,7 @@
   <data name="Set_Position_Desc" xml:space="preserve"><value>0 = ऊपर, 0.5 = बीच में, 1 = नीचे।</value></data>
   <data name="Set_Growth" xml:space="preserve"><value>बढ़ना</value></data>
   <data name="Set_Growth_Fit" xml:space="preserve"><value>बातचीत के अनुसार</value></data>
-  <data name="Set_Growth_Full" xml:space="preserve"><value>सीधे अधिकतम ऊँचाई पर</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>सीधे अधिकतम ऊँचाई तक बढ़ाएँ</value></data>
   <data name="Set_History" xml:space="preserve"><value>चैट इतिहास सहेजें</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>केवल टेक्स्ट, आपके .hotline फ़ोल्डर में।</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>इतिहास इतने समय रखें</value></data>
@@ -90,7 +90,7 @@
   <data name="Set_Ocr_Always" xml:space="preserve"><value>हमेशा जोड़ें</value></data>
   <data name="Set_Ocr_Off" xml:space="preserve"><value>बंद</value></data>
   <data name="Set_ImageSize" xml:space="preserve"><value>चित्र आकार सीमा</value></data>
-  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>संलग्न और कैप्चर किए गए चित्र इस लंबी भुजा तक छोटे किए जाते हैं।</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>संलग्न और कैप्चर की गई छवियों को इस सबसे लंबे किनारे के अनुसार स्केल किया जाता है।</value></data>
   <data name="Set_Logging" xml:space="preserve"><value>विस्तृत लॉगिंग</value></data>
   <data name="Set_Logging_Desc" xml:space="preserve"><value>लॉग में अतिरिक्त डायग्नोस्टिक्स लिखता है।</value></data>
   <data name="Settings_Title" xml:space="preserve"><value>Hotline सेटिंग्स</value></data>
@@ -103,7 +103,7 @@
   <data name="Nav_Chat" xml:space="preserve"><value>चैट और इतिहास</value></data>
   <data name="Nav_Tools" xml:space="preserve"><value>टूल</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>उन्नत</value></data>
-  <data name="Nav_About" xml:space="preserve"><value>परिचय</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>के बारे में</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline को फिर से शुरू करने के बाद लागू होता है।)</value></data>
   <data name="Settings_InvalidValue" xml:space="preserve"><value>मान्य मान नहीं है</value></data>
   <data name="Settings_Startup" xml:space="preserve"><value>Windows के साथ शुरू करें</value></data>
@@ -212,10 +212,10 @@
   <data name="Bar_captureScreen" xml:space="preserve"><value>स्क्रीन कैप्चर करें</value></data>
   <data name="Bar_captureRegion" xml:space="preserve"><value>क्षेत्र कैप्चर करें</value></data>
   <data name="Bar_spacer" xml:space="preserve"><value>रिक्त स्थान</value></data>
-  <data name="Bar_effort" xml:space="preserve"><value>प्रयास चयनकर्ता</value></data>
-  <data name="Bar_model" xml:space="preserve"><value>मॉडल चयनकर्ता</value></data>
-  <data name="Bar_provider" xml:space="preserve"><value>प्रदाता चयनकर्ता</value></data>
-  <data name="Bar_prompt" xml:space="preserve"><value>प्रॉम्प्ट चयनकर्ता</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>प्रयास चुनें</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>मॉडल चुनें</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>प्रदाता चुनें</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>प्रॉम्प्ट चुनें</value></data>
   <data name="Bar_recent" xml:space="preserve"><value>हाल की चैट</value></data>
   <data name="Bar_newChat" xml:space="preserve"><value>नई चैट</value></data>
   <data name="Bar_settings" xml:space="preserve"><value>सेटिंग्स</value></data>
@@ -248,7 +248,7 @@
   <data name="Actions_OpenFolder" xml:space="preserve"><value>क्रिया फ़ोल्डर खोलें</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>बिल्ड {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR भाषा(एँ)</value></data>
-  <data name="Pc_OcrMissing" xml:space="preserve"><value>कोई OCR भाषा नहीं: सेटिंग्स › समय और भाषा › भाषा और क्षेत्र › ऑप्टिकल कैरेक्टर रिकग्निशन वाली भाषा जोड़ें</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>कोई OCR भाषा नहीं: सेटिंग्स › समय और भाषा › भाषा और क्षेत्र › ऑप्टिकल वर्ण पहचान वाली भाषा जोड़ें</value></data>
   <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows डिक्टेशन उपलब्ध है</value></data>
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — सेटिंग्स › गोपनीयता और सुरक्षा › वाक् › ऑनलाइन वाक् पहचान, और एक माइक्रोफ़ोन</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows एजेंट कनेक्टर</value></data>
@@ -276,11 +276,11 @@
   <data name="Attach_TooLarge" xml:space="preserve"><value>{0} बहुत बड़ी है ({1} MB; अधिकतम {2} MB)।</value></data>
   <data name="Attach_Unreadable" xml:space="preserve"><value>{0} पढ़ी नहीं जा सकी।</value></data>
   <data name="Attach_NotImage" xml:space="preserve"><value>{0} को चित्र के रूप में पढ़ा नहीं जा सका।</value></data>
-  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows में कोई OCR भाषा इंस्टॉल नहीं है, इसलिए चित्रों का टेक्स्ट पढ़ा नहीं जा सकता। सेटिंग्स › समय और भाषा › भाषा और क्षेत्र में एक जोड़ें ("ऑप्टिकल कैरेक्टर रिकग्निशन" वाली भाषा)।</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows में कोई OCR भाषा इंस्टॉल नहीं है, इसलिए चित्रों का टेक्स्ट पढ़ा नहीं जा सकता। सेटिंग्स › समय और भाषा › भाषा और क्षेत्र में एक जोड़ें ("ऑप्टिकल वर्ण पहचान" वाली भाषा)।</value></data>
   <data name="Attach_OcrFailed" xml:space="preserve"><value>{0} का टेक्स्ट पढ़ा नहीं जा सका।</value></data>
   <data name="Attach_CopyImage" xml:space="preserve"><value>चित्र कॉपी करें</value></data>
   <data name="Attach_ImageCopied" xml:space="preserve"><value>चित्र कॉपी किया गया।</value></data>
-  <data name="Chat_StillAnswering" xml:space="preserve"><value>अभी उत्तर दे रहा है। {0} या रोकें बटन इसे रोकता है; आपका संदेश बॉक्स में प्रतीक्षा कर रहा है।</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>अभी उत्तर दे रहा है। {0} या रोकें बटन इसे रोकता है; आपका संदेश बॉक्स में ही रहेगा।</value></data>
   <data name="Chat_RememberWhat" xml:space="preserve"><value>/remember के बाद टाइप करें कि क्या याद रखना है, जैसे "/remember मुझे मीट्रिक इकाइयाँ पसंद हैं"।</value></data>
   <data name="Chat_Remembered" xml:space="preserve"><value>याद रखा गया। अब से हर चैट इसे देखती है (सेटिंग्स › चैट और इतिहास › मेमोरी में संपादित करें)।</value></data>
   <data name="Chat_NotRemembered" xml:space="preserve"><value>सहेजा नहीं गया: इसे अधिकतम {0} वर्णों की एक पंक्ति में रखें।</value></data>
@@ -292,7 +292,7 @@
   <data name="Welcome_Body" xml:space="preserve"><value>आप जो भेजते हैं — आपका संदेश, अनुलग्नक, और जिस ऐप से आप आए उसमें चयनित टेक्स्ट (हटाने योग्य चिप के रूप में दिखता है) — वह केवल आपके चुने AI कनेक्शन तक जाता है। सुझाव: त्वरित क्रियाओं के लिए / टाइप करें, और नोट सहेजने के लिए /remember।</value></data>
   <data name="Welcome_WhatsSent" xml:space="preserve"><value>क्या भेजा जाता है</value></data>
   <data name="SupportNote_Title" xml:space="preserve"><value>Hotline पसंद आ रहा है?</value></data>
-  <data name="SupportNote_Body" xml:space="preserve"><value>यह निःशुल्क और ओपन सोर्स है, एक व्यक्ति द्वारा बनाया गया। अगर यह आपकी मदद करता है, तो एक दान इसे चलाए रखता है (GitHub Sponsors या Ko-fi; लिंक सेटिंग्स › परिचय में रहते हैं)। यह सूचना फिर नहीं दिखेगी।</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>यह निःशुल्क और ओपन सोर्स है, एक व्यक्ति द्वारा बनाया गया। अगर यह आपकी मदद करता है, तो एक दान इसे चलाए रखता है (GitHub Sponsors या Ko-fi; लिंक सेटिंग्स › के बारे में में रहते हैं)। यह सूचना फिर नहीं दिखेगी।</value></data>
   <data name="Common_Copy" xml:space="preserve"><value>कॉपी करें</value></data>
   <data name="Md_CopyCode" xml:space="preserve"><value>कोड कॉपी करें</value></data>
   <data name="Md_Code" xml:space="preserve"><value>कोड</value></data>
@@ -329,7 +329,7 @@
   <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>क्लिपबोर्ड व्यस्त है; फिर से प्रयास करें।</value></data>
   <data name="Transcript_Report" xml:space="preserve"><value>यह उत्तर {0} को रिपोर्ट करें…</value></data>
   <data name="Transcript_More" xml:space="preserve"><value>अधिक</value></data>
-  <data name="Task_Failed" xml:space="preserve"><value>यह काम नहीं किया: {0}</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>यह काम नहीं हुआ: {0}</value></data>
   <data name="Voice_HintHold" xml:space="preserve"><value>रोकने के लिए कुंजी छोड़ें। Esc रद्द करता है।</value></data>
   <data name="Voice_HintTap" xml:space="preserve"><value>रोकने के लिए कुंजी फिर से दबाएँ। Esc रद्द करता है।</value></data>
   <data name="Voice_Starting" xml:space="preserve"><value>🎙 माइक्रोफ़ोन शुरू हो रहा है…</value></data>
@@ -378,8 +378,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} ने समय पर उत्तर नहीं दिया।</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>सेटिंग्स › AI कनेक्शन में {0} के लिए API कुंजी जोड़ें।</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} का एंडपॉइंट मान्य http(s) पता नहीं है: {1}</value></data>
-  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} दर सीमा पर है, {1} सेकंड में फिर प्रयास…</value></data>
-  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} व्यस्त है, {1} सेकंड में फिर प्रयास…</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} की दर सीमा पूरी हो गई है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} व्यस्त है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ने API कुंजी अस्वीकार कर दी। {1}</value></data>
   <data name="Api_RateLimited" xml:space="preserve"><value>{0} की दर सीमा या कोटा पूरा हो गया। {1}</value></data>
   <data name="Api_ServerError" xml:space="preserve"><value>{0} में सर्वर त्रुटि हुई (या ओवरलोड है)। {1}</value></data>
@@ -387,7 +387,7 @@
   <data name="Api_PickModel" xml:space="preserve"><value>{0} के लिए मॉडल चुनें (मॉडल ड्रॉपडाउन में सूचीबद्ध हैं)।</value></data>
   <data name="Api_Blocked" xml:space="preserve"><value>{0} ने यह अनुरोध रोक दिया ({1})।</value></data>
   <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} ने उत्तर रोक दिया ({1})।</value></data>
-  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} टूल माँगते समय रुक गया ({1}); कुछ नहीं चलाया गया।</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} टूल का अनुरोध करते समय रुक गया ({1}); कुछ नहीं चलाया गया।</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: टूल अनुरोध पूरा होने से पहले कनेक्शन समाप्त हो गया; कुछ नहीं चलाया गया।</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} अप्रत्याशित रूप से रुक गया।</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} का कार्य फ़ोल्डर मौजूद नहीं है: {1}। सेटिंग्स › AI कनेक्शन में कोई दूसरा चुनें।</value></data>

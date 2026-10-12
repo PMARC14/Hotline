@@ -62,7 +62,7 @@
   <data name="Set_Position_Desc" xml:space="preserve"><value>0 = 頂端,0.5 = 置中,1 = 底端。</value></data>
   <data name="Set_Growth" xml:space="preserve"><value>長高方式</value></data>
   <data name="Set_Growth_Fit" xml:space="preserve"><value>配合對話內容</value></data>
-  <data name="Set_Growth_Full" xml:space="preserve"><value>直接到最大高度</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>直接展開至最大高度</value></data>
   <data name="Set_History" xml:space="preserve"><value>儲存聊天記錄</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>僅文字,儲存在你的 .hotline 資料夾中。</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>聊天記錄保留期間</value></data>
@@ -205,7 +205,7 @@
   <data name="Effort_low" xml:space="preserve"><value>低</value></data>
   <data name="Effort_medium" xml:space="preserve"><value>中</value></data>
   <data name="Effort_high" xml:space="preserve"><value>高</value></data>
-  <data name="Effort_xhigh" xml:space="preserve"><value>很高</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>極高</value></data>
   <data name="Effort_max" xml:space="preserve"><value>最高</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>釘選</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>擷取視窗</value></data>
@@ -316,7 +316,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>無法開啟該對話。</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>聊天記錄已關閉</value></data>
   <data name="Recent_None" xml:space="preserve"><value>尚無已儲存的聊天</value></data>
-  <data name="Recent_Tip" xml:space="preserve"><value>{0} 則訊息,最後於 {1:g}</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} 則訊息,最後一則:{1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>開啟記錄資料夾</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>剛剛</value></data>
   <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} 分鐘前</value></data>
