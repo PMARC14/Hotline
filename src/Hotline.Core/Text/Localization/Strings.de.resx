@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Sofort maximale Höhe</value></data>
   <data name="Set_History" xml:space="preserve"><value>Chatverlauf speichern</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Nur Text, in deinem .hotline-Ordner.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Benachrichtigen, wenn eine Antwort im Hintergrund fertig ist</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Eine Windows-Benachrichtigung, wenn eine Antwort fertig ist, während das Panel ausgeblendet ist oder eine andere App im Vordergrund steht. Klicke darauf, um die Antwort zu öffnen.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} hat geantwortet</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} konnte die Antwort nicht fertigstellen</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Verlauf aufbewahren für</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>Tage</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Markierten Text anhängen</value></data>

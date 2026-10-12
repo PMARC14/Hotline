@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Passer directement à la hauteur maximale</value></data>
   <data name="Set_History" xml:space="preserve"><value>Enregistrer l'historique des conversations</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Texte uniquement, dans votre dossier .hotline.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Avertir quand une réponse se termine en arrière-plan</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Une notification Windows quand une réponse se termine alors que le panneau est masqué ou qu'une autre application est au premier plan. Cliquez dessus pour ouvrir la réponse.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} a répondu</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} n'a pas pu terminer la réponse</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Conserver l'historique pendant</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>jours</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Joindre le texte sélectionné</value></data>

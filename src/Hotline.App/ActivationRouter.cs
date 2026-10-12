@@ -107,7 +107,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
             return;
         }
         if (plan.Key is { } key) OnKey(key, KeySource.Protocol);
-        else if (plan.ShowPopup) popup.ShowPopup();
+        else if (plan.ShowPopup) popup.ShowPopup(plan.ReadSelection);
     }
 
     public void OnKey(KeyEvent e, KeySource source)

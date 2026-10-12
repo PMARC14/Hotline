@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>सीधे अधिकतम ऊँचाई तक बढ़ाएँ</value></data>
   <data name="Set_History" xml:space="preserve"><value>चैट इतिहास सहेजें</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>केवल टेक्स्ट, आपके .hotline फ़ोल्डर में।</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>उत्तर बैकग्राउंड में पूरा होने पर सूचित करें</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>जब पैनल छिपा हो या कोई दूसरा ऐप सामने हो और उत्तर पूरा हो जाए, तो Windows सूचना दिखाता है। उत्तर खोलने के लिए उस पर क्लिक करें।</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} ने उत्तर दिया</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} उत्तर पूरा नहीं कर सका</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>इतिहास इतने समय रखें</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>दिन</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>चयनित टेक्स्ट संलग्न करें</value></data>

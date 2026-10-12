@@ -10,8 +10,9 @@ public enum ActivationKind { Launch, Protocol, ProtocolForResults, StartupTask, 
 public sealed record ActivationRequest(ActivationKind Kind, Uri? Uri, bool IsFirstLaunch,
     IReadOnlyDictionary<string, string>? Inputs = null, string? CallerPackageFamily = null);
 
-/// <summary>What to do: route a key event, show the popup, or (neither) stay in the tray.</summary>
-public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false, AppActionRequest? AppAction = null);
+/// <summary>What to do: route a key event, show the popup, or (neither) stay in the tray. ReadSelection: attach the text
+/// selected in the app in front (not when the panel opens to show an answer).</summary>
+public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false, AppActionRequest? AppAction = null, bool ReadSelection = true);
 
 public static class ActivationPlanner
 {
@@ -26,6 +27,8 @@ public static class ActivationPlanner
             : string.Equals(r.Uri?.Host, "settings", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false, OpenSettings: true)
             // hotline://tray: start or wake quietly in the tray (used by install/test scripts)
             : string.Equals(r.Uri?.Host, "tray", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false)
+            // hotline://answer: a click on the "answer finished" notification
+            : string.Equals(r.Uri?.Host, "answer", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, true, ReadSelection: false)
             : new ActivationPlan(null, true),
         ActivationKind.StartupTask when r.IsFirstLaunch => new ActivationPlan(null, false), // signed in: stay in tray
         _ => new ActivationPlan(null, true),

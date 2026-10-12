@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>すぐに最大の高さにする</value></data>
   <data name="Set_History" xml:space="preserve"><value>チャット履歴を保存</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>テキストのみ、.hotline フォルダーに保存します。</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>バックグラウンドで回答が完了したら通知する</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>パネルが非表示のときや別のアプリが前面にあるときに回答が完了すると、Windows の通知を表示します。クリックすると回答を開きます。</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} が回答しました</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} は回答を完了できませんでした</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>履歴の保存期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>日</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>選択したテキストを添付</value></data>

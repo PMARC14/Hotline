@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Langsung ke tinggi maksimum</value></data>
   <data name="Set_History" xml:space="preserve"><value>Simpan riwayat obrolan</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Hanya teks, di folder .hotline Anda.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Beri tahu saat jawaban selesai di latar belakang</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Notifikasi Windows saat jawaban selesai ketika panel tersembunyi atau aplikasi lain berada di depan. Klik untuk membuka jawabannya.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} sudah menjawab</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} tidak dapat menyelesaikan jawaban</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Simpan riwayat selama</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>hari</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Lampirkan teks yang dipilih</value></data>

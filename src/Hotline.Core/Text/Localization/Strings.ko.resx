@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>최대 높이로 바로 확장</value></data>
   <data name="Set_History" xml:space="preserve"><value>채팅 기록 저장</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>텍스트만, .hotline 폴더에 저장합니다.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>백그라운드에서 답변이 끝나면 알림</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>패널이 숨겨져 있거나 다른 앱이 앞에 있을 때 답변이 끝나면 Windows 알림을 표시합니다. 클릭하면 답변이 열립니다.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0}이(가) 답변했습니다</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0}이(가) 답변을 완료하지 못했습니다</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>기록 보관 기간</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>일</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>선택한 텍스트 첨부</value></data>

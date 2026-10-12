@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Jump to maximum height</value></data>
   <data name="Set_History" xml:space="preserve"><value>Save chat history</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Text only, in your .hotline folder.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Notify when an answer finishes in the background</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>A Windows notification when an answer finishes while the panel is hidden or another app is in front. Click it to open the answer.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} answered</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} couldn't finish the answer</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Keep history for</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>days</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Attach selected text</value></data>

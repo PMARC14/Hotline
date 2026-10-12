@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Chuyển ngay sang chiều cao tối đa</value></data>
   <data name="Set_History" xml:space="preserve"><value>Lưu lịch sử trò chuyện</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Chỉ văn bản, trong thư mục .hotline của bạn.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Thông báo khi câu trả lời hoàn tất trong nền</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Thông báo của Windows khi câu trả lời hoàn tất trong lúc bảng bị ẩn hoặc một ứng dụng khác ở phía trước. Bấm vào để mở câu trả lời.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} đã trả lời</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} không thể hoàn tất câu trả lời</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Giữ lịch sử trong</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>ngày</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Đính kèm văn bản đã chọn</value></data>

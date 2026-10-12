@@ -65,6 +65,10 @@
   <data name="Set_Growth_Full" xml:space="preserve"><value>Direct naar maximale hoogte</value></data>
   <data name="Set_History" xml:space="preserve"><value>Chatgeschiedenis opslaan</value></data>
   <data name="Set_History_Desc" xml:space="preserve"><value>Alleen tekst, in je .hotline-map.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Melden wanneer een antwoord op de achtergrond klaar is</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Een Windows-melding wanneer een antwoord klaar is terwijl het paneel verborgen is of een andere app op de voorgrond staat. Klik erop om het antwoord te openen.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} heeft geantwoord</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} kon het antwoord niet afmaken</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Geschiedenis bewaren gedurende</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>dagen</value></data>
   <data name="Set_Selection" xml:space="preserve"><value>Geselecteerde tekst bijvoegen</value></data>

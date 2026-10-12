@@ -138,6 +138,8 @@ public sealed class ChatSettings
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
     public GrowMode GrowMode { get; set; } = GrowMode.Grow;
     public bool SaveHistory { get; set; } = true;
+    /// <summary>A Windows notification when an answer finishes while the panel is hidden or another app is in front.</summary>
+    public bool NotifyWhenDone { get; set; } = true;
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
     public int MaxImagePixels { get; set; } = 2048;
