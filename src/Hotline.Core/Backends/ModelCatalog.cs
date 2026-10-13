@@ -73,14 +73,17 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
     /// Settings › AI connections › Test: lists the models afresh (proves the endpoint and key) and checks the chosen
     /// model is among them. Throws <see cref="ModelListException"/> with the server's message on failure.
     /// </summary>
-    public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) => Describe(await GetAsync(p, refresh: true, ct), p.Model);
+    public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) =>
+        Describe(await GetAsync(p, refresh: true, ct), p.Model, ConnectionTypes.Of(p.Type).ListsModels);
 
     /// <summary>"Connected: N models[, including X | , but X isn't one of them]."</summary>
-    public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen)
+    public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen, bool listsModels = true)
     {
         var count = models.Count == 1 ? Strings.Models_One : L.F(Strings.Models_Many, models.Count);
         var model = chosen?.Trim();
         if (model is { Length: > 0 } && model.StartsWith("models/", StringComparison.Ordinal)) model = model[7..];
+        if (!listsModels)
+            return string.IsNullOrEmpty(model) ? Strings.Models_NoList : L.F(Strings.Models_Unlisted, model);
         if (string.IsNullOrEmpty(model) || models.Count == 0) return L.F(Strings.Models_Connected, count);
         return models.Any(m => string.Equals(m.Id, model, StringComparison.OrdinalIgnoreCase))
             ? L.F(Strings.Models_Including, count, model)
@@ -95,6 +98,8 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
                 return ModelListParsers.Agy(await runAgyModels(p, ct));
             case BackendType.ClaudeCode:
                 return ModelListParsers.ClaudeCodeAliases;
+            case BackendType.Codex:
+                return []; // codex has no model list command: Default (codex's own choice) or a typed model name
             case BackendType.Gemini:
                 return ModelListParsers.Gemini(await GetAsync(p, "models?pageSize=1000", (r, k) => r.Headers.Add("x-goog-api-key", k), ct));
             case BackendType.Anthropic:

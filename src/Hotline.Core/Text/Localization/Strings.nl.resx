@@ -428,6 +428,17 @@ Weigeren:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in de settings.json van agy is geen lijst; er wordt niets gewijzigd.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline-gebied vastleggen</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>De Antigravity CLI (agy) is niet geïnstalleerd. Installeer hem via antigravity.google/cli en probeer het opnieuw.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Je geïnstalleerde codex en je aanmelding (je ChatGPT-abonnement of OpenAI-API-sleutel).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Deze verbinding toont geen modellen: houd Standaard of typ een modelnaam.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} wordt gebruikt (deze verbinding toont geen modellen om het mee te controleren).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex is niet geïnstalleerd. Installeer het (npm install -g @openai/codex), voer `codex login` eenmaal uit om je aan te melden en probeer het opnieuw.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex kon niet worden gestart ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex is niet aangemeld. Voer `codex login` uit in een terminal en probeer het opnieuw.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Gebruikslimiet van Codex voorlopig bereikt. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI is op dit moment overbelast; probeer het zo opnieuw.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex kon dit antwoord niet afmaken.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex maakt opnieuw verbinding…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Kies hoe Hotline verbinding maakt</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Kies de AI die Hotline moet gebruiken. Tot die tijd wordt er niets verstuurd of uitgevoerd.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code of Antigravity is niet geïnstalleerd op deze pc. Installeer er een en meld je aan, of gebruik een API-sleutel.</value></data>

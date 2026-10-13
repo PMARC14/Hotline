@@ -7,7 +7,7 @@ notes; git-ignored). The design spec is `docs/superpowers/specs/2026-09-30-hotli
 ## What Hotline is
 
 A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acrylic, no WebView) that chats with the AI
-the user picks — Claude Code CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
+the user picks — Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
 ## State (2026-10-04, evening)
@@ -40,9 +40,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 User-tested 2026-10-07: everything in `docs/TESTING.md` works. Next: merge PR #2 (Plans 6 + 7), make the repo public,
 then apply the `main` ruleset (`scriptspply-rulesets.ps1`; see docs/RELEASING.md).
 
-**Future: OpenAI Codex support.** Add Codex as a connection the same way Claude Code and agy are: drive the user's
-logged-in `codex` CLI (non-interactive `codex exec` with JSON output, session resume), plus the API path for
-OpenAI keys if that's still missing. Check the current Codex CLI flags first; they change often.
+**OpenAI Codex CLI connection** (`Backends/Codex/`, PR #14): one `codex exec --json` per message, prompt on stdin;
+ephemeral sessions with the chat replayed, or `exec resume <thread>` with keepCliSessions. Flags were checked against
+codex-cli 0.162.1; they change often, so re-check `codex exec --help` when something breaks. OpenAI API keys already
+work through the OpenAI-compatible connection.
 
 Plan 7 (`docs/superpowers/plans/2026-10-05-hotline-plan7-structure-actions.md`) is done: memory, the ChatPresenter
 split, SendRouter + VoiceSession in Core, App Actions, the Copilot key as Right Ctrl, privacy notes, `docs/TESTING.md`.
@@ -68,7 +69,7 @@ follow-up (needs a visual check of the mirrored panel).
 - `src/Hotline.Core` (net10.0, no UI, unit-tested):
   - `Activation/` key events, URI parsing, dedupe, planner (`hotline://key|tray|settings|demo|selftest`).
   - `Backends/` `ConnectionTypes`, `ConnectionEditor`, `ModelCatalog`/`ModelFamilies`, `Secrets`, `BackendCatalog`
-    (factory + cache), `Agy/` (stream-json CLI, workspace, permissions), `ClaudeCode/` (stream-json CLI),
+    (factory + cache), `Agy/` (stream-json CLI, workspace, permissions), `ClaudeCode/` (stream-json CLI), `Codex/` (`codex exec --json`, one process per turn),
     `Api/` (`ApiCommon` SSE/errors/https rule, `OpenAiBackend`, `GeminiBackend`, `AnthropicBackend`).
   - `Chat/` `ChatController` (turns, cancel, retry, resume), `HistoryStore` (JSONL, `Recent`), `PromptLibrary`, `QuickActions`, `OcrPlan`, `VoiceText`, attachments (`SelectionAttachment`).
   - `Settings/` `HotlineSettings` (schema v7), `SettingsStore` (settings.json + `connections/*.json`, migrations,

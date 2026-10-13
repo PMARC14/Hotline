@@ -428,6 +428,17 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» у settings.json agy не є списком; файл не змінено.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Знімок області Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) не встановлено. Установіть його з antigravity.google/cli і спробуйте ще раз.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Ваш установлений codex і вхід (ваш план ChatGPT або ключ API OpenAI).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Це підключення не надає списку моделей: залиште «За замовчуванням» або введіть назву моделі.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Використовується {0} (це підключення не надає списку моделей для перевірки).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex не встановлено. Установіть його (npm install -g @openai/codex), один раз запустіть `codex login`, щоб увійти, і спробуйте ще раз.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Не вдалося запустити Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex не виконав вхід. Запустіть `codex login` у терміналі й спробуйте ще раз.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Ліміт використання Codex поки вичерпано. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI зараз перевантажений; спробуйте за мить.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex не вдалося завершити цю відповідь.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex повторно підключається…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Виберіть, як підключається Hotline</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Виберіть ШІ, яким користуватиметься Hotline. Доти нічого не надсилається й не запускається.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>На цьому ПК не встановлено Claude Code чи Antigravity. Установіть один із них і ввійдіть або скористайтеся ключем API.</value></data>

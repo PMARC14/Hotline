@@ -428,6 +428,17 @@ Tolak:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" di settings.json milik agy bukan daftar; tidak diubah.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Tangkapan area Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) tidak terpasang. Pasang dari antigravity.google/cli, lalu coba lagi.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>codex yang terpasang dan akun Anda (paket ChatGPT atau kunci API OpenAI Anda).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Koneksi ini tidak menampilkan daftar model: biarkan Default atau ketik nama model.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Menggunakan {0} (koneksi ini tidak punya daftar model untuk memeriksanya).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex tidak terpasang. Pasang (npm install -g @openai/codex), jalankan `codex login` sekali untuk masuk, lalu coba lagi.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex tidak dapat dimulai ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex belum masuk. Jalankan `codex login` di terminal, lalu coba lagi.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Batas penggunaan Codex tercapai untuk saat ini. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI sedang kelebihan beban; coba lagi sebentar lagi.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex tidak dapat menyelesaikan jawaban ini.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex sedang menyambung ulang…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Pilih cara Hotline terhubung</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Pilih AI yang akan digunakan Hotline. Tidak ada yang dikirim atau dijalankan sebelum Anda memilih.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code atau Antigravity belum terpasang di PC ini. Pasang salah satunya dan masuk, atau gunakan kunci API.</value></data>

@@ -9,6 +9,8 @@ public interface ILineProcess : IAsyncDisposable
     bool HasExited { get; }
     string StandardErrorTail { get; }
     Task WriteLineAsync(string line, CancellationToken ct);
+    /// <summary>Closes stdin, for one-shot programs that read their input to the end (codex exec).</summary>
+    void CompleteInput();
     /// <summary>Next stdout line, or null when the process has ended.</summary>
     Task<string?> ReadLineAsync(CancellationToken ct);
     /// <summary>Waits (bounded) for the process to exit, e.g. so its final stderr has been collected.</summary>
@@ -70,6 +72,12 @@ public sealed class SystemLineProcess : ILineProcess
     {
         await _process.StandardInput.WriteAsync((line + "\n").AsMemory(), ct);
         await _process.StandardInput.FlushAsync(ct);
+    }
+
+    public void CompleteInput()
+    {
+        try { _process.StandardInput.Close(); }
+        catch (Exception ex) when (ex is IOException or ObjectDisposedException or InvalidOperationException) { /* already exited or closed */ }
     }
 
     public Task<string?> ReadLineAsync(CancellationToken ct) => _process.StandardOutput.ReadLineAsync(ct).AsTask();

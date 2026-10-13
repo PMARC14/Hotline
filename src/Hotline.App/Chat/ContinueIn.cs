@@ -37,7 +37,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
         }
         // Another CLI reads the chat from a file: only when the panel has all of it (not a chat reopened from a record).
         if (chat.Messages.Count == 0 || !chat.HasWholeTranscript) return targets;
-        foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity })
+        foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
         {
             if (type == own) continue;
             var other = settings.Chat.Backends.FirstOrDefault(b => b.Type == type) ?? new BackendProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
@@ -63,6 +63,8 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
             {
                 BackendType.Antigravity => AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), path),
                 BackendType.ClaudeCode => ClaudeLocator.Find(p.CliPath, File.Exists, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), path),
+                BackendType.Codex => Hotline.Core.Backends.Codex.CodexLocator.Find(p.CliPath, File.Exists, path,
+                    System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64"),
                 _ => null,
             };
         }

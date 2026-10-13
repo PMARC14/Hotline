@@ -12,7 +12,8 @@ public class ReportLinksTests
     [InlineData(BackendType.Anthropic, "Anthropic")]
     [InlineData(BackendType.Antigravity, "Google")]
     [InlineData(BackendType.Gemini, "Google")]
-    public void Anthropic_and_Google_answers_link_to_their_report_page(BackendType type, string provider)
+    [InlineData(BackendType.Codex, "OpenAI")]
+    public void Single_provider_answers_link_to_their_report_page(BackendType type, string provider)
     {
         var target = ReportLinks.For(type);
         Assert.NotNull(target);

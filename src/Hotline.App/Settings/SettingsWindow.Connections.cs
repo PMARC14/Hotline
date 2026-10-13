@@ -343,7 +343,7 @@ public sealed partial class SettingsWindow
                 model.SelectedItem = current;
                 filling = false;
                 status.Severity = InfoBarSeverity.Success;
-                status.Message = ModelCatalog.Describe(list, p.Model);
+                status.Message = ModelCatalog.Describe(list, p.Model, ConnectionTypes.Of(p.Type).ListsModels);
             }
             catch (ModelListException ex) { status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
             catch (Exception ex) { _log.Error("model list failed", ex); status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
