@@ -428,6 +428,17 @@ Negar:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" no settings.json do agy não é uma lista; ele não será alterado.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Captura de região do Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>A CLI do Antigravity (agy) não está instalada. Instale-a em antigravity.google/cli e tente de novo.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>CLI do OpenAI Codex</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Seu codex instalado e seu login (seu plano do ChatGPT ou chave de API da OpenAI).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Esta conexão não lista modelos: mantenha Padrão ou digite o nome de um modelo.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Usando {0} (esta conexão não lista modelos para verificar).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>O Codex não está instalado. Instale-o (npm install -g @openai/codex), execute `codex login` uma vez para entrar e tente de novo.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Não foi possível iniciar o Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>O Codex não está conectado. Execute `codex login` em um terminal e tente de novo.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Limite de uso do Codex atingido por enquanto. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>A OpenAI está sobrecarregada agora; tente de novo em instantes.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>O Codex não conseguiu terminar esta resposta.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>O Codex está se reconectando…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Escolha como o Hotline se conecta</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Escolha a IA que o Hotline deve usar. Nada é enviado nem executado até você escolher.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>O Claude Code ou o Antigravity não está instalado neste PC. Instale um e entre nele, ou use uma chave de API.</value></data>

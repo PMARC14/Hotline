@@ -428,6 +428,17 @@ Reddet:
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions.{0}" bir liste değil; değiştirilmiyor.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline bölge yakalama</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) yüklü değil. antigravity.google/cli adresinden yükleyin ve yeniden deneyin.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Yüklü codex'iniz ve oturumunuz (ChatGPT planınız veya OpenAI API anahtarınız).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Bu bağlantı model listelemiyor: Varsayılan'ı koruyun veya bir model adı yazın.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} kullanılıyor (bu bağlantı, kontrol edilecek bir model listesi sunmuyor).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex yüklü değil. Yükleyin (npm install -g @openai/codex), oturum açmak için `codex login` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex başlatılamadı ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex oturum açmamış. Bir terminalde `codex login` komutunu çalıştırın ve yeniden deneyin.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Codex kullanım sınırına şimdilik ulaşıldı. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI şu anda aşırı yüklü; birazdan yeniden deneyin.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex bu yanıtı tamamlayamadı.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex yeniden bağlanıyor…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Hotline'ın nasıl bağlanacağını seçin</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Hotline'ın kullanacağı yapay zekâyı seçin. Siz seçene kadar hiçbir şey gönderilmez ve çalıştırılmaz.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Bu bilgisayarda Claude Code veya Antigravity yüklü değil. Birini yükleyip oturum açın veya bir API anahtarı kullanın.</value></data>

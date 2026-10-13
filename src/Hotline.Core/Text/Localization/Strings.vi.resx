@@ -428,6 +428,17 @@ Từ chối:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" trong settings.json của agy không phải danh sách; sẽ không được thay đổi.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Chụp vùng Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Chưa cài đặt Antigravity CLI (agy). Hãy cài từ antigravity.google/cli, rồi thử lại.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>codex đã cài và tài khoản đăng nhập của bạn (gói ChatGPT hoặc khóa API OpenAI của bạn).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Kết nối này không liệt kê mô hình: giữ Mặc định hoặc gõ tên mô hình.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Đang dùng {0} (kết nối này không có danh sách mô hình để đối chiếu).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Chưa cài đặt Codex. Hãy cài (npm install -g @openai/codex), chạy `codex login` một lần để đăng nhập, rồi thử lại.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Không thể khởi động Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex chưa đăng nhập. Hãy chạy `codex login` trong terminal, rồi thử lại.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Tạm thời đã đạt giới hạn sử dụng Codex. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI đang quá tải; hãy thử lại sau giây lát.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex không thể hoàn tất câu trả lời này.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex đang kết nối lại…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Chọn cách Hotline kết nối</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Chọn AI mà Hotline sẽ dùng. Không có gì được gửi hay chạy cho đến khi bạn chọn.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>PC này chưa cài Claude Code hoặc Antigravity. Hãy cài một trong hai và đăng nhập, hoặc dùng khóa API.</value></data>

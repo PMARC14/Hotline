@@ -74,7 +74,7 @@ public sealed class WindowSettings
     public double LuminosityOpacity { get; set; } = 0.35;
 }
 
-public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local }
+public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local, Codex }
 
 /// <summary>ChatOnly: answers only (attachments readable). Inherit: the CLI's own tools and permission rules.</summary>
 public enum ToolMode { ChatOnly, Inherit }

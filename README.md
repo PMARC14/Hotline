@@ -6,7 +6,7 @@
 **You are stuck with the key might as well use it. Gives you an option to replace the Windows Copilot key with your own fast, native AI popup that talks to the AI *you* choose.**
 
 Hotline uses the AI tools you already have (your
-installed Claude Code or Antigravity CLI and their sign-ins) or any API key you bring, and keeps everything
+installed Claude Code, Codex or Antigravity CLI and their sign-ins) or any API key you bring, and keeps everything
 configurable in plain files.
 
 <p align="center">
@@ -20,7 +20,8 @@ configurable in plain files.
 - **The Copilot key** — short press opens/closes, long press starts a new chat (both configurable), plus an
   optional extra hotkey. Opens on the monitor you're working on, focused and ready to type.
 - **Your choice of AI** — pick *Effort → Model → Provider* in the bar:
-  - **Claude Code** (your Claude plan, no API key) and **Antigravity CLI / agy** (Gemini with your Google sign-in)
+  - **Claude Code** (your Claude plan, no API key), **OpenAI Codex CLI** (your ChatGPT plan) and **Antigravity CLI / agy**
+    (Gemini with your Google sign-in)
   - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, …)
   - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
 - **Native and light** — WinUI 3 with acrylic, no embedded webview2.
@@ -103,6 +104,7 @@ Then assign the key as above.
 | Connection | You need |
 |---|---|
 | Claude Code | [Claude Code](https://claude.com/claude-code) installed and signed in (run `claude` once) |
+| OpenAI Codex | The [Codex CLI](https://github.com/openai/codex) installed and signed in (`npm install -g @openai/codex`, then `codex login`) |
 | Antigravity (agy) | The [Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once) |
 | Anthropic / Gemini / OpenAI-compatible | An API key — Settings › AI connections › Add connection, paste the key, pick a model |
 | Local | An OpenAI-style server running (e.g. `llama-server` on `http://127.0.0.1:8080`) |

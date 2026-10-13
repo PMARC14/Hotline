@@ -13,11 +13,15 @@ public static class ReportLinks
     /// <summary>Google has no general form for Gemini answers; its Generative AI Prohibited Use Policy links its reporting options.</summary>
     public static readonly Uri Google = new("https://support.google.com/gemini/answer/16625148");
 
+    /// <summary>OpenAI's content reporting form (from its help article "Reporting content in ChatGPT and OpenAI platforms").</summary>
+    public static readonly Uri OpenAi = new("https://openai.com/form/report-content/");
+
     /// <summary>Null for OpenAI-compatible and local connections: no single provider to report to (yet).</summary>
     public static ReportTarget? For(BackendType type) => type switch
     {
         BackendType.ClaudeCode or BackendType.Anthropic => new("Anthropic", Anthropic),
         BackendType.Antigravity or BackendType.Gemini => new("Google", Google),
+        BackendType.Codex => new("OpenAI", OpenAi),
         _ => null,
     };
 }

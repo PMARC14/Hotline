@@ -428,6 +428,17 @@ Deny:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in agy's settings.json isn't a list; not changing it.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline region capture</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>The Antigravity CLI (agy) isn't installed. Install it from antigravity.google/cli, then try again.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Your installed codex and its sign-in (your ChatGPT plan or OpenAI API key).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>This connection doesn't list models: keep Default or type a model name.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Using {0} (this connection doesn't list models to check it against).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex isn't installed. Install it (npm install -g @openai/codex), run `codex login` once to sign in, then try again.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Couldn't start Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex isn't signed in. Run `codex login` in a terminal, then try again.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Codex usage limit reached for now. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI is overloaded right now; try again in a moment.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex couldn't finish this answer.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex is reconnecting…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Choose how Hotline connects</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Pick the AI Hotline should use. Nothing is sent and nothing runs until you do.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code or Antigravity isn't installed on this PC. Install one and sign in to it, or use an API key.</value></data>

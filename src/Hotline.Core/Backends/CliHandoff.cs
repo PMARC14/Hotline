@@ -13,7 +13,7 @@ public sealed record CliCommand(string Exe, IReadOnlyList<string> Args, string W
 /// </summary>
 public static class CliHandoff
 {
-    public static bool CanResume(BackendType type) => type is BackendType.Antigravity or BackendType.ClaudeCode;
+    public static bool CanResume(BackendType type) => type is BackendType.Antigravity or BackendType.ClaudeCode or BackendType.Codex;
 
     public static CliCommand Resume(BackendType type, string exe, CliSession session)
     {
@@ -22,6 +22,7 @@ public static class CliHandoff
         {
             BackendType.Antigravity => new(exe, ["--conversation", session.Id], session.WorkingDirectory),
             BackendType.ClaudeCode => new(exe, ["--resume", session.Id], session.WorkingDirectory),
+            BackendType.Codex => new(exe, ["resume", session.Id], session.WorkingDirectory),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "No resume for this connection type."),
         };
     }
@@ -31,6 +32,7 @@ public static class CliHandoff
     {
         BackendType.Antigravity => new(exe, ["--prompt-interactive", Prompt(file)], workingDirectory),
         BackendType.ClaudeCode => new(exe, [Prompt(file)], workingDirectory),
+        BackendType.Codex => new(exe, [Prompt(file)], workingDirectory),
         _ => throw new ArgumentOutOfRangeException(nameof(type), type, "Not a CLI connection type."),
     };
 

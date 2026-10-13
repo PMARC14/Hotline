@@ -12,4 +12,4 @@ Hotline is licensed under Apache-2.0 (see `LICENSE`). It uses the following thir
 | [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) | Placeholder app icon (telephone receiver) | MIT (see `assets/source/ATTRIBUTION.md`) |
 
 Optional external programs Hotline can launch are installed and licensed separately by the user: Claude Code,
-the Antigravity CLI (agy), MCP servers listed in `mcp.json`, and the Windows on-device agent registry (`odr.exe`).
+the OpenAI Codex CLI, the Antigravity CLI (agy), MCP servers listed in `mcp.json`, and the Windows on-device agent registry (`odr.exe`).

@@ -10,7 +10,7 @@ namespace Hotline.App.Chat;
 
 /// <summary>
 /// First run (chat.defaultBackend empty): instead of starting a CLI nobody chose, the panel opens on a card listing the
-/// connections that can work on this PC (installed Claude Code / Antigravity) plus API keys, and a link to the Copilot
+/// connections that can work on this PC (installed Claude Code / Antigravity / Codex) plus API keys, and a link to the Copilot
 /// key setting. Nothing is sent and no CLI runs until one is picked. The card comes back on each open (and on a send)
 /// until then; choosing in the toolbar or in Settings works too.
 /// </summary>
@@ -78,6 +78,8 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
                 found.Add(BackendType.ClaudeCode);
             if (AgyLocator.Find(null, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), path) is not null)
                 found.Add(BackendType.Antigravity);
+            if (Hotline.Core.Backends.Codex.CodexLocator.Find(null, File.Exists, path, System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64") is not null)
+                found.Add(BackendType.Codex);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException) { }
         return found;
