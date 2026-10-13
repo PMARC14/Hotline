@@ -163,10 +163,10 @@ Weigeren:
   <data name="Agy_EditRules" xml:space="preserve"><value>agy-regels bewerken</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy-machtigingen</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Alles goedkeuren? (gevaarlijk)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy voert dan ELKE shellopdracht uit en bewerkt of verwijdert ELK bestand dat het wil, zonder te vragen. Een verkeerd antwoord of een kwaadaardige webpagina of bestand kan echte schade aanrichten. Gebruik dit alleen met een werkmap die je kunt missen.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} voert dan ELKE shellopdracht uit en bewerkt of verwijdert ELK bestand dat het wil, zonder te vragen. Een verkeerd antwoord of een kwaadaardige webpagina of bestand kan echte schade aanrichten. Gebruik dit alleen met een werkmap die je kunt missen.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Ik begrijp het, inschakelen</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Alles goedkeuren (gevaarlijk)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Slaat alle machtigingscontroles van agy over (--dangerously-skip-permissions). Alleen in de modus "eigen hulpmiddelen van het programma gebruiken".</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Slaat alle machtigingscontroles van {0} over. Alleen in de modus "eigen hulpmiddelen van het programma gebruiken".</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Naam</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Eindpunt</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Basis-URL van de API.</value></data>
@@ -457,4 +457,12 @@ Weigeren:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} kon dit gesprek niet opnieuw openen. Begin een nieuwe chat om verder te gaan.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Deze chat voortzetten in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} kon niet worden geopend: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Startopties (geavanceerd)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Vervangt de opties die Hotline voor deze modus toevoegt (gescheiden door spaties). De opties die Hotline nodig heeft om met het programma te praten worden altijd toegevoegd, gevaarlijke alleen via ‘Alles goedkeuren’. Leeg = standaard van Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Standaard van Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Maximale antwoordlengte</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Maximaal aantal tokens per antwoord. Is dit te laag, dan stopt een lang antwoord eerder. Leeg = standaard van het model.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Temperatuur</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Hoe gevarieerd antwoorden zijn: 0 = gericht en herhaalbaar, hoger = gevarieerder (tot 2). Leeg = standaard van het model.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Standaard van het model</value></data>
 </root>

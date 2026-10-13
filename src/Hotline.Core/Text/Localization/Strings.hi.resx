@@ -163,10 +163,10 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>agy नियम संपादित करें</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy अनुमतियाँ</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>सब कुछ स्वीकृत करें? (खतरनाक)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy बिना पूछे कोई भी शेल कमांड चलाएगा और कोई भी फ़ाइल संपादित या हटाएगा। गलत उत्तर या दुर्भावनापूर्ण वेब पेज या फ़ाइल वास्तविक नुकसान कर सकती है। इसे केवल ऐसे कार्य फ़ोल्डर के साथ उपयोग करें जिसे खोना आपको स्वीकार्य हो।</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} बिना पूछे कोई भी शेल कमांड चलाएगा और कोई भी फ़ाइल संपादित या हटाएगा। गलत उत्तर या दुर्भावनापूर्ण वेब पेज या फ़ाइल वास्तविक नुकसान कर सकती है। इसे केवल ऐसे कार्य फ़ोल्डर के साथ उपयोग करें जिसे खोना आपको स्वीकार्य हो।</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>मैं समझता/समझती हूँ, चालू करें</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ सब कुछ स्वीकृत करें (खतरनाक)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>agy की सभी अनुमति जाँच छोड़ देता है (--dangerously-skip-permissions)। केवल "प्रोग्राम के अपने टूल का उपयोग करें" मोड में।</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0} की सभी अनुमति जाँच छोड़ देता है। केवल "प्रोग्राम के अपने टूल का उपयोग करें" मोड में।</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>नाम</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>एंडपॉइंट</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API का आधार URL।</value></data>
@@ -457,4 +457,12 @@
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} इस बातचीत को फिर से नहीं खोल सका। जारी रखने के लिए नई चैट शुरू करें।</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>यह चैट यहाँ जारी रखें</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} नहीं खुल सका: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>लॉन्च विकल्प (उन्नत)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>इस मोड के लिए Hotline जो विकल्प जोड़ता है, उनकी जगह लेता है (स्पेस से अलग)। प्रोग्राम से बात करने के लिए Hotline को जिन विकल्पों की ज़रूरत है, वे हमेशा जोड़े जाते हैं, और ख़तरनाक विकल्प केवल “सब कुछ स्वीकृत करें” से आते हैं। खाली = Hotline के डिफ़ॉल्ट।</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline के डिफ़ॉल्ट</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>उत्तर की अधिकतम लंबाई</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>एक उत्तर अधिकतम कितने टोकन उपयोग कर सकता है। बहुत कम होने पर लंबा उत्तर जल्दी रुक जाता है। खाली = मॉडल का डिफ़ॉल्ट।</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>तापमान</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>उत्तर कितने विविध हों: 0 = केंद्रित और दोहराने योग्य, ज़्यादा = अधिक विविध (2 तक)। खाली = मॉडल का डिफ़ॉल्ट।</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>मॉडल का डिफ़ॉल्ट</value></data>
 </root>

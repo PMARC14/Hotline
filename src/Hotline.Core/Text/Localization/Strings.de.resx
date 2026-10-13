@@ -163,10 +163,10 @@ Verweigern:
   <data name="Agy_EditRules" xml:space="preserve"><value>agy-Regeln bearbeiten</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy-Berechtigungen</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Alles genehmigen? (gefährlich)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy führt dann JEDEN Shell-Befehl aus und bearbeitet oder löscht JEDE Datei, die es für richtig hält, ohne zu fragen. Eine falsche Antwort oder eine bösartige Webseite oder Datei kann echten Schaden anrichten. Nutze das nur mit einem Arbeitsordner, dessen Verlust du verkraften kannst.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} führt dann JEDEN Shell-Befehl aus und bearbeitet oder löscht JEDE Datei, die es für richtig hält, ohne zu fragen. Eine falsche Antwort oder eine bösartige Webseite oder Datei kann echten Schaden anrichten. Nutze das nur mit einem Arbeitsordner, dessen Verlust du verkraften kannst.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Verstanden, einschalten</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Alles genehmigen (gefährlich)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Überspringt alle Berechtigungsprüfungen von agy (--dangerously-skip-permissions). Nur im Modus „Eigene Tools des Programms verwenden“.</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Überspringt alle Berechtigungsprüfungen von {0}. Nur im Modus „Eigene Tools des Programms verwenden“.</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Name</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Endpunkt</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Basis-URL der API.</value></data>
@@ -457,4 +457,12 @@ Verweigern:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} konnte diese Unterhaltung nicht wieder öffnen. Starte einen neuen Chat, um weiterzumachen.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Diesen Chat fortsetzen in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} konnte nicht geöffnet werden: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Startoptionen (erweitert)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Ersetzt die Optionen, die Hotline für diesen Modus hinzufügt (durch Leerzeichen getrennt). Die Optionen, die Hotline zur Verständigung mit dem Programm braucht, werden immer hinzugefügt, gefährliche nur über „Alles genehmigen“. Leer = Standard von Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Standard von Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Maximale Antwortlänge</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Höchstzahl an Tokens pro Antwort. Ist der Wert zu niedrig, bricht eine lange Antwort früher ab. Leer = Standard des Modells.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Temperatur</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Wie abwechslungsreich Antworten sind: 0 = fokussiert und wiederholbar, höher = vielfältiger (bis 2). Leer = Standard des Modells.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Standard des Modells</value></data>
 </root>

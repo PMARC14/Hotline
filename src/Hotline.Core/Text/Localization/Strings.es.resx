@@ -163,10 +163,10 @@ Denegar:
   <data name="Agy_EditRules" xml:space="preserve"><value>Editar reglas de agy</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>Permisos de agy</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>¿Aprobarlo todo? (peligroso)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy ejecutará CUALQUIER comando de shell y editará o eliminará CUALQUIER archivo que decida, sin preguntar. Una respuesta equivocada o una página web o un archivo malintencionados pueden causar daños reales. Úsalo solo con una carpeta de trabajo que puedas permitirte perder.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} ejecutará CUALQUIER comando de shell y editará o eliminará CUALQUIER archivo que decida, sin preguntar. Una respuesta equivocada o una página web o un archivo malintencionados pueden causar daños reales. Úsalo solo con una carpeta de trabajo que puedas permitirte perder.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Lo entiendo, activar</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Aprobarlo todo (peligroso)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Omite todas las comprobaciones de permisos de agy (--dangerously-skip-permissions). Solo en el modo «usar las herramientas propias del programa».</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Omite todas las comprobaciones de permisos de {0}. Solo en el modo «usar las herramientas propias del programa».</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Nombre</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Punto de conexión</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>URL base de la API.</value></data>
@@ -457,4 +457,12 @@ Denegar:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} no pudo reabrir esta conversación. Inicia un chat nuevo para continuar.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Continuar este chat en</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>No se pudo abrir {0}: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Opciones de inicio (avanzado)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Sustituye las opciones que Hotline añade en este modo (separadas por espacios). Las que Hotline necesita para comunicarse con el programa se añaden siempre, y las peligrosas solo con «Aprobar todo». Vacío = valores de Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Valores de Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Longitud máxima de la respuesta</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Máximo de tokens por respuesta. Si es demasiado bajo, una respuesta larga se corta antes. Vacío = valor predeterminado del modelo.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Temperatura</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Cuánto varían las respuestas: 0 = centradas y repetibles, más alto = más variadas (hasta 2). Vacío = valor predeterminado del modelo.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Predeterminado del modelo</value></data>
 </root>

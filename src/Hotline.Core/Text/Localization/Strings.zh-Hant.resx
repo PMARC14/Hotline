@@ -163,10 +163,10 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>編輯 agy 規則</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy 權限</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>要核准所有動作嗎?(危險)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy 會不經詢問就執行它決定執行的任何 Shell 命令,並編輯或刪除任何檔案。錯誤的回答或惡意網頁、檔案都可能造成實際損害。請只在能承受資料損失的工作資料夾中使用。</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} 會不經詢問就執行它決定執行的任何 Shell 命令,並編輯或刪除任何檔案。錯誤的回答或惡意網頁、檔案都可能造成實際損害。請只在能承受資料損失的工作資料夾中使用。</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>我了解,開啟</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ 核准所有動作 (危險)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>略過 agy 的所有權限檢查 (--dangerously-skip-permissions)。僅限「使用程式本身的工具」模式。</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>略過 {0} 的所有權限檢查。僅限「使用程式本身的工具」模式。</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>名稱</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>端點</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API 的基底 URL。</value></data>
@@ -457,4 +457,12 @@
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} 無法重新開啟此對話。請開始新的聊天以繼續。</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置繼續此聊天</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>無法開啟 {0}:{1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>啟動參數 (進階)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>取代 Hotline 為此模式新增的參數 (以空格分隔)。Hotline 與程式溝通所需的參數一律會加入,危險參數只能透過「全部核准」加入。留空 = Hotline 的預設值。</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 的預設值</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>最大回答長度</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>一次回答最多可用的權杖數。設得太低,長回答會提前結束。留空 = 模型預設值。</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>溫度</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答的多樣性:0 = 專注且可重複,越高越多樣 (最高 2)。留空 = 模型預設值。</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>模型預設值</value></data>
 </root>

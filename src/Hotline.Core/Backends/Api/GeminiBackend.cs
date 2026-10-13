@@ -120,7 +120,11 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                     }).ToArray()),
                 },
             };
-        if (ThinkingConfig(model, profile.Effort) is { } thinking) body["generationConfig"] = new JsonObject { ["thinkingConfig"] = thinking };
+        var generation = new JsonObject();
+        if (ThinkingConfig(model, profile.Effort) is { } thinking) generation["thinkingConfig"] = thinking;
+        if (profile.MaxTokens is { } max) generation["maxOutputTokens"] = max;
+        if (profile.Temperature is { } temperature) generation["temperature"] = temperature;
+        if (generation.Count > 0) body["generationConfig"] = generation;
         log.Debug($"{profile.Id}: Gemini streamGenerateContent ({contents.Count} contents, {offered.Count} tools, model {model}, effort {profile.Effort ?? "default"})");
         var request = new HttpRequestMessage(HttpMethod.Post, $"{endpoint}/models/{Uri.EscapeDataString(model)}:streamGenerateContent?alt=sse")
         {

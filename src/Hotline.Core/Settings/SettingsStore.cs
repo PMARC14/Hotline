@@ -307,6 +307,11 @@ public sealed class SettingsStore(string directory)
         s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).ToList();
         if (s.Chat.Backends.Count == 0) s.Chat.Backends = ChatSettings.DefaultBackends();
         foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
+        foreach (var b in s.Chat.Backends)
+        {
+            if (b.MaxTokens is { } max) b.MaxTokens = max < 1 ? null : Math.Min(max, 1_000_000);
+            if (b.Temperature is { } t) b.Temperature = double.IsFinite(t) ? Math.Clamp(t, 0, 2) : null;
+        }
         s.Chat.DefaultBackend = s.Chat.DefaultBackend?.Trim() ?? "";
         if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);

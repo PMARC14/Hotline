@@ -19,7 +19,7 @@ public class ConnectionTypesTests
         Assert.Equal(["low", "medium", "high", "xhigh", "max"], ConnectionTypes.Of(BackendType.Anthropic).EffortLevels);
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Gemini).EffortLevels);
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.OpenAiCompatible).EffortLevels);
-        Assert.Empty(ConnectionTypes.Of(BackendType.Local).EffortLevels);
+        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Local).EffortLevels); // sent only when chosen
     }
 
     [Fact]

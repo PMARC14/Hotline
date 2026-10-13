@@ -161,7 +161,15 @@ public sealed partial class SettingsWindow
         // Like every other card: title and the rules summary on the left, the actions on the right.
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center, Children = { addReadOnly, open } };
         host.Children.Add(CardWithStatus(Strings.Agy_Permissions, summary, buttons));
+    }
 
+    /// <summary>
+    /// ⚠ Approve everything (every CLI, inherit mode only): skips the CLI's permission checks (agy/Claude Code
+    /// --dangerously-skip-permissions, Codex --dangerously-bypass-approvals-and-sandbox). Turning it on asks first.
+    /// </summary>
+    private void AddApproveAll(StackPanel host, BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    {
+        var cliName = ConnectionTypes.Of(p.Type).DisplayName;
         var approveAll = new ToggleSwitch { IsOn = p.ApproveAllTools, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.Tools == ToolMode.Inherit };
         var reverting = false;
         approveAll.Toggled += async (_, _) =>
@@ -172,14 +180,27 @@ public sealed partial class SettingsWindow
                 var dialog = new ContentDialog
                 {
                     XamlRoot = Root.XamlRoot, Title = Strings.Agy_ApproveAllTitle,
-                    Content = Strings.Agy_ApproveAllBody,
+                    Content = new TextBlock { Text = L.F(Strings.Conn_ApproveAllBody, cliName), TextWrapping = TextWrapping.Wrap },
                     PrimaryButtonText = Strings.Agy_ApproveAllConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
                 };
                 if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
             }
             await save(x => x.ApproveAllTools = approveAll.IsOn);
         };
-        host.Children.Add(Card(Strings.Agy_ApproveAll, Strings.Agy_ApproveAll_Desc, approveAll));
+        host.Children.Add(Card(Strings.Agy_ApproveAll, L.F(Strings.Conn_ApproveAll_Desc, cliName), approveAll));
+    }
+
+    /// <summary>A number setting that can be left empty (= the model's default).</summary>
+    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set)
+    {
+        var box = new NumberBox
+        {
+            Value = value ?? double.NaN, Minimum = min, Maximum = max, SmallChange = step, LargeChange = step * 10,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, PlaceholderText = placeholder, MinWidth = 160,
+            ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
+        };
+        box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+        return box;
     }
 
     private void BuildEditor(StackPanel host, BackendProfile p)
@@ -251,7 +272,12 @@ public sealed partial class SettingsWindow
             host.Children.Add(Card(Strings.Conn_KeepInHotline, Strings.Conn_KeepInHotline_Desc, alsoHotline));
         }
         if (info.Has(ConnectionField.ExtraArgs))
+        {
             host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
+            // Advanced: replaces the mode's flags (the protocol flags are always added; dangerous ones never come from here).
+            host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : string.Join(' ', p.Args), Strings.Conn_LaunchArgs_Default,
+                v => p.Args = string.IsNullOrWhiteSpace(v) ? null : v.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList())));
+        }
 
         if (info.Has(ConnectionField.Tools) && !info.Has(ConnectionField.CliPath))
         {
@@ -293,6 +319,7 @@ public sealed partial class SettingsWindow
             host.Children.Add(Card(Strings.Conn_WorkingFolder, Strings.Conn_WorkingFolder_Desc,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { folder, browse } }));
             if (p.Type == BackendType.Antigravity) AddAgyPermissions(host, p, Save);
+            AddApproveAll(host, p, Save);
         }
 
         if (p.Type == BackendType.Anthropic)
@@ -319,6 +346,12 @@ public sealed partial class SettingsWindow
             if (prompt.SelectedItem is ComboBoxItem { Tag: string name }) await Save(x => x.Prompt = name.Length == 0 ? null : name);
         };
         host.Children.Add(Card(Strings.Conn_SystemPrompt, null, prompt));
+        if (info.Has(ConnectionField.MaxTokens))
+            host.Children.Add(Card(Strings.Conn_MaxTokens, Strings.Conn_MaxTokens_Desc,
+                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null))));
+        if (info.Has(ConnectionField.Temperature))
+            host.Children.Add(Card(Strings.Conn_Temperature, Strings.Conn_Temperature_Desc,
+                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null))));
 
         var def = Strings.Common_Default; // the "no override" entry (a typed "Default" in English means the same)
         bool IsDefault(string? v) => string.IsNullOrWhiteSpace(v) || v == def || v == "Default";

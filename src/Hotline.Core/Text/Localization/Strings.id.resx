@@ -163,10 +163,10 @@ Tolak:
   <data name="Agy_EditRules" xml:space="preserve"><value>Edit aturan agy</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>Izin agy</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Setujui semuanya? (berbahaya)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy akan menjalankan perintah shell APA PUN dan mengedit atau menghapus file APA PUN yang diputuskannya, tanpa bertanya. Jawaban yang salah atau halaman web maupun file berbahaya dapat menimbulkan kerusakan nyata. Gunakan ini hanya dengan folder kerja yang rela Anda hilangkan.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} akan menjalankan perintah shell APA PUN dan mengedit atau menghapus file APA PUN yang diputuskannya, tanpa bertanya. Jawaban yang salah atau halaman web maupun file berbahaya dapat menimbulkan kerusakan nyata. Gunakan ini hanya dengan folder kerja yang rela Anda hilangkan.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Saya mengerti, aktifkan</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Setujui semuanya (berbahaya)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Melewati semua pemeriksaan izin agy (--dangerously-skip-permissions). Hanya dalam mode "gunakan alat milik program".</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Melewati semua pemeriksaan izin {0}. Hanya dalam mode "gunakan alat milik program".</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Nama</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Titik akhir</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>URL dasar API.</value></data>
@@ -457,4 +457,12 @@ Tolak:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} tidak dapat membuka kembali percakapan ini. Mulai obrolan baru untuk melanjutkan.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Lanjutkan obrolan ini di</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Tidak dapat membuka {0}: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Opsi peluncuran (lanjutan)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Menggantikan opsi yang ditambahkan Hotline untuk mode ini (dipisahkan spasi). Opsi yang dibutuhkan Hotline untuk berkomunikasi dengan program selalu ditambahkan, dan opsi berbahaya hanya berasal dari “Setujui semuanya”. Kosong = bawaan Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Bawaan Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Panjang jawaban maksimum</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Jumlah token terbanyak untuk satu jawaban. Jika terlalu rendah, jawaban panjang berhenti lebih awal. Kosong = bawaan model.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Temperatur</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Seberapa bervariasi jawaban: 0 = fokus dan dapat diulang, lebih tinggi = lebih bervariasi (hingga 2). Kosong = bawaan model.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Bawaan model</value></data>
 </root>

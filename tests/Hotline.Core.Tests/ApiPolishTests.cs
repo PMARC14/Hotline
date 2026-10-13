@@ -80,11 +80,11 @@ public sealed class ApiPolishTests : IDisposable
     // ---- effort levels ------------------------------------------------------------------------
 
     [Fact]
-    public void Gemini_and_openai_offer_low_medium_high_and_local_offers_none()
+    public void Gemini_openai_and_local_offer_low_medium_high()
     {
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Gemini).EffortLevels);
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.OpenAiCompatible).EffortLevels);
-        Assert.Empty(ConnectionTypes.Of(BackendType.Local).EffortLevels);
+        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Local).EffortLevels);
     }
 
     [Fact]
