@@ -181,8 +181,6 @@ Weigeren:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Automatisch detecteren</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy-agent</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Gebruikt in de modus Alleen chatten.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Chats bewaren in de geschiedenis van Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline-chats ook tonen in claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Extra argumenten</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Ongewijzigd doorgegeven aan het programma (gescheiden door spaties).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Alleen chatten</value></data>
@@ -440,4 +438,12 @@ Weigeren:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Hotline gebruiken voor de Copilot-toets</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Kies in Windows-instellingen › Persoonlijke instellingen › Tekstinvoer › Copilot-toets op het toetsenbord aanpassen de optie Aangepast en daarna Hotline. Vereist een toetsenbord met een Copilot-toets.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Instellingen voor de Copilot-toets openen</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Chats bewaren in de geschiedenis van {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Elke Hotline-chat is daar één gesprek, gegroepeerd onder Hotline, zodat je het kunt hervatten via Recente chats of in de CLI zelf. Uit: Hotline bewaart de chat.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Berichten ook in Hotline bewaren</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Recente chats toont deze chats altijd; dit bewaart ook hun berichten in de geschiedenismap van Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Vervolg van ‘{0}’. De eerdere berichten staan in de geschiedenis van {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} kon dit gesprek niet opnieuw openen. Begin een nieuwe chat om verder te gaan.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Deze chat voortzetten in</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} kon niet worden geopend: {1}</value></data>
 </root>

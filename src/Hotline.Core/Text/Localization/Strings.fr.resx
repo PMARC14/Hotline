@@ -181,8 +181,6 @@ Refuser :
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Détection automatique</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Agent agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Utilisé en mode Conversation seule.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Conserver les conversations dans l'historique de Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Lister aussi les conversations Hotline dans claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Arguments supplémentaires</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Transmis tels quels au programme (séparés par des espaces).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Conversation seule</value></data>
@@ -440,4 +438,12 @@ Refuser :
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Utiliser Hotline avec la touche Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Dans Paramètres Windows › Personnalisation › Saisie de texte › Personnaliser la touche Copilot du clavier, choisissez Personnalisé, puis Hotline. Nécessite un clavier avec une touche Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Ouvrir les paramètres de la touche Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Conserver les conversations dans l'historique de {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Chaque conversation Hotline y devient une conversation, regroupée sous Hotline, pour la reprendre depuis Conversations récentes ou dans la CLI elle-même. Désactivé : Hotline conserve la conversation.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Conserver aussi les messages dans Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Conversations récentes liste toujours ces conversations ; ceci enregistre aussi leurs messages dans le dossier d'historique de Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Suite de « {0} ». Les messages précédents sont dans l'historique de {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} n'a pas pu rouvrir cette conversation. Démarrez une nouvelle conversation pour continuer.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Continuer cette conversation dans</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Impossible d'ouvrir {0} : {1}</value></data>
 </root>

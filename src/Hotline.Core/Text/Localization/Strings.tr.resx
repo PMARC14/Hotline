@@ -181,8 +181,6 @@ Reddet:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Otomatik algıla</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy aracısı</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Yalnızca sohbet modunda kullanılır.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Sohbetleri Claude Code geçmişinde tut</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline sohbetlerini claude --resume içinde de listele.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Ek bağımsız değişkenler</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Programa olduğu gibi iletilir (boşlukla ayrılmış).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Yalnızca sohbet</value></data>
@@ -440,4 +438,12 @@ Reddet:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot tuşu için Hotline'ı kullan</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows Ayarlar › Kişiselleştirme › Metin girişi › Klavyedeki Copilot tuşunu özelleştir bölümünde Özel'i, ardından Hotline'ı seçin. Copilot tuşlu bir klavye gerekir.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot tuşu ayarlarını aç</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Sohbetleri {0} geçmişinde tut</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Her Hotline sohbeti orada Hotline altında gruplanmış tek bir konuşmadır; Son sohbetler'den veya CLI'nin kendisinden sürdürebilirsiniz. Kapalı: sohbeti Hotline tutar.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>İletileri Hotline'da da tut</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Son sohbetler bu sohbetleri her zaman listeler; bu seçenek iletileri ayrıca Hotline'ın geçmiş klasörüne kaydeder.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>“{0}” sürdürülüyor. Önceki iletiler {1} geçmişinde.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} bu konuşmayı yeniden açamadı. Devam etmek için yeni bir sohbet başlatın.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Bu sohbeti şurada sürdür</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} açılamadı: {1}</value></data>
 </root>

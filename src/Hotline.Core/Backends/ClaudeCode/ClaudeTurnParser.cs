@@ -17,6 +17,8 @@ public sealed class ClaudeTurnParser
 
     public bool Completed { get; private set; }
     public string? Error { get; private set; }
+    /// <summary>The Claude Code session this turn ran in (from the init line), when reported.</summary>
+    public string? SessionId { get; private set; }
 
     public IEnumerable<ChatDelta> Feed(string line)
     {
@@ -27,6 +29,10 @@ public sealed class ClaudeTurnParser
 
         switch (type)
         {
+            case "system" when Str(root, "subtype") == "init":
+                SessionId = Str(root, "session_id");
+                break;
+
             case "stream_event" when root.TryGetProperty("event", out var ev):
                 switch (Str(ev, "type"))
                 {

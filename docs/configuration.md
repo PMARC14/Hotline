@@ -12,7 +12,8 @@ same files). Comments and trailing commas are allowed.
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The bottom bar: which items, in what order |
-| `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`) |
+| `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
+| `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
@@ -68,7 +69,8 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `approveAllTools` | agy, Claude Code | ⚠ Dangerous: auto-approve every tool request (inherit mode only) |
 | `args` | agy, Claude Code | Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
 | `extraArgs` | agy, Claude Code | Added on top, e.g. `--mcp-config C:\mcp\servers.json` |
-| `keepCliSessions` | Claude Code | Also keep Hotline chats in Claude Code's own history (`claude --resume`) |
+| `keepCliSessions` | agy, Claude Code | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
+| `keepInHotline` | agy, Claude Code | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\` |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `images` | APIs | Whether the model reads images (`true`/`false`; default: `false` for `local`, `true` otherwise). With `false`, screenshots go as their text (`chat.ocr`) |
 | `refusalFallback` | Anthropic | If a safety check declines a request, the API re-serves it with a suitable model (default on) |
@@ -77,6 +79,20 @@ API connections retry a rate limit or overload (HTTP 429/503/529) up to twice, w
 (`Retry-After`, Gemini's `retryDelay`) or 2 s then 4 s, and say so in the panel. A wait over a minute, or an exhausted
 quota, fails at once. Settings › AI connections › **Test connection** lists the models with your key and checks the
 chosen one exists.
+
+## Chats with a CLI (agy, Claude Code)
+
+- **One conversation per chat.** Hotline records the CLI's session ID and resumes it (`agy --conversation`,
+  `claude --resume`) when the session has to start again: after a restart, a prompt change, or from Recent chats. If
+  the CLI can't find it any more, Hotline starts a new conversation and replays the messages it has.
+- **New chat** (the toolbar button, or a long press of the Copilot key) always starts a new conversation.
+- **Grouped under Hotline.** In chat-only mode the CLIs run in folders named `Hotline` (in Hotline's private app
+  folder), so `claude --resume` and Claude Code's `/resume` list Hotline chats when run there, and agy puts them in a
+  project named **Hotline** (created once, by agy). A conversation you move to another agy project stays there.
+  `inherit` mode runs in your own folder and gets no project.
+- **Continue this chat in ▸** (Recent chats menu) opens the chat's CLI in your default terminal (Windows Terminal unless
+  you chose another in Windows Settings › System › For developers › Terminal) on the same conversation. Another
+  installed CLI gets a new session that reads the chat from a Markdown file (only when Hotline has the messages).
 
 ## mcp.json (tools for API connections)
 

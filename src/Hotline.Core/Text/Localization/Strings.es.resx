@@ -181,8 +181,6 @@ Denegar:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Detectar automáticamente</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Agente de agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Se usa en el modo Solo chat.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Conservar los chats en el historial de Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Mostrar también los chats de Hotline en claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Argumentos adicionales</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Se pasan al programa tal cual (separados por espacios).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Solo chat</value></data>
@@ -440,4 +438,12 @@ Denegar:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Usar Hotline con la tecla Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>En Configuración de Windows › Personalización › Entrada de texto › Personalizar la tecla Copilot del teclado, elige Personalizado y luego Hotline. Requiere un teclado con tecla Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Abrir la configuración de la tecla Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Conservar los chats en el historial de {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Cada chat de Hotline es una conversación allí, agrupada en Hotline, para que puedas retomarla desde Chats recientes o en la propia CLI. Desactivado: Hotline guarda el chat.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Guardar también los mensajes en Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Chats recientes siempre muestra estos chats; esto además guarda sus mensajes en la carpeta de historial de Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Continuando «{0}». Los mensajes anteriores están en el historial de {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} no pudo reabrir esta conversación. Inicia un chat nuevo para continuar.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Continuar este chat en</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>No se pudo abrir {0}: {1}</value></data>
 </root>

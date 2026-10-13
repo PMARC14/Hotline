@@ -228,10 +228,10 @@ public sealed class ClaudeCodeTests : IDisposable
     }
 
     [Fact]
-    public void Sessions_are_not_saved_by_claude_unless_asked()
+    public void Sessions_are_kept_in_claude_by_default_and_not_when_switched_off()
     {
-        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile(), "x"));
-        Assert.DoesNotContain("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile { KeepCliSessions = true }, "x"));
+        Assert.DoesNotContain("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile(), "x"));
+        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile { KeepCliSessions = false }, "x"));
     }
 
     [Fact]
