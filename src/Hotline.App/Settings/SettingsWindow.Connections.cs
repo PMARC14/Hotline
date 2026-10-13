@@ -119,7 +119,7 @@ public sealed partial class SettingsWindow
             return L.F(Strings.Agy_Summary, Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "allow").Count,
                 Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "deny").Count);
         }
-        var summary = new TextBlock { Text = Summary(), FontSize = 12, Opacity = 0.75, TextWrapping = TextWrapping.Wrap };
+        var summary = new TextBlock { Text = Summary() }; // the card's description (styled by CardWithStatus)
         var addReadOnly = new Button { Content = Strings.Agy_AllowReadOnly };
         ToolTipService.SetToolTip(addReadOnly, Strings.Agy_AllowReadOnly_Tip);
         addReadOnly.Click += async (_, _) =>
@@ -158,10 +158,9 @@ public sealed partial class SettingsWindow
         };
         var open = new Button { Content = Strings.Agy_EditRules };
         open.Click += (_, _) => { if (File.Exists(agySettings)) CliRunner.OpenInEditor(agySettings); else CliRunner.OpenFolder(Path.GetDirectoryName(agySettings)!); };
-        var panel = new StackPanel { Spacing = 6 };
-        panel.Children.Add(summary);
-        panel.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { addReadOnly, open } });
-        host.Children.Add(Card(Strings.Agy_Permissions, null, panel));
+        // Like every other card: title and the rules summary on the left, the actions on the right.
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center, Children = { addReadOnly, open } };
+        host.Children.Add(CardWithStatus(Strings.Agy_Permissions, summary, buttons));
 
         var approveAll = new ToggleSwitch { IsOn = p.ApproveAllTools, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.Tools == ToolMode.Inherit };
         var reverting = false;
