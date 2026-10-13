@@ -163,10 +163,10 @@ Reddet:
   <data name="Agy_EditRules" xml:space="preserve"><value>agy kurallarını düzenle</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy izinleri</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Her şey onaylansın mı? (tehlikeli)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy, karar verdiği HERHANGİ bir kabuk komutunu çalıştırır ve HERHANGİ bir dosyayı sormadan düzenler veya siler. Yanlış bir yanıt ya da kötü amaçlı bir web sayfası veya dosya gerçek zarara yol açabilir. Bunu yalnızca kaybetmeyi göze alabileceğiniz bir çalışma klasörüyle kullanın.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0}, karar verdiği HERHANGİ bir kabuk komutunu çalıştırır ve HERHANGİ bir dosyayı sormadan düzenler veya siler. Yanlış bir yanıt ya da kötü amaçlı bir web sayfası veya dosya gerçek zarara yol açabilir. Bunu yalnızca kaybetmeyi göze alabileceğiniz bir çalışma klasörüyle kullanın.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Anladım, aç</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Her şeyi onayla (tehlikeli)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>agy'nin tüm izin denetimlerini atlar (--dangerously-skip-permissions). Yalnızca "programın kendi araçlarını kullan" modunda.</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0}'nin tüm izin denetimlerini atlar. Yalnızca "programın kendi araçlarını kullan" modunda.</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Ad</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Uç nokta</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API'nin temel URL'si.</value></data>
@@ -457,4 +457,12 @@ Reddet:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} bu konuşmayı yeniden açamadı. Devam etmek için yeni bir sohbet başlatın.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Bu sohbeti şurada sürdür</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} açılamadı: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Başlatma seçenekleri (gelişmiş)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Hotline'ın bu mod için eklediği seçeneklerin yerine geçer (boşlukla ayrılmış). Hotline'ın programla konuşmak için gereken seçenekleri her zaman eklenir; tehlikeli olanlar yalnızca “Her şeyi onayla”dan gelir. Boş = Hotline varsayılanları.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline varsayılanları</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>En uzun yanıt</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Bir yanıtın kullanabileceği en fazla token. Çok düşükse uzun bir yanıt erken biter. Boş = modelin varsayılanı.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Sıcaklık</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Yanıtların ne kadar çeşitli olduğu: 0 = odaklı ve tekrarlanabilir, daha yüksek = daha çeşitli (en fazla 2). Boş = modelin varsayılanı.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Modelin varsayılanı</value></data>
 </root>

@@ -163,10 +163,10 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>编辑 agy 规则</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy 权限</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>要批准所有操作吗?(危险)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy 将不经询问运行它决定的任何 shell 命令,并编辑或删除任何文件。错误的回答或恶意网页、文件都可能造成实际损害。仅在可以承受丢失的工作文件夹中使用此功能。</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} 将不经询问运行它决定的任何 shell 命令,并编辑或删除任何文件。错误的回答或恶意网页、文件都可能造成实际损害。仅在可以承受丢失的工作文件夹中使用此功能。</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>我了解,打开</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ 批准所有操作(危险)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>跳过 agy 的所有权限检查(--dangerously-skip-permissions)。仅限“使用程序自己的工具”模式。</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>跳过 {0} 的所有权限检查。仅限“使用程序自己的工具”模式。</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>名称</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>终结点</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API 的基础 URL。</value></data>
@@ -457,4 +457,12 @@
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} 无法重新打开此对话。请开始新的聊天以继续。</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置继续此聊天</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>无法打开 {0}:{1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>启动参数(高级)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>替换 Hotline 为此模式添加的参数(以空格分隔)。Hotline 与程序通信所需的参数始终会添加,危险参数只能通过“全部批准”添加。留空 = Hotline 的默认值。</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 的默认值</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>最大回答长度</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>一次回答最多可用的令牌数。设得太低,长回答会提前结束。留空 = 模型默认值。</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>温度</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答的多样性:0 = 专注且可重复,越高越多样(最高 2)。留空 = 模型默认值。</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>模型默认值</value></data>
 </root>

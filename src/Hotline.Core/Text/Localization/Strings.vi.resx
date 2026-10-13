@@ -163,10 +163,10 @@ Từ chối:
   <data name="Agy_EditRules" xml:space="preserve"><value>Sửa quy tắc agy</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>Quyền của agy</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Phê duyệt mọi thứ? (nguy hiểm)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy sẽ chạy BẤT KỲ lệnh shell nào và sửa hoặc xóa BẤT KỲ tệp nào nó quyết định, mà không hỏi. Một câu trả lời sai hoặc một trang web hay tệp độc hại có thể gây thiệt hại thật. Chỉ dùng tùy chọn này với thư mục làm việc mà bạn chấp nhận mất.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} sẽ chạy BẤT KỲ lệnh shell nào và sửa hoặc xóa BẤT KỲ tệp nào nó quyết định, mà không hỏi. Một câu trả lời sai hoặc một trang web hay tệp độc hại có thể gây thiệt hại thật. Chỉ dùng tùy chọn này với thư mục làm việc mà bạn chấp nhận mất.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Tôi hiểu, bật lên</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Phê duyệt mọi thứ (nguy hiểm)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Bỏ qua mọi bước kiểm tra quyền của agy (--dangerously-skip-permissions). Chỉ trong chế độ "dùng công cụ riêng của chương trình".</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Bỏ qua mọi bước kiểm tra quyền của {0}. Chỉ trong chế độ "dùng công cụ riêng của chương trình".</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Tên</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Điểm cuối</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>URL cơ sở của API.</value></data>
@@ -457,4 +457,12 @@ Từ chối:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} không thể mở lại cuộc hội thoại này. Hãy bắt đầu cuộc trò chuyện mới để tiếp tục.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Tiếp tục cuộc trò chuyện này trong</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Không thể mở {0}: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Tùy chọn khởi chạy (nâng cao)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Thay thế các tùy chọn Hotline thêm cho chế độ này (cách nhau bằng dấu cách). Các tùy chọn Hotline cần để giao tiếp với chương trình luôn được thêm, còn tùy chọn nguy hiểm chỉ đến từ “Phê duyệt mọi thứ”. Để trống = mặc định của Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Mặc định của Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Độ dài câu trả lời tối đa</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Số token tối đa cho một câu trả lời. Nếu quá thấp, câu trả lời dài sẽ dừng sớm. Để trống = mặc định của mô hình.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Nhiệt độ</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Mức đa dạng của câu trả lời: 0 = tập trung và lặp lại được, cao hơn = đa dạng hơn (tối đa 2). Để trống = mặc định của mô hình.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Mặc định của mô hình</value></data>
 </root>

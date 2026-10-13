@@ -163,10 +163,10 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>Редагувати правила agy</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>Дозволи agy</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Схвалювати все? (небезпечно)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy виконуватиме БУДЬ-ЯКУ команду оболонки й змінюватиме чи видалятиме БУДЬ-ЯКИЙ файл на власний розсуд, не питаючи. Хибна відповідь або шкідлива вебсторінка чи файл можуть завдати реальної шкоди. Використовуйте це лише з робочою папкою, втрату якої можете собі дозволити.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} виконуватиме БУДЬ-ЯКУ команду оболонки й змінюватиме чи видалятиме БУДЬ-ЯКИЙ файл на власний розсуд, не питаючи. Хибна відповідь або шкідлива вебсторінка чи файл можуть завдати реальної шкоди. Використовуйте це лише з робочою папкою, втрату якої можете собі дозволити.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Зрозуміло, увімкнути</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Схвалювати все (небезпечно)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Пропускає всі перевірки дозволів agy (--dangerously-skip-permissions). Лише в режимі «власні інструменти програми».</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Пропускає всі перевірки дозволів {0}. Лише в режимі «власні інструменти програми».</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Назва</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Кінцева точка</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Базова URL-адреса API.</value></data>
@@ -457,4 +457,12 @@
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} не вдалося знову відкрити цю розмову. Почніть новий чат, щоб продовжити.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Продовжити цей чат у</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Не вдалося відкрити {0}: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Параметри запуску (додатково)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Замінює параметри, які Hotline додає для цього режиму (через пробіл). Параметри, потрібні Hotline для зв’язку з програмою, додаються завжди, а небезпечні — лише через «Схвалювати все». Порожньо = типові параметри Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Типові параметри Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Максимальна довжина відповіді</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Найбільша кількість токенів на одну відповідь. Якщо значення замале, довга відповідь обірветься раніше. Порожньо = типове значення моделі.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Температура</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Наскільки різноманітні відповіді: 0 = зосереджені й повторювані, вище = різноманітніші (до 2). Порожньо = типове значення моделі.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Типове значення моделі</value></data>
 </root>

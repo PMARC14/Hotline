@@ -60,19 +60,21 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `type` | all | `antigravity`, `claudeCode`, `codex`, `gemini`, `anthropic`, `openAiCompatible`, `local` |
 | `name` | all | Shown in the Provider dropdown |
 | `model` | all | Model id (empty = the connection's default; Anthropic defaults to `claude-opus-5-5`) |
-| `effort` | all but `local` | Codex: `low` … `xhigh` (`model_reasoning_effort`). agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it). Empty = the model's default |
+| `effort` | all | Codex: `low` … `xhigh` (`model_reasoning_effort`). agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible and `local`: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it; for `local` also as `chat_template_kwargs.reasoning_effort`, which llama.cpp's `llama-server --jinja` reads for gpt-oss-style models). Empty = the model's default |
 | `prompt` | all | System prompt name (`prompts\<name>.md`); empty = `chat.defaultPrompt` |
 | `endpoint` | APIs | Base URL (defaults per type, e.g. `http://127.0.0.1:8080/v1` for `local`) |
 | `cliPath` | agy, Claude Code, Codex | Program path (empty = auto-detect) |
 | `tools` | all | `chatOnly` (default) or `inherit`: CLIs use their own tools and permission rules in `workingDirectory`; API connections use Hotline's MCP tools (`mcp.json`) |
 | `workingDirectory` | agy, Claude Code, Codex | Folder for `inherit` mode (empty = your user folder) |
-| `approveAllTools` | agy, Claude Code, Codex | ⚠ Dangerous: auto-approve every tool request (inherit mode only) |
-| `args` | agy, Claude Code, Codex | Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
+| `approveAllTools` | agy, Claude Code, Codex | ⚠ Dangerous: auto-approve every tool request (inherit mode only; agy/Claude Code `--dangerously-skip-permissions`, Codex `--dangerously-bypass-approvals-and-sandbox`). Settings › AI connections asks before turning it on |
+| `args` | agy, Claude Code, Codex | Settings: *Launch flags (advanced)*. Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
 | `extraArgs` | agy, Claude Code, Codex | Added on top, e.g. Claude Code `--mcp-config C:\mcp\servers.json`, Codex `--search` or `-c model_verbosity="low"` (Codex: sandbox, approval and folder flags are dropped) |
 | `keepCliSessions` | agy, Claude Code, Codex | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
 | `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\` |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `images` | APIs | Whether the model reads images (`true`/`false`; default: `false` for `local`, `true` otherwise). With `false`, screenshots go as their text (`chat.ocr`) |
+| `maxTokens` | APIs | Most tokens one answer may use (empty = the model's default; Claude API: 64000). Sent as `max_completion_tokens` to api.openai.com and Azure OpenAI, `max_tokens` to other OpenAI-style servers, `maxOutputTokens` to Gemini |
+| `temperature` | Gemini, OpenAI-compatible, `local` | 0–2 (empty = the model's default; Gemini 3 works best at its default 1.0). Not sent to OpenAI-style APIs when an `effort` is set (their reasoning models only accept the default); `local` always gets it. The Claude API has none (it rejects one while thinking) |
 | `refusalFallback` | Anthropic | If a safety check declines a request, the API re-serves it with a suitable model (default on) |
 
 API connections retry a rate limit or overload (HTTP 429/503/529) up to twice, waiting what the server asks

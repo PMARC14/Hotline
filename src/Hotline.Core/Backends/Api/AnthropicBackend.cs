@@ -195,7 +195,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
         var p = new MessageCreateParams
         {
             Model = model,
-            MaxTokens = 64000,
+            MaxTokens = profile.MaxTokens ?? 64000,
             Messages = messages.ToList(),
         };
         if (offered.Count > 0)

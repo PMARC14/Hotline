@@ -163,10 +163,10 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>agy 규칙 편집</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy 권한</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>모두 승인할까요? (위험)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy가 묻지 않고 원하는 모든 셸 명령을 실행하고 모든 파일을 편집하거나 삭제합니다. 잘못된 답변이나 악성 웹 페이지·파일 때문에 실제 피해가 생길 수 있습니다. 잃어도 괜찮은 작업 폴더에서만 사용하세요.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0}이(가) 묻지 않고 원하는 모든 셸 명령을 실행하고 모든 파일을 편집하거나 삭제합니다. 잘못된 답변이나 악성 웹 페이지·파일 때문에 실제 피해가 생길 수 있습니다. 잃어도 괜찮은 작업 폴더에서만 사용하세요.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>이해했습니다, 켜기</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ 모두 승인(위험)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>agy의 모든 권한 검사를 건너뜁니다(--dangerously-skip-permissions). "프로그램 자체 도구 사용" 모드에서만 적용됩니다.</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0}의 모든 권한 검사를 건너뜁니다. "프로그램 자체 도구 사용" 모드에서만 적용됩니다.</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>이름</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>엔드포인트</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API의 기본 URL.</value></data>
@@ -457,4 +457,12 @@
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0}이(가) 이 대화를 다시 열 수 없습니다. 계속하려면 새 채팅을 시작하세요.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>이 채팅 이어서 하기</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0}을(를) 열 수 없습니다: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>실행 옵션(고급)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>이 모드에서 Hotline이 추가하는 옵션을 대체합니다(공백으로 구분). Hotline이 프로그램과 통신하는 데 필요한 옵션은 항상 추가되며, 위험한 옵션은 “모두 승인”에서만 추가됩니다. 비워 두면 Hotline 기본값입니다.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 기본값</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>최대 답변 길이</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>답변 하나에 쓸 수 있는 최대 토큰 수입니다. 너무 낮으면 긴 답변이 일찍 끊깁니다. 비워 두면 모델 기본값입니다.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>온도</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>답변이 얼마나 다양한지: 0 = 집중적이고 반복 가능, 높을수록 다양(최대 2). 비워 두면 모델 기본값입니다.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>모델 기본값</value></data>
 </root>

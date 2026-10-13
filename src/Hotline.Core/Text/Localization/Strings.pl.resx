@@ -163,10 +163,10 @@ Zabroń:
   <data name="Agy_EditRules" xml:space="preserve"><value>Edytuj reguły agy</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>Uprawnienia agy</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Zatwierdzać wszystko? (niebezpieczne)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy uruchomi DOWOLNE polecenie powłoki oraz zmieni lub usunie DOWOLNY plik, jaki zechce, bez pytania. Błędna odpowiedź albo złośliwa strona internetowa lub plik mogą wyrządzić prawdziwe szkody. Używaj tego tylko z folderem roboczym, którego utrata nie będzie problemem.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} uruchomi DOWOLNE polecenie powłoki oraz zmieni lub usunie DOWOLNY plik, jaki zechce, bez pytania. Błędna odpowiedź albo złośliwa strona internetowa lub plik mogą wyrządzić prawdziwe szkody. Używaj tego tylko z folderem roboczym, którego utrata nie będzie problemem.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Rozumiem, włącz</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Zatwierdzaj wszystko (niebezpieczne)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Pomija wszystkie kontrole uprawnień agy (--dangerously-skip-permissions). Tylko w trybie „używaj narzędzi programu”.</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Pomija wszystkie kontrole uprawnień {0}. Tylko w trybie „używaj narzędzi programu”.</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Nazwa</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Punkt końcowy</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Podstawowy adres URL interfejsu API.</value></data>
@@ -457,4 +457,12 @@ Zabroń:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} nie może ponownie otworzyć tej rozmowy. Rozpocznij nowy czat, aby kontynuować.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Kontynuuj ten czat w</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Nie można otworzyć {0}: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Opcje uruchamiania (zaawansowane)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Zastępuje opcje, które Hotline dodaje w tym trybie (oddzielone spacjami). Opcje potrzebne Hotline do komunikacji z programem są dodawane zawsze, a niebezpieczne tylko przez „Zatwierdzaj wszystko”. Puste = domyślne opcje Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Domyślne opcje Hotline</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Maksymalna długość odpowiedzi</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Maksymalna liczba tokenów na odpowiedź. Przy zbyt niskiej wartości długa odpowiedź skończy się wcześniej. Puste = domyślne ustawienie modelu.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Temperatura</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Jak zróżnicowane są odpowiedzi: 0 = skupione i powtarzalne, wyżej = bardziej różnorodne (do 2). Puste = domyślne ustawienie modelu.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Domyślne ustawienie modelu</value></data>
 </root>
