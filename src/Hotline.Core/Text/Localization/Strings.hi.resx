@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>अपने-आप पहचानें</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy एजेंट</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>केवल-चैट मोड में उपयोग होता है।</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>चैट को Claude Code इतिहास में रखें</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline चैट को claude --resume में भी दिखाएँ।</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>अतिरिक्त आर्ग्युमेंट</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>प्रोग्राम को जैसे के तैसे भेजे जाते हैं (स्पेस से अलग)।</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>केवल चैट</value></data>
@@ -430,6 +428,17 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy की settings.json में "permissions.{0}" एक सूची नहीं है; इसे नहीं बदला जा रहा।</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline क्षेत्र कैप्चर</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) इंस्टॉल नहीं है। इसे antigravity.google/cli से इंस्टॉल करें, फिर से प्रयास करें।</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>आपका इंस्टॉल किया गया codex और उसका साइन-इन (आपका ChatGPT प्लान या OpenAI API कुंजी)।</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>यह कनेक्शन मॉडल की सूची नहीं देता: डिफ़ॉल्ट रखें या मॉडल का नाम टाइप करें।</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} का उपयोग हो रहा है (इस कनेक्शन में जाँचने के लिए मॉडल सूची नहीं है)।</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex इंस्टॉल नहीं है। इसे इंस्टॉल करें (npm install -g @openai/codex), साइन इन करने के लिए एक बार `codex login` चलाएँ, फिर से प्रयास करें।</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex शुरू नहीं हो सका ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex साइन इन नहीं है। टर्मिनल में `codex login` चलाएँ, फिर से प्रयास करें।</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>अभी के लिए Codex उपयोग सीमा पूरी हो गई। {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI अभी ओवरलोड है; थोड़ी देर में फिर से प्रयास करें।</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex यह उत्तर पूरा नहीं कर सका।</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex फिर से कनेक्ट हो रहा है…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>चुनें कि Hotline कैसे कनेक्ट हो</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>वह AI चुनें जिसे Hotline उपयोग करे। आपके चुनने तक कुछ भी भेजा या चलाया नहीं जाता।</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>इस PC पर Claude Code या Antigravity इंस्टॉल नहीं है। इनमें से एक इंस्टॉल करके साइन इन करें, या API कुंजी का उपयोग करें।</value></data>
@@ -440,4 +449,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot कुंजी के लिए Hotline का उपयोग करें</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows सेटिंग्स › वैयक्तिकरण › टेक्स्ट इनपुट › कीबोर्ड पर Copilot कुंजी कस्टमाइज़ करें में कस्टम चुनें, फिर Hotline चुनें। Copilot कुंजी वाला कीबोर्ड चाहिए।</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot कुंजी सेटिंग्स खोलें</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>चैट को {0} के इतिहास में रखें</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>हर Hotline चैट वहाँ एक बातचीत होती है, Hotline के तहत समूहित, ताकि आप उसे हाल की चैट से या CLI में ही फिर से शुरू कर सकें। बंद: चैट Hotline रखता है।</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>संदेश Hotline में भी रखें</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>हाल की चैट इन चैट को हमेशा दिखाती है; यह उनके संदेश Hotline के इतिहास फ़ोल्डर में भी सहेजता है।</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>“{0}” जारी है। पिछले संदेश {1} के इतिहास में हैं।</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} इस बातचीत को फिर से नहीं खोल सका। जारी रखने के लिए नई चैट शुरू करें।</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>यह चैट यहाँ जारी रखें</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} नहीं खुल सका: {1}</value></data>
 </root>

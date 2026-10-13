@@ -1,6 +1,6 @@
 # Privacy policy
 
-*Last updated: 8 October 2026*
+*Last updated: 11 October 2026*
 
 Hotline is a free, open-source app for Windows that opens an AI chat panel from the Copilot key. This policy explains
 what Hotline does with your information. The source code is public, so you can check every statement here.
@@ -30,6 +30,7 @@ The AI connection is something you set up. It can be:
 | Connection | Who receives your data | Whose terms apply |
 |---|---|---|
 | Claude Code (your Claude sign-in) | Anthropic | Anthropic's |
+| OpenAI Codex CLI (your ChatGPT sign-in or OpenAI key) | OpenAI | OpenAI's |
 | Antigravity CLI / agy (your Google sign-in) | Google | Google's |
 | Anthropic API, Gemini API, OpenAI-compatible APIs (your key) | That provider (Anthropic, Google, OpenAI, OpenRouter, …) | That provider's |
 | A local model server | Only a program running on your own PC | — |

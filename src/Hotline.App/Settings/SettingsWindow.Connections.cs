@@ -25,8 +25,9 @@ public sealed partial class SettingsWindow
     private void BuildConnectionsPage()
     {
         var chat = _settings.Current.Chat;
-        _selectedConnection ??= chat.DefaultBackend;
-        if (chat.Backends.All(b => b.Id != _selectedConnection)) _selectedConnection = chat.DefaultBackend;
+        // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
+        if (chat.Backends.All(b => b.Id != _selectedConnection))
+            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends[0].Id;
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
         var addMenu = new MenuFlyout();
@@ -231,11 +232,24 @@ public sealed partial class SettingsWindow
             host.Children.Add(Card(Strings.Conn_ProgramPath, Strings.Conn_ProgramPath_Desc, Text(p.CliPath, Strings.Conn_AutoDetect, v => p.CliPath = v)));
         if (info.Has(ConnectionField.Agent))
             host.Children.Add(Card(Strings.Conn_AgyAgent, Strings.Conn_AgyAgent_Desc, Text(p.Agent, "hotline", v => p.Agent = v)));
-        if (p.Type == BackendType.ClaudeCode)
+        if (ConnectionTypes.IsCli(p.Type))
         {
+            // Chats live in the CLI's own history (resumable there and from Recent chats); Hotline can keep them too.
+            var cliName = ConnectionTypes.Of(p.Type).DisplayName;
             var keep = new ToggleSwitch { IsOn = p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0 };
-            keep.Toggled += async (_, _) => await Save(x => x.KeepCliSessions = keep.IsOn);
-            host.Children.Add(Card(Strings.Conn_KeepClaude, Strings.Conn_KeepClaude_Desc, keep));
+            var alsoHotline = new ToggleSwitch { IsOn = p.KeepInHotline || !p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.KeepCliSessions };
+            var updating = false;
+            keep.Toggled += async (_, _) =>
+            {
+                updating = true;
+                alsoHotline.IsEnabled = keep.IsOn;
+                alsoHotline.IsOn = !keep.IsOn || p.KeepInHotline; // the CLI not keeping it means Hotline does
+                updating = false;
+                await Save(x => x.KeepCliSessions = keep.IsOn);
+            };
+            alsoHotline.Toggled += async (_, _) => { if (!updating && keep.IsOn) await Save(x => x.KeepInHotline = alsoHotline.IsOn); };
+            host.Children.Add(Card(L.F(Strings.Conn_KeepCli, cliName), Strings.Conn_KeepCli_Desc, keep));
+            host.Children.Add(Card(Strings.Conn_KeepInHotline, Strings.Conn_KeepInHotline_Desc, alsoHotline));
         }
         if (info.Has(ConnectionField.ExtraArgs))
             host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
@@ -329,7 +343,7 @@ public sealed partial class SettingsWindow
                 model.SelectedItem = current;
                 filling = false;
                 status.Severity = InfoBarSeverity.Success;
-                status.Message = ModelCatalog.Describe(list, p.Model);
+                status.Message = ModelCatalog.Describe(list, p.Model, ConnectionTypes.Of(p.Type).ListsModels);
             }
             catch (ModelListException ex) { status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
             catch (Exception ex) { _log.Error("model list failed", ex); status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }

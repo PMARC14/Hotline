@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>自动检测</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy 代理</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>在仅聊天模式中使用。</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>在 Claude Code 历史中保留聊天</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>也在 claude --resume 中列出 Hotline 聊天。</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>额外参数</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>按原样传给程序(以空格分隔)。</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>仅聊天</value></data>
@@ -430,6 +428,17 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy 的 settings.json 中的“permissions.{0}”不是列表;不做更改。</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline 区域截图</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>未安装 Antigravity CLI(agy)。请从 antigravity.google/cli 安装,然后重试。</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>你已安装的 codex 及其登录(你的 ChatGPT 套餐或 OpenAI API 密钥)。</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>此连接不提供模型列表:保留“默认”或输入模型名称。</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>正在使用 {0}(此连接没有可供核对的模型列表)。</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>未安装 Codex。请安装(npm install -g @openai/codex),运行一次 `codex login` 登录,然后重试。</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>无法启动 Codex({0}):{1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex 未登录。请在终端中运行 `codex login`,然后重试。</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>暂时已达到 Codex 使用上限。{0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI 目前负载过高,请稍后重试。</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex 无法完成此回答。</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex 正在重新连接…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>选择 Hotline 的连接方式</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>选择 Hotline 要使用的 AI。在你选择之前,不会发送或运行任何内容。</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>此电脑未安装 Claude Code 或 Antigravity。请安装其中一个并登录,或使用 API 密钥。</value></data>
@@ -440,4 +449,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>用 Copilot 键打开 Hotline</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>在 Windows 设置 › 个性化 › 文本输入 › 自定义键盘上的 Copilot 键中选择“自定义”,然后选择 Hotline。需要带 Copilot 键的键盘。</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>打开 Copilot 键设置</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>在 {0} 的历史中保留聊天</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>每个 Hotline 聊天在那里都是一个对话,归在 Hotline 之下,可以从“最近的聊天”或在 CLI 中继续。关闭:由 Hotline 保留聊天。</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>同时在 Hotline 中保留消息</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>“最近的聊天”始终列出这些聊天;此选项还会把消息保存到 Hotline 的历史文件夹中。</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>继续“{0}”。之前的消息在 {1} 的历史中。</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} 无法重新打开此对话。请开始新的聊天以继续。</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置继续此聊天</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>无法打开 {0}:{1}</value></data>
 </root>

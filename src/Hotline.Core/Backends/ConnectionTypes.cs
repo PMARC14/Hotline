@@ -11,7 +11,8 @@ public enum ConnectionField { None = 0, Endpoint = 1, ApiKey = 2, CliPath = 4, A
 /// <param name="DescriptionKey">Resource key of the one-line description (shown as <see cref="Description"/>).</param>
 public sealed record ConnectionTypeInfo(
     BackendType Type, string DisplayNameKey, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
-    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true)
+    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true,
+    bool ListsModels = true)
 {
     public string DisplayName => L.Get(DisplayNameKey);
     public string Description => L.Get(DescriptionKey);
@@ -30,6 +31,8 @@ public static class ConnectionTypes
             ["low", "medium", "high"], false, nameof(Strings.Type_Agy_Desc), EffortInModelId: true),
         new(BackendType.ClaudeCode, nameof(Strings.Type_ClaudeCode), "Claude (Claude Code)", Cli, null,
             ClaudeCode.ClaudeCodeProtocol.EffortLevels, false, nameof(Strings.Type_ClaudeCode_Desc)),
+        new(BackendType.Codex, nameof(Strings.Type_Codex), "ChatGPT (Codex)", Cli, null,
+            Codex.CodexProtocol.EffortLevels, false, nameof(Strings.Type_Codex_Desc), ListsModels: false),
         new(BackendType.Gemini, nameof(Strings.Type_Gemini), "Gemini API", Api, "https://generativelanguage.googleapis.com/v1beta",
             ["low", "medium", "high"], false, nameof(Strings.Type_Gemini_Desc)),
         new(BackendType.Anthropic, nameof(Strings.Type_Anthropic), "Claude API", Api, "https://api.anthropic.com/v1",
@@ -41,6 +44,15 @@ public static class ConnectionTypes
     ];
 
     public static ConnectionTypeInfo Of(BackendType type) => All.First(t => t.Type == type);
+
+    /// <summary>A connection that runs the user's installed CLI (Antigravity, Claude Code, Codex).</summary>
+    public static bool IsCli(BackendType type) => All.FirstOrDefault(t => t.Type == type)?.Has(ConnectionField.CliPath) == true;
+
+    /// <summary>
+    /// Whether Hotline keeps a chat's messages in its own history: always for API and local connections; for a CLI only
+    /// when the CLI doesn't keep it (keepCliSessions off) or the user also wants it in Hotline (keepInHotline).
+    /// </summary>
+    public static bool HotlineKeepsTranscript(BackendProfile p) => !IsCli(p.Type) || !p.KeepCliSessions || p.KeepInHotline;
 
     /// <summary>Whether this connection's model reads images: its "images" setting, else the type's default.</summary>
     public static bool TakesImages(BackendProfile p) => p.Images ?? Of(p.Type).ImagesByDefault;

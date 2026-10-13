@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 10;
+    public const int CurrentSchemaVersion = 11;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -74,7 +74,7 @@ public sealed class WindowSettings
     public double LuminosityOpacity { get; set; } = 0.35;
 }
 
-public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local }
+public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local, Codex }
 
 /// <summary>ChatOnly: answers only (attachments readable). Inherit: the CLI's own tools and permission rules.</summary>
 public enum ToolMode { ChatOnly, Inherit }
@@ -101,8 +101,13 @@ public sealed class BackendProfile
     /// always added; dangerous flags only come from ApproveAllTools. Null = Hotline's defaults.
     /// </summary>
     public List<string>? Args { get; set; }
-    /// <summary>Let the CLI keep its own copy of these chats (agy always does; Claude Code only when true).</summary>
-    public bool KeepCliSessions { get; set; }
+    /// <summary>
+    /// CLI connections: chats live in the CLI's own history (one conversation per Hotline chat, resumable there and from
+    /// Recent chats). Off: Hotline keeps the chat and replays it (Claude Code then keeps nothing; agy always records).
+    /// </summary>
+    public bool KeepCliSessions { get; set; } = true;
+    /// <summary>CLI connections with keepCliSessions: also keep the messages in Hotline's own history (default: only a record).</summary>
+    public bool KeepInHotline { get; set; }
     /// <summary>Anthropic API: if a safety check declines a request, let the API re-serve it with a suitable model.</summary>
     public bool RefusalFallback { get; set; } = true;
     /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>

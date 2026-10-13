@@ -181,8 +181,6 @@ Weigeren:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Automatisch detecteren</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy-agent</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Gebruikt in de modus Alleen chatten.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Chats bewaren in de geschiedenis van Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline-chats ook tonen in claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Extra argumenten</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Ongewijzigd doorgegeven aan het programma (gescheiden door spaties).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Alleen chatten</value></data>
@@ -430,6 +428,17 @@ Weigeren:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in de settings.json van agy is geen lijst; er wordt niets gewijzigd.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline-gebied vastleggen</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>De Antigravity CLI (agy) is niet geïnstalleerd. Installeer hem via antigravity.google/cli en probeer het opnieuw.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Je geïnstalleerde codex en je aanmelding (je ChatGPT-abonnement of OpenAI-API-sleutel).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Deze verbinding toont geen modellen: houd Standaard of typ een modelnaam.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} wordt gebruikt (deze verbinding toont geen modellen om het mee te controleren).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex is niet geïnstalleerd. Installeer het (npm install -g @openai/codex), voer `codex login` eenmaal uit om je aan te melden en probeer het opnieuw.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex kon niet worden gestart ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex is niet aangemeld. Voer `codex login` uit in een terminal en probeer het opnieuw.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Gebruikslimiet van Codex voorlopig bereikt. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI is op dit moment overbelast; probeer het zo opnieuw.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex kon dit antwoord niet afmaken.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex maakt opnieuw verbinding…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Kies hoe Hotline verbinding maakt</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Kies de AI die Hotline moet gebruiken. Tot die tijd wordt er niets verstuurd of uitgevoerd.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code of Antigravity is niet geïnstalleerd op deze pc. Installeer er een en meld je aan, of gebruik een API-sleutel.</value></data>
@@ -440,4 +449,12 @@ Weigeren:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Hotline gebruiken voor de Copilot-toets</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Kies in Windows-instellingen › Persoonlijke instellingen › Tekstinvoer › Copilot-toets op het toetsenbord aanpassen de optie Aangepast en daarna Hotline. Vereist een toetsenbord met een Copilot-toets.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Instellingen voor de Copilot-toets openen</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Chats bewaren in de geschiedenis van {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Elke Hotline-chat is daar één gesprek, gegroepeerd onder Hotline, zodat je het kunt hervatten via Recente chats of in de CLI zelf. Uit: Hotline bewaart de chat.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Berichten ook in Hotline bewaren</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Recente chats toont deze chats altijd; dit bewaart ook hun berichten in de geschiedenismap van Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Vervolg van ‘{0}’. De eerdere berichten staan in de geschiedenis van {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} kon dit gesprek niet opnieuw openen. Begin een nieuwe chat om verder te gaan.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Deze chat voortzetten in</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} kon niet worden geopend: {1}</value></data>
 </root>

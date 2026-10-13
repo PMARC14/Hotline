@@ -15,6 +15,8 @@ public sealed class AgyTurnParser
 
     public bool Completed { get; private set; }
     public string? Error { get; private set; }
+    /// <summary>The agy conversation this turn ran in (from the init event), when reported.</summary>
+    public string? SessionId { get; private set; }
 
     public IEnumerable<ChatDelta> Feed(string line)
     {
@@ -25,6 +27,10 @@ public sealed class AgyTurnParser
 
         switch (ev.GetString())
         {
+            case "init":
+                SessionId = Str(root, "conversation_id");
+                break;
+
             case "step_update" when root.TryGetProperty("step_update", out var su):
                 if (Str(su, "step_type") != "agent_response" || !su.TryGetProperty("text_delta", out var deltaEl)) yield break;
                 var delta = deltaEl.GetString() ?? "";

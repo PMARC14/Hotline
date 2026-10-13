@@ -181,8 +181,6 @@ Tolak:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Deteksi otomatis</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Agen agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Dipakai dalam mode Hanya obrolan.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Simpan obrolan di riwayat Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Tampilkan juga obrolan Hotline di claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Argumen tambahan</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Diteruskan ke program apa adanya (dipisahkan spasi).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Hanya obrolan</value></data>
@@ -430,6 +428,17 @@ Tolak:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" di settings.json milik agy bukan daftar; tidak diubah.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Tangkapan area Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) tidak terpasang. Pasang dari antigravity.google/cli, lalu coba lagi.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>codex yang terpasang dan akun Anda (paket ChatGPT atau kunci API OpenAI Anda).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Koneksi ini tidak menampilkan daftar model: biarkan Default atau ketik nama model.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Menggunakan {0} (koneksi ini tidak punya daftar model untuk memeriksanya).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex tidak terpasang. Pasang (npm install -g @openai/codex), jalankan `codex login` sekali untuk masuk, lalu coba lagi.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex tidak dapat dimulai ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex belum masuk. Jalankan `codex login` di terminal, lalu coba lagi.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Batas penggunaan Codex tercapai untuk saat ini. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI sedang kelebihan beban; coba lagi sebentar lagi.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex tidak dapat menyelesaikan jawaban ini.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex sedang menyambung ulang…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Pilih cara Hotline terhubung</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Pilih AI yang akan digunakan Hotline. Tidak ada yang dikirim atau dijalankan sebelum Anda memilih.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code atau Antigravity belum terpasang di PC ini. Pasang salah satunya dan masuk, atau gunakan kunci API.</value></data>
@@ -440,4 +449,12 @@ Tolak:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Gunakan Hotline untuk tombol Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Di Pengaturan Windows › Personalisasi › Input teks › Sesuaikan tombol Copilot pada keyboard, pilih Kustom, lalu pilih Hotline. Memerlukan keyboard dengan tombol Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Buka pengaturan tombol Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Simpan obrolan di riwayat {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Setiap obrolan Hotline menjadi satu percakapan di sana, dikelompokkan di bawah Hotline, sehingga bisa dilanjutkan dari Obrolan terbaru atau di CLI itu sendiri. Nonaktif: Hotline yang menyimpan obrolan.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Simpan juga pesannya di Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Obrolan terbaru selalu menampilkan obrolan ini; opsi ini juga menyimpan pesannya di folder riwayat Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Melanjutkan “{0}”. Pesan sebelumnya ada di riwayat {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} tidak dapat membuka kembali percakapan ini. Mulai obrolan baru untuk melanjutkan.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Lanjutkan obrolan ini di</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Tidak dapat membuka {0}: {1}</value></data>
 </root>

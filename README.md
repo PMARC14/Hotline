@@ -6,7 +6,7 @@
 **You are stuck with the key might as well use it. Gives you an option to replace the Windows Copilot key with your own fast, native AI popup that talks to the AI *you* choose.**
 
 Hotline uses the AI tools you already have (your
-installed Claude Code or Antigravity CLI and their sign-ins) or any API key you bring, and keeps everything
+installed Claude Code, Codex or Antigravity CLI and their sign-ins) or any API key you bring, and keeps everything
 configurable in plain files.
 
 <p align="center">
@@ -20,7 +20,8 @@ configurable in plain files.
 - **The Copilot key** — short press opens/closes, long press starts a new chat (both configurable), plus an
   optional extra hotkey. Opens on the monitor you're working on, focused and ready to type.
 - **Your choice of AI** — pick *Effort → Model → Provider* in the bar:
-  - **Claude Code** (your Claude plan, no API key) and **Antigravity CLI / agy** (Gemini with your Google sign-in)
+  - **Claude Code** (your Claude plan, no API key), **OpenAI Codex CLI** (your ChatGPT plan) and **Antigravity CLI / agy**
+    (Gemini with your Google sign-in)
   - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, …)
   - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
 - **Native and light** — WinUI 3 with acrylic, no embedded webview2.
@@ -38,7 +39,10 @@ configurable in plain files.
 - **Memory** — `/remember I prefer metric units` (or "remember that…" to an API model, which asks you first) saves a
   note to `memory.md`; every chat sees it, whichever AI you use.
 - **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
-- **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑.
+- **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑. A chat with Claude Code, Codex or
+  Antigravity lives in that tool's own history (grouped under *Hotline*), so it picks up where it left off, even after
+  a restart, and **Continue this chat in ▸** opens it in a terminal window.
+- **Answers in the background** — ask something long, switch away, and a Windows notification says when it's ready.
 - **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits
   are retried for you, and Settings › AI connections › *Test connection* checks a key and model.
 - **Tools, carefully** — API connections can use tools from your **MCP servers** (`mcp.json`, the same format other
@@ -58,6 +62,11 @@ configurable in plain files.
 
 Windows 11 22H2 or later, on x64 or ARM64 (Windows on ARM runs the native ARM64 build).
 
+### From the Microsoft Store
+
+Search for **Hotline AI** in the Microsoft Store (or `winget install -s msstore "Hotline AI"`). Store installs are
+signed by Microsoft and update automatically.
+
 ### From Releases
 
 Download the latest `.msixbundle` from [Releases](https://github.com/PMARC14/Hotline/releases) and double-click it (Windows'
@@ -69,6 +78,9 @@ and open that.
 > `Import-Certificate -FilePath .\Hotline.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople`.
 > Each test build has its own certificate, and test builds don't update automatically. Trusted-signed releases
 > need none of this.
+
+The first time you open it, Hotline asks which AI to use: the ones installed on your PC (Claude Code, Codex,
+Antigravity) or an API key. Nothing runs or is sent until you pick one.
 
 Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
 Hotline**, or use the **Open Copilot key settings** button in Hotline (Settings › General). (Windows only lets packaged
@@ -103,6 +115,7 @@ Then assign the key as above.
 | Connection | You need |
 |---|---|
 | Claude Code | [Claude Code](https://claude.com/claude-code) installed and signed in (run `claude` once) |
+| OpenAI Codex | The [Codex CLI](https://github.com/openai/codex) installed and signed in (`npm install -g @openai/codex`, then `codex login`) |
 | Antigravity (agy) | The [Antigravity CLI](https://antigravity.google/cli) installed and signed in (run `agy` once) |
 | Anthropic / Gemini / OpenAI-compatible | An API key — Settings › AI connections › Add connection, paste the key, pick a model |
 | Local | An OpenAI-style server running (e.g. `llama-server` on `http://127.0.0.1:8080`) |
@@ -116,7 +129,7 @@ All options, the file layout and the agy permission setup: **[docs/configuration
 ## What leaves your PC
 
 Hotline has no server of its own and collects nothing. When you send a message, it goes to **the AI connection you
-picked** (Anthropic, Google, OpenAI-style service, a local server, or your Claude Code / agy sign-in), together with:
+picked** (Anthropic, Google, OpenAI-style service, a local server, or your Claude Code / Codex / agy sign-in), together with:
 
 - **attachments** in the message box — files, screenshots, and the **text you had selected** in the app you came from
   (it appears as a chip; remove it with ✕, or turn it off: Settings › Chat and history › Attach selected text);
@@ -156,9 +169,8 @@ Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
 
-Trusted signing (Store or Azure Trusted Signing) and one-click installs with automatic updates for the first public
-release — see
-[docs/RELEASING.md](docs/RELEASING.md) and [docs/HANDOFF.md](docs/HANDOFF.md).
+Automatic Microsoft Store updates from each release, Windows 11 26H2 follow-ups, continuing a chat in a local web page
+(llama.cpp), and native-speaker reviews of the translations. See [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## Support Hotline
 

@@ -176,6 +176,7 @@ public sealed partial class PopupWindow : Window
         PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;
         _reclaimed = 0;
+        _shows++;
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
@@ -184,6 +185,8 @@ public sealed partial class PopupWindow : Window
     private bool _offscreen;
     private long _shownAtMs;
     private int _reclaimed;
+    private int _shows;
+    private long _consoleReclaimLaunch = long.MinValue;
 
     /// <summary>Self-test only: shows the panel far outside every monitor, without activation or focus, so the
     /// conversation is really drawn (composition) without the user seeing anything.</summary>
@@ -259,8 +262,9 @@ public sealed partial class PopupWindow : Window
     {
         if (e.WindowActivationState != WindowActivationState.Deactivated || !_settings.HideOnBlur || _modal != 0 || Pinned) return;
         // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
-        // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show).
-        if (Environment.TickCount64 - _shownAtMs < 1500 && _reclaimed < 3) // focus can bounce more than once on a cold start
+        // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show; up to
+        // three times on the first show after launch, when focus can bounce more than once).
+        if (Environment.TickCount64 - _shownAtMs < 1500 && _reclaimed < (_shows <= 1 ? 3 : 1))
         {
             _reclaimed++;
             _log.Info("lost focus right after opening; taking it back");
@@ -279,7 +283,7 @@ public sealed partial class PopupWindow : Window
     /// </summary>
     private void ConsiderBlur(bool retried)
     {
-        if (!AppWindow.IsVisible) return;
+        if (!AppWindow.IsVisible || !_settings.HideOnBlur || _modal != 0 || Pinned) return; // may have changed during the retry
         var fg = Native.GetForegroundWindow();
         if (fg == Hwnd) return; // it came back
         if (fg == 0 && !retried)
@@ -292,8 +296,9 @@ public sealed partial class PopupWindow : Window
             timer.Start();
             return;
         }
-        if (fg != 0 && IsOurs(fg))
+        if (fg != 0 && IsOurConsole(fg))
         {
+            _consoleReclaimLaunch = Hotline.Core.Processes.ProcessLaunches.Last; // once per launch: never a tug of war
             _log.Info($"a window from a program Hotline started ({Native.ClassNameOf(fg)}) took focus; keeping the panel");
             if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back");
             return;
@@ -301,14 +306,21 @@ public sealed partial class PopupWindow : Window
         HidePopup();
     }
 
-    private bool IsOurs(nint window)
+    /// <summary>
+    /// Only console/terminal windows count (never a browser a CLI opens to sign in), at most once per program launch:
+    /// a plain console must belong to a process Hotline started (its job); a Windows Terminal window (owned by
+    /// WindowsTerminal.exe, so the job can't tell) must appear within 2 s of a launch.
+    /// </summary>
+    private bool IsOurConsole(nint window)
     {
-        Native.GetWindowThreadProcessId(window, out var pid);
-        if (IsOurProcess?.Invoke(pid) == true) return true;
-        // With Windows Terminal as the default terminal, a console a CLI opens is owned by WindowsTerminal.exe, not the
-        // CLI: count a terminal window that appears right after Hotline started a program.
-        return Native.ClassNameOf(window) is "CASCADIA_HOSTING_WINDOW_CLASS" or "ConsoleWindowClass" or "PseudoConsoleWindow"
-               && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(3));
+        if (Hotline.Core.Processes.ProcessLaunches.Last == _consoleReclaimLaunch) return false;
+        var cls = Native.ClassNameOf(window);
+        if (cls is "ConsoleWindowClass" or "PseudoConsoleWindow")
+        {
+            Native.GetWindowThreadProcessId(window, out var pid);
+            return IsOurProcess?.Invoke(pid) == true || Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
+        }
+        return cls == "CASCADIA_HOSTING_WINDOW_CLASS" && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
     }
 
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)

@@ -10,7 +10,7 @@ namespace Hotline.App.Chat;
 
 /// <summary>
 /// First run (chat.defaultBackend empty): instead of starting a CLI nobody chose, the panel opens on a card listing the
-/// connections that can work on this PC (installed Claude Code / Antigravity) plus API keys, and a link to the Copilot
+/// connections that can work on this PC (installed Claude Code / Antigravity / Codex) plus API keys, and a link to the Copilot
 /// key setting. Nothing is sent and no CLI runs until one is picked. The card comes back on each open (and on a send)
 /// until then; choosing in the toolbar or in Settings works too.
 /// </summary>
@@ -23,15 +23,21 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
 
     public void Initialize()
     {
+        notices.Sticky.Add(Tag);
         popup.Shown += () => { if (!Chosen(settings.Current)) Show(); };
         if (popup.IsShown && !Chosen(settings.Current)) Show(); // already open when this was set up
         settings.Changed += () => popup.DispatcherQueue.TryEnqueue(() => { if (Chosen(settings.Current)) notices.Remove(Tag); });
     }
 
-    /// <summary>Shows (or refreshes) the card.</summary>
-    public void Show()
+    /// <summary>Shows (or refreshes) the card. The installed-CLI lookup (file checks over PATH) runs off the UI thread.</summary>
+    public void Show() => _ = ShowAsync();
+
+    private async Task ShowAsync()
     {
-        var installed = Installed();
+        List<BackendType> installed;
+        try { installed = await Task.Run(Installed); }
+        catch (Exception ex) { log.Error("looking for installed CLIs failed", ex); installed = []; }
+        if (Chosen(settings.Current)) return; // picked meanwhile
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
         foreach (var type in installed)
         {
@@ -72,6 +78,8 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
                 found.Add(BackendType.ClaudeCode);
             if (AgyLocator.Find(null, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), path) is not null)
                 found.Add(BackendType.Antigravity);
+            if (Hotline.Core.Backends.Codex.CodexLocator.Find(null, File.Exists, path, System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64") is not null)
+                found.Add(BackendType.Codex);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException) { }
         return found;
@@ -94,8 +102,8 @@ internal static class CopilotKeySettings
     {
         try
         {
-            if (await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:personalization-textinput-copilot-hardwarekey"))) return;
-            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:personalization-textinput")); // the page above it
+            // Windows builds without this page open Settings on its home page (LaunchUriAsync still reports success).
+            await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:personalization-textinput-copilot-hardwarekey"));
         }
         catch (Exception ex) { log.Error("could not open the Copilot key setting", ex); }
     }

@@ -181,8 +181,6 @@ Deny:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Auto-detect</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy agent</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Used in Chat-only mode.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Keep chats in Claude Code's history</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Also list Hotline chats in claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Extra arguments</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Passed to the program as-is (space separated).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Chat only</value></data>
@@ -430,6 +428,17 @@ Deny:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in agy's settings.json isn't a list; not changing it.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline region capture</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>The Antigravity CLI (agy) isn't installed. Install it from antigravity.google/cli, then try again.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Your installed codex and its sign-in (your ChatGPT plan or OpenAI API key).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>This connection doesn't list models: keep Default or type a model name.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Using {0} (this connection doesn't list models to check it against).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex isn't installed. Install it (npm install -g @openai/codex), run `codex login` once to sign in, then try again.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Couldn't start Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex isn't signed in. Run `codex login` in a terminal, then try again.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Codex usage limit reached for now. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI is overloaded right now; try again in a moment.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex couldn't finish this answer.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex is reconnecting…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Choose how Hotline connects</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Pick the AI Hotline should use. Nothing is sent and nothing runs until you do.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code or Antigravity isn't installed on this PC. Install one and sign in to it, or use an API key.</value></data>
@@ -440,4 +449,12 @@ Deny:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Use Hotline for the Copilot key</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>In Windows Settings › Personalization › Text input › Customize Copilot key on keyboard, choose Custom, then pick Hotline. Needs a keyboard with a Copilot key.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Open Copilot key settings</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Keep chats in {0}'s history</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Each Hotline chat is one conversation there, grouped under Hotline, so you can resume it from Recent chats or in the CLI itself. Off: Hotline keeps the chat instead.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Also keep the messages in Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Recent chats always lists these chats; this also saves their messages in Hotline's history folder.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Continuing “{0}”. The earlier messages are in {1}'s history.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} couldn't reopen this conversation. Start a new chat to continue.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Continue this chat in</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Couldn't open {0}: {1}</value></data>
 </root>

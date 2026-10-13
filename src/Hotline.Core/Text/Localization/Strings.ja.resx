@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>自動検出</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>agy エージェント</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>チャットのみモードで使用します。</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>チャットを Claude Code の履歴にも残す</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Hotline のチャットを claude --resume にも表示します。</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>追加の引数</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>そのままプログラムに渡されます (スペース区切り)。</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>チャットのみ</value></data>
@@ -430,6 +428,17 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy の settings.json の「permissions.{0}」がリストではないため、変更しません。</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Hotline 範囲キャプチャ</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) がインストールされていません。antigravity.google/cli からインストールしてから、もう一度お試しください。</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>インストール済みの codex とサインイン (ChatGPT のプランまたは OpenAI API キー)。</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>この接続はモデル一覧を提供しません。既定のままにするか、モデル名を入力してください。</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} を使用します (この接続には確認用のモデル一覧がありません)。</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex がインストールされていません。インストール (npm install -g @openai/codex) し、`codex login` を一度実行してサインインしてから、もう一度お試しください。</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex を起動できませんでした ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex がサインインしていません。ターミナルで `codex login` を実行してから、もう一度お試しください。</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Codex の使用上限に達しました。{0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI は現在混み合っています。しばらくしてからもう一度お試しください。</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex はこの回答を完了できませんでした。</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex が再接続しています…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Hotline の接続方法を選択</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Hotline で使う AI を選んでください。選ぶまでは何も送信・実行されません。</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>この PC には Claude Code も Antigravity もインストールされていません。どちらかをインストールしてサインインするか、API キーを使ってください。</value></data>
@@ -440,4 +449,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot キーで Hotline を使う</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows の設定 › 個人用設定 › テキスト入力 › キーボードの Copilot キーをカスタマイズする で「カスタム」を選び、Hotline を選択します。Copilot キーのあるキーボードが必要です。</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot キーの設定を開く</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>チャットを {0} の履歴に残す</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Hotline の各チャットは向こうで 1 つの会話になり、Hotline にまとめられます。最近のチャットや CLI 自体から再開できます。オフ: チャットは Hotline が保持します。</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>メッセージを Hotline にも保存する</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>最近のチャットには常にこれらのチャットが表示されます。オンにすると、メッセージも Hotline の履歴フォルダーに保存します。</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>「{0}」の続きです。以前のメッセージは {1} の履歴にあります。</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} はこの会話を再び開けませんでした。続けるには新しいチャットを始めてください。</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>このチャットを続ける場所</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} を開けませんでした: {1}</value></data>
 </root>

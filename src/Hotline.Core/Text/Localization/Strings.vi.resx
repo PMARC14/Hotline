@@ -181,8 +181,6 @@ Từ chối:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Tự động phát hiện</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Tác tử agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Dùng trong chế độ Chỉ trò chuyện.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Giữ cuộc trò chuyện trong lịch sử Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Liệt kê cả các cuộc trò chuyện Hotline trong claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Đối số bổ sung</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Được truyền nguyên văn cho chương trình (cách nhau bằng dấu cách).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Chỉ trò chuyện</value></data>
@@ -430,6 +428,17 @@ Từ chối:
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" trong settings.json của agy không phải danh sách; sẽ không được thay đổi.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Chụp vùng Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Chưa cài đặt Antigravity CLI (agy). Hãy cài từ antigravity.google/cli, rồi thử lại.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>codex đã cài và tài khoản đăng nhập của bạn (gói ChatGPT hoặc khóa API OpenAI của bạn).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Kết nối này không liệt kê mô hình: giữ Mặc định hoặc gõ tên mô hình.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Đang dùng {0} (kết nối này không có danh sách mô hình để đối chiếu).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Chưa cài đặt Codex. Hãy cài (npm install -g @openai/codex), chạy `codex login` một lần để đăng nhập, rồi thử lại.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Không thể khởi động Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex chưa đăng nhập. Hãy chạy `codex login` trong terminal, rồi thử lại.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Tạm thời đã đạt giới hạn sử dụng Codex. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI đang quá tải; hãy thử lại sau giây lát.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex không thể hoàn tất câu trả lời này.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex đang kết nối lại…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Chọn cách Hotline kết nối</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Chọn AI mà Hotline sẽ dùng. Không có gì được gửi hay chạy cho đến khi bạn chọn.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>PC này chưa cài Claude Code hoặc Antigravity. Hãy cài một trong hai và đăng nhập, hoặc dùng khóa API.</value></data>
@@ -440,4 +449,12 @@ Từ chối:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Dùng Hotline cho phím Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Trong Cài đặt Windows › Cá nhân hóa › Nhập văn bản › Tùy chỉnh phím Copilot trên bàn phím, chọn Tùy chỉnh rồi chọn Hotline. Cần bàn phím có phím Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Mở cài đặt phím Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Giữ cuộc trò chuyện trong lịch sử {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Mỗi cuộc trò chuyện Hotline là một cuộc hội thoại ở đó, nhóm trong Hotline, để bạn tiếp tục từ Trò chuyện gần đây hoặc ngay trong CLI. Tắt: Hotline giữ cuộc trò chuyện.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Giữ cả tin nhắn trong Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Trò chuyện gần đây luôn liệt kê các cuộc trò chuyện này; tùy chọn này lưu thêm tin nhắn vào thư mục lịch sử của Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Đang tiếp tục “{0}”. Các tin nhắn trước nằm trong lịch sử của {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} không thể mở lại cuộc hội thoại này. Hãy bắt đầu cuộc trò chuyện mới để tiếp tục.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Tiếp tục cuộc trò chuyện này trong</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Không thể mở {0}: {1}</value></data>
 </root>

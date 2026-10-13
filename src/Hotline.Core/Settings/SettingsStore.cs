@@ -272,6 +272,10 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v11: CLI chats live in the CLI's own history by default (resumable); Hotline keeps only a record unless
+        // keepInHotline. Existing CLI connections switch over, keeping what Hotline already saved.
+        if (s.SchemaVersion < 11)
+            foreach (var b in s.Chat.Backends.Where(b => Backends.ConnectionTypes.IsCli(b.Type))) b.KeepCliSessions = true;
         // → v10: an empty defaultBackend means "not chosen yet" (new installs ask). Older files always had one chosen.
         if (s.SchemaVersion < 10 && string.IsNullOrWhiteSpace(s.Chat.DefaultBackend) && s.Chat.Backends.Count > 0)
             s.Chat.DefaultBackend = s.Chat.Backends[0].Id;

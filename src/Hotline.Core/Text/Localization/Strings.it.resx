@@ -181,8 +181,6 @@ Nega:
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Rilevamento automatico</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Agente agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Usato in modalità Solo chat.</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Conserva le chat nella cronologia di Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Elenca le chat di Hotline anche in claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Argomenti aggiuntivi</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Passati al programma così come sono (separati da spazi).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Solo chat</value></data>
@@ -430,6 +428,17 @@ Nega:
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» nel settings.json di agy non è un elenco; non viene modificato.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Cattura area di Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>L'interfaccia della riga di comando di Antigravity (agy) non è installata. Installala da antigravity.google/cli, poi riprova.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>CLI di OpenAI Codex</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Il tuo codex installato e il tuo accesso (il tuo piano ChatGPT o la chiave API OpenAI).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Questa connessione non elenca i modelli: lascia Predefinito o digita il nome di un modello.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Uso di {0} (questa connessione non elenca modelli con cui verificarlo).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex non è installato. Installalo (npm install -g @openai/codex), esegui `codex login` una volta per accedere, poi riprova.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Impossibile avviare Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex non ha effettuato l'accesso. Esegui `codex login` in un terminale, poi riprova.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Limite di utilizzo di Codex raggiunto per ora. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI è sovraccarico in questo momento; riprova tra poco.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex non è riuscito a completare questa risposta.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex si sta riconnettendo…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Scegli come si connette Hotline</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Scegli l'IA che Hotline deve usare. Finché non lo fai, non viene inviato né eseguito nulla.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code o Antigravity non è installato su questo PC. Installane uno ed esegui l'accesso, oppure usa una chiave API.</value></data>
@@ -440,4 +449,12 @@ Nega:
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Usa Hotline per il tasto Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>In Impostazioni di Windows › Personalizzazione › Input testo › Personalizza il tasto Copilot sulla tastiera, scegli Personalizzato e poi Hotline. Richiede una tastiera con tasto Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Apri le impostazioni del tasto Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Conserva le chat nella cronologia di {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Ogni chat di Hotline diventa lì una conversazione, raggruppata sotto Hotline, così puoi riprenderla da Chat recenti o nella CLI stessa. Disattivato: Hotline conserva la chat.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Conserva i messaggi anche in Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Chat recenti elenca sempre queste chat; questa opzione salva anche i loro messaggi nella cartella della cronologia di Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Continuazione di «{0}». I messaggi precedenti sono nella cronologia di {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} non è riuscito a riaprire questa conversazione. Avvia una nuova chat per continuare.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Continua questa chat in</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Impossibile aprire {0}: {1}</value></data>
 </root>

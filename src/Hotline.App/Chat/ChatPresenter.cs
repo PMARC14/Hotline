@@ -52,6 +52,9 @@ internal sealed class ChatPresenter
     /// <summary>Recent conversations from the history (set by the app; null when history is off).</summary>
     public Func<int, IReadOnlyList<HistoryStore.Summary>>? RecentChats { get => _recent.Source; set => _recent.Source = value; }
 
+    /// <summary>"Continue this chat in ▸" targets (set by App).</summary>
+    internal ContinueIn? ContinueIn { get => _recent.ContinueIn; set => _recent.ContinueIn = value; }
+
     public ChatPresenter(PopupWindow popup, ChatController chat, AttachmentTray tray, HotlineSettings settings, SettingsStore store, FileLog log,
         string dataDirectory)
     {
@@ -313,6 +316,11 @@ internal sealed class ChatPresenter
                 _transcript.Clear();
                 _notices.Clear();
                 SetBusy(false);
+                break;
+            case ConversationResumed { HasTranscript: false } resumed:
+                // Only the record was kept: the earlier messages are in the CLI's own history.
+                var holder = _settings.Chat.Backends.FirstOrDefault(b => b.Id == resumed.BackendId)?.Name ?? resumed.BackendId ?? "";
+                _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
                 break;
         }
     }

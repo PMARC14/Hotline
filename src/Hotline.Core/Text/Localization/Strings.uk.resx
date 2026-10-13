@@ -181,8 +181,6 @@
   <data name="Conn_AutoDetect" xml:space="preserve"><value>Визначити автоматично</value></data>
   <data name="Conn_AgyAgent" xml:space="preserve"><value>Агент agy</value></data>
   <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Використовується в режимі «Лише чат».</value></data>
-  <data name="Conn_KeepClaude" xml:space="preserve"><value>Зберігати чати в історії Claude Code</value></data>
-  <data name="Conn_KeepClaude_Desc" xml:space="preserve"><value>Показувати чати Hotline також у claude --resume.</value></data>
   <data name="Conn_ExtraArgs" xml:space="preserve"><value>Додаткові аргументи</value></data>
   <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Передаються програмі як є (через пробіл).</value></data>
   <data name="Conn_ChatOnly" xml:space="preserve"><value>Лише чат</value></data>
@@ -430,6 +428,17 @@
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» у settings.json agy не є списком; файл не змінено.</value></data>
   <data name="Region_Title" xml:space="preserve"><value>Знімок області Hotline</value></data>
   <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) не встановлено. Установіть його з antigravity.google/cli і спробуйте ще раз.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Ваш установлений codex і вхід (ваш план ChatGPT або ключ API OpenAI).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Це підключення не надає списку моделей: залиште «За замовчуванням» або введіть назву моделі.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>Використовується {0} (це підключення не надає списку моделей для перевірки).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex не встановлено. Установіть його (npm install -g @openai/codex), один раз запустіть `codex login`, щоб увійти, і спробуйте ще раз.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Не вдалося запустити Codex ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex не виконав вхід. Запустіть `codex login` у терміналі й спробуйте ще раз.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Ліміт використання Codex поки вичерпано. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI зараз перевантажений; спробуйте за мить.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex не вдалося завершити цю відповідь.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex повторно підключається…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Виберіть, як підключається Hotline</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Виберіть ШІ, яким користуватиметься Hotline. Доти нічого не надсилається й не запускається.</value></data>
   <data name="Choose_NoneFound" xml:space="preserve"><value>На цьому ПК не встановлено Claude Code чи Antigravity. Установіть один із них і ввійдіть або скористайтеся ключем API.</value></data>
@@ -440,4 +449,12 @@
   <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Використовувати Hotline для клавіші Copilot</value></data>
   <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>У Параметрах Windows › Персоналізація › Введення тексту › Налаштувати клавішу Copilot на клавіатурі виберіть «Настроюване», а потім Hotline. Потрібна клавіатура з клавішею Copilot.</value></data>
   <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Відкрити параметри клавіші Copilot</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Зберігати чати в історії {0}</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Кожен чат Hotline стає там однією розмовою, згрупованою в Hotline, тож її можна продовжити з «Останніх чатів» або в самому CLI. Вимкнено: чат зберігає Hotline.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Також зберігати повідомлення в Hotline</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>«Останні чати» завжди показують ці чати; це ще й зберігає їхні повідомлення в папці історії Hotline.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>Продовження «{0}». Попередні повідомлення — в історії {1}.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} не вдалося знову відкрити цю розмову. Почніть новий чат, щоб продовжити.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Продовжити цей чат у</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>Не вдалося відкрити {0}: {1}</value></data>
 </root>

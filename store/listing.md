@@ -26,6 +26,7 @@ press the key again and it's gone. No browser tab, no account with us.
 
 USE THE AI YOU ALREADY HAVE
 • Claude Code: uses your installed Claude Code and its sign-in, so your Claude plan works with no API key.
+• OpenAI Codex CLI: uses your installed Codex and its sign-in, so your ChatGPT plan works with no API key.
 • Antigravity CLI (agy): Gemini with your Google sign-in.
 • Your own API key: Anthropic, Google Gemini, OpenAI and other OpenAI-compatible services such as OpenRouter.
 • Local models: any OpenAI-style server on your PC (for example llama.cpp or LM Studio), so nothing leaves your
@@ -61,7 +62,7 @@ memory stay on your PC. Free and open source.
 No Copilot key? Set any shortcut you like, for example Ctrl+Alt+H.
 
 Hotline AI is an independent app and isn't affiliated with or endorsed by Microsoft, Anthropic, Google or OpenAI. Using
-Claude Code, the Antigravity CLI or an AI API requires your own account with that service.
+Claude Code, Codex, the Antigravity CLI or an AI API requires your own account with that service.
 
 ## What's new in this version
 
@@ -70,7 +71,7 @@ First release on the Microsoft Store. Native on both x64 and ARM64 (Windows on A
 ## Product features (up to 20; 200 characters each)
 
 1. Opens from the Copilot key (or any shortcut) on the monitor you're working on, ready to type
-2. Works with your Claude Code or Gemini (Antigravity CLI) sign-in: no API key needed
+2. Works with your Claude Code, ChatGPT (Codex CLI) or Gemini (Antigravity CLI) sign-in: no API key needed
 3. Bring your own key: Anthropic, Google Gemini, OpenAI and OpenAI-compatible APIs
 4. Local models: any OpenAI-style server on your PC, so nothing leaves your computer
 5. Pick the model, provider and thinking effort from the panel
