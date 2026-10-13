@@ -65,7 +65,13 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         foreach (var old in Panel.Children.OfType<InfoBar>().Where(b => tag.Equals(b.Tag)).ToList()) Panel.Children.Remove(old);
     }
 
-    public void Clear() => Panel.Children.Clear();
+    /// <summary>Tags of bars that New chat leaves in place (the first-run connection chooser).</summary>
+    public HashSet<string> Sticky { get; } = [];
+
+    public void Clear()
+    {
+        foreach (var bar in Panel.Children.Where(c => c is not InfoBar { Tag: string t } || !Sticky.Contains(t)).ToList()) Panel.Children.Remove(bar);
+    }
 
     /// <summary>
     /// Asks whether a tool may run: a bar with Allow once / Always / Deny. No answer within five minutes (or the answer

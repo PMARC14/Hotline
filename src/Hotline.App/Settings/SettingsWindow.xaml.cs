@@ -201,7 +201,6 @@ public sealed partial class SettingsWindow : Window
         }
     }
 
-    /// <summary>Start with Windows (the package's StartupTask; not a settings.json value — Windows owns it).</summary>
     /// <summary>Choosing Hotline for the Copilot key happens in Windows Settings; this explains it and opens the page.</summary>
     private void BuildCopilotKeyCard()
     {
@@ -210,6 +209,7 @@ public sealed partial class SettingsWindow : Window
         PageHost.Children.Add(Card(Strings.Set_CopilotKeyApp, Strings.Set_CopilotKeyApp_Desc, open));
     }
 
+    /// <summary>Start with Windows (the package's StartupTask; not a settings.json value — Windows owns it).</summary>
     private void BuildStartupCard()
     {
         var status = new TextBlock();

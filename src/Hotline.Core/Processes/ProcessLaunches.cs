@@ -11,4 +11,7 @@ public static class ProcessLaunches
     public static void Noted() => Interlocked.Exchange(ref _lastMs, Environment.TickCount64);
 
     public static bool Recent(TimeSpan window) => Environment.TickCount64 - Interlocked.Read(ref _lastMs) < (long)window.TotalMilliseconds;
+
+    /// <summary>When the last launch happened (TickCount64), to tell launches apart.</summary>
+    public static long Last => Interlocked.Read(ref _lastMs);
 }
