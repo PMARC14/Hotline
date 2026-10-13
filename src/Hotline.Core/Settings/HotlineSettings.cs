@@ -110,10 +110,11 @@ public sealed class BackendProfile
     public bool KeepInHotline { get; set; }
     /// <summary>Anthropic API: if a safety check declines a request, let the API re-serve it with a suitable model.</summary>
     public bool RefusalFallback { get; set; } = true;
-    /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>
+    /// <summary>Tool use: CLI connections (agy, Claude Code, Codex) use their own tools; API connections Hotline's MCP tools.</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
     /// <summary>
-    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy --dangerously-skip-permissions), including
+    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy/Claude Code --dangerously-skip-permissions, Codex
+    /// --dangerously-bypass-approvals-and-sandbox), including
     /// shell commands and file edits, with no prompt. Off: the CLI's own permission rules apply (in the background,
     /// anything that would ask is denied).
     /// </summary>
@@ -122,6 +123,12 @@ public sealed class BackendProfile
     public string? WorkingDirectory { get; set; }
     /// <summary>System prompt name (file ~/.hotline/prompts/&lt;name&gt;.md). Null = chat.defaultPrompt.</summary>
     public string? Prompt { get; set; }
+    /// <summary>API connections: most tokens one answer may use. Null = the model's default (Claude API: 64000).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public int? MaxTokens { get; set; }
+    /// <summary>Gemini, OpenAI-compatible and local connections: sampling temperature (0–2). Null = the model's default.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public double? Temperature { get; set; }
     /// <summary>Whether the model reads images. Null = the type's default (local: no; others: yes).</summary>
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public bool? Images { get; set; }

@@ -163,10 +163,10 @@ Deny:
   <data name="Agy_EditRules" xml:space="preserve"><value>Edit agy rules</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy permissions</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Approve everything? (dangerous)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy will run ANY shell command and edit or delete ANY file it decides to, without asking. A wrong answer or a malicious web page or file can make it do real damage. Only use this with a working folder you can afford to lose.</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} will run ANY shell command and edit or delete ANY file it decides to, without asking. A wrong answer or a malicious web page or file can make it do real damage. Only use this with a working folder you can afford to lose.</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>I understand, turn on</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Approve everything (dangerous)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>Skips all of agy's permission checks (--dangerously-skip-permissions). Only in “use the program's own tools” mode.</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Skips all of {0}'s permission checks. Only in “use the program's own tools” mode.</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>Name</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Base URL of the API.</value></data>
@@ -457,4 +457,12 @@ Deny:
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} couldn't reopen this conversation. Start a new chat to continue.</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Continue this chat in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Couldn't open {0}: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Launch flags (advanced)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Replaces the flags Hotline adds for this mode (space separated). The flags Hotline needs to talk to the program are always added, and dangerous ones only come from “Approve everything”. Empty = Hotline's defaults.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline's defaults</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>Maximum answer length</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Most tokens one answer may use. A long answer stops early if this is too low. Empty = the model's default.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Temperature</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>How varied answers are: 0 = focused and repeatable, higher = more varied (up to 2). Empty = the model's default.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Model's default</value></data>
 </root>

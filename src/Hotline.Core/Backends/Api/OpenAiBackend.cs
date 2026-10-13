@@ -121,12 +121,26 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
         }
     }
 
+    private static bool IsOpenAi(string endpoint) =>
+        Uri.TryCreate(endpoint, UriKind.Absolute, out var u)
+        && (u.Host.Equals("api.openai.com", StringComparison.OrdinalIgnoreCase) || u.Host.EndsWith(".openai.azure.com", StringComparison.OrdinalIgnoreCase));
+
     private HttpRequestMessage Request(string endpoint, string? key, JsonArray messages, IReadOnlyList<ToolSpec> offered)
     {
         var body = new JsonObject { ["stream"] = true, ["messages"] = messages.DeepClone() };
         if (!string.IsNullOrWhiteSpace(profile.Model)) body["model"] = profile.Model.Trim();
-        if (profile.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" && profile.Effort is { } effort)
-            body["reasoning_effort"] = effort.Trim().ToLowerInvariant();
+        var effort = profile.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" ? profile.Effort.Trim().ToLowerInvariant() : null;
+        if (effort is not null)
+        {
+            body["reasoning_effort"] = effort; // OpenAI, vLLM, LM Studio
+            // llama-server reads it only from the chat template's kwargs (gpt-oss and the few models trained for it).
+            if (profile.Type == BackendType.Local) body["chat_template_kwargs"] = new JsonObject { ["reasoning_effort"] = effort };
+        }
+        // OpenAI's own API wants max_completion_tokens (reasoning models refuse max_tokens); other servers take max_tokens.
+        if (profile.MaxTokens is { } max) body[IsOpenAi(endpoint) ? "max_completion_tokens" : "max_tokens"] = max;
+        // OpenAI-style reasoning models (the ones an effort is set for) only accept the default temperature: don't send
+        // one then. Local reasoning models (DeepSeek-R1, Qwen) do take one, often a recommended one.
+        if (profile.Temperature is { } temperature && (effort is null || profile.Type == BackendType.Local)) body["temperature"] = temperature;
         if (offered.Count > 0)
             body["tools"] = new JsonArray(offered.Select(t => (JsonNode)new JsonObject
             {

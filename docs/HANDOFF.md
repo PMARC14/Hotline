@@ -27,6 +27,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     restart and from Recent chats; `keepCliSessions` (default on) / `keepInHotline` (default off, Hotline then keeps
     `history\<id>.meta.json` only); chat-only folders `…\agy|claude|codex\Hotline`; agy project "Hotline";
     Recent chats › **Continue this chat in ▸** a terminal. Settings schema v11.
+  - **Connection options pass** (#23, #24): every CLI has *Approve everything* and *Launch flags*; API connections have
+    *Maximum answer length* (`maxTokens`) and, except the Claude API, *Temperature*; Local gets *Effort* (also sent as
+    `chat_template_kwargs.reasoning_effort` for llama-server). Request rules were checked against the providers' docs
+    (configuration.md lists them).
   - **OpenAI Codex CLI** connection (#14), on the same session design. Merged without a live Codex test (the owner
     doesn't use Codex): the first person with a Codex sign-in should run its checklist in the PR #14 description.
 - Tests: 863 Core unit tests; `tests/smoke/smoke.ps1 -Install` 22/22 (the "agy exits with Hotline" check fails if any

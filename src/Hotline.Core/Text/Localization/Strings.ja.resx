@@ -163,10 +163,10 @@
   <data name="Agy_EditRules" xml:space="preserve"><value>agy のルールを編集</value></data>
   <data name="Agy_Permissions" xml:space="preserve"><value>agy のアクセス許可</value></data>
   <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>すべて承認しますか? (危険)</value></data>
-  <data name="Agy_ApproveAllBody" xml:space="preserve"><value>agy は確認なしに、判断した任意のシェル コマンドを実行し、任意のファイルを編集・削除します。誤った回答や悪意のある Web ページ・ファイルによって実害が生じるおそれがあります。失っても構わない作業フォルダーでのみ使用してください。</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} は確認なしに、判断した任意のシェル コマンドを実行し、任意のファイルを編集・削除します。誤った回答や悪意のある Web ページ・ファイルによって実害が生じるおそれがあります。失っても構わない作業フォルダーでのみ使用してください。</value></data>
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>理解しました、オンにする</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ すべて承認 (危険)</value></data>
-  <data name="Agy_ApproveAll_Desc" xml:space="preserve"><value>agy のアクセス許可チェックをすべて省略します (--dangerously-skip-permissions)。「プログラム独自のツールを使う」モードでのみ有効です。</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0} のアクセス許可チェックをすべて省略します。「プログラム独自のツールを使う」モードでのみ有効です。</value></data>
   <data name="Conn_Name" xml:space="preserve"><value>名前</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>エンドポイント</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API のベース URL。</value></data>
@@ -457,4 +457,12 @@
   <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} はこの会話を再び開けませんでした。続けるには新しいチャットを始めてください。</value></data>
   <data name="Recent_ContinueIn" xml:space="preserve"><value>このチャットを続ける場所</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} を開けませんでした: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>起動オプション (詳細)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>このモードで Hotline が追加するオプションを置き換えます (スペース区切り)。Hotline がプログラムとやり取りするのに必要なオプションは常に追加され、危険なものは「すべて承認」からのみ追加されます。空欄 = Hotline の既定値。</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline の既定値</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>回答の最大長</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>1 回の回答で使えるトークンの上限。低すぎると長い回答が途中で止まります。空欄 = モデルの既定値。</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>温度</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答のばらつき: 0 = 的確で再現性が高い、高いほど多様 (最大 2)。空欄 = モデルの既定値。</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>モデルの既定値</value></data>
 </root>
