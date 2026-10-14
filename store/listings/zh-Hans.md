@@ -15,6 +15,7 @@ Center › the submission › Store listings › 中文(简体). Product name st
 
 使用你已有的 AI
 • Claude Code:使用你已安装的 Claude Code 及其登录,无需 API 密钥即可使用你的 Claude 套餐。
+• OpenAI Codex CLI:使用你已安装的 Codex 及其登录,无需 API 密钥即可使用你的 ChatGPT 套餐。
 • Antigravity CLI(agy):使用你的 Google 账户访问 Gemini。
 • 你自己的 API 密钥:Anthropic、Google Gemini、OpenAI,以及 OpenRouter 等 OpenAI 兼容服务。
 • 本地模型:你电脑上任何 OpenAI 风格的服务器(例如 llama.cpp 或 LM Studio),数据不会离开你的电脑。
@@ -44,12 +45,16 @@ Hotline AI 没有服务器,也不收集任何信息:没有账户、没有分析�
 
 没有 Copilot 键?可以设置任意快捷键,例如 Ctrl+Alt+H。
 
-Hotline AI 是一款独立应用,与 Microsoft、Anthropic、Google 或 OpenAI 没有关联,也未获得其认可。使用 Claude Code、Antigravity CLI 或 AI API 需要你在相应服务中拥有自己的账户。
+Hotline AI 是一款独立应用,与 Microsoft、Anthropic、Google 或 OpenAI 没有关联,也未获得其认可。使用 Claude Code、Codex、Antigravity CLI 或 AI API 需要你在相应服务中拥有自己的账户。
+
+## 此版本的新增功能
+
+Hotline AI 现已支持 17 种语言。新增:OpenAI Codex CLI 连接;与 Claude Code、Codex 和 agy 的聊天即使在重启后也能从上次中断处继续,还可以在终端中继续;后台回答完成时发出通知;首次运行时选择 Hotline 的连接方式;每个连接提供更多选项(回答长度、temperature、思考程度)。
 
 ## 产品功能
 
 1. 按 Copilot 键(或任意快捷键)在你正在使用的显示器上打开,随即可输入
-2. 使用你的 Claude Code 或 Gemini(Antigravity CLI)登录:无需 API 密钥
+2. 使用你的 Claude Code、ChatGPT(Codex CLI)或 Gemini(Antigravity CLI)登录:无需 API 密钥
 3. 使用自己的密钥:Anthropic、Google Gemini、OpenAI 及 OpenAI 兼容 API
 4. 本地模型:你电脑上任何 OpenAI 风格的服务器,数据不离开电脑
 5. 在面板中选择模型、提供方和思考强度

@@ -19,6 +19,7 @@ nosotros.
 
 USA LA IA QUE YA TIENES
 • Claude Code: usa tu Claude Code instalado y su sesión, así que tu plan de Claude funciona sin clave de API.
+• OpenAI Codex CLI: usa tu Codex instalado y su sesión, así que tu plan de ChatGPT funciona sin clave de API.
 • CLI de Antigravity (agy): Gemini con tu cuenta de Google.
 • Tu propia clave de API: Anthropic, Google Gemini, OpenAI y otros servicios compatibles con OpenAI, como OpenRouter.
 • Modelos locales: cualquier servidor de estilo OpenAI en tu PC (por ejemplo, llama.cpp o LM Studio), para que nada salga de tu equipo.
@@ -51,12 +52,16 @@ Windows; el historial, la configuración y la memoria se quedan en tu PC. Gratui
 ¿No tienes tecla Copilot? Configura el atajo que quieras, por ejemplo Ctrl+Alt+H.
 
 Hotline AI es una aplicación independiente y no está afiliada ni respaldada por Microsoft, Anthropic, Google ni OpenAI.
-Para usar Claude Code, la CLI de Antigravity o una API de IA necesitas tu propia cuenta en ese servicio.
+Para usar Claude Code, Codex, la CLI de Antigravity o una API de IA necesitas tu propia cuenta en ese servicio.
+
+## Novedades de esta versión
+
+Hotline AI ya está disponible en 17 idiomas. Novedades: conexión con la CLI de OpenAI Codex; los chats con Claude Code, Codex y agy continúan donde los dejaste, incluso tras reiniciar, y puedes seguirlos en una terminal; una notificación cuando una respuesta termina en segundo plano; al iniciar por primera vez eliges cómo se conecta Hotline; más opciones por conexión (longitud de respuesta, temperatura, esfuerzo).
 
 ## Características del producto
 
 1. Se abre con la tecla Copilot (o cualquier atajo) en el monitor en el que trabajas, listo para escribir
-2. Funciona con tu sesión de Claude Code o de Gemini (CLI de Antigravity): sin clave de API
+2. Funciona con tu sesión de Claude Code, ChatGPT (CLI de Codex) o Gemini (CLI de Antigravity): sin clave de API
 3. Usa tu propia clave: Anthropic, Google Gemini, OpenAI y API compatibles con OpenAI
 4. Modelos locales: cualquier servidor de estilo OpenAI en tu PC, nada sale de tu equipo
 5. Elige el modelo, el proveedor y el esfuerzo de razonamiento desde el panel

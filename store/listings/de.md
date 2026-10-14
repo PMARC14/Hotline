@@ -18,6 +18,7 @@ die Antwort erscheint live; drück die Taste erneut, und es ist weg. Kein Browse
 
 NUTZE DIE KI, DIE DU SCHON HAST
 • Claude Code: nutzt dein installiertes Claude Code und dessen Anmeldung, dein Claude-Abo funktioniert also ohne API-Schlüssel.
+• OpenAI Codex CLI: nutzt dein installiertes Codex und dessen Anmeldung, dein ChatGPT-Abo funktioniert also ohne API-Schlüssel.
 • Antigravity CLI (agy): Gemini mit deiner Google-Anmeldung.
 • Dein eigener API-Schlüssel: Anthropic, Google Gemini, OpenAI und andere OpenAI-kompatible Dienste wie OpenRouter.
 • Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC (z. B. llama.cpp oder LM Studio), sodass nichts deinen Computer verlässt.
@@ -50,13 +51,17 @@ Verlauf, Einstellungen und Gedächtnis bleiben auf deinem PC. Kostenlos und Open
 Keine Copilot-Taste? Leg eine beliebige Tastenkombination fest, z. B. Strg+Alt+H.
 
 Hotline AI ist eine unabhängige App und steht in keiner Verbindung zu Microsoft, Anthropic, Google oder OpenAI und wird
-von diesen nicht unterstützt. Für Claude Code, die Antigravity CLI oder eine KI-API brauchst du ein eigenes Konto bei
+von diesen nicht unterstützt. Für Claude Code, Codex, die Antigravity CLI oder eine KI-API brauchst du ein eigenes Konto bei
 dem jeweiligen Dienst.
+
+## Neuigkeiten in dieser Version
+
+Hotline AI gibt es jetzt in 17 Sprachen. Neu: Verbindung über die OpenAI Codex CLI; Chats mit Claude Code, Codex und agy machen dort weiter, wo du aufgehört hast, auch nach einem Neustart, und lassen sich in einem Terminal fortsetzen; eine Benachrichtigung, wenn eine Antwort im Hintergrund fertig ist; beim ersten Start wählst du, wie Hotline sich verbindet; mehr Optionen je Verbindung (Antwortlänge, Temperatur, Denkaufwand).
 
 ## Produktmerkmale
 
 1. Öffnet sich per Copilot-Taste (oder beliebiger Tastenkombination) auf dem Monitor, an dem du arbeitest, bereit zum Tippen
-2. Funktioniert mit deiner Claude Code- oder Gemini-Anmeldung (Antigravity CLI): kein API-Schlüssel nötig
+2. Funktioniert mit deiner Claude Code-, ChatGPT- (Codex CLI) oder Gemini-Anmeldung (Antigravity CLI): kein API-Schlüssel nötig
 3. Eigener Schlüssel: Anthropic, Google Gemini, OpenAI und OpenAI-kompatible APIs
 4. Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC, nichts verlässt deinen Computer
 5. Modell, Anbieter und Denkaufwand direkt im Panel wählen

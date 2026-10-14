@@ -18,6 +18,7 @@ veja a resposta chegar em tempo real, pressione a tecla de novo e ele some. Sem 
 
 USE A IA QUE VOCÊ JÁ TEM
 • Claude Code: usa o seu Claude Code instalado e o login dele, então seu plano do Claude funciona sem chave de API.
+• OpenAI Codex CLI: usa o seu Codex instalado e o login dele, então seu plano do ChatGPT funciona sem chave de API.
 • CLI do Antigravity (agy): Gemini com seu login do Google.
 • Sua própria chave de API: Anthropic, Google Gemini, OpenAI e outros serviços compatíveis com OpenAI, como o OpenRouter.
 • Modelos locais: qualquer servidor no estilo OpenAI no seu PC (por exemplo, llama.cpp ou LM Studio), para que nada saia do seu computador.
@@ -50,12 +51,16 @@ histórico, configurações e memória ficam no seu PC. Gratuito e de código ab
 Não tem tecla Copilot? Defina o atalho que quiser, por exemplo Ctrl+Alt+H.
 
 O Hotline AI é um app independente e não é afiliado nem endossado pela Microsoft, Anthropic, Google ou OpenAI. Usar o
-Claude Code, a CLI do Antigravity ou uma API de IA exige sua própria conta nesse serviço.
+Claude Code, o Codex, a CLI do Antigravity ou uma API de IA exige sua própria conta nesse serviço.
+
+## Novidades desta versão
+
+O Hotline AI agora está disponível em 17 idiomas. Novidades: conexão com a CLI do OpenAI Codex; os chats com Claude Code, Codex e agy continuam de onde você parou, mesmo depois de reiniciar, e podem ser continuados em um terminal; uma notificação quando uma resposta termina em segundo plano; na primeira execução você escolhe como o Hotline se conecta; mais opções por conexão (tamanho da resposta, temperatura, esforço).
 
 ## Recursos do produto
 
 1. Abre com a tecla Copilot (ou qualquer atalho) no monitor em que você trabalha, pronto para digitar
-2. Funciona com seu login do Claude Code ou do Gemini (CLI do Antigravity): sem chave de API
+2. Funciona com seu login do Claude Code, do ChatGPT (CLI do Codex) ou do Gemini (CLI do Antigravity): sem chave de API
 3. Use sua própria chave: Anthropic, Google Gemini, OpenAI e APIs compatíveis com OpenAI
 4. Modelos locais: qualquer servidor no estilo OpenAI no seu PC, nada sai do seu computador
 5. Escolha modelo, provedor e esforço de raciocínio no painel
