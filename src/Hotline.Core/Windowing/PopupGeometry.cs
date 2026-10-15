@@ -39,11 +39,13 @@ public static class PopupGeometry
     /// <summary>
     /// The panel height for <paramref name="contentPx"/> given the height it has now: it grows in whole steps (a streamed
     /// answer resizes the window once per step, not once per line) and keeps its height through small shrinks; a big
-    /// drop (a new chat) follows the content down. <paramref name="stepPx"/> 0 = no steps.
+    /// drop (a new chat) follows the content down. <paramref name="stepPx"/> 0 = no steps. Within one step of
+    /// <paramref name="floorPx"/> (the empty panel: just the message bar) it fits exactly, so an empty panel never
+    /// gets a gap on top.
     /// </summary>
-    public static int Stepped(int previousPx, int contentPx, int stepPx)
+    public static int Stepped(int previousPx, int contentPx, int stepPx, int floorPx)
     {
-        if (stepPx <= 0) return contentPx;
+        if (stepPx <= 0 || contentPx <= floorPx + stepPx) return contentPx;
         if (contentPx > previousPx) return previousPx + (contentPx - previousPx + stepPx - 1) / stepPx * stepPx;
         return contentPx > previousPx - stepPx ? previousPx : contentPx;
     }

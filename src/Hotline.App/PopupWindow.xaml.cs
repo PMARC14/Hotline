@@ -359,7 +359,7 @@ public sealed partial class PopupWindow : Window
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
         // While shown, grow in steps (~2 lines): a streamed answer resizes the window once per step, not once per line.
         if (AppWindow.IsVisible && _currentRect is not null && _targetRect.Height > 0)
-            contentPx = PopupGeometry.Stepped(_targetRect.Height, contentPx, (int)Math.Round(GrowStepDip * _scale));
+            contentPx = PopupGeometry.Stepped(_targetRect.Height, contentPx, (int)Math.Round(GrowStepDip * _scale), _bar.Height);
         _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
         if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
             || current.Y + current.Height != _targetRect.Y + _targetRect.Height)

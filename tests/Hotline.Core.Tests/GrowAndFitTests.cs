@@ -36,7 +36,15 @@ public class GrowAndFitTests
     [InlineData(408, 200, 48, 200)] // much shorter (new chat): follow the content down
     [InlineData(120, 400, 0, 400)]  // no step: plain content height
     public void Height_grows_in_steps_and_holds_small_shrinks(int previous, int content, int step, int expected)
-        => Assert.Equal(expected, PopupGeometry.Stepped(previous, content, step));
+        => Assert.Equal(expected, PopupGeometry.Stepped(previous, content, step, floorPx: 0));
+
+    [Theory]
+    [InlineData(120, 126, 120 + 6)] // empty panel: the bar measures a little taller than the minimum — no extra step on top
+    [InlineData(126, 130, 130)]
+    [InlineData(200, 150, 150)]     // back to (nearly) empty, e.g. a notice closed: fits exactly, no gap kept
+    [InlineData(120, 200, 216)]     // a conversation: steps again
+    public void Near_the_bar_height_the_panel_fits_exactly(int previous, int content, int expected)
+        => Assert.Equal(expected, PopupGeometry.Stepped(previous, content, 48, floorPx: 120));
 
     [Theory]
     [InlineData(4000, 3000, 2048, 2048, 1536)]
