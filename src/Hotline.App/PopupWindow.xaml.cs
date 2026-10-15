@@ -347,8 +347,8 @@ public sealed partial class PopupWindow : Window
 
     /// <summary>
     /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it uses two sizes per chat (halfway,
-    /// then the maximum; see PopupGeometry.TwoStep) and jumps straight to them: a window growing upward can't resize
-    /// smoothly (each resize shows the old frame at the new top edge for a moment), so it resizes as rarely as it can.
+    /// then the maximum; see PopupGeometry.TwoStep) and slides to each. Resizing a window upward is never perfectly
+    /// smooth (each resize shows the old frame at the new top edge for a moment), so it changes size only twice per chat.
     /// </summary>
     private void ApplyHeight(bool force = false)
     {
@@ -363,7 +363,53 @@ public sealed partial class PopupWindow : Window
             contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), _conversation);
         }
         _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
+        // Between the two sizes of a chat the panel slides (only twice per chat); anything else moves at once.
+        if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
+            && current.Width == _targetRect.Width && current.Y + current.Height == _targetRect.Y + _targetRect.Height)
+        {
+            if (current == _targetRect || _animating) return; // already there, or the running slide retargets next frame
+            _animating = true;
+            _animatedHeight = current.Height;
+            _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+            return;
+        }
+        StopAnimation();
         if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
+    }
+
+    private bool _animating;
+    private double _animatedHeight;
+    private long _lastFrame;
+
+    private void StopAnimation()
+    {
+        if (!_animating) return;
+        _animating = false;
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
+    }
+
+    /// <summary>
+    /// One display frame of a slide: exponential ease toward the target height (time constant ~70 ms, frame-rate
+    /// independent), bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
+    /// </summary>
+    private void OnFrame(object? sender, object e)
+    {
+        var now = System.Diagnostics.Stopwatch.GetTimestamp();
+        var dt = Math.Clamp((now - _lastFrame) / (double)System.Diagnostics.Stopwatch.Frequency, 0.001, 0.1);
+        _lastFrame = now;
+        if (!AppWindow.IsVisible) { StopAnimation(); return; }
+        var target = _targetRect.Height;
+        _animatedHeight += (target - _animatedHeight) * (1 - Math.Exp(-dt / 0.07));
+        if (Math.Abs(target - _animatedHeight) < 0.75)
+        {
+            StopAnimation();
+            MoveTo(_targetRect);
+            return;
+        }
+        var height = (int)Math.Round(_animatedHeight);
+        if (_currentRect is { } current && current.Height == height) return; // sub-pixel step: nothing to move yet
+        MoveTo(_targetRect with { Y = _targetRect.Y + _targetRect.Height - height, Height = height });
     }
 
     private void MoveTo(RectI r)
