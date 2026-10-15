@@ -476,4 +476,29 @@ Tolak:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperatur</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Seberapa bervariasi jawaban: 0 = fokus dan dapat diulang, lebih tinggi = lebih bervariasi (hingga 2). Kosong = bawaan model.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Bawaan model</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Simpan catatan ke memori — semua obrolan melihatnya</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Buka lagi obrolan dari riwayat</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Ubah menjadi daftar poin</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Jelaskan dengan bahasa sederhana</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Perbaiki ejaan dan tata bahasa</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Tulis ulang dengan nada profesional</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Buat draf balasan</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Buat lebih singkat dan jelas</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Ringkas dalam beberapa poin</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Terjemahkan (ke bahasa Inggris atau bahasa yang Anda sebut)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Kontras tinggi</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Kontras tinggi adalah tema Hotline sendiri; tema kontras Windows diikuti secara otomatis.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Cari obrolan</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Juga membuka Hotline. Klik, lalu tekan tombolnya. Esc membatalkan, Backspace menghapus.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Tekan pintasan…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Belum diatur</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Tambahkan Ctrl, Alt, Shift, atau Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Tombol itu tidak dapat digunakan</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Pulihkan tindakan bawaan</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} tindakan bawaan ditambahkan atau diperbarui.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Ganti nama</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Gunakan huruf, angka, - dan _, dan nama yang belum dipakai.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Hapus /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Nama baru</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Aplikasi lain sudah memakai pintasan itu</value></data>
 </root>

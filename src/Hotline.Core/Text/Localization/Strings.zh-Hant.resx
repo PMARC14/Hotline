@@ -476,4 +476,29 @@
   <data name="Conn_Temperature" xml:space="preserve"><value>溫度</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答的多樣性:0 = 專注且可重複,越高越多樣 (最高 2)。留空 = 模型預設值。</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>模型預設值</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>將筆記存入記憶 — 每個聊天都看得到</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>從歷程記錄重新開啟聊天</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>整理成項目清單</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>用淺白的話解釋</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>修正拼字和文法</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>改寫成專業的語氣</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>草擬回覆</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>改得更簡短清楚</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>用幾個重點摘要</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>翻譯 (譯成英文或你指定的語言)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>高對比</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>高對比是 Hotline 內建的佈景主題;Windows 的對比佈景主題會自動套用。</value></data>
+  <data name="History_Search" xml:space="preserve"><value>搜尋聊天</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>也會開啟 Hotline。按一下,然後按下按鍵。Esc 取消,Backspace 清除。</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>請按快速鍵…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>未設定</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>請加上 Ctrl、Alt、Shift 或 Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>無法使用該按鍵</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>還原預設動作</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>已新增或更新 {0} 個預設動作。</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>重新命名</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>請使用字母、數字、- 和 _,且名稱不可重複。</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>刪除 /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>新名稱</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>其他應用程式已在使用該快速鍵</value></data>
 </root>

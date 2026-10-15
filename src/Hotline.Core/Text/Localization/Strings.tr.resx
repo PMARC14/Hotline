@@ -476,4 +476,29 @@ Reddet:
   <data name="Conn_Temperature" xml:space="preserve"><value>Sıcaklık</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Yanıtların ne kadar çeşitli olduğu: 0 = odaklı ve tekrarlanabilir, daha yüksek = daha çeşitli (en fazla 2). Boş = modelin varsayılanı.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Modelin varsayılanı</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Belleğe not kaydet — her sohbet görür</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Geçmişten bir sohbeti yeniden aç</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Madde işaretli listeye çevir</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Sade bir dille açıkla</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Yazım ve dil bilgisini düzelt</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Profesyonel bir dille yeniden yaz</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Bir yanıt taslağı yaz</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Daha kısa ve net yap</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Birkaç maddede özetle</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Çevir (İngilizceye veya belirttiğin dile)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Yüksek karşıtlık</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Yüksek karşıtlık Hotline'ın kendi temasıdır; Windows karşıtlık temaları otomatik olarak izlenir.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Sohbetlerde ara</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Hotline'ı da açar. Tıklayın, sonra tuşlara basın. Esc iptal eder, Geri tuşu temizler.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Bir kısayola basın…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Ayarlanmadı</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift veya Win ekleyin</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Bu tuş kullanılamaz</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Varsayılan eylemleri geri yükle</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} varsayılan eylem eklendi veya güncellendi.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Yeniden adlandır</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Harf, rakam, - ve _ kullanın ve henüz kullanılmayan bir ad seçin.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
 </root>

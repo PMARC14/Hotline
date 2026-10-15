@@ -39,6 +39,13 @@ public sealed record TextItem(SettingsPage Page, string Header, string? Descript
     public string? Invalid { get; init; }
 }
 
+/// <summary>
+/// A global hotkey, set by pressing it (Settings shows a key binder; see Activation.HotkeyCapture). The value is the
+/// text settings.json holds, e.g. "Ctrl+Alt+H"; null = none.
+/// </summary>
+public sealed record HotkeyItem(SettingsPage Page, string Header, string? Description, Func<HotlineSettings, string?> Get,
+    Action<HotlineSettings, string?> Set, bool RequiresRestart = false) : SettingItem(Page, Header, Description, RequiresRestart);
+
 public static class SettingsSchema
 {
     private static ChoiceItem Choice<T>(SettingsPage page, string header, string? description, (T Value, string Label)[] options,
@@ -82,15 +89,15 @@ public static class SettingsSchema
             s => s.Activation.Hold == KeyAction.Voice,
             (s, v) => { if (v) s.Activation.Hold = KeyAction.Voice; else if (s.Activation.Hold == KeyAction.Voice) s.Activation.Hold = KeyAction.NewChat; })
         { RefreshPage = true },
-        new TextItem(SettingsPage.General, nameof(Strings.Set_Hotkey), nameof(Strings.Set_Hotkey_Desc), "Ctrl+Alt+H",
-            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true)
-        { Validate = v => Activation.Hotkey.TryParse(v, out _), Invalid = nameof(Strings.Set_Hotkey_Invalid) },
+        new HotkeyItem(SettingsPage.General, nameof(Strings.Set_Hotkey), nameof(Strings.Set_Hotkey_Press_Desc),
+            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true),
         new ToggleItem(SettingsPage.General, nameof(Strings.Set_HideOnBlur), nameof(Strings.Set_HideOnBlur_Desc),
             s => s.Window.HideOnBlur, (s, v) => s.Window.HideOnBlur = v),
         new ToggleItem(SettingsPage.General, nameof(Strings.Set_OnTop), null, s => s.Window.AlwaysOnTop, (s, v) => s.Window.AlwaysOnTop = v),
 
-        Choice(SettingsPage.Appearance, nameof(Strings.Set_Theme), null,
-            [(ThemeChoice.System, nameof(Strings.Set_Theme_System)), (ThemeChoice.Light, nameof(Strings.Set_Theme_Light)), (ThemeChoice.Dark, nameof(Strings.Set_Theme_Dark))],
+        Choice(SettingsPage.Appearance, nameof(Strings.Set_Theme), nameof(Strings.Set_Theme_Desc),
+            [(ThemeChoice.System, nameof(Strings.Set_Theme_System)), (ThemeChoice.Light, nameof(Strings.Set_Theme_Light)), (ThemeChoice.Dark, nameof(Strings.Set_Theme_Dark)),
+             (ThemeChoice.HighContrast, nameof(Strings.Set_Theme_HighContrast))],
             s => s.Window.Theme, (s, v) => s.Window.Theme = v),
         new ChoiceItem(SettingsPage.Appearance, nameof(Strings.Set_Accent), nameof(Strings.Set_Accent_Desc),
             [new(AccentChoice.Hotline, nameof(Strings.Set_Accent_Hotline)), new(AccentChoice.Windows, nameof(Strings.Set_Accent_Windows)),

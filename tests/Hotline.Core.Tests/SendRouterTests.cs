@@ -45,22 +45,6 @@ public sealed class SendRouterTests : IDisposable
     public void Resume_is_listed_with_the_quick_actions() =>
         Assert.Contains(QuickActions.BuiltIns, a => a.Name == "resume");
 
-    private static readonly HistoryStore.Summary[] Recent =
-    [
-        new("c3", "Current chat", DateTimeOffset.Now, 2),
-        new("c2", "Tax forms for 2026", DateTimeOffset.Now.AddHours(-1), 6),
-        new("c1", "Old tax question", DateTimeOffset.Now.AddDays(-3), 4),
-    ];
-
-    [Theory]
-    [InlineData("", "c2")]          // the last chat other than this one (as Ctrl+Up)
-    [InlineData("tax", "c2")]       // the newest whose title has the words
-    [InlineData("TAX Question", "c1")] // every word, any case, any order
-    [InlineData("current", null)]   // the open chat isn't "another" chat
-    [InlineData("recipe", null)]    // nothing matches
-    public void Resume_picks_the_newest_matching_chat(string query, string? expected) =>
-        Assert.Equal(expected, ResumeCommand.Pick(Recent, currentId: "c3", query)?.Id);
-
     [Fact]
     public void A_quick_action_expands_and_names_itself()
     {

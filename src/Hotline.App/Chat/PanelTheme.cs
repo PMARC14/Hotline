@@ -22,13 +22,13 @@ internal sealed class PanelTheme(HotlineSettings settings, Action<string> openLi
     {
         Dark = settings.Window.Theme switch
         {
-            ThemeChoice.Dark => true,
+            ThemeChoice.Dark or ThemeChoice.HighContrast => true,
             ThemeChoice.Light => false,
             _ => SystemTheme.IsDark, // live, not the theme Hotline started with
         };
         var windows = SystemTheme.Colors;
         Tokens = ThemeTokens.For(Dark, settings.Window, windows);
-        Backdrop = ThemeTokens.EffectiveBackdrop(settings.Window.Backdrop, windows);
+        Backdrop = ThemeTokens.EffectiveBackdrop(settings.Window.Backdrop, windows, settings.Window.Theme);
         Style = new RenderStyle(Tokens.FontSizePx, new FontFamily(Tokens.Font), Brush(Tokens.Muted), Brush(Tokens.CodeBackground),
             Brush(Tokens.Accent), Tokens.RadiusPx, openLink);
     }

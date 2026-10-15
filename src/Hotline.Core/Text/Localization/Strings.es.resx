@@ -476,4 +476,29 @@ Denegar:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperatura</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Cuánto varían las respuestas: 0 = centradas y repetibles, más alto = más variadas (hasta 2). Vacío = valor predeterminado del modelo.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Predeterminado del modelo</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Guardar una nota en la memoria: todos los chats la ven</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Volver a abrir un chat del historial</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Convertirlo en una lista</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Explicarlo en lenguaje sencillo</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Corregir ortografía y gramática</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Reescribirlo con un tono profesional</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Redactar una respuesta</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Hacerlo más corto y claro</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Resumirlo en unos puntos</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Traducirlo (al inglés o al idioma que indiques)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Contraste alto</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>El contraste alto es propio de Hotline; los temas de contraste de Windows se siguen automáticamente.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Buscar chats</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>También abre Hotline. Haz clic y pulsa las teclas. Esc cancela y Retroceso la borra.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Pulsa un atajo…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Sin definir</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Añade Ctrl, Alt, Mayús o Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Esa tecla no se puede usar</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Restaurar acciones predeterminadas</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} acciones predeterminadas añadidas o actualizadas.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Cambiar nombre</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Usa letras, dígitos, - y _, y un nombre que no esté en uso.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>¿Eliminar /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Nuevo nombre</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Otra aplicación ya usa ese atajo</value></data>
 </root>

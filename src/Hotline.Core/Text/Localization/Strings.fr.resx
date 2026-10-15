@@ -476,4 +476,29 @@ Refuser :
   <data name="Conn_Temperature" xml:space="preserve"><value>Température</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Variété des réponses : 0 = précises et reproductibles, plus haut = plus variées (jusqu’à 2). Vide = valeur par défaut du modèle.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Valeur par défaut du modèle</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Enregistrer une note en mémoire — chaque conversation la voit</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Rouvrir une conversation de l'historique</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>En faire une liste à puces</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>L'expliquer simplement</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Corriger l'orthographe et la grammaire</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Le réécrire sur un ton professionnel</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Rédiger une réponse</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Le rendre plus court et plus clair</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Le résumer en quelques points</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Le traduire (en anglais ou dans la langue indiquée)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Contraste élevé</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Le contraste élevé est propre à Hotline ; un thème de contraste Windows est suivi automatiquement.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Rechercher des conversations</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Ouvre aussi Hotline. Cliquez, puis appuyez sur les touches. Échap annule, Retour arrière efface.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Appuyez sur un raccourci…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Non défini</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ajoutez Ctrl, Alt, Maj ou Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Cette touche ne peut pas être utilisée</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Restaurer les actions par défaut</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} actions par défaut ajoutées ou mises à jour.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Renommer</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Utilisez des lettres, des chiffres, - et _, et un nom qui n'est pas déjà pris.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Supprimer /{0} ?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Nouveau nom</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Une autre application utilise déjà ce raccourci</value></data>
 </root>

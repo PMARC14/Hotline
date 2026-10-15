@@ -7,6 +7,15 @@ internal static class HotkeyRegistration
 {
     private const int HotkeyId = 0x484C; // "HL"
 
+    /// <summary>True when no app holds <paramref name="hotkey"/> right now (registers it on <paramref name="hwnd"/> for a moment).</summary>
+    public static bool IsFree(nint hwnd, Hotkey hotkey)
+    {
+        const int ProbeId = 0x484D;
+        if (!Native.RegisterHotKey(hwnd, ProbeId, (uint)hotkey.Modifiers | Native.MOD_NOREPEAT, hotkey.VirtualKey)) return false;
+        Native.UnregisterHotKey(hwnd, ProbeId);
+        return true;
+    }
+
     /// <summary>Registers the optional fallback hotkey. Invalid or already-taken hotkeys are logged and skipped.</summary>
     public static bool TryRegister(WindowMessageHook hook, string? text, Action onPressed, FileLog log)
     {

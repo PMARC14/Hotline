@@ -71,7 +71,7 @@ internal static class SystemTheme
     public static bool ResolveDark(ThemeChoice choice) => choice switch
     {
         ThemeChoice.Light => false,
-        ThemeChoice.Dark => true,
+        ThemeChoice.Dark or ThemeChoice.HighContrast => true, // Hotline's high contrast is white on black
         _ => IsDark,
     };
 

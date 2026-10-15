@@ -96,7 +96,7 @@ internal sealed class ChatPresenter
         _composer.SendRequested += OnEnter;
         _composer.SendButtonClicked += () => { if (_chat.IsBusy) _chat.Cancel(); else _tasks.Run("send", SendAsync); }; // Stop while answering
         _popup.Root.PreviewKeyDown += OnPanelKey;
-        _composer.PreviousChatRequested += () => { if (!_chat.IsBusy) _recent.ResumeLast(); };
+        _composer.PreviousChatRequested += () => _recent.Show(""); // the history list, on the last chat
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };
@@ -223,7 +223,8 @@ internal sealed class ChatPresenter
                 else _notices.Show(L.F(Strings.Chat_NotRemembered, MemoryStore.MaxFactChars), InfoBarSeverity.Warning);
                 return;
             case SendRoute.Resume r:
-                if (_recent.ResumeMatching(r.Query)) _composer.Text = "";
+                _composer.Text = "";
+                _recent.Show(r.Query); // the history list, filtered by the words
                 return;
             case SendRoute.NeedsText n:
                 _notices.Show(L.F(Strings.Chat_ActionNeedsText, n.Action), InfoBarSeverity.Warning);

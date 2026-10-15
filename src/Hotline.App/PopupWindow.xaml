@@ -179,11 +179,7 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}">
-                <Button.Flyout>
-                    <MenuFlyout x:Name="RecentMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
-                </Button.Flyout>
-            </Button>
+                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
             <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"

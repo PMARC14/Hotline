@@ -476,4 +476,29 @@ Zabroń:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperatura</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Jak zróżnicowane są odpowiedzi: 0 = skupione i powtarzalne, wyżej = bardziej różnorodne (do 2). Puste = domyślne ustawienie modelu.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Domyślne ustawienie modelu</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Zapisz notatkę w pamięci — widzi ją każdy czat</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Otwórz ponownie czat z historii</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Zamień na listę punktowaną</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Wyjaśnij prostym językiem</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Popraw pisownię i gramatykę</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Przepisz profesjonalnym tonem</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Napisz szkic odpowiedzi</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Skróć i uprość</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Podsumuj w kilku punktach</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Przetłumacz (na angielski lub wskazany język)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Wysoki kontrast</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Wysoki kontrast to własny motyw Hotline; motywy kontrastowe systemu Windows są stosowane automatycznie.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Szukaj czatów</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Też otwiera Hotline. Kliknij, a potem naciśnij klawisze. Esc anuluje, Backspace czyści.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Naciśnij skrót…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Nie ustawiono</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Dodaj Ctrl, Alt, Shift lub Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Tego klawisza nie można użyć</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Przywróć domyślne akcje</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>Dodano lub zaktualizowano domyślne akcje: {0}.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Zmień nazwę</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Użyj liter, cyfr, - i _ oraz nazwy, która nie jest zajęta.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Usunąć /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Nowa nazwa</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Inna aplikacja już używa tego skrótu</value></data>
 </root>
