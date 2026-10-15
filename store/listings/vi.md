@@ -18,6 +18,7 @@ gian thực; nhấn phím lần nữa là bảng biến mất. Không cần th�
 
 DÙNG AI BẠN ĐÃ CÓ
 • Claude Code: dùng Claude Code đã cài và tài khoản đăng nhập của nó, nên gói Claude của bạn hoạt động mà không cần khóa API.
+• OpenAI Codex CLI: dùng Codex đã cài và tài khoản đăng nhập của nó, nên gói ChatGPT của bạn hoạt động mà không cần khóa API.
 • Antigravity CLI (agy): Gemini với tài khoản Google của bạn.
 • Khóa API của riêng bạn: Anthropic, Google Gemini, OpenAI và các dịch vụ tương thích OpenAI khác như OpenRouter.
 • Mô hình cục bộ: bất kỳ máy chủ kiểu OpenAI nào trên PC (ví dụ llama.cpp hoặc LM Studio), để không có gì rời khỏi máy tính của bạn.
@@ -50,12 +51,16 @@ của Windows; lịch sử, cài đặt và bộ nhớ ở lại trên PC của 
 Không có phím Copilot? Hãy đặt bất kỳ phím tắt nào bạn thích, ví dụ Ctrl+Alt+H.
 
 Hotline AI là ứng dụng độc lập, không liên kết với cũng như không được Microsoft, Anthropic, Google hay OpenAI bảo trợ.
-Để dùng Claude Code, Antigravity CLI hoặc API AI, bạn cần có tài khoản riêng tại dịch vụ đó.
+Để dùng Claude Code, Codex, Antigravity CLI hoặc API AI, bạn cần có tài khoản riêng tại dịch vụ đó.
+
+## Có gì mới trong phiên bản này
+
+Hotline AI nay có 17 ngôn ngữ. Mới: kết nối OpenAI Codex CLI; cuộc trò chuyện với Claude Code, Codex và agy tiếp tục từ chỗ bạn dừng lại, kể cả sau khi khởi động lại, và có thể tiếp tục trong terminal; thông báo khi câu trả lời hoàn tất ở chế độ nền; lần chạy đầu tiên, bạn chọn cách Hotline kết nối; thêm tùy chọn cho mỗi kết nối (độ dài câu trả lời, temperature, mức suy nghĩ).
 
 ## Tính năng sản phẩm
 
 1. Mở bằng phím Copilot (hoặc phím tắt bất kỳ) trên màn hình bạn đang làm việc, sẵn sàng để gõ
-2. Hoạt động với tài khoản Claude Code hoặc Gemini (Antigravity CLI): không cần khóa API
+2. Hoạt động với tài khoản Claude Code, ChatGPT (Codex CLI) hoặc Gemini (Antigravity CLI): không cần khóa API
 3. Dùng khóa của bạn: Anthropic, Google Gemini, OpenAI và API tương thích OpenAI
 4. Mô hình cục bộ: bất kỳ máy chủ kiểu OpenAI nào trên PC, không gì rời khỏi máy tính
 5. Chọn mô hình, nhà cung cấp và mức suy luận ngay trên bảng

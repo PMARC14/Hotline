@@ -18,6 +18,7 @@ seketika, tekan tombol lagi dan panel menghilang. Tanpa tab browser, tanpa akun 
 
 GUNAKAN AI YANG SUDAH ANDA MILIKI
 • Claude Code: memakai Claude Code yang terpasang beserta akunnya, jadi paket Claude Anda bekerja tanpa kunci API.
+• OpenAI Codex CLI: memakai Codex yang terpasang beserta akunnya, jadi paket ChatGPT Anda bekerja tanpa kunci API.
 • Antigravity CLI (agy): Gemini dengan akun Google Anda.
 • Kunci API Anda sendiri: Anthropic, Google Gemini, OpenAI, dan layanan kompatibel OpenAI lainnya seperti OpenRouter.
 • Model lokal: server bergaya OpenAI apa pun di PC Anda (misalnya llama.cpp atau LM Studio), sehingga tidak ada yang keluar dari komputer Anda.
@@ -50,12 +51,16 @@ riwayat, pengaturan, dan memori tetap di PC Anda. Gratis dan sumber terbuka.
 Tidak punya tombol Copilot? Atur pintasan apa pun yang Anda suka, misalnya Ctrl+Alt+H.
 
 Hotline AI adalah aplikasi independen dan tidak berafiliasi dengan atau didukung oleh Microsoft, Anthropic, Google,
-atau OpenAI. Menggunakan Claude Code, Antigravity CLI, atau API AI memerlukan akun Anda sendiri di layanan tersebut.
+atau OpenAI. Menggunakan Claude Code, Codex, Antigravity CLI, atau API AI memerlukan akun Anda sendiri di layanan tersebut.
+
+## Yang baru di versi ini
+
+Hotline AI kini tersedia dalam 17 bahasa. Baru: koneksi OpenAI Codex CLI; obrolan dengan Claude Code, Codex, dan agy berlanjut dari tempat Anda berhenti, bahkan setelah restart, dan bisa dilanjutkan di terminal; notifikasi saat jawaban selesai di latar belakang; saat pertama kali dijalankan, Anda memilih cara Hotline terhubung; lebih banyak opsi per koneksi (panjang jawaban, temperature, upaya).
 
 ## Fitur produk
 
 1. Terbuka dengan tombol Copilot (atau pintasan apa pun) di monitor tempat Anda bekerja, siap mengetik
-2. Bekerja dengan akun Claude Code atau Gemini (Antigravity CLI) Anda: tanpa kunci API
+2. Bekerja dengan akun Claude Code, ChatGPT (Codex CLI), atau Gemini (Antigravity CLI) Anda: tanpa kunci API
 3. Kunci Anda sendiri: Anthropic, Google Gemini, OpenAI, dan API kompatibel OpenAI
 4. Model lokal: server bergaya OpenAI apa pun di PC Anda, tidak ada yang keluar dari komputer
 5. Pilih model, penyedia, dan upaya penalaran dari panel

@@ -18,6 +18,7 @@ antwoord live verschijnen, druk nogmaals op de toets en het is weg. Geen browser
 
 GEBRUIK DE AI DIE JE AL HEBT
 • Claude Code: gebruikt je geïnstalleerde Claude Code en de aanmelding daarvan, dus je Claude-abonnement werkt zonder API-sleutel.
+• OpenAI Codex CLI: gebruikt je geïnstalleerde Codex en de aanmelding daarvan, dus je ChatGPT-abonnement werkt zonder API-sleutel.
 • Antigravity CLI (agy): Gemini met je Google-aanmelding.
 • Je eigen API-sleutel: Anthropic, Google Gemini, OpenAI en andere OpenAI-compatibele diensten zoals OpenRouter.
 • Lokale modellen: elke server in OpenAI-stijl op je pc (bijvoorbeeld llama.cpp of LM Studio), zodat niets je computer verlaat.
@@ -50,12 +51,16 @@ Referentiebeheer; geschiedenis, instellingen en geheugen blijven op je pc. Grati
 Geen Copilot-toets? Stel een sneltoets naar keuze in, bijvoorbeeld Ctrl+Alt+H.
 
 Hotline AI is een onafhankelijke app en is niet verbonden aan of goedgekeurd door Microsoft, Anthropic, Google of
-OpenAI. Voor Claude Code, de Antigravity CLI of een AI-API heb je een eigen account bij die dienst nodig.
+OpenAI. Voor Claude Code, Codex, de Antigravity CLI of een AI-API heb je een eigen account bij die dienst nodig.
+
+## Nieuw in deze versie
+
+Hotline AI is nu beschikbaar in 17 talen. Nieuw: verbinding via de OpenAI Codex CLI; chats met Claude Code, Codex en agy gaan verder waar je was gebleven, ook na een herstart, en kun je voortzetten in een terminal; een melding wanneer een antwoord op de achtergrond klaar is; bij de eerste start kies je hoe Hotline verbinding maakt; meer opties per verbinding (antwoordlengte, temperatuur, denkniveau).
 
 ## Productkenmerken
 
 1. Opent met de Copilot-toets (of een eigen sneltoets) op het scherm waarop je werkt, klaar om te typen
-2. Werkt met je aanmelding voor Claude Code of Gemini (Antigravity CLI): geen API-sleutel nodig
+2. Werkt met je aanmelding voor Claude Code, ChatGPT (Codex CLI) of Gemini (Antigravity CLI): geen API-sleutel nodig
 3. Eigen sleutel: Anthropic, Google Gemini, OpenAI en OpenAI-compatibele API's
 4. Lokale modellen: elke server in OpenAI-stijl op je pc, niets verlaat je computer
 5. Kies model, provider en denkinspanning in het paneel
