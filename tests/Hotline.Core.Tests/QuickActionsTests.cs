@@ -194,6 +194,7 @@ public sealed class QuickActionsTests : IDisposable
 
     [Theory]
     [InlineData("fix", "fix-it", true)]
+    [InlineData("fix", "Fix", true)]        // only the case changes (Windows file names ignore case)
     [InlineData("fix", "explain", false)]   // taken
     [InlineData("fix", "remember", false)]  // a built-in
     [InlineData("fix", "no spaces", false)] // not a file-safe name

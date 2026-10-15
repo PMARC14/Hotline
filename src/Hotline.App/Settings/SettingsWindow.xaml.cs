@@ -230,7 +230,7 @@ public sealed partial class SettingsWindow : Window
             if (Down(Windows.System.VirtualKey.Menu)) held |= HotkeyModifiers.Alt;
             if (Down(Windows.System.VirtualKey.Shift)) held |= HotkeyModifiers.Shift;
             if (Down(Windows.System.VirtualKey.LeftWindows) || Down(Windows.System.VirtualKey.RightWindows)) held |= HotkeyModifiers.Win;
-            var result = HotkeyCapture.Press(held, (uint)e.OriginalKey);
+            var result = HotkeyCapture.Press(held, (uint)e.Key);
             switch (result.Outcome)
             {
                 case HotkeyCapture.Outcome.Waiting: return;

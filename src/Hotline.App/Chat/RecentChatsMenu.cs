@@ -1,4 +1,5 @@
 using Hotline.Core.Chat;
+using Hotline.Core.Diagnostics;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
@@ -13,7 +14,7 @@ namespace Hotline.App.Chat;
 /// than the open chat. Typing in its search box filters by title (every word); ↑/↓ move, Enter opens, Esc closes.
 /// "Continue this chat in ▸" and "Open history folder" sit above the list.
 /// </summary>
-internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, NoticeArea notices, string dataDirectory)
+internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, NoticeArea notices, string dataDirectory, FileLog log)
 {
     /// <summary>Saved conversations, newest first (set by the app; null when history is off).</summary>
     public Func<int, IReadOnlyList<HistoryStore.Summary>>? Source { get; set; }
@@ -38,6 +39,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     public async void Show(string query)
     {
         if (Source is not { } source) { notices.Show(Strings.Recent_HistoryOff, InfoBarSeverity.Informational); return; }
+        if (_loading || _flyout?.IsOpen == true) return; // already opening or open (a second Ctrl+Up, a double click)
+        _loading = true;
         try
         {
             var all = await Task.Run(() => source(MaxChats)); // reads each chat's file: off the UI thread
@@ -48,11 +51,15 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             Fill(query);
             flyout.ShowAt(popup.Composer, new FlyoutShowOptions { Placement = FlyoutPlacementMode.Top });
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) // async void: nothing may escape (an unreadable history folder, a WinUI refusal)
         {
+            log.Error("opening the history list failed", ex);
             notices.Show(Strings.Recent_OpenFailed, InfoBarSeverity.Warning);
         }
+        finally { _loading = false; }
     }
+
+    private bool _loading;
 
     private Flyout Build()
     {
@@ -72,18 +79,16 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         AddRow(grid, _search, 3); // next to the message bar, where the eye already is
 
         var flyout = new Flyout { Content = grid, ShouldConstrainToRootBounds = false, AreOpenCloseAnimationsEnabled = true };
+        var presenter = new Style(typeof(FlyoutPresenter)); // layered over the default style, which keeps the frame
+        presenter.Setters.Add(new Setter(FrameworkElement.MaxWidthProperty, double.PositiveInfinity)); // the default caps it at 456
+        flyout.FlyoutPresenterStyle = presenter;
         flyout.Opening += (_, _) =>
         {
-            var width = Math.Max(320, popup.Composer.ActualWidth);
-            var style = new Style(typeof(FlyoutPresenter));
-            style.Setters.Add(new Setter(FrameworkElement.WidthProperty, width));
-            style.Setters.Add(new Setter(FrameworkElement.MaxWidthProperty, width));
-            style.Setters.Add(new Setter(Control.PaddingProperty, new Thickness(8)));
-            flyout.FlyoutPresenterStyle = style;
+            _modal ??= popup.Modal(); // the list is part of the panel: don't hide the panel as focus moves into it
+            grid.Width = Math.Max(320, popup.Composer.ActualWidth - 24); // as wide as the message bar (less the frame)
         };
         flyout.Opened += (_, _) =>
         {
-            _modal ??= popup.Modal(); // the list is part of the panel: don't hide it as if focus had left
             _search.Focus(FocusState.Programmatic);
             _search.SelectionStart = _search.Text.Length;
             if (_list.SelectedItem is { } selected) _list.ScrollIntoView(selected, ScrollIntoViewAlignment.Default);

@@ -75,8 +75,12 @@ public sealed partial class QuickActions(string directory)
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { continue; }
                 if (current == text || !PreviousDefaults.TryGetValue(name, out var old) || !old.Contains(current)) continue;
             }
-            File.WriteAllText(path, text + "\n");
-            written++;
+            try
+            {
+                File.WriteAllText(path, text + "\n");
+                written++;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { } // locked or read-only: left as it is
         }
         return written;
     }
@@ -85,11 +89,16 @@ public sealed partial class QuickActions(string directory)
     public bool Rename(string from, string to)
     {
         to = to.Trim();
-        if (!SafeName().IsMatch(from) || !SafeName().IsMatch(to) || !File.Exists(PathFor(from)) || File.Exists(PathFor(to))
+        var caseOnly = from.Equals(to, StringComparison.OrdinalIgnoreCase); // the same file on Windows
+        if (!SafeName().IsMatch(from) || !SafeName().IsMatch(to) || !File.Exists(PathFor(from)) || (!caseOnly && File.Exists(PathFor(to)))
             || BuiltIns.Any(b => b.Name.Equals(to, StringComparison.OrdinalIgnoreCase)))
             return false;
-        File.Move(PathFor(from), PathFor(to));
-        return true;
+        try
+        {
+            File.Move(PathFor(from), PathFor(to));
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; } // e.g. open in an editor
     }
 
     /// <summary>A default action still holding its default text describes itself in the interface language.</summary>

@@ -72,7 +72,7 @@ internal sealed class ChatPresenter
         _memory = new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
         _composer = new Composer(popup, _theme, actions, _tasks);
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
-        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
+        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
