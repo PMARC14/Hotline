@@ -73,6 +73,9 @@ internal sealed class ProviderBar(
 
     public void Initialize()
     {
+        // The bar cuts long names off with "…": the tooltip shows the whole one.
+        popup.ProviderBox.SelectionChanged += (_, _) => NameTip(popup.ProviderBox, Strings.Popup_Provider);
+        popup.ModelBox.SelectionChanged += (_, _) => NameTip(popup.ModelBox, Strings.Popup_Model);
         popup.ProviderBox.SelectionChanged += (_, _) => { if (!_updating) OnProviderChanged(); };
         popup.ModelBox.SelectionChanged += (_, _) => { if (!_updating && popup.ModelBox.SelectedItem is string m) _ = SetModelAsync(m); };
         popup.ModelBox.DropDownOpened += (_, _) => _ = LoadModelsAsync();
@@ -120,7 +123,10 @@ internal sealed class ProviderBar(
         Layout();
     }
 
-    private static readonly string[] HideOrder = ["effort", "provider", "model"];
+    private static void NameTip(ComboBox box, string what) =>
+        ToolTipService.SetToolTip(box, box.SelectedItem is string s && s.Trim().Length > 0 ? $"{what}: {s.Trim()}" : what);
+
+    private static readonly string[] HideOrder =["effort", "provider", "model"];
 
     /// <summary>
     /// Gives the pickers explicit widths from the space the fixed buttons leave (see ToolbarLayout): the bar never

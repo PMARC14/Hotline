@@ -34,6 +34,18 @@ public sealed class SendRouterTests : IDisposable
     }
 
     [Fact]
+    public void Resume_reopens_a_chat_instead_of_sending()
+    {
+        Assert.Equal(new SendRoute.Resume(""), Router().Route("/resume", hasAttachments: false));
+        Assert.Equal(new SendRoute.Resume("tax forms"), Router().Route("/RESUME  tax forms ", hasAttachments: false));
+        Assert.IsType<SendRoute.Message>(Router().Route("/resumes are hard", hasAttachments: false)); // not the command
+    }
+
+    [Fact]
+    public void Resume_is_listed_with_the_quick_actions() =>
+        Assert.Contains(QuickActions.BuiltIns, a => a.Name == "resume");
+
+    [Fact]
     public void A_quick_action_expands_and_names_itself()
     {
         var route = Assert.IsType<SendRoute.Message>(Router().Route("/fix teh cat", hasAttachments: false));

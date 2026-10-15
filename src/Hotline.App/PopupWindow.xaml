@@ -25,6 +25,13 @@
                     <SolidColorBrush x:Key="TextControlBackground" Color="#FFFBFBFB" />
                     <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFBFBFB" />
                 </ResourceDictionary>
+                <!-- Contrast themes: the theme's own window colours (otherwise "Default", the dark set, would apply). -->
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="ComposerSurface" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{ThemeResource SystemColorWindowColor}" />
+                </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
             <!-- No minimum height: the message box is as tall as one line of text (Hotline sizes it from the font). -->
             <x:Double x:Key="TextControlThemeMinHeight">0</x:Double>
@@ -147,10 +154,10 @@
                     <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
                     <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
                     <!-- Picker text shrinks to fit the (fixed-width) box instead of being cut off. -->
+                    <!-- A long name is cut off with "…" at the bar's text size (it used to shrink until unreadable);
+                         the full name is in the list and in the tooltip. -->
                     <DataTemplate x:Key="FitText">
-                        <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding}" />
-                        </Viewbox>
+                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" />
                     </DataTemplate>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
                         <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
@@ -172,11 +179,7 @@
                 </Button.Flyout>
             </Button>
             <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}">
-                <Button.Flyout>
-                    <MenuFlyout x:Name="RecentMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
-                </Button.Flyout>
-            </Button>
+                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
             <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"

@@ -56,16 +56,10 @@ internal static class MarkdownRenderer
                 return 1;
             case MdCode c:
             {
-                // Header row (language + copy) is a small shaded control; the code itself is selectable monospace text.
+                // Header row (language + copy) is a small shaded control; the code below it is selectable monospace
+                // text in its own box that scrolls sideways, so long lines stay whole (as in an editor).
                 rtb.Blocks.Add(Boxed(CodeHeader(c, s)));
-                var code = new Paragraph { FontFamily = Mono, FontSize = s.FontSize - 1, Margin = new Thickness(indent * 18 + 10, 0, 0, 10) };
-                var lines = c.Code.TrimEnd('\n', '\r').Replace("\r\n", "\n").Split('\n');
-                for (var i = 0; i < lines.Length; i++)
-                {
-                    if (i > 0) code.Inlines.Add(new LineBreak());
-                    code.Inlines.Add(new Run { Text = lines[i].Length == 0 ? " " : lines[i] });
-                }
-                rtb.Blocks.Add(code);
+                rtb.Blocks.Add(Boxed(CodeBody(c, s)));
                 return 2;
             }
             case MdMath m:
@@ -116,6 +110,25 @@ internal static class MarkdownRenderer
             default:
                 return 0;
         }
+    }
+
+    /// <summary>The code, unwrapped and selectable, scrolling sideways when a line is longer than the panel.</summary>
+    private static UIElement CodeBody(MdCode code, RenderStyle s)
+    {
+        var text = new RichTextBlock { IsTextSelectionEnabled = true, TextWrapping = TextWrapping.NoWrap, FontFamily = Mono, FontSize = s.FontSize - 1 };
+        var p = new Paragraph();
+        var lines = code.Code.TrimEnd('\n', '\r').Replace("\r\n", "\n").Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+        {
+            if (i > 0) p.Inlines.Add(new LineBreak());
+            p.Inlines.Add(new Run { Text = lines[i].Length == 0 ? " " : lines[i] });
+        }
+        text.Blocks.Add(p);
+        return new ScrollViewer
+        {
+            Content = text, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollMode = ScrollMode.Enabled,
+            VerticalScrollMode = ScrollMode.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Padding = new Thickness(10, 0, 0, 8),
+        };
     }
 
     /// <summary>Language label + copy button above a code block (the code itself stays selectable text).</summary>

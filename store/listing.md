@@ -66,7 +66,7 @@ Claude Code, Codex, the Antigravity CLI or an AI API requires your own account w
 
 ## What's new in this version
 
-Hotline AI now speaks 17 languages. New: an OpenAI Codex CLI connection; chats with Claude Code, Codex and agy pick up where you left off, even after a restart, and can be continued in a terminal; a notification when an answer finishes in the background; on first run you choose how Hotline connects; more options per connection (answer length, temperature, effort).
+Pick your accent colour (Hotline purple, your Windows accent or any colour) and a new High contrast theme; Hotline also follows Windows' contrast themes and transparency setting. Your chat history opens as a searchable list (history button, Ctrl+↑ or /resume). Set the extra shortcut by simply pressing it. New quick actions: /reply, /shorter, /formal and /bullets. Code blocks scroll sideways, and the panel follows answers as they stream in.
 
 ## Product features (up to 20; 200 characters each)
 

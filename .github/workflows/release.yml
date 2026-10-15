@@ -7,7 +7,7 @@
 #      AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID (an Entra app with a GitHub OIDC federated
 #      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored). A normal release.
 #   2. A .pfx — secrets HOTLINE_SIGNING_PFX_BASE64 / HOTLINE_SIGNING_PFX_PASSWORD (subject = manifest Publisher).
-#   3. Neither: a throwaway self-signed certificate; published as a pre-release test build (trust Hotline.cer first).
+#   3. Neither: a throwaway self-signed certificate (users trust Hotline.cer first; the release notes say how).
 name: Release
 
 on:
@@ -154,10 +154,11 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          flags=(--target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes)
+          # Every release is a normal ("latest") release; a self-signed one says how to trust it.
+          flags=(--target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes --latest)
           if [ '${{ steps.cert.outputs.prerelease }}' = true ]; then
-            flags+=(--prerelease --notes "Test build, signed with a temporary self-signed certificate: install Hotline.cer into Local Machine > Trusted People first, then open the .msixbundle (x64 and ARM64).")
-          else flags+=(--latest --notes ""); fi
+            flags+=(--notes "Signed with a self-signed certificate: install Hotline.cer into Local Machine > Trusted People first (README › Install), then open the .msixbundle (x64 and ARM64). The Microsoft Store version (Hotline AI) needs none of this.")
+          else flags+=(--notes ""); fi
           files=(artifacts/Hotline_*.msixbundle artifacts/Hotline.appinstaller)
           [ -f artifacts/Hotline.cer ] && files+=(artifacts/Hotline.cer) # only self-signed/.pfx builds need it
           gh release create '${{ steps.ver.outputs.tag }}' "${files[@]}" "${flags[@]}"

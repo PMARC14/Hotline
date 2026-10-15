@@ -87,10 +87,11 @@ public sealed partial class PopupWindow : Window
     /// <summary>Re-applies backdrop, theme, always-on-top and scrollbar from the (live) settings object.</summary>
     public void ApplyAppearance()
     {
-        SystemBackdrop = Backdrops.Create(_settings);
+        var backdrop = Hotline.Core.Theming.ThemeTokens.EffectiveBackdrop(_settings.Backdrop, SystemTheme.Colors, _settings.Theme);
+        SystemBackdrop = Backdrops.Create(_settings, backdrop);
         if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
         Root.RequestedTheme = SystemTheme.Resolve(_settings.Theme); // "System" follows Windows live
-        if (_settings.Backdrop != BackdropKind.Solid) Root.Background = null;
+        if (backdrop != BackdropKind.Solid) Root.Background = null;
         MessagesScroll.VerticalScrollBarVisibility = _settings.Scrollbar switch
         {
             ScrollbarStyle.Visible => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Visible,
@@ -228,9 +229,11 @@ public sealed partial class PopupWindow : Window
     public void RequestRegionCapture() => RegionCaptureRequested?.Invoke();
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
-    public void SetContentHeight(double dip)
+    /// <param name="conversation">The chat has messages: the panel then expands to halfway at once, and past it with the text.</param>
+    public void SetContentHeight(double dip, bool conversation)
     {
         _contentDip = dip; // DIPs: converted with the current monitor scale in ApplyHeight
+        _conversation = conversation;
         if (AppWindow.IsVisible) ApplyHeight();
     }
 
@@ -338,37 +341,47 @@ public sealed partial class PopupWindow : Window
         }
     }
 
-    private bool _animating;
-    private double _animatedHeight;
-    private long _lastFrame;
     private RectI _targetRect;
     private RectI? _currentRect;
+    private bool _conversation;
 
     /// <summary>
-    /// Sizes the panel to its content. While visible, the height eases toward the new size over a few frames
-    /// (bottom edge fixed) instead of jumping, so streamed answers and new messages slide in smoothly.
+    /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it expands to halfway after the first
+    /// message and then only as far as the text needs (see PopupGeometry.TwoStep), sliding there. Resizing a window
+    /// upward is never perfectly smooth (each resize shows the old frame at the new top edge for a moment), so a short
+    /// answer never resizes it after that first expansion.
     /// </summary>
-    private void ApplyHeight(bool animate = true)
+    private void ApplyHeight(bool force = false)
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
         if (_bar.Width == 0) return;
-        var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
+        var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
-        _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
-        if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
-            || current.Y + current.Height != _targetRect.Y + _targetRect.Height)
+        if (GrowMode == GrowMode.Grow)
         {
-            StopAnimation();
-            MoveTo(_targetRect);
+            var previous = _targetRect.Height > 0 ? _targetRect.Height : _bar.Height;
+            contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), _conversation);
+        }
+        _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
+        // During a chat the panel slides to its new height; anything else (no message yet, a new chat, placing) moves at once.
+        if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
+            && current.Width == _targetRect.Width && current.Y + current.Height == _targetRect.Y + _targetRect.Height)
+        {
+            if (current == _targetRect || _animating) return; // already there, or the running slide retargets next frame
+            _animating = true;
+            _animatedHeight = current.Height;
+            _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
             return;
         }
-        if (_animating) return; // the running animation retargets on its next frame
-        _animating = true;
-        _animatedHeight = current.Height;
-        _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
-        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+        StopAnimation();
+        if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
     }
+
+    private bool _animating;
+    private double _animatedHeight;
+    private long _lastFrame;
 
     private void StopAnimation()
     {
@@ -378,8 +391,8 @@ public sealed partial class PopupWindow : Window
     }
 
     /// <summary>
-    /// One display frame: exponential ease toward the target height (time constant ~70 ms, frame-rate independent),
-    /// bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
+    /// One display frame of a slide: exponential ease toward the target height (time constant ~70 ms, frame-rate
+    /// independent), bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
     /// </summary>
     private void OnFrame(object? sender, object e)
     {
@@ -434,7 +447,7 @@ public sealed partial class PopupWindow : Window
         var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.VerticalPosition);
         _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
         (_bar, _work, _scale) = (r, new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale);
-        ApplyHeight(animate: false);
+        ApplyHeight(force: true);
     }
 
     private sealed class Releaser(Action release) : IDisposable

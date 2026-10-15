@@ -58,7 +58,7 @@ service.
 
 ## Nouveautés de cette version
 
-Hotline AI est désormais disponible en 17 langues. Nouveau : connexion via la CLI OpenAI Codex ; les conversations avec Claude Code, Codex et agy reprennent là où vous les avez laissées, même après un redémarrage, et peuvent se poursuivre dans un terminal ; une notification quand une réponse se termine en arrière-plan ; au premier lancement, vous choisissez comment Hotline se connecte ; plus d'options par connexion (longueur de réponse, température, effort).
+Choisissez votre couleur d'accentuation (violet Hotline, celle de Windows ou n'importe quelle couleur) et un nouveau thème Contraste élevé ; Hotline suit aussi les thèmes de contraste et la transparence de Windows. Votre historique s'ouvre en liste avec recherche (bouton Historique, Ctrl+↑ ou /resume). Définissez le raccourci supplémentaire en appuyant simplement dessus. Nouvelles actions rapides : /reply, /shorter, /formal et /bullets. Les blocs de code défilent horizontalement et le panneau suit les réponses à mesure qu'elles arrivent.
 
 ## Fonctionnalités du produit
 

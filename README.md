@@ -73,11 +73,11 @@ Download the latest `.msixbundle` from [Releases](https://github.com/PMARC14/Hot
 App Installer opens with an **Install** button). To get automatic updates instead, download `Hotline.appinstaller`
 and open that.
 
-> **Test builds** (pre-releases) are signed with a throwaway self-signed certificate, so Windows refuses them until
-> you trust that build's `Hotline.cer` once (admin PowerShell, in the download folder):
+> **GitHub releases are self-signed** (the Microsoft Store version is signed by Microsoft), so Windows refuses them
+> until you trust `Hotline.cer` once (admin PowerShell, in the download folder):
 > `Import-Certificate -FilePath .\Hotline.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople`.
-> Each test build has its own certificate, and test builds don't update automatically. Trusted-signed releases
-> need none of this.
+> Releases from v0.2.24 on share one certificate (valid until 2036): trust it once, and installs from
+> `Hotline.appinstaller` then update themselves.
 
 The first time you open it, Hotline asks which AI to use: the ones installed on your PC (Claude Code, Codex,
 Antigravity) or an API key. Nothing runs or is sent until you pick one.
@@ -164,7 +164,7 @@ Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status
 
 Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
 to `main` publishes a release with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
-(`.github/workflows/release.yml`); until the signing secrets are set these are self-signed pre-release test builds.
+(`.github/workflows/release.yml`), signed with Hotline's long-lived self-signed certificate (trust `Hotline.cer` once).
 Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap

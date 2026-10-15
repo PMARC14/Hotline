@@ -56,7 +56,7 @@ hesabınız gerekir.
 
 ## Bu sürümdeki yenilikler
 
-Hotline AI artık 17 dilde. Yeni: OpenAI Codex CLI bağlantısı; Claude Code, Codex ve agy ile sohbetler yeniden başlattıktan sonra bile kaldığınız yerden sürer ve bir terminalde devam ettirilebilir; arka planda bir yanıt bittiğinde bildirim; ilk açılışta Hotline'ın nasıl bağlanacağını seçersiniz; her bağlantı için daha fazla seçenek (yanıt uzunluğu, sıcaklık, düşünme düzeyi).
+Vurgu renginizi seçin (Hotline moru, Windows vurgu rengi veya herhangi bir renk) ve yeni Yüksek karşıtlık teması; Hotline, Windows karşıtlık temalarını ve saydamlık ayarını da izler. Sohbet geçmişiniz aranabilir bir liste olarak açılır (geçmiş düğmesi, Ctrl+↑ veya /resume). Ek kısayolu tuşlara basarak ayarlayın. Yeni hızlı eylemler: /reply, /shorter, /formal ve /bullets. Kod blokları yana kayar ve panel yanıtları gelirken izler.
 
 ## Ürün özellikleri
 

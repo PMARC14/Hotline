@@ -49,7 +49,7 @@ Hotline AI는 독립 앱이며 Microsoft, Anthropic, Google, OpenAI와 제휴하
 
 ## 이번 버전의 새로운 기능
 
-이제 Hotline AI를 17개 언어로 사용할 수 있습니다. 새 기능: OpenAI Codex CLI 연결, Claude Code·Codex·agy와의 채팅을 다시 시작한 후에도 이어서 할 수 있고 터미널에서 계속할 수도 있음, 백그라운드에서 답변이 완료되면 알림, 처음 실행할 때 Hotline의 연결 방법 선택, 연결별 옵션 추가(답변 길이, temperature, 사고 수준).
+강조 색(Hotline 보라, Windows 강조 색 또는 원하는 색)과 새 고대비 테마를 고를 수 있습니다. Windows 대비 테마와 투명 효과 설정도 따릅니다. 채팅 기록은 검색할 수 있는 목록으로 열립니다(기록 단추, Ctrl+↑ 또는 /resume). 추가 바로 가기 키는 그냥 눌러서 설정합니다. 새 빠른 작업: /reply, /shorter, /formal, /bullets. 코드 블록은 가로로 스크롤되고, 패널은 답변이 나오는 대로 따라갑니다.
 
 ## 제품 기능
 

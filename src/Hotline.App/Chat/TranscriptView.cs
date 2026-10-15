@@ -5,6 +5,7 @@ using Hotline.Core.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
 namespace Hotline.App.Chat;
@@ -45,8 +46,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private readonly List<Entry> _entries = [];
     private RichTextBlock _block = null!;
     private RenderTimer? _timer;
-    private bool _stickToBottom = true;
-    private bool _autoScrolling;
+    private readonly ScrollFollow _follow = new();
 
     public bool IsEmpty => _block is null || _block.Blocks.Count == 0;
     public int ParagraphCount => _block.Blocks.Count;
@@ -58,9 +58,10 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         popup.MessagesPanel.Children.Clear();
         popup.MessagesPanel.Children.Add(_block);
         _timer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(50), RenderDirty);
-        popup.MessagesPanel.SizeChanged += (_, _) => { if (_stickToBottom) ScrollToBottomNow(); };
+        popup.MessagesPanel.SizeChanged += (_, _) => { if (_follow.Following) ScrollToBottomNow(); };
         popup.MessagesScroll.ViewChanged += OnViewChanged;
-        popup.JumpToLatestButton.Click += (_, _) => { _stickToBottom = true; UpdateJumpButton(); ScrollToBottomNow(); };
+        WatchReaderScrolling(popup.MessagesScroll);
+        popup.JumpToLatestButton.Click += (_, _) => { _follow.Follow(); UpdateJumpButton(); ScrollToBottomNow(); };
     }
 
     private double ContentWidth => Math.Max(200, popup.MessagesPanel.ActualWidth - popup.MessagesPanel.Padding.Left - popup.MessagesPanel.Padding.Right - 4);
@@ -265,17 +266,16 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     /// </summary>
     public void ScrollToEnd(bool force)
     {
-        if (force) _stickToBottom = true;
-        if (_stickToBottom) ScrollToBottomNow();
+        if (force) _follow.Follow();
+        if (_follow.Following) ScrollToBottomNow();
     }
 
     private void UpdateJumpButton() =>
-        popup.JumpToLatestButton.Visibility = !_stickToBottom && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
+        popup.JumpToLatestButton.Visibility = !_follow.Following && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
 
     private void ScrollToBottomNow()
     {
         var sv = popup.MessagesScroll;
-        _autoScrolling = true;
         sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: false); // animated: no jolts while streaming
     }
 
@@ -283,10 +283,53 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     {
         if (e.IsIntermediate) return;
         var sv = popup.MessagesScroll;
-        var atBottom = sv.ScrollableHeight - sv.VerticalOffset < 24;
-        if (_autoScrolling) { _autoScrolling = false; if (atBottom) { UpdateJumpButton(); return; } }
-        _stickToBottom = atBottom; // user scrolled: follow only if they are back at the bottom
+        if (_follow.Settled(AtBottom(sv))) ScrollToBottomNow(); // the answer grew while scrolling: catch up
         UpdateJumpButton();
+    }
+
+    /// <summary>
+    /// True when the press landed on <paramref name="owner"/>'s own scrollbar (track, thumb or arrows) — not on its
+    /// content, and not on a code block's sideways scrollbar inside it.
+    /// </summary>
+    private static bool OnScrollBar(DependencyObject? element, ScrollViewer owner)
+    {
+        var onBar = false;
+        for (var e = element; e is not null; e = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(e))
+        {
+            if (e is Microsoft.UI.Xaml.Controls.Primitives.ScrollBar) onBar = true;
+            if (e is ScrollViewer viewer) return onBar && viewer == owner; // the first scroll viewer up owns that bar
+        }
+        return false;
+    }
+
+    private static bool AtBottom(ScrollViewer sv) => sv.ScrollableHeight - sv.VerticalOffset < 24;
+
+    /// <summary>
+    /// The reader's own scrolling (wheel up, the scrollbar, touch, Up/Page Up/Home) is the only thing that stops
+    /// following. Handled events too: the ScrollViewer marks wheel and key input handled itself.
+    /// </summary>
+    private void WatchReaderScrolling(ScrollViewer sv)
+    {
+        sv.AddHandler(UIElement.PointerWheelChangedEvent, new PointerEventHandler((_, e) =>
+        {
+            var wheel = e.GetCurrentPoint(sv).Properties;
+            if (!wheel.IsHorizontalMouseWheel && wheel.MouseWheelDelta > 0 && sv.VerticalOffset > 0) _follow.UserInput();
+        }), handledEventsToo: true);
+        sv.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler((_, e) =>
+        {
+            if (OnScrollBar(e.OriginalSource as DependencyObject, sv)) _follow.UserInput(); // not a click on a Copy button near the edge
+        }), handledEventsToo: true);
+        sv.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler((_, _) =>
+        {
+            if (_follow.Settled(AtBottom(sv))) ScrollToBottomNow(); // let go without moving: follow again at the bottom
+            UpdateJumpButton();
+        }), handledEventsToo: true);
+        sv.DirectManipulationStarted += (_, _) => _follow.UserInput(); // touch / touchpad panning
+        sv.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler((_, e) =>
+        {
+            if (e.Key is Windows.System.VirtualKey.Up or Windows.System.VirtualKey.PageUp or Windows.System.VirtualKey.Home && sv.VerticalOffset > 0)
+                _follow.UserInput();
+        }), handledEventsToo: true);
     }
 
     // ---- helpers ------------------------------------------------------------------------------

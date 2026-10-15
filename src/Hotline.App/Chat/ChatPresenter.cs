@@ -72,7 +72,7 @@ internal sealed class ChatPresenter
         _memory = new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
         _composer = new Composer(popup, _theme, actions, _tasks);
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
-        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
+        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
@@ -96,7 +96,7 @@ internal sealed class ChatPresenter
         _composer.SendRequested += OnEnter;
         _composer.SendButtonClicked += () => { if (_chat.IsBusy) _chat.Cancel(); else _tasks.Run("send", SendAsync); }; // Stop while answering
         _popup.Root.PreviewKeyDown += OnPanelKey;
-        _composer.PreviousChatRequested += () => { if (!_chat.IsBusy) _recent.ResumeLast(); };
+        _composer.PreviousChatRequested += () => _recent.Show(""); // the history list, on the last chat
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };
@@ -113,7 +113,7 @@ internal sealed class ChatPresenter
     public void ApplyAppearance()
     {
         _theme.Update();
-        if (_settings.Window.Backdrop == BackdropKind.Solid)
+        if (_theme.Backdrop == BackdropKind.Solid)
             _popup.Root.Background = PanelTheme.Brush(_theme.Tokens.SolidBackground); // follows the chosen theme, not the OS theme
         _composer.ApplyAppearance();
         if (_lastLook is not null && _theme.Look != _lastLook) _transcript.Rebuild();
@@ -221,6 +221,10 @@ internal sealed class ChatPresenter
                     _notices.Show(Strings.Chat_Remembered, InfoBarSeverity.Success);
                 }
                 else _notices.Show(L.F(Strings.Chat_NotRemembered, MemoryStore.MaxFactChars), InfoBarSeverity.Warning);
+                return;
+            case SendRoute.Resume r:
+                _composer.Text = "";
+                _recent.Show(r.Query); // the history list, filtered by the words
                 return;
             case SendRoute.NeedsText n:
                 _notices.Show(L.F(Strings.Chat_ActionNeedsText, n.Action), InfoBarSeverity.Warning);
@@ -338,7 +342,8 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
-        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20);
+        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
+            conversation: !_transcript.IsEmpty);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

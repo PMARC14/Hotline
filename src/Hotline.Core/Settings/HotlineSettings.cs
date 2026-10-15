@@ -41,7 +41,8 @@ public sealed class ActivationSettings
 
 public enum PopupLayout { QuickView, CommandBar, SidePanel }
 
-public enum ThemeChoice { System, Light, Dark }
+/// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
+public enum ThemeChoice { System, Light, Dark, HighContrast }
 
 /// <summary>Window backdrop material. Acrylic (translucent) is the default look.</summary>
 public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
@@ -62,6 +63,8 @@ public sealed class WindowSettings
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
+    /// <summary>"hotline" (the built-in purple), "windows" (follows the Windows accent) or a "#RRGGBB" colour.</summary>
+    public string Accent { get; set; } = Theming.AccentChoice.Hotline;
     /// <summary>Chat text size in px (10–32); null = the Windows default (scaled by Settings › Accessibility › Text size).</summary>
     public int? FontSize { get; set; }
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>

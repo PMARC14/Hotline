@@ -10,7 +10,8 @@ namespace Hotline.App;
 /// <summary>Builds the popup's backdrop from settings. Acrylic uses a tunable controller so it can be lighter/clearer than the stock material.</summary>
 internal static class Backdrops
 {
-    public static SystemBackdrop? Create(WindowSettings s) => s.Backdrop switch
+    /// <param name="kind">The backdrop to draw (the chosen one, or Solid when Windows' settings call for it).</param>
+    public static SystemBackdrop? Create(WindowSettings s, BackdropKind kind) => kind switch
     {
         BackdropKind.Acrylic => new TunableAcrylicBackdrop(DesktopAcrylicKind.Base, s),
         BackdropKind.AcrylicThin => new TunableAcrylicBackdrop(DesktopAcrylicKind.Thin, s),

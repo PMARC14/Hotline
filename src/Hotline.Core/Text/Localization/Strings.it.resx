@@ -32,6 +32,16 @@
   <data name="Set_Theme_System" xml:space="preserve"><value>Usa l'impostazione di Windows</value></data>
   <data name="Set_Theme_Light" xml:space="preserve"><value>Chiaro</value></data>
   <data name="Set_Theme_Dark" xml:space="preserve"><value>Scuro</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>Colore principale</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>I link, i tuoi messaggi e il pulsante Invia.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Viola Hotline</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Usa il colore principale di Windows</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>Personalizzato</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>Colore principale personalizzato</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>Un colore come #E81123, usato quando il colore principale è Personalizzato.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>Usa il formato #RRGGBB, ad esempio #E81123.</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>È attivo un tema a contrasto di Windows: Hotline usa i suoi colori e uno sfondo opaco.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Gli effetti di trasparenza sono disattivati in Windows, quindi Hotline usa uno sfondo opaco.</value></data>
   <data name="Set_Backdrop" xml:space="preserve"><value>Sfondo</value></data>
   <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Acrilico è traslucido; Tinta unita è opaco.</value></data>
   <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Acrilico</value></data>
@@ -320,6 +330,7 @@ Nega:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Impossibile aprire quella conversazione.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>La cronologia delle chat è disattivata</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Nessuna chat salvata</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Nessuna chat recente ha «{0}» nel titolo.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} messaggi, ultimo {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Apri la cartella della cronologia</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>proprio ora</value></data>
@@ -465,4 +476,29 @@ Nega:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperatura</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Quanto variano le risposte: 0 = mirate e ripetibili, più alto = più varie (fino a 2). Vuoto = valore predefinito del modello.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Predefinito del modello</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Salva una nota in memoria: ogni chat la vede</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Riapri una chat dalla cronologia</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Trasformalo in un elenco puntato</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Spiegalo in parole semplici</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Correggi ortografia e grammatica</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Riscrivilo con un tono professionale</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Scrivi una bozza di risposta</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Rendilo più breve e chiaro</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Riassumilo in pochi punti</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Traducilo (in inglese o nella lingua indicata)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Contrasto elevato</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Il contrasto elevato è il tema di Hotline; i temi a contrasto di Windows vengono seguiti automaticamente.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Cerca nelle chat</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Apre anche Hotline. Fai clic, poi premi i tasti. Esc annulla, Backspace cancella.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Premi una scorciatoia…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Non impostata</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Aggiungi Ctrl, Alt, Maiusc o Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Questo tasto non si può usare</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Ripristina le azioni predefinite</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} azioni predefinite aggiunte o aggiornate.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Rinomina</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Usa lettere, cifre, - e _, e un nome non ancora usato.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Eliminare /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Nuovo nome</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Un'altra app usa già questa scorciatoia</value></data>
 </root>

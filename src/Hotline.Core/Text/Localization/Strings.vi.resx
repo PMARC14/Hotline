@@ -32,6 +32,16 @@
   <data name="Set_Theme_System" xml:space="preserve"><value>Dùng cài đặt của Windows</value></data>
   <data name="Set_Theme_Light" xml:space="preserve"><value>Sáng</value></data>
   <data name="Set_Theme_Dark" xml:space="preserve"><value>Tối</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>Màu nhấn</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>Liên kết, tin nhắn của bạn và nút Gửi.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Tím Hotline</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Dùng màu nhấn của Windows</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>Tùy chỉnh</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>Màu nhấn tùy chỉnh</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>Một màu như #E81123, dùng khi Màu nhấn là Tùy chỉnh.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>Hãy dùng dạng #RRGGBB, ví dụ #E81123.</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Một chủ đề tương phản của Windows đang bật: Hotline dùng màu của chủ đề đó và nền đặc.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Hiệu ứng trong suốt đang tắt trong Windows, nên Hotline dùng nền đặc.</value></data>
   <data name="Set_Backdrop" xml:space="preserve"><value>Nền</value></data>
   <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Acrylic trong mờ; Đặc thì không trong suốt.</value></data>
   <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Acrylic</value></data>
@@ -320,6 +330,7 @@ Từ chối:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Không thể mở cuộc trò chuyện đó.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Lịch sử trò chuyện đang tắt</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Chưa có cuộc trò chuyện nào được lưu</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Không có cuộc trò chuyện gần đây nào có “{0}” trong tiêu đề.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} tin nhắn, gần nhất {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Mở thư mục lịch sử</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>vừa xong</value></data>
@@ -465,4 +476,29 @@ Từ chối:
   <data name="Conn_Temperature" xml:space="preserve"><value>Nhiệt độ</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Mức đa dạng của câu trả lời: 0 = tập trung và lặp lại được, cao hơn = đa dạng hơn (tối đa 2). Để trống = mặc định của mô hình.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Mặc định của mô hình</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Lưu ghi chú vào bộ nhớ — mọi cuộc trò chuyện đều thấy</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Mở lại một cuộc trò chuyện trong lịch sử</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Chuyển thành danh sách gạch đầu dòng</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Giải thích bằng lời dễ hiểu</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Sửa chính tả và ngữ pháp</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Viết lại với giọng chuyên nghiệp</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Soạn nháp câu trả lời</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Làm ngắn gọn và rõ ràng hơn</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Tóm tắt thành vài ý</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Dịch (sang tiếng Anh hoặc ngôn ngữ bạn chỉ định)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Độ tương phản cao</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Độ tương phản cao là chủ đề riêng của Hotline; chủ đề tương phản của Windows được áp dụng tự động.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Tìm cuộc trò chuyện</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Cũng mở Hotline. Nhấp vào, rồi nhấn các phím. Esc để hủy, Backspace để xóa.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Nhấn phím tắt…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Chưa đặt</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Thêm Ctrl, Alt, Shift hoặc Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Không thể dùng phím đó</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Khôi phục hành động mặc định</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>Đã thêm hoặc cập nhật {0} hành động mặc định.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Đổi tên</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Dùng chữ cái, chữ số, - và _, và một tên chưa có.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Xóa /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Tên mới</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Một ứng dụng khác đã dùng phím tắt đó</value></data>
 </root>
