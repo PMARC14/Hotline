@@ -20,10 +20,24 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         if (Source?.Invoke(5).FirstOrDefault(c => c.Id != chat.ConversationId) is { } last) Resume(last.Id);
     }
 
-    private void Resume(string id)
+    /// <summary>"/resume [words]": the last chat, or the newest whose title has every word. True when one opened.</summary>
+    public bool ResumeMatching(string query)
     {
-        if (chat.IsBusy) { notices.Show(Strings.Recent_Busy, InfoBarSeverity.Informational); return; }
-        if (!chat.Resume(id)) notices.Show(Strings.Recent_OpenFailed, InfoBarSeverity.Warning);
+        if (Source is null) { notices.Show(Strings.Recent_HistoryOff, InfoBarSeverity.Informational); return false; }
+        if (ResumeCommand.Pick(Source(200), chat.ConversationId, query) is not { } match)
+        {
+            notices.Show(query.Length == 0 ? Strings.Recent_None : L.F(Strings.Recent_NoMatch, query), InfoBarSeverity.Informational);
+            return false;
+        }
+        return Resume(match.Id);
+    }
+
+    private bool Resume(string id)
+    {
+        if (chat.IsBusy) { notices.Show(Strings.Recent_Busy, InfoBarSeverity.Informational); return false; }
+        if (chat.Resume(id)) return true;
+        notices.Show(Strings.Recent_OpenFailed, InfoBarSeverity.Warning);
+        return false;
     }
 
     private void Build()

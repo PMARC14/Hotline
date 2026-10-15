@@ -330,6 +330,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Не вдалося відкрити цю розмову.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Історію чатів вимкнуто</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Збережених чатів поки немає</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Немає недавнього чату з «{0}» у назві.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>Повідомлень: {0}, останнє {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Відкрити папку історії</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>щойно</value></data>

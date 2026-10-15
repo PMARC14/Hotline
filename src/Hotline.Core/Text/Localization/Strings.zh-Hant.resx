@@ -330,6 +330,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>無法開啟該對話。</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>聊天記錄已關閉</value></data>
   <data name="Recent_None" xml:space="preserve"><value>尚無已儲存的聊天</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>沒有標題中含有「{0}」的最近聊天。</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} 則訊息,最後一則:{1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>開啟記錄資料夾</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>剛剛</value></data>

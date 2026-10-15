@@ -330,6 +330,7 @@ Verweigern:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Diese Unterhaltung konnte nicht geöffnet werden.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Der Chatverlauf ist ausgeschaltet</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Noch keine gespeicherten Chats</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Kein letzter Chat hat „{0}“ im Titel.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} Nachrichten, zuletzt {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Verlaufsordner öffnen</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>gerade eben</value></data>

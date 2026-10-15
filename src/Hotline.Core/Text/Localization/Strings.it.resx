@@ -330,6 +330,7 @@ Nega:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Impossibile aprire quella conversazione.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>La cronologia delle chat è disattivata</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Nessuna chat salvata</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Nessuna chat recente ha «{0}» nel titolo.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} messaggi, ultimo {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Apri la cartella della cronologia</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>proprio ora</value></data>

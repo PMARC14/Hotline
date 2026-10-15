@@ -97,6 +97,7 @@ public sealed partial class QuickActions(string directory)
     public static readonly IReadOnlyList<QuickAction> BuiltIns =
     [
         new("remember", "Save a note to memory.md — every chat sees it", ""),
+        new("resume", "Reopen the last chat, or the newest whose title has these words", ""),
     ];
 
     public IReadOnlyList<QuickAction> Matching(string query) =>

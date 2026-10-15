@@ -330,6 +330,7 @@ Denegar:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>No se pudo abrir esa conversación.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>El historial de chats está desactivado</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Aún no hay chats guardados</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Ningún chat reciente tiene «{0}» en el título.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} mensajes, último {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Abrir la carpeta del historial</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>ahora mismo</value></data>

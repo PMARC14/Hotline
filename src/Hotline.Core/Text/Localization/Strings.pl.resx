@@ -330,6 +330,7 @@ Zabroń:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Nie można otworzyć tej rozmowy.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Historia czatów jest wyłączona</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Brak zapisanych czatów</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Żaden ostatni czat nie ma „{0}” w tytule.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>Wiadomości: {0}, ostatnia {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Otwórz folder historii</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>przed chwilą</value></data>

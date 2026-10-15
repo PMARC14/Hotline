@@ -229,7 +229,7 @@ public sealed partial class PopupWindow : Window
     public void RequestRegionCapture() => RegionCaptureRequested?.Invoke();
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
-    /// <param name="conversation">The chat has messages: the panel then uses its two sizes (halfway, then full).</param>
+    /// <param name="conversation">The chat has messages: the panel then expands to halfway at once, and past it with the text.</param>
     public void SetContentHeight(double dip, bool conversation)
     {
         _contentDip = dip; // DIPs: converted with the current monitor scale in ApplyHeight
@@ -346,9 +346,10 @@ public sealed partial class PopupWindow : Window
     private bool _conversation;
 
     /// <summary>
-    /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it uses two sizes per chat (halfway,
-    /// then the maximum; see PopupGeometry.TwoStep) and slides to each. Resizing a window upward is never perfectly
-    /// smooth (each resize shows the old frame at the new top edge for a moment), so it changes size only twice per chat.
+    /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it expands to halfway after the first
+    /// message and then only as far as the text needs (see PopupGeometry.TwoStep), sliding there. Resizing a window
+    /// upward is never perfectly smooth (each resize shows the old frame at the new top edge for a moment), so a short
+    /// answer never resizes it after that first expansion.
     /// </summary>
     private void ApplyHeight(bool force = false)
     {
@@ -363,7 +364,7 @@ public sealed partial class PopupWindow : Window
             contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), _conversation);
         }
         _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
-        // Between the two sizes of a chat the panel slides (only twice per chat); anything else moves at once.
+        // During a chat the panel slides to its new height; anything else (no message yet, a new chat, placing) moves at once.
         if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
             && current.Width == _targetRect.Width && current.Y + current.Height == _targetRect.Y + _targetRect.Height)
         {

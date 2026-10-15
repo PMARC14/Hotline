@@ -330,6 +330,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>해당 대화를 열 수 없습니다.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>채팅 기록이 꺼져 있습니다</value></data>
   <data name="Recent_None" xml:space="preserve"><value>저장된 채팅이 아직 없습니다</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>제목에 “{0}”이(가) 들어간 최근 채팅이 없습니다.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>메시지 {0}개, 최근: {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>기록 폴더 열기</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>방금</value></data>

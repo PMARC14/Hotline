@@ -330,6 +330,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>その会話を開けませんでした。</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>チャット履歴はオフになっています</value></data>
   <data name="Recent_None" xml:space="preserve"><value>保存されたチャットはまだありません</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>タイトルに「{0}」を含む最近のチャットはありません。</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} 件のメッセージ、最終更新: {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>履歴フォルダーを開く</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>たった今</value></data>

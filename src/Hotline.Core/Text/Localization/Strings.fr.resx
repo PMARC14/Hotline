@@ -330,6 +330,7 @@ Refuser :
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Impossible d'ouvrir cette conversation.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>L'historique des conversations est désactivé</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Aucune conversation enregistrée pour l'instant</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Aucune conversation récente n'a « {0} » dans son titre.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} messages, dernier {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Ouvrir le dossier de l'historique</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>à l'instant</value></data>

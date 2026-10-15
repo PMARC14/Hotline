@@ -222,6 +222,9 @@ internal sealed class ChatPresenter
                 }
                 else _notices.Show(L.F(Strings.Chat_NotRemembered, MemoryStore.MaxFactChars), InfoBarSeverity.Warning);
                 return;
+            case SendRoute.Resume r:
+                if (_recent.ResumeMatching(r.Query)) _composer.Text = "";
+                return;
             case SendRoute.NeedsText n:
                 _notices.Show(L.F(Strings.Chat_ActionNeedsText, n.Action), InfoBarSeverity.Warning);
                 return;

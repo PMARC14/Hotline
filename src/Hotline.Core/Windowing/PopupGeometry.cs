@@ -37,10 +37,9 @@ public static class PopupGeometry
     }
 
     /// <summary>
-    /// The panel height for <paramref name="contentPx"/> given the height it has now, in two sizes: after the first
-    /// message it jumps to halfway between the bar and <paramref name="maxPx"/>, and when the text outgrows that, to
-    /// the maximum. Resizing a window that grows upward can't be smooth (Windows shows the old frame at the new top edge
-    /// until the next one is drawn), so it resizes twice per chat instead of once per streamed line. It holds its height
+    /// The panel height for <paramref name="contentPx"/> given the height it has now: after the first message it
+    /// expands to halfway between the bar and <paramref name="maxPx"/> at once (so a short answer never resizes it
+    /// again), and only when the text outgrows that does it grow with the text, up to the maximum. It holds its height
     /// mid-chat. Without a <paramref name="conversation"/> (no message yet, or a new chat) it fits its content
     /// exactly: just the bar, a longer draft, a notice.
     /// </summary>
@@ -48,7 +47,7 @@ public static class PopupGeometry
     {
         if (!conversation || maxPx <= floorPx) return contentPx;
         var half = floorPx + (maxPx - floorPx) / 2;
-        var size = contentPx <= half ? half : maxPx;
+        var size = Math.Max(contentPx, half);
         return Math.Min(maxPx, Math.Max(size, previousPx));
     }
 

@@ -330,6 +330,7 @@ Deny:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>That conversation couldn't be opened.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Chat history is turned off</value></data>
   <data name="Recent_None" xml:space="preserve"><value>No saved chats yet</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>No recent chat has “{0}” in its title.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} messages, last {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Open history folder</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>just now</value></data>

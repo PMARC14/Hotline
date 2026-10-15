@@ -330,6 +330,7 @@ Reddet:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Bu konuşma açılamadı.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Sohbet geçmişi kapalı</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Henüz kaydedilmiş sohbet yok</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Başlığında “{0}” geçen yakın tarihli sohbet yok.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} ileti, son {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Geçmiş klasörünü aç</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>az önce</value></data>

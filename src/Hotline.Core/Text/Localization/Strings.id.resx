@@ -330,6 +330,7 @@ Tolak:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Percakapan itu tidak dapat dibuka.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Riwayat obrolan dinonaktifkan</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Belum ada obrolan yang disimpan</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Tidak ada obrolan terbaru dengan “{0}” di judulnya.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} pesan, terakhir {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Buka folder riwayat</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>baru saja</value></data>

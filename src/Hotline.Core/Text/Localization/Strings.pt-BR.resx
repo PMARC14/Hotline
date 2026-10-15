@@ -330,6 +330,7 @@ Negar:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Não foi possível abrir essa conversa.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>O histórico de chats está desativado</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Nenhum chat salvo ainda</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Nenhum chat recente tem “{0}” no título.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} mensagens, última {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Abrir a pasta do histórico</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>agora mesmo</value></data>

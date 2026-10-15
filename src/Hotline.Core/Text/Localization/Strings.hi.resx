@@ -330,6 +330,7 @@
   <data name="Recent_OpenFailed" xml:space="preserve"><value>वह बातचीत खोली नहीं जा सकी।</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>चैट इतिहास बंद है</value></data>
   <data name="Recent_None" xml:space="preserve"><value>अभी तक कोई सहेजी गई चैट नहीं</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>किसी हाल की चैट के शीर्षक में “{0}” नहीं है।</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} संदेश, अंतिम {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>इतिहास फ़ोल्डर खोलें</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>अभी-अभी</value></data>

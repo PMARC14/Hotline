@@ -330,6 +330,7 @@ Weigeren:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Dat gesprek kon niet worden geopend.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Chatgeschiedenis is uitgeschakeld</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Nog geen opgeslagen chats</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Geen recente chat heeft ‘{0}’ in de titel.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} berichten, laatste {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Map met geschiedenis openen</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>zojuist</value></data>
