@@ -287,6 +287,21 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         UpdateJumpButton();
     }
 
+    /// <summary>
+    /// True when the press landed on <paramref name="owner"/>'s own scrollbar (track, thumb or arrows) — not on its
+    /// content, and not on a code block's sideways scrollbar inside it.
+    /// </summary>
+    private static bool OnScrollBar(DependencyObject? element, ScrollViewer owner)
+    {
+        var onBar = false;
+        for (var e = element; e is not null; e = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(e))
+        {
+            if (e is Microsoft.UI.Xaml.Controls.Primitives.ScrollBar) onBar = true;
+            if (e is ScrollViewer viewer) return onBar && viewer == owner; // the first scroll viewer up owns that bar
+        }
+        return false;
+    }
+
     private static bool AtBottom(ScrollViewer sv) => sv.ScrollableHeight - sv.VerticalOffset < 24;
 
     /// <summary>
@@ -302,7 +317,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         }), handledEventsToo: true);
         sv.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler((_, e) =>
         {
-            if (e.GetCurrentPoint(sv).Position.X > sv.ActualWidth - 20) _follow.UserInput(); // the scrollbar
+            if (OnScrollBar(e.OriginalSource as DependencyObject, sv)) _follow.UserInput(); // not a click on a Copy button near the edge
         }), handledEventsToo: true);
         sv.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler((_, _) =>
         {

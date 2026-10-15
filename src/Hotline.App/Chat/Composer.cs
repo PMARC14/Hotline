@@ -47,7 +47,6 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
         popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: QuickAction a }) Complete(a); };
         popup.SendButton.Click += (_, _) => SendButtonClicked?.Invoke();
-        _defaultBorder = popup.Composer.BorderBrush;
         popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = theme.Style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
         popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = RestingBorder; popup.Composer.BorderThickness = new Thickness(1); };
         // Focus after the window is laid out and active, or the caret may not appear.
@@ -73,10 +72,11 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         ApplySurface();
     }
 
-    private Microsoft.UI.Xaml.Media.Brush? _defaultBorder;
-
-    /// <summary>The message box outline when it doesn't have focus: white in Hotline's high contrast, else Windows' own.</summary>
-    private Microsoft.UI.Xaml.Media.Brush? RestingBorder => theme.Tokens.HighContrast ? PanelTheme.Brush(theme.Tokens.Border) : _defaultBorder;
+    /// <summary>
+    /// The message box outline when it doesn't have focus, from the panel's current colours (a brush captured at start
+    /// would keep the old theme's colour after a light/dark switch). High contrast: full-strength.
+    /// </summary>
+    private Microsoft.UI.Xaml.Media.Brush RestingBorder => PanelTheme.Brush(theme.Tokens.Border);
 
     private static readonly string[] SurfaceKeys = ["ComposerSurface", "TextControlBackground", "TextControlBackgroundFocused", "TextControlBackgroundPointerOver"];
 
@@ -107,7 +107,8 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     {
         var resources = popup.SendButton.Resources;
         foreach (var key in AccentKeys) resources.Remove(key);
-        if (!theme.Tokens.HighContrast)
+        // Windows' contrast themes keep the system's own button colours; Hotline's High contrast uses its cyan accent.
+        if (!theme.Tokens.HighContrast || SystemTheme.Colors.Contrast is null)
         {
             var accent = theme.Tokens.Accent;
             var on = ThemeColor.OnColor(accent);

@@ -40,6 +40,10 @@ public class HotkeyCaptureTests
         => Assert.Equal(HotkeyCapture.Outcome.NeedsModifier, HotkeyCapture.Press(HotkeyModifiers.None, F5).Outcome);
 
     [Fact]
+    public void With_a_modifier_held_an_unusable_key_is_unsupported_not_needs_modifier()
+        => Assert.Equal(HotkeyCapture.Outcome.Unsupported, HotkeyCapture.Press(HotkeyModifiers.Shift, Delete).Outcome);
+
+    [Fact]
     public void A_key_settings_json_cannot_name_is_refused() // the file must be able to hold it
         => Assert.Equal(HotkeyCapture.Outcome.Unsupported, HotkeyCapture.Press(HotkeyModifiers.Control, Delete).Outcome);
 
