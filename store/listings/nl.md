@@ -18,6 +18,7 @@ antwoord live verschijnen, druk nogmaals op de toets en het is weg. Geen browser
 
 GEBRUIK DE AI DIE JE AL HEBT
 • Claude Code: gebruikt je geïnstalleerde Claude Code en de aanmelding daarvan, dus je Claude-abonnement werkt zonder API-sleutel.
+• OpenAI Codex CLI: gebruikt je geïnstalleerde Codex en de aanmelding daarvan, dus je ChatGPT-abonnement werkt zonder API-sleutel.
 • Antigravity CLI (agy): Gemini met je Google-aanmelding.
 • Je eigen API-sleutel: Anthropic, Google Gemini, OpenAI en andere OpenAI-compatibele diensten zoals OpenRouter.
 • Lokale modellen: elke server in OpenAI-stijl op je pc (bijvoorbeeld llama.cpp of LM Studio), zodat niets je computer verlaat.
@@ -50,12 +51,16 @@ Referentiebeheer; geschiedenis, instellingen en geheugen blijven op je pc. Grati
 Geen Copilot-toets? Stel een sneltoets naar keuze in, bijvoorbeeld Ctrl+Alt+H.
 
 Hotline AI is een onafhankelijke app en is niet verbonden aan of goedgekeurd door Microsoft, Anthropic, Google of
-OpenAI. Voor Claude Code, de Antigravity CLI of een AI-API heb je een eigen account bij die dienst nodig.
+OpenAI. Voor Claude Code, Codex, de Antigravity CLI of een AI-API heb je een eigen account bij die dienst nodig.
+
+## Nieuw in deze versie
+
+Kies je accentkleur (Hotline-paars, je Windows-accentkleur of elke kleur) en het nieuwe thema Hoog contrast; Hotline volgt ook de contrastthema's en transparantie-instelling van Windows. Je chatgeschiedenis opent als doorzoekbare lijst (geschiedenisknop, Ctrl+↑ of /resume). Stel de extra sneltoets in door hem gewoon in te drukken. Nieuwe snelle acties: /reply, /shorter, /formal en /bullets. Codeblokken scrollen zijwaarts en het paneel volgt antwoorden terwijl ze binnenkomen.
 
 ## Productkenmerken
 
 1. Opent met de Copilot-toets (of een eigen sneltoets) op het scherm waarop je werkt, klaar om te typen
-2. Werkt met je aanmelding voor Claude Code of Gemini (Antigravity CLI): geen API-sleutel nodig
+2. Werkt met je aanmelding voor Claude Code, ChatGPT (Codex CLI) of Gemini (Antigravity CLI): geen API-sleutel nodig
 3. Eigen sleutel: Anthropic, Google Gemini, OpenAI en OpenAI-compatibele API's
 4. Lokale modellen: elke server in OpenAI-stijl op je pc, niets verlaat je computer
 5. Kies model, provider en denkinspanning in het paneel

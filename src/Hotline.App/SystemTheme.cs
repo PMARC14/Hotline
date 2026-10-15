@@ -32,7 +32,7 @@ internal static class SystemTheme
         get
         {
             try { return Accessibility.HighContrast; }
-            catch (System.Runtime.InteropServices.COMException) { return false; }
+            catch (Exception) { return false; } // outside a CoreWindow WinRT may fail in any form: no contrast theme then
         }
     }
 

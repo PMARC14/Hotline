@@ -18,6 +18,7 @@ yeniden basın, panel kaybolur. Tarayıcı sekmesi yok, bizde hesap yok.
 
 ZATEN SAHİP OLDUĞUNUZ YAPAY ZEKÂYI KULLANIN
 • Claude Code: yüklü Claude Code'unuzu ve oturumunu kullanır; Claude planınız API anahtarı olmadan çalışır.
+• OpenAI Codex CLI: yüklü Codex'inizi ve oturumunu kullanır; ChatGPT planınız API anahtarı olmadan çalışır.
 • Antigravity CLI (agy): Google oturumunuzla Gemini.
 • Kendi API anahtarınız: Anthropic, Google Gemini, OpenAI ve OpenRouter gibi OpenAI uyumlu diğer hizmetler.
 • Yerel modeller: bilgisayarınızdaki OpenAI tarzı herhangi bir sunucu (ör. llama.cpp veya LM Studio); böylece hiçbir şey bilgisayarınızdan çıkmaz.
@@ -50,13 +51,17 @@ kalır; geçmiş, ayarlar ve bellek bilgisayarınızda kalır. Ücretsiz ve aç�
 Copilot tuşunuz yok mu? İstediğiniz bir kısayolu ayarlayın, ör. Ctrl+Alt+H.
 
 Hotline AI bağımsız bir uygulamadır; Microsoft, Anthropic, Google veya OpenAI ile bağlantılı değildir ve onlar
-tarafından onaylanmamıştır. Claude Code, Antigravity CLI veya bir yapay zekâ API'sini kullanmak için o hizmette kendi
+tarafından onaylanmamıştır. Claude Code, Codex, Antigravity CLI veya bir yapay zekâ API'sini kullanmak için o hizmette kendi
 hesabınız gerekir.
+
+## Bu sürümdeki yenilikler
+
+Vurgu renginizi seçin (Hotline moru, Windows vurgu rengi veya herhangi bir renk) ve yeni Yüksek karşıtlık teması; Hotline, Windows karşıtlık temalarını ve saydamlık ayarını da izler. Sohbet geçmişiniz aranabilir bir liste olarak açılır (geçmiş düğmesi, Ctrl+↑ veya /resume). Ek kısayolu tuşlara basarak ayarlayın. Yeni hızlı eylemler: /reply, /shorter, /formal ve /bullets. Kod blokları yana kayar ve panel yanıtları gelirken izler.
 
 ## Ürün özellikleri
 
 1. Copilot tuşuyla (veya herhangi bir kısayolla) çalıştığınız monitörde, yazmaya hazır açılır
-2. Claude Code veya Gemini (Antigravity CLI) oturumunuzla çalışır: API anahtarı gerekmez
+2. Claude Code, ChatGPT (Codex CLI) veya Gemini (Antigravity CLI) oturumunuzla çalışır: API anahtarı gerekmez
 3. Kendi anahtarınız: Anthropic, Google Gemini, OpenAI ve OpenAI uyumlu API'ler
 4. Yerel modeller: bilgisayarınızdaki OpenAI tarzı herhangi bir sunucu, hiçbir şey bilgisayarınızdan çıkmaz
 5. Modeli, sağlayıcıyı ve düşünme eforunu panelden seçin

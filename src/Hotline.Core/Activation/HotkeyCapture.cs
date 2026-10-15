@@ -25,6 +25,6 @@ public static class HotkeyCapture
         var text = new Hotkey(held, virtualKey).ToString();
         if (Hotkey.TryParse(text, out var parsed) && parsed == new Hotkey(held, virtualKey)) return new(Outcome.Bound, text);
         // Text the setting can't hold back (an unnamed key) is refused; a nameable key alone needs a modifier.
-        return Hotkey.TryParseShortcut(text, out _) ? new(Outcome.NeedsModifier) : new(Outcome.Unsupported);
+        return held == HotkeyModifiers.None && Hotkey.TryParseShortcut(text, out _) ? new(Outcome.NeedsModifier) : new(Outcome.Unsupported);
     }
 }

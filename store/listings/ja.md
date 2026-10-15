@@ -15,6 +15,7 @@ Copilot キーを、好きな AI とすばやく話せるチャットに。Claud
 
 すでに使っている AI をそのまま
 • Claude Code: インストール済みの Claude Code とそのサインインを使うので、Claude のプランを API キーなしで利用できます。
+• OpenAI Codex CLI: インストール済みの Codex とそのサインインを使うので、ChatGPT のプランを API キーなしで利用できます。
 • Antigravity CLI (agy): Google アカウントで Gemini を利用。
 • 自分の API キー: Anthropic、Google Gemini、OpenAI のほか、OpenRouter などの OpenAI 互換サービス。
 • ローカル モデル: PC 上の OpenAI 形式のサーバー (llama.cpp や LM Studio など) を使えば、データは PC の外に出ません。
@@ -44,12 +45,16 @@ Hotline AI にはサーバーがなく、何も収集しません。アカウン
 
 Copilot キーがない場合は、Ctrl+Alt+H などお好きなショートカットを設定できます。
 
-Hotline AI は独立したアプリであり、Microsoft、Anthropic、Google、OpenAI とは提携しておらず、承認も受けていません。Claude Code、Antigravity CLI、AI API を使うには、それぞれのサービスのアカウントが必要です。
+Hotline AI は独立したアプリであり、Microsoft、Anthropic、Google、OpenAI とは提携しておらず、承認も受けていません。Claude Code、Codex、Antigravity CLI、AI API を使うには、それぞれのサービスのアカウントが必要です。
+
+## このバージョンの新機能
+
+アクセント カラー (Hotline パープル、Windows のアクセント カラー、任意の色) と新しいハイ コントラスト テーマを選べます。Windows のコントラスト テーマと透明効果の設定にも従います。チャット履歴は検索できる一覧で開きます (履歴ボタン、Ctrl+↑、/resume)。追加のショートカットはキーを押すだけで設定できます。新しいクイック アクション: /reply、/shorter、/formal、/bullets。コード ブロックは横にスクロールし、パネルは生成中の回答に追従します。
 
 ## 製品の機能
 
 1. Copilot キー (または任意のショートカット) で、作業中のモニターにすぐ入力できる状態で開く
-2. Claude Code や Gemini (Antigravity CLI) のサインインで利用でき、API キーは不要
+2. Claude Code、ChatGPT (Codex CLI)、Gemini (Antigravity CLI) のサインインで利用でき、API キーは不要
 3. 自分のキーも使用可能: Anthropic、Google Gemini、OpenAI、OpenAI 互換 API
 4. ローカル モデル: PC 上の OpenAI 形式サーバーなら、データは PC の外に出ない
 5. モデル、プロバイダー、思考の深さをパネルから選択

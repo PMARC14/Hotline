@@ -12,9 +12,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## State (2026-10-12)
 
-- **Released:** the Microsoft Store listing **Hotline AI** is certified (first submission 0.2.4.0). The next Store
-  package is built by hand (`scripts/build-msix.sh --store …`, docs/RELEASING.md) until automatic submission is set up
-  (`.github/workflows/store.yml`, secrets and `STORE_PRODUCT_ID`). GitHub releases stay self-signed test builds.
+- **Released:** Microsoft Store **Hotline AI** (Store ID `9PMW5CR6G3BC`; also `winget install 9PMW5CR6G3BC`).
+  0.2.23.0 submitted 2026-10-14 with the English listing only. Store updates stay **manual** (the owner decided
+  against the Entra/Partner Center setup automatic submission needs): Actions › Store › Run workflow with *Submit*
+  off, upload the artifact (docs/RELEASING.md). GitHub releases stay self-signed test builds.
 - **Merged since the Store submission** (PRs #10–#21, #14):
   - ARM64 builds; x64 + ARM64 `.msixbundle` (#10). Store listing text in 17 languages (`store/listings/`).
   - 17 interface languages (#4, #16; Plan 8; model-drafted, every language spot-checked by Gemini; no RTL yet).
@@ -40,8 +41,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **Store update:** upload the package from the last build (docs/RELEASING.md › Microsoft Store), with the
-   translated listings from `store/listings/`. Then set up automatic submission (store.yml).
+1. **Store 0.2.24 (by hand), once 0.2.23.0 is live:** add the 16 translated listings from `store/listings/` (each
+   needs a description and a screenshot; the English screenshots will do; Partner Center's listing CSV
+   export/import can fill them in one go).
 2. **Windows 11 26H2 follow-ups** (PR #9, draft) once 26H2 reaches the dev PC (it was rolling out from 2026-09-29).
 3. **Codex:** a live check with a Codex sign-in (PR #14 checklist).
 4. **Continue in a web page** (llama.cpp / a routing page): to be designed (Plan 9 left it open).
