@@ -66,7 +66,7 @@ Claude Code, Codex, the Antigravity CLI or an AI API requires your own account w
 
 ## What's new in this version
 
-First release on the Microsoft Store. Native on both x64 and ARM64 (Windows on ARM) PCs.
+Pick your accent colour (Hotline purple, your Windows accent or any colour) and a new High contrast theme; Hotline also follows Windows' contrast themes and transparency setting. Your chat history opens as a searchable list (history button, Ctrl+↑ or /resume). Set the extra shortcut by simply pressing it. New quick actions: /reply, /shorter, /formal and /bullets. Code blocks scroll sideways, and the panel follows answers as they stream in.
 
 ## Product features (up to 20; 200 characters each)
 

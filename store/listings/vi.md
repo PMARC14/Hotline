@@ -18,6 +18,7 @@ gian thực; nhấn phím lần nữa là bảng biến mất. Không cần th�
 
 DÙNG AI BẠN ĐÃ CÓ
 • Claude Code: dùng Claude Code đã cài và tài khoản đăng nhập của nó, nên gói Claude của bạn hoạt động mà không cần khóa API.
+• OpenAI Codex CLI: dùng Codex đã cài và tài khoản đăng nhập của nó, nên gói ChatGPT của bạn hoạt động mà không cần khóa API.
 • Antigravity CLI (agy): Gemini với tài khoản Google của bạn.
 • Khóa API của riêng bạn: Anthropic, Google Gemini, OpenAI và các dịch vụ tương thích OpenAI khác như OpenRouter.
 • Mô hình cục bộ: bất kỳ máy chủ kiểu OpenAI nào trên PC (ví dụ llama.cpp hoặc LM Studio), để không có gì rời khỏi máy tính của bạn.
@@ -50,12 +51,16 @@ của Windows; lịch sử, cài đặt và bộ nhớ ở lại trên PC của 
 Không có phím Copilot? Hãy đặt bất kỳ phím tắt nào bạn thích, ví dụ Ctrl+Alt+H.
 
 Hotline AI là ứng dụng độc lập, không liên kết với cũng như không được Microsoft, Anthropic, Google hay OpenAI bảo trợ.
-Để dùng Claude Code, Antigravity CLI hoặc API AI, bạn cần có tài khoản riêng tại dịch vụ đó.
+Để dùng Claude Code, Codex, Antigravity CLI hoặc API AI, bạn cần có tài khoản riêng tại dịch vụ đó.
+
+## Có gì mới trong phiên bản này
+
+Chọn màu nhấn (tím Hotline, màu nhấn của Windows hoặc bất kỳ màu nào) và chủ đề Độ tương phản cao mới; Hotline cũng theo các chủ đề tương phản và cài đặt trong suốt của Windows. Lịch sử trò chuyện mở dưới dạng danh sách có tìm kiếm (nút lịch sử, Ctrl+↑ hoặc /resume). Đặt phím tắt bổ sung chỉ bằng cách nhấn nó. Hành động nhanh mới: /reply, /shorter, /formal và /bullets. Khối mã cuộn ngang, và bảng điều khiển theo dõi câu trả lời khi chúng xuất hiện.
 
 ## Tính năng sản phẩm
 
 1. Mở bằng phím Copilot (hoặc phím tắt bất kỳ) trên màn hình bạn đang làm việc, sẵn sàng để gõ
-2. Hoạt động với tài khoản Claude Code hoặc Gemini (Antigravity CLI): không cần khóa API
+2. Hoạt động với tài khoản Claude Code, ChatGPT (Codex CLI) hoặc Gemini (Antigravity CLI): không cần khóa API
 3. Dùng khóa của bạn: Anthropic, Google Gemini, OpenAI và API tương thích OpenAI
 4. Mô hình cục bộ: bất kỳ máy chủ kiểu OpenAI nào trên PC, không gì rời khỏi máy tính
 5. Chọn mô hình, nhà cung cấp và mức suy luận ngay trên bảng

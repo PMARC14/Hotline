@@ -476,4 +476,29 @@
   <data name="Conn_Temperature" xml:space="preserve"><value>तापमान</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>उत्तर कितने विविध हों: 0 = केंद्रित और दोहराने योग्य, ज़्यादा = अधिक विविध (2 तक)। खाली = मॉडल का डिफ़ॉल्ट।</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>मॉडल का डिफ़ॉल्ट</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>मेमोरी में नोट सहेजें — हर चैट इसे देखती है</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>इतिहास से कोई चैट फिर खोलें</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>बुलेट सूची में बदलें</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>आसान भाषा में समझाएँ</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>वर्तनी और व्याकरण ठीक करें</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>पेशेवर लहजे में फिर से लिखें</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>जवाब का मसौदा लिखें</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>छोटा और साफ़ करें</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>कुछ बिंदुओं में सारांश दें</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>अनुवाद करें (अंग्रेज़ी में या आपकी बताई भाषा में)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>हाई कॉन्ट्रास्ट</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>हाई कॉन्ट्रास्ट Hotline की अपनी थीम है; Windows की कॉन्ट्रास्ट थीम अपने-आप अपनाई जाती है।</value></data>
+  <data name="History_Search" xml:space="preserve"><value>चैट खोजें</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>यह भी Hotline खोलता है। क्लिक करें, फिर कुंजियाँ दबाएँ। Esc रद्द करता है, Backspace हटाता है।</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>शॉर्टकट दबाएँ…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>सेट नहीं</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift या Win जोड़ें</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>यह कुंजी इस्तेमाल नहीं हो सकती</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>डिफ़ॉल्ट क्रियाएँ वापस लाएँ</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} डिफ़ॉल्ट क्रियाएँ जोड़ी या अपडेट की गईं।</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>नाम बदलें</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>अक्षर, अंक, - और _ इस्तेमाल करें, और ऐसा नाम जो पहले से न हो।</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} हटाएँ?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>नया नाम</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>यह शॉर्टकट पहले से कोई दूसरा ऐप इस्तेमाल कर रहा है</value></data>
 </root>

@@ -476,4 +476,29 @@ Nega:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperatura</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Quanto variano le risposte: 0 = mirate e ripetibili, più alto = più varie (fino a 2). Vuoto = valore predefinito del modello.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Predefinito del modello</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Salva una nota in memoria: ogni chat la vede</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Riapri una chat dalla cronologia</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Trasformalo in un elenco puntato</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Spiegalo in parole semplici</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Correggi ortografia e grammatica</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Riscrivilo con un tono professionale</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Scrivi una bozza di risposta</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Rendilo più breve e chiaro</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Riassumilo in pochi punti</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Traducilo (in inglese o nella lingua indicata)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Contrasto elevato</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Il contrasto elevato è il tema di Hotline; i temi a contrasto di Windows vengono seguiti automaticamente.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Cerca nelle chat</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Apre anche Hotline. Fai clic, poi premi i tasti. Esc annulla, Backspace cancella.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Premi una scorciatoia…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Non impostata</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Aggiungi Ctrl, Alt, Maiusc o Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Questo tasto non si può usare</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Ripristina le azioni predefinite</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} azioni predefinite aggiunte o aggiornate.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Rinomina</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Usa lettere, cifre, - e _, e un nome non ancora usato.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Eliminare /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Nuovo nome</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Un'altra app usa già questa scorciatoia</value></data>
 </root>

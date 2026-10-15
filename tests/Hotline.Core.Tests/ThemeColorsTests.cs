@@ -81,6 +81,25 @@ public class ThemeColorsTests
     }
 
     [Fact]
+    public void Hotlines_own_high_contrast_theme_is_white_on_black_with_a_cyan_accent()
+    {
+        var t = ThemeTokens.For(true, new WindowSettings { Theme = ThemeChoice.HighContrast, Accent = "#E81123" }, Windows());
+        Assert.True(t.HighContrast);
+        Assert.Equal("#FF000000", t.SolidBackground);
+        Assert.Equal("#FFFFFFFF", t.Text);
+        Assert.Equal("#FFFFFFFF", t.Muted);
+        Assert.Equal(ThemeTokens.HighContrastColors.Hotlight, t.Accent); // not the user's accent
+    }
+
+    [Fact]
+    public void A_windows_contrast_theme_wins_over_hotlines_own()
+        => Assert.Equal("#FF75E9FC", ThemeTokens.For(true, new WindowSettings { Theme = ThemeChoice.HighContrast }, Windows(Aquatic)).Accent);
+
+    [Fact]
+    public void High_contrast_theme_is_drawn_solid()
+        => Assert.Equal(BackdropKind.Solid, ThemeTokens.EffectiveBackdrop(BackdropKind.Acrylic, Windows(), ThemeChoice.HighContrast));
+
+    [Fact]
     public void Normal_themes_are_not_high_contrast()
         => Assert.False(ThemeTokens.For(true, Window(), Windows()).HighContrast);
 

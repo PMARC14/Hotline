@@ -47,9 +47,9 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
         popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: QuickAction a }) Complete(a); };
         popup.SendButton.Click += (_, _) => SendButtonClicked?.Invoke();
-        var restingBorder = popup.Composer.BorderBrush;
+        _defaultBorder = popup.Composer.BorderBrush;
         popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = theme.Style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
-        popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = restingBorder; popup.Composer.BorderThickness = new Thickness(1); };
+        popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = RestingBorder; popup.Composer.BorderThickness = new Thickness(1); };
         // Focus after the window is laid out and active, or the caret may not appear.
         popup.Shown += () => popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => popup.Input.Focus(FocusState.Keyboard));
     }
@@ -70,6 +70,29 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.SendButton.FontSize = Math.Round(button * 0.4);
         popup.Composer.CornerRadius = new CornerRadius(Math.Round(button * 0.3) + 4);
         ApplyAccent();
+        ApplySurface();
+    }
+
+    private Microsoft.UI.Xaml.Media.Brush? _defaultBorder;
+
+    /// <summary>The message box outline when it doesn't have focus: white in Hotline's high contrast, else Windows' own.</summary>
+    private Microsoft.UI.Xaml.Media.Brush? RestingBorder => theme.Tokens.HighContrast ? PanelTheme.Brush(theme.Tokens.Border) : _defaultBorder;
+
+    private static readonly string[] SurfaceKeys = ["ComposerSurface", "TextControlBackground", "TextControlBackgroundFocused", "TextControlBackgroundPointerOver"];
+
+    /// <summary>
+    /// High contrast: the message area takes the theme's window colour (black for Hotline's own) and a full-strength
+    /// outline. The caret is drawn from this background, so it stays visible. Otherwise the XAML colour sets apply.
+    /// </summary>
+    private void ApplySurface()
+    {
+        var resources = popup.Composer.Resources;
+        foreach (var key in SurfaceKeys) resources.Remove(key);
+        if (theme.Tokens.HighContrast)
+            foreach (var key in SurfaceKeys) resources[key] = PanelTheme.Brush(theme.Tokens.SolidBackground);
+        if (popup.Input.FocusState == FocusState.Unfocused) popup.Composer.BorderBrush = RestingBorder;
+        popup.Composer.RequestedTheme = theme.Dark ? ElementTheme.Light : ElementTheme.Dark; // re-read the theme resources
+        popup.Composer.RequestedTheme = ElementTheme.Default;
     }
 
     private static readonly string[] AccentKeys =

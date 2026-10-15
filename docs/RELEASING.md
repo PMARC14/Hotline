@@ -15,14 +15,18 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
   `v<version.txt>.<run number>` (e.g. `v0.2.57`); a pushed tag `vX.Y.Z` or **Run workflow** with a version publishes
   that version. Bump `version.txt` (e.g. `0.3`, `1.0`) for a new minor/major line.
   - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
-    `Publisher`): a normal release.
-  - Without them: signed with a throwaway self-signed certificate and published as a **pre-release** test build.
-    Each test build has a new certificate, so testers trust that build's `Hotline.cer` again. `.appinstaller` updates
-    don't apply to test builds, because GitHub's `releases/latest` link skips pre-releases. Automatic updates start
-    with the first trusted-signed release (first one: `v0.2.1`, 2026-10-04).
+    `Publisher`): a normal release. **Set since 2026-10-15** with a self-signed certificate valid until 2036-10-12
+    (`CN=pmarc14 Hotline Dev`; the owner keeps `certs/release/hotline-release.pfx` and its password, git-ignored, and a
+    backup). Users trust `Hotline.cer` once; `.appinstaller` updates then work across releases. To replace it, set the
+    two secrets again (every user then trusts the new `Hotline.cer`).
+  - Without them: signed with a throwaway self-signed certificate, still published as a normal release (since
+    v0.2.24; earlier ones were pre-releases) with notes on trusting `Hotline.cer`. Each such release has a new
+    certificate, so users trust each one's `Hotline.cer` and `.appinstaller` updates don't carry across releases;
+    automatic updates need one stable certificate (a `.pfx` above, or Azure Artifact Signing).
   - Assets: the `.msixbundle` (x64 and ARM64; Windows installs the right one), `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
-- **winget** (`.github/workflows/winget.yml`): disabled until the repository variable `HOTLINE_WINGET_ENABLED=true`;
-  needs trusted signing, a first manual submission (`wingetcreate new`) and a `WINGET_TOKEN` secret (details in the file).
+- **winget:** covered by the Store. Its `msstore` source lists every Store app, so `winget install 9PMW5CR6G3BC`
+  installs Hotline AI and `winget upgrade` updates it, with nothing to submit. (`.github/workflows/winget.yml`, for a
+  `winget-pkgs` entry of the GitHub builds, stays disabled: winget-pkgs rejects self-signed packages.)
 
 Users then either double-click the `.msixbundle`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
 checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background. Updates keep
@@ -64,10 +68,15 @@ the last one. `--display-name` must be a name reserved for the app; the panel an
 
 ### Store workflow (`.github/workflows/store.yml`)
 
-Runs on a pushed tag `vX.Y.Z` or **Actions › Store › Run workflow** with a version (`0.2.60` → package `0.2.60.0`). It
-always builds the Store `.msixbundle` with the identity above and attaches it to the run (download it from the run's
-*Artifacts* to upload by hand). Submitting automatically needs a one-time setup, and only works once the app is live
-(msstore updates a published app; it can't submit while another submission is in certification):
+**How Store updates are released: by hand.** Run **Actions › Store › Run workflow** with a version (`0.2.60` →
+package `0.2.60.0`) and *Submit* off (or push a tag `vX.Y.Z`). It builds the Store `.msixbundle` with the identity
+above and attaches it to the run; download it from the run's *Artifacts* and upload it in a Partner Center
+submission. Store ID: `9PMW5CR6G3BC`.
+
+Automatic submission is **not set up, on purpose**: Partner Center only adds an Entra app from a work account
+(a personal Microsoft account is refused), which means a separate admin user in an Entra tenant just for this. If
+that ever becomes worth it, the one-time setup is below (msstore only updates a published app and can't submit
+while another submission is in certification):
 
 1. **Entra app:** [Entra admin center](https://entra.microsoft.com) › *App registrations › New registration* (e.g.
    "hotline-store"). Copy the *Application (client) ID* and the *Directory (tenant) ID*. Under *Certificates & secrets*
@@ -112,8 +121,8 @@ with `Get-AuthenticodeSignature Hotline_*.msixbundle` (Status *Valid*, signer = 
 **Identity change:** the `Publisher` is part of the package identity, so the first trusted build installs *next to* a
 self-signed one rather than updating it. Uninstall the old Hotline first (settings in `%USERPROFILE%\.hotline` stay)
 and pick Hotline for the Copilot key again. Local dev builds keep the dev publisher (`CN=pmarc14 Hotline Dev`).
-- [ ] **winget** (after signing): submit the first version by hand (`wingetcreate new`), add `WINGET_TOKEN`, set
-      `HOTLINE_WINGET_ENABLED=true` — later releases are submitted automatically.
+- [x] **winget:** through the Store (`winget install 9PMW5CR6G3BC`). A winget-pkgs entry for the GitHub builds would
+      need trusted signing (`winget.yml`, `wingetcreate new`, `WINGET_TOKEN`).
 - [ ] **Final icon** (the user's SVG of an upside-down phone hanging by its cord) → `scripts\make-assets.ps1 -Source`.
 - [ ] **README:** fresh screenshots (`hotline://demo`, blur anything personal). Install steps from Releases are in.
 - [x] **License check:** Apache-2.0 for Hotline; third-party components listed in `THIRD-PARTY-NOTICES.md` (licenses

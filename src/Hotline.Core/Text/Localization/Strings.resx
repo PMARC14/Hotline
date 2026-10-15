@@ -476,4 +476,29 @@ Deny:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperature</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>How varied answers are: 0 = focused and repeatable, higher = more varied (up to 2). Empty = the model's default.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Model's default</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Save a note to memory — every chat sees it</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Reopen a chat from your history</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Turn it into a bulleted list</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Explain it in plain language</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Fix spelling and grammar</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Rewrite it in a professional tone</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Draft a reply to it</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Make it shorter and clearer</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Summarize it in a few points</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Translate it (to English or a language you name)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>High contrast</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>High contrast is Hotline's own; a Windows contrast theme is followed automatically.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Search chats</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Also opens Hotline. Click it, then press the keys. Esc cancels, Backspace clears.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Press a shortcut…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Not set</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Add Ctrl, Alt, Shift or Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>That key can't be used</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Restore default actions</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} default actions added or updated.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Rename</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Use letters, digits, - and _, and a name that isn't taken.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Delete /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>New name</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Another app already uses that shortcut</value></data>
 </root>

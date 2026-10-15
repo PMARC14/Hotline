@@ -87,7 +87,7 @@ public sealed partial class PopupWindow : Window
     /// <summary>Re-applies backdrop, theme, always-on-top and scrollbar from the (live) settings object.</summary>
     public void ApplyAppearance()
     {
-        var backdrop = Hotline.Core.Theming.ThemeTokens.EffectiveBackdrop(_settings.Backdrop, SystemTheme.Colors);
+        var backdrop = Hotline.Core.Theming.ThemeTokens.EffectiveBackdrop(_settings.Backdrop, SystemTheme.Colors, _settings.Theme);
         SystemBackdrop = Backdrops.Create(_settings, backdrop);
         if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
         Root.RequestedTheme = SystemTheme.Resolve(_settings.Theme); // "System" follows Windows live

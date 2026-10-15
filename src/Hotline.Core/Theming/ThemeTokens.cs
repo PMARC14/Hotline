@@ -34,7 +34,9 @@ public sealed partial record ThemeTokens(
     /// </summary>
     public static ThemeTokens For(bool dark, WindowSettings window, WindowsColors? windows = null)
     {
-        var baseTokens = windows?.Contrast is { } c ? Contrast(c) : dark ? Dark : Light;
+        var baseTokens = windows?.Contrast is { } c ? Contrast(c) // Windows' contrast theme always wins
+            : window.Theme == ThemeChoice.HighContrast ? Contrast(HighContrastColors)
+            : dark ? Dark : Light;
         var family = window.FontFamily?.Trim();
         var font = string.IsNullOrEmpty(family) || !SafeFont().IsMatch(family) ? DefaultFont : $"{family}, {DefaultFont}";
         var tokens = baseTokens with { Font = font, FontSizePx = window.FontSize ?? DefaultFontSize };
@@ -48,12 +50,17 @@ public sealed partial record ThemeTokens(
         c.WindowText, c.WindowText, c.Hotlight, c.Window, c.ButtonFace, c.WindowText, c.Window, c.ButtonFace, DefaultFont, DefaultFontSize, 8)
     { SolidBackground = c.Window, HighContrast = true };
 
+    /// <summary>Hotline's own High contrast theme (Theme › High contrast): white on black, cyan links and accent.</summary>
+    public static ContrastColors HighContrastColors { get; } = new(
+        Window: "#FF000000", WindowText: "#FFFFFFFF", Highlight: "#FF1AEBFF", HighlightText: "#FF000000", Hotlight: "#FF1AEBFF",
+        GrayText: "#FFBFBFBF", ButtonFace: "#FF000000", ButtonText: "#FFFFFFFF");
+
     /// <summary>
-    /// The backdrop actually drawn: Solid when Windows' transparency effects are off or a contrast theme is on (as
-    /// Windows' own apps do), otherwise the user's choice.
+    /// The backdrop actually drawn: Solid with a contrast theme (Windows' or Hotline's own) or when Windows'
+    /// transparency effects are off (as Windows' own apps do), otherwise the user's choice.
     /// </summary>
-    public static BackdropKind EffectiveBackdrop(BackdropKind chosen, WindowsColors? windows)
-        => windows is { Contrast: not null } or { Transparency: false } ? BackdropKind.Solid : chosen;
+    public static BackdropKind EffectiveBackdrop(BackdropKind chosen, WindowsColors? windows, ThemeChoice theme = ThemeChoice.System)
+        => windows is { Contrast: not null } or { Transparency: false } || theme == ThemeChoice.HighContrast ? BackdropKind.Solid : chosen;
 
     [GeneratedRegex(@"^[\w ,.\-]+$")]
     private static partial Regex SafeFont();

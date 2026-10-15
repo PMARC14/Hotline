@@ -476,4 +476,29 @@
   <data name="Conn_Temperature" xml:space="preserve"><value>温度</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答のばらつき: 0 = 的確で再現性が高い、高いほど多様 (最大 2)。空欄 = モデルの既定値。</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>モデルの既定値</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>メモを記憶に保存 (すべてのチャットで参照)</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>履歴からチャットを開き直す</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>箇条書きにする</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>わかりやすく説明する</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>スペルと文法を直す</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>ビジネス向けの丁寧な文体に書き直す</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>返信の下書きを作る</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>短く、わかりやすくする</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>要点をまとめる</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>翻訳する (英語、または指定した言語へ)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>ハイ コントラスト</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>ハイ コントラストは Hotline 独自のテーマです。Windows のコントラスト テーマには自動で従います。</value></data>
+  <data name="History_Search" xml:space="preserve"><value>チャットを検索</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>これでも Hotline が開きます。クリックしてからキーを押してください。Esc で取り消し、Backspace で解除します。</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>ショートカットを押してください…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>未設定</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl、Alt、Shift、Win のいずれかを加えてください</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>このキーは使えません</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>既定のアクションを復元</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} 個の既定のアクションを追加または更新しました。</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>名前の変更</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>英数字、-、_ を使い、まだ使われていない名前にしてください。</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
 </root>

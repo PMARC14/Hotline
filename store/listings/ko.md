@@ -15,6 +15,7 @@ Copilot 키를 원하는 AI와 대화하는 빠른 채팅으로 바꿔 보세요
 
 이미 쓰는 AI를 그대로
 • Claude Code: 설치된 Claude Code와 그 로그인을 사용하므로 Claude 요금제를 API 키 없이 쓸 수 있습니다.
+• OpenAI Codex CLI: 설치된 Codex와 그 로그인을 사용하므로 ChatGPT 요금제를 API 키 없이 쓸 수 있습니다.
 • Antigravity CLI(agy): Google 로그인으로 Gemini 사용.
 • 내 API 키: Anthropic, Google Gemini, OpenAI 및 OpenRouter 같은 OpenAI 호환 서비스.
 • 로컬 모델: PC에서 실행되는 OpenAI 방식 서버(예: llama.cpp, LM Studio)를 쓰면 데이터가 PC 밖으로 나가지 않습니다.
@@ -44,12 +45,16 @@ Hotline AI에는 서버가 없고 아무것도 수집하지 않습니다. 계정
 
 Copilot 키가 없나요? Ctrl+Alt+H처럼 원하는 바로 가기 키를 설정하세요.
 
-Hotline AI는 독립 앱이며 Microsoft, Anthropic, Google, OpenAI와 제휴하거나 이들의 보증을 받지 않았습니다. Claude Code, Antigravity CLI 또는 AI API를 사용하려면 해당 서비스의 계정이 필요합니다.
+Hotline AI는 독립 앱이며 Microsoft, Anthropic, Google, OpenAI와 제휴하거나 이들의 보증을 받지 않았습니다. Claude Code, Codex, Antigravity CLI 또는 AI API를 사용하려면 해당 서비스의 계정이 필요합니다.
+
+## 이번 버전의 새로운 기능
+
+강조 색(Hotline 보라, Windows 강조 색 또는 원하는 색)과 새 고대비 테마를 고를 수 있습니다. Windows 대비 테마와 투명 효과 설정도 따릅니다. 채팅 기록은 검색할 수 있는 목록으로 열립니다(기록 단추, Ctrl+↑ 또는 /resume). 추가 바로 가기 키는 그냥 눌러서 설정합니다. 새 빠른 작업: /reply, /shorter, /formal, /bullets. 코드 블록은 가로로 스크롤되고, 패널은 답변이 나오는 대로 따라갑니다.
 
 ## 제품 기능
 
 1. Copilot 키(또는 원하는 바로 가기 키)로 작업 중인 모니터에 바로 입력 가능한 상태로 열림
-2. Claude Code 또는 Gemini(Antigravity CLI) 로그인으로 작동: API 키 불필요
+2. Claude Code, ChatGPT(Codex CLI) 또는 Gemini(Antigravity CLI) 로그인으로 작동: API 키 불필요
 3. 내 키 사용: Anthropic, Google Gemini, OpenAI 및 OpenAI 호환 API
 4. 로컬 모델: PC의 OpenAI 방식 서버를 쓰면 데이터가 PC 밖으로 나가지 않음
 5. 패널에서 모델, 공급자, 추론 강도 선택

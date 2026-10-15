@@ -41,7 +41,8 @@ public sealed class ActivationSettings
 
 public enum PopupLayout { QuickView, CommandBar, SidePanel }
 
-public enum ThemeChoice { System, Light, Dark }
+/// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
+public enum ThemeChoice { System, Light, Dark, HighContrast }
 
 /// <summary>Window backdrop material. Acrylic (translucent) is the default look.</summary>
 public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }

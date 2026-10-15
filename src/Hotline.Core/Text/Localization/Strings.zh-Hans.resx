@@ -476,4 +476,29 @@
   <data name="Conn_Temperature" xml:space="preserve"><value>温度</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答的多样性:0 = 专注且可重复,越高越多样(最高 2)。留空 = 模型默认值。</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>模型默认值</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>把笔记存入记忆 — 每个聊天都能看到</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>从历史记录中重新打开聊天</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>整理成项目列表</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>用通俗的话解释</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>修正拼写和语法</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>改写成专业的语气</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>起草回复</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>改得更简短清楚</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>用几个要点总结</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>翻译(译成英语或你指定的语言)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>高对比度</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>高对比度是 Hotline 自带的主题;Windows 的对比度主题会自动跟随。</value></data>
+  <data name="History_Search" xml:space="preserve"><value>搜索聊天</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>也可打开 Hotline。点击后按下按键。Esc 取消,Backspace 清除。</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>请按快捷键…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>未设置</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>请加上 Ctrl、Alt、Shift 或 Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>不能使用该键</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>恢复默认操作</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>已添加或更新 {0} 个默认操作。</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>重命名</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>请使用字母、数字、- 和 _,且名称不能重复。</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>删除 /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>新名称</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>其他应用已在使用该快捷键</value></data>
 </root>

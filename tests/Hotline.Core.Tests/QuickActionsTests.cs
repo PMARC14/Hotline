@@ -8,11 +8,11 @@ public sealed class QuickActionsTests : IDisposable
     public void Dispose() { if (Directory.Exists(Path.GetDirectoryName(_dir))) Directory.Delete(Path.GetDirectoryName(_dir)!, recursive: true); }
 
     [Fact]
-    public void First_run_writes_the_four_defaults_once()
+    public void First_run_writes_the_defaults_once()
     {
         var actions = new QuickActions(_dir);
         actions.EnsureDefaults();
-        Assert.Equal(["explain", "fix", "summarize", "translate"], actions.List().Select(a => a.Name));
+        Assert.Equal(["bullets", "explain", "fix", "formal", "reply", "shorter", "summarize", "translate"], actions.List().Select(a => a.Name));
         File.Delete(Path.Combine(_dir, "fix.md"));
         actions.EnsureDefaults(); // a deleted default stays deleted
         Assert.DoesNotContain(actions.List(), a => a.Name == "fix");
@@ -65,7 +65,7 @@ public sealed class QuickActionsTests : IDisposable
         var actions = new QuickActions(_dir);
         actions.EnsureDefaults();
         Assert.Equal(["summarize"], actions.Matching("SU").Select(a => a.Name));
-        Assert.Equal(6, actions.Matching("").Count); // the four defaults + the built-ins /remember and /resume
+        Assert.Equal(10, actions.Matching("").Count); // the eight defaults + the built-ins /remember and /resume
     }
 
     [Fact]
@@ -152,5 +152,58 @@ public sealed class QuickActionsTests : IDisposable
         Assert.True(actions.Delete("my-action"));
         Assert.False(actions.Delete("../escape"));
         Assert.DoesNotContain(actions.List(), a => a.Name == "my-action");
+    }
+
+    [Fact]
+    public void Restore_adds_missing_defaults_and_updates_untouched_old_ones_but_keeps_edits()
+    {
+        Directory.CreateDirectory(_dir);
+        // An install from before this version: the old four, one of them edited, one deleted.
+        File.WriteAllText(Path.Combine(_dir, "translate.md"), QuickActions.PreviousDefaults["translate"][0] + "\n");
+        File.WriteAllText(Path.Combine(_dir, "fix.md"), "Fix it my way.\n");
+        File.WriteAllText(Path.Combine(_dir, "summarize.md"), QuickActions.DefaultText("summarize") + "\n"); // already current
+        var actions = new QuickActions(_dir);
+
+        Assert.Equal(6, actions.RestoreDefaults()); // explain + the four new ones, and translate updated
+        var list = actions.List();
+        Assert.Equal(["bullets", "explain", "fix", "formal", "reply", "shorter", "summarize", "translate"], list.Select(a => a.Name));
+        Assert.Equal("Fix it my way.", list.Single(a => a.Name == "fix").Instruction); // edits are never touched
+        Assert.Equal(QuickActions.DefaultText("translate"), list.Single(a => a.Name == "translate").Instruction);
+        Assert.Equal(0, actions.RestoreDefaults()); // nothing left to do
+    }
+
+    [Fact]
+    public void Untouched_defaults_and_built_ins_describe_themselves_in_the_interface_language()
+    {
+        var actions = new QuickActions(_dir);
+        actions.EnsureDefaults();
+        File.WriteAllText(Path.Combine(_dir, "fix.md"), "Fix it my way.\nAnd more.\n");
+        var all = actions.Matching("");
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Action_translate_Desc, all.Single(a => a.Name == "translate").Description);
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Action_remember_Desc, all.Single(a => a.Name == "remember").Description);
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Action_resume_Desc, all.Single(a => a.Name == "resume").Description);
+        Assert.Equal("Fix it my way.", all.Single(a => a.Name == "fix").Description); // edited: its own first line
+    }
+
+    [Fact]
+    public void Every_default_has_a_translated_description()
+    {
+        foreach (var name in QuickActions.DefaultNames)
+            Assert.False(string.IsNullOrWhiteSpace(Hotline.Core.Text.Localization.L.Get("Action_" + name + "_Desc")), name);
+    }
+
+    [Theory]
+    [InlineData("fix", "fix-it", true)]
+    [InlineData("fix", "Fix", true)]        // only the case changes (Windows file names ignore case)
+    [InlineData("fix", "explain", false)]   // taken
+    [InlineData("fix", "remember", false)]  // a built-in
+    [InlineData("fix", "no spaces", false)] // not a file-safe name
+    [InlineData("missing", "other", false)]
+    public void Rename(string from, string to, bool ok)
+    {
+        var actions = new QuickActions(_dir);
+        actions.EnsureDefaults();
+        Assert.Equal(ok, actions.Rename(from, to));
+        if (ok) Assert.Contains(actions.List(), a => a.Name == to);
     }
 }

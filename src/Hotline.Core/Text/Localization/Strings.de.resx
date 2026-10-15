@@ -476,4 +476,29 @@ Verweigern:
   <data name="Conn_Temperature" xml:space="preserve"><value>Temperatur</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Wie abwechslungsreich Antworten sind: 0 = fokussiert und wiederholbar, höher = vielfältiger (bis 2). Leer = Standard des Modells.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Standard des Modells</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Notiz im Gedächtnis speichern – jeder Chat sieht sie</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Einen Chat aus dem Verlauf wieder öffnen</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>In eine Aufzählung umwandeln</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Verständlich erklären</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Rechtschreibung und Grammatik korrigieren</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>In professionellem Ton umschreiben</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Eine Antwort entwerfen</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Kürzer und klarer machen</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>In wenigen Punkten zusammenfassen</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Übersetzen (ins Englische oder in eine genannte Sprache)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Hoher Kontrast</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>„Hoher Kontrast“ ist Hotlines eigenes Design; einem Windows-Kontrastdesign folgt Hotline automatisch.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Chats durchsuchen</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Öffnet Hotline ebenfalls. Klicken, dann die Tasten drücken. Esc bricht ab, Rücktaste löscht.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Tastenkombination drücken…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Nicht festgelegt</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Strg, Alt, Umschalt oder Win dazunehmen</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Diese Taste kann nicht verwendet werden</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Standardaktionen wiederherstellen</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} Standardaktionen hinzugefügt oder aktualisiert.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Umbenennen</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Verwende Buchstaben, Ziffern, - und _ und einen Namen, der noch nicht vergeben ist.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} löschen?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Neuer Name</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Diese Tastenkombination nutzt schon eine andere App</value></data>
 </root>
