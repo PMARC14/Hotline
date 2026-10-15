@@ -64,8 +64,8 @@ Windows 11 22H2 or later, on x64 or ARM64 (Windows on ARM runs the native ARM64 
 
 ### From the Microsoft Store
 
-Search for **Hotline AI** in the Microsoft Store (or `winget install -s msstore "Hotline AI"`). Store installs are
-signed by Microsoft and update automatically.
+Search for **Hotline AI** in the Microsoft Store, or run `winget install 9PMW5CR6G3BC`. Store installs are signed by
+Microsoft and update automatically (also through `winget upgrade`).
 
 ### From Releases
 
@@ -169,7 +169,7 @@ Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
 
-Automatic Microsoft Store updates from each release, Windows 11 26H2 follow-ups, continuing a chat in a local web page
+Windows 11 26H2 follow-ups, continuing a chat in a local web page
 (llama.cpp), and native-speaker reviews of the translations. See [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## Support Hotline

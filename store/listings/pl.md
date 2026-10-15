@@ -18,6 +18,7 @@ pojawia się na bieżąco, naciśnij klawisz ponownie i panel znika. Bez karty p
 
 UŻYWAJ AI, KTÓRĄ JUŻ MASZ
 • Claude Code: korzysta z zainstalowanego Claude Code i jego logowania, więc Twój plan Claude działa bez klucza API.
+• OpenAI Codex CLI: korzysta z zainstalowanego Codex i jego logowania, więc Twój plan ChatGPT działa bez klucza API.
 • Antigravity CLI (agy): Gemini z Twoim kontem Google.
 • Własny klucz API: Anthropic, Google Gemini, OpenAI i inne usługi zgodne z OpenAI, na przykład OpenRouter.
 • Modele lokalne: dowolny serwer w stylu OpenAI na Twoim komputerze (np. llama.cpp lub LM Studio), więc nic nie opuszcza Twojego komputera.
@@ -50,12 +51,16 @@ ustawienia i pamięć zostają na Twoim komputerze. Bezpłatny i open source.
 Nie masz klawisza Copilot? Ustaw dowolny skrót, na przykład Ctrl+Alt+H.
 
 Hotline AI to niezależna aplikacja, niepowiązana z firmami Microsoft, Anthropic, Google ani OpenAI i nieautoryzowana
-przez nie. Korzystanie z Claude Code, Antigravity CLI lub API AI wymaga własnego konta w danej usłudze.
+przez nie. Korzystanie z Claude Code, Codex, Antigravity CLI lub API AI wymaga własnego konta w danej usłudze.
+
+## Nowości w tej wersji
+
+Hotline AI jest teraz dostępny w 17 językach. Nowości: połączenie przez OpenAI Codex CLI; czaty z Claude Code, Codex i agy są kontynuowane tam, gdzie je przerwano, także po ponownym uruchomieniu, i można je kontynuować w terminalu; powiadomienie, gdy odpowiedź skończy się w tle; przy pierwszym uruchomieniu wybierasz, jak Hotline się łączy; więcej opcji dla każdego połączenia (długość odpowiedzi, temperatura, poziom rozumowania).
 
 ## Funkcje produktu
 
 1. Otwiera się klawiszem Copilot (lub dowolnym skrótem) na monitorze, na którym pracujesz, gotowy do pisania
-2. Działa z logowaniem do Claude Code lub Gemini (Antigravity CLI): bez klucza API
+2. Działa z logowaniem do Claude Code, ChatGPT (Codex CLI) lub Gemini (Antigravity CLI): bez klucza API
 3. Własny klucz: Anthropic, Google Gemini, OpenAI i API zgodne z OpenAI
 4. Modele lokalne: dowolny serwer w stylu OpenAI na Twoim komputerze, nic go nie opuszcza
 5. Wybór modelu, dostawcy i intensywności rozumowania w panelu

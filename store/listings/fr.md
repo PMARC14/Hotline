@@ -19,6 +19,7 @@ de compte chez nous.
 
 UTILISEZ L'IA QUE VOUS AVEZ DÉJÀ
 • Claude Code : utilise votre Claude Code installé et sa connexion ; votre forfait Claude fonctionne sans clé API.
+• CLI OpenAI Codex : utilise votre Codex installé et sa connexion ; votre forfait ChatGPT fonctionne sans clé API.
 • CLI Antigravity (agy) : Gemini avec votre compte Google.
 • Votre propre clé API : Anthropic, Google Gemini, OpenAI et d'autres services compatibles OpenAI comme OpenRouter.
 • Modèles locaux : n'importe quel serveur de type OpenAI sur votre PC (par exemple llama.cpp ou LM Studio), pour que rien ne quitte votre ordinateur.
@@ -52,13 +53,17 @@ et open source.
 Pas de touche Copilot ? Définissez le raccourci de votre choix, par exemple Ctrl+Alt+H.
 
 Hotline AI est une application indépendante, non affiliée à Microsoft, Anthropic, Google ou OpenAI, ni approuvée par
-eux. L'utilisation de Claude Code, de la CLI Antigravity ou d'une API d'IA nécessite votre propre compte auprès de ce
+eux. L'utilisation de Claude Code, de Codex, de la CLI Antigravity ou d'une API d'IA nécessite votre propre compte auprès de ce
 service.
+
+## Nouveautés de cette version
+
+Hotline AI est désormais disponible en 17 langues. Nouveau : connexion via la CLI OpenAI Codex ; les conversations avec Claude Code, Codex et agy reprennent là où vous les avez laissées, même après un redémarrage, et peuvent se poursuivre dans un terminal ; une notification quand une réponse se termine en arrière-plan ; au premier lancement, vous choisissez comment Hotline se connecte ; plus d'options par connexion (longueur de réponse, température, effort).
 
 ## Fonctionnalités du produit
 
 1. S'ouvre avec la touche Copilot (ou n'importe quel raccourci) sur l'écran où vous travaillez, prêt à écrire
-2. Fonctionne avec votre connexion Claude Code ou Gemini (CLI Antigravity) : aucune clé API nécessaire
+2. Fonctionne avec votre connexion Claude Code, ChatGPT (CLI Codex) ou Gemini (CLI Antigravity) : aucune clé API nécessaire
 3. Votre propre clé : Anthropic, Google Gemini, OpenAI et API compatibles OpenAI
 4. Modèles locaux : n'importe quel serveur de type OpenAI sur votre PC, rien ne quitte votre ordinateur
 5. Choisissez le modèle, le fournisseur et l'effort de réflexion depuis le panneau
