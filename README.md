@@ -39,9 +39,10 @@ configurable in plain files.
 - **Memory** — `/remember I prefer metric units` (or "remember that…" to an API model, which asks you first) saves a
   note to `memory.md`; every chat sees it, whichever AI you use.
 - **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
-- **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑. A chat with Claude Code, Codex or
-  Antigravity lives in that tool's own history (grouped under *Hotline*), so it picks up where it left off, even after
-  a restart, and **Continue this chat in ▸** opens it in a terminal window.
+- **Chat history** — the 🕘 button, Ctrl+↑ or `/resume words` open a searchable list of your chats. A chat with
+  Claude Code, Codex or Antigravity lives in that tool's own history (grouped under *Hotline*), so it picks up where
+  it left off, even after a restart. **Continue this chat in ▸** opens it in a terminal, or in your chat app: a real
+  copy in Open WebUI, the llama.cpp web UI, LM Studio or any web page you set (Settings › Chat › Continue in).
 - **Answers in the background** — ask something long, switch away, and a Windows notification says when it's ready.
 - **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits
   are retried for you, and Settings › AI connections › *Test connection* checks a key and model.
@@ -169,8 +170,7 @@ Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
 
-Windows 11 26H2 follow-ups, continuing a chat in a local web page
-(llama.cpp), and native-speaker reviews of the translations. See [docs/HANDOFF.md](docs/HANDOFF.md).
+Windows 11 26H2 follow-ups and multi-monitor region capture, then version 1.0. See [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## Support Hotline
 

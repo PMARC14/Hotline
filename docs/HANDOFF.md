@@ -10,12 +10,21 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 the user picks — Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-10-12)
+## State (2026-10-15)
 
-- **Released:** Microsoft Store **Hotline AI** (Store ID `9PMW5CR6G3BC`; also `winget install 9PMW5CR6G3BC`).
-  0.2.23.0 submitted 2026-10-14 with the English listing only. Store updates stay **manual** (the owner decided
-  against the Entra/Partner Center setup automatic submission needs): Actions › Store › Run workflow with *Submit*
-  off, upload the artifact (docs/RELEASING.md). GitHub releases stay self-signed test builds.
+- **Released:** v0.2.24 on GitHub (2026-10-15) — a normal release, signed with Hotline's long-lived self-signed
+  certificate (`CN=pmarc14 Hotline Dev`, until 2036-10-12; repo secrets `HOTLINE_SIGNING_PFX_*`; the owner keeps the
+  `.pfx` and a backup): users trust `Hotline.cer` once, then `.appinstaller` updates work. Microsoft Store **Hotline
+  AI** (Store ID `9PMW5CR6G3BC`; also `winget install 9PMW5CR6G3BC`): 0.2.24.0 built for a hand upload with all 17
+  listings. Store updates stay **manual** (no Entra/Partner Center automation): Actions › Store › Run workflow with
+  *Submit* off, or `scripts/build-msix.sh --store`, then upload (docs/RELEASING.md).
+- **In v0.2.24** (#26, #27): accent colour (Hotline / Windows / custom), a High contrast theme and Windows contrast
+  and transparency followed; code blocks scroll sideways; the transcript follows answers until you scroll; the panel
+  expands to half after the first message, then with the text (sliding); a searchable history list for the 🕘
+  button, Ctrl+↑ and `/resume words`; a key binder for the extra hotkey; quick actions /bullets /formal /reply
+  /shorter, Restore defaults, translated descriptions, Rename.
+- **Branch `continue-in-targets`** (not merged, awaits hand testing): Continue in for web pages, Open WebUI (a real
+  chat through its API) and apps, from a shared list or per connection (spec and plan in `docs/superpowers/`).
 - **Merged since the Store submission** (PRs #10–#21, #14):
   - ARM64 builds; x64 + ARM64 `.msixbundle` (#10). Store listing text in 17 languages (`store/listings/`).
   - 17 interface languages (#4, #16; Plan 8; model-drafted, every language spot-checked by Gemini; no RTL yet).
@@ -41,15 +50,15 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **Store 0.2.24 (by hand), once 0.2.23.0 is live:** add the 16 translated listings from `store/listings/` (each
-   needs a description and a screenshot; the English screenshots will do; Partner Center's listing CSV
-   export/import can fill them in one go).
-2. **Windows 11 26H2 follow-ups** (PR #9, draft) once 26H2 reaches the dev PC (it was rolling out from 2026-09-29).
-3. **Codex:** a live check with a Codex sign-in (PR #14 checklist).
-4. **Continue in a web page** (llama.cpp / a routing page): to be designed (Plan 9 left it open).
-5. Native-speaker review of the translations; right-to-left languages.
-6. Still open from earlier: region capture on multi-monitor / mixed DPI; `odr.exe` (Windows agent connectors) needs
-   build 26220.7262+.
+1. **Hand test** `continue-in-targets` (llama.cpp `?q=`, Open WebUI real chat, LM Studio with the chat copied, ChatGPT
+   and Claude links, a per-connection list), then merge it.
+2. **Windows 11 26H2 follow-ups** (PR #9, draft) once 26H2 reaches the dev PC — part of 1.0.
+3. **Region capture on multi-monitor / mixed DPI** on the owner's desktop — part of 1.0.
+4. **Version 1.0** when: Continue in merged, hand tests done, multi-monitor capture OK, a Store update certified with
+   all languages, 26H2 merged, and settings files staying compatible from then on.
+5. **Codex:** a live check with a Codex sign-in (PR #14 checklist).
+6. Known: the first off-screen layout after a fresh start logs a `LayoutCycleException` (kept running; also on older
+   builds). `odr.exe` (Windows agent connectors) needs build 26220.7262+. No native-speaker reviews or RTL planned.
 
 The personal branch `personal/gemini-web` (a WebView2 Gemini window, never released) is kept up to date by merging
 `main` into it (no force-push).
