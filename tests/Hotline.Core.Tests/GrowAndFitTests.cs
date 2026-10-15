@@ -29,16 +29,17 @@ public class GrowAndFitTests
 
     // Bar (empty panel) 120 px, maximum 720 px, so halfway is 420 px.
     [Theory]
-    [InlineData(120, 126, 126)] // empty panel: the bar measures a little taller than the minimum — fits exactly
-    [InlineData(120, 200, 420)] // a message was sent: straight to halfway
-    [InlineData(420, 400, 420)] // the answer streams in below halfway: no resize
-    [InlineData(420, 500, 720)] // it outgrows halfway: straight to the maximum
-    [InlineData(720, 300, 720)] // shorter mid-chat (an edit, a notice gone): hold
-    [InlineData(720, 140, 140)] // new chat (back to just the bar): fits again
-    [InlineData(120, 900, 720)] // a long chat reopened: the maximum at once
-    [InlineData(800, 500, 720)] // never above the maximum (the screen or setting changed)
-    public void Panel_grows_in_two_sizes_halfway_then_full(int previous, int content, int expected)
-        => Assert.Equal(expected, PopupGeometry.TwoStep(previous, content, floorPx: 120, maxPx: 720, slackPx: 48));
+    [InlineData(120, 126, false, 126)] // empty panel: the bar measures a little taller than the minimum — fits exactly
+    [InlineData(120, 260, false, 260)] // no message yet (a long draft, a notice): fits, no jump to halfway
+    [InlineData(120, 200, true, 420)]  // the first message: straight to halfway
+    [InlineData(420, 400, true, 420)]  // the answer streams in below halfway: no resize
+    [InlineData(420, 500, true, 720)]  // the text outgrows halfway: straight to the maximum
+    [InlineData(720, 300, true, 720)]  // shorter mid-chat (an edit, a notice gone): hold
+    [InlineData(720, 140, false, 140)] // new chat: fits the bar again
+    [InlineData(120, 900, true, 720)]  // a long chat reopened: the maximum at once
+    [InlineData(800, 500, true, 720)]  // never above the maximum (the screen or setting changed)
+    public void Panel_expands_to_half_after_the_first_message_then_full_when_the_text_needs_it(int previous, int content, bool conversation, int expected)
+        => Assert.Equal(expected, PopupGeometry.TwoStep(previous, content, floorPx: 120, maxPx: 720, conversation));
 
     [Theory]
     [InlineData(4000, 3000, 2048, 2048, 1536)]

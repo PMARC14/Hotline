@@ -338,7 +338,8 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
-        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20);
+        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
+            conversation: !_transcript.IsEmpty);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

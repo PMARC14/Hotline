@@ -37,16 +37,16 @@ public static class PopupGeometry
     }
 
     /// <summary>
-    /// The panel height for <paramref name="contentPx"/> given the height it has now, in two sizes: once a chat starts it
-    /// jumps to halfway between the bar and <paramref name="maxPx"/>, and when the conversation outgrows that, to the
-    /// maximum. Resizing a window that grows upward can't be smooth (Windows shows the old frame at the new top edge
+    /// The panel height for <paramref name="contentPx"/> given the height it has now, in two sizes: after the first
+    /// message it jumps to halfway between the bar and <paramref name="maxPx"/>, and when the text outgrows that, to
+    /// the maximum. Resizing a window that grows upward can't be smooth (Windows shows the old frame at the new top edge
     /// until the next one is drawn), so it resizes twice per chat instead of once per streamed line. It holds its height
-    /// mid-chat; within <paramref name="slackPx"/> of <paramref name="floorPx"/> (the empty panel: just the message
-    /// bar, e.g. a new chat) it fits exactly.
+    /// mid-chat. Without a <paramref name="conversation"/> (no message yet, or a new chat) it fits its content
+    /// exactly: just the bar, a longer draft, a notice.
     /// </summary>
-    public static int TwoStep(int previousPx, int contentPx, int floorPx, int maxPx, int slackPx)
+    public static int TwoStep(int previousPx, int contentPx, int floorPx, int maxPx, bool conversation)
     {
-        if (contentPx <= floorPx + slackPx || maxPx <= floorPx) return contentPx;
+        if (!conversation || maxPx <= floorPx) return contentPx;
         var half = floorPx + (maxPx - floorPx) / 2;
         var size = contentPx <= half ? half : maxPx;
         return Math.Min(maxPx, Math.Max(size, previousPx));

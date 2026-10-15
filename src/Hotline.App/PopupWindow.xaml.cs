@@ -229,9 +229,11 @@ public sealed partial class PopupWindow : Window
     public void RequestRegionCapture() => RegionCaptureRequested?.Invoke();
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
-    public void SetContentHeight(double dip)
+    /// <param name="conversation">The chat has messages: the panel then uses its two sizes (halfway, then full).</param>
+    public void SetContentHeight(double dip, bool conversation)
     {
         _contentDip = dip; // DIPs: converted with the current monitor scale in ApplyHeight
+        _conversation = conversation;
         if (AppWindow.IsVisible) ApplyHeight();
     }
 
@@ -339,10 +341,9 @@ public sealed partial class PopupWindow : Window
         }
     }
 
-    /// <summary>The empty panel may measure up to this much taller than the bar and still fit exactly.</summary>
-    private const int EmptySlackDip = 48;
     private RectI _targetRect;
     private RectI? _currentRect;
+    private bool _conversation;
 
     /// <summary>
     /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it uses two sizes per chat (halfway,
@@ -359,7 +360,7 @@ public sealed partial class PopupWindow : Window
         if (GrowMode == GrowMode.Grow)
         {
             var previous = _targetRect.Height > 0 ? _targetRect.Height : _bar.Height;
-            contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), (int)Math.Round(EmptySlackDip * _scale));
+            contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), _conversation);
         }
         _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
         if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
