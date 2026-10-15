@@ -27,24 +27,18 @@ public class GrowAndFitTests
         Assert.Equal(600, r.Height);
     }
 
+    // Bar (empty panel) 120 px, maximum 720 px, so halfway is 420 px.
     [Theory]
-    [InlineData(120, 130, 48, 168)] // a streamed line past the edge: one whole step up
-    [InlineData(168, 150, 48, 168)] // still fits: no resize
-    [InlineData(168, 168, 48, 168)]
-    [InlineData(120, 400, 48, 408)] // a long jump: the smallest number of steps that holds it
-    [InlineData(408, 380, 48, 408)] // a little shorter (an edit, a notice gone): hold the height
-    [InlineData(408, 200, 48, 200)] // much shorter (new chat): follow the content down
-    [InlineData(120, 400, 0, 400)]  // no step: plain content height
-    public void Height_grows_in_steps_and_holds_small_shrinks(int previous, int content, int step, int expected)
-        => Assert.Equal(expected, PopupGeometry.Stepped(previous, content, step, floorPx: 0));
-
-    [Theory]
-    [InlineData(120, 126, 120 + 6)] // empty panel: the bar measures a little taller than the minimum — no extra step on top
-    [InlineData(126, 130, 130)]
-    [InlineData(200, 150, 150)]     // back to (nearly) empty, e.g. a notice closed: fits exactly, no gap kept
-    [InlineData(120, 200, 216)]     // a conversation: steps again
-    public void Near_the_bar_height_the_panel_fits_exactly(int previous, int content, int expected)
-        => Assert.Equal(expected, PopupGeometry.Stepped(previous, content, 48, floorPx: 120));
+    [InlineData(120, 126, 126)] // empty panel: the bar measures a little taller than the minimum — fits exactly
+    [InlineData(120, 200, 420)] // a message was sent: straight to halfway
+    [InlineData(420, 400, 420)] // the answer streams in below halfway: no resize
+    [InlineData(420, 500, 720)] // it outgrows halfway: straight to the maximum
+    [InlineData(720, 300, 720)] // shorter mid-chat (an edit, a notice gone): hold
+    [InlineData(720, 140, 140)] // new chat (back to just the bar): fits again
+    [InlineData(120, 900, 720)] // a long chat reopened: the maximum at once
+    [InlineData(800, 500, 720)] // never above the maximum (the screen or setting changed)
+    public void Panel_grows_in_two_sizes_halfway_then_full(int previous, int content, int expected)
+        => Assert.Equal(expected, PopupGeometry.TwoStep(previous, content, floorPx: 120, maxPx: 720, slackPx: 48));
 
     [Theory]
     [InlineData(4000, 3000, 2048, 2048, 1536)]

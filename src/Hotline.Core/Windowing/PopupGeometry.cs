@@ -37,17 +37,19 @@ public static class PopupGeometry
     }
 
     /// <summary>
-    /// The panel height for <paramref name="contentPx"/> given the height it has now: it grows in whole steps (a streamed
-    /// answer resizes the window once per step, not once per line) and keeps its height through small shrinks; a big
-    /// drop (a new chat) follows the content down. <paramref name="stepPx"/> 0 = no steps. Within one step of
-    /// <paramref name="floorPx"/> (the empty panel: just the message bar) it fits exactly, so an empty panel never
-    /// gets a gap on top.
+    /// The panel height for <paramref name="contentPx"/> given the height it has now, in two sizes: once a chat starts it
+    /// jumps to halfway between the bar and <paramref name="maxPx"/>, and when the conversation outgrows that, to the
+    /// maximum. Resizing a window that grows upward can't be smooth (Windows shows the old frame at the new top edge
+    /// until the next one is drawn), so it resizes twice per chat instead of once per streamed line. It holds its height
+    /// mid-chat; within <paramref name="slackPx"/> of <paramref name="floorPx"/> (the empty panel: just the message
+    /// bar, e.g. a new chat) it fits exactly.
     /// </summary>
-    public static int Stepped(int previousPx, int contentPx, int stepPx, int floorPx)
+    public static int TwoStep(int previousPx, int contentPx, int floorPx, int maxPx, int slackPx)
     {
-        if (stepPx <= 0 || contentPx <= floorPx + stepPx) return contentPx;
-        if (contentPx > previousPx) return previousPx + (contentPx - previousPx + stepPx - 1) / stepPx * stepPx;
-        return contentPx > previousPx - stepPx ? previousPx : contentPx;
+        if (contentPx <= floorPx + slackPx || maxPx <= floorPx) return contentPx;
+        var half = floorPx + (maxPx - floorPx) / 2;
+        var size = contentPx <= half ? half : maxPx;
+        return Math.Min(maxPx, Math.Max(size, previousPx));
     }
 
     /// <summary>Panel width in DIPs: percent of the work area (converted from physical pixels), clamped to [min, max].</summary>

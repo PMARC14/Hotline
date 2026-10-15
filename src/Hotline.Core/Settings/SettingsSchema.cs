@@ -105,7 +105,12 @@ public static class SettingsSchema
         { RefreshPage = true },
         new TextItem(SettingsPage.Appearance, nameof(Strings.Set_AccentColor), nameof(Strings.Set_AccentColor_Desc), "#E81123",
             s => AccentChoice.IsCustomColor(s.Window.Accent) ? s.Window.Accent.Trim().ToUpperInvariant() : null,
-            (s, v) => s.Window.Accent = AccentChoice.IsCustomColor(v) ? v!.Trim().ToUpperInvariant() : AccentChoice.Hotline)
+            (s, v) =>
+            {
+                if (AccentChoice.IsCustomColor(v)) s.Window.Accent = v!.Trim().ToUpperInvariant();
+                else if (AccentChoice.IsCustomColor(s.Window.Accent)) s.Window.Accent = AccentChoice.Hotline; // cleared: back to purple
+                // otherwise ("hotline" / "windows" chosen above) an empty box changes nothing
+            })
         { Validate = AccentChoice.IsCustomColor, Invalid = nameof(Strings.Set_AccentColor_Invalid) },
         Choice(SettingsPage.Appearance, nameof(Strings.Set_Backdrop), nameof(Strings.Set_Backdrop_Desc),
             [(BackdropKind.Acrylic, nameof(Strings.Set_Backdrop_Acrylic)), (BackdropKind.AcrylicThin, nameof(Strings.Set_Backdrop_AcrylicThin)),

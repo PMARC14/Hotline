@@ -339,70 +339,30 @@ public sealed partial class PopupWindow : Window
         }
     }
 
-    private const int GrowStepDip = 48;
-    private bool _animating;
-    private double _animatedHeight;
-    private long _lastFrame;
+    /// <summary>The empty panel may measure up to this much taller than the bar and still fit exactly.</summary>
+    private const int EmptySlackDip = 48;
     private RectI _targetRect;
     private RectI? _currentRect;
 
     /// <summary>
-    /// Sizes the panel to its content. While visible, the height eases toward the new size over a few frames
-    /// (bottom edge fixed) instead of jumping, so streamed answers and new messages slide in smoothly.
+    /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it uses two sizes per chat (halfway,
+    /// then the maximum; see PopupGeometry.TwoStep) and jumps straight to them: a window growing upward can't resize
+    /// smoothly (each resize shows the old frame at the new top edge for a moment), so it resizes as rarely as it can.
     /// </summary>
-    private void ApplyHeight(bool animate = true)
+    private void ApplyHeight(bool force = false)
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
         if (_bar.Width == 0) return;
-        var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
+        var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
-        // While shown, grow in steps (~2 lines): a streamed answer resizes the window once per step, not once per line.
-        if (AppWindow.IsVisible && _currentRect is not null && _targetRect.Height > 0)
-            contentPx = PopupGeometry.Stepped(_targetRect.Height, contentPx, (int)Math.Round(GrowStepDip * _scale), _bar.Height);
+        if (GrowMode == GrowMode.Grow)
+        {
+            var previous = _targetRect.Height > 0 ? _targetRect.Height : _bar.Height;
+            contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), (int)Math.Round(EmptySlackDip * _scale));
+        }
         _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
-        if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
-            || current.Y + current.Height != _targetRect.Y + _targetRect.Height)
-        {
-            StopAnimation();
-            MoveTo(_targetRect);
-            return;
-        }
-        if (_animating) return; // the running animation retargets on its next frame
-        _animating = true;
-        _animatedHeight = current.Height;
-        _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
-        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
-    }
-
-    private void StopAnimation()
-    {
-        if (!_animating) return;
-        _animating = false;
-        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
-    }
-
-    /// <summary>
-    /// One display frame: exponential ease toward the target height (time constant ~70 ms, frame-rate independent),
-    /// bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
-    /// </summary>
-    private void OnFrame(object? sender, object e)
-    {
-        var now = System.Diagnostics.Stopwatch.GetTimestamp();
-        var dt = Math.Clamp((now - _lastFrame) / (double)System.Diagnostics.Stopwatch.Frequency, 0.001, 0.1);
-        _lastFrame = now;
-        if (!AppWindow.IsVisible) { StopAnimation(); return; }
-        var target = _targetRect.Height;
-        _animatedHeight += (target - _animatedHeight) * (1 - Math.Exp(-dt / 0.07));
-        if (Math.Abs(target - _animatedHeight) < 0.75)
-        {
-            StopAnimation();
-            MoveTo(_targetRect);
-            return;
-        }
-        var height = (int)Math.Round(_animatedHeight);
-        if (_currentRect is { } current && current.Height == height) return; // sub-pixel step: nothing to move yet
-        MoveTo(_targetRect with { Y = _targetRect.Y + _targetRect.Height - height, Height = height });
+        if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
     }
 
     private void MoveTo(RectI r)
@@ -439,7 +399,7 @@ public sealed partial class PopupWindow : Window
         var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.VerticalPosition);
         _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
         (_bar, _work, _scale) = (r, new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale);
-        ApplyHeight(animate: false);
+        ApplyHeight(force: true);
     }
 
     private sealed class Releaser(Action release) : IDisposable
