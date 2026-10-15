@@ -75,8 +75,8 @@ public static class OpenWebUiChat
             var text = await response.Content.ReadAsStringAsync(ct);
             string? id = null;
             if (response.IsSuccessStatusCode)
-                try { id = (string?)JsonNode.Parse(text)?["id"]; }
-                catch (System.Text.Json.JsonException) { }
+                try { id = JsonNode.Parse(text) is JsonObject o ? (string?)o["id"] : null; } // a bare value isn't a chat
+                catch (Exception ex) when (ex is System.Text.Json.JsonException or InvalidOperationException or FormatException) { }
             if (string.IsNullOrEmpty(id))
                 throw new OpenWebUiException(OpenWebUiError.BadReply, $"Open WebUI didn't create the chat ({(int)response.StatusCode}).");
             return new Uri($"{root}/c/{Uri.EscapeDataString(id)}");

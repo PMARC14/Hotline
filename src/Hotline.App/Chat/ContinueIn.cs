@@ -70,7 +70,8 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
         {
             case ContinueKind.Web:
             {
-                var filled = ContinueTargets.FillUrl(target.Url ?? "", ContinueTargets.Values(title, chat.Messages, null, model))
+                var file = target.Url?.Contains("{file}", StringComparison.Ordinal) == true ? WriteHandoff() : null;
+                var filled = ContinueTargets.FillUrl(target.Url ?? "", ContinueTargets.Values(title, chat.Messages, file, model))
                     ?? throw new InvalidOperationException(Strings.Continue_NotAWebAddress);
                 if (target.CopyChat || filled.Shortened) CopyChat(title);
                 if (filled.Shortened) notify(Strings.Continue_Shortened);

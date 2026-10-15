@@ -92,6 +92,15 @@ public class OpenWebUiChatTests
     }
 
     [Fact]
+    public async Task A_reply_that_is_not_an_object_is_an_error()
+    {
+        var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(
+            new HttpClient(new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("true") })),
+            new Uri("http://localhost:3000"), "k", Body(), CancellationToken.None));
+        Assert.Equal(OpenWebUiError.BadReply, e.Error);
+    }
+
+    [Fact]
     public async Task A_reply_without_an_id_is_an_error()
     {
         var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(

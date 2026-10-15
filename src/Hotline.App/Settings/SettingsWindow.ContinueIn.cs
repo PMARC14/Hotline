@@ -152,9 +152,10 @@ public sealed partial class SettingsWindow
             test.Click += async (_, _) => status.Text = await TestOpenWebUiAsync(where.Text, key.Password);
             form.Children.Add(model);
             form.Children.Add(key);
-            form.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { test, status } });
+            form.Children.Add(test);
         }
         form.Children.Add(copy);
+        form.Children.Add(status); // the Test result, or why Save was refused
 
         var dialog = new ContentDialog
         {
@@ -168,8 +169,15 @@ public sealed partial class SettingsWindow
         if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return null;
 
         var url = where.Text.Trim();
-        if (t.Kind == ContinueKind.OpenWebUi && key.Password.Trim().Length > 0)
-            _secrets.Set(Chat.ContinueIn.ApiKeyName(url), key.Password.Trim()); // only in Credential Locker, never in a file
+        if (t.Kind == ContinueKind.OpenWebUi)
+        {
+            // Only in Credential Locker, never in a file. The key is stored per address: a new address keeps the saved key.
+            var typed = key.Password.Trim();
+            var oldName = Chat.ContinueIn.ApiKeyName(t.Url ?? "");
+            var newName = Chat.ContinueIn.ApiKeyName(url);
+            if (typed.Length > 0) _secrets.Set(newName, typed);
+            else if (newName != oldName && _secrets.Get(oldName) is { } saved) _secrets.Set(newName, saved);
+        }
         return t with
         {
             Name = name.Text.Trim(),

@@ -79,11 +79,18 @@ public static partial class ContinueTargets
         return parts.Count == 0 ? ("", []) : (parts[0], parts.Skip(1).ToList());
     }
 
-    private static string Fill(string template, ContinueValues v, Func<string, string> encode) => template
-        .Replace("{chat}", encode(v.Chat), StringComparison.Ordinal)
-        .Replace("{last}", encode(v.Last), StringComparison.Ordinal)
-        .Replace("{file}", encode(v.File ?? ""), StringComparison.Ordinal)
-        .Replace("{model}", encode(v.Model), StringComparison.Ordinal);
+    /// <summary>One pass over the template: text put in for one placeholder is never scanned for another.</summary>
+    private static string Fill(string template, ContinueValues v, Func<string, string> encode) =>
+        Placeholder().Replace(template, m => encode(m.Groups[1].Value switch
+        {
+            "chat" => v.Chat,
+            "last" => v.Last,
+            "file" => v.File ?? "",
+            _ => v.Model,
+        }));
+
+    [System.Text.RegularExpressions.GeneratedRegex(@"\{(chat|last|file|model)\}")]
+    private static partial System.Text.RegularExpressions.Regex Placeholder();
 
     private static List<string> Split(string commandLine)
     {
@@ -110,7 +117,7 @@ public static partial class ContinueTargets
     [
         ("llamacpp", LlamaCpp("http://127.0.0.1:8080")),
         ("openwebui", new(ContinueKind.OpenWebUi, "Open WebUI", Url: "http://localhost:3000")),
-        ("lmstudio", new(ContinueKind.App, "LM Studio", Command: @"%LOCALAPPDATA%\Programs\LM Studio\LM Studio.exe", CopyChat: true)),
+        ("lmstudio", new(ContinueKind.App, "LM Studio", Command: @"""%LOCALAPPDATA%\Programs\LM Studio\LM Studio.exe""", CopyChat: true)),
         ("chatgpt", new(ContinueKind.Web, "ChatGPT", Url: "https://chatgpt.com/?q={chat}")),
         ("claude", new(ContinueKind.Web, "Claude", Url: "https://claude.ai/new?q={chat}")),
     ];

@@ -145,12 +145,28 @@ public sealed class ContinueTargetsTests : IDisposable
     }
 
     [Fact]
+    public void The_lm_studio_entry_starts_one_program_whose_path_has_spaces()
+    {
+        var lm = ContinueTargets.ReadyMade.Single(e => e.Key == "lmstudio").Target;
+        var (program, args) = ContinueTargets.FillCommand(lm.Command!, Values(Msg(ChatRole.User, "hi")));
+        Assert.EndsWith(@"\Programs\LM Studio\LM Studio.exe", program);
+        Assert.Empty(args);
+    }
+
+    [Fact]
+    public void Placeholder_text_inside_the_chat_is_left_alone()
+    {
+        var (_, args) = ContinueTargets.FillCommand("app.exe {last}", Values(Msg(ChatRole.User, "use {file} and {model} in the template")));
+        Assert.Equal(["use {file} and {model} in the template"], args);
+    }
+
+    [Fact]
     public void Ready_made_entries_match_the_spec()
     {
         var r = ContinueTargets.ReadyMade.ToDictionary(e => e.Key, e => e.Target);
         Assert.Equal("http://127.0.0.1:8080/?q={chat}&model={model}", r["llamacpp"].Url);
         Assert.Equal((ContinueKind.OpenWebUi, "http://localhost:3000"), (r["openwebui"].Kind, r["openwebui"].Url));
-        Assert.Equal((ContinueKind.App, @"%LOCALAPPDATA%\Programs\LM Studio\LM Studio.exe", true),
+        Assert.Equal((ContinueKind.App, @"""%LOCALAPPDATA%\Programs\LM Studio\LM Studio.exe""", true),
             (r["lmstudio"].Kind, r["lmstudio"].Command, r["lmstudio"].CopyChat));
         Assert.Equal("https://chatgpt.com/?q={chat}", r["chatgpt"].Url);
         Assert.Equal("https://claude.ai/new?q={chat}", r["claude"].Url);
