@@ -501,4 +501,11 @@ Từ chối:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Xóa /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Tên mới</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Một ứng dụng khác đã dùng phím tắt đó</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Cuộc trò chuyện quá dài cho một liên kết: chỉ tin nhắn cuối của bạn được gửi, và toàn bộ cuộc trò chuyện nằm trong bộ nhớ tạm.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Thêm khóa API Open WebUI trong Cài đặt › Trò chuyện › Tiếp tục trong.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI đã từ chối khóa API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI không chạy tại {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Khóa API chỉ được gửi qua https hoặc tới PC này.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Địa chỉ không phải địa chỉ web http hoặc https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Chưa đặt chương trình cho đích này.</value></data>
 </root>

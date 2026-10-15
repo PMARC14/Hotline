@@ -501,4 +501,11 @@ Deny:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Delete /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>New name</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Another app already uses that shortcut</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>The chat was too long for a link: only your last message was sent, and the whole chat is on the clipboard.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Add the Open WebUI API key in Settings › Chat › Continue in.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI refused the API key.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI isn't running at {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>The API key is only sent over https or to this PC.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>The address isn't an http or https web address.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>No program is set for this target.</value></data>
 </root>

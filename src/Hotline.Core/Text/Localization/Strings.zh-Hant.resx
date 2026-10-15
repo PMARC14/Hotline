@@ -501,4 +501,11 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>刪除 /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新名稱</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他應用程式已在使用該快速鍵</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>聊天太長,無法放入連結:只傳送了你的最後一則訊息,完整聊天已複製到剪貼簿。</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>請在 [設定] › [聊天] › [繼續於] 中新增 Open WebUI API 金鑰。</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI 拒絕了 API 金鑰。</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI 未在 {0} 執行。</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API 金鑰只會透過 https 或傳送到這台電腦。</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>該位址不是 http 或 https 網址。</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>此目標未設定程式。</value></data>
 </root>

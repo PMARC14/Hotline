@@ -12,10 +12,11 @@ namespace Hotline.App.Chat;
 /// "Continue this chat in ▸": the chat's own CLI resumes its conversation in a terminal window; another installed CLI
 /// starts a new session that reads the chat from a handoff file (only when the panel has the messages). The program
 /// is started as a normal console program, so Windows opens it in the user's default terminal (Windows Terminal unless
-/// they picked another in Settings › System › For developers).
+/// they picked another in Settings › System › For developers). After them come the user's own targets (web pages, Open
+/// WebUI, apps): the chat's connection's list, or the shared one (ContinueTargets).
 /// </summary>
 internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, string handoffDirectory, Func<string, ValueTask> stopBackend,
-    FileLog log)
+    FileLog log, ISecretStore secrets, HttpClient http, Action<string> notify)
 {
     public sealed record Target(string Label, Func<Task> Run);
 
@@ -49,8 +50,70 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
                 return Task.CompletedTask;
             }));
         }
+        foreach (var target in ContinueTargets.For(Profile(chat.BackendId), settings))
+            targets.Add(new(target.Name, () => RunAsync(target)));
         return targets;
     }
+
+    /// <summary>The Credential Locker key of an Open WebUI target's API key.</summary>
+    public static string ApiKeyName(string url) => $"continue:{url.Trim().TrimEnd('/')}:apiKey";
+
+    /// <summary>
+    /// Runs one of the user's targets. Failures surface as InvalidOperationException with a message for the notice
+    /// (the history list shows "Couldn't open {name}: {message}").
+    /// </summary>
+    private async Task RunAsync(ContinueTarget target)
+    {
+        var title = HistoryStore.TitleOf(chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User)?.Text ?? "");
+        var model = Profile(chat.BackendId)?.Model;
+        switch (target.Kind)
+        {
+            case ContinueKind.Web:
+            {
+                var filled = ContinueTargets.FillUrl(target.Url ?? "", ContinueTargets.Values(title, chat.Messages, null, model))
+                    ?? throw new InvalidOperationException(Strings.Continue_NotAWebAddress);
+                if (target.CopyChat || filled.Shortened) CopyChat(title);
+                if (filled.Shortened) notify(Strings.Continue_Shortened);
+                await Windows.System.Launcher.LaunchUriAsync(filled.Uri);
+                break;
+            }
+            case ContinueKind.OpenWebUi:
+            {
+                var url = target.Url?.Trim() ?? "";
+                if (!Uri.TryCreate(url, UriKind.Absolute, out var baseUrl)) throw new InvalidOperationException(Strings.Continue_NotAWebAddress);
+                var key = secrets.Get(ApiKeyName(url));
+                if (string.IsNullOrWhiteSpace(key)) throw new InvalidOperationException(Strings.Continue_NoKey);
+                if (target.CopyChat) CopyChat(title);
+                var body = OpenWebUiChat.Body(title, target.Model ?? model, chat.Messages, Guid.NewGuid);
+                Uri page;
+                try { page = await OpenWebUiChat.CreateAsync(http, baseUrl, key, body, CancellationToken.None); }
+                catch (OpenWebUiException ex)
+                {
+                    throw new InvalidOperationException(ex.Error switch
+                    {
+                        OpenWebUiError.KeyRefused => Strings.Continue_KeyRefused,
+                        OpenWebUiError.Unreachable => L.F(Strings.Continue_Unreachable, url),
+                        OpenWebUiError.InsecureKey => Strings.Continue_InsecureKey,
+                        _ => ex.Message,
+                    }, ex);
+                }
+                await Windows.System.Launcher.LaunchUriAsync(page);
+                break;
+            }
+            case ContinueKind.App:
+            {
+                var file = target.Command?.Contains("{file}", StringComparison.Ordinal) == true ? WriteHandoff() : null;
+                var (program, args) = ContinueTargets.FillCommand(target.Command ?? "", ContinueTargets.Values(title, chat.Messages, file, model));
+                if (program.Length == 0) throw new InvalidOperationException(Strings.Continue_NoCommand);
+                if (target.CopyChat) CopyChat(title);
+                Launch(new CliCommand(program, args, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+                break;
+            }
+        }
+        log.Info($"continued in {target.Kind} target");
+    }
+
+    private void CopyChat(string title) => MarkdownRenderer.SetClipboardText(CliHandoff.Markdown(title, chat.Messages));
 
     private BackendProfile? Profile(string id) => settings.Chat.Backends.FirstOrDefault(b => b.Id == id);
 

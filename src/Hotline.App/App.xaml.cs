@@ -159,7 +159,8 @@ public partial class App : Application
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
-        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log);
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log, _secrets,
+            new HttpClient { Timeout = TimeSpan.FromSeconds(20) }, m => _presenter.Notice(m, Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational));
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 

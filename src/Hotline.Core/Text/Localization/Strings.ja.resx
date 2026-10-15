@@ -501,4 +501,11 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>チャットがリンクには長すぎたため、最後のメッセージだけを送り、チャット全体をクリップボードにコピーしました。</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>[設定] › [チャット] › [続きを開く] で Open WebUI の API キーを追加してください。</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI が API キーを拒否しました。</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI が {0} で動作していません。</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API キーは https またはこの PC にだけ送信されます。</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>アドレスが http または https の Web アドレスではありません。</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>このターゲットにはプログラムが設定されていません。</value></data>
 </root>

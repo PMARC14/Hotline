@@ -501,4 +501,11 @@ Reddet:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Sohbet bağlantı için fazla uzundu: yalnızca son mesajınız gönderildi, sohbetin tamamı panoda.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Open WebUI API anahtarını Ayarlar › Sohbet › Şurada devam et bölümünde ekleyin.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI API anahtarını reddetti.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI {0} adresinde çalışmıyor.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API anahtarı yalnızca https üzerinden veya bu bilgisayara gönderilir.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Adres bir http veya https web adresi değil.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Bu hedef için bir program ayarlanmadı.</value></data>
 </root>

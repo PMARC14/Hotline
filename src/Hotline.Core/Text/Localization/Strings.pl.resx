@@ -501,4 +501,11 @@ Zabroń:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Usunąć /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nowa nazwa</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Inna aplikacja już używa tego skrótu</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Czat był za długi na link: wysłano tylko Twoją ostatnią wiadomość, a cały czat jest w schowku.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Dodaj klucz API Open WebUI w Ustawienia › Czat › Kontynuuj w.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI odrzucił klucz API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI nie działa pod adresem {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Klucz API jest wysyłany tylko przez https lub do tego komputera.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>To nie jest adres internetowy http ani https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Dla tego celu nie ustawiono programu.</value></data>
 </root>

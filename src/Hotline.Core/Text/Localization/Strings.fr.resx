@@ -501,4 +501,11 @@ Refuser :
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Supprimer /{0} ?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nouveau nom</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Une autre application utilise déjà ce raccourci</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>La conversation était trop longue pour un lien : seul votre dernier message a été envoyé, et toute la conversation est dans le Presse-papiers.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Ajoutez la clé API d'Open WebUI dans Paramètres › Conversation › Continuer dans.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI a refusé la clé API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI ne fonctionne pas à {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>La clé API n'est envoyée qu'en https ou à ce PC.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>L'adresse n'est pas une adresse web http ou https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Aucun programme n'est défini pour cette cible.</value></data>
 </root>

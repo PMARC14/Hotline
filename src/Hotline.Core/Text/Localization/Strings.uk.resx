@@ -501,4 +501,11 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Видалити /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Нова назва</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Це сполучення клавіш уже використовує інша програма</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Чат задовгий для посилання: надіслано лише ваше останнє повідомлення, а весь чат скопійовано в буфер обміну.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Додайте ключ API Open WebUI у Параметри › Чат › Продовжити в.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI відхилив ключ API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI не запущено за адресою {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Ключ API надсилається лише через https або на цей ПК.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Адреса не є веб-адресою http або https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Для цієї цілі не задано програму.</value></data>
 </root>

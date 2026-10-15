@@ -501,4 +501,11 @@ Verweigern:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} löschen?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Neuer Name</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Diese Tastenkombination nutzt schon eine andere App</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Der Chat war zu lang für einen Link: Nur deine letzte Nachricht wurde gesendet, der ganze Chat liegt in der Zwischenablage.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Füge den Open WebUI-API-Schlüssel unter Einstellungen › Chat › Fortsetzen in hinzu.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI hat den API-Schlüssel abgelehnt.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI läuft nicht unter {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Der API-Schlüssel wird nur über https oder an diesen PC gesendet.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Die Adresse ist keine http- oder https-Webadresse.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Für dieses Ziel ist kein Programm festgelegt.</value></data>
 </root>

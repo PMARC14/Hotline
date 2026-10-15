@@ -501,4 +501,11 @@ Tolak:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Hapus /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nama baru</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Aplikasi lain sudah memakai pintasan itu</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Obrolan terlalu panjang untuk tautan: hanya pesan terakhir Anda yang dikirim, dan seluruh obrolan ada di clipboard.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Tambahkan kunci API Open WebUI di Pengaturan › Obrolan › Lanjutkan di.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI menolak kunci API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI tidak berjalan di {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Kunci API hanya dikirim melalui https atau ke PC ini.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Alamat bukan alamat web http atau https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Tidak ada program yang diatur untuk tujuan ini.</value></data>
 </root>

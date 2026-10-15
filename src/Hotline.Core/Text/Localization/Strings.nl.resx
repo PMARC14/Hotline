@@ -501,4 +501,11 @@ Weigeren:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} verwijderen?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nieuwe naam</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Een andere app gebruikt die sneltoets al</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>De chat was te lang voor een link: alleen je laatste bericht is verzonden en de hele chat staat op het klembord.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Voeg de API-sleutel van Open WebUI toe in Instellingen › Chat › Verdergaan in.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI heeft de API-sleutel geweigerd.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI draait niet op {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>De API-sleutel wordt alleen via https of naar deze pc verzonden.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Het adres is geen http- of https-webadres.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Er is geen programma ingesteld voor dit doel.</value></data>
 </root>

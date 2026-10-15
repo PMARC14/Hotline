@@ -501,4 +501,11 @@ Negar:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Excluir /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Novo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Outro app já usa esse atalho</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>O chat era longo demais para um link: só a sua última mensagem foi enviada, e o chat inteiro está na área de transferência.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Adicione a chave de API do Open WebUI em Configurações › Chat › Continuar em.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>O Open WebUI recusou a chave de API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>O Open WebUI não está em execução em {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>A chave de API só é enviada por https ou para este PC.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>O endereço não é um endereço web http ou https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Nenhum programa definido para este destino.</value></data>
 </root>

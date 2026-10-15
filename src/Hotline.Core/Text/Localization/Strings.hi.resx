@@ -501,4 +501,11 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} हटाएँ?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>नया नाम</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>यह शॉर्टकट पहले से कोई दूसरा ऐप इस्तेमाल कर रहा है</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>लिंक के लिए चैट बहुत लंबी थी: केवल आपका अंतिम संदेश भेजा गया, और पूरी चैट क्लिपबोर्ड पर है।</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Open WebUI API कुंजी सेटिंग्स › चैट › इसमें जारी रखें में जोड़ें।</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI ने API कुंजी अस्वीकार कर दी।</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI {0} पर नहीं चल रहा है।</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API कुंजी केवल https पर या इसी PC को भेजी जाती है।</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>यह पता http या https वेब पता नहीं है।</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>इस लक्ष्य के लिए कोई प्रोग्राम सेट नहीं है।</value></data>
 </root>

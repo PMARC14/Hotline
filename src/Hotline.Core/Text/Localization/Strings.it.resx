@@ -501,4 +501,11 @@ Nega:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Eliminare /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nuovo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Un'altra app usa già questa scorciatoia</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>La chat era troppo lunga per un link: è stato inviato solo l'ultimo messaggio e l'intera chat è negli appunti.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Aggiungi la chiave API di Open WebUI in Impostazioni › Chat › Continua in.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI ha rifiutato la chiave API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI non è in esecuzione su {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>La chiave API viene inviata solo tramite https o a questo PC.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>L'indirizzo non è un indirizzo web http o https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Nessun programma impostato per questa destinazione.</value></data>
 </root>

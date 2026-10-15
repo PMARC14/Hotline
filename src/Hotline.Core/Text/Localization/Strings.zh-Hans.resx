@@ -501,4 +501,11 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>删除 /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新名称</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他应用已在使用该快捷键</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>聊天太长,无法放入链接:只发送了你的最后一条消息,完整聊天已复制到剪贴板。</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>请在“设置 › 聊天 › 继续到”中添加 Open WebUI API 密钥。</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI 拒绝了 API 密钥。</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI 未在 {0} 运行。</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API 密钥只会通过 https 或发送到这台电脑。</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>该地址不是 http 或 https 网址。</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>此目标未设置程序。</value></data>
 </root>
