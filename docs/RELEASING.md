@@ -15,7 +15,10 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
   `v<version.txt>.<run number>` (e.g. `v0.2.57`); a pushed tag `vX.Y.Z` or **Run workflow** with a version publishes
   that version. Bump `version.txt` (e.g. `0.3`, `1.0`) for a new minor/major line.
   - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
-    `Publisher`): a normal release.
+    `Publisher`): a normal release. **Set since 2026-10-15** with a self-signed certificate valid until 2036-10-12
+    (`CN=pmarc14 Hotline Dev`; the owner keeps `certs/release/hotline-release.pfx` and its password, git-ignored, and a
+    backup). Users trust `Hotline.cer` once; `.appinstaller` updates then work across releases. To replace it, set the
+    two secrets again (every user then trusts the new `Hotline.cer`).
   - Without them: signed with a throwaway self-signed certificate, still published as a normal release (since
     v0.2.24; earlier ones were pre-releases) with notes on trusting `Hotline.cer`. Each such release has a new
     certificate, so users trust each one's `Hotline.cer` and `.appinstaller` updates don't carry across releases;

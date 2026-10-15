@@ -74,9 +74,10 @@ App Installer opens with an **Install** button). To get automatic updates instea
 and open that.
 
 > **GitHub releases are self-signed** (the Microsoft Store version is signed by Microsoft), so Windows refuses them
-> until you trust that release's `Hotline.cer` once (admin PowerShell, in the download folder):
+> until you trust `Hotline.cer` once (admin PowerShell, in the download folder):
 > `Import-Certificate -FilePath .\Hotline.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople`.
-> Each release has its own certificate, so they don't update automatically; the Store version does.
+> Releases from v0.2.24 on share one certificate (valid until 2036): trust it once, and installs from
+> `Hotline.appinstaller` then update themselves.
 
 The first time you open it, Hotline asks which AI to use: the ones installed on your PC (Claude Code, Codex,
 Antigravity) or an API key. Nothing runs or is sent until you pick one.
@@ -163,7 +164,7 @@ Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status
 
 Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
 to `main` publishes a release with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
-(`.github/workflows/release.yml`); until the signing secrets are set these are self-signed (trust `Hotline.cer` first).
+(`.github/workflows/release.yml`), signed with Hotline's long-lived self-signed certificate (trust `Hotline.cer` once).
 Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
