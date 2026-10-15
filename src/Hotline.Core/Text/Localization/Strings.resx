@@ -508,4 +508,29 @@ Deny:
   <data name="Continue_InsecureKey" xml:space="preserve"><value>The API key is only sent over https or to this PC.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>The address isn't an http or https web address.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>No program is set for this target.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Continue in</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Where "Continue this chat in" can take a chat, besides Claude Code, Codex and agy. Every connection uses this list unless it has its own.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Where this connection's chats can continue.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Use the shared list</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Own list</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>None</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>No places yet.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Web page</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>App</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Add</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Name</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Address</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} is the whole chat, {last} your last message, {model} the chat's model. Example: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Command</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>A program and its arguments; {file} is the chat saved as Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Model (empty: the chat's own)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>API key</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>A key is saved; type a new one to replace it</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Copy the whole chat to the clipboard first</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Test</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Connected: {0} models.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Couldn't connect: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Save</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Fill in the name and the address or command.</value></data>
 </root>

@@ -508,4 +508,29 @@ Nega:
   <data name="Continue_InsecureKey" xml:space="preserve"><value>La chiave API viene inviata solo tramite https o a questo PC.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>L'indirizzo non è un indirizzo web http o https.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>Nessun programma impostato per questa destinazione.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Continua in</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Dove "Continua questa chat in" può portare una chat, oltre a Claude Code, Codex e agy. Ogni connessione usa questo elenco, salvo che abbia il suo.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Dove possono continuare le chat di questa connessione.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Usa l'elenco condiviso</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Elenco proprio</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Nessuno</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Ancora nessuna destinazione.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Pagina web</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>App</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Aggiungi</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Nome</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Indirizzo</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} è l'intera chat, {last} il tuo ultimo messaggio, {model} il modello della chat. Esempio: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Comando</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Un programma e i suoi argomenti; {file} è la chat salvata in Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Modello (vuoto: quello della chat)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>Chiave API</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>È salvata una chiave; scrivine una nuova per sostituirla</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Copia prima l'intera chat negli appunti</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Prova</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Connesso: {0} modelli.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Connessione non riuscita: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Salva</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Inserisci il nome e l'indirizzo o il comando.</value></data>
 </root>

@@ -106,7 +106,7 @@ public sealed partial class SettingsWindow : Window
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
                 if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildToolbarSection(); }
-                if (page == SettingsPage.Chat) BuildMemoryCard();
+                if (page == SettingsPage.Chat) { BuildMemoryCard(); BuildContinueInSection(); }
                 break;
         }
     }

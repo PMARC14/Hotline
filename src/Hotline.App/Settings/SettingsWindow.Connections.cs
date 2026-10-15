@@ -346,6 +346,7 @@ public sealed partial class SettingsWindow
             if (prompt.SelectedItem is ComboBoxItem { Tag: string name }) await Save(x => x.Prompt = name.Length == 0 ? null : name);
         };
         host.Children.Add(Card(Strings.Conn_SystemPrompt, null, prompt));
+        host.Children.Add(ConnectionContinueIn(p, Save));
         if (info.Has(ConnectionField.MaxTokens))
             host.Children.Add(Card(Strings.Conn_MaxTokens, Strings.Conn_MaxTokens_Desc,
                 OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null))));

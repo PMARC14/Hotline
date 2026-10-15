@@ -508,4 +508,29 @@
   <data name="Continue_InsecureKey" xml:space="preserve"><value>Ключ API надсилається лише через https або на цей ПК.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Адреса не є веб-адресою http або https.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>Для цієї цілі не задано програму.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Продовжити в</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Куди "Продовжити цей чат у" може перенести чат, окрім Claude Code, Codex і agy. Кожне підключення використовує цей список, якщо не має власного.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Де можна продовжити чати цього підключення.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Використовувати спільний список</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Власний список</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Немає</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Поки що немає місць.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Веб-сторінка</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>Програма</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Додати</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Назва</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Адреса</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} — увесь чат, {last} — ваше останнє повідомлення, {model} — модель чату. Приклад: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Команда</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Програма та її аргументи; {file} — чат, збережений як Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Модель (порожньо: модель чату)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>Ключ API</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Ключ збережено; введіть новий, щоб замінити його</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Спершу скопіювати весь чат у буфер обміну</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Перевірити</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Підключено: моделей — {0}.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Не вдалося підключитися: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Зберегти</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Укажіть назву та адресу або команду.</value></data>
 </root>
