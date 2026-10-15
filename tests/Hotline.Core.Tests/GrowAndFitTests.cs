@@ -28,6 +28,17 @@ public class GrowAndFitTests
     }
 
     [Theory]
+    [InlineData(120, 130, 48, 168)] // a streamed line past the edge: one whole step up
+    [InlineData(168, 150, 48, 168)] // still fits: no resize
+    [InlineData(168, 168, 48, 168)]
+    [InlineData(120, 400, 48, 408)] // a long jump: the smallest number of steps that holds it
+    [InlineData(408, 380, 48, 408)] // a little shorter (an edit, a notice gone): hold the height
+    [InlineData(408, 200, 48, 200)] // much shorter (new chat): follow the content down
+    [InlineData(120, 400, 0, 400)]  // no step: plain content height
+    public void Height_grows_in_steps_and_holds_small_shrinks(int previous, int content, int step, int expected)
+        => Assert.Equal(expected, PopupGeometry.Stepped(previous, content, step));
+
+    [Theory]
     [InlineData(4000, 3000, 2048, 2048, 1536)]
     [InlineData(1000, 3000, 2048, 683, 2048)]
     [InlineData(800, 600, 2048, 800, 600)]   // never upscale

@@ -1,5 +1,6 @@
 using Hotline.Core.Activation;
 using Hotline.Core.Text.Localization;
+using Hotline.Core.Theming;
 
 namespace Hotline.Core.Settings;
 
@@ -22,7 +23,11 @@ public sealed record ChoiceOption(string Value, string Label);
 
 public sealed record ChoiceItem(SettingsPage Page, string Header, string? Description, IReadOnlyList<ChoiceOption> Options,
     Func<HotlineSettings, string> Get, Action<HotlineSettings, string> Set, bool RequiresRestart = false)
-    : SettingItem(Page, Header, Description, RequiresRestart);
+    : SettingItem(Page, Header, Description, RequiresRestart)
+{
+    /// <summary>Other controls on the page show what this one changes, so the page is rebuilt after a change.</summary>
+    public bool RefreshPage { get; init; }
+}
 
 public sealed record TextItem(SettingsPage Page, string Header, string? Description, string? Placeholder,
     Func<HotlineSettings, string?> Get, Action<HotlineSettings, string?> Set, bool RequiresRestart = false)
@@ -42,6 +47,9 @@ public static class SettingsSchema
             s => get(s).ToString(), (s, v) => set(s, Enum.Parse<T>(v)), restart);
 
     private static string? Blank(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
+
+    /// <summary>The accent picker's "Custom" entry (settings.json stores the colour itself).</summary>
+    private const string CustomAccent = "custom";
 
     private static readonly (KeyAction, string)[] KeyActions =
     [
@@ -84,6 +92,21 @@ public static class SettingsSchema
         Choice(SettingsPage.Appearance, nameof(Strings.Set_Theme), null,
             [(ThemeChoice.System, nameof(Strings.Set_Theme_System)), (ThemeChoice.Light, nameof(Strings.Set_Theme_Light)), (ThemeChoice.Dark, nameof(Strings.Set_Theme_Dark))],
             s => s.Window.Theme, (s, v) => s.Window.Theme = v),
+        new ChoiceItem(SettingsPage.Appearance, nameof(Strings.Set_Accent), nameof(Strings.Set_Accent_Desc),
+            [new(AccentChoice.Hotline, nameof(Strings.Set_Accent_Hotline)), new(AccentChoice.Windows, nameof(Strings.Set_Accent_Windows)),
+             new(CustomAccent, nameof(Strings.Set_Accent_Custom))],
+            s => AccentChoice.IsCustomColor(s.Window.Accent) ? CustomAccent
+                : string.Equals(s.Window.Accent?.Trim(), AccentChoice.Windows, StringComparison.OrdinalIgnoreCase) ? AccentChoice.Windows : AccentChoice.Hotline,
+            (s, v) =>
+            {
+                if (v != CustomAccent) s.Window.Accent = v;
+                else if (!AccentChoice.IsCustomColor(s.Window.Accent)) s.Window.Accent = Theming.ThemeTokens.Dark.Accent.Replace("#FF", "#"); // start from the purple
+            })
+        { RefreshPage = true },
+        new TextItem(SettingsPage.Appearance, nameof(Strings.Set_AccentColor), nameof(Strings.Set_AccentColor_Desc), "#E81123",
+            s => AccentChoice.IsCustomColor(s.Window.Accent) ? s.Window.Accent.Trim().ToUpperInvariant() : null,
+            (s, v) => s.Window.Accent = AccentChoice.IsCustomColor(v) ? v!.Trim().ToUpperInvariant() : AccentChoice.Hotline)
+        { Validate = AccentChoice.IsCustomColor, Invalid = nameof(Strings.Set_AccentColor_Invalid) },
         Choice(SettingsPage.Appearance, nameof(Strings.Set_Backdrop), nameof(Strings.Set_Backdrop_Desc),
             [(BackdropKind.Acrylic, nameof(Strings.Set_Backdrop_Acrylic)), (BackdropKind.AcrylicThin, nameof(Strings.Set_Backdrop_AcrylicThin)),
              (BackdropKind.Mica, nameof(Strings.Set_Backdrop_Mica)), (BackdropKind.Solid, nameof(Strings.Set_Backdrop_Solid))],

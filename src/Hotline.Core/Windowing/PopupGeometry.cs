@@ -36,6 +36,18 @@ public static class PopupGeometry
         return bar with { Y = y, Height = h };
     }
 
+    /// <summary>
+    /// The panel height for <paramref name="contentPx"/> given the height it has now: it grows in whole steps (a streamed
+    /// answer resizes the window once per step, not once per line) and keeps its height through small shrinks; a big
+    /// drop (a new chat) follows the content down. <paramref name="stepPx"/> 0 = no steps.
+    /// </summary>
+    public static int Stepped(int previousPx, int contentPx, int stepPx)
+    {
+        if (stepPx <= 0) return contentPx;
+        if (contentPx > previousPx) return previousPx + (contentPx - previousPx + stepPx - 1) / stepPx * stepPx;
+        return contentPx > previousPx - stepPx ? previousPx : contentPx;
+    }
+
     /// <summary>Panel width in DIPs: percent of the work area (converted from physical pixels), clamped to [min, max].</summary>
     public static int RelativeWidthDip(int workAreaWidthPx, double scale, double percent, int minDip, int maxDip)
         => Math.Clamp((int)Math.Round(workAreaWidthPx / scale * percent / 100.0), minDip, Math.Max(minDip, maxDip));

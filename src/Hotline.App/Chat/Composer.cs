@@ -1,4 +1,5 @@
 using Hotline.Core.Chat;
+using Hotline.Core.Theming;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -68,6 +69,35 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.PlusButton.FontSize = Math.Round(button * 0.45);
         popup.SendButton.FontSize = Math.Round(button * 0.4);
         popup.Composer.CornerRadius = new CornerRadius(Math.Round(button * 0.3) + 4);
+        ApplyAccent();
+    }
+
+    private static readonly string[] AccentKeys =
+        ["AccentButtonBackground", "AccentButtonBackgroundPointerOver", "AccentButtonBackgroundPressed",
+         "AccentButtonForeground", "AccentButtonForegroundPointerOver", "AccentButtonForegroundPressed"];
+
+    /// <summary>
+    /// The Send button in the panel's accent (Windows would draw it in the Windows accent). A contrast theme keeps the
+    /// system's own button colours. The button re-reads its theme resources when its theme flips, so it flips twice.
+    /// </summary>
+    private void ApplyAccent()
+    {
+        var resources = popup.SendButton.Resources;
+        foreach (var key in AccentKeys) resources.Remove(key);
+        if (!theme.Tokens.HighContrast)
+        {
+            var accent = theme.Tokens.Accent;
+            var on = ThemeColor.OnColor(accent);
+            resources["AccentButtonBackground"] = PanelTheme.Brush(accent);
+            resources["AccentButtonBackgroundPointerOver"] = PanelTheme.Brush(ThemeColor.WithAlpha(accent, 0xE6)); // as Windows: 90 %
+            resources["AccentButtonBackgroundPressed"] = PanelTheme.Brush(ThemeColor.WithAlpha(accent, 0xCC)); // 80 %
+            resources["AccentButtonForeground"] = PanelTheme.Brush(on);
+            resources["AccentButtonForegroundPointerOver"] = PanelTheme.Brush(on);
+            resources["AccentButtonForegroundPressed"] = PanelTheme.Brush(ThemeColor.WithAlpha(on, 0xCC));
+        }
+        var b = popup.SendButton;
+        b.RequestedTheme = theme.Dark ? ElementTheme.Light : ElementTheme.Dark;
+        b.RequestedTheme = ElementTheme.Default;
     }
 
     public void SetBusy(bool busy)

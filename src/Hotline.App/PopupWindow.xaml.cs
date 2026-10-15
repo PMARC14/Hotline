@@ -87,10 +87,11 @@ public sealed partial class PopupWindow : Window
     /// <summary>Re-applies backdrop, theme, always-on-top and scrollbar from the (live) settings object.</summary>
     public void ApplyAppearance()
     {
-        SystemBackdrop = Backdrops.Create(_settings);
+        var backdrop = Hotline.Core.Theming.ThemeTokens.EffectiveBackdrop(_settings.Backdrop, SystemTheme.Colors);
+        SystemBackdrop = Backdrops.Create(_settings, backdrop);
         if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
         Root.RequestedTheme = SystemTheme.Resolve(_settings.Theme); // "System" follows Windows live
-        if (_settings.Backdrop != BackdropKind.Solid) Root.Background = null;
+        if (backdrop != BackdropKind.Solid) Root.Background = null;
         MessagesScroll.VerticalScrollBarVisibility = _settings.Scrollbar switch
         {
             ScrollbarStyle.Visible => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Visible,
@@ -338,6 +339,7 @@ public sealed partial class PopupWindow : Window
         }
     }
 
+    private const int GrowStepDip = 48;
     private bool _animating;
     private double _animatedHeight;
     private long _lastFrame;
@@ -355,6 +357,9 @@ public sealed partial class PopupWindow : Window
         var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
+        // While shown, grow in steps (~2 lines): a streamed answer resizes the window once per step, not once per line.
+        if (AppWindow.IsVisible && _currentRect is not null && _targetRect.Height > 0)
+            contentPx = PopupGeometry.Stepped(_targetRect.Height, contentPx, (int)Math.Round(GrowStepDip * _scale));
         _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
         if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
             || current.Y + current.Height != _targetRect.Y + _targetRect.Height)

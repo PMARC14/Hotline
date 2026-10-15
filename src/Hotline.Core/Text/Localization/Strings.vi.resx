@@ -32,6 +32,16 @@
   <data name="Set_Theme_System" xml:space="preserve"><value>Dùng cài đặt của Windows</value></data>
   <data name="Set_Theme_Light" xml:space="preserve"><value>Sáng</value></data>
   <data name="Set_Theme_Dark" xml:space="preserve"><value>Tối</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>Màu nhấn</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>Liên kết, tin nhắn của bạn và nút Gửi.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Tím Hotline</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Dùng màu nhấn của Windows</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>Tùy chỉnh</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>Màu nhấn tùy chỉnh</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>Một màu như #E81123, dùng khi Màu nhấn là Tùy chỉnh.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>Hãy dùng dạng #RRGGBB, ví dụ #E81123.</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Một chủ đề tương phản của Windows đang bật: Hotline dùng màu của chủ đề đó và nền đặc.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Hiệu ứng trong suốt đang tắt trong Windows, nên Hotline dùng nền đặc.</value></data>
   <data name="Set_Backdrop" xml:space="preserve"><value>Nền</value></data>
   <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Acrylic trong mờ; Đặc thì không trong suốt.</value></data>
   <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Acrylic</value></data>

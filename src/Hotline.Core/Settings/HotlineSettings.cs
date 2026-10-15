@@ -62,6 +62,8 @@ public sealed class WindowSettings
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
+    /// <summary>"hotline" (the built-in purple), "windows" (follows the Windows accent) or a "#RRGGBB" colour.</summary>
+    public string Accent { get; set; } = Theming.AccentChoice.Hotline;
     /// <summary>Chat text size in px (10–32); null = the Windows default (scaled by Settings › Accessibility › Text size).</summary>
     public int? FontSize { get; set; }
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>

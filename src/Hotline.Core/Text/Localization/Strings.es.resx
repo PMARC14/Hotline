@@ -32,6 +32,16 @@
   <data name="Set_Theme_System" xml:space="preserve"><value>Usar la configuración de Windows</value></data>
   <data name="Set_Theme_Light" xml:space="preserve"><value>Claro</value></data>
   <data name="Set_Theme_Dark" xml:space="preserve"><value>Oscuro</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>Color de énfasis</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>Enlaces, tus mensajes y el botón Enviar.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Morado de Hotline</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Usar el color de énfasis de Windows</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>Personalizado</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>Color de énfasis personalizado</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>Un color como #E81123, que se usa cuando el color de énfasis es Personalizado.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>Usa el formato #RRGGBB, por ejemplo #E81123.</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Hay un tema de contraste de Windows activado: Hotline usa sus colores y un fondo opaco.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Los efectos de transparencia están desactivados en Windows, así que Hotline usa un fondo opaco.</value></data>
   <data name="Set_Backdrop" xml:space="preserve"><value>Fondo</value></data>
   <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Acrílico es translúcido; Sólido es opaco.</value></data>
   <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Acrílico</value></data>

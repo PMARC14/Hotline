@@ -113,7 +113,7 @@ internal sealed class ChatPresenter
     public void ApplyAppearance()
     {
         _theme.Update();
-        if (_settings.Window.Backdrop == BackdropKind.Solid)
+        if (_theme.Backdrop == BackdropKind.Solid)
             _popup.Root.Background = PanelTheme.Brush(_theme.Tokens.SolidBackground); // follows the chosen theme, not the OS theme
         _composer.ApplyAppearance();
         if (_lastLook is not null && _theme.Look != _lastLook) _transcript.Rebuild();

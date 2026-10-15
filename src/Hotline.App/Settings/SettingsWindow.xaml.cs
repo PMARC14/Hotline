@@ -105,7 +105,7 @@ public sealed partial class SettingsWindow : Window
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
-                if (page == SettingsPage.Appearance) BuildToolbarSection();
+                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildToolbarSection(); }
                 if (page == SettingsPage.Chat) BuildMemoryCard();
                 break;
         }
@@ -178,7 +178,12 @@ public sealed partial class SettingsWindow : Window
                 var combo = new ComboBox { MinWidth = 200 };
                 foreach (var o in c.Options) combo.Items.Add(new ComboBoxItem { Content = L.Get(o.Label), Tag = o.Value });
                 combo.SelectedItem = combo.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == c.Get(s));
-                combo.SelectionChanged += (_, _) => { if (combo.SelectedItem is ComboBoxItem { Tag: string v }) _settings.Update(x => c.Set(x, v)); };
+                combo.SelectionChanged += (_, _) =>
+                {
+                    if (combo.SelectedItem is not ComboBoxItem { Tag: string v } || v == c.Get(_settings.Current)) return;
+                    _settings.Update(x => c.Set(x, v));
+                    if (c.RefreshPage) DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
+                };
                 return Card(header, description, combo);
             }
             case TextItem tx:
@@ -199,6 +204,15 @@ public sealed partial class SettingsWindow : Window
             default:
                 return Card(header, description, null);
         }
+    }
+
+    /// <summary>Says when Windows' contrast theme or transparency switch overrides the colours or backdrop chosen here.</summary>
+    private void BuildWindowsOverrideNote()
+    {
+        var windows = SystemTheme.Colors;
+        var message = windows.Contrast is not null ? Strings.Set_Override_Contrast : !windows.Transparency ? Strings.Set_Override_Transparency : null;
+        if (message is null) return;
+        PageHost.Children.Insert(1, new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Informational, Message = message, Margin = new Thickness(0, 0, 0, 8) });
     }
 
     /// <summary>Choosing Hotline for the Copilot key happens in Windows Settings; this explains it and opens the page.</summary>
