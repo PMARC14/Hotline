@@ -1,7 +1,7 @@
 # Submits each full (non-pre-release) GitHub Release to winget (microsoft/winget-pkgs) as PMARC14.Hotline.
 # DISABLED until the repository variable HOTLINE_WINGET_ENABLED is 'true'. Prerequisites:
 #   - releases signed with a trusted certificate (winget validation rejects self-signed MSIX packages)
-#   - the first version submitted once by hand (wingetcreate new <msix url>), so the package identifier exists
+#   - the first version submitted once by hand (wingetcreate new <.msixbundle url>), so the package identifier exists
 #   - a classic GitHub token with public_repo scope as the secret WINGET_TOKEN (it opens the PR to winget-pkgs)
 name: winget
 
@@ -28,7 +28,7 @@ jobs:
           if (-not $env:WINGET_TOKEN) { throw 'Secret WINGET_TOKEN is not set (see the comment at the top of this workflow).' }
           $tag = if ('${{ github.event_name }}' -eq 'release') { '${{ github.event.release.tag_name }}' } else { '${{ inputs.tag }}' }
           $version = $tag.TrimStart('v')
-          $msix = gh release view $tag --repo '${{ github.repository }}' --json assets --jq '.assets[] | select(.name | endswith(".msix")) | .url'
-          if (-not $msix) { throw "Release $tag has no .msix" }
+          $msix = gh release view $tag --repo '${{ github.repository }}' --json assets --jq '.assets[] | select(.name | endswith(".msixbundle")) | .url' # x64 + ARM64 in one file
+          if (-not $msix) { throw "Release $tag has no .msixbundle" }
           Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
           .\wingetcreate.exe update PMARC14.Hotline --version $version --urls $msix --submit --token $env:WINGET_TOKEN
