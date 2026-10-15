@@ -1,4 +1,5 @@
 using Hotline.Core.Backends;
+using Hotline.Core.Chat;
 using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
@@ -73,6 +74,74 @@ public sealed class ContinueTargetsTests : IDisposable
         var back = new SettingsStore(_dir).Load();
         Assert.True(Assert.Single(back.Chat.ContinueIn!).CopyChat);
         Assert.Equal(ContinueKind.OpenWebUi, Assert.Single(back.Chat.Backends.Single(b => b.Id == "claude").ContinueIn!).Kind);
+    }
+
+    // ---- filling (Task 2) ----------------------------------------------------------------------
+
+    private static ChatMessage Msg(ChatRole role, string text) => new(Guid.NewGuid().ToString("N"), role, text, [], DateTimeOffset.Now);
+
+    private static ContinueValues Values(params ChatMessage[] messages) =>
+        ContinueTargets.Values("Title", messages, file: @"C:\Temp\chat.md", model: "llama3");
+
+    [Fact]
+    public void Chat_value_is_the_continue_prompt_and_the_transcript()
+    {
+        var v = Values(Msg(ChatRole.User, "hi"), Msg(ChatRole.Assistant, "hello"), Msg(ChatRole.User, "more"));
+        Assert.StartsWith("Here is a conversation from another app. Continue it: reply to the last message.\n\n# Title", v.Chat);
+        Assert.Contains("## Assistant", v.Chat);
+        Assert.Equal("more", v.Last);
+        Assert.Equal("llama3", v.Model);
+    }
+
+    [Fact]
+    public void Values_are_url_encoded()
+    {
+        const string tricky = "a&b #c %d 😀\nline";
+        var filled = ContinueTargets.FillUrl("https://x.test/?q={last}", Values(Msg(ChatRole.User, tricky)));
+        Assert.NotNull(filled);
+        Assert.Equal(tricky, Uri.UnescapeDataString(filled!.Uri.AbsoluteUri.Split("?q=")[1]));
+    }
+
+    [Theory]
+    [InlineData("{last}", "file:///c:/windows/x.txt")]
+    [InlineData("{last}", "javascript:alert(1)")]
+    [InlineData("ftp://x.test/{last}", "a")]
+    public void Only_http_and_https_are_opened(string template, string last)
+        => Assert.Null(ContinueTargets.FillUrl(template, Values(Msg(ChatRole.User, last))));
+
+    [Fact]
+    public void An_https_template_is_opened() => Assert.NotNull(ContinueTargets.FillUrl("https://x.test/?q={chat}", Values(Msg(ChatRole.User, "hi"))));
+
+    [Fact]
+    public void A_long_chat_falls_back_to_the_last_message()
+    {
+        var messages = Enumerable.Range(0, 5000).Select(i => Msg(ChatRole.User, "0123456789")).Append(Msg(ChatRole.User, "the last one")).ToArray();
+        var filled = ContinueTargets.FillUrl("https://x.test/?q={chat}", Values(messages))!;
+        Assert.True(filled.Shortened);
+        Assert.True(filled.Uri.AbsoluteUri.Length <= ContinueTargets.MaxUrlLength);
+        Assert.EndsWith(Uri.EscapeDataString("the last one"), filled.Uri.AbsoluteUri);
+    }
+
+    [Fact]
+    public void Commands_split_like_a_command_line()
+    {
+        var (program, args) = ContinueTargets.FillCommand("\"C:\\Program Files\\X\\x.exe\" --open \"{file}\"", Values(Msg(ChatRole.User, "hi")));
+        Assert.Equal(@"C:\Program Files\X\x.exe", program);
+        Assert.Equal(["--open", @"C:\Temp\chat.md"], args);
+    }
+
+    [Fact]
+    public void Environment_variables_expand_in_the_command()
+    {
+        var (program, _) = ContinueTargets.FillCommand(@"%LOCALAPPDATA%\x.exe", Values(Msg(ChatRole.User, "hi")));
+        Assert.Equal(Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA")!, "x.exe"), program);
+    }
+
+    [Fact]
+    public void Chat_text_stays_one_argument()
+    {
+        var (_, args) = ContinueTargets.FillCommand("app.exe --prompt {last}", Values(Msg(ChatRole.User, "say \"hi\" & run calc")));
+        Assert.Equal(["--prompt", "say \"hi\" & run calc"], args);
     }
 
     [Fact]
