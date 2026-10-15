@@ -55,7 +55,7 @@ Hotline AI là ứng dụng độc lập, không liên kết với cũng như kh
 
 ## Có gì mới trong phiên bản này
 
-Hotline AI nay có 17 ngôn ngữ. Mới: kết nối OpenAI Codex CLI; cuộc trò chuyện với Claude Code, Codex và agy tiếp tục từ chỗ bạn dừng lại, kể cả sau khi khởi động lại, và có thể tiếp tục trong terminal; thông báo khi câu trả lời hoàn tất ở chế độ nền; lần chạy đầu tiên, bạn chọn cách Hotline kết nối; thêm tùy chọn cho mỗi kết nối (độ dài câu trả lời, temperature, mức suy nghĩ).
+Chọn màu nhấn (tím Hotline, màu nhấn của Windows hoặc bất kỳ màu nào) và chủ đề Độ tương phản cao mới; Hotline cũng theo các chủ đề tương phản và cài đặt trong suốt của Windows. Lịch sử trò chuyện mở dưới dạng danh sách có tìm kiếm (nút lịch sử, Ctrl+↑ hoặc /resume). Đặt phím tắt bổ sung chỉ bằng cách nhấn nó. Hành động nhanh mới: /reply, /shorter, /formal và /bullets. Khối mã cuộn ngang, và bảng điều khiển theo dõi câu trả lời khi chúng xuất hiện.
 
 ## Tính năng sản phẩm
 

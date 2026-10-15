@@ -49,7 +49,7 @@ Hotline AI 是一款獨立應用程式,與 Microsoft、Anthropic、Google 或 Op
 
 ## 此版本的新功能
 
-Hotline AI 現已支援 17 種語言。新功能:OpenAI Codex CLI 連線;與 Claude Code、Codex 和 agy 的聊天即使在重新啟動後也能從上次中斷處繼續,也可以在終端機中繼續;背景中的回答完成時發出通知;第一次執行時選擇 Hotline 的連線方式;每個連線提供更多選項(回答長度、temperature、思考程度)。
+可選擇輔色 (Hotline 紫、Windows 輔色或任何色彩) 和新的高對比佈景主題;Hotline 也會跟隨 Windows 的對比佈景主題和透明效果設定。聊天歷程記錄會以可搜尋的清單開啟 (歷程記錄按鈕、Ctrl+↑ 或 /resume)。額外快速鍵只要按下即可設定。新的快速動作:/reply、/shorter、/formal 和 /bullets。程式碼區塊可橫向捲動,面板會跟著產生中的回答。
 
 ## 產品功能
 

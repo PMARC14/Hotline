@@ -55,7 +55,7 @@ OpenAI. Voor Claude Code, Codex, de Antigravity CLI of een AI-API heb je een eig
 
 ## Nieuw in deze versie
 
-Hotline AI is nu beschikbaar in 17 talen. Nieuw: verbinding via de OpenAI Codex CLI; chats met Claude Code, Codex en agy gaan verder waar je was gebleven, ook na een herstart, en kun je voortzetten in een terminal; een melding wanneer een antwoord op de achtergrond klaar is; bij de eerste start kies je hoe Hotline verbinding maakt; meer opties per verbinding (antwoordlengte, temperatuur, denkniveau).
+Kies je accentkleur (Hotline-paars, je Windows-accentkleur of elke kleur) en het nieuwe thema Hoog contrast; Hotline volgt ook de contrastthema's en transparantie-instelling van Windows. Je chatgeschiedenis opent als doorzoekbare lijst (geschiedenisknop, Ctrl+↑ of /resume). Stel de extra sneltoets in door hem gewoon in te drukken. Nieuwe snelle acties: /reply, /shorter, /formal en /bullets. Codeblokken scrollen zijwaarts en het paneel volgt antwoorden terwijl ze binnenkomen.
 
 ## Productkenmerken
 
