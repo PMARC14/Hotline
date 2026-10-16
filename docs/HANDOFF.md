@@ -64,11 +64,12 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Versions (toward 1.0)
 
-- `version.txt` holds major.minor (now `0.2`); the release workflow appends the GitHub run number, so every code push
-  to `main` publishes `v<major.minor>.<run>` (v0.2.25 was run 25). The Store package is the same version plus `.0`.
+- `version.txt` holds major.minor (now `0.2`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch
+  being the next number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml): after
+  v0.2.25 comes v0.2.26; bumping `version.txt` to `0.3` starts at **v0.3.0**, then v0.3.1, … (until 2026-10-16 the patch
+  was the GitHub run number, which is why 0.2 reached .25). The Store package is the same version plus `.0`.
 - **The Store only needs each submission's version, compared as a whole (left to right), to be higher than the last**,
-  and the fourth part to be `0`. So `0.3.0.0` would follow `0.2.25.0` fine; Hotline's third number simply keeps counting
-  because it is the run number (0.3.26, …). Resetting it per minor line would need release.yml to compute it (optional).
+  and the fourth part to be `0`: `0.3.0.0` follows `0.2.25.0` fine.
 - **The plan:**
   - **0.3** — when Continue in (PR #29) merges: the last big feature before 1.0. Bump `version.txt` to `0.3` in that PR.
   - **0.4** — when the Windows 11 26H2 work (#9) and the multi-monitor / mixed-DPI region capture fix land: feature

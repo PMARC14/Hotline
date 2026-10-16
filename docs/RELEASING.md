@@ -12,10 +12,11 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
 
 - **CI** (`.github/workflows/ci.yml`): unit tests + app build on every pull request and every push to `main`.
 - **Release** (`.github/workflows/release.yml`): every push to `main` that changes code publishes a release
-  `v<version.txt>.<run number>` (e.g. `v0.2.57`); a pushed tag `vX.Y.Z` or **Run workflow** with a version publishes
-  that version. Bump `version.txt` (e.g. `0.3`, `1.0`) for a new minor/major line; the third number keeps counting
-  (it is the run number), which the Store accepts as long as the whole version is higher than the last submission's.
-  When to bump: docs/HANDOFF.md › *Versions*.
+  `v<major.minor>.<patch>`: major.minor from `version.txt`, patch the next number in that line from the existing tags
+  (`scripts/next-version.sh`; after `v0.2.25` comes `v0.2.26`, and bumping `version.txt` to `0.3` starts at
+  `v0.3.0`). A pushed tag `vX.Y.Z` or **Run workflow** with a version publishes that version instead. The Store package
+  is the same version plus `.0`; the Store only needs each submission higher than the last (compared as a whole) with
+  the fourth part `0`. When to bump: docs/HANDOFF.md › *Versions*.
   - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
     `Publisher`): a normal release. **Set since 2026-10-15** with a self-signed certificate valid until 2036-10-12
     (`CN=pmarc14 Hotline Dev`; the owner keeps `certs/release/hotline-release.pfx` and its password, git-ignored, and a
