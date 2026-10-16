@@ -174,7 +174,14 @@ public partial class App : Application
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
                       ?? throw new ModelListException(Strings.Agy_NotInstalled);
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
-        }, TimeProvider.System);
+        }, TimeProvider.System, new Hotline.Core.Backends.Codex.CodexModelLister(new SystemLineProcessFactory(job.Add),
+            p => Hotline.Core.Backends.Codex.CodexLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("PATH"),
+                System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64"),
+            () =>
+            {
+                var cache = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".codex", "models_cache.json");
+                return File.Exists(cache) ? File.ReadAllText(cache) : null;
+            }, typeof(App).Assembly.GetName().Version?.ToString(3) ?? "0.0.0").ListAsync);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         chat.Event += e => { if (e is ConversationResumed) _providerBar.Refresh(); }; // a CLI chat brings its connection back
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }

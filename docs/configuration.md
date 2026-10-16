@@ -63,7 +63,7 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `type` | all | `antigravity`, `claudeCode`, `codex`, `gemini`, `anthropic`, `openAiCompatible`, `local` |
 | `name` | all | Shown in the Provider dropdown |
 | `model` | all | Model id (empty = the connection's default; Anthropic defaults to `claude-opus-5-5`) |
-| `effort` | all | Codex: `low` … `xhigh` (`model_reasoning_effort`). agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible and `local`: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it; for `local` also as `chat_template_kwargs.reasoning_effort`, which llama.cpp's `llama-server --jinja` reads for gpt-oss-style models). Empty = the model's default |
+| `effort` | all | Codex: `low` … `ultra` (`model_reasoning_effort`; what a model supports is Codex's call). agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible and `local`: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it; for `local` also as `chat_template_kwargs.reasoning_effort`, which llama.cpp's `llama-server --jinja` reads for gpt-oss-style models). Empty = the model's default |
 | `prompt` | all | System prompt name (`prompts\<name>.md`); empty = `chat.defaultPrompt` |
 | `endpoint` | APIs | Base URL (defaults per type, e.g. `http://127.0.0.1:8080/v1` for `local`) |
 | `cliPath` | agy, Claude Code, Codex | Program path (empty = auto-detect) |
@@ -150,7 +150,7 @@ Hotline runs `codex exec --json` once per message, with the message on stdin, an
 an npm global install (`npm install -g @openai/codex`). *Chat only*: a read-only sandbox in an empty folder, without
 your `config.toml` or rules. *Inherit*: your own Codex setup with a `workspace-write` sandbox in `workingDirectory`
 (`approveAllTools` bypasses the sandbox). Codex never asks for approval when run this way, so anything outside the
-sandbox is refused. Codex has no model list: keep **Default** (Codex's own choice) or type a model name.
+sandbox is refused. The model list comes from `codex app-server`, else `~\.codex\models_cache.json`, else a built-in list; keep **Default** (Codex's own choice) or type any model name.
 
 ## agy permissions
 
