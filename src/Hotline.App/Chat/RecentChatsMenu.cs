@@ -67,7 +67,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _search.TextChanged += (_, _) => Fill(_search.Text);
         _search.PreviewKeyDown += OnSearchKey;
         _list = new ListView { SelectionMode = ListViewSelectionMode.Single, IsItemClickEnabled = true, MaxHeight = 360 };
-        _list.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: string id }) Open(id); };
+        // ListViewItems added directly: ItemClick reports their content (the row), which carries the chat id too.
+        _list.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: string id }) Open(id); };
         _empty = new TextBlock { Opacity = 0.7, Margin = new Thickness(12, 8, 12, 8), TextWrapping = TextWrapping.Wrap };
         _actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
 
@@ -105,7 +106,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _list.Items.Clear();
         foreach (var c in view.Items)
         {
-            var row = new Grid { ColumnSpacing = 12 };
+            var row = new Grid { ColumnSpacing = 12, Tag = c.Id };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             var title = new TextBlock { Text = c.Title, TextTrimming = TextTrimming.CharacterEllipsis };
@@ -137,7 +138,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             case VirtualKey.Down when count > 0:
                 _list.SelectedIndex = Math.Min(count - 1, _list.SelectedIndex + 1);
                 break;
-            case VirtualKey.Enter:
+            case VirtualKey.Enter when !e.KeyStatus.WasKeyDown: // not a repeat of the Enter that sent "/resume"
                 if (_list.SelectedItem is ListViewItem { Tag: string id }) Open(id);
                 break;
             case VirtualKey.Escape:

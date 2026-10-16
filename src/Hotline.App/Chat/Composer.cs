@@ -45,10 +45,12 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     {
         popup.Input.PreviewKeyDown += OnPreviewKeyDown;
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
-        popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: QuickAction a }) Complete(a); };
+        // ListViewItems added directly: ItemClick reports their content (the row), which carries the action too.
+        popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: QuickAction a }) Complete(a); };
         popup.SendButton.Click += (_, _) => SendButtonClicked?.Invoke();
-        popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = theme.Style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
-        popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = RestingBorder; popup.Composer.BorderThickness = new Thickness(1); };
+        // Colour only: changing the thickness would change the panel's height (and resize the window).
+        popup.Input.GotFocus += (_, _) => popup.Composer.BorderBrush = theme.Style.Accent;
+        popup.Input.LostFocus += (_, _) => popup.Composer.BorderBrush = RestingBorder;
         // Focus after the window is laid out and active, or the caret may not appear.
         popup.Shown += () => popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => popup.Input.Focus(FocusState.Keyboard));
     }
@@ -180,6 +182,7 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         };
         Grid.SetColumn(description, 1);
         row.Children.Add(description);
+        row.Tag = a; // what ItemClick reports
         return new ListViewItem
         {
             Content = row, Tag = a, MinHeight = 0, Padding = new Thickness(8, 4, 8, 4),
