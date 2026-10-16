@@ -6,8 +6,14 @@
 param([switch]$Install, [switch]$WithAgy)
 $ErrorActionPreference = 'Stop'
 $root = Split-Path (Split-Path $PSScriptRoot -Parent) -Parent
-# Git's bash (not WSL's bash.exe) runs the install script.
-if ($Install) { & (Join-Path (Split-Path (Split-Path (Get-Command git).Source -Parent) -Parent) 'binash.exe') (Join-Path $root 'scripts/install.sh') | Out-Host }
+if ($Install) {
+    # Git's bash (not WSL's bash.exe): git.exe lives in Git\cmd or Git\mingw64\bin, bash.exe in Git\bin.
+    $gitDir = Split-Path (Get-Command git).Source -Parent
+    $bash = @('..\bin\bash.exe', '..\..\bin\bash.exe') | ForEach-Object { Join-Path $gitDir $_ } | Where-Object { Test-Path $_ } | Select-Object -First 1
+    if (-not $bash) { Write-Error "Git's bash.exe not found next to $gitDir"; exit 1 }
+    & $bash (Join-Path $root 'scripts/install.sh') | Out-Host
+    if ($LASTEXITCODE -ne 0) { Write-Error 'install failed'; exit 1 }
+}
 
 Add-Type @"
 using System; using System.Runtime.InteropServices; using System.Text;

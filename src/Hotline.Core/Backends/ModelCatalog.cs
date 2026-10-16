@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends;
 
@@ -48,7 +49,7 @@ public static class ModelListParsers
         }
         catch (Exception ex) when (ex is JsonException or KeyNotFoundException or InvalidOperationException)
         {
-            throw new ModelListException("The server's model list wasn't in the expected format.");
+            throw new ModelListException(Strings.Models_BadFormat);
         }
     }
 }
@@ -72,18 +73,21 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
     /// Settings › AI connections › Test: lists the models afresh (proves the endpoint and key) and checks the chosen
     /// model is among them. Throws <see cref="ModelListException"/> with the server's message on failure.
     /// </summary>
-    public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) => Describe(await GetAsync(p, refresh: true, ct), p.Model);
+    public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) =>
+        Describe(await GetAsync(p, refresh: true, ct), p.Model, ConnectionTypes.Of(p.Type).ListsModels);
 
     /// <summary>"Connected: N models[, including X | , but X isn't one of them]."</summary>
-    public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen)
+    public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen, bool listsModels = true)
     {
-        var count = models.Count == 1 ? "1 model" : $"{models.Count} models";
+        var count = models.Count == 1 ? Strings.Models_One : L.F(Strings.Models_Many, models.Count);
         var model = chosen?.Trim();
         if (model is { Length: > 0 } && model.StartsWith("models/", StringComparison.Ordinal)) model = model[7..];
-        if (string.IsNullOrEmpty(model) || models.Count == 0) return $"Connected: {count}.";
+        if (!listsModels)
+            return string.IsNullOrEmpty(model) ? Strings.Models_NoList : L.F(Strings.Models_Unlisted, model);
+        if (string.IsNullOrEmpty(model) || models.Count == 0) return L.F(Strings.Models_Connected, count);
         return models.Any(m => string.Equals(m.Id, model, StringComparison.OrdinalIgnoreCase))
-            ? $"Connected: {count}, including {model}."
-            : $"Connected: {count}, but {model} isn't one of them.";
+            ? L.F(Strings.Models_Including, count, model)
+            : L.F(Strings.Models_NotIncluded, count, model);
     }
 
     private async Task<IReadOnlyList<ModelInfo>> FetchAsync(BackendProfile p, CancellationToken ct)
@@ -94,6 +98,8 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
                 return ModelListParsers.Agy(await runAgyModels(p, ct));
             case BackendType.ClaudeCode:
                 return ModelListParsers.ClaudeCodeAliases;
+            case BackendType.Codex:
+                return []; // codex has no model list command: Default (codex's own choice) or a typed model name
             case BackendType.Gemini:
                 return ModelListParsers.Gemini(await GetAsync(p, "models?pageSize=1000", (r, k) => r.Headers.Add("x-goog-api-key", k), ct));
             case BackendType.Anthropic:
@@ -113,7 +119,7 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
         var info = ConnectionTypes.Of(p.Type);
         var key = secrets.Get(SecretKeys.ApiKey(p.Id));
         if (string.IsNullOrEmpty(key) && !info.ApiKeyOptional)
-            throw new ModelListException($"Add an API key for {p.Name} first.");
+            throw new ModelListException(L.F(Strings.Models_NeedKey, p.Name));
         var endpoint = (string.IsNullOrWhiteSpace(p.Endpoint) ? info.DefaultEndpoint : p.Endpoint)!.TrimEnd('/');
         if (!string.IsNullOrEmpty(key) && Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) && uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
             throw new ModelListException($"Not sending the API key for {p.Name} over plain http to {uri.Host}; use an https:// endpoint.");
@@ -123,21 +129,21 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
         {
             using var response = await http.SendAsync(request, ct);
             if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
-                throw new ModelListException($"{p.Name} rejected the API key.");
+                throw new ModelListException(L.F(Strings.Models_KeyRejected, p.Name));
             if (!response.IsSuccessStatusCode)
             {
                 var detail = Api.ApiCommon.ErrorMessage(await response.Content.ReadAsStringAsync(ct));
-                throw new ModelListException($"{p.Name} answered {(int)response.StatusCode} {response.ReasonPhrase}." + (detail is { Length: > 0 } ? $" {detail}" : ""));
+                throw new ModelListException(L.F(Strings.Models_HttpError, p.Name, $"{(int)response.StatusCode} {response.ReasonPhrase}") + (detail is { Length: > 0 } ? $" {detail}" : ""));
             }
             return await response.Content.ReadAsStringAsync(ct);
         }
         catch (HttpRequestException ex)
         {
-            throw new ModelListException($"Can't reach {endpoint}: {ex.Message}");
+            throw new ModelListException(L.F(Strings.Api_Unreachable, endpoint, ex.Message));
         }
         catch (TaskCanceledException) when (!ct.IsCancellationRequested)
         {
-            throw new ModelListException($"{endpoint} didn't answer in time.");
+            throw new ModelListException(L.F(Strings.Api_Timeout, endpoint));
         }
     }
 }

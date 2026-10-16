@@ -6,8 +6,16 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Interface text: English in Strings.resx, one Strings.<language>.resx per translation (satellite assemblies).
+         The generated Hotline.Core.Text.Localization.Strings class gives each text a property, so a missing key fails the build. -->
+    <EmbeddedResource Update="Text\Localization\Strings.resx" StronglyTypedLanguage="CSharp" StronglyTypedClassName="Strings"
+                      StronglyTypedNamespace="Hotline.Core.Text.Localization" StronglyTypedFileName="$(IntermediateOutputPath)Strings.Designer.cs"
+                      PublicClass="true" />
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Anthropic" Version="12.53.0" />
     <PackageReference Include="Markdig" Version="1.4.0" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.12" />
     <PackageReference Include="ModelContextProtocol.Core" Version="2.2.0" />
   </ItemGroup>
 </Project>

@@ -12,7 +12,8 @@ same files). Comments and trailing commas are allowed.
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The bottom bar: which items, in what order |
-| `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`) |
+| `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
+| `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
@@ -21,6 +22,8 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 
 | Key | Default | Meaning |
 |---|---|---|
+| `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
+| `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
 | `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the free space |
@@ -32,11 +35,15 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
 | `activation.copilotKey` | `hotline` | `hotline`: the key opens Hotline (tap/hold above). `rightCtrl`: the key is a plain Right Ctrl (Copilot+C = Ctrl+C) and no longer opens Hotline — use the extra hotkey or the tray. Works on keyboards whose Copilot key sends Win+Shift+F23 (most do) |
-| `chat.defaultBackend` | `agy` | Connection that answers by default (its `id`) |
+| `chat.defaultBackend` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
+| `chat.notifyWhenDone` | `true` | A Windows notification when an answer finishes while the panel is hidden or another app is in front; clicking it opens the answer |
+| `chat.historyListSize` | `300` | How many saved chats the history list reads (10–5000). Not in the Settings window |
+| `chat.resumeWhileTyping` | `true` | Typing `/resume` and a space opens the history list at once and the search continues there (best match selected, Enter opens it). Not in the Settings window |
+| `chat.cliTranscripts` | `true` | Reopening a CLI chat Hotline kept only a record of (`keepInHotline` off) shows its earlier messages from the CLI's own history (read-only; see *Chats with a CLI*). Not in the Settings window |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
@@ -53,27 +60,52 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 
 | Key | Applies to | Meaning |
 |---|---|---|
-| `type` | all | `antigravity`, `claudeCode`, `gemini`, `anthropic`, `openAiCompatible`, `local` |
+| `type` | all | `antigravity`, `claudeCode`, `codex`, `gemini`, `anthropic`, `openAiCompatible`, `local` |
 | `name` | all | Shown in the Provider dropdown |
 | `model` | all | Model id (empty = the connection's default; Anthropic defaults to `claude-opus-5-5`) |
-| `effort` | all but `local` | agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it). Empty = the model's default |
+| `effort` | all | Codex: `low` … `xhigh` (`model_reasoning_effort`). agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible and `local`: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it; for `local` also as `chat_template_kwargs.reasoning_effort`, which llama.cpp's `llama-server --jinja` reads for gpt-oss-style models). Empty = the model's default |
 | `prompt` | all | System prompt name (`prompts\<name>.md`); empty = `chat.defaultPrompt` |
 | `endpoint` | APIs | Base URL (defaults per type, e.g. `http://127.0.0.1:8080/v1` for `local`) |
-| `cliPath` | agy, Claude Code | Program path (empty = auto-detect) |
+| `cliPath` | agy, Claude Code, Codex | Program path (empty = auto-detect) |
 | `tools` | all | `chatOnly` (default) or `inherit`: CLIs use their own tools and permission rules in `workingDirectory`; API connections use Hotline's MCP tools (`mcp.json`) |
-| `workingDirectory` | agy, Claude Code | Folder for `inherit` mode (empty = your user folder) |
-| `approveAllTools` | agy, Claude Code | ⚠ Dangerous: auto-approve every tool request (inherit mode only) |
-| `args` | agy, Claude Code | Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
-| `extraArgs` | agy, Claude Code | Added on top, e.g. `--mcp-config C:\mcp\servers.json` |
-| `keepCliSessions` | Claude Code | Also keep Hotline chats in Claude Code's own history (`claude --resume`) |
+| `workingDirectory` | agy, Claude Code, Codex | Folder for `inherit` mode (empty = your user folder) |
+| `approveAllTools` | agy, Claude Code, Codex | ⚠ Dangerous: auto-approve every tool request (inherit mode only; agy/Claude Code `--dangerously-skip-permissions`, Codex `--dangerously-bypass-approvals-and-sandbox`). Settings › AI connections asks before turning it on |
+| `args` | agy, Claude Code, Codex | Settings: *Launch flags (advanced)*. Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
+| `extraArgs` | agy, Claude Code, Codex | Added on top, e.g. Claude Code `--mcp-config C:\mcp\servers.json`, Codex `--search` or `-c model_verbosity="low"` (Codex: sandbox, approval and folder flags are dropped) |
+| `keepCliSessions` | agy, Claude Code, Codex | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
+| `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\`. Reopened, a record-only chat still shows its messages: they're read from the CLI's own history (`chat.cliTranscripts`) |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `images` | APIs | Whether the model reads images (`true`/`false`; default: `false` for `local`, `true` otherwise). With `false`, screenshots go as their text (`chat.ocr`) |
+| `maxTokens` | APIs | Most tokens one answer may use (empty = the model's default; Claude API: 64000). Sent as `max_completion_tokens` to api.openai.com and Azure OpenAI, `max_tokens` to other OpenAI-style servers, `maxOutputTokens` to Gemini |
+| `temperature` | Gemini, OpenAI-compatible, `local` | 0–2 (empty = the model's default; Gemini 3 works best at its default 1.0). Not sent to OpenAI-style APIs when an `effort` is set (their reasoning models only accept the default); `local` always gets it. The Claude API has none (it rejects one while thinking) |
 | `refusalFallback` | Anthropic | If a safety check declines a request, the API re-serves it with a suitable model (default on) |
 
 API connections retry a rate limit or overload (HTTP 429/503/529) up to twice, waiting what the server asks
 (`Retry-After`, Gemini's `retryDelay`) or 2 s then 4 s, and say so in the panel. A wait over a minute, or an exhausted
 quota, fails at once. Settings › AI connections › **Test connection** lists the models with your key and checks the
 chosen one exists.
+
+## Chats with a CLI (agy, Claude Code, Codex)
+
+- **One conversation per chat.** Hotline records the CLI's session ID and resumes it (`agy --conversation`,
+  `claude --resume`, `codex exec resume`) when the session has to start again: after a restart, a prompt change, or from Recent chats. If
+  the CLI can't find it any more, Hotline starts a new conversation and replays the messages it has.
+- **New chat** (the toolbar button, or a long press of the Copilot key) always starts a new conversation.
+- **Grouped under Hotline.** In chat-only mode the CLIs run in folders named `Hotline` (in Hotline's private app
+  folder), so `claude --resume`, Claude Code's `/resume` and `codex resume` list Hotline chats when run there, and agy puts them in a
+  project named **Hotline** (created once, by agy). A conversation you move to another agy project stays there.
+  `inherit` mode runs in your own folder and gets no project.
+- **Reopened chats show their messages.** When Hotline kept only a record, it reads the conversation from the CLI's
+  own history (read-only): Claude Code's `~\.claude\projects\*\<session>.jsonl`, Codex's
+  `~\.codex\sessions\…\rollout-…-<thread>.jsonl`, and agy's `~\.gemini\antigravity-cli\conversations\<id>.db`
+  (SQLite). Hotline's own wrapping of what it sent (earlier turns, instructions, attached files) is removed. If a file
+  is missing or in a format Hotline doesn't recognise, the chat opens empty as before and still resumes.
+- **The history list** (the 🕘 button, Ctrl+↑ in an empty message box, or `/resume`): chats run oldest at the top to
+  newest at the bottom, centered over the message bar; type to filter by title, ↑/↓ and Enter (or click) to open.
+  `/resume words` opens it filtered.
+- **Continue this chat in ▸** (top of the history list) opens the chat's CLI in your default terminal (Windows Terminal unless
+  you chose another in Windows Settings › System › For developers › Terminal) on the same conversation. Another
+  installed CLI gets a new session that reads the chat from a Markdown file (only when Hotline has the messages).
 
 ## mcp.json (tools for API connections)
 
@@ -111,6 +143,14 @@ creates, edits and deletes them.
 provider) sit together in the order listed. Settings › Appearance › **Bottom bar** edits this file (the previous version
 is kept as `toolbar.json.bak`). `captureRegion` (drag out a part of the screen) is in the default bar since Plan 6; an
 older toolbar.json keeps its own list, so add it there if you want the button.
+
+## Codex
+
+Hotline runs `codex exec --json` once per message, with the message on stdin, and finds `codex.exe` on PATH or inside
+an npm global install (`npm install -g @openai/codex`). *Chat only*: a read-only sandbox in an empty folder, without
+your `config.toml` or rules. *Inherit*: your own Codex setup with a `workspace-write` sandbox in `workingDirectory`
+(`approveAllTools` bypasses the sandbox). Codex never asks for approval when run this way, so anything outside the
+sandbox is refused. Codex has no model list: keep **Default** (Codex's own choice) or type a model name.
 
 ## agy permissions
 

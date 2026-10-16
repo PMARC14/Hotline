@@ -7,6 +7,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Hotline.Core.Tools;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends.Api;
 
@@ -35,7 +36,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
         var key = ApiCommon.Key(profile, secrets);
         var local = profile.Type == BackendType.Local;
         if (string.IsNullOrWhiteSpace(profile.Model) && !local)
-            throw new BackendException(BackendErrorKind.NotConfigured, $"Pick a model for {ApiCommon.Name(profile)} (the Model dropdown lists them).");
+            throw new BackendException(BackendErrorKind.NotConfigured, L.F(Strings.Api_PickModel, ApiCommon.Name(profile)));
         ApiCommon.RequireSafeTransport(profile, endpoint, key);
 
         var offered = await ToolLoop.ToolsFor(profile, tools, ct);
@@ -90,9 +91,9 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             if (calls.Count == 0 || offered.Count == 0) yield break;
             // Never run tool calls from a cut-off stream: their arguments may be incomplete.
             if (finish is "length" or "content_filter")
-                throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)} stopped ({finish}) while asking for a tool; nothing was run.");
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_ToolStopped, ApiCommon.Name(profile), finish));
             if (!done && finish is null)
-                throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: the connection ended before the tool request was complete; nothing was run.");
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_ToolCut, ApiCommon.Name(profile)));
             // The model asked for tools: record its turn, run each call, feed the results back.
             var toolCallsJson = new JsonArray();
             foreach (var call in calls.Values)
@@ -120,12 +121,26 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
         }
     }
 
+    private static bool IsOpenAi(string endpoint) =>
+        Uri.TryCreate(endpoint, UriKind.Absolute, out var u)
+        && (u.Host.Equals("api.openai.com", StringComparison.OrdinalIgnoreCase) || u.Host.EndsWith(".openai.azure.com", StringComparison.OrdinalIgnoreCase));
+
     private HttpRequestMessage Request(string endpoint, string? key, JsonArray messages, IReadOnlyList<ToolSpec> offered)
     {
         var body = new JsonObject { ["stream"] = true, ["messages"] = messages.DeepClone() };
         if (!string.IsNullOrWhiteSpace(profile.Model)) body["model"] = profile.Model.Trim();
-        if (profile.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" && profile.Effort is { } effort)
-            body["reasoning_effort"] = effort.Trim().ToLowerInvariant();
+        var effort = profile.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" ? profile.Effort.Trim().ToLowerInvariant() : null;
+        if (effort is not null)
+        {
+            body["reasoning_effort"] = effort; // OpenAI, vLLM, LM Studio
+            // llama-server reads it only from the chat template's kwargs (gpt-oss and the few models trained for it).
+            if (profile.Type == BackendType.Local) body["chat_template_kwargs"] = new JsonObject { ["reasoning_effort"] = effort };
+        }
+        // OpenAI's own API wants max_completion_tokens (reasoning models refuse max_tokens); other servers take max_tokens.
+        if (profile.MaxTokens is { } max) body[IsOpenAi(endpoint) ? "max_completion_tokens" : "max_tokens"] = max;
+        // OpenAI-style reasoning models (the ones an effort is set for) only accept the default temperature: don't send
+        // one then. Local reasoning models (DeepSeek-R1, Qwen) do take one, often a recommended one.
+        if (profile.Temperature is { } temperature && (effort is null || profile.Type == BackendType.Local)) body["temperature"] = temperature;
         if (offered.Count > 0)
             body["tools"] = new JsonArray(offered.Select(t => (JsonNode)new JsonObject
             {

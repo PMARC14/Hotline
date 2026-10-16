@@ -25,19 +25,20 @@ public sealed partial class SettingsWindow
     private void BuildConnectionsPage()
     {
         var chat = _settings.Current.Chat;
-        _selectedConnection ??= chat.DefaultBackend;
-        if (chat.Backends.All(b => b.Id != _selectedConnection)) _selectedConnection = chat.DefaultBackend;
+        // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
+        if (chat.Backends.All(b => b.Id != _selectedConnection))
+            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends[0].Id;
 
-        var add = new DropDownButton { Content = "Add connection" };
+        var add = new DropDownButton { Content = Strings.Conn_Add };
         var addMenu = new MenuFlyout();
         foreach (var type in ConnectionTypes.All)
         {
-            var item = new MenuFlyoutItem { Text = type.DisplayName + (BackendFactory.IsAvailable(type.Type) ? "" : "  (chat coming soon)") };
+            var item = new MenuFlyoutItem { Text = type.DisplayName };
             item.Click += (_, _) => { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); };
             addMenu.Items.Add(item);
         }
         add.Flyout = addMenu;
-        var duplicate = new Button { Content = "Duplicate" };
+        var duplicate = new Button { Content = Strings.Conn_Duplicate };
         duplicate.Click += (_, _) =>
         {
             var source = _selectedConnection!;
@@ -47,14 +48,14 @@ public sealed partial class SettingsWindow
             _selectedConnection = copyId;
             ShowPage("Connections");
         };
-        var remove = new Button { Content = "Remove", IsEnabled = chat.Backends.Count > 1 };
+        var remove = new Button { Content = Strings.Common_Remove, IsEnabled = chat.Backends.Count > 1 };
         remove.Click += async (_, _) =>
         {
             var id = _selectedConnection!;
             var dialog = new ContentDialog
             {
-                XamlRoot = Root.XamlRoot, Title = "Remove this connection?", Content = chat.Backends.First(b => b.Id == id).Name,
-                PrimaryButtonText = "Remove", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Close,
+                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle, Content = chat.Backends.First(b => b.Id == id).Name,
+                PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
@@ -63,7 +64,7 @@ public sealed partial class SettingsWindow
             _selectedConnection = null;
             ShowPage("Connections");
         };
-        var makeDefault = new Button { Content = "Use by default", IsEnabled = _selectedConnection != chat.DefaultBackend };
+        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = _selectedConnection != chat.DefaultBackend };
         makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };
         Button MoveButton(string glyph, string tip, int delta)
         {
@@ -75,14 +76,14 @@ public sealed partial class SettingsWindow
         PageHost.Children.Add(new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
-            Children = { add, duplicate, remove, makeDefault, MoveButton("\uE74A", "Move up in the Provider list", -1), MoveButton("\uE74B", "Move down in the Provider list", +1) },
+            Children = { add, duplicate, remove, makeDefault, MoveButton("\uE74A", Strings.Conn_MoveUp, -1), MoveButton("\uE74B", Strings.Conn_MoveDown, +1) },
         });
 
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, Margin = new Thickness(0, 8, 0, 8) };
         foreach (var p in chat.Backends)
         {
             var info = ConnectionTypes.Of(p.Type);
-            var subtitle = info.DisplayName + (p.Id == chat.DefaultBackend ? " · default" : "") + (BackendFactory.IsAvailable(p.Type) ? "" : " · chat coming soon");
+            var subtitle = p.Id == chat.DefaultBackend ? L.F(Strings.Conn_DefaultSuffix, info.DisplayName) : info.DisplayName;
             list.Items.Add(new ListViewItem
             {
                 Tag = p.Id,
@@ -114,31 +115,30 @@ public sealed partial class SettingsWindow
         {
             string? json;
             try { json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null; }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return "Couldn't read agy's settings right now."; }
-            return $"agy rules: {Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "allow").Count} allowed, " +
-                   $"{Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "deny").Count} denied. Reading files in the working folder is allowed by default; " +
-                   "shell commands need an allow rule.";
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return Strings.Agy_ReadFailed; }
+            return L.F(Strings.Agy_Summary, Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "allow").Count,
+                Hotline.Core.Backends.Agy.AgyPermissions.Rules(json, "deny").Count);
         }
-        var summary = new TextBlock { Text = Summary(), FontSize = 12, Opacity = 0.75, TextWrapping = TextWrapping.Wrap };
-        var addReadOnly = new Button { Content = "Allow read-only commands" };
-        ToolTipService.SetToolTip(addReadOnly, "Adds rules like command(Get-ChildItem), command(git status) to agy's allow list, and denies Remove-Item, rm, git push...");
+        var summary = new TextBlock { Text = Summary() }; // the card's description (styled by CardWithStatus)
+        var addReadOnly = new Button { Content = Strings.Agy_AllowReadOnly };
+        ToolTipService.SetToolTip(addReadOnly, Strings.Agy_AllowReadOnly_Tip);
         addReadOnly.Click += async (_, _) =>
         {
             var dialog = new ContentDialog
             {
-                XamlRoot = Root.XamlRoot, Title = "Allow read-only shell commands for agy?",
+                XamlRoot = Root.XamlRoot, Title = Strings.Agy_AllowTitle,
                 Content = new ScrollViewer
                 {
                     MaxHeight = 320,
                     Content = new TextBlock
                     {
                         TextWrapping = TextWrapping.Wrap,
-                        Text = "This edits agy's own settings (" + agySettings + "), so it also applies when you use agy yourself.\n\nAllow:\n" +
-                               string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules) +
-                               "\n\nDeny:\n" + string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.DenyRules),
+                        Text = L.F(Strings.Agy_AllowBody, agySettings,
+                            string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules),
+                            string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.DenyRules)),
                     },
                 },
-                PrimaryButtonText = "Add rules", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Close,
+                PrimaryButtonText = Strings.Agy_AddRules, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             try
@@ -154,15 +154,22 @@ public sealed partial class SettingsWindow
                 summary.Text = Summary();
                 await _invalidate(p.Id);
             }
-            catch (Exception ex) { _log.Error("editing agy permissions failed", ex); summary.Text = "Couldn't edit agy's settings: " + ex.Message; }
+            catch (Exception ex) { _log.Error("editing agy permissions failed", ex); summary.Text = L.F(Strings.Agy_EditFailed, ex.Message); }
         };
-        var open = new Button { Content = "Edit agy rules" };
+        var open = new Button { Content = Strings.Agy_EditRules };
         open.Click += (_, _) => { if (File.Exists(agySettings)) CliRunner.OpenInEditor(agySettings); else CliRunner.OpenFolder(Path.GetDirectoryName(agySettings)!); };
-        var panel = new StackPanel { Spacing = 6 };
-        panel.Children.Add(summary);
-        panel.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { addReadOnly, open } });
-        host.Children.Add(Card("agy permissions", null, panel));
+        // Like every other card: title and the rules summary on the left, the actions on the right.
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, VerticalAlignment = VerticalAlignment.Center, Children = { addReadOnly, open } };
+        host.Children.Add(CardWithStatus(Strings.Agy_Permissions, summary, buttons));
+    }
 
+    /// <summary>
+    /// ⚠ Approve everything (every CLI, inherit mode only): skips the CLI's permission checks (agy/Claude Code
+    /// --dangerously-skip-permissions, Codex --dangerously-bypass-approvals-and-sandbox). Turning it on asks first.
+    /// </summary>
+    private void AddApproveAll(StackPanel host, BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    {
+        var cliName = ConnectionTypes.Of(p.Type).DisplayName;
         var approveAll = new ToggleSwitch { IsOn = p.ApproveAllTools, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.Tools == ToolMode.Inherit };
         var reverting = false;
         approveAll.Toggled += async (_, _) =>
@@ -172,17 +179,28 @@ public sealed partial class SettingsWindow
             {
                 var dialog = new ContentDialog
                 {
-                    XamlRoot = Root.XamlRoot, Title = "Approve everything? (dangerous)",
-                    Content = "agy will run ANY shell command and edit or delete ANY file it decides to, without asking. " +
-                              "A wrong answer or a malicious web page or file can make it do real damage. Only use this with a working folder you can afford to lose.",
-                    PrimaryButtonText = "I understand, turn on", CloseButtonText = "Cancel", DefaultButton = ContentDialogButton.Close,
+                    XamlRoot = Root.XamlRoot, Title = Strings.Agy_ApproveAllTitle,
+                    Content = new TextBlock { Text = L.F(Strings.Conn_ApproveAllBody, cliName), TextWrapping = TextWrapping.Wrap },
+                    PrimaryButtonText = Strings.Agy_ApproveAllConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
                 };
                 if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
             }
             await save(x => x.ApproveAllTools = approveAll.IsOn);
         };
-        host.Children.Add(Card("⚠ Approve everything (dangerous)",
-            "Skips all of agy's permission checks (--dangerously-skip-permissions). Only in “use the program's own tools” mode.", approveAll));
+        host.Children.Add(Card(Strings.Agy_ApproveAll, L.F(Strings.Conn_ApproveAll_Desc, cliName), approveAll));
+    }
+
+    /// <summary>A number setting that can be left empty (= the model's default).</summary>
+    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set)
+    {
+        var box = new NumberBox
+        {
+            Value = value ?? double.NaN, Minimum = min, Maximum = max, SmallChange = step, LargeChange = step * 10,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, PlaceholderText = placeholder, MinWidth = 160,
+            ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
+        };
+        box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+        return box;
     }
 
     private void BuildEditor(StackPanel host, BackendProfile p)
@@ -208,63 +226,81 @@ public sealed partial class SettingsWindow
             return box;
         }
 
-        host.Children.Add(Card("Name", null, Text(p.Name, info.DefaultName, v => p.Name = v ?? info.DefaultName)));
+        host.Children.Add(Card(Strings.Conn_Name, null, Text(p.Name, info.DefaultName, v => p.Name = v ?? info.DefaultName)));
         if (info.Has(ConnectionField.Endpoint))
-            host.Children.Add(Card("Endpoint", "Base URL of the API.", Text(p.Endpoint, info.DefaultEndpoint ?? "", v => p.Endpoint = v)));
+            host.Children.Add(Card(Strings.Conn_Endpoint, Strings.Conn_Endpoint_Desc, Text(p.Endpoint, info.DefaultEndpoint ?? "", v => p.Endpoint = v)));
         if (info.Has(ConnectionField.ApiKey))
         {
             var saved = _secrets.Get(SecretKeys.ApiKey(p.Id)) is not null;
             var keyBox = new PasswordBox
             {
                 Width = 360,
-                PlaceholderText = saved ? "Saved; type to replace" : info.ApiKeyOptional ? "Optional" : "Required",
+                PlaceholderText = saved ? Strings.Conn_KeySaved : info.ApiKeyOptional ? Strings.Conn_Optional : Strings.Conn_Required,
             };
             keyBox.LostFocus += async (_, _) =>
             {
                 if (keyBox.Password.Length == 0) return;
                 try { _secrets.Set(SecretKeys.ApiKey(p.Id), keyBox.Password.Trim()); }
-                catch (Exception) { keyBox.Header = "Couldn't save the key"; return; }
+                catch (Exception) { keyBox.Header = Strings.Conn_KeySaveFailed; return; }
                 keyBox.Password = "";
-                keyBox.PlaceholderText = "Saved; type to replace";
+                keyBox.PlaceholderText = Strings.Conn_KeySaved;
                 await _invalidate(p.Id);
             };
-            host.Children.Add(Card("API key", "Stored in Windows Credential Locker, not in settings.json.", keyBox));
+            host.Children.Add(Card(Strings.Conn_ApiKey, Strings.Conn_ApiKey_Desc, keyBox));
         }
         if (info.Has(ConnectionField.CliPath))
-            host.Children.Add(Card("Program path", "Leave empty to find it automatically.", Text(p.CliPath, "Auto-detect", v => p.CliPath = v)));
+            host.Children.Add(Card(Strings.Conn_ProgramPath, Strings.Conn_ProgramPath_Desc, Text(p.CliPath, Strings.Conn_AutoDetect, v => p.CliPath = v)));
         if (info.Has(ConnectionField.Agent))
-            host.Children.Add(Card("agy agent", "Used in Chat-only mode.", Text(p.Agent, "hotline", v => p.Agent = v)));
-        if (p.Type == BackendType.ClaudeCode)
+            host.Children.Add(Card(Strings.Conn_AgyAgent, Strings.Conn_AgyAgent_Desc, Text(p.Agent, "hotline", v => p.Agent = v)));
+        if (ConnectionTypes.IsCli(p.Type))
         {
+            // Chats live in the CLI's own history (resumable there and from Recent chats); Hotline can keep them too.
+            var cliName = ConnectionTypes.Of(p.Type).DisplayName;
             var keep = new ToggleSwitch { IsOn = p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0 };
-            keep.Toggled += async (_, _) => await Save(x => x.KeepCliSessions = keep.IsOn);
-            host.Children.Add(Card("Keep chats in Claude Code's history", "Also list Hotline chats in claude --resume.", keep));
+            var alsoHotline = new ToggleSwitch { IsOn = p.KeepInHotline || !p.KeepCliSessions, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.KeepCliSessions };
+            var updating = false;
+            keep.Toggled += async (_, _) =>
+            {
+                updating = true;
+                alsoHotline.IsEnabled = keep.IsOn;
+                alsoHotline.IsOn = !keep.IsOn || p.KeepInHotline; // the CLI not keeping it means Hotline does
+                updating = false;
+                await Save(x => x.KeepCliSessions = keep.IsOn);
+            };
+            alsoHotline.Toggled += async (_, _) => { if (!updating && keep.IsOn) await Save(x => x.KeepInHotline = alsoHotline.IsOn); };
+            host.Children.Add(Card(L.F(Strings.Conn_KeepCli, cliName), Strings.Conn_KeepCli_Desc, keep));
+            host.Children.Add(Card(Strings.Conn_KeepInHotline, Strings.Conn_KeepInHotline_Desc, alsoHotline));
         }
         if (info.Has(ConnectionField.ExtraArgs))
-            host.Children.Add(Card("Extra arguments", "Passed to the program as-is (space separated).", Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
+        {
+            host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
+            // Advanced: replaces the mode's flags (the protocol flags are always added; dangerous ones never come from here).
+            host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : string.Join(' ', p.Args), Strings.Conn_LaunchArgs_Default,
+                v => p.Args = string.IsNullOrWhiteSpace(v) ? null : v.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList())));
+        }
 
         if (info.Has(ConnectionField.Tools) && !info.Has(ConnectionField.CliPath))
         {
             // API connections: Hotline's own MCP tools (Settings › Tools), approved in the panel.
             var apiMode = new ComboBox { MinWidth = 280 };
-            apiMode.Items.Add(new ComboBoxItem { Content = "Chat only", Tag = ToolMode.ChatOnly });
-            apiMode.Items.Add(new ComboBoxItem { Content = "Use Hotline's tools (MCP)", Tag = ToolMode.Inherit });
+            apiMode.Items.Add(new ComboBoxItem { Content = Strings.Conn_ChatOnly, Tag = ToolMode.ChatOnly });
+            apiMode.Items.Add(new ComboBoxItem { Content = Strings.Conn_UseHotlineTools, Tag = ToolMode.Inherit });
             apiMode.SelectedIndex = p.Tools == ToolMode.Inherit ? 1 : 0;
             apiMode.SelectionChanged += async (_, _) =>
             {
                 if (apiMode.SelectedItem is ComboBoxItem { Tag: ToolMode m }) await Save(x => x.Tools = m);
             };
-            host.Children.Add(Card("Tool use", "Lets this AI use the tools from your MCP servers (Settings › Tools). Read-only tools run; anything else asks you in the panel first.", apiMode));
+            host.Children.Add(Card(Strings.Conn_ToolUse, Strings.Conn_ToolUse_ApiDesc, apiMode));
         }
         else if (info.Has(ConnectionField.Tools))
         {
             var mode = new ComboBox { MinWidth = 280 };
-            mode.Items.Add(new ComboBoxItem { Content = "Chat only (can read your attachments)", Tag = ToolMode.ChatOnly });
-            mode.Items.Add(new ComboBoxItem { Content = "Use the program's own tools and permissions", Tag = ToolMode.Inherit });
+            mode.Items.Add(new ComboBoxItem { Content = Strings.Conn_ChatOnlyCli, Tag = ToolMode.ChatOnly });
+            mode.Items.Add(new ComboBoxItem { Content = Strings.Conn_UseOwnTools, Tag = ToolMode.Inherit });
             mode.SelectedIndex = p.Tools == ToolMode.Inherit ? 1 : 0;
             var folder = Text(p.WorkingDirectory, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), v => p.WorkingDirectory = v);
             folder.IsEnabled = p.Tools == ToolMode.Inherit;
-            var browse = new Button { Content = "Browse…", IsEnabled = folder.IsEnabled };
+            var browse = new Button { Content = Strings.Common_Browse, IsEnabled = folder.IsEnabled };
             browse.Click += async (_, _) =>
             {
                 var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
@@ -279,17 +315,18 @@ public sealed partial class SettingsWindow
                 await Save(x => x.Tools = m);
                 BuildEditor(host, p);
             };
-            host.Children.Add(Card("Tool use", "Inherit lets the program run its tools (files, commands, web) under its own permission rules.", mode));
-            host.Children.Add(Card("Working folder", "Where the program's tools act in Inherit mode.",
+            host.Children.Add(Card(Strings.Conn_ToolUse, Strings.Conn_ToolUse_CliDesc, mode));
+            host.Children.Add(Card(Strings.Conn_WorkingFolder, Strings.Conn_WorkingFolder_Desc,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { folder, browse } }));
             if (p.Type == BackendType.Antigravity) AddAgyPermissions(host, p, Save);
+            AddApproveAll(host, p, Save);
         }
 
         if (p.Type == BackendType.Anthropic)
         {
             var fallback = new ToggleSwitch { IsOn = p.RefusalFallback, OnContent = "", OffContent = "", MinWidth = 0 };
             fallback.Toggled += async (_, _) => await Save(x => x.RefusalFallback = fallback.IsOn);
-            host.Children.Add(Card("Refusal fallback", "If a safety check declines a request, the API re-serves it with a suitable model instead of stopping (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).", fallback));
+            host.Children.Add(Card(Strings.Conn_RefusalFallback, Strings.Conn_RefusalFallback_Desc, fallback));
         }
 
         if (info.Has(ConnectionField.ApiKey))
@@ -297,23 +334,31 @@ public sealed partial class SettingsWindow
             var images = new ToggleSwitch { IsOn = ConnectionTypes.TakesImages(p), OnContent = "", OffContent = "", MinWidth = 0 };
             images.Toggled += async (_, _) =>
                 await Save(x => x.Images = images.IsOn == info.ImagesByDefault ? null : images.IsOn); // default stays unset in the file
-            host.Children.Add(Card("Model reads images", "Off: screenshots are sent as their text (Settings › Chat › Screenshot text).", images));
+            host.Children.Add(Card(Strings.Conn_Images, Strings.Conn_Images_Desc, images));
         }
 
         var prompt = new ComboBox { MinWidth = 220 };
-        prompt.Items.Add(new ComboBoxItem { Content = $"Default ({_settings.Current.Chat.DefaultPrompt})", Tag = "" });
+        prompt.Items.Add(new ComboBoxItem { Content = L.F(Strings.Conn_DefaultPrompt, _settings.Current.Chat.DefaultPrompt), Tag = "" });
         foreach (var name in _prompts.List()) prompt.Items.Add(new ComboBoxItem { Content = name, Tag = name });
         prompt.SelectedItem = prompt.Items.OfType<ComboBoxItem>().FirstOrDefault(i => (string)i.Tag == (p.Prompt ?? "")) ?? prompt.Items[0];
         prompt.SelectionChanged += async (_, _) =>
         {
             if (prompt.SelectedItem is ComboBoxItem { Tag: string name }) await Save(x => x.Prompt = name.Length == 0 ? null : name);
         };
-        host.Children.Add(Card("System prompt", null, prompt));
+        host.Children.Add(Card(Strings.Conn_SystemPrompt, null, prompt));
+        if (info.Has(ConnectionField.MaxTokens))
+            host.Children.Add(Card(Strings.Conn_MaxTokens, Strings.Conn_MaxTokens_Desc,
+                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null))));
+        if (info.Has(ConnectionField.Temperature))
+            host.Children.Add(Card(Strings.Conn_Temperature, Strings.Conn_Temperature_Desc,
+                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null))));
 
+        var def = Strings.Common_Default; // the "no override" entry (a typed "Default" in English means the same)
+        bool IsDefault(string? v) => string.IsNullOrWhiteSpace(v) || v == def || v == "Default";
         var model = new ComboBox { IsEditable = true, MinWidth = 260 };
-        model.Items.Add("Default");
+        model.Items.Add(def);
         if (!string.IsNullOrWhiteSpace(p.Model)) model.Items.Add(p.Model);
-        model.SelectedItem = string.IsNullOrWhiteSpace(p.Model) ? "Default" : p.Model;
+        model.SelectedItem = string.IsNullOrWhiteSpace(p.Model) ? def : p.Model;
         var status = new InfoBar { IsClosable = true };
         var filling = false;
         async Task LoadModels(bool refresh)
@@ -322,15 +367,15 @@ public sealed partial class SettingsWindow
             {
                 filling = true;
                 var list = await _models.GetAsync(p, refresh, CancellationToken.None);
-                var current = model.SelectedItem as string ?? "Default";
+                var current = model.SelectedItem as string ?? def;
                 model.Items.Clear();
-                model.Items.Add("Default");
+                model.Items.Add(def);
                 foreach (var m in list) model.Items.Add(m.Id);
-                if (current != "Default" && !list.Any(m => m.Id == current)) model.Items.Add(current);
+                if (current != def && !list.Any(m => m.Id == current)) model.Items.Add(current);
                 model.SelectedItem = current;
                 filling = false;
                 status.Severity = InfoBarSeverity.Success;
-                status.Message = ModelCatalog.Describe(list, p.Model);
+                status.Message = ModelCatalog.Describe(list, p.Model, ConnectionTypes.Of(p.Type).ListsModels);
             }
             catch (ModelListException ex) { status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
             catch (Exception ex) { _log.Error("model list failed", ex); status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
@@ -341,26 +386,27 @@ public sealed partial class SettingsWindow
         model.SelectionChanged += async (_, _) =>
         {
             if (filling || model.SelectedItem is not string m) return;
-            var value = m == "Default" ? null : m;
+            var value = IsDefault(m) ? null : m;
             if (value != p.Model) await Save(x => x.Model = value);
         };
-        model.TextSubmitted += async (_, e) => await Save(x => x.Model = string.IsNullOrWhiteSpace(e.Text) || e.Text == "Default" ? null : e.Text.Trim());
-        host.Children.Add(Card("Default model", null, model));
+        model.TextSubmitted += async (_, e) => await Save(x => x.Model = IsDefault(e.Text) ? null : e.Text.Trim());
+        host.Children.Add(Card(Strings.Conn_DefaultModel, null, model));
 
         if (info.EffortLevels.Count > 0)
         {
             var effort = new ComboBox { MinWidth = 160 };
-            effort.Items.Add("Default");
-            foreach (var l in info.EffortLevels) effort.Items.Add(l);
-            effort.SelectedItem = p.Effort is { } e && info.EffortLevels.Contains(e) ? e : "Default";
+            effort.Items.Add(new ComboBoxItem { Content = def, Tag = "" });
+            foreach (var l in info.EffortLevels) effort.Items.Add(new ComboBoxItem { Content = L.Effort(l), Tag = l });
+            var chosen = p.Effort is { } e && info.EffortLevels.Contains(e) ? e : "";
+            effort.SelectedItem = effort.Items.OfType<ComboBoxItem>().First(i => (string)i.Tag == chosen);
             effort.SelectionChanged += async (_, _) =>
             {
-                if (effort.SelectedItem is string v) await Save(x => x.Effort = v == "Default" ? null : v);
+                if (effort.SelectedItem is ComboBoxItem { Tag: string v }) await Save(x => x.Effort = v.Length == 0 ? null : v);
             };
-            host.Children.Add(Card("Default effort", null, effort));
+            host.Children.Add(Card(Strings.Conn_DefaultEffort, null, effort));
         }
 
-        var test = new Button { Content = "Test connection" };
+        var test = new Button { Content = Strings.Conn_Test };
         test.Click += async (_, _) => await LoadModels(true);
         host.Children.Add(test);
         host.Children.Add(status);

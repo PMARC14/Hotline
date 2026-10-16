@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>Dil</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline'ın menülerinin, ayarlarının ve iletilerinin dili. Yapay zekâ yanıtları yazdığınız dilde verilir.</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Windows dilini kullan</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Hotline'ı aç / kapat</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Hotline'ı aç</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>Yeni sohbet başlat</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>Geçerli pencereyi yakala</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Bir bölge yakala</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>Sesle giriş (konuşmak için basılı tutun)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>Hiçbir şey yapma</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot tuşu</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Sağ Ctrl olarak Copilot+C, Ctrl+C olur ve tuş artık Hotline'ı açmaz (aşağıdaki ek kısayolu veya bildirim alanı simgesini kullanın). Copilot tuşu Win+Shift+F23 gönderen klavyelerde çalışır (çoğu).</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline'ı açar</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Sağ Ctrl gibi davranır</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Copilot tuşuna kısa basma</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Copilot tuşuna uzun basma</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>Sesle giriş</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot tuşunu basılı tutup konuşun; durdurmak için bırakın (Esc iptal eder). Windows konuşma tanımayı kullanır: mikrofona izin verin ve Ayarlar › Gizlilik ve güvenlik › Konuşma › Çevrimiçi konuşma tanıma'yı açın. Bu ayar açıldığında uzun basma sesli girişe ayarlanır; kapatıldığında ise yeni sohbete döner.</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>Ek kısayol tuşu</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Hotline'ı da açar, ör. Ctrl+Alt+H. Kullanmamak için boş bırakın.</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>Geçerli bir kısayol değil (örnek: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>Başka yere tıkladığımda gizle</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>Paneli geçici olarak açık tutmak için sabitleyin (📌).</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>Diğer pencerelerin üstünde tut</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>Tema</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Windows ayarını kullan</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>Açık</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>Koyu</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>Vurgu rengi</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>Bağlantılar, mesajlarınız ve Gönder düğmesi.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Hotline moru</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Windows vurgu rengini kullan</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>Özel</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>Özel vurgu rengi</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>#E81123 gibi bir renk; vurgu rengi Özel olduğunda kullanılır.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>#RRGGBB biçimini kullanın, örneğin #E81123.</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Bir Windows karşıtlık teması açık: Hotline onun renklerini ve opak bir arka plan kullanır.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Windows'ta saydamlık efektleri kapalı, bu yüzden Hotline opak bir arka plan kullanır.</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>Arka plan</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Akrilik yarı saydamdır; Düz opaktır.</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Akrilik</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>Akrilik (ince)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>Mica</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>Düz</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>Akrilik renk tonu</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = saydam, 1 = koyu renkli.</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>Akrilik parlaklığı</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>Daha düşük değer daha saydamdır.</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>Metin boyutu</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>Varsayılan olarak Windows'u izler (Ayarlar › Erişilebilirlik › Metin boyutu).</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>Yazı tipi</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>Yüklü herhangi bir yazı tipi, ör. Cascadia Code. Boş = Segoe UI Variable.</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>Kaydırma çubuğu</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>Kaydırırken göster</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Her zaman</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Hiçbir zaman</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>Genişlik</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Ekran genişliğinin payı.</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>En küçük genişlik</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>En büyük genişlik</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>En küçük yükseklik</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = yalnızca ileti çubuğu; siz yazdıkça ve sohbet ettikçe panel yukarı doğru büyür.</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>En büyük yükseklik</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>Ekranın ne kadarını kaplayabileceği.</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>Dikey konum</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = üst, 0,5 = orta, 1 = alt.</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>Büyüme</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>Sohbete sığdır</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>Doğrudan en büyük yüksekliğe geç</value></data>
+  <data name="Set_History" xml:space="preserve"><value>Sohbet geçmişini kaydet</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>Yalnızca metin, .hotline klasörünüzde.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>Bir yanıt arka planda bitince bildir</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Panel gizliyken veya önde başka bir uygulama varken bir yanıt bittiğinde Windows bildirimi gösterir. Yanıtı açmak için tıklayın.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} yanıtladı</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} yanıtı tamamlayamadı</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>Geçmişi şu süre sakla</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>gün</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>Seçili metni ekle</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>Tuş paneli açtığında, geldiğiniz uygulamada seçili olan metin eklenir. Ctrl+C, seçimini paylaşmayan uygulamalarda da çalışır ancak panoyu kısa süreliğine kullanır (ardından geri yüklenir).</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>Evet</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>Evet, Ctrl+C ile de</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>Hayır</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>Yanıtı durdur</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>Yazılırken bir yanıtı durduran tuş (Enter asla durdurmaz; Gönder düğmesi de durdurur). Tek bir tuş (Esc) veya Ctrl+. gibi bir kombinasyon — yanıtlanan bir şey yokken Esc paneli gizler.</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>Geçerli bir kısayol değil (örnekler: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>Bellek</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>Her sohbet .hotline klasörünüzdeki memory.md dosyasını görür ("/remember bir şey" bir satır ekler).</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>Yapay zekânın anı kaydetmesine izin ver</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>API bağlantıları, bir şeyi akılda tutmalarını istediğinizde bir bilgiyi kaydedebilir.</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>Her seferinde sor</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>Evet, sormadan</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>Hayır</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>Dikteden sonra gönder</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>Ses tuş eylemiyle: tuşu bıraktığınızda iletiyi gönderir.</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>Ekran görüntüsü metni (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>Windows, görüntüleri göremeyen modeller için görüntülerdeki metni (çevrimdışı) okur.</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>Yalnızca metin modelleri için</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>Her zaman ekle</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>Kapalı</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>Görüntü boyutu sınırı</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>Eklenen ve yakalanan görüntüler bu uzun kenar boyutuna ölçeklenir.</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>Ayrıntılı günlük kaydı</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>Günlüğe ek tanılama bilgileri yazar.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Hotline ayarları</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>Genel</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>Yapay zekâ bağlantıları</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>İstemler</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>Hızlı eylemler</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>Görünüm</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>Pencere</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>Sohbet ve geçmiş</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Araçlar</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>Gelişmiş</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>Hakkında</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline yeniden başlatıldıktan sonra uygulanır.)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>Geçerli bir değer değil</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Windows ile başlat</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>Araç kullanımı "Hotline araçlarını kullan" olarak ayarlanmış API bağlantıları bu MCP sunucularının araçlarını çağırabilir. Salt okunur araçlar çalışır; diğer her şey için panelde size sorulur (Bir kez izin ver / Her zaman / Reddet).</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>MCP sunucuları</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — diğer MCP uygulamalarıyla aynı "mcpServers" biçimi; onaylar aynı dosyada tutulur</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json dosyasını düzenle</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>Klasörü aç</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Windows aracı kayıt defteri</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>Bu Windows'ta kullanılamıyor (26220.7262 veya sonraki derleme gerekir). Yerleşik bağlayıcıları burada otomatik olarak görünür.</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>Kullanılabilir ({0}). Bağlayıcıları aşağıda windows-… olarak listelenir</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>Henüz hiçbir sunucu denetlenmedi. mcp.json dosyasına sunucu ekleyin, ardından Sunucuları denetle'ye basın.</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>Hazır — {0} araç</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>Başarısız: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>mcp.json dosyasında devre dışı</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>Sunucuları denetle</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>Ayarlar dosyası</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>settings.json dosyasını düzenle</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — bağlantı başına bir dosya; settings.json içindeki "chat.order" açılır listedeki sırayı belirler</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>Bağlantılar klasörünü aç</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>Günlükler</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>Günlükler klasörünü aç</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>Sistem istemleri Markdown dosyalarıdır. Varsayılan istem, kendi istemini seçmeyen her bağlantı tarafından kullanılır.</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>Düzenle</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>Varsayılan yap</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>Sil</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>Varsayılan istem</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>Yeni istem</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>İstemler klasörünü aç</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>Bağlantı ekle</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>Çoğalt</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>Kaldır</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>İptal</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>Bu bağlantı kaldırılsın mı?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>Varsayılan olarak kullan</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>Sağlayıcı listesinde yukarı taşı</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>Sağlayıcı listesinde aşağı taşı</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · varsayılan</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>agy ayarları şu anda okunamadı.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy kuralları: {0} izinli, {1} reddedilmiş. Çalışma klasöründeki dosyaları okumaya varsayılan olarak izin verilir; kabuk komutları bir izin kuralı gerektirir.</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>Salt okunur komutlara izin ver</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>agy'nin izin listesine command(Get-ChildItem), command(git status) gibi kurallar ekler ve Remove-Item, rm, git push... komutlarını reddeder</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>agy için salt okunur kabuk komutlarına izin verilsin mi?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>Bu, agy'nin kendi ayarlarını ({0}) değiştirir; bu nedenle agy'yi kendiniz kullandığınızda da geçerlidir.
+
+İzin ver:
+{1}
+
+Reddet:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>Kural ekle</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>agy ayarları değiştirilemedi: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>agy kurallarını düzenle</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>agy izinleri</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>Her şey onaylansın mı? (tehlikeli)</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0}, karar verdiği HERHANGİ bir kabuk komutunu çalıştırır ve HERHANGİ bir dosyayı sormadan düzenler veya siler. Yanlış bir yanıt ya da kötü amaçlı bir web sayfası veya dosya gerçek zarara yol açabilir. Bunu yalnızca kaybetmeyi göze alabileceğiniz bir çalışma klasörüyle kullanın.</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Anladım, aç</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Her şeyi onayla (tehlikeli)</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0}'nin tüm izin denetimlerini atlar. Yalnızca "programın kendi araçlarını kullan" modunda.</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Ad</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>Uç nokta</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API'nin temel URL'si.</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>Kaydedildi; değiştirmek için yazın</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>İsteğe bağlı</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>Gerekli</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Anahtar kaydedilemedi</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>API anahtarı</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>settings.json'da değil, Windows Kimlik Bilgisi Yöneticisi'nde saklanır.</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>Program yolu</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>Otomatik bulmak için boş bırakın.</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>Otomatik algıla</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>agy aracısı</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>Yalnızca sohbet modunda kullanılır.</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>Ek bağımsız değişkenler</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>Programa olduğu gibi iletilir (boşlukla ayrılmış).</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>Yalnızca sohbet</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Hotline araçlarını kullan (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>Araç kullanımı</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>Bu yapay zekânın MCP sunucularınızın araçlarını kullanmasına izin verir (Ayarlar › Araçlar). Salt okunur araçlar çalışır; diğer her şey için önce panelde size sorulur.</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>Yalnızca sohbet (eklerinizi okuyabilir)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>Programın kendi araçlarını ve izinlerini kullan</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>Gözat…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>Devral, programın kendi araçlarını (dosyalar, komutlar, web) kendi izin kurallarıyla çalıştırmasına olanak tanır.</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>Çalışma klasörü</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>Devral modunda programın araçlarının çalıştığı yer.</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>Ret durumunda yedek model</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>Bir güvenlik denetimi isteği reddederse API, durmak yerine isteği uygun bir modelle yeniden yanıtlar (Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>Model görüntüleri okur</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>Kapalı: ekran görüntüleri metin olarak gönderilir (Ayarlar › Sohbet › Ekran görüntüsü metni).</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>Varsayılan ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>Sistem istemi</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>Varsayılan</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>Varsayılan model</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>Varsayılan efor</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>Bağlantıyı test et</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>En az</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>Düşük</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>Orta</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>Yüksek</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>Çok yüksek</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>En yüksek</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>Sabitle</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>Pencereyi yakala</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>Ekranı yakala</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>Bölge yakala</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>Boşluk</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>Efor seçici</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>Model seçici</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>Sağlayıcı seçici</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>İstem seçici</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>Son sohbetler</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>Yeni sohbet</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>Alt çubuk</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json dosyasında bir hata var</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} Dosyayı düzeltin veya çubuğu sıfırlayın.</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>Sola taşı</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>Sağa taşı</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>Çubuktan kaldır</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>Çubuğa ekle</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>Çubuğu sıfırla</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>geliştirme derlemesi</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot tuşundaki yapay zekânız. Ücretsiz ve açık kaynak (Apache-2.0).</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Hotline'ı destekleyin</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline tek bir kişi tarafından geliştirilir; reklam ve izleme içermez. Size zaman kazandırıyorsa bir bağış onu ayakta tutar.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>Bağış hatırlatıcısı</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>Bir yanıttan sonra paneli bir sonraki açışınızda, panelin üstünde bir kez "Hotline'ı beğendiniz mi?" gösterir. Sonra kendini kapatır; buradan yeniden açabilirsiniz.</value></data>
+  <data name="About_Project" xml:space="preserve"><value>Proje</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>Kaynak kodu, sürümler ve sorun bildirmek ya da özellik istemek için yer.</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>Sorun bildir</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>Denetleniyor…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>Bu bilgisayar</value></data>
+  <data name="About_License" xml:space="preserve"><value>Lisans</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0 ve Hotline'ın kullandığı bileşenlerin lisansları.</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>Üçüncü taraf bildirimleri</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>Bu bilgisayar denetlenemedi.</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>Belleği düzenle</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>Boş. İleti kutusunda "/remember bir şey" bir satır ekler.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} satır. Bellek açık olduğu sürece her sohbet bunları görür.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Birini kullanmak için iletinin başına / yazın: "/translate bir metin" veya bir ekle "/summarize". Her eylem bir Markdown dosyasıdır; ilk satırı listede gösterilen açıklamadır. Adlar harf, rakam, - ve _ içerebilir.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Yeni eylem</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Eylemler klasörünü aç</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>derleme {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR dili</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR dili yok: Ayarlar › Zaman ve dil › Dil ve bölge › optik karakter tanıma içeren bir dil ekleyin</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows dikte özelliği kullanılabilir</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Ayarlar › Gizlilik ve güvenlik › Konuşma › Çevrimiçi konuşma tanıma ve bir mikrofon</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Windows aracı bağlayıcıları</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe bulundu; bağlayıcıları windows-… araç sunucuları olarak görünür</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe bulunamadı (bu bilgisayarda henüz açılmamış)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows 26220.7262 veya sonraki derleme gerekir (ör. 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>Uygulama Eylemleri (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>kaydedildi; Click to Do'nun kendisi bir Copilot+ PC gerektirir</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (derleme 26100) veya sonrası gerekir</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>Açık — Hotline oturum açtığınızda bildirim alanında başlar.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>Kapalı (Windows Ayarlar › Uygulamalar › Başlangıç'ta kapatıldı). Hotline'ı orada açın.</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>Kapalı (kuruluşunuzun ilkesi tarafından engellendi).</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>Kapalı.</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>Bu derlemede kullanılamaz.</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>Belleğe kaydedildi: "{0}" (Ayarlar › Sohbet ve geçmiş › Belleği düzenle)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>Antigravity CLI (agy) yüklü değil.</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Hotline'ı aç</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>Ayarlar…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>Yeniden başlat (ayarları uygula)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>Çıkış</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>Bir bölgeyi yakalamak için sürükleyin  ·  İptal için Esc</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>O pencere kullanılamıyor (kapatılmış veya simge durumuna küçültülmüş), bu yüzden tüm ekran yakalandı.</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Hotline'a ekle</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>Klasörler eklenemez ({0}).</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} çok büyük ({1} MB; en fazla {2} MB).</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>{0} okunamadı.</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>{0} görüntü olarak okunamadı.</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows'ta yüklü OCR dili yok, bu nedenle görüntülerdeki metin okunamıyor. Ayarlar › Zaman ve dil › Dil ve bölge'den bir dil ekleyin ("Optik karakter tanıma" içeren bir dil).</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>{0} içindeki metin okunamadı.</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>Görüntüyü kopyala</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>Görüntü kopyalandı.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>Hâlâ yanıtlıyor. {0} veya Durdur düğmesi onu durdurur; iletiniz kutuda bekliyor.</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>Hatırlanacak şeyi /remember'dan sonra yazın, ör. "/remember metrik birimleri tercih ederim".</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>Hatırlandı. Bundan sonra her sohbet bunu görür (Ayarlar › Sohbet ve geçmiş › Bellek'ten düzenleyin).</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>Kaydedilmedi: en fazla {0} karakterlik tek bir satır olmalı.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>/{0} için metni ardından yazın veya bir şey ekleyin.</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>Ayarlar klasörü açılamadı ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>Durdur</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>Gönder (Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Hotline'a hoş geldiniz</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>Gönderdikleriniz — iletiniz, ekler ve geldiğiniz uygulamada seçili olan metin (kaldırabileceğiniz bir etiket olarak gösterilir) — yalnızca seçtiğiniz yapay zekâ bağlantısına gider. İpuçları: hızlı eylemler için / yazın, not kaydetmek için /remember kullanın.</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>Neler gönderilir</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Hotline'ı beğendiniz mi?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>Ücretsiz ve açık kaynaklıdır, tek bir kişi tarafından geliştirilir. İşinize yarıyorsa bir bağış onu ayakta tutar. Bu bir kez gösterilir (Ayarlar › Hakkında bölümünden yeniden açabilirsiniz).</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>Kopyala</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>Kodu kopyala</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>kod</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>Tabloyu kopyala</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>Tabloyu kopyala (elektronik tablolara yapıştırılabilir)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>Görüntü çiziliyor…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(güvenli şekilde gösterilemeyen bir çizim)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>Görüntüyü aç</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>Çizimin tamamını (etiketlerle) varsayılan görüntüleyicinizde açın</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>{0} › {1} için izin verilsin mi?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>Bir kez izin ver</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>Her zaman izin ver</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>Reddet</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>yok</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>Akıl yürütme eforu</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} Ayarlar'da yapılandırılabilir, ancak onunla sohbet özelliği sonraki bir güncellemede sunulacak.</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>Sistem istemi: {0} (sonraki iletiye uygulanır)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>"{0}" düzenle…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>Yeni istem…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>Önce yanıtın bitmesini bekleyin (veya durdurun).</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>Bu konuşma açılamadı.</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>Sohbet geçmişi kapalı</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>Henüz kaydedilmiş sohbet yok</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Başlığında “{0}” geçen yakın tarihli sohbet yok.</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} ileti, son {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>Geçmiş klasörünü aç</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>az önce</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} dk önce</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} sa önce</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} g önce</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>Siz</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>Yanıtı kopyala</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>Yeniden dene</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>Kopyalandı.</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>Pano meşgul; yeniden deneyin.</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>Bu yanıtı {0} tarafına bildir…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>Diğer</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>Bu işe yaramadı: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>Durdurmak için tuşu bırakın. Esc iptal eder.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>Durdurmak için tuşa yeniden basın. Esc iptal eder.</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 Mikrofon başlatılıyor…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 Dinliyor…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>Kullanılabilir mikrofon yok.</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>Sesle giriş durdu ({0}).</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>Sesle giriş, Windows çevrimiçi konuşma tanımasını gerektirir.</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>Aç</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline'ın mikrofonu kullanmasına izin verilmiyor.</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>Mikrofon ayarları</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>Sesle giriş başlatılamadı: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>Konuşma tanıma, Windows görüntüleme dilinizde dikteyi desteklemiyor.</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>Konuşma tanıma kullanılamıyor ({0}).</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>En son iletiye git</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>Dosya ekle veya yakala</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>Dosya ekle…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>Sabitle (başka yere tıkladığınızda açık kalır, böylece dosya sürükleyebilirsiniz)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>Bulunduğunuz pencereyi yakala</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>Tüm ekranı yakala</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>Model (bir ad yazın veya seçin)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>Kim yanıtlıyor</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>Son sohbetler (Ctrl+Yukarı son sohbeti yeniden açar)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>Yeni sohbet (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>Yüklü agy'niz ve Google oturumunuz.</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>Yüklü claude'unuz ve oturumunuz (Claude planınız).</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Bir Google AI Studio API anahtarı.</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Bir Anthropic Console API anahtarı. Varsayılan model: Claude Opus 5.5.</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>OpenAI uyumlu API</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq ve diğer OpenAI tarzı API'ler.</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>Yerel uç nokta</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>llama.cpp sunucusu, LM Studio ve diğer yerel OpenAI tarzı sunucular.</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>Sunucunun model listesi beklenen biçimde değildi.</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 model</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>{0} model</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>Bağlandı: {0}.</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>Bağlandı: {0}, {1} dahil.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>Bağlandı: {0}, ancak {1} bunlardan biri değil.</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>Önce {0} için bir API anahtarı ekleyin.</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} API anahtarını reddetti.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} şu yanıtı verdi: {1}.</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>{0} adresine ulaşılamıyor: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} zamanında yanıt vermedi.</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>Ayarlar › Yapay zekâ bağlantıları'nda {0} için bir API anahtarı ekleyin.</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} için uç nokta geçerli bir http(s) adresi değil: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} istek sınırına ulaştı, {1} sn içinde yeniden deneniyor…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} meşgul, {1} sn içinde yeniden deneniyor…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} API anahtarını reddetti. {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0}: istek sınırına veya kotaya ulaşıldı. {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} bir sunucu hatası verdi (veya aşırı yüklü). {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} bu isteği yanıtlamayı reddetti (güvenlik reddi).</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>{0} için bir model seçin (Model listesi bunları gösterir).</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} bu isteği engelledi ({1}).</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} yanıtı durdurdu ({1}).</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} bir araç isterken durdu ({1}); hiçbir şey çalıştırılmadı.</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: araç isteği tamamlanmadan bağlantı sona erdi; hiçbir şey çalıştırılmadı.</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} beklenmedik şekilde durdu.</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>{0} için çalışma klasörü yok: {1}. Ayarlar › Yapay zekâ bağlantıları'ndan başka bir tane seçin.</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code yüklü değil. claude.com/claude-code adresinden yükleyin, oturum açmak için `claude` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy oturum açmamış. Oturum açmak için bir terminalde `agy` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>Antigravity kotanız şimdilik doldu. Daha sonra yeniden deneyin.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy henüz Hotline çalışma alanına güvenmiyor. Bir terminalde `agy` komutunu bir kez çalıştırın ve ona güvenin.</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code oturum açmamış. Bir terminalde `claude` komutunu bir kez çalıştırın, oturum açın ve yeniden deneyin.</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>Claude kullanım sınırına şimdilik ulaşıldı. {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude şu anda aşırı yüklü; birazdan yeniden deneyin.</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0}, {1} MB'tan büyük.</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0}, {1} KB'tan büyük.</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: desteklenmeyen dosya türü.</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>Seçili metin</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} uygulamasından seçili metin</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>En fazla {0} dosya ekleyebilirsiniz.</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} içindeki metin</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} görüntüleri okuyamaz.</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} dosyaları okuyamaz.</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>'{0}' arka ucu henüz kullanılamıyor.</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>"{0}" yüklü değil, bu yüzden {1} sunucusu başlayamıyor. {2} yükleyin, ardından Hotline'ı yeniden başlatın.</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" yüklü değil veya PATH'te yok, bu yüzden {1} sunucusu başlayamıyor. mcp.json içindeki "command" değerini kontrol edin.</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json okunamadı: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>"{0}" onayı bilinmeyen bir değere sahip, bu yüzden "deny" olarak değerlendiriliyor.</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>Sunucu adı '/' veya '*' içeremez.</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} sn içinde başlamadı</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Düzeltilene kadar hiçbir araç çalışmaz.</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Son çalışan sürüm geçerli kalır.</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>sunucu kapandı (çıkış kodu {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyası bir JSON nesnesi değil; değiştirilmiyor.</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions" bir nesne değil; değiştirilmiyor.</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions.{0}" bir liste değil; değiştirilmiyor.</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Hotline bölge yakalama</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) yüklü değil. antigravity.google/cli adresinden yükleyin ve yeniden deneyin.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>Yüklü codex'iniz ve oturumunuz (ChatGPT planınız veya OpenAI API anahtarınız).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>Bu bağlantı model listelemiyor: Varsayılan'ı koruyun veya bir model adı yazın.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} kullanılıyor (bu bağlantı, kontrol edilecek bir model listesi sunmuyor).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex yüklü değil. Yükleyin (npm install -g @openai/codex), oturum açmak için `codex login` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex başlatılamadı ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex oturum açmamış. Bir terminalde `codex login` komutunu çalıştırın ve yeniden deneyin.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Codex kullanım sınırına şimdilik ulaşıldı. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI şu anda aşırı yüklü; birazdan yeniden deneyin.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex bu yanıtı tamamlayamadı.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex yeniden bağlanıyor…</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Hotline'ın nasıl bağlanacağını seçin</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Hotline'ın kullanacağı yapay zekâyı seçin. Siz seçene kadar hiçbir şey gönderilmez ve çalıştırılmaz.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Bu bilgisayarda Claude Code veya Antigravity yüklü değil. Birini yükleyip oturum açın veya bir API anahtarı kullanın.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>{0} kullan</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>API anahtarı kullan…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline'ı Copilot tuşu uygulaması yap</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>Bir bağlantı seçin</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot tuşu için Hotline'ı kullan</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows Ayarlar › Kişiselleştirme › Metin girişi › Klavyedeki Copilot tuşunu özelleştir bölümünde Özel'i, ardından Hotline'ı seçin. Copilot tuşlu bir klavye gerekir.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot tuşu ayarlarını aç</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>Sohbetleri {0} geçmişinde tut</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Her Hotline sohbeti orada Hotline altında gruplanmış tek bir konuşmadır; Son sohbetler'den veya CLI'nin kendisinden sürdürebilirsiniz. Kapalı: sohbeti Hotline tutar.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>İletileri Hotline'da da tut</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>Son sohbetler bu sohbetleri her zaman listeler; bu seçenek iletileri ayrıca Hotline'ın geçmiş klasörüne kaydeder.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>“{0}” sürdürülüyor. Önceki iletiler {1} geçmişinde.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} bu konuşmayı yeniden açamadı. Devam etmek için yeni bir sohbet başlatın.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>Bu sohbeti şurada sürdür</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} açılamadı: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>Başlatma seçenekleri (gelişmiş)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Hotline'ın bu mod için eklediği seçeneklerin yerine geçer (boşlukla ayrılmış). Hotline'ın programla konuşmak için gereken seçenekleri her zaman eklenir; tehlikeli olanlar yalnızca “Her şeyi onayla”dan gelir. Boş = Hotline varsayılanları.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline varsayılanları</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>En uzun yanıt</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Bir yanıtın kullanabileceği en fazla token. Çok düşükse uzun bir yanıt erken biter. Boş = modelin varsayılanı.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>Sıcaklık</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Yanıtların ne kadar çeşitli olduğu: 0 = odaklı ve tekrarlanabilir, daha yüksek = daha çeşitli (en fazla 2). Boş = modelin varsayılanı.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>Modelin varsayılanı</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Belleğe not kaydet — her sohbet görür</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Geçmişten bir sohbeti yeniden aç</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Madde işaretli listeye çevir</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Sade bir dille açıkla</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Yazım ve dil bilgisini düzelt</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Profesyonel bir dille yeniden yaz</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Bir yanıt taslağı yaz</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Daha kısa ve net yap</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Birkaç maddede özetle</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Çevir (İngilizceye veya belirttiğin dile)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Yüksek karşıtlık</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Yüksek karşıtlık Hotline'ın kendi temasıdır; Windows karşıtlık temaları otomatik olarak izlenir.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Sohbetlerde ara</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Hotline'ı da açar. Tıklayın, sonra tuşlara basın. Esc iptal eder, Geri tuşu temizler.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Bir kısayola basın…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Ayarlanmadı</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift veya Win ekleyin</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Bu tuş kullanılamaz</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Varsayılan eylemleri geri yükle</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} varsayılan eylem eklendi veya güncellendi.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Yeniden adlandır</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Harf, rakam, - ve _ kullanın ve henüz kullanılmayan bir ad seçin.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
+</root>

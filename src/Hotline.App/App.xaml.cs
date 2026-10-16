@@ -73,6 +73,20 @@ public partial class App : Application
     /// <summary>User-visible data folder: %USERPROFILE%\.hotline (settings.json, logs, history).</summary>
     internal static string DataDirectory => HotlinePaths.DataDirectory(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile));
 
+    /// <summary>
+    /// general.language: "system" follows the Windows display language; a tag picks one (Languages.Supported). Sets
+    /// .NET's interface culture (Hotline's own text) and the app's MRT language (the Start menu description and
+    /// WinUI's built-in control text). Takes effect at start, so the setting says "applies after restarting".
+    /// </summary>
+    private void ApplyLanguage(string? setting)
+    {
+        var culture = Languages.Apply(setting);
+        try { Microsoft.Windows.Globalization.ApplicationLanguages.PrimaryLanguageOverride = culture?.Name ?? ""; }
+        catch (Exception ex) when (ex is InvalidOperationException or System.Runtime.InteropServices.COMException or UnauthorizedAccessException)
+        { /* unpackaged dev run: .NET's culture alone still switches Hotline's text */ }
+        _log?.Info($"interface language: {(culture?.Name ?? "Windows (" + System.Globalization.CultureInfo.CurrentUICulture.Name + ")")}");
+    }
+
     protected override void OnLaunched(LaunchActivatedEventArgs args)
     {
         var dataDir = DataDirectory;
@@ -85,6 +99,7 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
+        ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
@@ -100,7 +115,13 @@ public partial class App : Application
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
         var job = new ChildProcessJob(_log);
-        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy-workspace"), TimeProvider.System);
+        _popup.IsOurProcess = job.Owns;
+        // Chat-only CLI chats run in folders named "Hotline": Claude Code and Codex list sessions by folder, agy names its
+        // project after it (Plan 9). The older folders held only the agent file and temporary attachments.
+        foreach (var old in new[] { "agy-workspace", "claude-workspace" })
+            try { if (Directory.Exists(Path.Combine(privateDir, old))) Directory.Delete(Path.Combine(privateDir, old), recursive: true); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error($"could not remove the old {old} folder", ex); }
+        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy", "Hotline"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
@@ -110,11 +131,13 @@ public partial class App : Application
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
-                _presenter?.Notice($"Saved to memory: \"{fact}\" (Settings › Chat and history › Edit memory)", Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
+                _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
-            home, Path.Combine(privateDir, "claude-workspace"), _secrets, BackendFactory.CreateApiHttpClient(), tools);
+            home, Path.Combine(privateDir, "claude", "Hotline"), _secrets, BackendFactory.CreateApiHttpClient(), tools,
+            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home)),
+            Path.Combine(privateDir, "codex", "Hotline"));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -122,25 +145,43 @@ public partial class App : Application
             history = new HistoryStore(Path.Combine(dataDir, "history"), TimeProvider.System);
             try { history.Prune(settings.Chat.HistoryRetentionDays); } catch (IOException ex) { _log.Error("history prune failed", ex); }
         }
-        var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log) { BackendId = settings.Chat.DefaultBackend };
-        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir);
+        // CLI chats live in the CLI's own history; Hotline keeps the messages too only for API/local connections or when asked.
+        var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log,
+            id => settings.Chat.Backends.FirstOrDefault(b => b.Id == id) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
+        {
+            BackendId = settings.Chat.DefaultBackend,
+            // A chat Hotline kept only a record of shows its messages from the CLI's own history (chat.cliTranscripts).
+            CliTranscript = (backendId, sessionId) => settings.Chat.CliTranscripts
+                && settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } owner
+                ? CliTranscripts.Read(owner.Type, sessionId, home, backendId) : null,
+        };
+        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
+        {
+            UpdateSettings = change => _settingsService!.Update(change),
+        };
         _popup.BeforeShow = foreground =>
         {
             if (Interop.SelectionReader.Read(foreground, _settingsService.Current.Chat.AttachSelection, _log) is { } selection)
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 
         _models = new ModelCatalog(new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) }, _secrets, (p, ct) =>
         {
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
-                      ?? throw new ModelListException("The Antigravity CLI (agy) isn't installed.");
+                      ?? throw new ModelListException(Strings.Agy_NotInstalled);
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
         }, TimeProvider.System);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
+        chat.Event += e => { if (e is ConversationResumed) _providerBar.Refresh(); }; // a CLI chat brings its connection back
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
+        var chooser = new Chat.ConnectionChooser(_popup, _presenter.Notices, _settingsService, _providerBar.Select,
+            () => { _popup.HidePopup(); _settingsHost?.Show("Connections"); }, _log);
+        chooser.Initialize();
+        _presenter.ConnectionMissing = chooser.Show;
         // Don't keep an idle CLI session (claude/agy) around after New chat or switching provider.
         var lastBackend = chat.BackendId;
         chat.Event += e => { if (e is ConversationReset) _ = InvalidateBackend(chat.BackendId).AsTask(); };
@@ -157,7 +198,7 @@ public partial class App : Application
         };
         var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
         _router.SelfTestRequested += selfTests.Run;
-        _router.DemoRequested += () => _presenter.Demo();
+        _router.DemoRequested += scene => _presenter.Demo(scene);
         _router.VoiceRequested += command => _presenter.Voice(command);
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
@@ -183,6 +224,9 @@ public partial class App : Application
             try
             {
                 _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
+                // First run: a default chosen in Settings › Connections or settings.json connects the panel too.
+                if (string.IsNullOrEmpty(chat.BackendId) && settings.Chat.Backends.Any(b => b.Id == settings.Chat.DefaultBackend))
+                    chat.BackendId = settings.Chat.DefaultBackend;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
                 _popup.GrowMode = settings.Chat.GrowMode;
                 _popup.ApplyAppearance();

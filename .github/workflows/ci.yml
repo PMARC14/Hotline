@@ -26,3 +26,19 @@ jobs:
 
       - name: Build app (x64)
         run: dotnet build src/Hotline.App/Hotline.App.csproj -c Release -p:Platform=x64
+
+  # Windows on ARM: unit tests and the app build on a real ARM64 runner (native, not emulated).
+  build-test-arm64:
+    runs-on: windows-11-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Unit tests
+        run: dotnet test --project tests/Hotline.Core.Tests/Hotline.Core.Tests.csproj -c Release
+
+      - name: Build app (ARM64)
+        run: dotnet build src/Hotline.App/Hotline.App.csproj -c Release -p:Platform=ARM64 -r win-arm64

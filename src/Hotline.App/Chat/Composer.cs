@@ -1,4 +1,5 @@
 using Hotline.Core.Chat;
+using Hotline.Core.Theming;
 using Microsoft.UI.Input;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
@@ -13,13 +14,15 @@ namespace Hotline.App.Chat;
 /// The message box: its size and focus look, its keys (Enter sends, Shift+Enter is a new line, Ctrl+↑ in an empty
 /// box reopens the last chat) and the "/" list of quick actions (↑/↓, Tab or Enter to pick, Esc to close).
 /// </summary>
-internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions actions, UiTasks tasks)
+internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions actions, UiTasks tasks, Func<bool> resumeWhileTyping)
 {
     /// <summary>Enter (send what's typed). Never a stop: see <see cref="SendButtonClicked"/>.</summary>
     public event Action? SendRequested;
     /// <summary>The Send button, which is the Stop button while an answer is being written.</summary>
     public event Action? SendButtonClicked;
     public event Action? PreviousChatRequested;
+    /// <summary>"/resume" and a space was typed (chat.resumeWhileTyping): open the history list with these words.</summary>
+    public event Action<string>? ResumeTyped;
 
     /// <summary>Gets the first look at every key (e.g. Esc cancels dictation); true when it handled the key.</summary>
     public Func<VirtualKey, bool>? KeyFilter { get; set; }
@@ -44,11 +47,16 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     {
         popup.Input.PreviewKeyDown += OnPreviewKeyDown;
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
-        popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: QuickAction a }) Complete(a); };
+        popup.Input.TextChanged += (_, _) =>
+        {
+            if (resumeWhileTyping() && ResumeCommand.TryTyping(popup.Input.Text, out var query)) ResumeTyped?.Invoke(query);
+        };
+        // ListViewItems added directly: ItemClick reports their content (the row), which carries the action too.
+        popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: QuickAction a }) Complete(a); };
         popup.SendButton.Click += (_, _) => SendButtonClicked?.Invoke();
-        var restingBorder = popup.Composer.BorderBrush;
-        popup.Input.GotFocus += (_, _) => { popup.Composer.BorderBrush = theme.Style.Accent; popup.Composer.BorderThickness = new Thickness(1.5); };
-        popup.Input.LostFocus += (_, _) => { popup.Composer.BorderBrush = restingBorder; popup.Composer.BorderThickness = new Thickness(1); };
+        // Colour only: changing the thickness would change the panel's height (and resize the window).
+        popup.Input.GotFocus += (_, _) => popup.Composer.BorderBrush = theme.Style.Accent;
+        popup.Input.LostFocus += (_, _) => popup.Composer.BorderBrush = RestingBorder;
         // Focus after the window is laid out and active, or the caret may not appear.
         popup.Shown += () => popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => popup.Input.Focus(FocusState.Keyboard));
     }
@@ -68,12 +76,66 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.PlusButton.FontSize = Math.Round(button * 0.45);
         popup.SendButton.FontSize = Math.Round(button * 0.4);
         popup.Composer.CornerRadius = new CornerRadius(Math.Round(button * 0.3) + 4);
+        ApplyAccent();
+        ApplySurface();
+    }
+
+    /// <summary>
+    /// The message box outline when it doesn't have focus, from the panel's current colours (a brush captured at start
+    /// would keep the old theme's colour after a light/dark switch). High contrast: full-strength.
+    /// </summary>
+    private Microsoft.UI.Xaml.Media.Brush RestingBorder => PanelTheme.Brush(theme.Tokens.Border);
+
+    private static readonly string[] SurfaceKeys = ["ComposerSurface", "TextControlBackground", "TextControlBackgroundFocused", "TextControlBackgroundPointerOver"];
+
+    /// <summary>
+    /// High contrast: the message area takes the theme's window colour (black for Hotline's own) and a full-strength
+    /// outline. The caret is drawn from this background, so it stays visible. Otherwise the XAML colour sets apply.
+    /// </summary>
+    private void ApplySurface()
+    {
+        var resources = popup.Composer.Resources;
+        foreach (var key in SurfaceKeys) resources.Remove(key);
+        if (theme.Tokens.HighContrast)
+            foreach (var key in SurfaceKeys) resources[key] = PanelTheme.Brush(theme.Tokens.SolidBackground);
+        if (popup.Input.FocusState == FocusState.Unfocused) popup.Composer.BorderBrush = RestingBorder;
+        popup.Composer.RequestedTheme = theme.Dark ? ElementTheme.Light : ElementTheme.Dark; // re-read the theme resources
+        popup.Composer.RequestedTheme = ElementTheme.Default;
+    }
+
+    private static readonly string[] AccentKeys =
+        ["AccentButtonBackground", "AccentButtonBackgroundPointerOver", "AccentButtonBackgroundPressed",
+         "AccentButtonForeground", "AccentButtonForegroundPointerOver", "AccentButtonForegroundPressed"];
+
+    /// <summary>
+    /// The Send button in the panel's accent (Windows would draw it in the Windows accent). A contrast theme keeps the
+    /// system's own button colours. The button re-reads its theme resources when its theme flips, so it flips twice.
+    /// </summary>
+    private void ApplyAccent()
+    {
+        var resources = popup.SendButton.Resources;
+        foreach (var key in AccentKeys) resources.Remove(key);
+        // Windows' contrast themes keep the system's own button colours; Hotline's High contrast uses its cyan accent.
+        if (!theme.Tokens.HighContrast || SystemTheme.Colors.Contrast is null)
+        {
+            var accent = theme.Tokens.Accent;
+            var on = ThemeColor.OnColor(accent);
+            resources["AccentButtonBackground"] = PanelTheme.Brush(accent);
+            resources["AccentButtonBackgroundPointerOver"] = PanelTheme.Brush(ThemeColor.WithAlpha(accent, 0xE6)); // as Windows: 90 %
+            resources["AccentButtonBackgroundPressed"] = PanelTheme.Brush(ThemeColor.WithAlpha(accent, 0xCC)); // 80 %
+            resources["AccentButtonForeground"] = PanelTheme.Brush(on);
+            resources["AccentButtonForegroundPointerOver"] = PanelTheme.Brush(on);
+            resources["AccentButtonForegroundPressed"] = PanelTheme.Brush(ThemeColor.WithAlpha(on, 0xCC));
+        }
+        var b = popup.SendButton;
+        b.RequestedTheme = theme.Dark ? ElementTheme.Light : ElementTheme.Dark;
+        b.RequestedTheme = ElementTheme.Default;
     }
 
     public void SetBusy(bool busy)
     {
         popup.SendButton.Content = busy ? Glyphs.Stop : Glyphs.Send;
-        ToolTipService.SetToolTip(popup.SendButton, busy ? "Stop" : "Send (Enter)");
+        ToolTipService.SetToolTip(popup.SendButton, busy ? Strings.Composer_Stop : Strings.Composer_Send);
     }
 
     private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)
@@ -126,6 +188,7 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         };
         Grid.SetColumn(description, 1);
         row.Children.Add(description);
+        row.Tag = a; // what ItemClick reports
         return new ListViewItem
         {
             Content = row, Tag = a, MinHeight = 0, Padding = new Thickness(8, 4, 8, 4),

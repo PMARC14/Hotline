@@ -66,11 +66,11 @@ internal sealed class TrayIcon : IDisposable
     private void ShowMenu()
     {
         var menu = Native.CreatePopupMenu();
-        Native.AppendMenu(menu, Native.MF_STRING, CmdOpen, "Open Hotline");
-        Native.AppendMenu(menu, Native.MF_STRING, CmdSettings, "Settings…");
-        Native.AppendMenu(menu, Native.MF_STRING, CmdRestart, "Restart (apply settings)");
+        Native.AppendMenu(menu, Native.MF_STRING, CmdOpen, Strings.Tray_Open);
+        Native.AppendMenu(menu, Native.MF_STRING, CmdSettings, Strings.Tray_Settings);
+        Native.AppendMenu(menu, Native.MF_STRING, CmdRestart, Strings.Tray_Restart);
         Native.AppendMenu(menu, Native.MF_SEPARATOR, 0, null);
-        Native.AppendMenu(menu, Native.MF_STRING, CmdQuit, "Quit");
+        Native.AppendMenu(menu, Native.MF_STRING, CmdQuit, Strings.Tray_Quit);
         Native.GetCursorPos(out var pt);
         Native.SetForegroundWindow(_hook.Hwnd); // required so the menu closes when clicking elsewhere
         Native.TrackPopupMenuEx(menu, Native.TPM_RIGHTBUTTON | Native.TPM_BOTTOMALIGN, pt.X, pt.Y, _hook.Hwnd, 0);

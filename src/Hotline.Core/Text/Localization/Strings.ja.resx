@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>言語</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline のメニュー、設定、メッセージの言語です。AI の回答は、あなたが書いた言語に合わせます。</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Windows の言語を使用する</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Hotline を開く / 閉じる</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Hotline を開く</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>新しいチャットを開始</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>現在のウィンドウをキャプチャ</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>範囲をキャプチャ</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>音声入力 (押している間話す)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>何もしない</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot キー</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>右 Ctrl として使うと、Copilot+C は Ctrl+C になり、キーで Hotline は開かなくなります (下の追加ホットキーか通知領域のアイコンを使ってください)。Copilot キーが Win+Shift+F23 を送るキーボード (ほとんど) で動作します。</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline を開く</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>右 Ctrl として動作</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Copilot キーの短押し</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Copilot キーの長押し</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>音声入力</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot キーを押したまま話し、離すと停止します (Esc でキャンセル)。Windows の音声認識を使います。マイクを許可し、[設定] › [プライバシーとセキュリティ] › [音声認識] › [オンライン音声認識] をオンにしてください。オンにすると長押しが音声入力になり、オフにすると新しいチャットに戻ります。</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>追加のホットキー</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>これでも Hotline を開けます (例: Ctrl+Alt+H)。使わない場合は空欄のままにします。</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>有効なホットキーではありません (例: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>ほかの場所をクリックしたら隠す</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>パネルをピン留め (📌) すると一時的に開いたままにできます。</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>ほかのウィンドウより手前に表示</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>テーマ</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Windows の設定を使用する</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>ライト</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>ダーク</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>アクセント カラー</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>リンク、自分のメッセージ、送信ボタン。</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Hotline パープル</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Windows のアクセント カラーを使う</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>カスタム</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>カスタム アクセント カラー</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>#E81123 のような色。アクセント カラーが [カスタム] のときに使われます。</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>#RRGGBB の形式で入力してください (例: #E81123)。</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Windows のコントラスト テーマがオンです。Hotline はその色と不透明な背景を使います。</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Windows の透明効果がオフのため、Hotline は不透明な背景を使います。</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>背景</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>アクリルは半透明、単色は不透明です。</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>アクリル</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>アクリル (薄い)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>マイカ</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>単色</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>アクリルの色合い</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = 透明、1 = 濃い色合い。</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>アクリルの明るさ</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>低いほど透けて見えます。</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>文字サイズ</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>既定では Windows に従います ([設定] › [アクセシビリティ] › [テキストのサイズ])。</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>フォント</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>インストール済みの任意のフォント (例: Cascadia Code)。空欄 = Segoe UI Variable。</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>スクロール バー</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>スクロール中に表示</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>常に表示</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>表示しない</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>幅</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>画面幅に対する割合。</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>最小幅</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>最大幅</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>最小の高さ</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = メッセージ バーのみ。入力やチャットに合わせてパネルが上に伸びます。</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>最大の高さ</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>画面のどこまで広がってよいか。</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>縦の位置</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = 上、0.5 = 中央、1 = 下。</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>拡大</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>会話に合わせる</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>すぐに最大の高さにする</value></data>
+  <data name="Set_History" xml:space="preserve"><value>チャット履歴を保存</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>テキストのみ、.hotline フォルダーに保存します。</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>バックグラウンドで回答が完了したら通知する</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>パネルが非表示のときや別のアプリが前面にあるときに回答が完了すると、Windows の通知を表示します。クリックすると回答を開きます。</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} が回答しました</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} は回答を完了できませんでした</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>履歴の保存期間</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>日</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>選択したテキストを添付</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>キーでパネルを開くと、直前のアプリで選択していたテキストが添付されます。選択範囲を共有しないアプリでも Ctrl+C で添付できますが、クリップボードを一時的に使います (後で元に戻します)。</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>はい</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>はい (Ctrl+C も使う)</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>いいえ</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>回答を停止</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>回答の生成中にそれを止めるキーです (Enter では止まりません。送信ボタンでも止まります)。単独のキー (Esc) または Ctrl+. のような組み合わせ。回答中でないときは Esc でパネルが隠れます。</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>有効なショートカットではありません (例: Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>メモリ</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>すべてのチャットが .hotline フォルダーの memory.md を参照します (「/remember 内容」で 1 行追加)。</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>AI にメモリの保存を許可</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>覚えておくよう指示すると、API 接続が情報を保存できます。</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>毎回確認する</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>はい (確認しない)</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>いいえ</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>ディクテーション後に送信</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>キー操作が音声の場合: キーを離したときにメッセージを送信します。</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>スクリーンショットのテキスト (OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>画像を読めないモデルのために、Windows が画像内のテキストを (オフラインで) 読み取ります。</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>テキスト専用モデルのみ</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>常に追加</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>画像サイズの上限</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>添付・キャプチャした画像は、長辺がこのサイズになるよう縮小されます。</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>詳細ログ</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>追加の診断情報をログに書き込みます。</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Hotline の設定</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>全般</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>AI 接続</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>プロンプト</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>クイック アクション</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>外観</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>ウィンドウ</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>チャットと履歴</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>ツール</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>詳細</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>バージョン情報</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline の再起動後に適用されます。)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>有効な値ではありません</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Windows の起動時に開始</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>ツールの使用を「Hotline のツールを使う」にした API 接続は、これらの MCP サーバーのツールを呼び出せます。読み取り専用のツールはそのまま実行され、それ以外はパネルで確認されます (今回のみ許可 / 常に許可 / 拒否)。</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>MCP サーバー</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — ほかの MCP アプリと同じ「mcpServers」形式。承認も同じファイルに保存されます</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json を編集</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>フォルダーを開く</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Windows エージェント レジストリ</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>この Windows では利用できません (ビルド 26220.7262 以降が必要)。組み込みのコネクタはここに自動的に表示されます。</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>利用可能 ({0})。コネクタは下に windows-… として表示されます</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>まだサーバーを確認していません。mcp.json にサーバーを追加して [サーバーを確認] を押してください。</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>準備完了 — ツール {0} 個</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>失敗: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>mcp.json で無効</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>サーバーを確認</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>設定ファイル</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>settings.json を編集</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — 接続ごとに 1 ファイル。settings.json の「chat.order」で一覧の順序が決まります</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>接続フォルダーを開く</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>ログ</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>ログ フォルダーを開く</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>システム プロンプトは Markdown ファイルです。独自のプロンプトを選ばない接続では既定のプロンプトが使われます。</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>編集</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>既定にする</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>削除</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>既定のプロンプト</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>新しいプロンプト</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>プロンプト フォルダーを開く</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>接続を追加</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>複製</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>削除</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>キャンセル</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>この接続を削除しますか?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>既定で使用</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>プロバイダー一覧で上へ移動</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>プロバイダー一覧で下へ移動</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · 既定</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>agy の設定を現在読み取れません。</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy のルール: 許可 {0} 件、拒否 {1} 件。作業フォルダー内のファイルの読み取りは既定で許可されています。シェル コマンドには許可ルールが必要です。</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>読み取り専用コマンドを許可</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>command(Get-ChildItem)、command(git status) などのルールを agy の許可リストに追加し、Remove-Item、rm、git push などを拒否します</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>agy に読み取り専用のシェル コマンドを許可しますか?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>これは agy 自身の設定 ({0}) を変更するため、agy を直接使うときにも適用されます。
+
+許可:
+{1}
+
+拒否:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>ルールを追加</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>agy の設定を変更できませんでした: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>agy のルールを編集</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>agy のアクセス許可</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>すべて承認しますか? (危険)</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} は確認なしに、判断した任意のシェル コマンドを実行し、任意のファイルを編集・削除します。誤った回答や悪意のある Web ページ・ファイルによって実害が生じるおそれがあります。失っても構わない作業フォルダーでのみ使用してください。</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>理解しました、オンにする</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ すべて承認 (危険)</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0} のアクセス許可チェックをすべて省略します。「プログラム独自のツールを使う」モードでのみ有効です。</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>名前</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>エンドポイント</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API のベース URL。</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>保存済み。入力すると上書きされます</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>省略可能</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>必須</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>キーを保存できませんでした</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>API キー</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>settings.json ではなく Windows の資格情報マネージャーに保存されます。</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>プログラムのパス</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>空欄にすると自動的に検出します。</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>自動検出</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>agy エージェント</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>チャットのみモードで使用します。</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>追加の引数</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>そのままプログラムに渡されます (スペース区切り)。</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>チャットのみ</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Hotline のツールを使う (MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>ツールの使用</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>この AI が MCP サーバーのツールを使えるようにします ([設定] › [ツール])。読み取り専用のツールはそのまま実行され、それ以外はまずパネルで確認されます。</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>チャットのみ (添付ファイルは読み取り可能)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>プログラム独自のツールとアクセス許可を使う</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>参照…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>継承モードでは、プログラムが独自のアクセス許可ルールに従ってツール (ファイル、コマンド、Web) を実行します。</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>作業フォルダー</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>継承モードでプログラムのツールが動作する場所。</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>拒否時のフォールバック</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>安全チェックが要求を拒否した場合、停止する代わりに API が適切なモデルで改めて応答します (Fable 5.1、Opus 5.5、Opus 5、Sonnet 5.5)。</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>モデルが画像を読む</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>オフ: スクリーンショットはテキストとして送信されます ([設定] › [チャット] › [スクリーンショットのテキスト])。</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>既定 ({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>システム プロンプト</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>既定</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>既定のモデル</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>既定の思考量</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>接続をテスト</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>最小</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>低</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>中</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>高</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>非常に高い</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>最大</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>ピン留め</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>ウィンドウをキャプチャ</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>画面をキャプチャ</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>範囲をキャプチャ</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>スペース</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>思考量の選択</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>モデルの選択</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>プロバイダーの選択</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>プロンプトの選択</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>最近のチャット</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>新しいチャット</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>設定</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>下部バー</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json にエラーがあります</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} ファイルを修正するか、バーをリセットしてください。</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>左へ移動</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>右へ移動</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>バーから削除</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>バーに追加</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>バーをリセット</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>開発ビルド</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot キーで呼び出す AI。無料のオープンソース (Apache-2.0)。</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Hotline を支援する</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline は 1 人で開発しており、広告やトラッキングはありません。時間の節約に役立っているなら、寄付で開発を支えてください。</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>寄付のお知らせ</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>回答の後に次にパネルを開いたとき、パネル上部に「Hotline はいかがですか?」を一度だけ表示します。その後は自動でオフになります。ここで再びオンにできます。</value></data>
+  <data name="About_Project" xml:space="preserve"><value>プロジェクト</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>ソース コード、リリース、問題の報告や機能の要望はこちら。</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>問題を報告</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>確認中…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>この PC</value></data>
+  <data name="About_License" xml:space="preserve"><value>ライセンス</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0、および Hotline が使用するコンポーネントのライセンス。</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>サードパーティに関する通知</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>この PC を確認できませんでした。</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>メモリを編集</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>空です。メッセージ ボックスで「/remember 内容」と入力すると 1 行追加されます。</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} 行。メモリがオンの間、すべてのチャットがこれを参照します。</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>メッセージの先頭に / を入力して使います: 「/translate テキスト」、または添付ファイルと一緒に「/summarize」。各アクションは Markdown ファイルで、1 行目が一覧に表示される説明です。名前には英字、数字、- と _ を使えます。</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>新しいアクション</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>アクション フォルダーを開く</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>ビルド {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>OCR 言語 {0} 個</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR 言語がありません: [設定] › [時刻と言語] › [言語と地域] › 光学式文字認識を含む言語を追加してください</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows の音声入力を利用できます</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — [設定] › [プライバシーとセキュリティ] › [音声認識] › [オンライン音声認識]、およびマイク</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Windows エージェント コネクタ</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe が見つかりました。コネクタは windows-… ツール サーバーとして表示されます</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe が見つかりません (この PC ではまだ有効になっていません)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows ビルド 26220.7262 以降が必要です (例: 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>アプリ アクション (Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>登録済み。Click to Do 自体には Copilot+ PC が必要です</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (ビルド 26100) 以降が必要です</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>オン — サインイン時に Hotline が通知領域で起動します。</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>オフ (Windows の [設定] › [アプリ] › [スタートアップ] でオフ)。そこで Hotline をオンにしてください。</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>オフ (組織のポリシーによりブロック)。</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>オフ。</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>このビルドでは利用できません。</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>メモリに保存しました: 「{0}」 ([設定] › [チャットと履歴] › [メモリを編集])</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>Antigravity CLI (agy) がインストールされていません。</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Hotline を開く</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>設定…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>再起動 (設定を適用)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>終了</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>ドラッグして範囲をキャプチャ  ·  Esc でキャンセル</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>そのウィンドウは利用できない (閉じているか最小化されている) ため、画面全体をキャプチャしました。</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Hotline に添付</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>フォルダーは添付できません ({0})。</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} は大きすぎます ({1} MB、上限 {2} MB)。</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>{0} を読み取れませんでした。</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>{0} を画像として読み取れませんでした。</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows に OCR 言語がインストールされていないため、画像内のテキストを読み取れません。[設定] › [時刻と言語] › [言語と地域] で追加してください (「光学式文字認識」を含む言語)。</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>{0} のテキストを読み取れませんでした。</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>画像をコピー</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>画像をコピーしました。</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>まだ回答中です。{0} または停止ボタンで止まります。メッセージは入力欄に保持されます。</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>/remember の後に覚える内容を入力してください (例: 「/remember メートル法を使いたい」)。</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>覚えました。今後すべてのチャットで参照されます ([設定] › [チャットと履歴] › [メモリ] で編集)。</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>保存されませんでした: {0} 文字以内の 1 行にしてください。</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>/{0} の後にテキストを入力するか、何か添付してください。</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>設定フォルダーを開けませんでした ({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>停止</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>送信 (Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Hotline へようこそ</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>送信する内容 — メッセージ、添付ファイル、直前のアプリで選択していたテキスト (削除できるチップとして表示) — は、選んだ AI 接続にのみ送られます。ヒント: / でクイック アクション、/remember でメモを保存できます。</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>送信される内容</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Hotline を気に入っていただけましたか?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>無料のオープンソースで、一人で開発しています。役に立っていれば、寄付が開発の支えになります。この表示は一度だけです (設定 › バージョン情報 で再びオンにできます)。</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>コピー</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>コードをコピー</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>コード</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>表をコピー</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>表をコピー (スプレッドシートに貼り付け可能)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>画像を描画中…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(安全に表示できなかった図)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>画像を開く</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>図の全体 (ラベル付き) を既定のビューアーで開く</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>{0} › {1} を許可しますか?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>今回のみ許可</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>常に許可</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>拒否</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>なし</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>推論の思考量</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0} は設定で構成できますが、チャットは今後の更新で対応予定です。</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>システム プロンプト: {0} (次のメッセージから適用)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>「{0}」を編集…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>新しいプロンプト…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>先に回答が終わるまで待つか、停止してください。</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>その会話を開けませんでした。</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>チャット履歴はオフになっています</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>保存されたチャットはまだありません</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>タイトルに「{0}」を含む最近のチャットはありません。</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} 件のメッセージ、最終更新: {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>履歴フォルダーを開く</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>たった今</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} 分前</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} 時間前</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} 日前</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>あなた</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>回答をコピー</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>再試行</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>コピーしました。</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>クリップボードが使用中です。もう一度お試しください。</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>この回答を {0} に報告…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>その他</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>うまくいきませんでした: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>キーを離すと停止します。Esc でキャンセル。</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>もう一度キーを押すと停止します。Esc でキャンセル。</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 マイクを起動中…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 聞き取り中…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>使用できるマイクがありません。</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>音声入力が停止しました ({0})。</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>音声入力には Windows のオンライン音声認識が必要です。</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>オンにする</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline にマイクの使用が許可されていません。</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>マイクの設定</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>音声入力を開始できませんでした: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>音声認識は、Windows の表示言語でのディクテーションに対応していません。</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>音声認識を利用できません ({0})。</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>最新のメッセージへ移動</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>ファイルを追加またはキャプチャ</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>ファイルを添付…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>ピン留め (ほかの場所をクリックしても開いたままなので、ファイルをドラッグできます)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>直前のウィンドウをキャプチャ</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>画面全体をキャプチャ</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>モデル (名前を入力するか選択)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>回答する AI</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>最近のチャット (Ctrl+↑ で直前のチャットを再度開く)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>新しいチャット (Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI (agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>インストール済みの agy と Google のサインイン。</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>インストール済みの claude とサインイン (Claude のプラン)。</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Google AI Studio の API キー。</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Anthropic Console の API キー。既定のモデル: Claude Opus 5.5。</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>OpenAI 互換 API</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI、OpenRouter、Groq などの OpenAI 形式の API。</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>ローカル エンドポイント</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>llama.cpp サーバー、LM Studio などのローカルの OpenAI 形式サーバー。</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>サーバーのモデル一覧が想定した形式ではありませんでした。</value></data>
+  <data name="Models_One" xml:space="preserve"><value>モデル 1 個</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>モデル {0} 個</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>接続済み: {0}。</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>接続済み: {0} ({1} を含む)。</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>接続済み: {0}。ただし {1} は含まれていません。</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>先に {0} の API キーを追加してください。</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} が API キーを拒否しました。</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} の応答: {1}。</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>{0} に接続できません: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} が時間内に応答しませんでした。</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>[設定] › [AI 接続] で {0} の API キーを追加してください。</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} のエンドポイントは有効な http(s) アドレスではありません: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} はレート制限中です。{1} 秒後に再試行します…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} は混雑しています。{1} 秒後に再試行します…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} が API キーを拒否しました。{1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0} のレート制限またはクォータに達しました。{1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} でサーバー エラーが発生しました (または過負荷です)。{1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} はこの要求への回答を拒否しました (安全上の拒否)。</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>{0} のモデルを選んでください (モデル一覧に表示されます)。</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} がこの要求をブロックしました ({1})。</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} が回答を中止しました ({1})。</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} がツールの要求中に停止しました ({1})。何も実行されていません。</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: ツールの要求が完了する前に接続が終了しました。何も実行されていません。</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} が予期せず停止しました。</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>{0} の作業フォルダーが存在しません: {1}。[設定] › [AI 接続] で別のフォルダーを選んでください。</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code がインストールされていません。claude.com/claude-code からインストールし、`claude` を一度実行してサインインしてから、もう一度お試しください。</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy がサインインしていません。ターミナルで `agy` を一度実行してサインインしてから、もう一度お試しください。</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>Antigravity のクォータを使い切りました。後でもう一度お試しください。</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy はまだ Hotline のワークスペースを信頼していません。ターミナルで `agy` を一度実行し、信頼してください。</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code がサインインしていません。ターミナルで `claude` を一度実行してサインインしてから、もう一度お試しください。</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>Claude の使用上限に達しました。{0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude は現在混み合っています。しばらくしてからもう一度お試しください。</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0} は {1} MB を超えています。</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0} は {1} KB を超えています。</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: サポートされていないファイルの種類です。</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>選択したテキスト</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} で選択したテキスト</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>添付できるファイルは {0} 個までです。</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} のテキスト</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} は画像を読めません。</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} はファイルを読めません。</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>バックエンド「{0}」はまだ利用できません。</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>「{0}」がインストールされていないため、{1} サーバーを起動できません。{2} をインストールしてから Hotline を再起動してください。</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>「{0}」がインストールされていないか PATH にないため、{1} サーバーを起動できません。mcp.json の「command」を確認してください。</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json を読み取れませんでした: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>承認「{0}」の値が不明なため、「deny」として扱います。</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>サーバー名に「/」や「*」は使えません。</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} 秒以内に起動しませんでした</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 修正されるまでツールは実行されません。</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 最後に正常だったバージョンが引き続き有効です。</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>サーバーが終了しました (終了コード {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy の settings.json が JSON オブジェクトではないため、変更しません。</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy の settings.json の「permissions」がオブジェクトではないため、変更しません。</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>agy の settings.json の「permissions.{0}」がリストではないため、変更しません。</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Hotline 範囲キャプチャ</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI (agy) がインストールされていません。antigravity.google/cli からインストールしてから、もう一度お試しください。</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>インストール済みの codex とサインイン (ChatGPT のプランまたは OpenAI API キー)。</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>この接続はモデル一覧を提供しません。既定のままにするか、モデル名を入力してください。</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} を使用します (この接続には確認用のモデル一覧がありません)。</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex がインストールされていません。インストール (npm install -g @openai/codex) し、`codex login` を一度実行してサインインしてから、もう一度お試しください。</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex を起動できませんでした ({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex がサインインしていません。ターミナルで `codex login` を実行してから、もう一度お試しください。</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>Codex の使用上限に達しました。{0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI は現在混み合っています。しばらくしてからもう一度お試しください。</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex はこの回答を完了できませんでした。</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex が再接続しています…</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Hotline の接続方法を選択</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Hotline で使う AI を選んでください。選ぶまでは何も送信・実行されません。</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>この PC には Claude Code も Antigravity もインストールされていません。どちらかをインストールしてサインインするか、API キーを使ってください。</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>{0} を使う</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>API キーを使う…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline を Copilot キーのアプリに設定</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>接続を選択</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot キーで Hotline を使う</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows の設定 › 個人用設定 › テキスト入力 › キーボードの Copilot キーをカスタマイズする で「カスタム」を選び、Hotline を選択します。Copilot キーのあるキーボードが必要です。</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot キーの設定を開く</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>チャットを {0} の履歴に残す</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Hotline の各チャットは向こうで 1 つの会話になり、Hotline にまとめられます。最近のチャットや CLI 自体から再開できます。オフ: チャットは Hotline が保持します。</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>メッセージを Hotline にも保存する</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>最近のチャットには常にこれらのチャットが表示されます。オンにすると、メッセージも Hotline の履歴フォルダーに保存します。</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>「{0}」の続きです。以前のメッセージは {1} の履歴にあります。</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} はこの会話を再び開けませんでした。続けるには新しいチャットを始めてください。</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>このチャットを続ける場所</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} を開けませんでした: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>起動オプション (詳細)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>このモードで Hotline が追加するオプションを置き換えます (スペース区切り)。Hotline がプログラムとやり取りするのに必要なオプションは常に追加され、危険なものは「すべて承認」からのみ追加されます。空欄 = Hotline の既定値。</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline の既定値</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>回答の最大長</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>1 回の回答で使えるトークンの上限。低すぎると長い回答が途中で止まります。空欄 = モデルの既定値。</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>温度</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答のばらつき: 0 = 的確で再現性が高い、高いほど多様 (最大 2)。空欄 = モデルの既定値。</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>モデルの既定値</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>メモを記憶に保存 (すべてのチャットで参照)</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>履歴からチャットを開き直す</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>箇条書きにする</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>わかりやすく説明する</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>スペルと文法を直す</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>ビジネス向けの丁寧な文体に書き直す</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>返信の下書きを作る</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>短く、わかりやすくする</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>要点をまとめる</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>翻訳する (英語、または指定した言語へ)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>ハイ コントラスト</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>ハイ コントラストは Hotline 独自のテーマです。Windows のコントラスト テーマには自動で従います。</value></data>
+  <data name="History_Search" xml:space="preserve"><value>チャットを検索</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>これでも Hotline が開きます。クリックしてからキーを押してください。Esc で取り消し、Backspace で解除します。</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>ショートカットを押してください…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>未設定</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl、Alt、Shift、Win のいずれかを加えてください</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>このキーは使えません</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>既定のアクションを復元</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} 個の既定のアクションを追加または更新しました。</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>名前の変更</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>英数字、-、_ を使い、まだ使われていない名前にしてください。</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
+</root>

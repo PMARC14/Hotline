@@ -87,10 +87,11 @@ public sealed partial class PopupWindow : Window
     /// <summary>Re-applies backdrop, theme, always-on-top and scrollbar from the (live) settings object.</summary>
     public void ApplyAppearance()
     {
-        SystemBackdrop = Backdrops.Create(_settings);
+        var backdrop = Hotline.Core.Theming.ThemeTokens.EffectiveBackdrop(_settings.Backdrop, SystemTheme.Colors, _settings.Theme);
+        SystemBackdrop = Backdrops.Create(_settings, backdrop);
         if (AppWindow.Presenter is OverlappedPresenter op) op.IsAlwaysOnTop = _settings.AlwaysOnTop;
         Root.RequestedTheme = SystemTheme.Resolve(_settings.Theme); // "System" follows Windows live
-        if (_settings.Backdrop != BackdropKind.Solid) Root.Background = null;
+        if (backdrop != BackdropKind.Solid) Root.Background = null;
         MessagesScroll.VerticalScrollBarVisibility = _settings.Scrollbar switch
         {
             ScrollbarStyle.Visible => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Visible,
@@ -175,7 +176,8 @@ public sealed partial class PopupWindow : Window
 
         PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;
-        _reclaimed = false;
+        _reclaimed = 0;
+        _shows++;
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
@@ -183,7 +185,9 @@ public sealed partial class PopupWindow : Window
 
     private bool _offscreen;
     private long _shownAtMs;
-    private bool _reclaimed;
+    private int _reclaimed;
+    private int _shows;
+    private long _consoleReclaimLaunch = long.MinValue;
 
     /// <summary>Self-test only: shows the panel far outside every monitor, without activation or focus, so the
     /// conversation is really drawn (composition) without the user seeing anything.</summary>
@@ -225,9 +229,11 @@ public sealed partial class PopupWindow : Window
     public void RequestRegionCapture() => RegionCaptureRequested?.Invoke();
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
-    public void SetContentHeight(double dip)
+    /// <param name="conversation">The chat has messages: the panel then expands to halfway at once, and past it with the text.</param>
+    public void SetContentHeight(double dip, bool conversation)
     {
         _contentDip = dip; // DIPs: converted with the current monitor scale in ApplyHeight
+        _conversation = conversation;
         if (AppWindow.IsVisible) ApplyHeight();
     }
 
@@ -237,6 +243,29 @@ public sealed partial class PopupWindow : Window
         _modal++;
         return new Releaser(() => _modal--);
     }
+
+    /// <summary>
+    /// While held, the window keeps its size: resizing a window closes its open flyouts at once (the history list
+    /// opened from the keyboard did exactly that). A resize asked for meanwhile is applied when the last hold ends.
+    /// Only flyouts take it; dialogs and captures still resize as usual.
+    /// </summary>
+    public IDisposable HoldResize()
+    {
+        _resizeHolds++;
+        return new Releaser(() =>
+        {
+            void Release()
+            {
+                _resizeHolds--;
+                if (_resizeHolds == 0 && _resizeHeld && AppWindow.IsVisible) ApplyHeight();
+            }
+            if (DispatcherQueue.HasThreadAccess) Release(); else DispatcherQueue.TryEnqueue(Release);
+        });
+    }
+
+    private int _resizeHolds;
+    /// <summary>A resize was asked for during a HoldResize; any real resize settles it.</summary>
+    private bool _resizeHeld;
 
     /// <summary>Hides the popup briefly (e.g. to capture what is underneath), then brings it back.</summary>
     public async Task<T> WithHiddenAsync<T>(Func<Task<T>> work)
@@ -259,15 +288,65 @@ public sealed partial class PopupWindow : Window
     {
         if (e.WindowActivationState != WindowActivationState.Deactivated || !_settings.HideOnBlur || _modal != 0 || Pinned) return;
         // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
-        // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show).
-        if (Environment.TickCount64 - _shownAtMs < 1500 && !_reclaimed)
+        // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show; up to
+        // three times on the first show after launch, when focus can bounce more than once).
+        if (Environment.TickCount64 - _shownAtMs < 1500 && _reclaimed < (_shows <= 1 ? 3 : 1))
         {
-            _reclaimed = true;
+            _reclaimed++;
             _log.Info("lost focus right after opening; taking it back");
             DispatcherQueue.TryEnqueue(() => { if (AppWindow.IsVisible && !Native.ForceForeground(Hwnd)) _log.Error("could not take focus back"); });
             return;
         }
+        ConsiderBlur(retried: false);
+    }
+
+    /// <summary>Whether a process is one Hotline started (a CLI, or something it started); set by App.</summary>
+    public Func<uint, bool>? IsOurProcess { get; set; }
+
+    /// <summary>
+    /// Focus went elsewhere: hide, unless the window that took it belongs to a program Hotline started (a CLI opening a
+    /// console on its first run). That isn't the user clicking away: keep the panel and take focus back.
+    /// </summary>
+    private void ConsiderBlur(bool retried)
+    {
+        if (!AppWindow.IsVisible || !_settings.HideOnBlur || _modal != 0 || Pinned) return; // may have changed during the retry
+        var fg = Native.GetForegroundWindow();
+        if (fg == Hwnd) return; // it came back
+        if (fg == 0 && !retried)
+        {
+            // Mid-switch there may be no foreground window yet: look again in a moment.
+            var timer = DispatcherQueue.CreateTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(150);
+            timer.IsRepeating = false;
+            timer.Tick += (_, _) => ConsiderBlur(retried: true);
+            timer.Start();
+            return;
+        }
+        if (fg != 0 && IsOurConsole(fg))
+        {
+            _consoleReclaimLaunch = Hotline.Core.Processes.ProcessLaunches.Last; // once per launch: never a tug of war
+            _log.Info($"a window from a program Hotline started ({Native.ClassNameOf(fg)}) took focus; keeping the panel");
+            if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back");
+            return;
+        }
         HidePopup();
+    }
+
+    /// <summary>
+    /// Only console/terminal windows count (never a browser a CLI opens to sign in), at most once per program launch:
+    /// a plain console must belong to a process Hotline started (its job); a Windows Terminal window (owned by
+    /// WindowsTerminal.exe, so the job can't tell) must appear within 2 s of a launch.
+    /// </summary>
+    private bool IsOurConsole(nint window)
+    {
+        if (Hotline.Core.Processes.ProcessLaunches.Last == _consoleReclaimLaunch) return false;
+        var cls = Native.ClassNameOf(window);
+        if (cls is "ConsoleWindowClass" or "PseudoConsoleWindow")
+        {
+            Native.GetWindowThreadProcessId(window, out var pid);
+            return IsOurProcess?.Invoke(pid) == true || Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
+        }
+        return cls == "CASCADIA_HOSTING_WINDOW_CLASS" && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
     }
 
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
@@ -285,37 +364,49 @@ public sealed partial class PopupWindow : Window
         }
     }
 
+    private RectI _targetRect;
+    private RectI? _currentRect;
+    private bool _conversation;
+
+    /// <summary>
+    /// Sizes the panel to its content, bottom edge fixed. In the usual "fit" mode it expands to halfway after the first
+    /// message and then only as far as the text needs (see PopupGeometry.TwoStep), sliding there. Resizing a window
+    /// upward is never perfectly smooth (each resize shows the old frame at the new top edge for a moment), so a short
+    /// answer never resizes it after that first expansion.
+    /// </summary>
+    private void ApplyHeight(bool force = false)
+    {
+        if (_offscreen) return; // never move the off-screen self-test window onto a monitor
+        if (_resizeHolds > 0 && !force) { _resizeHeld = true; return; } // a flyout is open: see HoldResize
+        if (_bar.Width == 0) return;
+        _resizeHeld = false; // this resize settles any held one
+        var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
+        // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
+        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
+        if (GrowMode == GrowMode.Grow)
+        {
+            var previous = _targetRect.Height > 0 ? _targetRect.Height : _bar.Height;
+            contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), _conversation);
+        }
+        _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
+        // During a chat the panel slides to its new height; anything else (no message yet, a new chat, placing) moves at once.
+        if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
+            && current.Width == _targetRect.Width && current.Y + current.Height == _targetRect.Y + _targetRect.Height)
+        {
+            if (current == _targetRect || _animating) return; // already there, or the running slide retargets next frame
+            _animating = true;
+            _animatedHeight = current.Height;
+            _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+            return;
+        }
+        StopAnimation();
+        if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
+    }
+
     private bool _animating;
     private double _animatedHeight;
     private long _lastFrame;
-    private RectI _targetRect;
-    private RectI? _currentRect;
-
-    /// <summary>
-    /// Sizes the panel to its content. While visible, the height eases toward the new size over a few frames
-    /// (bottom edge fixed) instead of jumping, so streamed answers and new messages slide in smoothly.
-    /// </summary>
-    private void ApplyHeight(bool animate = true)
-    {
-        if (_offscreen) return; // never move the off-screen self-test window onto a monitor
-        if (_bar.Width == 0) return;
-        var maxPx = (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0);
-        // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
-        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
-        _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
-        if (!animate || _currentRect is not { } current || !AppWindow.IsVisible || current.Width != _targetRect.Width
-            || current.Y + current.Height != _targetRect.Y + _targetRect.Height)
-        {
-            StopAnimation();
-            MoveTo(_targetRect);
-            return;
-        }
-        if (_animating) return; // the running animation retargets on its next frame
-        _animating = true;
-        _animatedHeight = current.Height;
-        _lastFrame = System.Diagnostics.Stopwatch.GetTimestamp();
-        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
-    }
 
     private void StopAnimation()
     {
@@ -325,8 +416,8 @@ public sealed partial class PopupWindow : Window
     }
 
     /// <summary>
-    /// One display frame: exponential ease toward the target height (time constant ~70 ms, frame-rate independent),
-    /// bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
+    /// One display frame of a slide: exponential ease toward the target height (time constant ~70 ms, frame-rate
+    /// independent), bottom edge fixed. Runs on the compositor's frame clock so steps line up with screen refreshes.
     /// </summary>
     private void OnFrame(object? sender, object e)
     {
@@ -381,7 +472,7 @@ public sealed partial class PopupWindow : Window
         var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.VerticalPosition);
         _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
         (_bar, _work, _scale) = (r, new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale);
-        ApplyHeight(animate: false);
+        ApplyHeight(force: true);
     }
 
     private sealed class Releaser(Action release) : IDisposable

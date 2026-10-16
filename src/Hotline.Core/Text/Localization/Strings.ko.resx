@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>언어</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline 메뉴, 설정, 메시지의 언어입니다. AI 답변은 작성하는 언어를 따릅니다.</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>Windows 언어 사용</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>Hotline 열기 / 닫기</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>Hotline 열기</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>새 채팅 시작</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>현재 창 캡처</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>영역 캡처</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>음성 입력(누르고 있는 동안 말하기)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>아무것도 안 함</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot 키</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>오른쪽 Ctrl로 쓰면 Copilot+C가 Ctrl+C가 되고 키로 Hotline이 더 이상 열리지 않습니다(아래의 추가 바로 가기 키나 알림 영역 아이콘을 사용하세요). Copilot 키가 Win+Shift+F23을 보내는 키보드(대부분)에서 작동합니다.</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline 열기</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>오른쪽 Ctrl로 작동</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>Copilot 키 짧게 누르기</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>Copilot 키 길게 누르기</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>음성 입력</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>Copilot 키를 누른 채 말하고, 떼면 멈춥니다(Esc는 취소). Windows 음성 인식을 사용합니다. 마이크를 허용하고 설정 › 개인 정보 및 보안 › 음성 › 온라인 음성 인식을 켜세요. 켜면 길게 누르기가 음성 입력이 되고, 끄면 새 채팅으로 돌아갑니다.</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>추가 바로 가기 키</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>Hotline을 엽니다(예: Ctrl+Alt+H). 사용하지 않으려면 비워 두세요.</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>올바른 바로 가기 키가 아닙니다(예: Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>다른 곳을 클릭하면 숨기기</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>패널을 고정(📌)하면 잠시 열어 둘 수 있습니다.</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>다른 창 위에 유지</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>테마</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>Windows 설정 사용</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>밝게</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>어둡게</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>강조 색</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>링크, 내 메시지, 보내기 단추.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Hotline 보라</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Windows 강조 색 사용</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>사용자 지정</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>사용자 지정 강조 색</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>#E81123 같은 색으로, 강조 색이 사용자 지정일 때 쓰입니다.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>#RRGGBB 형식으로 입력하세요(예: #E81123).</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Windows 대비 테마가 켜져 있습니다. Hotline은 그 색과 불투명한 배경을 사용합니다.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Windows에서 투명 효과가 꺼져 있어 Hotline은 불투명한 배경을 사용합니다.</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>배경</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>아크릴은 반투명하고 단색은 불투명합니다.</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>아크릴</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>아크릴(얇게)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>미카</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>단색</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>아크릴 색조</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = 투명, 1 = 진한 색조.</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>아크릴 밝기</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>낮을수록 더 투명합니다.</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>텍스트 크기</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>기본값은 Windows를 따릅니다(설정 › 접근성 › 텍스트 크기).</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>글꼴</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>설치된 아무 글꼴(예: Cascadia Code). 비워 두면 Segoe UI Variable.</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>스크롤 막대</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>스크롤할 때 표시</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>항상</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>안 함</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>너비</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>화면 너비 대비 비율.</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>최소 너비</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>최대 너비</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>최소 높이</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = 메시지 입력줄만. 입력하고 대화할수록 패널이 위로 커집니다.</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>최대 높이</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>화면에서 차지할 수 있는 최대 크기.</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>세로 위치</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = 위, 0.5 = 가운데, 1 = 아래.</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>커지는 방식</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>대화에 맞추기</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>최대 높이로 바로 확장</value></data>
+  <data name="Set_History" xml:space="preserve"><value>채팅 기록 저장</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>텍스트만, .hotline 폴더에 저장합니다.</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>백그라운드에서 답변이 끝나면 알림</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>패널이 숨겨져 있거나 다른 앱이 앞에 있을 때 답변이 끝나면 Windows 알림을 표시합니다. 클릭하면 답변이 열립니다.</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0}이(가) 답변했습니다</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0}이(가) 답변을 완료하지 못했습니다</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>기록 보관 기간</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>일</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>선택한 텍스트 첨부</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>키로 패널을 열면 이전 앱에서 선택한 텍스트가 첨부됩니다. 선택 영역을 공유하지 않는 앱에서도 Ctrl+C로 가능하지만, 잠시 클립보드를 사용합니다(이후 복원).</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>예</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>예, Ctrl+C로도</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>아니요</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>답변 중지</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>답변이 작성되는 동안 이를 멈추는 키입니다(Enter로는 멈추지 않으며, 보내기 단추로도 멈출 수 있습니다). 단일 키(Esc) 또는 Ctrl+. 같은 조합 — 답변 중이 아닐 때 Esc는 패널을 숨깁니다.</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>올바른 바로 가기 키가 아닙니다(예: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>메모리</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>모든 대화에서 .hotline 폴더의 memory.md를 참조합니다("/remember 내용"으로 한 줄 추가).</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>AI가 기억을 저장하도록 허용</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>기억해 달라고 요청하면 API 연결이 관련 정보를 저장할 수 있습니다.</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>매번 묻기</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>예, 묻지 않고</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>아니요</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>받아쓰기 후 보내기</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>키 동작이 음성일 때: 키를 떼면 메시지를 보냅니다.</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>스크린샷 텍스트(OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>이미지를 볼 수 없는 모델을 위해 Windows가 이미지 속 텍스트를 (오프라인으로) 읽습니다.</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>텍스트 전용 모델에만</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>항상 추가</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>끄기</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>이미지 크기 제한</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>첨부하거나 캡처한 이미지는 긴 쪽이 이 크기가 되도록 축소됩니다.</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>자세한 로그</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>추가 진단 정보를 로그에 기록합니다.</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Hotline 설정</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>일반</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>AI 연결</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>프롬프트</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>빠른 동작</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>모양</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>창</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>채팅 및 기록</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>도구</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>고급</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>정보</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline을 다시 시작한 후 적용됩니다.)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>올바른 값이 아닙니다</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>Windows 시작 시 실행</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>도구 사용을 "Hotline 도구 사용"으로 설정한 API 연결은 이 MCP 서버의 도구를 호출할 수 있습니다. 읽기 전용 도구는 바로 실행되고, 그 밖의 도구는 패널에서 묻습니다(한 번 허용 / 항상 / 거부).</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>MCP 서버</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 다른 MCP 앱과 같은 "mcpServers" 형식이며 승인도 같은 파일에 저장됩니다</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json 편집</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>폴더 열기</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Windows 에이전트 레지스트리</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>이 Windows에서는 사용할 수 없습니다(빌드 26220.7262 이상 필요). 기본 제공 커넥터는 여기에 자동으로 표시됩니다.</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>사용 가능({0}). 커넥터는 아래에 windows-…로 표시됩니다</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>아직 확인한 서버가 없습니다. mcp.json에 서버를 추가한 다음 서버 확인을 누르세요.</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>준비됨 — 도구 {0}개</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>실패: {0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>mcp.json에서 사용 안 함</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>서버 확인</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>설정 파일</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>settings.json 편집</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} — 연결마다 파일 하나. settings.json의 "chat.order"가 목록 순서를 정합니다</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>연결 폴더 열기</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>로그</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>로그 폴더 열기</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>시스템 프롬프트는 Markdown 파일입니다. 자체 프롬프트를 고르지 않은 모든 연결은 기본 프롬프트를 사용합니다.</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>편집</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>기본으로 설정</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>삭제</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>기본 프롬프트</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>새 프롬프트</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>프롬프트 폴더 열기</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>연결 추가</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>복제</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>제거</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>취소</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>이 연결을 제거할까요?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>기본으로 사용</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>공급자 목록에서 위로 이동</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>공급자 목록에서 아래로 이동</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · 기본</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>지금은 agy 설정을 읽을 수 없습니다.</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy 규칙: 허용 {0}개, 거부 {1}개. 작업 폴더의 파일 읽기는 기본적으로 허용되며, 셸 명령에는 허용 규칙이 필요합니다.</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>읽기 전용 명령 허용</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>command(Get-ChildItem), command(git status) 같은 규칙을 agy 허용 목록에 추가하고 Remove-Item, rm, git push 등을 거부합니다</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>agy에 읽기 전용 셸 명령을 허용할까요?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>agy 자체 설정({0})을 변경하므로 agy를 직접 사용할 때도 적용됩니다.
+
+허용:
+{1}
+
+거부:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>규칙 추가</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>agy 설정을 변경할 수 없습니다: {0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>agy 규칙 편집</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>agy 권한</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>모두 승인할까요? (위험)</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0}이(가) 묻지 않고 원하는 모든 셸 명령을 실행하고 모든 파일을 편집하거나 삭제합니다. 잘못된 답변이나 악성 웹 페이지·파일 때문에 실제 피해가 생길 수 있습니다. 잃어도 괜찮은 작업 폴더에서만 사용하세요.</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>이해했습니다, 켜기</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ 모두 승인(위험)</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>{0}의 모든 권한 검사를 건너뜁니다. "프로그램 자체 도구 사용" 모드에서만 적용됩니다.</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>이름</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>엔드포인트</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API의 기본 URL.</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>저장됨. 입력하면 바뀝니다</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>선택 사항</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>필수</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>키를 저장할 수 없습니다</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>API 키</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>settings.json이 아니라 Windows 자격 증명 관리자에 저장됩니다.</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>프로그램 경로</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>비워 두면 자동으로 찾습니다.</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>자동 감지</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>agy 에이전트</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>채팅 전용 모드에서 사용합니다.</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>추가 인수</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>프로그램에 그대로 전달됩니다(공백으로 구분).</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>채팅 전용</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>Hotline 도구 사용(MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>도구 사용</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>이 AI가 MCP 서버의 도구를 사용하게 합니다(설정 › 도구). 읽기 전용 도구는 바로 실행되고, 그 밖의 도구는 먼저 패널에서 묻습니다.</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>채팅 전용(첨부 파일은 읽을 수 있음)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>프로그램 자체 도구 및 권한 사용</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>찾아보기…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>상속 모드에서는 프로그램이 자체 권한 규칙에 따라 도구(파일, 명령, 웹)를 실행합니다.</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>작업 폴더</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>상속 모드에서 프로그램의 도구가 작동하는 위치.</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>거부 시 대체 모델</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>안전 검사가 요청을 거부하면, 멈추는 대신 API가 적합한 모델로 다시 응답합니다(Fable 5.1, Opus 5.5, Opus 5, Sonnet 5.5).</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>모델이 이미지를 읽음</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>끄기: 스크린샷은 텍스트로 전송됩니다(설정 › 채팅 › 스크린샷 텍스트).</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>기본({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>시스템 프롬프트</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>기본</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>기본 모델</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>기본 추론 강도</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>연결 테스트</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>최소</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>낮음</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>보통</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>높음</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>매우 높음</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>최대</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>고정</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>창 캡처</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>화면 캡처</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>영역 캡처</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>간격</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>추론 강도 선택</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>모델 선택</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>공급자 선택</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>프롬프트 선택</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>최근 채팅</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>새 채팅</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>설정</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>하단 막대</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json에 오류가 있습니다</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} 파일을 고치거나 막대를 초기화하세요.</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>왼쪽으로 이동</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>오른쪽으로 이동</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>막대에서 제거</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>막대에 추가</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>막대 초기화</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>개발 빌드</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} — Copilot 키로 부르는 AI. 무료 오픈 소스(Apache-2.0).</value></data>
+  <data name="About_Support" xml:space="preserve"><value>Hotline 후원하기</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline은 한 사람이 만들며 광고나 추적이 없습니다. 시간을 아껴 주었다면 후원으로 개발을 이어가게 해 주세요.</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>후원 알림</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>답변 후 다음에 패널을 열 때 패널 위쪽에 "Hotline이 마음에 드세요?"를 한 번 표시합니다. 그 후에는 자동으로 꺼지며, 여기에서 다시 켤 수 있습니다.</value></data>
+  <data name="About_Project" xml:space="preserve"><value>프로젝트</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>소스 코드, 릴리스, 문제 보고 및 기능 요청.</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>문제 보고</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>확인 중…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>내 PC</value></data>
+  <data name="About_License" xml:space="preserve"><value>라이선스</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0 및 Hotline이 사용하는 구성 요소의 라이선스.</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>타사 고지</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>이 PC를 확인할 수 없습니다.</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>메모리 편집</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>비어 있습니다. 메시지 상자에 "/remember 내용"을 입력하면 한 줄이 추가됩니다.</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0}줄. 메모리가 켜져 있는 동안 모든 대화에서 이 내용을 참조합니다.</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>메시지 맨 앞에 /를 입력해 사용합니다: "/translate 텍스트" 또는 첨부 파일과 함께 "/summarize". 각 동작은 Markdown 파일이며 첫 줄이 목록에 표시되는 설명입니다. 이름에는 영문자, 숫자, -, _를 쓸 수 있습니다.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>새 동작</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>동작 폴더 열기</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>빌드 {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>OCR 언어 {0}개</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR 언어 없음: 설정 › 시간 및 언어 › 언어 및 지역 › 광학 문자 인식이 포함된 언어 추가</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows 받아쓰기를 사용할 수 있습니다</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — 설정 › 개인 정보 및 보안 › 음성 › 온라인 음성 인식, 그리고 마이크</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Windows 에이전트 커넥터</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe를 찾았습니다. 커넥터는 windows-… 도구 서버로 표시됩니다</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe를 찾을 수 없습니다(이 PC에서 아직 켜지지 않음)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows 빌드 26220.7262 이상 필요(예: 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>앱 동작(Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>등록됨. Click to Do 자체는 Copilot+ PC가 필요합니다</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2(빌드 26100) 이상 필요</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>켜짐 — 로그인하면 Hotline이 알림 영역에서 시작됩니다.</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>꺼짐(Windows 설정 › 앱 › 시작 프로그램에서 꺼짐). 그곳에서 Hotline을 켜세요.</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>꺼짐(조직 정책으로 차단됨).</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>꺼짐.</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>이 빌드에서는 사용할 수 없습니다.</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>메모리에 저장됨: "{0}"(설정 › 채팅 및 기록 › 메모리 편집)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>Antigravity CLI(agy)가 설치되어 있지 않습니다.</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>Hotline 열기</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>설정…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>다시 시작(설정 적용)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>끝내기</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>끌어서 영역 캡처  ·  Esc로 취소</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>해당 창을 사용할 수 없어(닫혔거나 최소화됨) 전체 화면을 캡처했습니다.</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>Hotline에 첨부</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>폴더는 첨부할 수 없습니다({0}).</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0}이(가) 너무 큽니다({1}MB, 최대 {2}MB).</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>{0}을(를) 읽을 수 없습니다.</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>{0}을(를) 이미지로 읽을 수 없습니다.</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows에 OCR 언어가 설치되어 있지 않아 이미지 속 텍스트를 읽을 수 없습니다. 설정 › 시간 및 언어 › 언어 및 지역에서 추가하세요("광학 문자 인식"이 포함된 언어).</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>{0}의 텍스트를 읽을 수 없습니다.</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>이미지 복사</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>이미지를 복사했습니다.</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>아직 답변 중입니다. {0} 또는 중지 단추로 멈출 수 있으며, 작성한 메시지는 입력 상자에 그대로 유지됩니다.</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>/remember 뒤에 기억할 내용을 입력하세요(예: "/remember 미터법 단위를 선호함").</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>기억했습니다. 이제 모든 채팅이 이를 봅니다(설정 › 채팅 및 기록 › 메모리에서 편집).</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>저장 안 됨: 최대 {0}자의 한 줄로 작성하세요.</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>/{0} 뒤에 텍스트를 입력하거나 무언가를 첨부하세요.</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>설정 폴더를 열 수 없습니다({0}): {1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>중지</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>보내기(Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>Hotline에 오신 것을 환영합니다</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>보내는 내용(메시지, 첨부 파일, 이전 앱에서 선택한 텍스트 — 제거할 수 있는 칩으로 표시)은 선택한 AI 연결로만 전송됩니다. 팁: 빠른 동작은 /, 메모 저장은 /remember를 입력하세요.</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>전송되는 내용</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>Hotline이 마음에 드시나요?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>무료 오픈 소스이며 한 사람이 만듭니다. 도움이 된다면 후원이 계속 개발하는 힘이 됩니다. 이 알림은 한 번만 표시됩니다(설정 › 정보에서 다시 켤 수 있음).</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>복사</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>코드 복사</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>코드</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>표 복사</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>표 복사(스프레드시트에 붙여넣기 가능)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>이미지를 그리는 중…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(안전하게 표시할 수 없는 그림)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>이미지 열기</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>전체 그림(레이블 포함)을 기본 뷰어에서 열기</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>{0} › {1}을(를) 허용할까요?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>한 번 허용</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>항상 허용</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>거부</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>해당 없음</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>추론 강도</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>{0}은(는) 설정에서 구성할 수 있지만, 채팅은 이후 업데이트에서 지원됩니다.</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>시스템 프롬프트: {0}(다음 메시지부터 적용)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>"{0}" 편집…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>새 프롬프트…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>먼저 답변이 끝날 때까지 기다리거나 중지하세요.</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>해당 대화를 열 수 없습니다.</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>채팅 기록이 꺼져 있습니다</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>저장된 채팅이 아직 없습니다</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>제목에 “{0}”이(가) 들어간 최근 채팅이 없습니다.</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>메시지 {0}개, 최근: {1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>기록 폴더 열기</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>방금</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0}분 전</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0}시간 전</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0}일 전</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>나</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>답변 복사</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>다시 시도</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>복사했습니다.</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>클립보드가 사용 중입니다. 다시 시도하세요.</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>이 답변을 {0}에 신고…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>더 보기</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>실패했습니다: {0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>키를 떼면 멈춥니다. Esc는 취소.</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>키를 다시 누르면 멈춥니다. Esc는 취소.</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 마이크를 시작하는 중…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 듣는 중…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>사용할 수 있는 마이크가 없습니다.</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>음성 입력이 중지되었습니다({0}).</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>음성 입력에는 Windows 온라인 음성 인식이 필요합니다.</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>켜기</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline에 마이크 사용 권한이 없습니다.</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>마이크 설정</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>음성 입력을 시작할 수 없습니다: {0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>음성 인식이 Windows 표시 언어로 받아쓰기를 지원하지 않습니다.</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>음성 인식을 사용할 수 없습니다({0}).</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>최신 메시지로 이동</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>파일 추가 또는 캡처</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>파일 첨부…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>고정(다른 곳을 클릭해도 열려 있어 파일을 끌어 놓을 수 있음)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>직전에 있던 창 캡처</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>전체 화면 캡처</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>모델(이름 입력 또는 선택)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>답변할 AI</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>최근 채팅(Ctrl+위쪽 화살표로 마지막 채팅 다시 열기)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>새 채팅(Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI(agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>설치된 agy와 Google 로그인.</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>설치된 claude와 로그인(Claude 요금제).</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Google AI Studio API 키.</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Anthropic Console API 키. 기본 모델: Claude Opus 5.5.</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>OpenAI 호환 API</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI, OpenRouter, Groq 등 OpenAI 방식 API.</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>로컬 엔드포인트</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>llama.cpp 서버, LM Studio 등 로컬 OpenAI 방식 서버.</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>서버의 모델 목록이 예상한 형식이 아닙니다.</value></data>
+  <data name="Models_One" xml:space="preserve"><value>모델 1개</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>모델 {0}개</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>연결됨: {0}.</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>연결됨: {0}, {1} 포함.</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>연결됨: {0}, 하지만 {1}은(는) 없습니다.</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>먼저 {0}의 API 키를 추가하세요.</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0}에서 API 키를 거부했습니다.</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} 응답: {1}.</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>{0}에 연결할 수 없습니다: {1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0}이(가) 제시간에 응답하지 않았습니다.</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>설정 › AI 연결에서 {0}의 API 키를 추가하세요.</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>{0}의 엔드포인트가 올바른 http(s) 주소가 아닙니다: {1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} 요청 한도에 도달했습니다. {1}초 후 다시 시도합니다…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0}이(가) 바쁩니다. {1}초 후 다시 시도합니다…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0}에서 API 키를 거부했습니다. {1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0} 요청 한도 또는 할당량에 도달했습니다. {1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0}에서 서버 오류가 발생했습니다(또는 과부하 상태). {1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0}이(가) 이 요청에 대한 답변을 거부했습니다(안전 정책상 거부).</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>{0}의 모델을 선택하세요(모델 목록에 표시됨).</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0}이(가) 이 요청을 차단했습니다({1}).</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0}이(가) 답변을 중단했습니다({1}).</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0}이(가) 도구를 요청하는 중에 멈췄습니다({1}). 아무것도 실행되지 않았습니다.</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}: 도구 요청이 완료되기 전에 연결이 끊어졌습니다. 아무것도 실행되지 않았습니다.</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0}이(가) 예기치 않게 중지되었습니다.</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>{0}의 작업 폴더가 없습니다: {1}. 설정 › AI 연결에서 다른 폴더를 선택하세요.</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code가 설치되어 있지 않습니다. claude.com/claude-code에서 설치하고 `claude`를 한 번 실행해 로그인한 다음 다시 시도하세요.</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy에 로그인되어 있지 않습니다. 터미널에서 `agy`를 한 번 실행해 로그인한 다음 다시 시도하세요.</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>지금은 Antigravity 할당량을 모두 사용했습니다. 나중에 다시 시도하세요.</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy가 아직 Hotline 작업 영역을 신뢰하지 않습니다. 터미널에서 `agy`를 한 번 실행하고 신뢰하세요.</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code에 로그인되어 있지 않습니다. 터미널에서 `claude`를 한 번 실행해 로그인한 다음 다시 시도하세요.</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>지금은 Claude 사용 한도에 도달했습니다. {0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude가 현재 과부하 상태입니다. 잠시 후 다시 시도하세요.</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0}이(가) {1}MB보다 큽니다.</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0}이(가) {1}KB보다 큽니다.</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}: 지원하지 않는 파일 형식입니다.</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>선택한 텍스트</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0}에서 선택한 텍스트</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>파일은 최대 {0}개까지 첨부할 수 있습니다.</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0}의 텍스트</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0}은(는) 이미지를 읽을 수 없습니다.</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0}은(는) 파일을 읽을 수 없습니다.</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>'{0}' 백엔드는 아직 사용할 수 없습니다.</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>"{0}"이(가) 설치되어 있지 않아 {1} 서버를 시작할 수 없습니다. {2}을(를) 설치한 다음 Hotline을 다시 시작하세요.</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>"{0}"이(가) 설치되어 있지 않거나 PATH에 없어 {1} 서버를 시작할 수 없습니다. mcp.json의 "command"를 확인하세요.</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json을 읽을 수 없습니다: {0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>승인 "{0}"의 값을 알 수 없으므로 "deny"로 처리합니다.</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>서버 이름에는 '/'나 '*'를 쓸 수 없습니다.</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0}초 안에 시작되지 않았습니다</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 수정될 때까지 도구가 실행되지 않습니다.</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 마지막으로 정상이던 버전이 계속 적용됩니다.</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>서버가 종료되었습니다(종료 코드 {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>{0}을(를) 시작할 수 없습니다</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다: {0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy의 settings.json이 JSON 개체가 아니므로 변경하지 않습니다.</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy의 settings.json에 있는 "permissions"가 개체가 아니므로 변경하지 않습니다.</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>agy의 settings.json에 있는 "permissions.{0}"이(가) 목록이 아니므로 변경하지 않습니다.</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Hotline 영역 캡처</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>Antigravity CLI(agy)가 설치되어 있지 않습니다. antigravity.google/cli에서 설치한 다음 다시 시도하세요.</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>설치된 codex와 로그인(ChatGPT 요금제 또는 OpenAI API 키).</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>이 연결은 모델 목록을 제공하지 않습니다. 기본을 유지하거나 모델 이름을 입력하세요.</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>{0} 사용 중(이 연결에는 확인할 모델 목록이 없음).</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>Codex가 설치되어 있지 않습니다. 설치(npm install -g @openai/codex)한 다음 `codex login`을 한 번 실행해 로그인하고 다시 시도하세요.</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>Codex를 시작할 수 없습니다({0}): {1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex에 로그인되어 있지 않습니다. 터미널에서 `codex login`을 실행한 다음 다시 시도하세요.</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>지금은 Codex 사용 한도에 도달했습니다. {0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI가 현재 과부하 상태입니다. 잠시 후 다시 시도하세요.</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex가 이 답변을 완료하지 못했습니다.</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex가 다시 연결하는 중…</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>Hotline 연결 방법 선택</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>Hotline이 사용할 AI를 고르세요. 고르기 전에는 아무것도 보내거나 실행하지 않습니다.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>이 PC에 Claude Code나 Antigravity가 설치되어 있지 않습니다. 하나를 설치하고 로그인하거나 API 키를 사용하세요.</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>{0} 사용</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>API 키 사용…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline을 Copilot 키 앱으로 설정</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>연결 선택</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>Copilot 키로 Hotline 사용</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>Windows 설정 › 개인 설정 › 텍스트 입력 › 키보드의 Copilot 키 사용자 지정에서 사용자 지정을 선택한 다음 Hotline을 고르세요. Copilot 키가 있는 키보드가 필요합니다.</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>Copilot 키 설정 열기</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>{0} 기록에 채팅 보관</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>Hotline 채팅 하나가 그곳에서 하나의 대화가 되며 Hotline 아래에 묶입니다. 최근 채팅이나 CLI에서 직접 이어서 할 수 있습니다. 끄기: Hotline이 채팅을 보관합니다.</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>Hotline에도 메시지 보관</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>최근 채팅에는 항상 이 채팅이 표시됩니다. 이 옵션은 메시지도 Hotline 기록 폴더에 저장합니다.</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>“{0}”을(를) 이어서 합니다. 이전 메시지는 {1} 기록에 있습니다.</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0}이(가) 이 대화를 다시 열 수 없습니다. 계속하려면 새 채팅을 시작하세요.</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>이 채팅 이어서 하기</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0}을(를) 열 수 없습니다: {1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>실행 옵션(고급)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>이 모드에서 Hotline이 추가하는 옵션을 대체합니다(공백으로 구분). Hotline이 프로그램과 통신하는 데 필요한 옵션은 항상 추가되며, 위험한 옵션은 “모두 승인”에서만 추가됩니다. 비워 두면 Hotline 기본값입니다.</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 기본값</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>최대 답변 길이</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>답변 하나에 쓸 수 있는 최대 토큰 수입니다. 너무 낮으면 긴 답변이 일찍 끊깁니다. 비워 두면 모델 기본값입니다.</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>온도</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>답변이 얼마나 다양한지: 0 = 집중적이고 반복 가능, 높을수록 다양(최대 2). 비워 두면 모델 기본값입니다.</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>모델 기본값</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>메모를 기억에 저장 — 모든 채팅에서 봅니다</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>기록에서 채팅 다시 열기</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>글머리 기호 목록으로 바꾸기</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>쉬운 말로 설명하기</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>맞춤법과 문법 고치기</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>업무용 말투로 다시 쓰기</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>답장 초안 쓰기</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>더 짧고 명확하게</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>몇 가지 요점으로 요약</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>번역하기(영어 또는 지정한 언어로)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>고대비</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>고대비는 Hotline 자체 테마입니다. Windows 대비 테마는 자동으로 따릅니다.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>채팅 검색</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>이것으로도 Hotline이 열립니다. 클릭한 다음 키를 누르세요. Esc는 취소, Backspace는 지우기입니다.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>바로 가기 키를 누르세요…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>설정 안 됨</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift 또는 Win을 함께 누르세요</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>이 키는 사용할 수 없습니다</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>기본 작업 복원</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>기본 작업 {0}개를 추가하거나 업데이트했습니다.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>이름 바꾸기</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>문자, 숫자, -, _만 쓰고 아직 쓰이지 않은 이름으로 하세요.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0}을(를) 삭제할까요?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>새 이름</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>다른 앱에서 이미 이 바로 가기 키를 사용 중입니다</value></data>
+</root>

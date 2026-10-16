@@ -1,3 +1,5 @@
+using Hotline.Core.Text.Localization;
+
 namespace Hotline.Core.Platform;
 
 /// <summary>
@@ -52,7 +54,7 @@ public static class CommandResolver
     {
         var name = Path.GetFileNameWithoutExtension(command.Trim().Trim('"'));
         return Installers.TryGetValue(name, out var install)
-            ? $"\"{name}\" isn't installed, so the {server} server can't start. Install {install}, then restart Hotline."
-            : $"\"{command}\" isn't installed or isn't on PATH, so the {server} server can't start. Check \"command\" in mcp.json.";
+            ? L.F(Strings.Mcp_MissingKnown, name, server, install)
+            : L.F(Strings.Mcp_Missing, command, server);
     }
 }

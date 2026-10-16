@@ -11,5 +11,10 @@ public sealed record AssistantStatus(string Id, string Message) : ChatEvent;
 public sealed record AssistantCancelled(string Id) : ChatEvent;
 public sealed record AssistantFailed(string Id, BackendErrorKind Kind, string Message) : ChatEvent;
 public sealed record ConversationReset : ChatEvent;
+/// <summary>
+/// A saved chat was reopened (after its messages were restored). <paramref name="HasTranscript"/> false: Hotline kept
+/// only its record; the earlier messages are in the CLI's own history.
+/// </summary>
+public sealed record ConversationResumed(string ConversationId, string Title, string? BackendId, bool HasTranscript) : ChatEvent;
 /// <summary>A message from a resumed conversation (shown as it was; no streaming).</summary>
 public sealed record MessageRestored(ChatMessage Message) : ChatEvent;

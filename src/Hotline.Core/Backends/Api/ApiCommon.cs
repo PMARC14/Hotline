@@ -1,3 +1,4 @@
+using Hotline.Core.Text.Localization;
 using System.Net;
 using System.Runtime.CompilerServices;
 using System.Text;
@@ -10,6 +11,8 @@ namespace Hotline.Core.Backends.Api;
 /// <summary>Shared plumbing for the HTTP API backends: endpoint, key, transport safety, SSE and error mapping.</summary>
 public static partial class ApiCommon
 {
+    private const string RateLimited = "rate limited";
+
     public static string Endpoint(BackendProfile p) =>
         (string.IsNullOrWhiteSpace(p.Endpoint) ? ConnectionTypes.Of(p.Type).DefaultEndpoint! : p.Endpoint.Trim()).TrimEnd('/');
 
@@ -18,7 +21,7 @@ public static partial class ApiCommon
     {
         var key = secrets.Get(SecretKeys.ApiKey(p.Id));
         if (string.IsNullOrEmpty(key) && !ConnectionTypes.Of(p.Type).ApiKeyOptional)
-            throw new BackendException(BackendErrorKind.NotConfigured, $"Add an API key for {Name(p)} in Settings › AI connections.");
+            throw new BackendException(BackendErrorKind.NotConfigured, L.F(Strings.Api_NeedKey, Name(p)));
         return string.IsNullOrEmpty(key) ? null : key;
     }
 
@@ -27,7 +30,7 @@ public static partial class ApiCommon
     {
         if (key is null) return;
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
-            throw new BackendException(BackendErrorKind.NotConfigured, $"The endpoint for {Name(p)} isn't a valid http(s) address: {endpoint}");
+            throw new BackendException(BackendErrorKind.NotConfigured, L.F(Strings.Api_BadEndpoint, Name(p), endpoint));
         if (uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
             throw new BackendException(BackendErrorKind.NotConfigured,
                 $"Not sending the API key for {Name(p)} over plain http to {uri.Host}; use an https:// endpoint.");
@@ -61,7 +64,7 @@ public static partial class ApiCommon
                 yield break;
             }
             var seconds = (int)Math.Ceiling(wait.TotalSeconds);
-            yield return new SendStep(null, $"{Name(p)} is {reason}, retrying in {seconds} s…");
+            yield return new SendStep(null, L.F(reason == RateLimited ? Strings.Api_RetryRateLimited : Strings.Api_RetryBusy, Name(p), seconds));
             await Task.Delay(wait, ct);
         }
     }
@@ -74,11 +77,11 @@ public static partial class ApiCommon
         try { response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct); }
         catch (HttpRequestException ex)
         {
-            throw new BackendException(BackendErrorKind.ServerDown, $"Can't reach {request.RequestUri?.GetLeftPart(UriPartial.Authority)}: {ex.Message}", ex);
+            throw new BackendException(BackendErrorKind.ServerDown, L.F(Strings.Api_Unreachable, request.RequestUri?.GetLeftPart(UriPartial.Authority), ex.Message), ex);
         }
         catch (TaskCanceledException ex) when (!ct.IsCancellationRequested)
         {
-            throw new BackendException(BackendErrorKind.ServerDown, $"{Name(p)} didn't answer in time.", ex);
+            throw new BackendException(BackendErrorKind.ServerDown, L.F(Strings.Api_Timeout, Name(p)), ex);
         }
         if (response.IsSuccessStatusCode) return (response, default, "");
         var status = response.StatusCode;
@@ -91,15 +94,15 @@ public static partial class ApiCommon
             try { body = await response.Content.ReadAsStringAsync(ct); } catch (Exception ex) when (ex is not OperationCanceledException) { }
             wait = RetryDelay(response, body, attempt, DateTimeOffset.UtcNow);
         }
-        if (wait is { } w) return (null, w, status == HttpStatusCode.TooManyRequests ? "rate limited" : "busy");
+        if (wait is { } w) return (null, w, status == HttpStatusCode.TooManyRequests ? RateLimited : "busy");
         var message = ErrorMessage(body) ?? $"{(int)status} {reasonPhrase}";
         throw status switch
         {
-            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => new BackendException(BackendErrorKind.Unauthorized, $"{Name(p)} rejected the API key. {message}"),
+            HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden => new BackendException(BackendErrorKind.Unauthorized, L.F(Strings.Api_KeyRejected, Name(p), message)),
             // Google answers 400 for a bad key
             HttpStatusCode.BadRequest when message.Contains("API key", StringComparison.OrdinalIgnoreCase) => new BackendException(BackendErrorKind.Unauthorized, $"{Name(p)}: {message}"),
-            HttpStatusCode.TooManyRequests => new BackendException(BackendErrorKind.RateLimited, $"{Name(p)} rate limit or quota reached. {message}"),
-            >= HttpStatusCode.InternalServerError => new BackendException(BackendErrorKind.ServerDown, $"{Name(p)} had a server error. {message}"),
+            HttpStatusCode.TooManyRequests => new BackendException(BackendErrorKind.RateLimited, L.F(Strings.Api_RateLimited, Name(p), message)),
+            >= HttpStatusCode.InternalServerError => new BackendException(BackendErrorKind.ServerDown, L.F(Strings.Api_ServerError, Name(p), message)),
             _ => new BackendException(BackendErrorKind.Failed, $"{Name(p)}: {message}"),
         };
     }

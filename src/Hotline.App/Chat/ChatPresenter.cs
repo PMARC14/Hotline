@@ -36,16 +36,24 @@ internal sealed class ChatPresenter
     private readonly PanelSelfTest _selfTest;
     private readonly FirstRunNote _firstRun;
     private readonly SupportNote _support;
+    private readonly AnswerNotifier _notifier;
+    private readonly Dictionary<string, string> _answerBackends = [];
     private string? _lastLook;
     private bool _preparingSend;
 
     /// <summary>Raised when an answer starts or finishes streaming (the bottom-bar pickers lock meanwhile).</summary>
     public event Action<bool>? BusyChanged;
     public event Action? SettingsRequested;
+
+    /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
+    public Action<Action<HotlineSettings>>? UpdateSettings { set => _support.UpdateSettings = value; }
     public bool IsBusy { get; private set; }
 
     /// <summary>Recent conversations from the history (set by the app; null when history is off).</summary>
     public Func<int, IReadOnlyList<HistoryStore.Summary>>? RecentChats { get => _recent.Source; set => _recent.Source = value; }
+
+    /// <summary>"Continue this chat in ▸" targets (set by App).</summary>
+    internal ContinueIn? ContinueIn { get => _recent.ContinueIn; set => _recent.ContinueIn = value; }
 
     public ChatPresenter(PopupWindow popup, ChatController chat, AttachmentTray tray, HotlineSettings settings, SettingsStore store, FileLog log,
         string dataDirectory)
@@ -62,12 +70,14 @@ internal sealed class ChatPresenter
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("quick actions setup failed", ex); }
         _router = new SendRouter(actions);
         _memory = new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
-        _composer = new Composer(popup, _theme, actions, _tasks);
+        _composer = new Composer(popup, _theme, actions, _tasks, () => settings.Chat.ResumeWhileTyping);
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
-        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory);
+        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log, () => settings.Chat.HistoryListSize);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
-        _support = new SupportNote(_notices, dataDirectory);
-        _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat);
+        _support = new SupportNote(popup, _notices, settings, dataDirectory);
+        _notifier = new AnswerNotifier(popup, settings, log);
+        _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
+            (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll());
     }
 
     public void Initialize()
@@ -79,12 +89,15 @@ internal sealed class ChatPresenter
         _voice.Initialize();
         _recent.Initialize();
         _firstRun.Initialize();
+        _support.Initialize();
+        _notifier.Initialize();
 
         _chat.Event += e => _tasks.Guard("chat event", () => OnChatEvent(e));
         _composer.SendRequested += OnEnter;
         _composer.SendButtonClicked += () => { if (_chat.IsBusy) _chat.Cancel(); else _tasks.Run("send", SendAsync); }; // Stop while answering
         _popup.Root.PreviewKeyDown += OnPanelKey;
-        _composer.PreviousChatRequested += () => { if (!_chat.IsBusy) _recent.ResumeLast(); };
+        _composer.PreviousChatRequested += () => _recent.Show(""); // the history list, on the last chat
+        _composer.ResumeTyped += query => { _composer.Text = ""; _recent.Show(query, fromTyping: true); }; // "/resume ": search in the list
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };
@@ -101,7 +114,7 @@ internal sealed class ChatPresenter
     public void ApplyAppearance()
     {
         _theme.Update();
-        if (_settings.Window.Backdrop == BackdropKind.Solid)
+        if (_theme.Backdrop == BackdropKind.Solid)
             _popup.Root.Background = PanelTheme.Brush(_theme.Tokens.SolidBackground); // follows the chosen theme, not the OS theme
         _composer.ApplyAppearance();
         if (_lastLook is not null && _theme.Look != _lastLook) _transcript.Rebuild();
@@ -117,6 +130,11 @@ internal sealed class ChatPresenter
     // ---- what the rest of the app calls ---------------------------------------------------------
 
     internal void Notice(string message, InfoBarSeverity severity) => _notices.Show(message, severity);
+
+    internal NoticeArea Notices => _notices;
+
+    /// <summary>A send with no connection chosen yet (first run): App shows the connection chooser.</summary>
+    public Action? ConnectionMissing { get; set; }
 
     internal Task<ToolDecision> AskToolApprovalAsync(ToolCallRequest request, CancellationToken ct) => _notices.AskToolApprovalAsync(request, ct);
 
@@ -144,7 +162,7 @@ internal sealed class ChatPresenter
         if (action.AutoSend) await SendAsync();
     });
 
-    public void Demo() => _selfTest.Demo();
+    public void Demo(string? scene) => _ = _selfTest.DemoAsync(scene);
 
     public async void SelfTest(Uri? uri) => await _selfTest.RunAsync();
 
@@ -155,7 +173,7 @@ internal sealed class ChatPresenter
     {
         if (_chat.IsBusy)
         {
-            _notices.ShowTagged("stop-hint", null, $"Still answering. {_settings.Chat.StopShortcut} or the Stop button stops it; your message waits in the box.",
+            _notices.ShowTagged("stop-hint", null, L.F(Strings.Chat_StillAnswering, _settings.Chat.StopShortcut),
                 InfoBarSeverity.Informational, closable: true);
             return;
         }
@@ -188,24 +206,29 @@ internal sealed class ChatPresenter
         if (_chat.IsBusy) return; // stopping is the Stop button's or the stop shortcut's job, never a send's
         if (_preparingSend) return; // a second Enter/click while OCR runs
         if (_voice.Active) { await _voice.FinishAndSendAsync(); return; } // it sends once the dictation is final
+        if (string.IsNullOrEmpty(_chat.BackendId)) { ConnectionMissing?.Invoke(); return; } // the text stays in the box
         var typed = _composer.Text;
         switch (_router.Route(typed, _attachments.Items.Count > 0))
         {
             case SendRoute.Nothing:
                 return;
             case SendRoute.Remember { Fact: "" }:
-                _notices.Show("Type what to remember after /remember, e.g. \"/remember I prefer metric units\".", InfoBarSeverity.Warning);
+                _notices.Show(Strings.Chat_RememberWhat, InfoBarSeverity.Warning);
                 return;
             case SendRoute.Remember r:
                 if (_memory.Append(r.Fact))
                 {
                     _composer.Text = "";
-                    _notices.Show("Remembered. Every chat sees it from now on (edit in Settings › Chat and history › Memory).", InfoBarSeverity.Success);
+                    _notices.Show(Strings.Chat_Remembered, InfoBarSeverity.Success);
                 }
-                else _notices.Show($"Not saved: keep it to one line of at most {MemoryStore.MaxFactChars} characters.", InfoBarSeverity.Warning);
+                else _notices.Show(L.F(Strings.Chat_NotRemembered, MemoryStore.MaxFactChars), InfoBarSeverity.Warning);
+                return;
+            case SendRoute.Resume r:
+                _composer.Text = "";
+                _recent.Show(r.Query); // the history list, filtered by the words
                 return;
             case SendRoute.NeedsText n:
-                _notices.Show($"Type the text for /{n.Action} after it, or attach something.", InfoBarSeverity.Warning);
+                _notices.Show(L.F(Strings.Chat_ActionNeedsText, n.Action), InfoBarSeverity.Warning);
                 return;
             case SendRoute.Message m:
                 await SendMessageAsync(typed, m);
@@ -238,6 +261,11 @@ internal sealed class ChatPresenter
     private ReportTarget? ReportFor(string? backendId) =>
         _settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } profile ? ReportLinks.For(profile.Type) : null;
 
+    /// <summary>Not the self-test or demo.</summary>
+    private static bool IsRealAnswer(string id) => !id.StartsWith("st-", StringComparison.Ordinal) && !id.StartsWith("demo-", StringComparison.Ordinal);
+
+    private string BackendOf(string answerId) => _answerBackends.Remove(answerId, out var name) ? name : "";
+
     private void OnChatEvent(ChatEvent e)
     {
         switch (e)
@@ -247,6 +275,7 @@ internal sealed class ChatPresenter
                 break;
             case AssistantStarted s:
                 _transcript.StartAnswer(s.Id, s.BackendName, ReportFor(s.BackendId));
+                _answerBackends[s.Id] = s.BackendName;
                 SetBusy(true);
                 break;
             case AssistantDelta d:
@@ -260,11 +289,16 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(c.Id);
                 SetBusy(false);
                 _log.Info("chat answer completed");
-                if (!c.Id.StartsWith("st-", StringComparison.Ordinal) && !c.Id.StartsWith("demo-", StringComparison.Ordinal))
-                    _support.AnswerCompleted(); // a real answer, not the self-test or demo
+                var answeredBy = BackendOf(c.Id);
+                if (IsRealAnswer(c.Id))
+                {
+                    _support.AnswerCompleted();
+                    _notifier.Finished(answeredBy, _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
+                }
                 break;
             case AssistantCancelled c:
                 _transcript.FinishAnswer(c.Id);
+                _answerBackends.Remove(c.Id);
                 SetBusy(false);
                 break;
             case AssistantFailed f:
@@ -273,6 +307,8 @@ internal sealed class ChatPresenter
                 _transcript.FinishAnswer(f.Id);
                 _transcript.ShowError(f.Id, f.Message);
                 SetBusy(false);
+                var failedOn = BackendOf(f.Id);
+                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, f.Message, failed: true);
                 break;
             case MessageRestored r when r.Message.Role == ChatRole.User:
                 _transcript.AddUser(r.Message);
@@ -285,6 +321,11 @@ internal sealed class ChatPresenter
                 _transcript.Clear();
                 _notices.Clear();
                 SetBusy(false);
+                break;
+            case ConversationResumed { HasTranscript: false } resumed:
+                // Only the record was kept: the earlier messages are in the CLI's own history.
+                var holder = _settings.Chat.Backends.FirstOrDefault(b => b.Id == resumed.BackendId)?.Name ?? resumed.BackendId ?? "";
+                _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
                 break;
         }
     }
@@ -302,7 +343,8 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
-        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20);
+        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
+            conversation: !_transcript.IsEmpty);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>
@@ -316,7 +358,7 @@ internal sealed class ChatPresenter
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception)
         {
-            _notices.Show($"Could not open the settings folder ({_dataDirectory}): {ex.Message}", InfoBarSeverity.Error);
+            _notices.Show(L.F(Strings.Chat_FolderFailed, _dataDirectory, ex.Message), InfoBarSeverity.Error);
         }
     }
 

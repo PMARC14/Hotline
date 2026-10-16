@@ -56,16 +56,10 @@ internal static class MarkdownRenderer
                 return 1;
             case MdCode c:
             {
-                // Header row (language + copy) is a small shaded control; the code itself is selectable monospace text.
+                // Header row (language + copy) is a small shaded control; the code below it is selectable monospace
+                // text in its own box that scrolls sideways, so long lines stay whole (as in an editor).
                 rtb.Blocks.Add(Boxed(CodeHeader(c, s)));
-                var code = new Paragraph { FontFamily = Mono, FontSize = s.FontSize - 1, Margin = new Thickness(indent * 18 + 10, 0, 0, 10) };
-                var lines = c.Code.TrimEnd('\n', '\r').Replace("\r\n", "\n").Split('\n');
-                for (var i = 0; i < lines.Length; i++)
-                {
-                    if (i > 0) code.Inlines.Add(new LineBreak());
-                    code.Inlines.Add(new Run { Text = lines[i].Length == 0 ? " " : lines[i] });
-                }
-                rtb.Blocks.Add(code);
+                rtb.Blocks.Add(Boxed(CodeBody(c, s)));
                 return 2;
             }
             case MdMath m:
@@ -118,16 +112,35 @@ internal static class MarkdownRenderer
         }
     }
 
+    /// <summary>The code, unwrapped and selectable, scrolling sideways when a line is longer than the panel.</summary>
+    private static UIElement CodeBody(MdCode code, RenderStyle s)
+    {
+        var text = new RichTextBlock { IsTextSelectionEnabled = true, TextWrapping = TextWrapping.NoWrap, FontFamily = Mono, FontSize = s.FontSize - 1 };
+        var p = new Paragraph();
+        var lines = code.Code.TrimEnd('\n', '\r').Replace("\r\n", "\n").Split('\n');
+        for (var i = 0; i < lines.Length; i++)
+        {
+            if (i > 0) p.Inlines.Add(new LineBreak());
+            p.Inlines.Add(new Run { Text = lines[i].Length == 0 ? " " : lines[i] });
+        }
+        text.Blocks.Add(p);
+        return new ScrollViewer
+        {
+            Content = text, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto, HorizontalScrollMode = ScrollMode.Enabled,
+            VerticalScrollMode = ScrollMode.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Padding = new Thickness(10, 0, 0, 8),
+        };
+    }
+
     /// <summary>Language label + copy button above a code block (the code itself stays selectable text).</summary>
     private static UIElement CodeHeader(MdCode code, RenderStyle s)
     {
         var copy = new Button
         {
-            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Children = { new FontIcon { Glyph = "\uE8C8", FontSize = 11 }, new TextBlock { Text = "Copy", FontSize = 11 } } },
+            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4, Children = { new FontIcon { Glyph = "\uE8C8", FontSize = 11 }, new TextBlock { Text = Strings.Common_Copy, FontSize = 11 } } },
             Padding = new Thickness(6, 2, 6, 2), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
             HorizontalAlignment = HorizontalAlignment.Right, Opacity = 0.8,
         };
-        ToolTipService.SetToolTip(copy, "Copy code");
+        ToolTipService.SetToolTip(copy, Strings.Md_CopyCode);
         copy.Click += (_, _) =>
         {
             try
@@ -146,7 +159,7 @@ internal static class MarkdownRenderer
         };
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        grid.Children.Add(new TextBlock { Text = code.Language ?? "code", FontSize = 11, Foreground = s.Muted, VerticalAlignment = VerticalAlignment.Center });
+        grid.Children.Add(new TextBlock { Text = code.Language ?? Strings.Md_Code, FontSize = 11, Foreground = s.Muted, VerticalAlignment = VerticalAlignment.Center });
         Grid.SetColumn(copy, 1);
         copy.Foreground = s.Muted;
         grid.Children.Add(copy);
@@ -198,7 +211,7 @@ internal static class MarkdownRenderer
             VerticalScrollMode = ScrollMode.Disabled, VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, Padding = new Thickness(0, 0, 0, 6),
         };
         var tsv = string.Join("\n", table.Rows.Select(row => string.Join("\t", row.Select(PlainText))));
-        var copy = SmallButton("\uE8C8", "Copy table", "Copy table (pastes into spreadsheets)", () => SetClipboardText(tsv));
+        var copy = SmallButton("\uE8C8", Strings.Md_CopyTable, Strings.Md_CopyTable_Tip, () => SetClipboardText(tsv));
         copy.HorizontalAlignment = HorizontalAlignment.Left;
         var stack = new StackPanel { Spacing = 2, HorizontalAlignment = HorizontalAlignment.Left };
         stack.Children.Add(copy);
@@ -215,19 +228,19 @@ internal static class MarkdownRenderer
         var card = new StackPanel { Spacing = 4 };
         if (!svg.Complete)
         {
-            card.Children.Add(new TextBlock { Text = "Drawing an image…", Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
+            card.Children.Add(new TextBlock { Text = Strings.Md_Drawing, Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
             return card;
         }
         if (SvgSanitizer.Sanitize(svg.Markup) is not { } safe)
         {
-            card.Children.Add(new TextBlock { Text = "(a drawing that couldn't be shown safely)", Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
+            card.Children.Add(new TextBlock { Text = Strings.Md_UnsafeDrawing, Foreground = s.Muted, FontStyle = Windows.UI.Text.FontStyle.Italic });
             return card;
         }
         var image = new Image { MaxHeight = 360, MaxWidth = Math.Max(120, contentWidth), Stretch = Stretch.Uniform, HorizontalAlignment = HorizontalAlignment.Left };
         var source = new Microsoft.UI.Xaml.Media.Imaging.SvgImageSource();
         image.Source = source;
         _ = LoadSvgAsync(source, safe);
-        var open = SmallButton("\uE8A7", "Open image", "Open the full drawing (with labels) in your default viewer", () => OpenSvg(safe));
+        var open = SmallButton("\uE8A7", Strings.Md_OpenImage, Strings.Md_OpenImage_Tip, () => OpenSvg(safe));
         card.Children.Add(new Border { Child = image, CornerRadius = new CornerRadius(s.Radius), HorizontalAlignment = HorizontalAlignment.Left });
         card.Children.Add(open);
         return card;

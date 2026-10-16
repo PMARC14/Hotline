@@ -5,6 +5,7 @@ using Hotline.Core.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
+using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
 
 namespace Hotline.App.Chat;
@@ -45,8 +46,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private readonly List<Entry> _entries = [];
     private RichTextBlock _block = null!;
     private RenderTimer? _timer;
-    private bool _stickToBottom = true;
-    private bool _autoScrolling;
+    private readonly ScrollFollow _follow = new();
 
     public bool IsEmpty => _block is null || _block.Blocks.Count == 0;
     public int ParagraphCount => _block.Blocks.Count;
@@ -58,9 +58,10 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         popup.MessagesPanel.Children.Clear();
         popup.MessagesPanel.Children.Add(_block);
         _timer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(50), RenderDirty);
-        popup.MessagesPanel.SizeChanged += (_, _) => { if (_stickToBottom) ScrollToBottomNow(); };
+        popup.MessagesPanel.SizeChanged += (_, _) => { if (_follow.Following) ScrollToBottomNow(); };
         popup.MessagesScroll.ViewChanged += OnViewChanged;
-        popup.JumpToLatestButton.Click += (_, _) => { _stickToBottom = true; UpdateJumpButton(); ScrollToBottomNow(); };
+        WatchReaderScrolling(popup.MessagesScroll);
+        popup.JumpToLatestButton.Click += (_, _) => { _follow.Follow(); UpdateJumpButton(); ScrollToBottomNow(); };
     }
 
     private double ContentWidth => Math.Max(200, popup.MessagesPanel.ActualWidth - popup.MessagesPanel.Padding.Left - popup.MessagesPanel.Padding.Right - 4);
@@ -106,7 +107,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     {
         _block.Blocks.Add(Spacer());
         var label = new Paragraph { TextAlignment = TextAlignment.Right, FontSize = 11, Foreground = theme.Style.Accent, Margin = new Thickness(80, 0, 0, 2) };
-        label.Inlines.Add(new Run { Text = "You" });
+        label.Inlines.Add(new Run { Text = Strings.Transcript_You });
         _block.Blocks.Add(label);
         if (message.Text.Length > 0)
         {
@@ -185,7 +186,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         if (view.Text.Length > 0)
         {
             var p = new Paragraph { Margin = new Thickness(0, 0, 0, 2) };
-            p.Inlines.Add(new InlineUIContainer { Child = CopyButton(() => view.Text, "Copy response") });
+            p.Inlines.Add(new InlineUIContainer { Child = CopyButton(() => view.Text, Strings.Transcript_CopyResponse) });
             if (view.Report is { } report) p.Inlines.Add(new InlineUIContainer { Child = MoreButton(report) });
             _block.Blocks.Add(p);
         }
@@ -195,7 +196,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private void AppendError(AssistantView view)
     {
         var bar = new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = view.Error, Width = ContentWidth };
-        var retry = new Button { Content = "Retry" };
+        var retry = new Button { Content = Strings.Transcript_Retry };
         retry.Click += (_, _) =>
         {
             view.Error = null;
@@ -265,17 +266,16 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     /// </summary>
     public void ScrollToEnd(bool force)
     {
-        if (force) _stickToBottom = true;
-        if (_stickToBottom) ScrollToBottomNow();
+        if (force) _follow.Follow();
+        if (_follow.Following) ScrollToBottomNow();
     }
 
     private void UpdateJumpButton() =>
-        popup.JumpToLatestButton.Visibility = !_stickToBottom && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
+        popup.JumpToLatestButton.Visibility = !_follow.Following && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
 
     private void ScrollToBottomNow()
     {
         var sv = popup.MessagesScroll;
-        _autoScrolling = true;
         sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: false); // animated: no jolts while streaming
     }
 
@@ -283,10 +283,53 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     {
         if (e.IsIntermediate) return;
         var sv = popup.MessagesScroll;
-        var atBottom = sv.ScrollableHeight - sv.VerticalOffset < 24;
-        if (_autoScrolling) { _autoScrolling = false; if (atBottom) { UpdateJumpButton(); return; } }
-        _stickToBottom = atBottom; // user scrolled: follow only if they are back at the bottom
+        if (_follow.Settled(AtBottom(sv))) ScrollToBottomNow(); // the answer grew while scrolling: catch up
         UpdateJumpButton();
+    }
+
+    /// <summary>
+    /// True when the press landed on <paramref name="owner"/>'s own scrollbar (track, thumb or arrows) — not on its
+    /// content, and not on a code block's sideways scrollbar inside it.
+    /// </summary>
+    private static bool OnScrollBar(DependencyObject? element, ScrollViewer owner)
+    {
+        var onBar = false;
+        for (var e = element; e is not null; e = Microsoft.UI.Xaml.Media.VisualTreeHelper.GetParent(e))
+        {
+            if (e is Microsoft.UI.Xaml.Controls.Primitives.ScrollBar) onBar = true;
+            if (e is ScrollViewer viewer) return onBar && viewer == owner; // the first scroll viewer up owns that bar
+        }
+        return false;
+    }
+
+    private static bool AtBottom(ScrollViewer sv) => sv.ScrollableHeight - sv.VerticalOffset < 24;
+
+    /// <summary>
+    /// The reader's own scrolling (wheel up, the scrollbar, touch, Up/Page Up/Home) is the only thing that stops
+    /// following. Handled events too: the ScrollViewer marks wheel and key input handled itself.
+    /// </summary>
+    private void WatchReaderScrolling(ScrollViewer sv)
+    {
+        sv.AddHandler(UIElement.PointerWheelChangedEvent, new PointerEventHandler((_, e) =>
+        {
+            var wheel = e.GetCurrentPoint(sv).Properties;
+            if (!wheel.IsHorizontalMouseWheel && wheel.MouseWheelDelta > 0 && sv.VerticalOffset > 0) _follow.UserInput();
+        }), handledEventsToo: true);
+        sv.AddHandler(UIElement.PointerPressedEvent, new PointerEventHandler((_, e) =>
+        {
+            if (OnScrollBar(e.OriginalSource as DependencyObject, sv)) _follow.UserInput(); // not a click on a Copy button near the edge
+        }), handledEventsToo: true);
+        sv.AddHandler(UIElement.PointerReleasedEvent, new PointerEventHandler((_, _) =>
+        {
+            if (_follow.Settled(AtBottom(sv))) ScrollToBottomNow(); // let go without moving: follow again at the bottom
+            UpdateJumpButton();
+        }), handledEventsToo: true);
+        sv.DirectManipulationStarted += (_, _) => _follow.UserInput(); // touch / touchpad panning
+        sv.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler((_, e) =>
+        {
+            if (e.Key is Windows.System.VirtualKey.Up or Windows.System.VirtualKey.PageUp or Windows.System.VirtualKey.Home && sv.VerticalOffset > 0)
+                _follow.UserInput();
+        }), handledEventsToo: true);
     }
 
     // ---- helpers ------------------------------------------------------------------------------
@@ -307,19 +350,19 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     {
         var button = new Button
         {
-            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { new FontIcon { Glyph = Glyphs.Copy, FontSize = 12 }, new TextBlock { Text = "Copy", FontSize = 12 } } },
+            Content = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { new FontIcon { Glyph = Glyphs.Copy, FontSize = 12 }, new TextBlock { Text = Strings.Common_Copy, FontSize = 12 } } },
             Padding = new Thickness(8, 3, 8, 3), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
             Opacity = 0.75,
         };
         ToolTipService.SetToolTip(button, tooltip);
-        button.Click += (_, _) => { if (ClipboardText.TrySet(text())) notices.Show("Copied.", InfoBarSeverity.Success); else notices.Show("The clipboard is busy; try again.", InfoBarSeverity.Warning); };
+        button.Click += (_, _) => { if (ClipboardText.TrySet(text())) notices.Show(Strings.Transcript_Copied, InfoBarSeverity.Success); else notices.Show(Strings.Transcript_ClipboardBusy, InfoBarSeverity.Warning); };
         return button;
     }
 
     /// <summary>The answer's "⋯" menu, kept out of the way: today it only holds "Report this answer" (opens the provider's page).</summary>
     private static Button MoreButton(ReportTarget report)
     {
-        var item = new MenuFlyoutItem { Text = $"Report this answer to {report.Provider}…", Icon = new FontIcon { Glyph = Glyphs.Flag } };
+        var item = new MenuFlyoutItem { Text = L.F(Strings.Transcript_Report, report.Provider), Icon = new FontIcon { Glyph = Glyphs.Flag } };
         item.Click += (_, _) => _ = Windows.System.Launcher.LaunchUriAsync(report.Page);
         var button = new Button
         {
@@ -327,7 +370,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
             Padding = new Thickness(8, 3, 8, 3), Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), BorderThickness = new Thickness(0),
             Opacity = 0.75, Flyout = new MenuFlyout { Items = { item } },
         };
-        ToolTipService.SetToolTip(button, "More");
+        ToolTipService.SetToolTip(button, Strings.Transcript_More);
         return button;
     }
 

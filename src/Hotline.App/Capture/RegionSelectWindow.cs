@@ -34,7 +34,7 @@ internal sealed class RegionSelectWindow : Window
     public RegionSelectWindow(byte[] bgra, RectI monitor)
     {
         (_pixelWidth, _pixelHeight) = (monitor.Width, monitor.Height);
-        Title = "Hotline region capture";
+        Title = Strings.Region_Title;
         var presenter = OverlappedPresenter.Create();
         presenter.IsAlwaysOnTop = true;
         presenter.IsResizable = false;
@@ -61,7 +61,7 @@ internal sealed class RegionSelectWindow : Window
             Background = new SolidColorBrush(Windows.UI.Color.FromArgb(0xCC, 0x20, 0x20, 0x20)), CornerRadius = new CornerRadius(8),
             Padding = new Thickness(14, 8, 14, 8), Margin = new Thickness(0, 24, 0, 0), HorizontalAlignment = HorizontalAlignment.Center,
             VerticalAlignment = VerticalAlignment.Top, IsHitTestVisible = false,
-            Child = new TextBlock { Text = "Drag to capture a region  ·  Esc to cancel", Foreground = new SolidColorBrush(Colors.White) },
+            Child = new TextBlock { Text = Strings.Region_Hint, Foreground = new SolidColorBrush(Colors.White) },
         });
         Content = _root;
         _root.Loaded += (_, _) =>

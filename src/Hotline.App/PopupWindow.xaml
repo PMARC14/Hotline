@@ -2,6 +2,7 @@
     x:Class="Hotline.App.PopupWindow"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:Hotline.App"
     Title="Hotline">
     <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="8"
           AllowDrop="True" KeyDown="Root_KeyDown">
@@ -23,6 +24,13 @@
                     <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="#FFFBFBFB" />
                     <SolidColorBrush x:Key="TextControlBackground" Color="#FFFBFBFB" />
                     <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="#FFFBFBFB" />
+                </ResourceDictionary>
+                <!-- Contrast themes: the theme's own window colours (otherwise "Default", the dark set, would apply). -->
+                <ResourceDictionary x:Key="HighContrast">
+                    <SolidColorBrush x:Key="ComposerSurface" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TextControlBackgroundFocused" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TextControlBackground" Color="{ThemeResource SystemColorWindowColor}" />
+                    <SolidColorBrush x:Key="TextControlBackgroundPointerOver" Color="{ThemeResource SystemColorWindowColor}" />
                 </ResourceDictionary>
             </ResourceDictionary.ThemeDictionaries>
             <!-- No minimum height: the message box is as tall as one line of text (Hotline sizes it from the font). -->
@@ -61,7 +69,7 @@
         <Button x:Name="JumpToLatestButton" x:FieldModifier="internal" Grid.Row="0" Width="34" Height="34" Padding="0"
                 CornerRadius="17" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,22,6"
                 FontFamily="Segoe Fluent Icons" FontSize="14" Content="&#xE74B;" Visibility="Collapsed"
-                ToolTipService.ToolTip="Jump to the latest message" />
+                ToolTipService.ToolTip="{local:Loc Key=Popup_JumpLatest}" />
         <TextBlock x:Name="StatusText" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
                    Style="{StaticResource CaptionTextBlockStyle}" Visibility="Collapsed" />
 
@@ -80,20 +88,20 @@
                         <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Button x:Name="PlusButton" x:FieldModifier="internal" Width="44" Height="44" Padding="0" CornerRadius="10"
-                            FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xE710;" ToolTipService.ToolTip="Add files or capture"
+                            FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xE710;" ToolTipService.ToolTip="{local:Loc Key=Popup_AddMenu}"
                             VerticalAlignment="Bottom">
                         <Button.Flyout>
                             <MenuFlyout Placement="TopEdgeAlignedLeft">
-                                <MenuFlyoutItem x:Name="AttachFilesItem" x:FieldModifier="internal" Text="Attach files…">
+                                <MenuFlyoutItem x:Name="AttachFilesItem" x:FieldModifier="internal" Text="{local:Loc Key=Popup_AttachFiles}">
                                     <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE723;" /></MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                <MenuFlyoutItem x:Name="CaptureWindowItem" x:FieldModifier="internal" Text="Capture window">
+                                <MenuFlyoutItem x:Name="CaptureWindowItem" x:FieldModifier="internal" Text="{local:Loc Key=Bar_captureWindow}">
                                     <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7C4;" /></MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                <MenuFlyoutItem x:Name="CaptureRegionItem" x:FieldModifier="internal" Text="Capture region">
+                                <MenuFlyoutItem x:Name="CaptureRegionItem" x:FieldModifier="internal" Text="{local:Loc Key=Bar_captureRegion}">
                                     <MenuFlyoutItem.Icon><FontIcon Glyph="&#xF407;" /></MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
-                                <MenuFlyoutItem x:Name="CaptureScreenItem" x:FieldModifier="internal" Text="Capture screen">
+                                <MenuFlyoutItem x:Name="CaptureScreenItem" x:FieldModifier="internal" Text="{local:Loc Key=Bar_captureScreen}">
                                     <MenuFlyoutItem.Icon><FontIcon Glyph="&#xE7F4;" /></MenuFlyoutItem.Icon>
                                 </MenuFlyoutItem>
                             </MenuFlyout>
@@ -104,7 +112,7 @@
                              ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     <Button x:Name="SendButton" x:FieldModifier="internal" Grid.Column="2" Width="44" Height="44" Padding="0"
                             CornerRadius="10" Style="{StaticResource AccentButtonStyle}" FontFamily="Segoe Fluent Icons"
-                            FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="Send (Enter)" VerticalAlignment="Bottom" />
+                            FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="{local:Loc Key=Composer_Send}" VerticalAlignment="Bottom" />
                 </Grid>
             </StackPanel>
         </Border>
@@ -120,14 +128,14 @@
             </Grid.ColumnDefinitions>
             <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Width="36" Height="32" Padding="0" BorderThickness="0"
                           Background="Transparent" FontFamily="Segoe Fluent Icons" FontSize="15" Content="&#xE718;"
-                          ToolTipService.ToolTip="Pin open (stays open when you click elsewhere, so you can drag files in)" />
+                          ToolTipService.ToolTip="{local:Loc Key=Popup_Pin}" />
             <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Grid.Column="1" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE7C4;" ToolTipService.ToolTip="Capture the window you were in" />
+                    Content="&#xE7C4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureWindow}" />
             <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE7F4;" ToolTipService.ToolTip="Capture the whole screen" />
+                    Content="&#xE7F4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureScreen}" />
             <!-- Arranged at runtime from ~/.hotline/toolbar.json (see PopupWindow.ApplyToolbar). -->
             <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
-                    Content="&#xF407;" ToolTipService.ToolTip="Capture a region" Visibility="Collapsed" />
+                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" Visibility="Collapsed" />
             <!-- Pickers blend into the bar (no fill/border) until hovered; order: effort, model, provider. -->
             <StackPanel x:Name="PickersPanel" x:FieldModifier="internal" Grid.Column="3" Orientation="Horizontal" Spacing="2"
                         VerticalAlignment="Center" HorizontalAlignment="Right">
@@ -146,10 +154,10 @@
                     <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
                     <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
                     <!-- Picker text shrinks to fit the (fixed-width) box instead of being cut off. -->
+                    <!-- A long name is cut off with "…" at the bar's text size (it used to shrink until unreadable);
+                         the full name is in the list and in the tooltip. -->
                     <DataTemplate x:Key="FitText">
-                        <Viewbox StretchDirection="DownOnly" HorizontalAlignment="Left" VerticalAlignment="Center">
-                            <TextBlock Text="{Binding}" />
-                        </Viewbox>
+                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" />
                     </DataTemplate>
                     <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
                         <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
@@ -159,27 +167,23 @@
                         <Setter Property="Opacity" Value="0.85" />
                     </Style>
                 </StackPanel.Resources>
-                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="Reasoning effort" />
+                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Bar_EffortTip}" />
                 <ComboBox x:Name="ModelBox" x:FieldModifier="internal"
-                          ToolTipService.ToolTip="Model (type a name or pick one)" />
-                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="Who answers" />
+                          ToolTipService.ToolTip="{local:Loc Key=Popup_Model}" />
+                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Popup_Provider}" />
             </StackPanel>
             <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE8A5;" ToolTipService.ToolTip="System prompt">
+                    Content="&#xE8A5;" ToolTipService.ToolTip="{local:Loc Key=Conn_SystemPrompt}">
                 <Button.Flyout>
                     <MenuFlyout x:Name="PromptMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
                 </Button.Flyout>
             </Button>
             <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE81C;" ToolTipService.ToolTip="Recent chats (Ctrl+Up reopens the last one)">
-                <Button.Flyout>
-                    <MenuFlyout x:Name="RecentMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
-                </Button.Flyout>
-            </Button>
+                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
             <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE8BD;" ToolTipService.ToolTip="New chat (Ctrl+N)" />
+                    Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE713;" ToolTipService.ToolTip="Settings" />
+                    Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
         </Grid>
     </Grid>
 </Window>

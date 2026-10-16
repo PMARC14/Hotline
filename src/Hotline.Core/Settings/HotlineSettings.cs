@@ -4,12 +4,22 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 8;
+    public const int CurrentSchemaVersion = 11;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
+    public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
     public DiagnosticsSettings Diagnostics { get; set; } = new();
     public ChatSettings Chat { get; set; } = new();
+}
+
+public sealed class GeneralSettings
+{
+    /// <summary>Interface language: "system" follows Windows, or a tag from Languages.Supported (e.g. "de"). Applies on restart.</summary>
+    public string Language { get; set; } = Text.Localization.Languages.System;
+
+    /// <summary>Show the "Enjoying Hotline?" donation note once, the next time the panel opens after an answer (then it turns itself off).</summary>
+    public bool SupportReminder { get; set; } = true;
 }
 
 public sealed class DiagnosticsSettings
@@ -31,7 +41,8 @@ public sealed class ActivationSettings
 
 public enum PopupLayout { QuickView, CommandBar, SidePanel }
 
-public enum ThemeChoice { System, Light, Dark }
+/// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
+public enum ThemeChoice { System, Light, Dark, HighContrast }
 
 /// <summary>Window backdrop material. Acrylic (translucent) is the default look.</summary>
 public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
@@ -52,6 +63,8 @@ public sealed class WindowSettings
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
+    /// <summary>"hotline" (the built-in purple), "windows" (follows the Windows accent) or a "#RRGGBB" colour.</summary>
+    public string Accent { get; set; } = Theming.AccentChoice.Hotline;
     /// <summary>Chat text size in px (10–32); null = the Windows default (scaled by Settings › Accessibility › Text size).</summary>
     public int? FontSize { get; set; }
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
@@ -64,7 +77,7 @@ public sealed class WindowSettings
     public double LuminosityOpacity { get; set; } = 0.35;
 }
 
-public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local }
+public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local, Codex }
 
 /// <summary>ChatOnly: answers only (attachments readable). Inherit: the CLI's own tools and permission rules.</summary>
 public enum ToolMode { ChatOnly, Inherit }
@@ -91,14 +104,20 @@ public sealed class BackendProfile
     /// always added; dangerous flags only come from ApproveAllTools. Null = Hotline's defaults.
     /// </summary>
     public List<string>? Args { get; set; }
-    /// <summary>Let the CLI keep its own copy of these chats (agy always does; Claude Code only when true).</summary>
-    public bool KeepCliSessions { get; set; }
+    /// <summary>
+    /// CLI connections: chats live in the CLI's own history (one conversation per Hotline chat, resumable there and from
+    /// Recent chats). Off: Hotline keeps the chat and replays it (Claude Code then keeps nothing; agy always records).
+    /// </summary>
+    public bool KeepCliSessions { get; set; } = true;
+    /// <summary>CLI connections with keepCliSessions: also keep the messages in Hotline's own history (default: only a record).</summary>
+    public bool KeepInHotline { get; set; }
     /// <summary>Anthropic API: if a safety check declines a request, let the API re-serve it with a suitable model.</summary>
     public bool RefusalFallback { get; set; } = true;
-    /// <summary>Tool use for CLI connections (agy, Claude Code).</summary>
+    /// <summary>Tool use: CLI connections (agy, Claude Code, Codex) use their own tools; API connections Hotline's MCP tools.</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
     /// <summary>
-    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy --dangerously-skip-permissions), including
+    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy/Claude Code --dangerously-skip-permissions, Codex
+    /// --dangerously-bypass-approvals-and-sandbox), including
     /// shell commands and file edits, with no prompt. Off: the CLI's own permission rules apply (in the background,
     /// anything that would ask is denied).
     /// </summary>
@@ -107,6 +126,12 @@ public sealed class BackendProfile
     public string? WorkingDirectory { get; set; }
     /// <summary>System prompt name (file ~/.hotline/prompts/&lt;name&gt;.md). Null = chat.defaultPrompt.</summary>
     public string? Prompt { get; set; }
+    /// <summary>API connections: most tokens one answer may use. Null = the model's default (Claude API: 64000).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public int? MaxTokens { get; set; }
+    /// <summary>Gemini, OpenAI-compatible and local connections: sampling temperature (0–2). Null = the model's default.</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public double? Temperature { get; set; }
     /// <summary>Whether the model reads images. Null = the type's default (local: no; others: yes).</summary>
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public bool? Images { get; set; }
@@ -114,7 +139,8 @@ public sealed class BackendProfile
 
 public sealed class ChatSettings
 {
-    public string DefaultBackend { get; set; } = "agy";
+    /// <summary>The connection the panel uses. Empty = not chosen yet: a new install asks on first open (and runs no CLI before).</summary>
+    public string DefaultBackend { get; set; } = "";
     /// <summary>System prompt used by connections that don't pick their own.</summary>
     public string DefaultPrompt { get; set; } = "default";
     /// <summary>
@@ -128,6 +154,17 @@ public sealed class ChatSettings
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
     public GrowMode GrowMode { get; set; } = GrowMode.Grow;
     public bool SaveHistory { get; set; } = true;
+    /// <summary>A Windows notification when an answer finishes while the panel is hidden or another app is in front.</summary>
+    public bool NotifyWhenDone { get; set; } = true;
+    /// <summary>How many saved chats the history list reads (each is opened for its title). settings.json only.</summary>
+    public int HistoryListSize { get; set; } = 300;
+    /// <summary>"/resume" and a space opens the history list right away, searching as you type. settings.json only.</summary>
+    public bool ResumeWhileTyping { get; set; } = true;
+    /// <summary>
+    /// A reopened CLI chat whose messages Hotline didn't keep shows them from the CLI's own history (agy, Claude Code,
+    /// Codex). settings.json only.
+    /// </summary>
+    public bool CliTranscripts { get; set; } = true;
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
     public int MaxImagePixels { get; set; } = 2048;

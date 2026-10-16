@@ -9,12 +9,8 @@ namespace Hotline.App.Settings;
 /// <summary>Settings pages for the files next to settings.json: the bottom bar (toolbar.json) and quick actions (actions\).</summary>
 public sealed partial class SettingsWindow
 {
-    private static readonly Dictionary<string, string> ToolbarNames = new()
-    {
-        ["pin"] = "Pin", ["captureWindow"] = "Capture window", ["captureScreen"] = "Capture screen", ["captureRegion"] = "Capture region",
-        ["spacer"] = "Space", ["effort"] = "Effort picker", ["model"] = "Model picker", ["provider"] = "Provider picker",
-        ["prompt"] = "Prompt picker", ["recent"] = "Recent chats", ["newChat"] = "New chat", ["settings"] = "Settings",
-    };
+    /// <summary>A bar item's name ("captureWindow" → Bar_captureWindow); unknown ids show as they are.</summary>
+    private static string ToolbarName(string id) => Strings.ResourceManager.GetString("Bar_" + id, System.Globalization.CultureInfo.CurrentUICulture) ?? id;
 
     private string DataDirectory => Path.GetDirectoryName(_settingsFile)!;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
@@ -24,12 +20,12 @@ public sealed partial class SettingsWindow
     {
         PageHost.Children.Add(new TextBlock
         {
-            Text = "Bottom bar", Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
+            Text = Strings.Bar_Title, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
         var config = ToolbarConfig.Load(ToolbarPath);
         if (config.Error is { } error)
         {
-            PageHost.Children.Add(Card("toolbar.json has an error", error + " Fix the file, or reset the bar.", ResetToolbarButton()));
+            PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
         var items = config.Items;
@@ -46,20 +42,20 @@ public sealed partial class SettingsWindow
             var row = new Grid { ColumnSpacing = 4 };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             for (var c = 0; c < 3; c++) row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            row.Children.Add(new TextBlock { Text = ToolbarNames.GetValueOrDefault(items[i], items[i]), VerticalAlignment = VerticalAlignment.Center });
-            AddIconButton(row, 1, "\uE76B", "Move left", index > 0, () => Save(ToolbarConfig.Move(items, index, -1)));
-            AddIconButton(row, 2, "\uE76C", "Move right", index < items.Count - 1, () => Save(ToolbarConfig.Move(items, index, +1)));
-            AddIconButton(row, 3, "\uE711", "Remove from the bar", items.Count > 1, () =>
+            row.Children.Add(new TextBlock { Text = ToolbarName(items[i]), VerticalAlignment = VerticalAlignment.Center });
+            AddIconButton(row, 1, "\uE76B", Strings.Bar_MoveLeft, index > 0, () => Save(ToolbarConfig.Move(items, index, -1)));
+            AddIconButton(row, 2, "\uE76C", Strings.Bar_MoveRight, index < items.Count - 1, () => Save(ToolbarConfig.Move(items, index, +1)));
+            AddIconButton(row, 3, "\uE711", Strings.Bar_Remove, items.Count > 1, () =>
                 Save(items.Where((_, j) => j != index).ToList()));
             list.Children.Add(row);
         }
         PageHost.Children.Add(new Border { Child = list, Style = (Style)Root.Resources["CardStyle"] });
 
-        var add = new DropDownButton { Content = "Add to the bar" };
+        var add = new DropDownButton { Content = Strings.Bar_Add };
         var menu = new MenuFlyout();
         foreach (var item in ToolbarConfig.Available.Where(a => a == "spacer" || !items.Contains(a)))
         {
-            var entry = new MenuFlyoutItem { Text = ToolbarNames.GetValueOrDefault(item, item) };
+            var entry = new MenuFlyoutItem { Text = ToolbarName(item) };
             entry.Click += (_, _) => Save(ToolbarConfig.Show(items, item));
             menu.Items.Add(entry);
         }
@@ -69,7 +65,7 @@ public sealed partial class SettingsWindow
 
     private Button ResetToolbarButton()
     {
-        var reset = new Button { Content = "Reset the bar" };
+        var reset = new Button { Content = Strings.Bar_Reset };
         reset.Click += (_, _) =>
         {
             try { ToolbarConfig.Save(ToolbarPath, ToolbarConfig.Defaults); }
@@ -97,39 +93,51 @@ public sealed partial class SettingsWindow
             var v = Windows.ApplicationModel.Package.Current.Id.Version;
             version = $"{v.Major}.{v.Minor}.{v.Build}";
         }
-        catch (InvalidOperationException) { version = "development build"; } // not packaged
+        catch (InvalidOperationException) { version = Strings.About_DevBuild; } // not packaged
         PageHost.Children.Add(new TextBlock
         {
-            Text = $"Hotline {version} — your AI on the Copilot key. Free and open source (Apache-2.0).",
+            Text = L.F(Strings.About_Intro, version),
             TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
         });
         HyperlinkButton Link(string text, Uri uri) => new() { Content = text, NavigateUri = uri, Padding = new Thickness(4, 2, 4, 2) };
-        if (SupportLinks.DonationsLive) PageHost.Children.Add(Card("Support Hotline",
-            "Hotline is made by one person and has no ads or tracking. If it saves you time, a donation keeps it going.",
+        if (SupportLinks.DonationsLive)
+        {
+            Button Donate(string text, Uri uri, bool accent)
+            {
+                var button = new Button { Content = text };
+                if (accent && Application.Current.Resources.TryGetValue("AccentButtonStyle", out var style) && style is Style s) button.Style = s;
+                button.Click += (_, _) => _ = Windows.System.Launcher.LaunchUriAsync(uri);
+                return button;
+            }
+            var reminder = new ToggleSwitch { IsOn = _settings.Current.General.SupportReminder, OnContent = "", OffContent = "", MinWidth = 0 };
+            reminder.Toggled += (_, _) => _settings.Update(s => s.General.SupportReminder = reminder.IsOn);
+            PageHost.Children.Add(Card(Strings.About_Support, Strings.About_Support_Desc,
+                new StackPanel
+                {
+                    Orientation = Orientation.Horizontal, Spacing = 8,
+                    Children = { Donate("GitHub Sponsors", SupportLinks.GitHubSponsors, accent: true), Donate("Ko-fi", SupportLinks.KoFi, accent: false) },
+                }));
+            PageHost.Children.Add(Card(Strings.About_SupportReminder, Strings.About_SupportReminder_Desc, reminder));
+        }
+        PageHost.Children.Add(Card(Strings.About_Project, Strings.About_Project_Desc,
             new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { Link("GitHub Sponsors", SupportLinks.GitHubSponsors), Link("Ko-fi", SupportLinks.KoFi) },
-            }));
-        PageHost.Children.Add(Card("Project", "Source code, releases, and the place to report problems or ask for features.",
-            new StackPanel
-            {
-                Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { Link("GitHub", SupportLinks.Repository), Link("Report a problem", SupportLinks.Issues) },
+                Children = { Link("GitHub", SupportLinks.Repository), Link(Strings.About_ReportProblem, SupportLinks.Issues) },
             }));
         var report = new StackPanel { Spacing = 4 };
-        report.Children.Add(new TextBlock { Text = "Checking…", Opacity = 0.7 });
+        report.Children.Add(new TextBlock { Text = Strings.About_Checking, Opacity = 0.7 });
         PageHost.Children.Add(new Border
         {
             Style = (Style)Root.Resources["CardStyle"],
-            Child = new StackPanel { Spacing = 6, Children = { new TextBlock { Text = "This PC" }, report } },
+            Child = new StackPanel { Spacing = 6, Children = { new TextBlock { Text = Strings.About_ThisPc }, report } },
         });
         _ = FillReportAsync(report);
-        PageHost.Children.Add(Card("License", "Apache-2.0, plus the licenses of the components Hotline uses.",
+        PageHost.Children.Add(Card(Strings.About_License, Strings.About_License_Desc,
             new StackPanel
             {
                 Orientation = Orientation.Horizontal, Spacing = 8,
-                Children = { Link("License", SupportLinks.License), Link("Third-party notices", SupportLinks.ThirdPartyNotices) },
+                Children = { Link(Strings.About_License, SupportLinks.License), Link(Strings.About_ThirdParty, SupportLinks.ThirdPartyNotices) },
             }));
     }
 
@@ -138,7 +146,7 @@ public sealed partial class SettingsWindow
     {
         IReadOnlyList<PcFeature> features;
         try { features = await ThisPc.CheckAsync(_odrPath); }
-        catch (Exception ex) { _log.Error("this-PC report failed", ex); host.Children.Clear(); host.Children.Add(new TextBlock { Text = "Couldn't check this PC." }); return; }
+        catch (Exception ex) { _log.Error("this-PC report failed", ex); host.Children.Clear(); host.Children.Add(new TextBlock { Text = Strings.About_CheckFailed }); return; }
         host.Children.Clear();
         foreach (var f in features)
         {
@@ -161,41 +169,104 @@ public sealed partial class SettingsWindow
         var memory = new MemoryStore(Path.Combine(DataDirectory, "memory.md"));
         var text = memory.Read();
         var lines = text.Length == 0 ? 0 : text.Split('\n').Length;
-        var edit = new Button { Content = "Edit memory" };
+        var edit = new Button { Content = Strings.Memory_Edit };
         edit.Click += (_, _) =>
         {
             try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
             CliRunner.OpenInEditor(memory.Path);
         };
-        PageHost.Children.Add(Card("memory.md", lines == 0 ? "Empty. \"/remember something\" in the message box adds a line."
-            : $"{lines} line(s). Every chat sees them while Memory is on.", edit));
+        PageHost.Children.Add(Card("memory.md", lines == 0 ? Strings.Memory_Empty : L.F(Strings.Memory_Lines, lines), edit));
     }
 
     /// <summary>Quick actions: "/name" in the message box applies the file's instruction (actions\&lt;name&gt;.md).</summary>
+    /// <summary>
+    /// Quick actions: each one's command, description and full instruction, with Edit (the .md file in your editor),
+    /// Rename and Delete; New action, Restore default actions and the folder below. The files hold everything.
+    /// </summary>
     private void BuildActionsPage()
     {
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
         PageHost.Children.Add(new TextBlock
         {
-            Text = "Type / at the start of a message to use one: \"/translate some text\", or \"/summarize\" with an attachment. Each action is " +
-                   "a Markdown file; its first line is the description shown in the list. Names may use letters, digits, - and _.",
+            Text = Strings.Actions_Intro,
             TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
         });
         foreach (var action in actions.List())
         {
             var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            var edit = new Button { Content = "Edit" };
+            var edit = new Button { Content = Strings.Common_Edit };
             edit.Click += (_, _) => CliRunner.OpenInEditor(actions.PathFor(action.Name));
-            var delete = new Button { Content = "Delete" };
-            delete.Click += (_, _) => { actions.Delete(action.Name); ShowPage("Actions"); };
+            var rename = new Button { Content = Strings.Actions_Rename };
+            rename.Click += async (_, _) => await RenameActionAsync(actions, action.Name);
+            var delete = new Button { Content = Strings.Common_Delete };
+            delete.Click += async (_, _) =>
+            {
+                var confirm = new ContentDialog
+                {
+                    XamlRoot = Root.XamlRoot, Title = L.F(Strings.Actions_DeleteConfirm, action.Name),
+                    PrimaryButtonText = Strings.Common_Delete, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+                };
+                if (await ShowDialogAsync(confirm) != ContentDialogResult.Primary) return;
+                actions.Delete(action.Name);
+                ShowPage("Actions");
+            };
             buttons.Children.Add(edit);
+            buttons.Children.Add(rename);
             buttons.Children.Add(delete);
-            PageHost.Children.Add(Card("/" + action.Name, action.Description, buttons));
+            var description = new TextBlock { Text = action.Description };
+            var card = CardWithStatus("/" + action.Name, description, buttons);
+            // The whole instruction under the card, when it says more than the description.
+            if (action.Instruction != action.Description)
+                PageHost.Children.Add(new StackPanel
+                {
+                    Spacing = 0,
+                    Children =
+                    {
+                        card,
+                        new TextBlock
+                        {
+                            Text = action.Instruction, TextWrapping = TextWrapping.Wrap, FontSize = 12, Opacity = 0.65, IsTextSelectionEnabled = true,
+                            Margin = new Thickness(16, -6, 16, 8), MaxLines = 6, TextTrimming = TextTrimming.CharacterEllipsis,
+                        },
+                    },
+                });
+            else PageHost.Children.Add(card);
         }
-        var create = new Button { Content = "New action", Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+        var create = new Button { Content = Strings.Actions_New, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
         create.Click += (_, _) => { CliRunner.OpenInEditor(actions.PathFor(actions.Create())); ShowPage("Actions"); };
-        var open = new Button { Content = "Open actions folder" };
+        var restore = new Button { Content = Strings.Actions_Restore };
+        restore.Click += (_, _) =>
+        {
+            var written = actions.RestoreDefaults();
+            ShowPage("Actions");
+            PageHost.Children.Insert(1, new InfoBar
+            {
+                IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Success,
+                Message = L.F(Strings.Actions_Restored, written), Margin = new Thickness(0, 0, 0, 8),
+            });
+        };
+        var open = new Button { Content = Strings.Actions_OpenFolder };
         open.Click += (_, _) => { Directory.CreateDirectory(actions.Directory); CliRunner.OpenFolder(actions.Directory); };
-        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { create, open } });
+        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { create, restore, open } });
+    }
+
+    /// <summary>Asks for a new name (letters, digits, - and _, not taken) and renames the action's file.</summary>
+    private async Task RenameActionAsync(QuickActions actions, string name)
+    {
+        var box = new TextBox { Text = name, Header = Strings.Actions_NewName };
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Root.XamlRoot, Title = Strings.Actions_Rename, Content = box,
+            PrimaryButtonText = Strings.Actions_Rename, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Primary,
+        };
+        dialog.PrimaryButtonClick += (_, e) =>
+        {
+            var to = box.Text.Trim();
+            if (to == name) return;
+            if (actions.Rename(name, to)) return;
+            box.Header = Strings.Actions_RenameInvalid; // keep the dialog open
+            e.Cancel = true;
+        };
+        if (await ShowDialogAsync(dialog) == ContentDialogResult.Primary) ShowPage("Actions");
     }
 }

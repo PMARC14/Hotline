@@ -19,7 +19,7 @@ public class ConnectionTypesTests
         Assert.Equal(["low", "medium", "high", "xhigh", "max"], ConnectionTypes.Of(BackendType.Anthropic).EffortLevels);
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Gemini).EffortLevels);
         Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.OpenAiCompatible).EffortLevels);
-        Assert.Empty(ConnectionTypes.Of(BackendType.Local).EffortLevels);
+        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Local).EffortLevels); // sent only when chosen
     }
 
     [Fact]
@@ -31,7 +31,7 @@ public class ConnectionTypesTests
             Assert.True(info.Has(ConnectionField.Endpoint) && info.Has(ConnectionField.ApiKey));
             Assert.False(string.IsNullOrEmpty(info.DefaultEndpoint));
         }
-        foreach (var t in new[] { BackendType.Antigravity, BackendType.ClaudeCode })
+        foreach (var t in new[] { BackendType.Antigravity, BackendType.ClaudeCode, BackendType.Codex })
             Assert.True(ConnectionTypes.Of(t).Has(ConnectionField.CliPath) && ConnectionTypes.Of(t).Has(ConnectionField.Tools));
         Assert.True(ConnectionTypes.Of(BackendType.Local).ApiKeyOptional);
     }

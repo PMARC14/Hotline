@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype"><value>text/microsoft-resx</value></resheader>
+  <resheader name="version"><value>2.0</value></resheader>
+  <resheader name="reader"><value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <resheader name="writer"><value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value></resheader>
+  <data name="Set_Language" xml:space="preserve"><value>语言</value></data>
+  <data name="Set_Language_Desc" xml:space="preserve"><value>Hotline 菜单、设置和消息的语言。AI 的回答会使用你书写的语言。</value></data>
+  <data name="Set_Language_System" xml:space="preserve"><value>使用 Windows 语言</value></data>
+  <data name="Set_Key_Toggle" xml:space="preserve"><value>打开 / 关闭 Hotline</value></data>
+  <data name="Set_Key_Open" xml:space="preserve"><value>打开 Hotline</value></data>
+  <data name="Set_Key_NewChat" xml:space="preserve"><value>开始新聊天</value></data>
+  <data name="Set_Key_CaptureWindow" xml:space="preserve"><value>截取当前窗口</value></data>
+  <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>截取区域</value></data>
+  <data name="Set_Key_Voice" xml:space="preserve"><value>语音输入(按住说话)</value></data>
+  <data name="Set_Key_None" xml:space="preserve"><value>不执行任何操作</value></data>
+  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot 键</value></data>
+  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>用作右 Ctrl 时,Copilot+C 等于 Ctrl+C,且该键不再打开 Hotline(请使用下方的额外热键或通知区域图标)。适用于 Copilot 键发送 Win+Shift+F23 的键盘(大多数如此)。</value></data>
+  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>打开 Hotline</value></data>
+  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>用作右 Ctrl</value></data>
+  <data name="Set_Tap" xml:space="preserve"><value>短按 Copilot 键</value></data>
+  <data name="Set_Hold" xml:space="preserve"><value>长按 Copilot 键</value></data>
+  <data name="Set_Voice" xml:space="preserve"><value>语音输入</value></data>
+  <data name="Set_Voice_Desc" xml:space="preserve"><value>按住 Copilot 键说话,松开即停止(Esc 取消)。使用 Windows 语音识别:请允许使用麦克风,并打开“设置” › “隐私和安全性” › “语音” › “联机语音识别”。打开后长按将用于语音输入;关闭后恢复为新聊天。</value></data>
+  <data name="Set_Hotkey" xml:space="preserve"><value>额外热键</value></data>
+  <data name="Set_Hotkey_Desc" xml:space="preserve"><value>也可打开 Hotline,例如 Ctrl+Alt+H。留空表示不使用。</value></data>
+  <data name="Set_Hotkey_Invalid" xml:space="preserve"><value>热键无效(示例:Ctrl+Alt+H)</value></data>
+  <data name="Set_HideOnBlur" xml:space="preserve"><value>点击其他位置时隐藏</value></data>
+  <data name="Set_HideOnBlur_Desc" xml:space="preserve"><value>固定面板(📌)可让它暂时保持打开。</value></data>
+  <data name="Set_OnTop" xml:space="preserve"><value>置于其他窗口之上</value></data>
+  <data name="Set_Theme" xml:space="preserve"><value>主题</value></data>
+  <data name="Set_Theme_System" xml:space="preserve"><value>使用 Windows 设置</value></data>
+  <data name="Set_Theme_Light" xml:space="preserve"><value>浅色</value></data>
+  <data name="Set_Theme_Dark" xml:space="preserve"><value>深色</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>主题色</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>链接、你的消息和“发送”按钮。</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Hotline 紫</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>使用 Windows 主题色</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>自定义</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>自定义主题色</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>例如 #E81123 的颜色,在主题色为“自定义”时使用。</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>请使用 #RRGGBB 格式,例如 #E81123。</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Windows 对比度主题已开启:Hotline 使用其颜色和不透明背景。</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Windows 中的透明效果已关闭,因此 Hotline 使用不透明背景。</value></data>
+  <data name="Set_Backdrop" xml:space="preserve"><value>背景</value></data>
+  <data name="Set_Backdrop_Desc" xml:space="preserve"><value>亚克力为半透明;纯色为不透明。</value></data>
+  <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>亚克力</value></data>
+  <data name="Set_Backdrop_AcrylicThin" xml:space="preserve"><value>亚克力(薄)</value></data>
+  <data name="Set_Backdrop_Mica" xml:space="preserve"><value>云母</value></data>
+  <data name="Set_Backdrop_Solid" xml:space="preserve"><value>纯色</value></data>
+  <data name="Set_Tint" xml:space="preserve"><value>亚克力色调</value></data>
+  <data name="Set_Tint_Desc" xml:space="preserve"><value>0 = 透明,1 = 浓重色调。</value></data>
+  <data name="Set_Luminosity" xml:space="preserve"><value>亚克力亮度</value></data>
+  <data name="Set_Luminosity_Desc" xml:space="preserve"><value>越低越透明。</value></data>
+  <data name="Set_TextSize" xml:space="preserve"><value>文本大小</value></data>
+  <data name="Set_TextSize_Desc" xml:space="preserve"><value>默认跟随 Windows(“设置” › “辅助功能” › “文本大小”)。</value></data>
+  <data name="Set_Font" xml:space="preserve"><value>字体</value></data>
+  <data name="Set_Font_Desc" xml:space="preserve"><value>任何已安装的字体,例如 Cascadia Code。留空 = Segoe UI Variable。</value></data>
+  <data name="Set_Scrollbar" xml:space="preserve"><value>滚动条</value></data>
+  <data name="Set_Scrollbar_Auto" xml:space="preserve"><value>滚动时显示</value></data>
+  <data name="Set_Scrollbar_Always" xml:space="preserve"><value>始终显示</value></data>
+  <data name="Set_Scrollbar_Never" xml:space="preserve"><value>从不显示</value></data>
+  <data name="Set_Width" xml:space="preserve"><value>宽度</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>占屏幕宽度的比例。</value></data>
+  <data name="Set_MinWidth" xml:space="preserve"><value>最小宽度</value></data>
+  <data name="Set_MaxWidth" xml:space="preserve"><value>最大宽度</value></data>
+  <data name="Set_MinHeight" xml:space="preserve"><value>最小高度</value></data>
+  <data name="Set_MinHeight_Desc" xml:space="preserve"><value>0 = 仅消息栏;面板会随着你输入和聊天向上增长。</value></data>
+  <data name="Set_MaxHeight" xml:space="preserve"><value>最大高度</value></data>
+  <data name="Set_MaxHeight_Desc" xml:space="preserve"><value>最多可占用屏幕的多少。</value></data>
+  <data name="Set_Position" xml:space="preserve"><value>垂直位置</value></data>
+  <data name="Set_Position_Desc" xml:space="preserve"><value>0 = 顶部,0.5 = 居中,1 = 底部。</value></data>
+  <data name="Set_Growth" xml:space="preserve"><value>增长方式</value></data>
+  <data name="Set_Growth_Fit" xml:space="preserve"><value>适应对话</value></data>
+  <data name="Set_Growth_Full" xml:space="preserve"><value>直接展开至最大高度</value></data>
+  <data name="Set_History" xml:space="preserve"><value>保存聊天记录</value></data>
+  <data name="Set_History_Desc" xml:space="preserve"><value>仅文本,保存在你的 .hotline 文件夹中。</value></data>
+  <data name="Set_NotifyDone" xml:space="preserve"><value>回答在后台完成时通知</value></data>
+  <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>面板隐藏或其他应用在前台时,回答完成后显示 Windows 通知。点击即可打开回答。</value></data>
+  <data name="Notify_Answered" xml:space="preserve"><value>{0} 已回答</value></data>
+  <data name="Notify_Failed" xml:space="preserve"><value>{0} 无法完成回答</value></data>
+  <data name="Set_Retention" xml:space="preserve"><value>聊天记录保留时间</value></data>
+  <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>
+  <data name="Set_Selection" xml:space="preserve"><value>附加所选文本</value></data>
+  <data name="Set_Selection_Desc" xml:space="preserve"><value>用该键打开面板时,会附加你之前所在应用中选中的文本。对于不共享选区的应用,Ctrl+C 也可使用,但会短暂占用剪贴板(之后恢复)。</value></data>
+  <data name="Set_Selection_Auto" xml:space="preserve"><value>是</value></data>
+  <data name="Set_Selection_Clipboard" xml:space="preserve"><value>是,也使用 Ctrl+C</value></data>
+  <data name="Set_Selection_Off" xml:space="preserve"><value>否</value></data>
+  <data name="Set_Stop" xml:space="preserve"><value>停止回答</value></data>
+  <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答生成过程中将其停止的按键(Enter 从不停止;“发送”按钮也可停止)。单个键(Esc)或组合键,如 Ctrl+. —— 没有回答在进行时,Esc 会隐藏面板。</value></data>
+  <data name="Set_Stop_Invalid" xml:space="preserve"><value>快捷键无效(示例:Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
+  <data name="Set_Memory" xml:space="preserve"><value>记忆</value></data>
+  <data name="Set_Memory_Desc" xml:space="preserve"><value>每个聊天都会读取 .hotline 文件夹中的 memory.md(“/remember 某事”会添加一行)。</value></data>
+  <data name="Set_MemoryTool" xml:space="preserve"><value>允许 AI 保存记忆</value></data>
+  <data name="Set_MemoryTool_Desc" xml:space="preserve"><value>当你要求 API 连接记住某事时,它们可以保存一条信息。</value></data>
+  <data name="Set_MemoryTool_Ask" xml:space="preserve"><value>每次询问</value></data>
+  <data name="Set_MemoryTool_Allow" xml:space="preserve"><value>是,不询问</value></data>
+  <data name="Set_MemoryTool_Off" xml:space="preserve"><value>否</value></data>
+  <data name="Set_VoiceSend" xml:space="preserve"><value>听写后发送</value></data>
+  <data name="Set_VoiceSend_Desc" xml:space="preserve"><value>按键操作为“语音”时:松开按键即发送消息。</value></data>
+  <data name="Set_Ocr" xml:space="preserve"><value>截图文字(OCR)</value></data>
+  <data name="Set_Ocr_Desc" xml:space="preserve"><value>对于无法查看图像的模型,Windows 会(离线)读取图像中的文字。</value></data>
+  <data name="Set_Ocr_Auto" xml:space="preserve"><value>仅用于纯文本模型</value></data>
+  <data name="Set_Ocr_Always" xml:space="preserve"><value>始终添加</value></data>
+  <data name="Set_Ocr_Off" xml:space="preserve"><value>关闭</value></data>
+  <data name="Set_ImageSize" xml:space="preserve"><value>图像大小上限</value></data>
+  <data name="Set_ImageSize_Desc" xml:space="preserve"><value>附加和截取的图像会缩放到此最长边。</value></data>
+  <data name="Set_Logging" xml:space="preserve"><value>详细日志</value></data>
+  <data name="Set_Logging_Desc" xml:space="preserve"><value>向日志写入更多诊断信息。</value></data>
+  <data name="Settings_Title" xml:space="preserve"><value>Hotline 设置</value></data>
+  <data name="Nav_General" xml:space="preserve"><value>常规</value></data>
+  <data name="Nav_Connections" xml:space="preserve"><value>AI 连接</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>提示词</value></data>
+  <data name="Nav_Actions" xml:space="preserve"><value>快速操作</value></data>
+  <data name="Nav_Appearance" xml:space="preserve"><value>外观</value></data>
+  <data name="Nav_Window" xml:space="preserve"><value>窗口</value></data>
+  <data name="Nav_Chat" xml:space="preserve"><value>聊天和记录</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>工具</value></data>
+  <data name="Nav_Advanced" xml:space="preserve"><value>高级</value></data>
+  <data name="Nav_About" xml:space="preserve"><value>关于</value></data>
+  <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(重启 Hotline 后生效。)</value></data>
+  <data name="Settings_InvalidValue" xml:space="preserve"><value>值无效</value></data>
+  <data name="Settings_Startup" xml:space="preserve"><value>随 Windows 启动</value></data>
+  <data name="Tools_Intro" xml:space="preserve"><value>“工具使用”设为“使用 Hotline 的工具”的 API 连接可以调用这些 MCP 服务器的工具。只读工具会直接运行;其他操作会在面板中询问你(允许一次 / 始终 / 拒绝)。</value></data>
+  <data name="Tools_Servers" xml:space="preserve"><value>MCP 服务器</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} —— 与其他 MCP 应用相同的“mcpServers”格式;授权保存在同一文件中</value></data>
+  <data name="Tools_EditMcp" xml:space="preserve"><value>编辑 mcp.json</value></data>
+  <data name="Common_OpenFolder" xml:space="preserve"><value>打开文件夹</value></data>
+  <data name="Tools_Odr" xml:space="preserve"><value>Windows 代理注册表</value></data>
+  <data name="Tools_Odr_Missing" xml:space="preserve"><value>此 Windows 不可用(需要内部版本 26220.7262 或更高版本)。其内置连接器会自动显示在这里。</value></data>
+  <data name="Tools_Odr_Available" xml:space="preserve"><value>可用({0})。其连接器在下方显示为 windows-…</value></data>
+  <data name="Tools_NoneChecked" xml:space="preserve"><value>尚未检查任何服务器。请将服务器添加到 mcp.json,然后点击“检查服务器”。</value></data>
+  <data name="Tools_Ready" xml:space="preserve"><value>就绪 —— {0} 个工具</value></data>
+  <data name="Tools_Failed" xml:space="preserve"><value>失败:{0}</value></data>
+  <data name="Tools_Disabled" xml:space="preserve"><value>已在 mcp.json 中禁用</value></data>
+  <data name="Tools_Check" xml:space="preserve"><value>检查服务器</value></data>
+  <data name="Advanced_SettingsFile" xml:space="preserve"><value>设置文件</value></data>
+  <data name="Advanced_EditSettings" xml:space="preserve"><value>编辑 settings.json</value></data>
+  <data name="Advanced_Connections_Desc" xml:space="preserve"><value>{0} —— 每个连接一个文件;settings.json 中的“chat.order”决定列表顺序</value></data>
+  <data name="Advanced_OpenConnections" xml:space="preserve"><value>打开连接文件夹</value></data>
+  <data name="Advanced_Logs" xml:space="preserve"><value>日志</value></data>
+  <data name="Advanced_OpenLogs" xml:space="preserve"><value>打开日志文件夹</value></data>
+  <data name="Prompts_Intro" xml:space="preserve"><value>系统提示词是 Markdown 文件。未单独选择提示词的连接都会使用默认提示词。</value></data>
+  <data name="Common_Edit" xml:space="preserve"><value>编辑</value></data>
+  <data name="Prompts_MakeDefault" xml:space="preserve"><value>设为默认</value></data>
+  <data name="Common_Delete" xml:space="preserve"><value>删除</value></data>
+  <data name="Prompts_Default" xml:space="preserve"><value>默认提示词</value></data>
+  <data name="Prompts_New" xml:space="preserve"><value>新建提示词</value></data>
+  <data name="Prompts_OpenFolder" xml:space="preserve"><value>打开提示词文件夹</value></data>
+  <data name="Conn_Add" xml:space="preserve"><value>添加连接</value></data>
+  <data name="Conn_Duplicate" xml:space="preserve"><value>复制</value></data>
+  <data name="Common_Remove" xml:space="preserve"><value>移除</value></data>
+  <data name="Common_Cancel" xml:space="preserve"><value>取消</value></data>
+  <data name="Conn_RemoveTitle" xml:space="preserve"><value>要移除此连接吗?</value></data>
+  <data name="Conn_UseByDefault" xml:space="preserve"><value>默认使用</value></data>
+  <data name="Conn_MoveUp" xml:space="preserve"><value>在提供方列表中上移</value></data>
+  <data name="Conn_MoveDown" xml:space="preserve"><value>在提供方列表中下移</value></data>
+  <data name="Conn_DefaultSuffix" xml:space="preserve"><value>{0} · 默认</value></data>
+  <data name="Agy_ReadFailed" xml:space="preserve"><value>暂时无法读取 agy 的设置。</value></data>
+  <data name="Agy_Summary" xml:space="preserve"><value>agy 规则:允许 {0} 条,拒绝 {1} 条。默认允许读取工作文件夹中的文件;shell 命令需要允许规则。</value></data>
+  <data name="Agy_AllowReadOnly" xml:space="preserve"><value>允许只读命令</value></data>
+  <data name="Agy_AllowReadOnly_Tip" xml:space="preserve"><value>将 command(Get-ChildItem)、command(git status) 等规则添加到 agy 的允许列表,并拒绝 Remove-Item、rm、git push 等</value></data>
+  <data name="Agy_AllowTitle" xml:space="preserve"><value>要允许 agy 使用只读 shell 命令吗?</value></data>
+  <data name="Agy_AllowBody" xml:space="preserve"><value>这会修改 agy 自己的设置({0}),因此你自己使用 agy 时也会生效。
+
+允许:
+{1}
+
+拒绝:
+{2}</value></data>
+  <data name="Agy_AddRules" xml:space="preserve"><value>添加规则</value></data>
+  <data name="Agy_EditFailed" xml:space="preserve"><value>无法修改 agy 的设置:{0}</value></data>
+  <data name="Agy_EditRules" xml:space="preserve"><value>编辑 agy 规则</value></data>
+  <data name="Agy_Permissions" xml:space="preserve"><value>agy 权限</value></data>
+  <data name="Agy_ApproveAllTitle" xml:space="preserve"><value>要批准所有操作吗?(危险)</value></data>
+  <data name="Conn_ApproveAllBody" xml:space="preserve"><value>{0} 将不经询问运行它决定的任何 shell 命令,并编辑或删除任何文件。错误的回答或恶意网页、文件都可能造成实际损害。仅在可以承受丢失的工作文件夹中使用此功能。</value></data>
+  <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>我了解,打开</value></data>
+  <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ 批准所有操作(危险)</value></data>
+  <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>跳过 {0} 的所有权限检查。仅限“使用程序自己的工具”模式。</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>名称</value></data>
+  <data name="Conn_Endpoint" xml:space="preserve"><value>终结点</value></data>
+  <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API 的基础 URL。</value></data>
+  <data name="Conn_KeySaved" xml:space="preserve"><value>已保存;输入可替换</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>可选</value></data>
+  <data name="Conn_Required" xml:space="preserve"><value>必填</value></data>
+  <data name="Conn_KeySaveFailed" xml:space="preserve"><value>无法保存密钥</value></data>
+  <data name="Conn_ApiKey" xml:space="preserve"><value>API 密钥</value></data>
+  <data name="Conn_ApiKey_Desc" xml:space="preserve"><value>存储在 Windows 凭据管理器中,而不是 settings.json 中。</value></data>
+  <data name="Conn_ProgramPath" xml:space="preserve"><value>程序路径</value></data>
+  <data name="Conn_ProgramPath_Desc" xml:space="preserve"><value>留空以自动查找。</value></data>
+  <data name="Conn_AutoDetect" xml:space="preserve"><value>自动检测</value></data>
+  <data name="Conn_AgyAgent" xml:space="preserve"><value>agy 代理</value></data>
+  <data name="Conn_AgyAgent_Desc" xml:space="preserve"><value>在仅聊天模式中使用。</value></data>
+  <data name="Conn_ExtraArgs" xml:space="preserve"><value>额外参数</value></data>
+  <data name="Conn_ExtraArgs_Desc" xml:space="preserve"><value>按原样传给程序(以空格分隔)。</value></data>
+  <data name="Conn_ChatOnly" xml:space="preserve"><value>仅聊天</value></data>
+  <data name="Conn_UseHotlineTools" xml:space="preserve"><value>使用 Hotline 的工具(MCP)</value></data>
+  <data name="Conn_ToolUse" xml:space="preserve"><value>工具使用</value></data>
+  <data name="Conn_ToolUse_ApiDesc" xml:space="preserve"><value>允许此 AI 使用你的 MCP 服务器中的工具(“设置” › “工具”)。只读工具会直接运行;其他操作会先在面板中询问你。</value></data>
+  <data name="Conn_ChatOnlyCli" xml:space="preserve"><value>仅聊天(可读取你的附件)</value></data>
+  <data name="Conn_UseOwnTools" xml:space="preserve"><value>使用程序自己的工具和权限</value></data>
+  <data name="Common_Browse" xml:space="preserve"><value>浏览…</value></data>
+  <data name="Conn_ToolUse_CliDesc" xml:space="preserve"><value>“继承”模式让程序按其自身的权限规则运行工具(文件、命令、网络)。</value></data>
+  <data name="Conn_WorkingFolder" xml:space="preserve"><value>工作文件夹</value></data>
+  <data name="Conn_WorkingFolder_Desc" xml:space="preserve"><value>“继承”模式下程序工具的操作位置。</value></data>
+  <data name="Conn_RefusalFallback" xml:space="preserve"><value>拒绝时的备用模型</value></data>
+  <data name="Conn_RefusalFallback_Desc" xml:space="preserve"><value>如果安全检查拒绝请求,API 会改用合适的模型重新回答,而不是停止(Fable 5.1、Opus 5.5、Opus 5、Sonnet 5.5)。</value></data>
+  <data name="Conn_Images" xml:space="preserve"><value>模型可读取图像</value></data>
+  <data name="Conn_Images_Desc" xml:space="preserve"><value>关闭:截图以其中的文字发送(“设置” › “聊天” › “截图文字”)。</value></data>
+  <data name="Conn_DefaultPrompt" xml:space="preserve"><value>默认({0})</value></data>
+  <data name="Conn_SystemPrompt" xml:space="preserve"><value>系统提示词</value></data>
+  <data name="Common_Default" xml:space="preserve"><value>默认</value></data>
+  <data name="Conn_DefaultModel" xml:space="preserve"><value>默认模型</value></data>
+  <data name="Conn_DefaultEffort" xml:space="preserve"><value>默认推理强度</value></data>
+  <data name="Conn_Test" xml:space="preserve"><value>测试连接</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>最低</value></data>
+  <data name="Effort_low" xml:space="preserve"><value>低</value></data>
+  <data name="Effort_medium" xml:space="preserve"><value>中</value></data>
+  <data name="Effort_high" xml:space="preserve"><value>高</value></data>
+  <data name="Effort_xhigh" xml:space="preserve"><value>极高</value></data>
+  <data name="Effort_max" xml:space="preserve"><value>最高</value></data>
+  <data name="Bar_pin" xml:space="preserve"><value>固定</value></data>
+  <data name="Bar_captureWindow" xml:space="preserve"><value>截取窗口</value></data>
+  <data name="Bar_captureScreen" xml:space="preserve"><value>截取屏幕</value></data>
+  <data name="Bar_captureRegion" xml:space="preserve"><value>截取区域</value></data>
+  <data name="Bar_spacer" xml:space="preserve"><value>间隔</value></data>
+  <data name="Bar_effort" xml:space="preserve"><value>推理强度选择器</value></data>
+  <data name="Bar_model" xml:space="preserve"><value>模型选择器</value></data>
+  <data name="Bar_provider" xml:space="preserve"><value>提供方选择器</value></data>
+  <data name="Bar_prompt" xml:space="preserve"><value>提示词选择器</value></data>
+  <data name="Bar_recent" xml:space="preserve"><value>最近聊天</value></data>
+  <data name="Bar_newChat" xml:space="preserve"><value>新聊天</value></data>
+  <data name="Bar_settings" xml:space="preserve"><value>设置</value></data>
+  <data name="Bar_Title" xml:space="preserve"><value>底部栏</value></data>
+  <data name="Bar_FileError" xml:space="preserve"><value>toolbar.json 有错误</value></data>
+  <data name="Bar_FileError_Desc" xml:space="preserve"><value>{0} 请修复该文件,或重置底部栏。</value></data>
+  <data name="Bar_MoveLeft" xml:space="preserve"><value>左移</value></data>
+  <data name="Bar_MoveRight" xml:space="preserve"><value>右移</value></data>
+  <data name="Bar_Remove" xml:space="preserve"><value>从底部栏移除</value></data>
+  <data name="Bar_Add" xml:space="preserve"><value>添加到底部栏</value></data>
+  <data name="Bar_Reset" xml:space="preserve"><value>重置底部栏</value></data>
+  <data name="About_DevBuild" xml:space="preserve"><value>开发版本</value></data>
+  <data name="About_Intro" xml:space="preserve"><value>Hotline {0} —— Copilot 键上的 AI 助手。免费且开源(Apache-2.0)。</value></data>
+  <data name="About_Support" xml:space="preserve"><value>支持 Hotline</value></data>
+  <data name="About_Support_Desc" xml:space="preserve"><value>Hotline 由一个人开发,没有广告,也不跟踪你。如果它为你节省了时间,捐助可以让它继续下去。</value></data>
+  <data name="About_SupportReminder" xml:space="preserve"><value>捐助提醒</value></data>
+  <data name="About_SupportReminder_Desc" xml:space="preserve"><value>在回答之后下次打开面板时,于面板顶部显示一次“喜欢 Hotline 吗?”。之后会自动关闭;可在此重新开启。</value></data>
+  <data name="About_Project" xml:space="preserve"><value>项目</value></data>
+  <data name="About_Project_Desc" xml:space="preserve"><value>源代码、版本发布,以及报告问题或请求功能的地方。</value></data>
+  <data name="About_ReportProblem" xml:space="preserve"><value>报告问题</value></data>
+  <data name="About_Checking" xml:space="preserve"><value>正在检查…</value></data>
+  <data name="About_ThisPc" xml:space="preserve"><value>此电脑</value></data>
+  <data name="About_License" xml:space="preserve"><value>许可证</value></data>
+  <data name="About_License_Desc" xml:space="preserve"><value>Apache-2.0,以及 Hotline 所用组件的许可证。</value></data>
+  <data name="About_ThirdParty" xml:space="preserve"><value>第三方声明</value></data>
+  <data name="About_CheckFailed" xml:space="preserve"><value>无法检查此电脑。</value></data>
+  <data name="Memory_Edit" xml:space="preserve"><value>编辑记忆</value></data>
+  <data name="Memory_Empty" xml:space="preserve"><value>为空。在消息框中输入“/remember 某事”可添加一行。</value></data>
+  <data name="Memory_Lines" xml:space="preserve"><value>{0} 行。记忆打开时,每个聊天都会读取它们。</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>在消息开头输入 / 来使用:“/translate 某段文字”,或附上文件后输入“/summarize”。每个操作是一个 Markdown 文件;其第一行是列表中显示的说明。名称可以使用字母、数字、- 和 _。</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>新建操作</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>打开操作文件夹</value></data>
+  <data name="Pc_Build" xml:space="preserve"><value>内部版本 {0}</value></data>
+  <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} 种 OCR 语言</value></data>
+  <data name="Pc_OcrMissing" xml:space="preserve"><value>没有 OCR 语言:“设置” › “时间和语言” › “语言和区域” › 添加带有光学字符识别的语言</value></data>
+  <data name="Pc_VoiceOk" xml:space="preserve"><value>Windows 听写可用</value></data>
+  <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} —— “设置” › “隐私和安全性” › “语音” › “联机语音识别”,以及麦克风</value></data>
+  <data name="Pc_Agents" xml:space="preserve"><value>Windows 代理连接器</value></data>
+  <data name="Pc_AgentsOk" xml:space="preserve"><value>已找到 odr.exe;其连接器显示为 windows-… 工具服务器</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>未找到 odr.exe(此电脑尚未启用)</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>需要 Windows 内部版本 26220.7262 或更高版本(例如 26H2)</value></data>
+  <data name="Pc_Actions" xml:space="preserve"><value>应用操作(Click to Do)</value></data>
+  <data name="Pc_ActionsOk" xml:space="preserve"><value>已注册;Click to Do 本身需要 Copilot+ PC</value></data>
+  <data name="Pc_ActionsBuild" xml:space="preserve"><value>需要 Windows 11 24H2(内部版本 26100)或更高版本</value></data>
+  <data name="Startup_On" xml:space="preserve"><value>开 —— 登录时 Hotline 会在通知区域中启动。</value></data>
+  <data name="Startup_OffByUser" xml:space="preserve"><value>关(已在 Windows “设置” › “应用” › “启动”中关闭)。请在那里打开 Hotline。</value></data>
+  <data name="Startup_OffByPolicy" xml:space="preserve"><value>关(被你所在组织的策略阻止)。</value></data>
+  <data name="Startup_Off" xml:space="preserve"><value>关。</value></data>
+  <data name="Startup_Unavailable" xml:space="preserve"><value>此版本中不可用。</value></data>
+  <data name="Memory_Saved" xml:space="preserve"><value>已保存到记忆:“{0}”(“设置” › “聊天和记录” › “编辑记忆”)</value></data>
+  <data name="Agy_NotInstalled" xml:space="preserve"><value>未安装 Antigravity CLI(agy)。</value></data>
+  <data name="Tray_Open" xml:space="preserve"><value>打开 Hotline</value></data>
+  <data name="Tray_Settings" xml:space="preserve"><value>设置…</value></data>
+  <data name="Tray_Restart" xml:space="preserve"><value>重启(应用设置)</value></data>
+  <data name="Tray_Quit" xml:space="preserve"><value>退出</value></data>
+  <data name="Region_Hint" xml:space="preserve"><value>拖动以截取区域  ·  按 Esc 取消</value></data>
+  <data name="Attach_WindowGone" xml:space="preserve"><value>该窗口不可用(已关闭或最小化),因此截取了整个屏幕。</value></data>
+  <data name="Attach_DropCaption" xml:space="preserve"><value>附加到 Hotline</value></data>
+  <data name="Attach_NoFolders" xml:space="preserve"><value>无法附加文件夹({0})。</value></data>
+  <data name="Attach_TooLarge" xml:space="preserve"><value>{0} 太大({1} MB;上限 {2} MB)。</value></data>
+  <data name="Attach_Unreadable" xml:space="preserve"><value>无法读取 {0}。</value></data>
+  <data name="Attach_NotImage" xml:space="preserve"><value>无法将 {0} 作为图像读取。</value></data>
+  <data name="Attach_NoOcr" xml:space="preserve"><value>Windows 未安装 OCR 语言,因此无法读取图像中的文字。请在“设置” › “时间和语言” › “语言和区域”中添加一种(带有“光学字符识别”的语言)。</value></data>
+  <data name="Attach_OcrFailed" xml:space="preserve"><value>无法读取 {0} 中的文字。</value></data>
+  <data name="Attach_CopyImage" xml:space="preserve"><value>复制图像</value></data>
+  <data name="Attach_ImageCopied" xml:space="preserve"><value>已复制图像。</value></data>
+  <data name="Chat_StillAnswering" xml:space="preserve"><value>仍在回答。{0} 或“停止”按钮可将其停止;你的消息会留在输入框中。</value></data>
+  <data name="Chat_RememberWhat" xml:space="preserve"><value>请在 /remember 后输入要记住的内容,例如“/remember 我更喜欢公制单位”。</value></data>
+  <data name="Chat_Remembered" xml:space="preserve"><value>已记住。从现在起每个聊天都会看到它(在“设置” › “聊天和记录” › “记忆”中编辑)。</value></data>
+  <data name="Chat_NotRemembered" xml:space="preserve"><value>未保存:请控制在一行,最多 {0} 个字符。</value></data>
+  <data name="Chat_ActionNeedsText" xml:space="preserve"><value>请在 /{0} 后输入文字,或附加一些内容。</value></data>
+  <data name="Chat_FolderFailed" xml:space="preserve"><value>无法打开设置文件夹({0}):{1}</value></data>
+  <data name="Composer_Stop" xml:space="preserve"><value>停止</value></data>
+  <data name="Composer_Send" xml:space="preserve"><value>发送(Enter)</value></data>
+  <data name="Welcome_Title" xml:space="preserve"><value>欢迎使用 Hotline</value></data>
+  <data name="Welcome_Body" xml:space="preserve"><value>你发送的内容——消息、附件,以及你在之前应用中选中的文本(显示为可移除的标签)——只会发送到你选择的 AI 连接。提示:输入 / 使用快速操作,输入 /remember 保存笔记。</value></data>
+  <data name="Welcome_WhatsSent" xml:space="preserve"><value>会发送什么</value></data>
+  <data name="SupportNote_Title" xml:space="preserve"><value>喜欢 Hotline 吗?</value></data>
+  <data name="SupportNote_Body" xml:space="preserve"><value>它免费且开源,由一个人开发。如果它对你有帮助,捐助能让它持续下去。此提示只显示一次(可在“设置 › 关于”中重新开启)。</value></data>
+  <data name="Common_Copy" xml:space="preserve"><value>复制</value></data>
+  <data name="Md_CopyCode" xml:space="preserve"><value>复制代码</value></data>
+  <data name="Md_Code" xml:space="preserve"><value>代码</value></data>
+  <data name="Md_CopyTable" xml:space="preserve"><value>复制表格</value></data>
+  <data name="Md_CopyTable_Tip" xml:space="preserve"><value>复制表格(可粘贴到电子表格中)</value></data>
+  <data name="Md_Drawing" xml:space="preserve"><value>正在绘制图像…</value></data>
+  <data name="Md_UnsafeDrawing" xml:space="preserve"><value>(无法安全显示的图形)</value></data>
+  <data name="Md_OpenImage" xml:space="preserve"><value>打开图像</value></data>
+  <data name="Md_OpenImage_Tip" xml:space="preserve"><value>在默认查看器中打开完整图形(含标签)</value></data>
+  <data name="Tool_AllowTitle" xml:space="preserve"><value>允许 {0} › {1}?</value></data>
+  <data name="Tool_AllowOnce" xml:space="preserve"><value>允许一次</value></data>
+  <data name="Tool_AllowAlways" xml:space="preserve"><value>始终允许</value></data>
+  <data name="Tool_Deny" xml:space="preserve"><value>拒绝</value></data>
+  <data name="Effort_NA" xml:space="preserve"><value>不适用</value></data>
+  <data name="Bar_EffortTip" xml:space="preserve"><value>推理强度</value></data>
+  <data name="Bar_NotYet" xml:space="preserve"><value>可以在“设置”中设置 {0},但与其聊天的功能会在以后的更新中推出。</value></data>
+  <data name="Bar_PromptChosen" xml:space="preserve"><value>系统提示词:{0}(从下一条消息起生效)</value></data>
+  <data name="Bar_EditPrompt" xml:space="preserve"><value>编辑“{0}”…</value></data>
+  <data name="Bar_NewPrompt" xml:space="preserve"><value>新建提示词…</value></data>
+  <data name="Recent_Busy" xml:space="preserve"><value>请先等待回答完成(或将其停止)。</value></data>
+  <data name="Recent_OpenFailed" xml:space="preserve"><value>无法打开该对话。</value></data>
+  <data name="Recent_HistoryOff" xml:space="preserve"><value>聊天记录已关闭</value></data>
+  <data name="Recent_None" xml:space="preserve"><value>还没有保存的聊天</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>没有标题中含有“{0}”的最近聊天。</value></data>
+  <data name="Recent_Tip" xml:space="preserve"><value>{0} 条消息,最后一条:{1:g}</value></data>
+  <data name="Recent_OpenFolder" xml:space="preserve"><value>打开记录文件夹</value></data>
+  <data name="Recent_JustNow" xml:space="preserve"><value>刚刚</value></data>
+  <data name="Recent_MinutesAgo" xml:space="preserve"><value>{0} 分钟前</value></data>
+  <data name="Recent_HoursAgo" xml:space="preserve"><value>{0} 小时前</value></data>
+  <data name="Recent_DaysAgo" xml:space="preserve"><value>{0} 天前</value></data>
+  <data name="Transcript_You" xml:space="preserve"><value>你</value></data>
+  <data name="Transcript_CopyResponse" xml:space="preserve"><value>复制回答</value></data>
+  <data name="Transcript_Retry" xml:space="preserve"><value>重试</value></data>
+  <data name="Transcript_Copied" xml:space="preserve"><value>已复制。</value></data>
+  <data name="Transcript_ClipboardBusy" xml:space="preserve"><value>剪贴板正忙,请重试。</value></data>
+  <data name="Transcript_Report" xml:space="preserve"><value>向 {0} 举报此回答…</value></data>
+  <data name="Transcript_More" xml:space="preserve"><value>更多</value></data>
+  <data name="Task_Failed" xml:space="preserve"><value>操作失败:{0}</value></data>
+  <data name="Voice_HintHold" xml:space="preserve"><value>松开按键即停止。Esc 取消。</value></data>
+  <data name="Voice_HintTap" xml:space="preserve"><value>再按一次按键即停止。Esc 取消。</value></data>
+  <data name="Voice_Starting" xml:space="preserve"><value>🎙 正在启动麦克风…</value></data>
+  <data name="Voice_Listening" xml:space="preserve"><value>🎙 正在聆听…</value></data>
+  <data name="Voice_NoMic" xml:space="preserve"><value>没有可用的麦克风。</value></data>
+  <data name="Voice_Stopped" xml:space="preserve"><value>语音输入已停止({0})。</value></data>
+  <data name="Voice_NeedsOnline" xml:space="preserve"><value>语音输入需要 Windows 联机语音识别。</value></data>
+  <data name="Voice_TurnOn" xml:space="preserve"><value>打开</value></data>
+  <data name="Voice_MicDenied" xml:space="preserve"><value>Hotline 无权使用麦克风。</value></data>
+  <data name="Voice_MicSettings" xml:space="preserve"><value>麦克风设置</value></data>
+  <data name="Voice_StartFailed" xml:space="preserve"><value>无法启动语音输入:{0}</value></data>
+  <data name="Voice_LanguageUnsupported" xml:space="preserve"><value>语音识别不支持以你的 Windows 显示语言进行听写。</value></data>
+  <data name="Voice_Unavailable" xml:space="preserve"><value>语音识别不可用({0})。</value></data>
+  <data name="Popup_JumpLatest" xml:space="preserve"><value>跳到最新消息</value></data>
+  <data name="Popup_AddMenu" xml:space="preserve"><value>添加文件或截图</value></data>
+  <data name="Popup_AttachFiles" xml:space="preserve"><value>附加文件…</value></data>
+  <data name="Popup_Pin" xml:space="preserve"><value>保持固定(点击其他位置时仍保持打开,方便你拖入文件)</value></data>
+  <data name="Popup_CaptureWindow" xml:space="preserve"><value>截取你之前所在的窗口</value></data>
+  <data name="Popup_CaptureScreen" xml:space="preserve"><value>截取整个屏幕</value></data>
+  <data name="Popup_Model" xml:space="preserve"><value>模型(输入名称或选择一个)</value></data>
+  <data name="Popup_Provider" xml:space="preserve"><value>由谁回答</value></data>
+  <data name="Popup_Recent" xml:space="preserve"><value>最近聊天(Ctrl+向上键重新打开上一个)</value></data>
+  <data name="Popup_NewChat" xml:space="preserve"><value>新聊天(Ctrl+N)</value></data>
+  <data name="Type_Agy" xml:space="preserve"><value>Antigravity CLI(agy)</value></data>
+  <data name="Type_Agy_Desc" xml:space="preserve"><value>你已安装的 agy 及其 Google 登录。</value></data>
+  <data name="Type_ClaudeCode" xml:space="preserve"><value>Claude Code CLI</value></data>
+  <data name="Type_ClaudeCode_Desc" xml:space="preserve"><value>你已安装的 claude 及其登录(你的 Claude 套餐)。</value></data>
+  <data name="Type_Gemini" xml:space="preserve"><value>Gemini API</value></data>
+  <data name="Type_Gemini_Desc" xml:space="preserve"><value>Google AI Studio API 密钥。</value></data>
+  <data name="Type_Anthropic" xml:space="preserve"><value>Anthropic API</value></data>
+  <data name="Type_Anthropic_Desc" xml:space="preserve"><value>Anthropic Console API 密钥。默认模型:Claude Opus 5.5。</value></data>
+  <data name="Type_OpenAi" xml:space="preserve"><value>OpenAI 兼容 API</value></data>
+  <data name="Type_OpenAi_Desc" xml:space="preserve"><value>OpenAI、OpenRouter、Groq 及其他 OpenAI 风格的 API。</value></data>
+  <data name="Type_Local" xml:space="preserve"><value>本地终结点</value></data>
+  <data name="Type_Local_Desc" xml:space="preserve"><value>llama.cpp 服务器、LM Studio 及其他本地 OpenAI 风格服务器。</value></data>
+  <data name="Models_BadFormat" xml:space="preserve"><value>服务器的模型列表格式不符合预期。</value></data>
+  <data name="Models_One" xml:space="preserve"><value>1 个模型</value></data>
+  <data name="Models_Many" xml:space="preserve"><value>{0} 个模型</value></data>
+  <data name="Models_Connected" xml:space="preserve"><value>已连接:{0}。</value></data>
+  <data name="Models_Including" xml:space="preserve"><value>已连接:{0},包括 {1}。</value></data>
+  <data name="Models_NotIncluded" xml:space="preserve"><value>已连接:{0},但其中没有 {1}。</value></data>
+  <data name="Models_NeedKey" xml:space="preserve"><value>请先为 {0} 添加 API 密钥。</value></data>
+  <data name="Models_KeyRejected" xml:space="preserve"><value>{0} 拒绝了 API 密钥。</value></data>
+  <data name="Models_HttpError" xml:space="preserve"><value>{0} 返回 {1}。</value></data>
+  <data name="Api_Unreachable" xml:space="preserve"><value>无法访问 {0}:{1}</value></data>
+  <data name="Api_Timeout" xml:space="preserve"><value>{0} 未及时回应。</value></data>
+  <data name="Api_NeedKey" xml:space="preserve"><value>请在“设置” › “AI 连接”中为 {0} 添加 API 密钥。</value></data>
+  <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} 的终结点不是有效的 http(s) 地址:{1}</value></data>
+  <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} 已达到速率限制,{1} 秒后重试…</value></data>
+  <data name="Api_RetryBusy" xml:space="preserve"><value>{0} 繁忙,{1} 秒后重试…</value></data>
+  <data name="Api_KeyRejected" xml:space="preserve"><value>{0} 拒绝了 API 密钥。{1}</value></data>
+  <data name="Api_RateLimited" xml:space="preserve"><value>{0} 已达到速率限制或配额。{1}</value></data>
+  <data name="Api_ServerError" xml:space="preserve"><value>{0} 出现服务器错误(或负载过高)。{1}</value></data>
+  <data name="Api_Refused" xml:space="preserve"><value>{0} 拒绝回答此请求(安全拒绝)。</value></data>
+  <data name="Api_PickModel" xml:space="preserve"><value>请为 {0} 选择一个模型(“模型”下拉列表中会列出)。</value></data>
+  <data name="Api_Blocked" xml:space="preserve"><value>{0} 阻止了此请求({1})。</value></data>
+  <data name="Api_StoppedAnswer" xml:space="preserve"><value>{0} 停止了回答({1})。</value></data>
+  <data name="Api_ToolStopped" xml:space="preserve"><value>{0} 在请求工具时停止({1});未运行任何操作。</value></data>
+  <data name="Api_ToolCut" xml:space="preserve"><value>{0}:工具请求完成前连接已结束;未运行任何操作。</value></data>
+  <data name="Cli_Stopped" xml:space="preserve"><value>{0} 意外停止。</value></data>
+  <data name="Cli_NoFolder" xml:space="preserve"><value>{0} 的工作文件夹不存在:{1}。请在“设置” › “AI 连接”中另选一个。</value></data>
+  <data name="Claude_NotInstalled" xml:space="preserve"><value>未安装 Claude Code。请从 claude.com/claude-code 安装,运行一次 `claude` 登录,然后重试。</value></data>
+  <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy 未登录。请在终端中运行一次 `agy` 登录,然后重试。</value></data>
+  <data name="Agy_Quota" xml:space="preserve"><value>你的 Antigravity 配额暂时已用完。请稍后重试。</value></data>
+  <data name="Agy_NotTrusted" xml:space="preserve"><value>agy 尚未信任 Hotline 的工作区。请在终端中运行一次 `agy` 并信任它。</value></data>
+  <data name="Claude_NotSignedIn" xml:space="preserve"><value>Claude Code 未登录。请在终端中运行一次 `claude` 并登录,然后重试。</value></data>
+  <data name="Claude_Limit" xml:space="preserve"><value>暂时已达到 Claude 使用上限。{0}</value></data>
+  <data name="Claude_Overloaded" xml:space="preserve"><value>Claude 目前负载过高,请稍后重试。</value></data>
+  <data name="Attach_LargerMb" xml:space="preserve"><value>{0} 大于 {1} MB。</value></data>
+  <data name="Attach_LargerKb" xml:space="preserve"><value>{0} 大于 {1} KB。</value></data>
+  <data name="Attach_Unsupported" xml:space="preserve"><value>{0}:不支持的文件类型。</value></data>
+  <data name="Attach_Selection" xml:space="preserve"><value>所选文本</value></data>
+  <data name="Attach_SelectionFrom" xml:space="preserve"><value>来自 {0} 的所选文本</value></data>
+  <data name="Attach_TooMany" xml:space="preserve"><value>最多可以附加 {0} 个文件。</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} 中的文字</value></data>
+  <data name="Chat_NoImages" xml:space="preserve"><value>{0} 无法读取图像。</value></data>
+  <data name="Chat_NoFiles" xml:space="preserve"><value>{0} 无法读取文件。</value></data>
+  <data name="Chat_NoBackend" xml:space="preserve"><value>后端“{0}”暂不可用。</value></data>
+  <data name="Mcp_MissingKnown" xml:space="preserve"><value>未安装“{0}”,因此 {1} 服务器无法启动。请安装 {2},然后重启 Hotline。</value></data>
+  <data name="Mcp_Missing" xml:space="preserve"><value>未安装“{0}”或其不在 PATH 中,因此 {1} 服务器无法启动。请检查 mcp.json 中的“command”。</value></data>
+  <data name="Mcp_Unreadable" xml:space="preserve"><value>无法读取 mcp.json:{0}</value></data>
+  <data name="Mcp_BadApproval" xml:space="preserve"><value>授权“{0}”的值未知,因此按“deny”处理。</value></data>
+  <data name="Mcp_BadName" xml:space="preserve"><value>服务器名称不能包含“/”或“*”。</value></data>
+  <data name="Mcp_StartTimeout" xml:space="preserve"><value>未在 {0:0} 秒内启动</value></data>
+  <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 修复前不会运行任何工具。</value></data>
+  <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 继续使用最后一个正常的版本。</value></data>
+  <data name="Mcp_Exited" xml:space="preserve"><value>服务器已退出(退出代码 {0})</value></data>
+  <data name="Mcp_StartFailed" xml:space="preserve"><value>无法启动 {0}</value></data>
+  <data name="Bar_Unreadable" xml:space="preserve"><value>无法读取 toolbar.json:{0}</value></data>
+  <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy 的 settings.json 不是 JSON 对象;不做更改。</value></data>
+  <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy 的 settings.json 中的“permissions”不是对象;不做更改。</value></data>
+  <data name="Agy_ListNotList" xml:space="preserve"><value>agy 的 settings.json 中的“permissions.{0}”不是列表;不做更改。</value></data>
+  <data name="Region_Title" xml:space="preserve"><value>Hotline 区域截图</value></data>
+  <data name="Agy_NotInstalledBackend" xml:space="preserve"><value>未安装 Antigravity CLI(agy)。请从 antigravity.google/cli 安装,然后重试。</value></data>
+  <data name="Type_Codex" xml:space="preserve"><value>OpenAI Codex CLI</value></data>
+  <data name="Type_Codex_Desc" xml:space="preserve"><value>你已安装的 codex 及其登录(你的 ChatGPT 套餐或 OpenAI API 密钥)。</value></data>
+  <data name="Models_NoList" xml:space="preserve"><value>此连接不提供模型列表:保留“默认”或输入模型名称。</value></data>
+  <data name="Models_Unlisted" xml:space="preserve"><value>正在使用 {0}(此连接没有可供核对的模型列表)。</value></data>
+  <data name="Codex_NotInstalled" xml:space="preserve"><value>未安装 Codex。请安装(npm install -g @openai/codex),运行一次 `codex login` 登录,然后重试。</value></data>
+  <data name="Codex_StartFailed" xml:space="preserve"><value>无法启动 Codex({0}):{1}</value></data>
+  <data name="Codex_NotSignedIn" xml:space="preserve"><value>Codex 未登录。请在终端中运行 `codex login`,然后重试。</value></data>
+  <data name="Codex_Limit" xml:space="preserve"><value>暂时已达到 Codex 使用上限。{0}</value></data>
+  <data name="Codex_Overloaded" xml:space="preserve"><value>OpenAI 目前负载过高,请稍后重试。</value></data>
+  <data name="Codex_TurnFailed" xml:space="preserve"><value>Codex 无法完成此回答。</value></data>
+  <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex 正在重新连接…</value></data>
+  <data name="Choose_Title" xml:space="preserve"><value>选择 Hotline 的连接方式</value></data>
+  <data name="Choose_Body" xml:space="preserve"><value>选择 Hotline 要使用的 AI。在你选择之前,不会发送或运行任何内容。</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>此电脑未安装 Claude Code 或 Antigravity。请安装其中一个并登录,或使用 API 密钥。</value></data>
+  <data name="Choose_Use" xml:space="preserve"><value>使用 {0}</value></data>
+  <data name="Choose_ApiKey" xml:space="preserve"><value>使用 API 密钥…</value></data>
+  <data name="Choose_CopilotKey" xml:space="preserve"><value>将 Hotline 设为 Copilot 键应用</value></data>
+  <data name="Bar_ChooseConnection" xml:space="preserve"><value>选择连接</value></data>
+  <data name="Set_CopilotKeyApp" xml:space="preserve"><value>用 Copilot 键打开 Hotline</value></data>
+  <data name="Set_CopilotKeyApp_Desc" xml:space="preserve"><value>在 Windows 设置 › 个性化 › 文本输入 › 自定义键盘上的 Copilot 键中选择“自定义”,然后选择 Hotline。需要带 Copilot 键的键盘。</value></data>
+  <data name="Set_CopilotKeyApp_Open" xml:space="preserve"><value>打开 Copilot 键设置</value></data>
+  <data name="Conn_KeepCli" xml:space="preserve"><value>在 {0} 的历史中保留聊天</value></data>
+  <data name="Conn_KeepCli_Desc" xml:space="preserve"><value>每个 Hotline 聊天在那里都是一个对话,归在 Hotline 之下,可以从“最近的聊天”或在 CLI 中继续。关闭:由 Hotline 保留聊天。</value></data>
+  <data name="Conn_KeepInHotline" xml:space="preserve"><value>同时在 Hotline 中保留消息</value></data>
+  <data name="Conn_KeepInHotline_Desc" xml:space="preserve"><value>“最近的聊天”始终列出这些聊天;此选项还会把消息保存到 Hotline 的历史文件夹中。</value></data>
+  <data name="Chat_ContinuingCli" xml:space="preserve"><value>继续“{0}”。之前的消息在 {1} 的历史中。</value></data>
+  <data name="Cli_ResumeFailed" xml:space="preserve"><value>{0} 无法重新打开此对话。请开始新的聊天以继续。</value></data>
+  <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置继续此聊天</value></data>
+  <data name="Recent_ContinueFailed" xml:space="preserve"><value>无法打开 {0}:{1}</value></data>
+  <data name="Conn_LaunchArgs" xml:space="preserve"><value>启动参数(高级)</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>替换 Hotline 为此模式添加的参数(以空格分隔)。Hotline 与程序通信所需的参数始终会添加,危险参数只能通过“全部批准”添加。留空 = Hotline 的默认值。</value></data>
+  <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 的默认值</value></data>
+  <data name="Conn_MaxTokens" xml:space="preserve"><value>最大回答长度</value></data>
+  <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>一次回答最多可用的令牌数。设得太低,长回答会提前结束。留空 = 模型默认值。</value></data>
+  <data name="Conn_Temperature" xml:space="preserve"><value>温度</value></data>
+  <data name="Conn_Temperature_Desc" xml:space="preserve"><value>回答的多样性:0 = 专注且可重复,越高越多样(最高 2)。留空 = 模型默认值。</value></data>
+  <data name="Conn_ModelDefault" xml:space="preserve"><value>模型默认值</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>把笔记存入记忆 — 每个聊天都能看到</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>从历史记录中重新打开聊天</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>整理成项目列表</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>用通俗的话解释</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>修正拼写和语法</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>改写成专业的语气</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>起草回复</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>改得更简短清楚</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>用几个要点总结</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>翻译(译成英语或你指定的语言)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>高对比度</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>高对比度是 Hotline 自带的主题;Windows 的对比度主题会自动跟随。</value></data>
+  <data name="History_Search" xml:space="preserve"><value>搜索聊天</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>也可打开 Hotline。点击后按下按键。Esc 取消,Backspace 清除。</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>请按快捷键…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>未设置</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>请加上 Ctrl、Alt、Shift 或 Win</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>不能使用该键</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>恢复默认操作</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>已添加或更新 {0} 个默认操作。</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>重命名</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>请使用字母、数字、- 和 _,且名称不能重复。</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>删除 /{0}?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>新名称</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>其他应用已在使用该快捷键</value></data>
+</root>
