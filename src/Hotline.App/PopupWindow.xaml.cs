@@ -241,15 +241,30 @@ public sealed partial class PopupWindow : Window
     public IDisposable Modal()
     {
         _modal++;
+        return new Releaser(() => _modal--);
+    }
+
+    /// <summary>
+    /// While held, the window keeps its size: resizing a window closes its open flyouts at once (the history list
+    /// opened from the keyboard did exactly that). A resize asked for meanwhile is applied when the last hold ends.
+    /// Only flyouts take it; dialogs and captures still resize as usual.
+    /// </summary>
+    public IDisposable HoldResize()
+    {
+        _resizeHolds++;
         return new Releaser(() =>
         {
-            _modal--;
-            // A resize asked for while held (e.g. the history list was open) happens now.
-            if (_modal == 0 && _resizeHeld && AppWindow.IsVisible) { _resizeHeld = false; ApplyHeight(); }
+            void Release()
+            {
+                _resizeHolds--;
+                if (_resizeHolds == 0 && _resizeHeld && AppWindow.IsVisible) ApplyHeight();
+            }
+            if (DispatcherQueue.HasThreadAccess) Release(); else DispatcherQueue.TryEnqueue(Release);
         });
     }
 
-    /// <summary>A resize was asked for while the panel was held (Modal): it is applied when the hold ends.</summary>
+    private int _resizeHolds;
+    /// <summary>A resize was asked for during a HoldResize; any real resize settles it.</summary>
     private bool _resizeHeld;
 
     /// <summary>Hides the popup briefly (e.g. to capture what is underneath), then brings it back.</summary>
@@ -362,9 +377,8 @@ public sealed partial class PopupWindow : Window
     private void ApplyHeight(bool force = false)
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
-        // Resizing the window closes an open flyout at once (the history list opened from the keyboard did exactly
-        // that): while something holds the panel, wait.
-        if (_modal != 0 && !force) { _resizeHeld = true; return; }
+        if (_resizeHolds > 0 && !force) { _resizeHeld = true; return; } // a flyout is open: see HoldResize
+        _resizeHeld = false;
         if (_bar.Width == 0) return;
         var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.

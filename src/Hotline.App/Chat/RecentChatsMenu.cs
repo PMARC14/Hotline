@@ -31,7 +31,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private TextBlock _empty = null!;
     private StackPanel _actions = null!;
     private IReadOnlyList<HistoryStore.Summary> _all = [];
-    private IDisposable? _modal;
+    private IDisposable? _modal, _resizeHold;
 
     public void Initialize() => popup.RecentButton.Click += (_, _) => Show("");
 
@@ -85,7 +85,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         flyout.FlyoutPresenterStyle = presenter;
         flyout.Opening += (_, _) =>
         {
-            _modal ??= popup.Modal(); // the list is part of the panel: don't hide the panel as focus moves into it
+            _modal ??= popup.Modal(); // the list is part of the panel: do not hide the panel as focus moves into it
+            _resizeHold ??= popup.HoldResize(); // and keep its size: a window resize would close the list
             grid.Width = Math.Max(320, popup.Composer.ActualWidth - 24); // as wide as the message bar (less the frame)
         };
         flyout.Opened += (_, _) =>
@@ -94,7 +95,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             _search.SelectionStart = _search.Text.Length;
             if (_list.SelectedItem is { } selected) _list.ScrollIntoView(selected, ScrollIntoViewAlignment.Default);
         };
-        flyout.Closed += (_, _) => { _modal?.Dispose(); _modal = null; popup.Input.Focus(FocusState.Programmatic); };
+        flyout.Closed += (_, _) => { _modal?.Dispose(); _modal = null; _resizeHold?.Dispose(); _resizeHold = null; popup.Input.Focus(FocusState.Programmatic); };
         return flyout;
 
         static void AddRow(Grid g, FrameworkElement e, int row) { Grid.SetRow(e, row); g.Children.Add(e); }
@@ -138,7 +139,9 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             case VirtualKey.Down when count > 0:
                 _list.SelectedIndex = Math.Min(count - 1, _list.SelectedIndex + 1);
                 break;
-            case VirtualKey.Enter when !e.KeyStatus.WasKeyDown: // not a repeat of the Enter that sent "/resume"
+            case VirtualKey.Enter when e.KeyStatus.WasKeyDown: // a repeat of the Enter that sent "/resume": swallow it
+                break;
+            case VirtualKey.Enter:
                 if (_list.SelectedItem is ListViewItem { Tag: string id }) Open(id);
                 break;
             case VirtualKey.Escape:
