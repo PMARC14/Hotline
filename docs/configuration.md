@@ -6,7 +6,7 @@ same files). Comments and trailing commas are allowed.
 | File | What |
 |---|---|
 | `settings.json` | General options (window, appearance, chat, key actions), `chat.order` (Provider dropdown order) and `chat.defaultBackend` |
-| `connections\<id>.json` | One file per AI connection. Add a connection by dropping in a file; remove one by deleting it |
+| `connections\<id>.json` | One file per AI connection. Add a connection by dropping in a file; remove one by deleting it. A new install has none (the panel offers the CLIs it finds); every connection can be removed |
 | `prompts\<name>.md` | System prompts (`default.md` is created on first run) |
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
@@ -15,6 +15,15 @@ same files). Comments and trailing commas are allowed.
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
+| `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
+| `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
+| `.defaults\settings.json` | (hidden) The default settings.json of this version, rewritten at every start |
+
+**Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current
+one and Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset
+settings** puts settings.json back to the defaults (connections stay); **Reset everything** also removes the
+connections and their API keys, `toolbar.json` and `mcp.json`. Prompts, quick actions, memory and history are never
+reset, and the previous files are kept in `backups\`.
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
 
@@ -41,6 +50,8 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.notifyWhenDone` | `true` | A Windows notification when an answer finishes while the panel is hidden or another app is in front; clicking it opens the answer |
+| `chat.thinkingIndicator` | `true` | While an answer is on its way but no text has come for `chat.thinkingDelayMs`, the cursor spins (so a slow model doesn't look stalled) |
+| `chat.thinkingDelayMs` | `700` | How long without new text before the cursor spins (0–10000 ms). Not in the Settings window |
 | `chat.historyListSize` | `300` | How many saved chats the history list reads (10–5000). Not in the Settings window |
 | `chat.resumeWhileTyping` | `true` | Typing `/resume` and a space opens the history list at once and the search continues there (best match selected, Enter opens it). Not in the Settings window |
 | `chat.cliTranscripts` | `true` | Reopening a CLI chat Hotline kept only a record of (`keepInHotline` off) shows its earlier messages from the CLI's own history (read-only; see *Chats with a CLI*). Not in the Settings window |
@@ -91,10 +102,11 @@ chosen one exists.
   `claude --resume`, `codex exec resume`) when the session has to start again: after a restart, a prompt change, or from Recent chats. If
   the CLI can't find it any more, Hotline starts a new conversation and replays the messages it has.
 - **New chat** (the toolbar button, or a long press of the Copilot key) always starts a new conversation.
-- **Grouped under Hotline.** In chat-only mode the CLIs run in folders named `Hotline` (in Hotline's private app
-  folder), so `claude --resume`, Claude Code's `/resume` and `codex resume` list Hotline chats when run there, and agy puts them in a
-  project named **Hotline** (created once, by agy). A conversation you move to another agy project stays there.
-  `inherit` mode runs in your own folder and gets no project.
+- **They run in your user folder.** In chat-only mode too, the CLIs start in `%USERPROFILE%`, so `claude --resume`,
+  Claude Code's `/resume` and `codex resume` in a terminal there list Hotline's chats. agy gets Hotline's working folder
+  (`scratch\agy\Hotline`: the `hotline` agent and attached images) with `--add-dir`, and joins the agy project named
+  **Hotline** when it exists (made by Hotline before 0.3); a conversation you move to another agy project stays there.
+  Chats begun in an older version's folder keep resuming there. `inherit` mode runs in `workingDirectory`.
 - **Reopened chats show their messages.** When Hotline kept only a record, it reads the conversation from the CLI's
   own history (read-only): Claude Code's `~\.claude\projects\*\<session>.jsonl`, Codex's
   `~\.codex\sessions\…\rollout-…-<thread>.jsonl`, and agy's `~\.gemini\antigravity-cli\conversations\<id>.db`
@@ -103,9 +115,10 @@ chosen one exists.
 - **The history list** (the 🕘 button, Ctrl+↑ in an empty message box, or `/resume`): chats run oldest at the top to
   newest at the bottom, centered over the message bar; type to filter by title, ↑/↓ and Enter (or click) to open.
   `/resume words` opens it filtered.
-- **Continue this chat in ▸** (top of the history list) opens the chat's CLI in your default terminal (Windows Terminal unless
-  you chose another in Windows Settings › System › For developers › Terminal) on the same conversation. Another
-  installed CLI gets a new session that reads the chat from a Markdown file (only when Hotline has the messages).
+- **Continue this chat in ▸** (top of the history list) opens the chat's own CLI in your default terminal (Windows
+  Terminal unless you chose another in Windows Settings › System › For developers › Terminal) on the same conversation.
+  The other installed CLIs are under **More…**: a new session that reads the chat from a Markdown file (only when
+  Hotline has the messages). A chat on an API connection lists the CLIs directly.
 
 ## mcp.json (tools for API connections)
 
@@ -147,7 +160,7 @@ older toolbar.json keeps its own list, so add it there if you want the button.
 ## Codex
 
 Hotline runs `codex exec --json` once per message, with the message on stdin, and finds `codex.exe` on PATH or inside
-an npm global install (`npm install -g @openai/codex`). *Chat only*: a read-only sandbox in an empty folder, without
+an npm global install (`npm install -g @openai/codex`). *Chat only*: a read-only sandbox in your user folder, without
 your `config.toml` or rules. *Inherit*: your own Codex setup with a `workspace-write` sandbox in `workingDirectory`
 (`approveAllTools` bypasses the sandbox). Codex never asks for approval when run this way, so anything outside the
 sandbox is refused. The model list comes from `codex app-server`, else `~\.codex\models_cache.json`, else a built-in list; keep **Default** (Codex's own choice) or type any model name.

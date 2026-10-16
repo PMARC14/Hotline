@@ -28,7 +28,8 @@ signing requirement, so we ship the MSIX directly. Double-clicking a signed `.ms
     automatic updates need one stable certificate (a `.pfx` above, or Azure Artifact Signing).
   - Assets: the `.msixbundle` (x64 and ARM64; Windows installs the right one), `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
 - **winget:** covered by the Store. Its `msstore` source lists every Store app, so `winget install 9PMW5CR6G3BC`
-  installs Hotline AI and `winget upgrade` updates it, with nothing to submit. (`.github/workflows/winget.yml`, for a
+  installs Hotline AI and `winget upgrade` updates it, with nothing to submit. `winget show` lists its version as
+  *Unknown*: the Store source doesn't publish versions for Store apps (same for every msstore app; not fixable here). (`.github/workflows/winget.yml`, for a
   `winget-pkgs` entry of the GitHub builds, stays disabled: winget-pkgs rejects self-signed packages.)
 
 Users then either double-click the `.msixbundle`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
