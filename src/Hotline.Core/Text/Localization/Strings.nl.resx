@@ -501,4 +501,36 @@ Weigeren:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} verwijderen?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nieuwe naam</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Een andere app gebruikt die sneltoets al</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>De chat was te lang voor een link: alleen je laatste bericht is verzonden en de hele chat staat op het klembord.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Voeg de API-sleutel van Open WebUI toe in Instellingen › Chat › Verdergaan in.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI heeft de API-sleutel geweigerd.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI draait niet op {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>De API-sleutel wordt alleen via https of naar deze pc verzonden.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Het adres is geen http- of https-webadres.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Er is geen programma ingesteld voor dit doel.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Verdergaan in</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Waar "Deze chat verdergaan in" een chat naartoe kan brengen, naast Claude Code, Codex en agy. Elke verbinding gebruikt deze lijst, tenzij ze een eigen lijst heeft.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Waar de chats van deze verbinding verder kunnen.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>De gedeelde lijst gebruiken</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Eigen lijst</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Geen</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Nog geen bestemmingen.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Webpagina</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>App</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Toevoegen</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Naam</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Adres</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} is de hele chat, {last} je laatste bericht, {model} het model van de chat. Voorbeeld: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Opdracht</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Een programma met argumenten; {file} is de chat opgeslagen als Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Model (leeg: dat van de chat)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>API-sleutel</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Er is een sleutel opgeslagen; typ een nieuwe om hem te vervangen</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Eerst de hele chat naar het klembord kopiëren</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Testen</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Verbonden: {0} modellen.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Geen verbinding: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Opslaan</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Vul de naam en het adres of de opdracht in.</value></data>
 </root>

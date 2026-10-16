@@ -501,4 +501,36 @@ Tolak:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Hapus /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nama baru</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Aplikasi lain sudah memakai pintasan itu</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Obrolan terlalu panjang untuk tautan: hanya pesan terakhir Anda yang dikirim, dan seluruh obrolan ada di clipboard.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Tambahkan kunci API Open WebUI di Pengaturan › Obrolan › Lanjutkan di.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI menolak kunci API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI tidak berjalan di {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Kunci API hanya dikirim melalui https atau ke PC ini.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Alamat bukan alamat web http atau https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Tidak ada program yang diatur untuk tujuan ini.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Lanjutkan di</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Ke mana "Lanjutkan obrolan ini di" dapat membawa obrolan, selain Claude Code, Codex, dan agy. Setiap koneksi memakai daftar ini kecuali punya daftar sendiri.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Tempat obrolan koneksi ini dapat dilanjutkan.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Gunakan daftar bersama</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Daftar sendiri</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Tidak ada</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Belum ada tujuan.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Halaman web</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>Aplikasi</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Tambah</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Nama</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Alamat</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} adalah seluruh obrolan, {last} pesan terakhir Anda, {model} model obrolan. Contoh: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Perintah</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Program dan argumennya; {file} adalah obrolan yang disimpan sebagai Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Model (kosong: milik obrolan)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>Kunci API</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Kunci sudah tersimpan; ketik yang baru untuk menggantinya</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Salin dulu seluruh obrolan ke clipboard</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Uji</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Terhubung: {0} model.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Tidak dapat terhubung: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Simpan</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Isi nama dan alamat atau perintah.</value></data>
 </root>

@@ -501,4 +501,36 @@ Reddet:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Sohbet bağlantı için fazla uzundu: yalnızca son mesajınız gönderildi, sohbetin tamamı panoda.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Open WebUI API anahtarını Ayarlar › Sohbet › Şurada devam et bölümünde ekleyin.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI API anahtarını reddetti.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI {0} adresinde çalışmıyor.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API anahtarı yalnızca https üzerinden veya bu bilgisayara gönderilir.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Adres bir http veya https web adresi değil.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Bu hedef için bir program ayarlanmadı.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Şurada devam et</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code, Codex ve agy dışında "Bu sohbete şurada devam et"in bir sohbeti götürebileceği yerler. Kendi listesi olmayan her bağlantı bu listeyi kullanır.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Bu bağlantının sohbetlerinin devam edebileceği yerler.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Ortak listeyi kullan</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Kendi listesi</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Hiçbiri</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Henüz hedef yok.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Web sayfası</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>Uygulama</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Ekle</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Ad</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Adres</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} sohbetin tamamı, {last} son mesajınız, {model} sohbetin modeli. Örnek: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Komut</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Bir program ve bağımsız değişkenleri; {file} Markdown olarak kaydedilen sohbettir.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Model (boş: sohbetin modeli)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>API anahtarı</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Bir anahtar kayıtlı; değiştirmek için yenisini yazın</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Önce sohbetin tamamını panoya kopyala</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Test et</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Bağlandı: {0} model.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Bağlanılamadı: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Kaydet</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Adı ve adresi ya da komutu girin.</value></data>
 </root>

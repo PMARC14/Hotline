@@ -96,6 +96,8 @@ public sealed class BackendProfile
     public string? CliPath { get; set; }
     /// <summary>agy custom agent name (default "hotline").</summary>
     public string? Agent { get; set; }
+    /// <summary>This connection's own "Continue this chat in" targets: null = the shared list (chat.continueIn), [] = none.</summary>
+    public List<Backends.ContinueTarget>? ContinueIn { get; set; }
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
     /// <summary>
@@ -143,6 +145,8 @@ public sealed class ChatSettings
     public string DefaultBackend { get; set; } = "";
     /// <summary>System prompt used by connections that don't pick their own.</summary>
     public string DefaultPrompt { get; set; } = "default";
+    /// <summary>The shared "Continue this chat in" targets; null = the default (the llama.cpp web UI of a Local connection).</summary>
+    public List<Backends.ContinueTarget>? ContinueIn { get; set; }
     /// <summary>
     /// The connections, in dropdown order. Stored one file each in ~/.hotline/connections/&lt;id&gt;.json (not in
     /// settings.json; an old settings.json "backends" list is moved there once).

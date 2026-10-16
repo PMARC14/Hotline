@@ -501,4 +501,36 @@ Từ chối:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Xóa /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Tên mới</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Một ứng dụng khác đã dùng phím tắt đó</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>Cuộc trò chuyện quá dài cho một liên kết: chỉ tin nhắn cuối của bạn được gửi, và toàn bộ cuộc trò chuyện nằm trong bộ nhớ tạm.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Thêm khóa API Open WebUI trong Cài đặt › Trò chuyện › Tiếp tục trong.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI đã từ chối khóa API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI không chạy tại {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>Khóa API chỉ được gửi qua https hoặc tới PC này.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Địa chỉ không phải địa chỉ web http hoặc https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Chưa đặt chương trình cho đích này.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Tiếp tục trong</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Nơi "Tiếp tục cuộc trò chuyện này trong" có thể đưa cuộc trò chuyện đến, ngoài Claude Code, Codex và agy. Mọi kết nối dùng danh sách này trừ khi có danh sách riêng.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Nơi các cuộc trò chuyện của kết nối này có thể tiếp tục.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Dùng danh sách chung</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Danh sách riêng</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Không</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Chưa có đích nào.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Trang web</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>Ứng dụng</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Thêm</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Tên</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Địa chỉ</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} là toàn bộ cuộc trò chuyện, {last} tin nhắn cuối của bạn, {model} mô hình của cuộc trò chuyện. Ví dụ: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Lệnh</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Một chương trình và các đối số; {file} là cuộc trò chuyện được lưu dạng Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Mô hình (để trống: mô hình của cuộc trò chuyện)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>Khóa API</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Đã lưu một khóa; nhập khóa mới để thay</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Sao chép toàn bộ cuộc trò chuyện vào bộ nhớ tạm trước</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Kiểm tra</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Đã kết nối: {0} mô hình.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Không kết nối được: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Lưu</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Hãy điền tên và địa chỉ hoặc lệnh.</value></data>
 </root>

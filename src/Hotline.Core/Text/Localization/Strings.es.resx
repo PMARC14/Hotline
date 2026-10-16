@@ -501,4 +501,36 @@ Denegar:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>¿Eliminar /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nuevo nombre</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Otra aplicación ya usa ese atajo</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>El chat era demasiado largo para un enlace: solo se envió tu último mensaje y el chat completo está en el portapapeles.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Añade la clave de API de Open WebUI en Configuración › Chat › Continuar en.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI rechazó la clave de API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI no se está ejecutando en {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>La clave de API solo se envía por https o a este PC.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>La dirección no es una dirección web http o https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>No hay ningún programa definido para este destino.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Continuar en</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Adónde puede llevar un chat «Continuar este chat en», además de Claude Code, Codex y agy. Todas las conexiones usan esta lista salvo que tengan la suya.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Dónde pueden continuar los chats de esta conexión.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Usar la lista compartida</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Lista propia</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Ninguno</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Todavía no hay destinos.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Página web</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>Aplicación</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Agregar</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Nombre</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Dirección</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} es el chat completo, {last} tu último mensaje, {model} el modelo del chat. Ejemplo: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Comando</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Un programa y sus argumentos; {file} es el chat guardado en Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Modelo (vacío: el del chat)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>Clave de API</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Hay una clave guardada; escribe otra para reemplazarla</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Copiar primero el chat completo al portapapeles</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Probar</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Conectado: {0} modelos.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>No se pudo conectar: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Guardar</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Escribe el nombre y la dirección o el comando.</value></data>
 </root>

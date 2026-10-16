@@ -501,4 +501,36 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>删除 /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新名称</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他应用已在使用该快捷键</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>聊天太长,无法放入链接:只发送了你的最后一条消息,完整聊天已复制到剪贴板。</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>请在“设置 › 聊天 › 继续到”中添加 Open WebUI API 密钥。</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI 拒绝了 API 密钥。</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI 未在 {0} 运行。</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API 密钥只会通过 https 或发送到这台电脑。</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>该地址不是 http 或 https 网址。</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>此目标未设置程序。</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>继续到</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>除 Claude Code、Codex 和 agy 外,“将此聊天继续到”还可以把聊天带到这些地方。每个连接都使用此列表,除非它有自己的列表。</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>此连接的聊天可以继续的地方。</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>使用共享列表</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>自己的列表</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>无</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>还没有目标。</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>网页</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>应用</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>添加</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>名称</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>地址</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} 是整个聊天,{last} 是你的最后一条消息,{model} 是聊天的模型。示例:http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>命令</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>程序及其参数;{file} 是保存为 Markdown 的聊天。</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>模型(留空:聊天的模型)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>API 密钥</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>已保存密钥;输入新密钥即可替换</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>先把整个聊天复制到剪贴板</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>测试</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>已连接:{0} 个模型。</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>无法连接:{0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>保存</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>请填写名称以及地址或命令。</value></data>
 </root>

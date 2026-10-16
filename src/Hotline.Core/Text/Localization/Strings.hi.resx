@@ -501,4 +501,36 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} हटाएँ?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>नया नाम</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>यह शॉर्टकट पहले से कोई दूसरा ऐप इस्तेमाल कर रहा है</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>लिंक के लिए चैट बहुत लंबी थी: केवल आपका अंतिम संदेश भेजा गया, और पूरी चैट क्लिपबोर्ड पर है।</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Open WebUI API कुंजी सेटिंग्स › चैट › इसमें जारी रखें में जोड़ें।</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI ने API कुंजी अस्वीकार कर दी।</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI {0} पर नहीं चल रहा है।</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API कुंजी केवल https पर या इसी PC को भेजी जाती है।</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>यह पता http या https वेब पता नहीं है।</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>इस लक्ष्य के लिए कोई प्रोग्राम सेट नहीं है।</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>इसमें जारी रखें</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code, Codex और agy के अलावा "इस चैट को इसमें जारी रखें" चैट को कहाँ ले जा सकता है। हर कनेक्शन यही सूची इस्तेमाल करता है, जब तक उसकी अपनी सूची न हो।</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>इस कनेक्शन की चैट कहाँ जारी रह सकती हैं।</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>साझा सूची इस्तेमाल करें</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>अपनी सूची</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>कोई नहीं</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>अभी कोई स्थान नहीं।</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>वेब पेज</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>ऐप</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>जोड़ें</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>नाम</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>पता</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} पूरी चैट है, {last} आपका अंतिम संदेश, {model} चैट का मॉडल। उदाहरण: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>कमांड</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>एक प्रोग्राम और उसके तर्क; {file} Markdown के रूप में सहेजी गई चैट है।</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>मॉडल (खाली: चैट का अपना)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>API कुंजी</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>एक कुंजी सहेजी गई है; बदलने के लिए नई लिखें</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>पहले पूरी चैट क्लिपबोर्ड पर कॉपी करें</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>जाँचें</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>कनेक्ट हुआ: {0} मॉडल।</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>कनेक्ट नहीं हो सका: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>सहेजें</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>नाम और पता या कमांड भरें।</value></data>
 </root>

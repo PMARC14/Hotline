@@ -501,4 +501,36 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>チャットがリンクには長すぎたため、最後のメッセージだけを送り、チャット全体をクリップボードにコピーしました。</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>[設定] › [チャット] › [続きを開く] で Open WebUI の API キーを追加してください。</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI が API キーを拒否しました。</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI が {0} で動作していません。</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>API キーは https またはこの PC にだけ送信されます。</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>アドレスが http または https の Web アドレスではありません。</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>このターゲットにはプログラムが設定されていません。</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>続きを開く</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code、Codex、agy のほかに「このチャットの続きを開く」でチャットを持っていける場所です。各接続は、独自の一覧がない限りこの一覧を使います。</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>この接続のチャットの続きを開ける場所。</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>共有の一覧を使う</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>独自の一覧</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>なし</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>まだありません。</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Web ページ</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>アプリ</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>追加</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>名前</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>アドレス</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} はチャット全体、{last} は最後のメッセージ、{model} はチャットのモデルです。例: http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>コマンド</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>プログラムとその引数。{file} は Markdown として保存したチャットです。</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>モデル (空欄: チャットのモデル)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>API キー</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>キーは保存済みです。置き換えるには新しいキーを入力してください</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>先にチャット全体をクリップボードにコピーする</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>テスト</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>接続しました: {0} 個のモデル。</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>接続できませんでした: {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>保存</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>名前と、アドレスまたはコマンドを入力してください。</value></data>
 </root>

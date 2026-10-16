@@ -501,4 +501,36 @@ Refuser :
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Supprimer /{0} ?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nouveau nom</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Une autre application utilise déjà ce raccourci</value></data>
+  <data name="Continue_Shortened" xml:space="preserve"><value>La conversation était trop longue pour un lien : seul votre dernier message a été envoyé, et toute la conversation est dans le Presse-papiers.</value></data>
+  <data name="Continue_NoKey" xml:space="preserve"><value>Ajoutez la clé API d'Open WebUI dans Paramètres › Conversation › Continuer dans.</value></data>
+  <data name="Continue_KeyRefused" xml:space="preserve"><value>Open WebUI a refusé la clé API.</value></data>
+  <data name="Continue_Unreachable" xml:space="preserve"><value>Open WebUI ne fonctionne pas à {0}.</value></data>
+  <data name="Continue_InsecureKey" xml:space="preserve"><value>La clé API n'est envoyée qu'en https ou à ce PC.</value></data>
+  <data name="Continue_NotAWebAddress" xml:space="preserve"><value>L'adresse n'est pas une adresse web http ou https.</value></data>
+  <data name="Continue_NoCommand" xml:space="preserve"><value>Aucun programme n'est défini pour cette cible.</value></data>
+  <data name="ContinueSet_Title" xml:space="preserve"><value>Continuer dans</value></data>
+  <data name="ContinueSet_Intro" xml:space="preserve"><value>Où « Continuer cette conversation dans » peut emmener une conversation, en plus de Claude Code, Codex et agy. Chaque connexion utilise cette liste, sauf si elle a la sienne.</value></data>
+  <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Où les conversations de cette connexion peuvent continuer.</value></data>
+  <data name="ContinueSet_Shared" xml:space="preserve"><value>Utiliser la liste commune</value></data>
+  <data name="ContinueSet_Own" xml:space="preserve"><value>Liste propre</value></data>
+  <data name="ContinueSet_None" xml:space="preserve"><value>Aucune</value></data>
+  <data name="ContinueSet_Empty" xml:space="preserve"><value>Aucune destination pour l'instant.</value></data>
+  <data name="ContinueSet_Web" xml:space="preserve"><value>Page web</value></data>
+  <data name="ContinueSet_OpenWebUi" xml:space="preserve"><value>Open WebUI</value></data>
+  <data name="ContinueSet_App" xml:space="preserve"><value>Application</value></data>
+  <data name="ContinueSet_Add" xml:space="preserve"><value>Ajouter</value></data>
+  <data name="ContinueSet_Name" xml:space="preserve"><value>Nom</value></data>
+  <data name="ContinueSet_Address" xml:space="preserve"><value>Adresse</value></data>
+  <data name="ContinueSet_AddressHint" xml:space="preserve"><value>{chat} est toute la conversation, {last} votre dernier message, {model} le modèle de la conversation. Exemple : http://127.0.0.1:8080/?q={chat}</value></data>
+  <data name="ContinueSet_Command" xml:space="preserve"><value>Commande</value></data>
+  <data name="ContinueSet_CommandHint" xml:space="preserve"><value>Un programme et ses arguments ; {file} est la conversation enregistrée en Markdown.</value></data>
+  <data name="ContinueSet_Model" xml:space="preserve"><value>Modèle (vide : celui de la conversation)</value></data>
+  <data name="ContinueSet_ApiKey" xml:space="preserve"><value>Clé API</value></data>
+  <data name="ContinueSet_KeySaved" xml:space="preserve"><value>Une clé est enregistrée ; saisissez-en une nouvelle pour la remplacer</value></data>
+  <data name="ContinueSet_CopyChat" xml:space="preserve"><value>Copier d'abord toute la conversation dans le Presse-papiers</value></data>
+  <data name="ContinueSet_Test" xml:space="preserve"><value>Tester</value></data>
+  <data name="ContinueSet_TestOk" xml:space="preserve"><value>Connecté : {0} modèles.</value></data>
+  <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Connexion impossible : {0}</value></data>
+  <data name="ContinueSet_Save" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="ContinueSet_Invalid" xml:space="preserve"><value>Indiquez le nom et l'adresse ou la commande.</value></data>
 </root>
