@@ -133,6 +133,36 @@ public sealed class CliSessionTests : IDisposable
     }
 
     [Fact]
+    public void A_record_only_chat_shows_its_messages_from_the_clis_own_history()
+    {
+        var history = History();
+        history.SaveMeta("abc", new HistoryStore.Meta("t", DateTimeOffset.UnixEpoch, "cli", "c58f0231-d4eb-4a1b-809c-d805b1a44fdf", @"C:\w", 2));
+        var c = New(new FakeCli(), history);
+        (string Backend, string Session)? asked = null;
+        c.CliTranscript = (backend, session) =>
+        {
+            asked = (backend, session);
+            return [new("cli-0", ChatRole.User, "hello", DateTimeOffset.UnixEpoch, "cli", []), new("cli-1", ChatRole.Assistant, "hi", DateTimeOffset.UnixEpoch, "cli", [])];
+        };
+        Assert.True(c.Resume("abc"));
+        Assert.Equal(("cli", "c58f0231-d4eb-4a1b-809c-d805b1a44fdf"), asked);
+        Assert.Equal(["hello", "hi"], c.Messages.Select(m => m.Text));
+        Assert.True(c.HasWholeTranscript); // so Continue in can hand it on
+    }
+
+    [Fact]
+    public void Without_the_clis_history_a_record_only_chat_opens_empty_as_before()
+    {
+        var history = History();
+        history.SaveMeta("abc", new HistoryStore.Meta("t", DateTimeOffset.UnixEpoch, "cli", "c58f0231-d4eb-4a1b-809c-d805b1a44fdf", @"C:\w", 2));
+        var c = New(new FakeCli(), history);
+        c.CliTranscript = (_, _) => null;
+        Assert.True(c.Resume("abc"));
+        Assert.Empty(c.Messages);
+        Assert.False(c.HasWholeTranscript);
+    }
+
+    [Fact]
     public void A_record_with_a_bad_session_id_is_not_resumable()
     {
         var history = History();
