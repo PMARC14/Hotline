@@ -33,9 +33,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `/resume` + space opens the list and the search continues there (`chat.resumeWhileTyping`).
   - Reopened CLI chats show their earlier messages from the CLI's own history (`CliTranscripts`;
     `chat.cliTranscripts`). `chat.historyListSize` sets how many chats the list reads. All three are settings.json only.
-- **In v0.3.0** (#29, `continue-in-targets`): Continue in to web pages, Open WebUI (a real chat) and apps, from a
-  shared list or per connection; built from `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed,
-  998 tests. `version.txt` went to `0.3` with it. Its hand-test list (rerun after changes to Continue in):
+- **Open PR #29** (`continue-in-targets`, ships as **0.4**): Continue in to web pages, Open WebUI (a real chat) and apps,
+  from a shared list or per connection; built from `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed,
+  998 tests. Waits for 0.3 (the Codex feedback branch); bump `version.txt` to `0.4` when it merges. Hand-test list:
   1. llama.cpp web UI (default target of a Local connection): opens with the conversation as the first message.
   2. Open WebUI (if run): Settings › Chat › Continue in › Add › Open WebUI, address + API key, **Test** shows the model
      count; continuing creates a real Open WebUI chat with every message.
@@ -50,30 +50,33 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **0.4 on the owner's desktop** (it already has 26H2 and several monitors; the laptop dev PC doesn't):
+1. **0.3** — Codex feedback (branch `codex-feedback`), then panel placement. **0.4** — PR #29 (Continue in).
+2. **0.5 on the owner's desktop** (it already has 26H2 and several monitors; the laptop dev PC doesn't):
    - **Windows 11 26H2 follow-ups** (PR #9, draft, branch `windows-26h2`, kept up to date with `main`): agent
      connectors (`odr.exe`), App Actions, the Copilot key, re-run TESTING.md, new APIs behind `PlatformSupport` checks.
    - **Region capture on multi-monitor / mixed DPI.**
    Set the desktop up first: clone, dev certificate (README), `scripts/install.sh`.
-2. **Codex:** a live check with a Codex sign-in, on another PC (PR #14 checklist).
-3. **Brainstorm** anything else wanted before 1.0, then decide on it.
+3. **Brainstorm** anything else wanted before 1.0, then decide on it. (The Codex live check was done by the owner on
+   2026-10-16; its feedback is 0.3.)
 4. **Version 1.0** when: hand tests done, multi-monitor capture OK, 26H2 merged, a Store update certified with all
    languages, and settings files staying compatible from then on.
-6. Known: the first off-screen layout after a fresh start logs a `LayoutCycleException` (kept running; older too).
+5. Known: the first off-screen layout after a fresh start logs a `LayoutCycleException` (kept running; older too).
    No native-speaker reviews or RTL planned. Paid signing (winget-pkgs) only if Hotline gets popular.
-7. Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
+6. Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
 
 ## Versions (toward 1.0)
 
-- `version.txt` holds major.minor (now `0.3`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch
-  being the next number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml): 0.3
-  started at **v0.3.0**, then v0.3.1, …; bumping to `0.4` starts at v0.4.0 (until 2026-10-16 the patch
+- `version.txt` holds major.minor (now `0.2`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch
+  being the next number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml): bumping
+  to `0.3` starts at **v0.3.0**, then v0.3.1, … (until 2026-10-16 the patch
   was the GitHub run number, which is why 0.2 reached .25). The Store package is the same version plus `.0`.
 - **The Store only needs each submission's version, compared as a whole (left to right), to be higher than the last**,
   and the fourth part to be `0`: `0.3.0.0` follows `0.2.25.0` fine.
 - **The plan:**
-  - **0.3** — Continue in (PR #29): the last big feature before 1.0.
-  - **0.4** — when the Windows 11 26H2 work (#9) and the multi-monitor / mixed-DPI region capture fix land: feature
+  - **0.3** — the Codex-test feedback (thinking indicator, Codex models, connections, folders, reset) and the movable,
+    pinnable panel.
+  - **0.4** — Continue in (PR #29): the last big feature before 1.0.
+  - **0.5** — when the Windows 11 26H2 work (#9) and the multi-monitor / mixed-DPI region capture fix land: feature
     complete for 1.0; after that only fixes, polish and a Store update certified with all 17 languages.
   - **1.0** — when that Store update is through and nothing that breaks existing settings files is pending. From 1.0
     on, settings files must keep working across updates (migrations, never breaking changes).
