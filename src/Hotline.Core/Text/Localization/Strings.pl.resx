@@ -502,4 +502,19 @@ Zabroń:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Usunąć /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nowa nazwa</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Inna aplikacja już używa tego skrótu</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Resetuj</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Przywraca ustawienia do stanu z momentu instalacji. Wszystko zostanie najpierw skopiowane do {0}\backups. Aby przełączać się między zestawami ustawień, zastąp settings.json (lub plik w connections) inną kopią: Hotline zastosuje ją natychmiast. Ustawienia domyślne znajdują się w {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Zresetuj wszystko</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, wszystkie połączenia (oraz ich klucze API), pasek narzędzi i mcp.json wrócą do stanu z momentu instalacji. Monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa (bez kluczy API).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Zresetować wszystko?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json powróci do wartości domyślnych. Twoje połączenia, monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Resetuj</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Gotowe. Poprzednie pliki znajdują się w {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Resetuj ustawienia</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Zresetować ustawienia?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Brak połączeń. Dodaj połączenie powyżej lub otwórz panel: zawiera on narzędzia wiersza polecenia AI zainstalowane na tym komputerze.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} to Twoje ostatnie połączenie. Bez połączenia Hotline nie może czatować: w panelu pojawi się prośba o wybranie zainstalowanego CLI lub dodanie klucza API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Więcej…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Pokazuj, gdy AI myśli</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Gdy odpowiedź jest generowana, ale przez chwilę nie pojawia się tekst, kursor obraca się, sygnalizując, że proces nie został zatrzymany</value></data>
 </root>

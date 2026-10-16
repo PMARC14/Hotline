@@ -502,4 +502,19 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Видалити /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Нова назва</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Це сполучення клавіш уже використовує інша програма</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Скинути</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Повертає параметри до стану після інсталяції. Спочатку все копіюється до {0}\backups. Щоб перемикатися між наборами параметрів, замініть settings.json (або файл у connections) іншою копією: Hotline застосує її негайно. Стандартні значення знаходяться в {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Скинути все</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, кожне підключення (і його ключ API), панель інструментів і mcp.json повертаються до початкового стану інсталяції. Підказки, швидкі дії, пам'ять та історія зберігаються. Спочатку створюється резервна копія (без ключів API).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Скинути все?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json повертається до стандартних значень. Ваші підключення, підказки, швидкі дії, пам'ять та історія зберігаються. Спочатку створюється резервна копія.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Скинути</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Готово. Попередні файли знаходяться в {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Скинути параметри</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Скинути параметри?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Підключень ще немає. Додайте одне вище або відкрийте панель: вона пропонує інструменти командного рядка ШІ, інстальовані на цьому ПК.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} — це ваше останнє підключення. Без нього Hotline не може спілкуватися в чаті: панель попросить вибрати інстальований CLI або додати ключ API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Більше…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Показувати, коли ШІ думає</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Поки відповідь готується, але текст тимчасово не з'являється, курсор обертається, показуючи, що процес не завис</value></data>
 </root>

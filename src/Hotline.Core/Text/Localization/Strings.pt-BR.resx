@@ -502,4 +502,19 @@ Negar:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Excluir /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Novo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Outro app já usa esse atalho</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Redefinir</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Restaura as configurações para o estado original de instalação. Tudo é copiado para {0}\backups primeiro. Para alternar entre conjuntos de configurações, substitua settings.json (ou um arquivo em connections) por outra cópia: o Hotline aplica imediatamente. Os padrões estão em {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Redefinir tudo</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, todas as conexões (e suas chaves de API), a barra de ferramentas e mcp.json voltam ao estado de instalação. Prompts, ações rápidas, memória e histórico são mantidos. Um backup é criado primeiro (as chaves de API não são incluídas).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Redefinir tudo?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json volta aos padrões. Suas conexões, prompts, ações rápidas, memória e histórico são mantidos. Um backup é criado primeiro.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Redefinir</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Concluído. Os arquivos anteriores estão em {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Redefinir configurações</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Redefinir configurações?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Nenhuma conexão ainda. Adicione uma acima ou abra o painel: ele oferece as ferramentas de linha de comando de IA instaladas neste computador.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} é sua última conexão. Sem ela, o Hotline não pode conversar: o painel solicitará a escolha de uma CLI instalada ou a adição de uma chave de API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Mais…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Mostrar quando a IA está pensando</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Enquanto uma resposta está a caminho, mas nenhum texto aparece no momento, o cursor gira para que você saiba que o processo não travou</value></data>
 </root>

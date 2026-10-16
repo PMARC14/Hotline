@@ -502,4 +502,19 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>刪除 /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新名稱</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他應用程式已在使用該快速鍵</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>重設</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>將設定還原為安裝時的狀態。所有內容會先複製到 {0}\backups。若要在多組設定之間切換，請使用其他複本取代 settings.json (或 connections 中的檔案)：Hotline 會立即套用。預設值位於 {1}。</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>重設所有項目</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、每個連線 (及其 API 金鑰)、工具列與 mcp.json 將還原為安裝時的狀態。系統會保留提示、快速指令、記憶與歷程記錄。系統會先建立備份 (不包含 API 金鑰)。</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>要重設所有項目嗎?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 將還原為預設值。系統會保留您的連線、提示、快速指令、記憶與歷程記錄。系統會先建立備份。</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>重設</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>完成。先前的檔案位於 {0}。</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>重設設定</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>要重設設定嗎?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>尚未建立連線。請在上方新增連線，或開啟面板：面板會列出此電腦上安裝的 AI 命令列工具。</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} 是您的最後一個連線。若沒有連線，Hotline 將無法聊天：面板會要求您選擇已安裝的 CLI 或新增 API 金鑰。</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>更多…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>在 AI 思考時顯示</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>正在產生回覆但暫時未出現文字時，游標會旋轉，以便您確認系統並未停滯</value></data>
 </root>

@@ -502,4 +502,19 @@ Nega:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Eliminare /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nuovo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Un'altra app usa già questa scorciatoia</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Reimposta</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ripristina le impostazioni allo stato iniziale di installazione. Tutto viene prima copiato in {0}\backups. Per passare da un set di impostazioni all'altro, sostituisci settings.json (o un file in connections) con un'altra copia: Hotline la applicherà subito. Le impostazioni predefinite sono in {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Reimposta tutto</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, tutte le connessioni (e le relative chiavi API), la barra degli strumenti e mcp.json tornano allo stato iniziale di installazione. Prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup (le chiavi API non sono incluse).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reimpostare tutto?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json viene reimpostato sui valori predefiniti. Connessioni, prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reimposta</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Operazione completata. I file precedenti si trovano in {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reimposta impostazioni</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Reimpostare le impostazioni?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Nessuna connessione. Aggiungine una sopra oppure apri il riquadro: visualizza gli strumenti della riga di comando per IA installati in questo PC.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} è la tua ultima connessione. Senza una connessione, Hotline non può avviare la chat: il riquadro richiederà di selezionare una CLI installata o aggiungere una chiave API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Altro…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Mostra quando l'IA sta elaborando</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Mentre una risposta è in preparazione ma non compare ancora testo, il cursore ruota per indicare che il processo non è bloccato</value></data>
 </root>

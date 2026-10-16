@@ -502,4 +502,19 @@ Tolak:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Hapus /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nama baru</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Aplikasi lain sudah memakai pintasan itu</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Mengembalikan pengaturan ke kondisi saat penginstalan. Semua file disalin ke {0}\backups terlebih dahulu. Untuk beralih antar kumpulan pengaturan, ganti settings.json (atau file di connections) dengan salinan lain: Hotline akan langsung menerapkannya. Pengaturan default ada di {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Reset semua</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, semua koneksi (dan kunci API-nya), toolbar, serta mcp.json kembali ke kondisi awal penginstalan. Perintah, tindakan cepat, memori, dan riwayat tetap tersimpan. Cadangan akan dibuat terlebih dahulu (kunci API tidak disertakan).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reset semua?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json kembali ke default. Koneksi, perintah, tindakan cepat, memori, dan riwayat Anda tetap tersimpan. Cadangan akan dibuat terlebih dahulu.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reset</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Selesai. File sebelumnya berada di {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reset pengaturan</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Reset pengaturan?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Belum ada koneksi. Tambahkan koneksi di atas, atau buka panel: panel menawarkan alat baris perintah AI yang terinstal di PC ini.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} adalah koneksi terakhir Anda. Tanpa koneksi, Hotline tidak dapat mengobrol: panel akan meminta Anda memilih CLI yang terinstal atau menambahkan kunci API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Lainnya…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Tampilkan saat AI sedang berpikir</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Saat jawaban sedang diproses tetapi teks belum muncul, kursor akan berputar agar Anda tahu proses tidak terhenti</value></data>
 </root>

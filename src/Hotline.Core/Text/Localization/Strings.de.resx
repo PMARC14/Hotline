@@ -502,4 +502,19 @@ Verweigern:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} löschen?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Neuer Name</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Diese Tastenkombination nutzt schon eine andere App</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Zurücksetzen</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Setzt die Einstellungen auf den Installationszustand zurück. Alles wird zuerst nach {0}\backups kopiert. Um zwischen verschiedenen Einstellungen zu wechseln, ersetzen Sie settings.json (oder eine Datei in connections) durch eine andere Kopie: Hotline übernimmt sie sofort. Die Standardwerte befinden sich in {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Alles zurücksetzen</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, alle Verbindungen (und deren API-Schlüssel), die Symbolleiste und mcp.json werden auf den Installationszustand zurückgesetzt. Prompts, Schnellaktionen, Speicher und Verlauf bleiben erhalten. Zuerst wird ein Backup erstellt (ohne API-Schlüssel).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Alles zurücksetzen?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json wird auf die Standardwerte zurückgesetzt. Ihre Verbindungen, Prompts, Schnellaktionen, Speicher und Verlauf bleiben erhalten. Zuerst wird ein Backup erstellt.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Zurücksetzen</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Fertig. Die vorherigen Dateien befinden sich in {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Einstellungen zurücksetzen</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Einstellungen zurücksetzen?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Noch keine Verbindungen. Fügen Sie oben eine hinzu oder öffnen Sie den Bereich: Hier werden die auf diesem PC installierten KI-Befehlszeilentools angezeigt.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} ist Ihre letzte Verbindung. Ohne Verbindung kann Hotline nicht chatten: Im Bereich werden Sie aufgefordert, eine installierte CLI auszuwählen oder einen API-Schlüssel hinzuzufügen.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Mehr…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Anzeigen, wenn die KI nachdenkt</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Während eine Antwort vorbereitet wird, aber kurzzeitig kein Text erscheint, dreht sich der Cursor, damit Sie sehen, dass der Vorgang nicht hängen geblieben ist</value></data>
 </root>

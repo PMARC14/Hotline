@@ -502,4 +502,19 @@ Reddet:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Sıfırla</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ayarları yükleme anındaki durumuna döndürür. Önce her şey {0}\backups konumuna kopyalanır. Ayar kümeleri arasında geçiş yapmak için settings.json (veya connections içindeki bir dosyayı) başka bir kopyayla değiştirin: Hotline bunu hemen uygular. Varsayılanlar {1} konumundadır.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Her şeyi sıfırla</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, tüm bağlantılar (ve API anahtarları), araç çubuğu ve mcp.json yükleme anındaki durumuna döner. İstemler, hızlı eylemler, bellek ve geçmiş korunur. Önce bir yedek oluşturulur (API anahtarları dahil edilmez).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Her şey sıfırlansın mı?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json varsayılanlara döner. Bağlantılarınız, istemleriniz, hızlı eylemleriniz, bellek ve geçmişiniz korunur. Önce bir yedek oluşturulur.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Sıfırla</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Bitti. Önceki dosyalar {0} konumunda.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Ayarları sıfırla</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Ayarlar sıfırlansın mı?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Henüz bağlantı yok. Yukarıdan bir tane ekleyin veya paneli açın: Bu bilgisayarda yüklü yapay zeka komut satırı araçlarını sunar.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} son bağlantınız. Bir bağlantı olmadan Hotline sohbet edemez: Panel, yüklü bir CLI seçmenizi veya bir API anahtarı eklemenizi ister.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Daha fazla…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Yapay zeka düşünürken göster</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Yanıt hazırlanırken ancak henüz metin gelmediğinde, yanıtın takılmadığını anlamanız için imleç döner</value></data>
 </root>

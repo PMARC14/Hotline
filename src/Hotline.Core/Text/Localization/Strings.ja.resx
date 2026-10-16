@@ -502,4 +502,19 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>リセット</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>設定をインストール時の状態に戻します。最初にすべてが {0}\backups にコピーされます。設定セットを切り替えるには、settings.json (または connections 内のファイル) を別のコピーに置き換えます。Hotline はすぐにそれを適用します。既定値は {1} にあります。</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>すべてリセット</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、すべての接続 (およびその API キー)、ツール バー、mcp.json がインストール時の状態に戻ります。プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます (API キーは含まれません)。</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>すべてリセットしますか?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json は既定値に戻ります。接続、プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます。</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>リセット</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>完了しました。以前のファイルは {0} にあります。</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>設定をリセット</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>設定をリセットしますか?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>接続はまだありません。上部で追加するか、パネルを開いてください。この PC にインストールされている AI コマンドライン ツールが表示されます。</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} は最後の接続です。接続がないと Hotline はチャットできません。パネルで、インストール済みの CLI を選択するか API キーを追加するよう求められます。</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>詳細…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>AI の思考中に表示する</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>回答の生成中でテキストがまだ表示されない間、停止していないことがわかるようにカーソルが回転します</value></data>
 </root>

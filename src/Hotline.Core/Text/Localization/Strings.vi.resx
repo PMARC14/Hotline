@@ -502,4 +502,19 @@ Từ chối:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Xóa /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Tên mới</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Một ứng dụng khác đã dùng phím tắt đó</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Đặt lại</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Đặt lại cài đặt về trạng thái ban đầu khi cài đặt. Mọi thứ sẽ được sao chép vào {0}\backups trước. Để chuyển đổi giữa các bộ cài đặt, hãy thay thế settings.json (hoặc tệp trong connections) bằng một bản sao khác: Hotline sẽ áp dụng ngay lập tức. Cài đặt mặc định nằm trong {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Đặt lại tất cả</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, mọi kết nối (và khóa API tương ứng), thanh công cụ và mcp.json sẽ trở về trạng thái khi cài đặt. Lời nhắc, tác vụ nhanh, bộ nhớ và lịch sử được giữ lại. Bản sao lưu sẽ được tạo trước (không bao gồm khóa API).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Đặt lại tất cả?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json sẽ trở về giá trị mặc định. Các kết nối, lời nhắc, tác vụ nhanh, bộ nhớ và lịch sử của bạn được giữ lại. Bản sao lưu sẽ được tạo trước.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Đặt lại</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Đã xong. Các tệp trước đó nằm trong {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Đặt lại cài đặt</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Đặt lại cài đặt?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Chưa có kết nối nào. Hãy thêm một kết nối ở trên hoặc mở bảng điều khiển: nơi đây cung cấp các công cụ dòng lệnh AI được cài đặt trên PC này.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} là kết nối cuối cùng của bạn. Nếu không có kết nối, Hotline không thể trò chuyện: bảng điều khiển sẽ yêu cầu bạn chọn một CLI đã cài đặt hoặc thêm khóa API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Thêm…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Hiển thị khi AI đang suy nghĩ</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Trong khi câu trả lời đang được tạo nhưng chưa xuất hiện văn bản, con trỏ sẽ xoay để bạn biết hệ thống không bị treo</value></data>
 </root>

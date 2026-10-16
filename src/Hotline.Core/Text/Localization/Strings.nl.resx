@@ -502,4 +502,19 @@ Weigeren:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} verwijderen?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nieuwe naam</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Een andere app gebruikt die sneltoets al</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Opnieuw instellen</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Hiermee herstelt u de instellingen zoals ze waren bij de installatie. Alles wordt eerst gekopieerd naar {0}\backups. Als u wilt schakelen tussen instellingen, vervangt u settings.json (of een bestand in connections) door een ander exemplaar: Hotline past dit direct toe. De standaardwaarden staan in {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Alles opnieuw instellen</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, elke verbinding (en de bijbehorende API-sleutel), de werkbalk en mcp.json worden teruggezet naar de installatiestatus. Prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt (zonder API-sleutels).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Alles opnieuw instellen?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json wordt hersteld naar de standaardwaarden. Uw verbindingen, prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Opnieuw instellen</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Gereed. De vorige bestanden staan in {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Instellingen opnieuw instellen</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Instellingen opnieuw instellen?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Nog geen verbindingen. Voeg hierboven een toe of open het paneel: hier vindt u de AI-opdrachtregelprogramma's die op deze pc zijn geïnstalleerd.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} is uw laatste verbinding. Zonder verbinding kan Hotline niet chatten: het paneel vraagt u om een geïnstalleerde CLI te kiezen of een API-sleutel toe te voegen.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Meer…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Weergeven wanneer de AI nadenkt</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Wanneer een antwoord onderweg is maar er nog even geen tekst verschijnt, draait de cursor zodat u weet dat het proces niet is vastgelopen</value></data>
 </root>
