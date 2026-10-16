@@ -140,6 +140,9 @@ internal static class Native
     [DllImport("gdi32.dll")] public static extern bool DeleteObject(nint obj);
     [DllImport("gdi32.dll")] public static extern bool DeleteDC(nint hdc);
     [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(nint hWnd, int attr, out RECT value, int size);
+    [DllImport("dwmapi.dll", EntryPoint = "DwmGetWindowAttribute")] public static extern int DwmGetWindowAttributeInt(nint hWnd, int attr, out int value, int size);
+    public const int DWMWA_CLOAKED = 14;
+    [DllImport("user32.dll")] public static extern bool IsWindowVisible(nint hWnd);
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] public static extern nint CreateJobObject(nint attrs, string? name);
     [DllImport("kernel32.dll")] public static extern bool SetInformationJobObject(nint job, int cls, ref JOBOBJECT_EXTENDED_LIMIT_INFORMATION info, int size);
     [DllImport("kernel32.dll")] public static extern bool AssignProcessToJobObject(nint job, nint process);

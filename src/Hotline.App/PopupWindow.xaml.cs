@@ -181,6 +181,39 @@ public sealed partial class PopupWindow : Window
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
+        CheckShown();
+    }
+
+    private int _showCheck;
+
+    /// <summary>
+    /// After waking from Modern Standby the panel once toggled "open" without appearing (2026-10-16). Half a second
+    /// after each open: if Windows says it's hidden or cloaked, or no frame was drawn, log what was seen and show it
+    /// once more.
+    /// </summary>
+    private void CheckShown()
+    {
+        var check = ++_showCheck;
+        var drawn = false;
+        void OnFrame(object? s, object e) { drawn = true; Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame; }
+        Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+        var timer = DispatcherQueue.CreateTimer();
+        timer.Interval = TimeSpan.FromMilliseconds(500);
+        timer.IsRepeating = false;
+        timer.Tick += (_, _) =>
+        {
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
+            if (check != _showCheck || !AppWindow.IsVisible || _offscreen) return; // closed or reopened since
+            var visible = Native.IsWindowVisible(Hwnd);
+            var cloaked = Native.DwmGetWindowAttributeInt(Hwnd, Native.DWMWA_CLOAKED, out var c, sizeof(int)) == 0 && c != 0;
+            if (visible && !cloaked && drawn) return;
+            var p = AppWindow.Position;
+            _log.Error($"panel opened but may not be on screen: visible={visible} cloaked={cloaked} drawn={drawn} at {p.X},{p.Y} {AppWindow.Size.Width}x{AppWindow.Size.Height}; showing it again");
+            AppWindow.Hide();
+            AppWindow.Show(activateWindow: true);
+            Native.ForceForeground(Hwnd);
+        };
+        timer.Start();
     }
 
     private bool _offscreen;
