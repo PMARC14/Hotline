@@ -179,6 +179,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         if (targets.Count > 0)
         {
             var menu = new MenuFlyout();
+            var more = new MenuFlyoutSubItem { Text = Strings.Recent_ContinueMore }; // other CLIs, reading the chat from a file
             foreach (var t in targets)
             {
                 var item = new MenuFlyoutItem { Text = t.Label };
@@ -193,8 +194,9 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
                         notices.Show(L.F(Strings.Recent_ContinueFailed, t.Label, ex.Message), InfoBarSeverity.Warning);
                     }
                 };
-                menu.Items.Add(item);
+                (t.More ? more.Items : menu.Items).Add(item);
             }
+            if (more.Items.Count > 0) menu.Items.Add(more);
             _actions.Children.Add(new DropDownButton
             {
                 Content = new StackPanel

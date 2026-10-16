@@ -244,6 +244,33 @@ public sealed class CliResumeTests : IDisposable
     // ---- Continue in…
 
     [Fact]
+    public void Continue_in_offers_the_chats_own_cli_and_the_others_under_more()
+    {
+        BackendType[] all = [BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex];
+        Assert.Equal(
+            [new(BackendType.Codex, CliHandoff.Way.Resume, false), new(BackendType.ClaudeCode, CliHandoff.Way.Handoff, true),
+             new(BackendType.Antigravity, CliHandoff.Way.Handoff, true)],
+            CliHandoff.Choices(BackendType.Codex, hasSession: true, wholeChat: true, all));
+    }
+
+    [Fact]
+    public void Continue_in_without_a_session_yet_still_offers_only_the_own_cli_on_top()
+    {
+        var choices = CliHandoff.Choices(BackendType.Codex, hasSession: false, wholeChat: true, [BackendType.Codex, BackendType.Antigravity]);
+        Assert.Equal([new(BackendType.Codex, CliHandoff.Way.Handoff, false), new(BackendType.Antigravity, CliHandoff.Way.Handoff, true)], choices);
+    }
+
+    [Fact]
+    public void Continue_in_a_record_only_chat_can_only_resume()
+        => Assert.Equal([new(BackendType.ClaudeCode, CliHandoff.Way.Resume, false)],
+            CliHandoff.Choices(BackendType.ClaudeCode, hasSession: true, wholeChat: false, [BackendType.ClaudeCode, BackendType.Codex]));
+
+    [Fact]
+    public void Continue_in_an_api_chat_lists_the_clis_directly()
+        => Assert.Equal([new(BackendType.ClaudeCode, CliHandoff.Way.Handoff, false), new(BackendType.Codex, CliHandoff.Way.Handoff, false)],
+            CliHandoff.Choices(BackendType.Gemini, hasSession: false, wholeChat: true, [BackendType.Codex, BackendType.ClaudeCode]));
+
+    [Fact]
     public void Continue_in_resumes_the_chats_own_conversation()
     {
         var s = new CliSession(SessionA, @"C:\w\Hotline");

@@ -17,37 +17,43 @@ namespace Hotline.App.Chat;
 internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, string handoffDirectory, Func<string, ValueTask> stopBackend,
     FileLog log)
 {
-    public sealed record Target(string Label, Func<Task> Run);
+    /// <summary>One menu entry; <paramref name="More"/>: listed under "More…".</summary>
+    public sealed record Target(string Label, Func<Task> Run, bool More = false);
 
     public IReadOnlyList<Target> Targets()
     {
-        var targets = new List<Target>();
-        BackendType? own = null;
-        if (chat.CurrentSession is { } current && Profile(current.BackendId) is { } profile && CliHandoff.CanResume(profile.Type)
-            && Locate(profile) is { } exe)
-        {
-            own = profile.Type;
-            var command = CliHandoff.Resume(profile.Type, exe, current.Session);
-            targets.Add(new(profile.Name, async () =>
-            {
-                await stopBackend(profile.Id); // one process per conversation: Hotline lets go before the terminal takes it
-                Launch(command);
-                chat.NewChat(); // the conversation now lives in the terminal; Hotline must not write into it as well
-            }));
-        }
-        // Another CLI reads the chat from a file: only when the panel has all of it (not a chat reopened from a record).
-        if (chat.Messages.Count == 0 || !chat.HasWholeTranscript) return targets;
+        // The chat's own CLI comes from its connection, with or without a conversation yet (CliHandoff.Choices).
+        var profile = Profile(chat.CurrentSession?.BackendId ?? chat.BackendId);
+        var exes = new Dictionary<BackendType, (BackendProfile Profile, string Exe)>();
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
         {
-            if (type == own) continue;
-            var other = settings.Chat.Backends.FirstOrDefault(b => b.Type == type) ?? new BackendProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
-            if (Locate(other) is not { } otherExe) continue;
-            targets.Add(new(other.Name, () =>
+            var p = profile?.Type == type ? profile
+                : settings.Chat.Backends.FirstOrDefault(b => b.Type == type) ?? new BackendProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
+            if (Locate(p) is { } exe) exes[type] = (p, exe);
+        }
+        var targets = new List<Target>();
+        var choices = CliHandoff.Choices(profile?.Type, chat.CurrentSession is not null,
+            chat.Messages.Count > 0 && chat.HasWholeTranscript, exes.Keys);
+        foreach (var choice in choices)
+        {
+            var (p, exe) = exes[choice.Type];
+            if (choice.Way == CliHandoff.Way.Resume)
             {
-                var file = WriteHandoff();
-                Launch(CliHandoff.Handoff(type, otherExe, file, Path.GetDirectoryName(file)!));
-                return Task.CompletedTask;
-            }));
+                var current = chat.CurrentSession!.Value;
+                var command = CliHandoff.Resume(choice.Type, exe, current.Session);
+                targets.Add(new(p.Name, async () =>
+                {
+                    await stopBackend(p.Id); // one process per conversation: Hotline lets go before the terminal takes it
+                    Launch(command);
+                    chat.NewChat(); // the conversation now lives in the terminal; Hotline must not write into it as well
+                }));
+            }
+            else
+                targets.Add(new(p.Name, () =>
+                {
+                    Launch(CliHandoff.Handoff(choice.Type, exe, WriteHandoff(), Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+                    return Task.CompletedTask;
+                }, choice.More));
         }
         return targets;
     }
