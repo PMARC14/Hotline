@@ -250,6 +250,9 @@ public sealed partial class PopupWindow : Window
 
     public void Toggle()
     {
+        // Evidence for the sound some hear when the key toggles a pinned panel: what had focus at the time.
+        var fg = Native.GetForegroundWindow();
+        _log.Info($"toggle: visible={AppWindow.IsVisible} pinned={Pinned} foreground={(fg == Hwnd ? "panel" : Native.ClassNameOf(fg))}");
         if (_guard.ShouldShowOnToggle(AppWindow.IsVisible)) ShowPopup();
         else HidePopup();
     }
