@@ -22,7 +22,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     public (string Backup, IReadOnlyList<string> Removed) Reset(bool everything)
     {
         var result = SettingsReset.Reset(store, Path.GetDirectoryName(store.FilePath)!, Current, everything, DateTimeOffset.Now);
-        if (store.TryRead() is { } fresh) Reload(fresh);
+        Reload(store.TryRead() ?? store.Load()); // Load when a scanner held the file a moment
         log.Info($"settings reset ({(everything ? "everything" : "settings")}); backup in {result.Backup}");
         return result;
     }

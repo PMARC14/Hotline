@@ -142,7 +142,7 @@ public partial class App : Application
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
             home, _secrets, BackendFactory.CreateApiHttpClient(), tools,
-            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home)),
+            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home), Path.Combine(privateDir, "agy", "Hotline")),
             Path.Combine(scratchDir, "codex", "Hotline"));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;

@@ -153,7 +153,7 @@ public sealed class CliResumeTests : IDisposable
     private AgyBackend Agy(bool keep = true, ToolMode tools = ToolMode.ChatOnly) =>
         new(new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline", KeepCliSessions = keep, Tools = tools }, () => @"C:\agy.exe",
             new AgyWorkspace(Path.Combine(_dir, "agy", "Hotline"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")),
-            _ => "SYSTEM", Path.Combine(_dir, "home"), new AgyProjects(ProjectsDir));
+            _ => "SYSTEM", Path.Combine(_dir, "home"), new AgyProjects(ProjectsDir, Path.Combine(_dir, "old", "agy", "Hotline")));
 
     [Fact]
     public async Task Agy_chat_only_runs_in_the_home_folder_with_its_workspace_added()
@@ -232,13 +232,17 @@ public sealed class CliResumeTests : IDisposable
     }
 
     [Fact]
-    public void Agy_projects_never_creates_one_and_finds_hotline_by_name_too()
+    public void Agy_projects_never_creates_one_and_finds_the_old_folder_but_not_a_name()
     {
-        var projects = new AgyProjects(ProjectsDir);
-        Assert.Empty(projects.ArgsFor(@"C:\x\Hotline"));
+        var old = Path.Combine(_dir, "old", "Hotline");
+        var projects = new AgyProjects(ProjectsDir, old);
+        Assert.Empty(projects.ArgsFor(Path.Combine(_dir, "new", "Hotline")));
         Directory.CreateDirectory(ProjectsDir);
-        File.WriteAllText(Path.Combine(ProjectsDir, "p.json"), "{\"id\":\"0f6c2d1e-aaaa-4bbb-8ccc-123456789abd\",\"name\":\"Hotline\",\"projectResources\":{}}");
-        Assert.Equal(["--project", "0f6c2d1e-aaaa-4bbb-8ccc-123456789abd"], projects.ArgsFor(@"C:\x\Hotline"));
+        File.WriteAllText(Path.Combine(ProjectsDir, "mine.json"), "{\"id\":\"0f6c2d1e-aaaa-4bbb-8ccc-123456789abd\",\"name\":\"Hotline\",\"projectResources\":{}}");
+        Assert.Empty(projects.ArgsFor(Path.Combine(_dir, "new", "Hotline"))); // the user's own project called Hotline
+        var uri = new Uri(old).AbsoluteUri.Replace("file:///", "file://");
+        File.WriteAllText(Path.Combine(ProjectsDir, "p.json"), "{\"id\":\"0f6c2d1e-aaaa-4bbb-8ccc-123456789abe\",\"name\":\"Hotline\",\"projectResources\":{\"resources\":[{\"folderUri\":\"" + uri + "\"}]}}");
+        Assert.Equal(["--project", "0f6c2d1e-aaaa-4bbb-8ccc-123456789abe"], projects.ArgsFor(Path.Combine(_dir, "new", "Hotline")));
     }
 
     // ---- Continue in…

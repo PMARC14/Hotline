@@ -31,7 +31,9 @@ public static class SettingsReset
     public static (string Backup, IReadOnlyList<string> Removed) Reset(SettingsStore store, string directory, HotlineSettings current,
         bool everything, DateTimeOffset now)
     {
-        var backup = Path.Combine(directory, BackupsFolder, $"reset-{now.ToLocalTime():yyyyMMdd-HHmmss}");
+        var stamp = $"reset-{now.ToLocalTime():yyyyMMdd-HHmmss}";
+        var backup = Path.Combine(directory, BackupsFolder, stamp);
+        for (var n = 2; Directory.Exists(backup); n++) backup = Path.Combine(directory, BackupsFolder, $"{stamp}-{n}"); // never over a backup
         Directory.CreateDirectory(backup);
         if (File.Exists(store.FilePath)) File.Copy(store.FilePath, Path.Combine(backup, SettingsStore.FileName), overwrite: true);
         if (Directory.Exists(store.ConnectionsDirectory))
@@ -47,10 +49,15 @@ public static class SettingsReset
         IReadOnlyList<string> removed = [];
         if (everything)
         {
-            removed = current.Chat.Backends.Select(b => b.Id).ToList();
+            var ids = current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
             fresh.Chat.Backends = [];
             if (Directory.Exists(store.ConnectionsDirectory))
-                foreach (var file in Directory.EnumerateFiles(store.ConnectionsDirectory, "*.json")) File.Delete(file);
+                foreach (var file in Directory.EnumerateFiles(store.ConnectionsDirectory, "*.json"))
+                {
+                    ids.Add(Path.GetFileNameWithoutExtension(file)); // files that didn't load too: their keys go as well
+                    File.Delete(file);
+                }
+            removed = ids.ToList();
             foreach (var name in EverythingFiles) File.Delete(Path.Combine(directory, name)); // recreated with defaults on use
         }
         else

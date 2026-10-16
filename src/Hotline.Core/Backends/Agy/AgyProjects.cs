@@ -7,34 +7,19 @@ namespace Hotline.Core.Backends.Agy;
 /// folder of that name). agy keeps projects in ~/.gemini/config/projects/&lt;id&gt;.json. Hotline only reads those files.
 /// Resumed conversations get no project flags, so one the user moved elsewhere stays there.
 /// </summary>
-public sealed class AgyProjects(string projectsDirectory)
+public sealed class AgyProjects(string projectsDirectory, params IReadOnlyList<string> legacyFolders)
 {
     public static string DirectoryFor(string homeDirectory) => Path.Combine(homeDirectory, ".gemini", "config", "projects");
 
     /// <summary>
-    /// Flags for a new chat-only conversation: the project holding <paramref name="folder"/> (Hotline's workspace), or
-    /// the one named "Hotline". None when neither exists: Hotline never creates one, since agy would name a new project
-    /// after the folder agy runs in (the home folder).
+    /// Flags for a new chat-only conversation: the project holding <paramref name="folder"/> (Hotline's workspace) or
+    /// one of the legacy folders (earlier versions' workspace, where agy made the "Hotline" project). None when there is
+    /// no such project: Hotline never creates one, since agy would name it after the home folder. Never matched by
+    /// name: the user may have a project of their own called Hotline.
     /// </summary>
     public IReadOnlyList<string> ArgsFor(string folder) =>
-        (Find(folder) ?? FindByName("Hotline")) is { } id && Chat.CliSession.IsValidId(id) ? ["--project", id] : [];
-
-    private string? FindByName(string name)
-    {
-        if (!Directory.Exists(projectsDirectory)) return null;
-        foreach (var file in Directory.EnumerateFiles(projectsDirectory, "*.json"))
-        {
-            try
-            {
-                using var doc = JsonDocument.Parse(File.ReadAllText(file));
-                var root = doc.RootElement;
-                if (root.TryGetProperty("name", out var n) && n.ValueKind == JsonValueKind.String && n.GetString() == name
-                    && root.TryGetProperty("id", out var idEl) && idEl.GetString() is { Length: > 0 } id) return id;
-            }
-            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException) { }
-        }
-        return null;
-    }
+        legacyFolders.Prepend(folder).Select(Find).FirstOrDefault(id => id is not null && Chat.CliSession.IsValidId(id)) is { } found
+            ? ["--project", found] : [];
 
     /// <summary>The ID of the agy project that holds <paramref name="folder"/>, if any.</summary>
     public string? Find(string folder)

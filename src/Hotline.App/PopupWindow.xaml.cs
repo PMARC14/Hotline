@@ -206,12 +206,16 @@ public sealed partial class PopupWindow : Window
             if (check != _showCheck || !AppWindow.IsVisible || _offscreen) return; // closed or reopened since
             var visible = Native.IsWindowVisible(Hwnd);
             var cloaked = Native.DwmGetWindowAttributeInt(Hwnd, Native.DWMWA_CLOAKED, out var c, sizeof(int)) == 0 && c != 0;
-            if (visible && !cloaked && drawn) return;
             var p = AppWindow.Position;
-            _log.Error($"panel opened but may not be on screen: visible={visible} cloaked={cloaked} drawn={drawn} at {p.X},{p.Y} {AppWindow.Size.Width}x{AppWindow.Size.Height}; showing it again");
+            var state = $"visible={visible} cloaked={cloaked} drawn={drawn} at {p.X},{p.Y} {AppWindow.Size.Width}x{AppWindow.Size.Height}";
+            if (cloaked) _log.Info($"panel open but cloaked ({state})"); // e.g. another virtual desktop: leave it
+            if (visible && drawn) return;
+            _log.Error($"panel opened but isn't on screen ({state}); showing it again");
+            var modal = Modal(); // the brief hide isn't the user clicking away
             AppWindow.Hide();
             AppWindow.Show(activateWindow: true);
             Native.ForceForeground(Hwnd);
+            DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, modal.Dispose);
         };
         timer.Start();
     }

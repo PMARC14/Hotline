@@ -23,7 +23,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
     public IReadOnlyList<Target> Targets()
     {
         // The chat's own CLI comes from its connection, with or without a conversation yet (CliHandoff.Choices).
-        var profile = Profile(chat.CurrentSession?.BackendId ?? chat.BackendId);
+        var profile = (chat.CurrentSession is { } s ? Profile(s.BackendId) : null) ?? Profile(chat.BackendId);
         var exes = new Dictionary<BackendType, (BackendProfile Profile, string Exe)>();
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
         {

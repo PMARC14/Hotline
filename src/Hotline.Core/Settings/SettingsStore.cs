@@ -58,10 +58,12 @@ public sealed class SettingsStore(string directory)
             if (s is null) return null;
             s.Chat ??= new ChatSettings();
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
-            var (files, _) = ReadConnectionFiles();
+            var (files, broken) = ReadConnectionFiles();
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
+            if (files.Count == 0 && s.SchemaVersion < 12 && broken.Count == 0)
+                files = ChatSettings.LegacyDefaultBackends(); // a pre-v12 file ran on the built-in agy (as in Load)
             s.Chat.Backends = Ordered(files,
                 s.Chat.Order is { Count: > 0 } order ? order : legacy?.Select(p => p.Id).ToList());
             return Normalize(s);

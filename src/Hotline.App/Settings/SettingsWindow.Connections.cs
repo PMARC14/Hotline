@@ -64,9 +64,9 @@ public sealed partial class SettingsWindow
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
             _secrets.Set(SecretKeys.ApiKey(id), null);
-            await _invalidate(id);
             _selectedConnection = null;
-            ShowPage("Connections");
+            ShowPage("Connections"); // before the wait: the old page's buttons still point at the removed connection
+            await _invalidate(id);
         };
         var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
         makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };

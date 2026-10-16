@@ -145,8 +145,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     public void AppendToAnswer(string id, string text, bool replace)
     {
         if (!_assistants.TryGetValue(id, out var view)) return;
-        view.Text = replace ? text : view.Text + text;
-        if (text.Length > 0) view.LastTextAt = Environment.TickCount64;
+        var next = replace ? text : view.Text + text;
+        if (next != view.Text) view.LastTextAt = Environment.TickCount64; // a repeated snapshot isn't new text
+        view.Text = next;
         view.Dirty = true;
         _timer?.Start();
     }
@@ -272,6 +273,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private void FillCaret(AssistantView view, bool spinning)
     {
         var p = view.CaretParagraph!;
+        StopSpinner(p);
         p.Inlines.Clear();
         view.Spinning = spinning;
         if (!spinning) { p.Inlines.Add(new Run { Text = "▍", Foreground = theme.Style.Accent }); return; }
@@ -295,9 +297,15 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         if (spin != view.Spinning) FillCaret(view, spin);
     }
 
+    private static void StopSpinner(Paragraph p)
+    {
+        foreach (var ring in p.Inlines.OfType<InlineUIContainer>().Select(i => i.Child).OfType<ProgressRing>()) ring.IsActive = false;
+    }
+
     private void RemoveCaret(AssistantView view)
     {
         if (view.CaretParagraph is null) return;
+        StopSpinner(view.CaretParagraph);
         _block.Blocks.Remove(view.CaretParagraph);
         view.CaretParagraph = null;
     }

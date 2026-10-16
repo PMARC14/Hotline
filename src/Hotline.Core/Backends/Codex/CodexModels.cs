@@ -121,7 +121,7 @@ public sealed class CodexModelLister(
             await proc.WriteLineAsync(JsonSerializer.Serialize(new { method = "model/list", id, @params = args }), token);
             var (page, next) = CodexModels.ParsePage(await ReadResultAsync(proc, id, token));
             all.AddRange(page);
-            if (next is null) break;
+            if (next is null || next == cursor || page.Count == 0) break; // a cursor that doesn't move ends the list
             cursor = next;
         }
         return all;
@@ -138,7 +138,8 @@ public sealed class CodexModelLister(
                 using var doc = JsonDocument.Parse(line);
                 var root = doc.RootElement;
                 if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("id", out var rid) || !rid.TryGetInt32(out var n) || n != id) continue;
-                if (root.TryGetProperty("error", out _)) throw new InvalidOperationException("codex app-server error");
+                if (root.TryGetProperty("error", out var error) && error.ValueKind != JsonValueKind.Null)
+                    throw new InvalidOperationException("codex app-server error");
                 if (root.TryGetProperty("result", out var result)) return result.Clone();
             }
             catch (JsonException) { /* not JSON */ }
