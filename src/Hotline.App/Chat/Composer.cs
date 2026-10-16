@@ -14,13 +14,15 @@ namespace Hotline.App.Chat;
 /// The message box: its size and focus look, its keys (Enter sends, Shift+Enter is a new line, Ctrl+↑ in an empty
 /// box reopens the last chat) and the "/" list of quick actions (↑/↓, Tab or Enter to pick, Esc to close).
 /// </summary>
-internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions actions, UiTasks tasks)
+internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions actions, UiTasks tasks, Func<bool> resumeWhileTyping)
 {
     /// <summary>Enter (send what's typed). Never a stop: see <see cref="SendButtonClicked"/>.</summary>
     public event Action? SendRequested;
     /// <summary>The Send button, which is the Stop button while an answer is being written.</summary>
     public event Action? SendButtonClicked;
     public event Action? PreviousChatRequested;
+    /// <summary>"/resume" and a space was typed (chat.resumeWhileTyping): open the history list with these words.</summary>
+    public event Action<string>? ResumeTyped;
 
     /// <summary>Gets the first look at every key (e.g. Esc cancels dictation); true when it handled the key.</summary>
     public Func<VirtualKey, bool>? KeyFilter { get; set; }
@@ -45,6 +47,10 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     {
         popup.Input.PreviewKeyDown += OnPreviewKeyDown;
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
+        popup.Input.TextChanged += (_, _) =>
+        {
+            if (resumeWhileTyping() && ResumeCommand.TryTyping(popup.Input.Text, out var query)) ResumeTyped?.Invoke(query);
+        };
         // ListViewItems added directly: ItemClick reports their content (the row), which carries the action too.
         popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: QuickAction a }) Complete(a); };
         popup.SendButton.Click += (_, _) => SendButtonClicked?.Invoke();

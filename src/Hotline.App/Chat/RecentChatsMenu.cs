@@ -14,7 +14,8 @@ namespace Hotline.App.Chat;
 /// than the open chat. Typing in its search box filters by title (every word); ↑/↓ move, Enter opens, Esc closes.
 /// "Continue this chat in ▸" and "Open history folder" sit above the list.
 /// </summary>
-internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, NoticeArea notices, string dataDirectory, FileLog log)
+internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, NoticeArea notices, string dataDirectory, FileLog log,
+    Func<int> listSize)
 {
     /// <summary>Saved conversations, newest first (set by the app; null when history is off).</summary>
     public Func<int, IReadOnlyList<HistoryStore.Summary>>? Source { get; set; }
@@ -22,8 +23,6 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     /// <summary>Where the current chat can continue in a terminal window (set by the app).</summary>
     public ContinueIn? ContinueIn { get; set; }
 
-    /// <summary>How many saved chats the list reads (each one's transcript is opened for its title).</summary>
-    private const int MaxChats = 300;
 
     private Flyout? _flyout;
     private TextBox _search = null!;
@@ -43,7 +42,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _loading = true;
         try
         {
-            var all = await Task.Run(() => source(MaxChats)); // reads each chat's file: off the UI thread
+            var all = await Task.Run(() => source(Math.Clamp(listSize(), 10, 5000))); // reads each chat's file: off the UI thread
             var flyout = _flyout ??= Build();
             BuildActions();
             _all = all;
