@@ -165,7 +165,7 @@ Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status
 ### CI and releases
 
 Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
-to `main` publishes a release with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
+to `main` publishes a release `v<version.txt>.<next patch>` with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
 (`.github/workflows/release.yml`), signed with Hotline's long-lived self-signed certificate (trust `Hotline.cer` once).
 Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
