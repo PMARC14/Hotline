@@ -75,7 +75,6 @@ public sealed class OcrPlanTests : IDisposable
         var loaded = new SettingsStore(_dir).Load();
         Assert.True(loaded.Chat.Backends.Single(b => b.Id == "llama").Images);
         Assert.Equal(OcrMode.Always, loaded.Chat.Ocr);
-        Assert.Null(loaded.Chat.Backends.Single(b => b.Id == "agy").Images);
     }
 
     [Fact]

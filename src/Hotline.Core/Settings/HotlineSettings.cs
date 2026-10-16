@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 11;
+    public const int CurrentSchemaVersion = 12;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -148,7 +148,7 @@ public sealed class ChatSettings
     /// settings.json; an old settings.json "backends" list is moved there once).
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public List<BackendProfile> Backends { get; set; } = DefaultBackends();
+    public List<BackendProfile> Backends { get; set; } = [];
     /// <summary>Dropdown order: connection ids. Connections not listed follow, by name.</summary>
     public List<string> Order { get; set; } = [];
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
@@ -181,7 +181,11 @@ public sealed class ChatSettings
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
     public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
 
-    public static List<BackendProfile> DefaultBackends() =>
+    /// <summary>
+    /// The agy connection settings files before v12 got when they had none of their own (no connection files). New
+    /// installs start with no connection and ask; only those older files keep it.
+    /// </summary>
+    public static List<BackendProfile> LegacyDefaultBackends() =>
     [
         new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" },
     ];

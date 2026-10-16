@@ -501,4 +501,6 @@ Deny:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Delete /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>New name</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Another app already uses that shortcut</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} is your last connection. Without one Hotline can't chat: the panel will ask you to pick an installed CLI or add an API key.</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>No connections yet. Add one above, or open the panel: it offers the AI command-line tools installed on this PC.</value></data>
 </root>

@@ -27,7 +27,8 @@ public sealed partial class SettingsWindow
         var chat = _settings.Current.Chat;
         // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
         if (chat.Backends.All(b => b.Id != _selectedConnection))
-            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends[0].Id;
+            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends.FirstOrDefault()?.Id;
+        var any = _selectedConnection is not null; // every connection can be removed; then there's nothing to act on
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
         var addMenu = new MenuFlyout();
@@ -38,7 +39,7 @@ public sealed partial class SettingsWindow
             addMenu.Items.Add(item);
         }
         add.Flyout = addMenu;
-        var duplicate = new Button { Content = Strings.Conn_Duplicate };
+        var duplicate = new Button { Content = Strings.Conn_Duplicate, IsEnabled = any };
         duplicate.Click += (_, _) =>
         {
             var source = _selectedConnection!;
@@ -48,13 +49,16 @@ public sealed partial class SettingsWindow
             _selectedConnection = copyId;
             ShowPage("Connections");
         };
-        var remove = new Button { Content = Strings.Common_Remove, IsEnabled = chat.Backends.Count > 1 };
+        var remove = new Button { Content = Strings.Common_Remove, IsEnabled = any };
         remove.Click += async (_, _) =>
         {
             var id = _selectedConnection!;
             var dialog = new ContentDialog
             {
-                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle, Content = chat.Backends.First(b => b.Id == id).Name,
+                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
+                Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
+                    ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, chat.Backends[0].Name), TextWrapping = TextWrapping.Wrap }
+                    : chat.Backends.First(b => b.Id == id).Name,
                 PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
@@ -64,11 +68,11 @@ public sealed partial class SettingsWindow
             _selectedConnection = null;
             ShowPage("Connections");
         };
-        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = _selectedConnection != chat.DefaultBackend };
+        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
         makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };
         Button MoveButton(string glyph, string tip, int delta)
         {
-            var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 } };
+            var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
             b.Click += (_, _) => { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); };
             return b;
@@ -79,6 +83,8 @@ public sealed partial class SettingsWindow
             Children = { add, duplicate, remove, makeDefault, MoveButton("\uE74A", Strings.Conn_MoveUp, -1), MoveButton("\uE74B", Strings.Conn_MoveDown, +1) },
         });
 
+        if (!any)
+            PageHost.Children.Add(new TextBlock { Text = Strings.Conn_None, TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 8, 0, 0) });
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, Margin = new Thickness(0, 8, 0, 8) };
         foreach (var p in chat.Backends)
         {

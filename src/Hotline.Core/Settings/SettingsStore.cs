@@ -62,7 +62,7 @@ public sealed class SettingsStore(string directory)
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
-            s.Chat.Backends = Ordered(files.Count > 0 ? files : ChatSettings.DefaultBackends(),
+            s.Chat.Backends = Ordered(files,
                 s.Chat.Order is { Count: > 0 } order ? order : legacy?.Select(p => p.Id).ToList());
             return Normalize(s);
         }
@@ -74,7 +74,7 @@ public sealed class SettingsStore(string directory)
         if (!File.Exists(FilePath))
         {
             var fresh = new HotlineSettings();
-            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order);
+            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order, keepLegacyDefault: false);
             Normalize(fresh);
             TrySave(fresh);
             return fresh;
@@ -88,7 +88,7 @@ public sealed class SettingsStore(string directory)
             s.Chat ??= new ChatSettings();
             var loadedVersion = s.SchemaVersion;
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
-            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
+            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order, keepLegacyDefault: loadedVersion < 12);
             Normalize(s);
             if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null)
                 TrySave(s); // writes the connection files and drops "backends" from settings.json
@@ -113,7 +113,7 @@ public sealed class SettingsStore(string directory)
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
             var fallback = new HotlineSettings();
-            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
+            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order, keepLegacyDefault: false);
             return Normalize(fallback);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -189,8 +189,11 @@ public sealed class SettingsStore(string directory)
         return (profiles, broken);
     }
 
-    /// <summary>Connections for Load: the files, or (once) the old settings.json list, or the defaults.</summary>
-    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order)
+    /// <summary>
+    /// Connections for Load: the files, or (once) the old settings.json list. A file from before v12 with neither
+    /// (<paramref name="keepLegacyDefault"/>) ran on the built-in agy connection, which it keeps; otherwise none.
+    /// </summary>
+    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order, bool keepLegacyDefault)
     {
         var (files, broken) = ReadConnectionFiles();
         BrokenConnectionFiles = broken;
@@ -198,7 +201,7 @@ public sealed class SettingsStore(string directory)
         if (legacy is not null)
             foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                 files.Add(p); // moved into files on the next save
-        var list = files.Count > 0 ? files : broken.Count > 0 ? [] : ChatSettings.DefaultBackends();
+        var list = files.Count > 0 || broken.Count > 0 || !keepLegacyDefault ? files : ChatSettings.LegacyDefaultBackends();
         return Ordered(list, order is { Count: > 0 } ? order : legacy?.Select(p => p.Id).ToList() ?? []);
     }
 
@@ -272,6 +275,7 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v12: no built-in connection any more (AssembleConnections keeps it for older files that relied on it).
         // → v11: CLI chats live in the CLI's own history by default (resumable); Hotline keeps only a record unless
         // keepInHotline. Existing CLI connections switch over, keeping what Hotline already saved.
         if (s.SchemaVersion < 11)
@@ -305,7 +309,6 @@ public sealed class SettingsStore(string directory)
         s.Diagnostics ??= new DiagnosticsSettings();
         s.Chat ??= new ChatSettings();
         s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).ToList();
-        if (s.Chat.Backends.Count == 0) s.Chat.Backends = ChatSettings.DefaultBackends();
         foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
         foreach (var b in s.Chat.Backends)
         {
@@ -313,7 +316,8 @@ public sealed class SettingsStore(string directory)
             if (b.Temperature is { } t) b.Temperature = double.IsFinite(t) ? Math.Clamp(t, 0, 2) : null;
         }
         s.Chat.DefaultBackend = s.Chat.DefaultBackend?.Trim() ?? "";
-        if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
+        if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend))
+            s.Chat.DefaultBackend = s.Chat.Backends.FirstOrDefault()?.Id ?? "";
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
         if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";

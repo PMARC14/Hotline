@@ -10,6 +10,8 @@ public sealed class SettingsServiceTests : IDisposable
 
     private SettingsService New(out SettingsStore store)
     {
+        Directory.CreateDirectory(Path.Combine(_dir, "connections"));
+        File.WriteAllText(Path.Combine(_dir, "connections", "agy.json"), """{ "type": "antigravity", "name": "Gemini (Antigravity)", "agent": "hotline" }""");
         store = new SettingsStore(_dir);
         return new SettingsService(store, store.Load(), new FileLog(Path.Combine(_dir, "h.log")));
     }
