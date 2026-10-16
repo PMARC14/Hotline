@@ -39,10 +39,11 @@ configurable in plain files.
 - **Memory** — `/remember I prefer metric units` (or "remember that…" to an API model, which asks you first) saves a
   note to `memory.md`; every chat sees it, whichever AI you use.
 - **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
-- **Chat history** — the 🕘 button, Ctrl+↑ or `/resume words` open a searchable list of your chats. A chat with
-  Claude Code, Codex or Antigravity lives in that tool's own history (grouped under *Hotline*), so it picks up where
-  it left off, even after a restart. **Continue this chat in ▸** opens it in a terminal, or in your chat app: a real
-  copy in Open WebUI, the llama.cpp web UI, LM Studio or any web page you set (Settings › Chat › Continue in).
+- **Chat history** — the 🕘 button, Ctrl+↑ or `/resume` open a searchable list of your chats. A chat with Claude
+  Code, Codex or Antigravity lives in that tool's own history (grouped under *Hotline*), shows its earlier messages
+  when you reopen it, and picks up where it left off, even after a restart. **Continue this chat in ▸** opens it in
+  a terminal, or in your chat app: a real copy in Open WebUI, the llama.cpp web UI, LM Studio or any web page you set
+  (Settings › Chat › Continue in).
 - **Answers in the background** — ask something long, switch away, and a Windows notification says when it's ready.
 - **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits
   are retried for you, and Settings › AI connections › *Test connection* checks a key and model.

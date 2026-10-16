@@ -70,9 +70,9 @@ internal sealed class ChatPresenter
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("quick actions setup failed", ex); }
         _router = new SendRouter(actions);
         _memory = new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
-        _composer = new Composer(popup, _theme, actions, _tasks);
+        _composer = new Composer(popup, _theme, actions, _tasks, () => settings.Chat.ResumeWhileTyping);
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
-        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log);
+        _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log, () => settings.Chat.HistoryListSize);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
@@ -97,6 +97,7 @@ internal sealed class ChatPresenter
         _composer.SendButtonClicked += () => { if (_chat.IsBusy) _chat.Cancel(); else _tasks.Run("send", SendAsync); }; // Stop while answering
         _popup.Root.PreviewKeyDown += OnPanelKey;
         _composer.PreviousChatRequested += () => _recent.Show(""); // the history list, on the last chat
+        _composer.ResumeTyped += query => { _composer.Text = ""; _recent.Show(query, fromTyping: true); }; // "/resume ": search in the list
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };

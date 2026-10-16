@@ -70,6 +70,12 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     /// that connection and resumes its CLI conversation; others are replayed as context. A chat with only a record
     /// (no transcript) starts empty in the panel and continues in the CLI's conversation.
     /// </summary>
+    /// <summary>
+    /// (connection id, CLI session id) → that conversation's messages from the CLI's own history, or null (set by the
+    /// app; see CliTranscripts and chat.cliTranscripts). Used when reopening a chat Hotline kept only a record of.
+    /// </summary>
+    public Func<string, string, IReadOnlyList<HistoryStore.Entry>?>? CliTranscript { get; set; }
+
     public bool Resume(string conversationId)
     {
         if (IsBusy || conversationId == ConversationId) return false; // never while answering, never into itself
@@ -87,6 +93,9 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         }
         var session = meta is { SessionId: { } sid, BackendId: { } owner } && resolveBackend(owner) is not null
             ? new CliSession(sid, meta.WorkingDirectory ?? "") : null;
+        // Hotline kept only a record: show the messages from the CLI's own history when it can read them.
+        if (entries.Count == 0 && session is not null && CliTranscript?.Invoke(meta!.BackendId!, session.Id) is { Count: > 0 } fromCli)
+            entries = fromCli;
         if (entries.Count == 0 && session is null) return false; // nothing to show and nothing to resume
         Cancel();
         _cts = null;

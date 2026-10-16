@@ -2,6 +2,28 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
+public sealed class HistorySettingsTests : IDisposable
+{
+    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
+    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
+
+    [Fact]
+    public void History_settings_default_on_and_round_trip_through_settings_json()
+    {
+        var store = new Settings.SettingsStore(_dir);
+        var s = store.Load();
+        Assert.Equal((300, true, true), (s.Chat.HistoryListSize, s.Chat.ResumeWhileTyping, s.Chat.CliTranscripts));
+        s.Chat.HistoryListSize = 50;
+        s.Chat.ResumeWhileTyping = false;
+        s.Chat.CliTranscripts = false;
+        store.Save(s);
+        var json = File.ReadAllText(Path.Combine(_dir, Settings.SettingsStore.FileName));
+        Assert.Contains("\"historyListSize\": 50", json);
+        var back = new Settings.SettingsStore(_dir).Load();
+        Assert.Equal((50, false, false), (back.Chat.HistoryListSize, back.Chat.ResumeWhileTyping, back.Chat.CliTranscripts));
+    }
+}
+
 public sealed class ChatSettingsTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));

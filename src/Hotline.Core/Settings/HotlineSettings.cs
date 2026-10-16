@@ -160,6 +160,15 @@ public sealed class ChatSettings
     public bool SaveHistory { get; set; } = true;
     /// <summary>A Windows notification when an answer finishes while the panel is hidden or another app is in front.</summary>
     public bool NotifyWhenDone { get; set; } = true;
+    /// <summary>How many saved chats the history list reads (each is opened for its title). settings.json only.</summary>
+    public int HistoryListSize { get; set; } = 300;
+    /// <summary>"/resume" and a space opens the history list right away, searching as you type. settings.json only.</summary>
+    public bool ResumeWhileTyping { get; set; } = true;
+    /// <summary>
+    /// A reopened CLI chat whose messages Hotline didn't keep shows them from the CLI's own history (agy, Claude Code,
+    /// Codex). settings.json only.
+    /// </summary>
+    public bool CliTranscripts { get; set; } = true;
     public int HistoryRetentionDays { get; set; } = 30;
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
     public int MaxImagePixels { get; set; } = 2048;

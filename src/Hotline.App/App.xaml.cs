@@ -148,7 +148,13 @@ public partial class App : Application
         // CLI chats live in the CLI's own history; Hotline keeps the messages too only for API/local connections or when asked.
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log,
             id => settings.Chat.Backends.FirstOrDefault(b => b.Id == id) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
-        { BackendId = settings.Chat.DefaultBackend };
+        {
+            BackendId = settings.Chat.DefaultBackend,
+            // A chat Hotline kept only a record of shows its messages from the CLI's own history (chat.cliTranscripts).
+            CliTranscript = (backendId, sessionId) => settings.Chat.CliTranscripts
+                && settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } owner
+                ? CliTranscripts.Read(owner.Type, sessionId, home, backendId) : null,
+        };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
         {
             UpdateSettings = change => _settingsService!.Update(change),

@@ -8,6 +8,8 @@ Hotline is licensed under Apache-2.0 (see `LICENSE`). It uses the following thir
 | [Markdig](https://github.com/xoofx/markdig) | Markdown parsing | BSD-2-Clause |
 | [Anthropic C# SDK](https://github.com/anthropics/anthropic-sdk-csharp) | Anthropic API connection | MIT |
 | [ModelContextProtocol C# SDK](https://github.com/modelcontextprotocol/csharp-sdk) | MCP tool servers | Apache-2.0 |
+| [Microsoft.Data.Sqlite](https://github.com/dotnet/efcore) | Reading agy's conversation history (read-only) | MIT |
+| [SQLitePCLRaw](https://github.com/ericsink/SQLitePCL.raw) (with the bundled SQLite library) | SQLite access for the above | Apache-2.0 (SQLite itself: public domain) |
 | [Interop.UIAutomationClient](https://github.com/Roemer/UIAutomation-Interop) | UI Automation (reading selected text) | MIT |
 | [Fluent Emoji](https://github.com/microsoft/fluentui-emoji) | Placeholder app icon (telephone receiver) | MIT (see `assets/source/ATTRIBUTION.md`) |
 

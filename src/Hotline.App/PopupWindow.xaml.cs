@@ -244,6 +244,29 @@ public sealed partial class PopupWindow : Window
         return new Releaser(() => _modal--);
     }
 
+    /// <summary>
+    /// While held, the window keeps its size: resizing a window closes its open flyouts at once (the history list
+    /// opened from the keyboard did exactly that). A resize asked for meanwhile is applied when the last hold ends.
+    /// Only flyouts take it; dialogs and captures still resize as usual.
+    /// </summary>
+    public IDisposable HoldResize()
+    {
+        _resizeHolds++;
+        return new Releaser(() =>
+        {
+            void Release()
+            {
+                _resizeHolds--;
+                if (_resizeHolds == 0 && _resizeHeld && AppWindow.IsVisible) ApplyHeight();
+            }
+            if (DispatcherQueue.HasThreadAccess) Release(); else DispatcherQueue.TryEnqueue(Release);
+        });
+    }
+
+    private int _resizeHolds;
+    /// <summary>A resize was asked for during a HoldResize; any real resize settles it.</summary>
+    private bool _resizeHeld;
+
     /// <summary>Hides the popup briefly (e.g. to capture what is underneath), then brings it back.</summary>
     public async Task<T> WithHiddenAsync<T>(Func<Task<T>> work)
     {
@@ -354,7 +377,9 @@ public sealed partial class PopupWindow : Window
     private void ApplyHeight(bool force = false)
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
+        if (_resizeHolds > 0 && !force) { _resizeHeld = true; return; } // a flyout is open: see HoldResize
         if (_bar.Width == 0) return;
+        _resizeHeld = false; // this resize settles any held one
         var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
