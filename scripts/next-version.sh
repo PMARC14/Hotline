@@ -8,5 +8,6 @@ source "$(dirname "$0")/lib/common.sh"
 
 line=$(tr -d '\r\n ' < "$ROOT/version.txt")
 [[ $line =~ ^[0-9]+\.[0-9]+$ ]] || die "version.txt must hold major.minor (e.g. 0.3), not '$line'"
-last=$(git -C "$ROOT" tag -l "v$line.*" | sed -n "s/^v${line//./\\.}\.\([0-9][0-9]*\)$/\1/p" | sort -n | tail -1)
+esc=${line//./[.]} # 0.2 -> 0[.]2: a literal dot in the pattern below, without backslash quoting
+last=$(git -C "$ROOT" tag -l "v$line.*" | sed -n "s/^v$esc[.]\([0-9][0-9]*\)$/\1/p" | sort -n | tail -1)
 printf '%s.%s\n' "$line" "$(( ${last:--1} + 1 ))"
