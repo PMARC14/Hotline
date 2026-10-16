@@ -41,6 +41,9 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.notifyWhenDone` | `true` | A Windows notification when an answer finishes while the panel is hidden or another app is in front; clicking it opens the answer |
+| `chat.historyListSize` | `300` | How many saved chats the history list reads (10–5000). Not in the Settings window |
+| `chat.resumeWhileTyping` | `true` | Typing `/resume` and a space opens the history list at once and the search continues there (best match selected, Enter opens it). Not in the Settings window |
+| `chat.cliTranscripts` | `true` | Reopening a CLI chat Hotline kept only a record of (`keepInHotline` off) shows its earlier messages from the CLI's own history (read-only; see *Chats with a CLI*). Not in the Settings window |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
@@ -70,7 +73,7 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `args` | agy, Claude Code, Codex | Settings: *Launch flags (advanced)*. Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
 | `extraArgs` | agy, Claude Code, Codex | Added on top, e.g. Claude Code `--mcp-config C:\mcp\servers.json`, Codex `--search` or `-c model_verbosity="low"` (Codex: sandbox, approval and folder flags are dropped) |
 | `keepCliSessions` | agy, Claude Code, Codex | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
-| `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\` |
+| `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\`. Reopened, a record-only chat still shows its messages: they're read from the CLI's own history (`chat.cliTranscripts`) |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `images` | APIs | Whether the model reads images (`true`/`false`; default: `false` for `local`, `true` otherwise). With `false`, screenshots go as their text (`chat.ocr`) |
 | `maxTokens` | APIs | Most tokens one answer may use (empty = the model's default; Claude API: 64000). Sent as `max_completion_tokens` to api.openai.com and Azure OpenAI, `max_tokens` to other OpenAI-style servers, `maxOutputTokens` to Gemini |
@@ -92,7 +95,15 @@ chosen one exists.
   folder), so `claude --resume`, Claude Code's `/resume` and `codex resume` list Hotline chats when run there, and agy puts them in a
   project named **Hotline** (created once, by agy). A conversation you move to another agy project stays there.
   `inherit` mode runs in your own folder and gets no project.
-- **Continue this chat in ▸** (Recent chats menu) opens the chat's CLI in your default terminal (Windows Terminal unless
+- **Reopened chats show their messages.** When Hotline kept only a record, it reads the conversation from the CLI's
+  own history (read-only): Claude Code's `~\.claude\projects\*\<session>.jsonl`, Codex's
+  `~\.codex\sessions\…\rollout-…-<thread>.jsonl`, and agy's `~\.gemini\antigravity-cli\conversations\<id>.db`
+  (SQLite). Hotline's own wrapping of what it sent (earlier turns, instructions, attached files) is removed. If a file
+  is missing or in a format Hotline doesn't recognise, the chat opens empty as before and still resumes.
+- **The history list** (the 🕘 button, Ctrl+↑ in an empty message box, or `/resume`): chats run oldest at the top to
+  newest at the bottom, centered over the message bar; type to filter by title, ↑/↓ and Enter (or click) to open.
+  `/resume words` opens it filtered.
+- **Continue this chat in ▸** (top of the history list) opens the chat's CLI in your default terminal (Windows Terminal unless
   you chose another in Windows Settings › System › For developers › Terminal) on the same conversation. Another
   installed CLI gets a new session that reads the chat from a Markdown file (only when Hotline has the messages).
 

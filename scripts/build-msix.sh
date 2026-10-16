@@ -84,7 +84,8 @@ build_one() {
     local rid=$1 platform=$2 msix
     dotnet publish "$(winpath "$ROOT/src/Hotline.App/Hotline.App.csproj")" -c "$configuration" -r "win-$rid" \
         "-p:Platform=$platform" -p:GenerateAppxPackageOnBuild=true "${signing[@]}" "-p:AppxPackageDir=$(winpath "$out")\\" >&2
-    msix=$(find "$out" -name "*_${version}_${rid}.msix" | tail -1)
+    # Debug packages are named …_<rid>_Debug.msix; Release ones …_<rid>.msix.
+    msix=$(find "$out" \( -name "*_${version}_${rid}.msix" -o -name "*_${version}_${rid}_Debug.msix" \) | tail -1)
     [ -n "$msix" ] || die "no $rid .msix for version $version was produced"
     printf '%s\n' "$msix"
 }

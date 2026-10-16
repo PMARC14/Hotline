@@ -14,7 +14,8 @@ namespace Hotline.App.Chat;
 /// than the open chat. Typing in its search box filters by title (every word); ↑/↓ move, Enter opens, Esc closes.
 /// "Continue this chat in ▸" and "Open history folder" sit above the list.
 /// </summary>
-internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, NoticeArea notices, string dataDirectory, FileLog log)
+internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, NoticeArea notices, string dataDirectory, FileLog log,
+    Func<int> listSize)
 {
     /// <summary>Saved conversations, newest first (set by the app; null when history is off).</summary>
     public Func<int, IReadOnlyList<HistoryStore.Summary>>? Source { get; set; }
@@ -22,8 +23,6 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     /// <summary>Where the current chat can continue in a terminal window (set by the app).</summary>
     public ContinueIn? ContinueIn { get; set; }
 
-    /// <summary>How many saved chats the list reads (each one's transcript is opened for its title).</summary>
-    private const int MaxChats = 300;
 
     private Flyout? _flyout;
     private TextBox _search = null!;
@@ -31,25 +30,29 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private TextBlock _empty = null!;
     private StackPanel _actions = null!;
     private IReadOnlyList<HistoryStore.Summary> _all = [];
-    private IDisposable? _modal;
+    private IDisposable? _modal, _resizeHold;
 
     public void Initialize() => popup.RecentButton.Click += (_, _) => Show("");
 
     /// <summary>Opens the list, filtered by <paramref name="query"/> (words that must all be in the title).</summary>
-    public async void Show(string query)
+    /// <param name="fromTyping">Opened by typing "/resume ": keys typed in the message box meanwhile move to the search.</param>
+    public async void Show(string query, bool fromTyping = false)
     {
         if (Source is not { } source) { notices.Show(Strings.Recent_HistoryOff, InfoBarSeverity.Informational); return; }
         if (_loading || _flyout?.IsOpen == true) return; // already opening or open (a second Ctrl+Up, a double click)
         _loading = true;
         try
         {
-            var all = await Task.Run(() => source(MaxChats)); // reads each chat's file: off the UI thread
+            // Open at once (the search takes the keyboard), then fill once the chats are read.
             var flyout = _flyout ??= Build();
             BuildActions();
-            _all = all;
+            _all = [];
+            _takeTyping = fromTyping;
             _search.Text = query;
             Fill(query);
             flyout.ShowAt(popup.Composer, new FlyoutShowOptions { Placement = FlyoutPlacementMode.Top });
+            _all = await Task.Run(() => source(Math.Clamp(listSize(), 10, 5000))); // reads each chat's file: off the UI thread
+            if (flyout.IsOpen) Fill(_search.Text); // what has been typed by now
         }
         catch (Exception ex) // async void: nothing may escape (an unreadable history folder, a WinUI refusal)
         {
@@ -59,7 +62,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         finally { _loading = false; }
     }
 
-    private bool _loading;
+    private bool _loading, _takeTyping;
 
     private Flyout Build()
     {
@@ -67,7 +70,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _search.TextChanged += (_, _) => Fill(_search.Text);
         _search.PreviewKeyDown += OnSearchKey;
         _list = new ListView { SelectionMode = ListViewSelectionMode.Single, IsItemClickEnabled = true, MaxHeight = 360 };
-        _list.ItemClick += (_, e) => { if (e.ClickedItem is ListViewItem { Tag: string id }) Open(id); };
+        // ListViewItems added directly: ItemClick reports their content (the row), which carries the chat id too.
+        _list.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: string id }) Open(id); };
         _empty = new TextBlock { Opacity = 0.7, Margin = new Thickness(12, 8, 12, 8), TextWrapping = TextWrapping.Wrap };
         _actions = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6 };
 
@@ -84,16 +88,23 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         flyout.FlyoutPresenterStyle = presenter;
         flyout.Opening += (_, _) =>
         {
-            _modal ??= popup.Modal(); // the list is part of the panel: don't hide the panel as focus moves into it
+            _modal ??= popup.Modal(); // the list is part of the panel: do not hide the panel as focus moves into it
+            _resizeHold ??= popup.HoldResize(); // and keep its size: a window resize would close the list
             grid.Width = Math.Max(320, popup.Composer.ActualWidth - 24); // as wide as the message bar (less the frame)
         };
         flyout.Opened += (_, _) =>
         {
+            if (_takeTyping && popup.Input.Text.Length > 0) // typed after "/resume " before the list appeared
+            {
+                _search.Text += popup.Input.Text;
+                popup.Input.Text = "";
+            }
+            _takeTyping = false;
             _search.Focus(FocusState.Programmatic);
             _search.SelectionStart = _search.Text.Length;
             if (_list.SelectedItem is { } selected) _list.ScrollIntoView(selected, ScrollIntoViewAlignment.Default);
         };
-        flyout.Closed += (_, _) => { _modal?.Dispose(); _modal = null; popup.Input.Focus(FocusState.Programmatic); };
+        flyout.Closed += (_, _) => { _modal?.Dispose(); _modal = null; _resizeHold?.Dispose(); _resizeHold = null; popup.Input.Focus(FocusState.Programmatic); };
         return flyout;
 
         static void AddRow(Grid g, FrameworkElement e, int row) { Grid.SetRow(e, row); g.Children.Add(e); }
@@ -105,7 +116,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _list.Items.Clear();
         foreach (var c in view.Items)
         {
-            var row = new Grid { ColumnSpacing = 12 };
+            var row = new Grid { ColumnSpacing = 12, Tag = c.Id };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
             var title = new TextBlock { Text = c.Title, TextTrimming = TextTrimming.CharacterEllipsis };
@@ -136,6 +147,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
                 break;
             case VirtualKey.Down when count > 0:
                 _list.SelectedIndex = Math.Min(count - 1, _list.SelectedIndex + 1);
+                break;
+            case VirtualKey.Enter when e.KeyStatus.WasKeyDown: // a repeat of the Enter that sent "/resume": swallow it
                 break;
             case VirtualKey.Enter:
                 if (_list.SelectedItem is ListViewItem { Tag: string id }) Open(id);
