@@ -3,9 +3,8 @@ using Hotline.Core.Chat;
 namespace Hotline.Core.Backends.Agy;
 
 /// <summary>
-/// agy's working directory: holds the custom "hotline" agent and per-message image attachments.
-/// agy may read files inside its (trusted) workspace without prompting; reads elsewhere are denied
-/// in headless mode, which is the boundary we want.
+/// Added to agy's workspace (--add-dir; agy runs in the home folder): holds the custom "hotline" agent and per-message
+/// image attachments (pruned after a day).
 /// </summary>
 public sealed class AgyWorkspace(string root, TimeProvider clock)
 {
@@ -23,7 +22,7 @@ public sealed class AgyWorkspace(string root, TimeProvider clock)
         ---
         {systemPrompt.Trim()}
 
-        When the user lists attached images under ./attachments, use view_file to look at them.
+        When the user lists attached images, use view_file to look at them.
         Do not run commands, browse the web or edit files in this mode.
         """;
 

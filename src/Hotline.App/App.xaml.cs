@@ -121,7 +121,11 @@ public partial class App : Application
         foreach (var old in new[] { "agy-workspace", "claude-workspace" })
             try { if (Directory.Exists(Path.Combine(privateDir, old))) Directory.Delete(Path.Combine(privateDir, old), recursive: true); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error($"could not remove the old {old} folder", ex); }
-        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy", "Hotline"), TimeProvider.System);
+        // CLI chats run in the home folder; their scratch files (agy's agent and attachments, Codex images, handoff
+        // files) live in ~/.hotline/scratch. Earlier versions' folders under the package's LocalState stay: chats begun
+        // there still resume there.
+        var scratchDir = Path.Combine(dataDir, "scratch");
+        var agyWorkspace = new AgyWorkspace(Path.Combine(scratchDir, "agy", "Hotline"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
@@ -135,9 +139,9 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
-            home, Path.Combine(privateDir, "claude", "Hotline"), _secrets, BackendFactory.CreateApiHttpClient(), tools,
+            home, _secrets, BackendFactory.CreateApiHttpClient(), tools,
             new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home)),
-            Path.Combine(privateDir, "codex", "Hotline"));
+            Path.Combine(scratchDir, "codex", "Hotline"));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -165,7 +169,7 @@ public partial class App : Application
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
-        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log);
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(scratchDir, "handoff"), InvalidateBackend, _log);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 

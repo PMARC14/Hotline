@@ -31,7 +31,7 @@ public sealed class ClaudeCodeTests : IDisposable
             .Append(Result(string.Concat(pieces)));
 
     private ClaudeCodeBackend New(string? exe = @"C:\claude.exe", BackendProfile? profile = null, Func<BackendProfile, string>? prompt = null) =>
-        new(profile ?? new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode }, () => exe, Path.Combine(_dir, "ws"),
+        new(profile ?? new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode }, () => exe,
             _factory, new FileLog(Path.Combine(_dir, "h.log")), prompt ?? (_ => "SYSTEM"), Path.Combine(_dir, "home"));
 
     private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
@@ -154,7 +154,7 @@ public sealed class ClaudeCodeTests : IDisposable
         Assert.Equal("Hi!", await Collect(b.StreamAsync([U("1", "hello")], default)));
         Assert.Equal("Hi!", await Collect(b.StreamAsync([U("1", "hello"), A("2", "Hi!"), U("3", "again")], default)));
         var (_, _, cwd, proc) = Assert.Single(_factory.Started);
-        Assert.EndsWith("ws", cwd);
+        Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only: no tools, run where `claude --resume` finds it
         Assert.Equal("again", Message(proc.Written[1]).GetProperty("content")[0].GetProperty("text").GetString());
     }
 

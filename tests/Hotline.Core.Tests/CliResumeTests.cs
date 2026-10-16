@@ -44,7 +44,7 @@ public sealed class CliResumeTests : IDisposable
 
     private ClaudeCodeBackend Claude(bool keep = true) =>
         new(new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode, KeepCliSessions = keep }, () => @"C:\claude.exe",
-            Path.Combine(_dir, "claude", "Hotline"), _factory, new FileLog(Path.Combine(_dir, "h.log")), _ => "SYSTEM", Path.Combine(_dir, "home"));
+            _factory, new FileLog(Path.Combine(_dir, "h.log")), _ => "SYSTEM", Path.Combine(_dir, "home"));
 
     [Fact]
     public async Task Claude_reports_its_session_with_the_folder()
@@ -52,7 +52,7 @@ public sealed class CliResumeTests : IDisposable
         _factory.Create = () => new FakeLineProcess { Respond = _ => ClaudeAnswer(SessionA, "hi!") };
         var (text, sessions) = await Collect(Claude().StreamAsync([U("1", "hi")], default));
         Assert.Equal("hi!", text);
-        Assert.Equal(new CliSession(SessionA, Path.Combine(_dir, "claude", "Hotline")), Assert.Single(sessions));
+        Assert.Equal(new CliSession(SessionA, Path.Combine(_dir, "home")), Assert.Single(sessions)); // chat only runs in the home folder
         Assert.DoesNotContain("--resume", _factory.Started[0].Args);
     }
 
@@ -156,23 +156,40 @@ public sealed class CliResumeTests : IDisposable
             _ => "SYSTEM", Path.Combine(_dir, "home"), new AgyProjects(ProjectsDir));
 
     [Fact]
-    public async Task Agy_new_conversation_creates_the_hotline_project_then_joins_it()
+    public async Task Agy_chat_only_runs_in_the_home_folder_with_its_workspace_added()
     {
         _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "ok") };
-        var backend = Agy();
-        var (_, sessions) = await Collect(backend.StreamAsync([U("1", "hi")], default));
-        Assert.Contains("--new-project", _factory.Started[0].Args);
-        Assert.Equal(SessionA, Assert.Single(sessions).Id);
+        var (_, sessions) = await Collect(Agy().StreamAsync([U("1", "hi")], default));
+        var started = _factory.Started[0];
+        Assert.Equal(Path.Combine(_dir, "home"), started.Cwd); // `agy --conversation` from a home terminal finds it
+        Assert.Equal(["--add-dir", Path.Combine(_dir, "agy", "Hotline")], started.Args.Skip(started.Args.ToList().IndexOf("--add-dir")).Take(2));
+        Assert.Contains("--agent", started.Args); // the hotline agent lives in the added workspace
+        Assert.DoesNotContain("--new-project", started.Args); // it would be named after the home folder
+        Assert.Equal(Path.Combine(_dir, "home"), Assert.Single(sessions).WorkingDirectory);
+    }
 
-        // agy wrote the project for the Hotline folder; the next new conversation joins it
+    [Fact]
+    public async Task Agy_chat_only_joins_the_hotline_project_when_there_is_one()
+    {
         Directory.CreateDirectory(ProjectsDir);
-        var folder = new Uri(Path.Combine(_dir, "agy", "Hotline")).AbsoluteUri.Replace("file:///", "file://");
+        var folder = new Uri(Path.Combine(_dir, "old", "agy", "Hotline")).AbsoluteUri.Replace("file:///", "file://");
         File.WriteAllText(Path.Combine(ProjectsDir, "p1.json"),
             "{\"id\":\"0f6c2d1e-aaaa-4bbb-8ccc-123456789abc\",\"name\":\"Hotline\",\"projectResources\":{\"resources\":[{\"folderUri\":\"" + folder + "\"}]}}");
-        backend.Resume = null;
-        await Collect(backend.StreamAsync([U("9", "another")], default));
-        var args = _factory.Started[1].Args;
+        _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "ok") };
+        await Collect(Agy().StreamAsync([U("1", "hi")], default));
+        var args = _factory.Started[0].Args;
         Assert.Equal(["--project", "0f6c2d1e-aaaa-4bbb-8ccc-123456789abc"], args.Skip(args.ToList().IndexOf("--project")).Take(2));
+    }
+
+    [Fact]
+    public async Task Agy_images_are_passed_by_full_path()
+    {
+        _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "ok") };
+        var user = U("1", "look") with { Attachments = [new Attachment("a1", "shot.png", AttachmentKind.Image, "image/png", [1, 2, 3])] };
+        await Collect(Agy().StreamAsync([user], default));
+        var line = _factory.Started[0].Process.Written.Single();
+        var prompt = System.Text.Json.JsonDocument.Parse(line).RootElement.GetProperty("message").GetProperty("content").GetString()!;
+        Assert.Contains(Path.Combine(_dir, "agy", "Hotline", "attachments"), prompt);
     }
 
     [Fact]
@@ -215,11 +232,13 @@ public sealed class CliResumeTests : IDisposable
     }
 
     [Fact]
-    public void Agy_projects_asks_for_a_new_project_only_once()
+    public void Agy_projects_never_creates_one_and_finds_hotline_by_name_too()
     {
         var projects = new AgyProjects(ProjectsDir);
-        Assert.Equal(["--new-project"], projects.ArgsFor(@"C:\x\Hotline"));
-        Assert.Empty(projects.ArgsFor(@"C:\x\Hotline")); // agy didn't create it as expected: don't make one per chat
+        Assert.Empty(projects.ArgsFor(@"C:\x\Hotline"));
+        Directory.CreateDirectory(ProjectsDir);
+        File.WriteAllText(Path.Combine(ProjectsDir, "p.json"), "{\"id\":\"0f6c2d1e-aaaa-4bbb-8ccc-123456789abd\",\"name\":\"Hotline\",\"projectResources\":{}}");
+        Assert.Equal(["--project", "0f6c2d1e-aaaa-4bbb-8ccc-123456789abd"], projects.ArgsFor(@"C:\x\Hotline"));
     }
 
     // ---- Continue in…

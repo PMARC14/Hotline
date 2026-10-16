@@ -240,7 +240,7 @@ public sealed class CodexTests : IDisposable
         Assert.Equal("Hi there.", text);
         var (exe, args, cwd, process) = Assert.Single(_factory.Started);
         Assert.Equal(@"C:\codex.exe", exe);
-        Assert.Equal(Path.Combine(_dir, "ws"), cwd); // chat only: an empty folder, nothing of the user's to read
+        Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only: the home folder (read-only sandbox), where `codex resume` finds it
         Assert.Equal("hello", Assert.Single(process.Written));
         Assert.True(process.InputCompleted);
         Assert.True(process.Disposed);

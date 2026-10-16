@@ -3,25 +3,35 @@ using System.Text.Json;
 namespace Hotline.Core.Backends.Agy;
 
 /// <summary>
-/// Groups Hotline's agy conversations in one agy project. agy names a project after the folder it was created in
-/// (Hotline's chat-only folder is called "Hotline") and keeps it in ~/.gemini/config/projects/&lt;id&gt;.json with that
-/// folder. Hotline only reads those files: a new conversation joins the project for its folder, or creates it with
-/// --new-project when there is none yet. Resumed conversations get no project flags, so one the user moved elsewhere
-/// stays there.
+/// Groups Hotline's agy conversations in one agy project ("Hotline", created by earlier versions, which ran agy in a
+/// folder of that name). agy keeps projects in ~/.gemini/config/projects/&lt;id&gt;.json. Hotline only reads those files.
+/// Resumed conversations get no project flags, so one the user moved elsewhere stays there.
 /// </summary>
 public sealed class AgyProjects(string projectsDirectory)
 {
-    private bool _created;
+    /// <summary>
+    /// Flags for a new chat-only conversation: the project holding <paramref name="folder"/> (Hotline's workspace), or
+    /// the one named "Hotline". None when neither exists: Hotline never creates one, since agy would name a new project
+    /// after the folder agy runs in (the home folder).
+    /// </summary>
+    public IReadOnlyList<string> ArgsFor(string folder) =>
+        (Find(folder) ?? FindByName("Hotline")) is { } id && Chat.CliSession.IsValidId(id) ? ["--project", id] : [];
 
-    public static string DirectoryFor(string homeDirectory) => Path.Combine(homeDirectory, ".gemini", "config", "projects");
-
-    /// <summary>Flags for a new conversation run in <paramref name="folder"/>.</summary>
-    public IReadOnlyList<string> ArgsFor(string folder)
+    private string? FindByName(string name)
     {
-        if (Find(folder) is { } id && Chat.CliSession.IsValidId(id)) return ["--project", id];
-        if (_created) return []; // asked agy to create it once and still can't see it: don't make one per chat
-        _created = true;
-        return ["--new-project"];
+        if (!Directory.Exists(projectsDirectory)) return null;
+        foreach (var file in Directory.EnumerateFiles(projectsDirectory, "*.json"))
+        {
+            try
+            {
+                using var doc = JsonDocument.Parse(File.ReadAllText(file));
+                var root = doc.RootElement;
+                if (root.TryGetProperty("name", out var n) && n.ValueKind == JsonValueKind.String && n.GetString() == name
+                    && root.TryGetProperty("id", out var idEl) && idEl.GetString() is { Length: > 0 } id) return id;
+            }
+            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException) { }
+        }
+        return null;
     }
 
     /// <summary>The ID of the agy project that holds <paramref name="folder"/>, if any.</summary>
