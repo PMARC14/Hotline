@@ -148,6 +148,8 @@ public static class SettingsSchema
             s => s.Chat.GrowMode, (s, v) => s.Chat.GrowMode = v),
 
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_NotifyDone), nameof(Strings.Set_NotifyDone_Desc), s => s.Chat.NotifyWhenDone, (s, v) => s.Chat.NotifyWhenDone = v),
+        new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Thinking), nameof(Strings.Set_Thinking_Desc),
+            s => s.Chat.ThinkingIndicator, (s, v) => s.Chat.ThinkingIndicator = v),
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_History), nameof(Strings.Set_History_Desc), s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
         new NumberItem(SettingsPage.Chat, nameof(Strings.Set_Retention), null, 1, 3650, 1, nameof(Strings.Set_Unit_Days), s => s.Chat.HistoryRetentionDays,
             (s, v) => s.Chat.HistoryRetentionDays = (int)v, RequiresRestart: true),

@@ -64,7 +64,8 @@ internal sealed class ChatPresenter
         _tasks = new UiTasks(log, _notices);
         var visuals = new AttachmentVisuals(_theme, _notices, log);
         _attachments = new AttachmentPanel(popup, tray, settings, _notices, visuals, _theme, _tasks, log);
-        _transcript = new TranscriptView(popup, _theme, visuals, _notices, () => _tasks.Run("retry", chat.RetryAsync));
+        _transcript = new TranscriptView(popup, _theme, visuals, _notices, () => _tasks.Run("retry", chat.RetryAsync),
+            () => (_settings.Chat.ThinkingIndicator, _settings.Chat.ThinkingDelayMs));
         var actions = new QuickActions(Path.Combine(dataDirectory, "actions"));
         try { actions.EnsureDefaults(); } // first run writes the defaults
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("quick actions setup failed", ex); }

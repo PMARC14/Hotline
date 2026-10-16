@@ -158,6 +158,10 @@ public sealed class ChatSettings
     public bool NotifyWhenDone { get; set; } = true;
     /// <summary>How many saved chats the history list reads (each is opened for its title). settings.json only.</summary>
     public int HistoryListSize { get; set; } = 300;
+    /// <summary>While an answer streams and no text has come for <see cref="ThinkingDelayMs"/>, the cursor spins.</summary>
+    public bool ThinkingIndicator { get; set; } = true;
+    /// <summary>How long without new text before the thinking indicator shows (ms, 0–10000). settings.json only.</summary>
+    public int ThinkingDelayMs { get; set; } = 700;
     /// <summary>"/resume" and a space opens the history list right away, searching as you type. settings.json only.</summary>
     public bool ResumeWhileTyping { get; set; } = true;
     /// <summary>
