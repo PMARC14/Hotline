@@ -1,5 +1,6 @@
 # Builds a signed MSIX and publishes a GitHub Release:
-#   - every push to main (code changes): version <version.txt>.<run number>, e.g. 0.2.57
+#   - every push to main (code changes): version.txt's major.minor plus the next patch in that line, e.g. 0.2.26
+#     (scripts/next-version.sh; bumping version.txt to 0.3 starts at 0.3.0)
 #   - a pushed tag vX.Y.Z, or "Run workflow" with a version: that version
 # Signing, first match wins (details: docs/RELEASING.md):
 #   1. Azure Artifact Signing (formerly Trusted Signing) — repository variables ARTIFACT_SIGNING_ENDPOINT,
@@ -18,7 +19,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version to release, e.g. 0.2.0 (empty = version.txt + run number)'
+        description: 'Version to release, e.g. 0.2.0 (empty = the next one: scripts/next-version.sh)'
         required: false
       publish:
         description: 'Publish the GitHub Release (off = build and upload the files only, e.g. to test a branch)'
@@ -54,7 +55,12 @@ jobs:
         run: |
           if [ "${{ github.ref_type }}" = tag ]; then v="${{ github.ref_name }}"; v=${v#v}
           elif [ -n "${{ inputs.version }}" ]; then v="${{ inputs.version }}"
-          else v="$(tr -d '\r\n' < version.txt).${{ github.run_number }}"; fi
+          else
+            # The next patch in version.txt's line, from the existing tags (v0.2.25 → v0.2.26; 0.3 → v0.3.0).
+            # Releases run one at a time (concurrency group), so two runs can't pick the same number.
+            git fetch --tags --force --quiet
+            v="$(scripts/next-version.sh)"
+          fi
           [[ $v =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo "Version '$v' must look like 1.2.3"; exit 1; }
           echo "package=$v.0" >> "$GITHUB_OUTPUT"
           echo "tag=v$v" >> "$GITHUB_OUTPUT"

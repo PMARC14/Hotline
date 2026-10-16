@@ -34,14 +34,25 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Reopened CLI chats show their earlier messages from the CLI's own history (`CliTranscripts`;
     `chat.cliTranscripts`). `chat.historyListSize` sets how many chats the list reads. All three are settings.json only.
 - **Open PR #29** (`continue-in-targets`): Continue in to web pages, Open WebUI (a real chat) and apps; built from
-  `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed, **awaiting the owner's hand test**. It
-  predates v0.2.25: merge `main` into it before merging (expect a HANDOFF/README conflict).
+  `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed, up to date with `main` (v0.2.25 merged in,
+  998 tests pass). **Right now (2026-10-16) its build is installed on the dev PC** for the owner's hand test; the owner
+  is first setting up a local model server (llama-server) and a free Gemini API key. The test list:
+  1. llama.cpp web UI (default target of a Local connection): opens with the conversation as the first message.
+  2. Open WebUI (if run): Settings › Chat › Continue in › Add › Open WebUI, address + API key, **Test** shows the model
+     count; continuing creates a real Open WebUI chat with every message.
+  3. LM Studio (if installed): opens with the whole chat on the clipboard.
+  4. ChatGPT / Claude ready-made entries: the site opens with the chat in its message box.
+  5. Per connection: *None* on one connection and *Own list* on another; each chat shows only its own targets.
+  6. A very long chat with a web target: the notice that only the last message went and the chat is on the clipboard.
+  7. A wrong Open WebUI key or address: a clear "Couldn't open…" notice.
+  A Gemini API connection has no default target (Gemini's site takes no message in its link); add one to test it.
+  Fix whatever the owner reports on that branch, then merge it **with `version.txt` bumped to `0.3`** (see below).
 - Tests: ~968 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
   off-screen self-test `hotline://selftest` builds every settings page.
 
 ## Next work
 
-1. **Hand test** PR #29 (Continue in), merge `main` into it, then merge.
+1. **Hand test** PR #29 (Continue in) — in progress by the owner — fix findings, then merge it with the 0.3 bump.
 2. **Windows 11 26H2 follow-ups** (PR #9, draft) once 26H2 reaches the dev PC — part of 1.0.
 3. **Region capture on multi-monitor / mixed DPI** on the owner's desktop — part of 1.0.
 4. **Version 1.0** when: Continue in merged, hand tests done, multi-monitor capture OK, a Store update certified with
@@ -50,6 +61,21 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 6. Known: the first off-screen layout after a fresh start logs a `LayoutCycleException` (kept running; older too).
    No native-speaker reviews or RTL planned. Paid signing (winget-pkgs) only if Hotline gets popular.
 7. Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
+
+## Versions (toward 1.0)
+
+- `version.txt` holds major.minor (now `0.2`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch
+  being the next number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml): after
+  v0.2.25 comes v0.2.26; bumping `version.txt` to `0.3` starts at **v0.3.0**, then v0.3.1, … (until 2026-10-16 the patch
+  was the GitHub run number, which is why 0.2 reached .25). The Store package is the same version plus `.0`.
+- **The Store only needs each submission's version, compared as a whole (left to right), to be higher than the last**,
+  and the fourth part to be `0`: `0.3.0.0` follows `0.2.25.0` fine.
+- **The plan:**
+  - **0.3** — when Continue in (PR #29) merges: the last big feature before 1.0. Bump `version.txt` to `0.3` in that PR.
+  - **0.4** — when the Windows 11 26H2 work (#9) and the multi-monitor / mixed-DPI region capture fix land: feature
+    complete for 1.0; after that only fixes, polish and a Store update certified with all 17 languages.
+  - **1.0** — when that Store update is through and nothing that breaks existing settings files is pending. From 1.0
+    on, settings files must keep working across updates (migrations, never breaking changes).
 
 ## Architecture map
 
