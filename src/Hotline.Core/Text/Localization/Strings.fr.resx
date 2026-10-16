@@ -219,6 +219,7 @@ Refuser :
   <data name="Effort_high" xml:space="preserve"><value>Élevé</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Très élevé</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Maximal</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Épingler</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Capturer la fenêtre</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Capturer l'écran</value></data>

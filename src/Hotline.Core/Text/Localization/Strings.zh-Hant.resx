@@ -219,6 +219,7 @@
   <data name="Effort_high" xml:space="preserve"><value>高</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>極高</value></data>
   <data name="Effort_max" xml:space="preserve"><value>最高</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>超高</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>釘選</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>擷取視窗</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>擷取螢幕</value></data>
