@@ -9,6 +9,8 @@ namespace Hotline.Core.Backends.Agy;
 /// </summary>
 public sealed class AgyProjects(string projectsDirectory)
 {
+    public static string DirectoryFor(string homeDirectory) => Path.Combine(homeDirectory, ".gemini", "config", "projects");
+
     /// <summary>
     /// Flags for a new chat-only conversation: the project holding <paramref name="folder"/> (Hotline's workspace), or
     /// the one named "Hotline". None when neither exists: Hotline never creates one, since agy would name a new project
