@@ -219,6 +219,7 @@ Tolak:
   <data name="Effort_high" xml:space="preserve"><value>Tinggi</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Sangat tinggi</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Maksimal</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Sematkan</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Tangkap jendela</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Tangkap layar</value></data>

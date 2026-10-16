@@ -219,6 +219,7 @@ Weigeren:
   <data name="Effort_high" xml:space="preserve"><value>Hoog</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Zeer hoog</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Maximaal</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Vastmaken</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Venster vastleggen</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Scherm vastleggen</value></data>

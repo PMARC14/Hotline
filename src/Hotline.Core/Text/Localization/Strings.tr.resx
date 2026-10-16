@@ -219,6 +219,7 @@ Reddet:
   <data name="Effort_high" xml:space="preserve"><value>Yüksek</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Çok yüksek</value></data>
   <data name="Effort_max" xml:space="preserve"><value>En yüksek</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Sabitle</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Pencereyi yakala</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Ekranı yakala</value></data>

@@ -219,6 +219,7 @@ Denegar:
   <data name="Effort_high" xml:space="preserve"><value>Alto</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Muy alto</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Máximo</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Anclar</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Capturar ventana</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Capturar pantalla</value></data>

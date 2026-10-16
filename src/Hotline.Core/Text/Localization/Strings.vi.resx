@@ -219,6 +219,7 @@ Từ chối:
   <data name="Effort_high" xml:space="preserve"><value>Cao</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Rất cao</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Tối đa</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Ghim</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Chụp cửa sổ</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Chụp màn hình</value></data>
