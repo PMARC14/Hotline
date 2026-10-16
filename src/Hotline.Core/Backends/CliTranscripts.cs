@@ -30,15 +30,16 @@ public static partial class CliTranscripts
             };
             return list is { Count: > 0 } ? list : null;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or SqliteException or InvalidOperationException
-            or JsonException or FormatException or IndexOutOfRangeException)
+        catch (Exception ex) when (ex is not OutOfMemoryException) // anything unreadable: the chat opens as before
         {
             return null;
         }
     }
 
     private static string? FirstFile(string root, string pattern) =>
-        Directory.Exists(root) ? Directory.EnumerateFiles(root, pattern, SearchOption.AllDirectories).FirstOrDefault() : null;
+        Directory.Exists(root)
+            ? Directory.EnumerateFiles(root, pattern, new EnumerationOptions { RecurseSubdirectories = true, IgnoreInaccessible = true }).FirstOrDefault()
+            : null;
 
     // ---- Claude Code: ~/.claude/projects/<folder>/<session>.jsonl -----------------------------------------------
 
@@ -47,17 +48,25 @@ public static partial class CliTranscripts
         var entries = new List<HistoryStore.Entry>();
         foreach (var line in ReadLines(file))
         {
-            if (Json(line) is not { } root || root.ValueKind != JsonValueKind.Object) continue;
+            if (!line.Contains("\"user\"", StringComparison.Ordinal) && !line.Contains("\"assistant\"", StringComparison.Ordinal)) continue; // fast skip
+            using var doc = Parse(line);
+            if (doc?.RootElement is not { ValueKind: JsonValueKind.Object } root) continue;
             var type = Str(root, "type");
             if (type is not ("user" or "assistant") || Bool(root, "isMeta") || Bool(root, "isSidechain")) continue;
-            if (!root.TryGetProperty("message", out var message) || !message.TryGetProperty("content", out var content)) continue;
+            if (!root.TryGetProperty("message", out var message) || message.ValueKind != JsonValueKind.Object
+                || !message.TryGetProperty("content", out var content)) continue;
             string text;
             if (content.ValueKind == JsonValueKind.String) text = content.GetString() ?? "";
             else if (content.ValueKind == JsonValueKind.Array)
             {
                 // Tool results and thinking aren't conversation; text blocks are.
                 if (type == "user" && content.EnumerateArray().Any(b => Str(b, "type") == "tool_result")) continue;
-                text = string.Join("\n", content.EnumerateArray().Where(b => Str(b, "type") == "text").Select(b => Str(b, "text") ?? ""));
+                text = string.Join("\n", content.EnumerateArray().Select(b => Str(b, "type") switch
+                {
+                    "text" => Str(b, "text") ?? "",
+                    "image" => "[attached: image]",
+                    _ => "",
+                }).Where(s => s.Length > 0));
             }
             else continue;
             Add(entries, type == "user" ? ChatRole.User : ChatRole.Assistant, text, Time(root, "timestamp"), backendId);
@@ -72,11 +81,18 @@ public static partial class CliTranscripts
         var entries = new List<HistoryStore.Entry>();
         foreach (var line in ReadLines(file))
         {
-            if (Json(line) is not { } root || Str(root, "type") != "response_item" || !root.TryGetProperty("payload", out var p)) continue;
+            using var doc = Parse(line);
+            if (doc?.RootElement is not { ValueKind: JsonValueKind.Object } root || Str(root, "type") != "response_item"
+                || !root.TryGetProperty("payload", out var p) || p.ValueKind != JsonValueKind.Object) continue;
             if (Str(p, "type") != "message" || Str(p, "role") is not ("user" or "assistant") || !p.TryGetProperty("content", out var content)
                 || content.ValueKind != JsonValueKind.Array) continue;
-            var text = string.Join("\n", content.EnumerateArray().Where(b => Str(b, "type") is "input_text" or "output_text").Select(b => Str(b, "text") ?? ""));
-            if (text.TrimStart().StartsWith('<')) continue; // Codex's own context (<environment_context>, <user_instructions>)
+            var text = string.Join("\n", content.EnumerateArray().Select(b => Str(b, "type") switch
+            {
+                "input_text" or "output_text" => Str(b, "text") ?? "",
+                "input_image" => "[attached: image]",
+                _ => "",
+            }).Where(s => s.Length > 0));
+            if (Str(p, "role") == "user" && CodexContext.Any(tag => text.TrimStart().StartsWith(tag, StringComparison.Ordinal))) continue;
             Add(entries, Str(p, "role") == "user" ? ChatRole.User : ChatRole.Assistant, text, Time(root, "timestamp"), backendId);
         }
         return entries;
@@ -95,22 +111,25 @@ public static partial class CliTranscripts
         if (!File.Exists(file)) return null;
         var at = new DateTimeOffset(File.GetLastWriteTimeUtc(file), TimeSpan.Zero);
         var entries = new List<HistoryStore.Entry>();
-        using var db = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = file, Mode = SqliteOpenMode.ReadOnly, Pooling = false }.ToString());
+        using var db = new SqliteConnection(new SqliteConnectionStringBuilder { DataSource = file, Mode = SqliteOpenMode.ReadOnly, Pooling = false, DefaultTimeout = 1 }.ToString());
         db.Open();
         using var query = db.CreateCommand();
         query.CommandText = "SELECT step_type, step_payload FROM steps ORDER BY idx";
         using var reader = query.ExecuteReader();
         while (reader.Read())
         {
-            if (reader.IsDBNull(1)) continue;
-            var stepType = reader.GetInt32(0);
-            var payload = (byte[])reader.GetValue(1);
-            var text = stepType switch
+            if (reader.GetValue(0) is not long stepType || reader.GetValue(1) is not byte[] payload) continue; // NULL or odd values
+            string? text;
+            try
             {
-                AgyUserStep => Proto(payload, 19) is { } user ? ProtoString(user, 2) : null,
-                AgyAnswerStep => Proto(payload, 20) is { } answer ? ProtoString(answer, 1) : null,
-                _ => null,
-            };
+                text = stepType switch
+                {
+                    AgyUserStep => Proto(payload, 19) is { } user ? ProtoString(user, 2) : null,
+                    AgyAnswerStep => Proto(payload, 20) is { } answer ? ProtoString(answer, 1) : null,
+                    _ => null,
+                };
+            }
+            catch (Exception ex) when (ex is IndexOutOfRangeException or FormatException) { continue; } // a malformed step: skip it
             if (text is not null) Add(entries, stepType == AgyUserStep ? ChatRole.User : ChatRole.Assistant, text, at, backendId);
         }
         return entries;
@@ -127,13 +146,13 @@ public static partial class CliTranscripts
             switch (wire)
             {
                 case 0: Varint(message, ref i); break;
-                case 1: i += 8; break;
-                case 5: i += 4; break;
+                case 1: if (message.Length - i < 8) return null; i += 8; break;
+                case 5: if (message.Length - i < 4) return null; i += 4; break;
                 case 2:
-                    var length = (int)Varint(message, ref i);
-                    if (length < 0 || i + length > message.Length) return null;
-                    if (field == number) return message[i..(i + length)];
-                    i += length;
+                    var length = Varint(message, ref i);
+                    if (length > (ulong)(message.Length - i)) return null; // past the end (compared without int overflow)
+                    if (field == number) return message[i..(i + (int)length)];
+                    i += (int)length;
                     break;
                 default: return null; // groups or garbage: not a message this reader understands
             }
@@ -161,6 +180,7 @@ public static partial class CliTranscripts
     private static void Add(List<HistoryStore.Entry> entries, ChatRole role, string raw, DateTimeOffset at, string backendId)
     {
         var text = role == ChatRole.User ? Unwrap(raw) : raw.Trim();
+        if (text.Length == 0 && role == ChatRole.User && raw.Trim().Length > 0) text = "[attachment]"; // attachments only: keep its place
         if (text.Length == 0) return;
         if (role == ChatRole.Assistant && entries.Count > 0 && entries[^1].Role == ChatRole.Assistant)
         {
@@ -190,7 +210,8 @@ public static partial class CliTranscripts
         text = AttachedImages().Replace(text, "");
         foreach (Match m in AttachedFile().Matches(text)) attached.Add(m.Groups[1].Value);
         text = AttachedFile().Replace(text, "").Trim();
-        if (text is "Please look at the attached file(s)." or "Please look at the attachment(s).") text = "";
+        // Hotline's stand-in for "attachments only" isn't something the user typed.
+        text = string.Join("\n", text.Split('\n').Where(l => l.Trim() is not ("Please look at the attached file(s)." or "Please look at the attachment(s)."))).Trim();
         return string.Join("\n", new[] { text }.Concat(attached.Select(a => $"[attached: {a}]")).Where(s => s.Length > 0));
     }
 
@@ -201,11 +222,15 @@ public static partial class CliTranscripts
         while (reader.ReadLine() is { } line) yield return line;
     }
 
-    private static JsonElement? Json(string line)
+    /// <summary>One line's JSON, or null; the caller disposes it (no copy of large lines).</summary>
+    private static JsonDocument? Parse(string line)
     {
-        try { using var doc = JsonDocument.Parse(line); return doc.RootElement.Clone(); }
+        try { return JsonDocument.Parse(line); }
         catch (JsonException) { return null; }
     }
+
+    /// <summary>Turns Codex adds itself (not the user's words).</summary>
+    private static readonly string[] CodexContext = ["<environment_context>", "<user_instructions>", "<permissions instructions>"];
 
     private static string? Str(JsonElement e, string name) =>
         e.ValueKind == JsonValueKind.Object && e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;

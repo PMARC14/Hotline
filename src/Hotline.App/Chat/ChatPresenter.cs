@@ -97,7 +97,7 @@ internal sealed class ChatPresenter
         _composer.SendButtonClicked += () => { if (_chat.IsBusy) _chat.Cancel(); else _tasks.Run("send", SendAsync); }; // Stop while answering
         _popup.Root.PreviewKeyDown += OnPanelKey;
         _composer.PreviousChatRequested += () => _recent.Show(""); // the history list, on the last chat
-        _composer.ResumeTyped += query => { _composer.Text = ""; _recent.Show(query); }; // "/resume ": search in the list
+        _composer.ResumeTyped += query => { _composer.Text = ""; _recent.Show(query, fromTyping: true); }; // "/resume ": search in the list
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };

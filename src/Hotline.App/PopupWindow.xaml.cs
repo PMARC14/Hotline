@@ -378,8 +378,8 @@ public sealed partial class PopupWindow : Window
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
         if (_resizeHolds > 0 && !force) { _resizeHeld = true; return; } // a flyout is open: see HoldResize
-        _resizeHeld = false;
         if (_bar.Width == 0) return;
+        _resizeHeld = false; // this resize settles any held one
         var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);

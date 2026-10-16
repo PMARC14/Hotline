@@ -35,20 +35,24 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     public void Initialize() => popup.RecentButton.Click += (_, _) => Show("");
 
     /// <summary>Opens the list, filtered by <paramref name="query"/> (words that must all be in the title).</summary>
-    public async void Show(string query)
+    /// <param name="fromTyping">Opened by typing "/resume ": keys typed in the message box meanwhile move to the search.</param>
+    public async void Show(string query, bool fromTyping = false)
     {
         if (Source is not { } source) { notices.Show(Strings.Recent_HistoryOff, InfoBarSeverity.Informational); return; }
         if (_loading || _flyout?.IsOpen == true) return; // already opening or open (a second Ctrl+Up, a double click)
         _loading = true;
         try
         {
-            var all = await Task.Run(() => source(Math.Clamp(listSize(), 10, 5000))); // reads each chat's file: off the UI thread
+            // Open at once (the search takes the keyboard), then fill once the chats are read.
             var flyout = _flyout ??= Build();
             BuildActions();
-            _all = all;
+            _all = [];
+            _takeTyping = fromTyping;
             _search.Text = query;
             Fill(query);
             flyout.ShowAt(popup.Composer, new FlyoutShowOptions { Placement = FlyoutPlacementMode.Top });
+            _all = await Task.Run(() => source(Math.Clamp(listSize(), 10, 5000))); // reads each chat's file: off the UI thread
+            if (flyout.IsOpen) Fill(_search.Text); // what has been typed by now
         }
         catch (Exception ex) // async void: nothing may escape (an unreadable history folder, a WinUI refusal)
         {
@@ -58,7 +62,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         finally { _loading = false; }
     }
 
-    private bool _loading;
+    private bool _loading, _takeTyping;
 
     private Flyout Build()
     {
@@ -90,6 +94,12 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         };
         flyout.Opened += (_, _) =>
         {
+            if (_takeTyping && popup.Input.Text.Length > 0) // typed after "/resume " before the list appeared
+            {
+                _search.Text += popup.Input.Text;
+                popup.Input.Text = "";
+            }
+            _takeTyping = false;
             _search.Focus(FocusState.Programmatic);
             _search.SelectionStart = _search.Text.Length;
             if (_list.SelectedItem is { } selected) _list.ScrollIntoView(selected, ScrollIntoViewAlignment.Default);

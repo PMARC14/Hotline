@@ -51,7 +51,7 @@ public sealed class CliTranscriptsTests : IDisposable
             """not json""",
         ]);
         var entries = CliTranscripts.Read(BackendType.ClaudeCode, "s1", _home, "claude");
-        Assert.Equal(["U: hello", "A: Hi there", "U: and more", "A: Sure."], Show(entries));
+        Assert.Equal(["U: hello", "A: Hi there", "U: and more\n[attached: image]", "A: Sure."], Show(entries));
         Assert.Equal(new DateTimeOffset(2026, 10, 15, 10, 0, 0, TimeSpan.Zero), entries![0].At);
         Assert.All(entries, e => Assert.Equal("claude", e.BackendId));
     }
@@ -121,6 +121,43 @@ public sealed class CliTranscriptsTests : IDisposable
             (15, Field(20, Text(1, "You're welcome!"))));
         Assert.Equal(["U: give me a test", "A: Here is a test.", "U: thanks", "A: You're welcome!"],
             Show(CliTranscripts.Read(BackendType.Antigravity, "c1", _home, "agy")));
+    }
+
+    [Fact]
+    public void A_malformed_agy_step_is_skipped_not_a_crash()
+    {
+        byte[] huge = [.. Varint(19 << 3 | 2), 0xFF, 0xFF, 0xFF, 0xFF, 0x07]; // length ~2^31: past the end
+        byte[] truncated = [.. Varint(5 << 3 | 1), 1, 2]; // a fixed64 with 2 of its 8 bytes
+        AgyDb("bad", (14, huge), (14, truncated), (15, Field(20, Text(1, "still here"))));
+        Assert.Equal(["A: still here"], Show(CliTranscripts.Read(BackendType.Antigravity, "bad", _home, "agy")));
+    }
+
+    [Fact]
+    public void Codex_keeps_hotlines_wrapped_turns_and_messages_that_start_with_a_tag()
+    {
+        var dir = Directory.CreateDirectory(Path.Combine(_home, ".codex", "sessions", "2026", "10", "16")).FullName;
+        File.WriteAllLines(Path.Combine(dir, "rollout-x-t2.jsonl"),
+        [
+            """{"type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"<previous_conversation>\n<turn role=\"user\">\nold\n</turn>\n</previous_conversation>\n\nNew message:\nhello"}]}}""",
+            """{"type":"response_item","payload":{"type":"message","role":"assistant","content":[{"type":"output_text","text":"<div>html answer</div>"}]}}""",
+            """{"type":"response_item","payload":{"type":"message","role":"user","content":[{"type":"input_text","text":"<user_instructions>rules</user_instructions>"}]}}""",
+        ]);
+        Assert.Equal(["U: hello", "A: <div>html answer</div>"], Show(CliTranscripts.Read(BackendType.Codex, "t2", _home, "codex")));
+    }
+
+    [Fact]
+    public void An_attachment_only_message_keeps_its_place()
+    {
+        var dir = Directory.CreateDirectory(Path.Combine(_home, ".claude", "projects", "p")).FullName;
+        File.WriteAllLines(Path.Combine(dir, "s2.jsonl"),
+        [
+            """{"type":"user","message":{"role":"user","content":"hi"}}""",
+            """{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"hello"}]}}""",
+            """{"type":"user","message":{"role":"user","content":[{"type":"text","text":"Please look at the attachment(s)."},{"type":"image","source":{}}]}}""",
+            """{"type":"assistant","message":{"role":"assistant","content":[{"type":"text","text":"a cat"}]}}""",
+            """{"type":"user","message":null}""",
+        ]);
+        Assert.Equal(["U: hi", "A: hello", "U: [attached: image]", "A: a cat"], Show(CliTranscripts.Read(BackendType.ClaudeCode, "s2", _home, "claude")));
     }
 
     [Fact]
