@@ -32,7 +32,7 @@ public static class ConnectionTypes
         new(BackendType.ClaudeCode, nameof(Strings.Type_ClaudeCode), "Claude (Claude Code)", Cli, null,
             ClaudeCode.ClaudeCodeProtocol.EffortLevels, false, nameof(Strings.Type_ClaudeCode_Desc)),
         new(BackendType.Codex, nameof(Strings.Type_Codex), "ChatGPT (Codex)", Cli, null,
-            Codex.CodexProtocol.EffortLevels, false, nameof(Strings.Type_Codex_Desc), ListsModels: false),
+            Codex.CodexProtocol.EffortLevels, false, nameof(Strings.Type_Codex_Desc)),
         new(BackendType.Gemini, nameof(Strings.Type_Gemini), "Gemini API", Api | ConnectionField.Temperature, "https://generativelanguage.googleapis.com/v1beta",
             ["low", "medium", "high"], false, nameof(Strings.Type_Gemini_Desc)),
         new(BackendType.Anthropic, nameof(Strings.Type_Anthropic), "Claude API", Api, "https://api.anthropic.com/v1",

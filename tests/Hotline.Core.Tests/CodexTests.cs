@@ -298,7 +298,6 @@ public sealed class CodexTests : IDisposable
         Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
         Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
         Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
-        Assert.False(ConnectionTypes.Of(BackendType.Codex).ListsModels);
     }
 
     [Fact]
@@ -403,6 +402,6 @@ public sealed class CodexTests : IDisposable
         var info = ConnectionTypes.Of(BackendType.Codex);
         Assert.True(info.Has(ConnectionField.CliPath) && info.Has(ConnectionField.Tools));
         Assert.False(info.Has(ConnectionField.ApiKey));
-        Assert.Equal(["low", "medium", "high", "xhigh"], info.EffortLevels);
+        Assert.Equal(["low", "medium", "high", "xhigh", "max", "ultra"], info.EffortLevels);
     }
 }
