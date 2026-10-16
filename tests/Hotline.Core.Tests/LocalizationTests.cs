@@ -119,7 +119,8 @@ public sealed partial class LocalizationTests
         finally { CultureInfo.CurrentUICulture = before; }
         Assert.Equal("px", L.Get("px")); // not a key: shown as is
         Assert.Equal("Low", L.Effort("low"));
-        Assert.Equal("ultra", L.Effort("ultra"));
+        Assert.Equal("Ultra", L.Effort("ultra"));
+        Assert.Equal("turbo", L.Effort("turbo")); // unknown level: shown as is
     }
 
     [Theory]
