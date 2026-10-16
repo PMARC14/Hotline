@@ -18,6 +18,15 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     /// Takes settings re-read from disk (the user edited settings.json) into the live objects other components hold.
     /// Returns false (and raises nothing) when nothing changed, e.g. for Hotline's own saves.
     /// </summary>
+    /// <summary>Settings › Advanced › Reset (see <see cref="SettingsReset"/>), applied live.</summary>
+    public (string Backup, IReadOnlyList<string> Removed) Reset(bool everything)
+    {
+        var result = SettingsReset.Reset(store, Path.GetDirectoryName(store.FilePath)!, Current, everything, DateTimeOffset.Now);
+        if (store.TryRead() is { } fresh) Reload(fresh);
+        log.Info($"settings reset ({(everything ? "everything" : "settings")}); backup in {result.Backup}");
+        return result;
+    }
+
     public bool Reload(HotlineSettings fromDisk)
     {
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };

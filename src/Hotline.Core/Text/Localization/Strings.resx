@@ -507,4 +507,14 @@ Deny:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>More…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Show when the AI is thinking</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>While an answer is on its way but no text has come for a moment, the cursor spins, so you can tell it hasn't stalled</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Puts settings back to how they were on install. Everything is copied to {0}\backups first. To switch between sets of settings, replace settings.json (or a file in connections) with another copy: Hotline applies it right away. The defaults are in {1}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reset settings</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Reset everything</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Reset settings?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json goes back to the defaults. Your connections, prompts, quick actions, memory and history stay. A backup is made first.</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reset everything?</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, every connection (and its API key), the toolbar and mcp.json go back to how they were on install. Prompts, quick actions, memory and history stay. A backup is made first (API keys aren't in it).</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reset</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Done. The previous files are in {0}.</value></data>
 </root>

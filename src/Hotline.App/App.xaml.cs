@@ -99,6 +99,8 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
+        try { SettingsReset.WriteDefaults(dataDir); } // the hidden copy of the defaults (Settings › Advanced › Reset)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Debug.WriteLine(ex); }
         ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");

@@ -131,6 +131,9 @@ public sealed class SettingsStore(string directory)
     }
 
     /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
+    public static string Serialize(HotlineSettings s) => SerializeMain(s);
+
+    /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
     private static string SerializeMain(HotlineSettings s)
     {
         var backends = s.Chat.Backends;

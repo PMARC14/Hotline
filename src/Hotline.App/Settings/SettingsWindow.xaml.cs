@@ -377,6 +377,39 @@ public sealed partial class SettingsWindow : Window
         PageHost.Children.Add(Card(Strings.Nav_Connections, L.F(Strings.Advanced_Connections_Desc, connections),
             Link(Strings.Advanced_OpenConnections, () => CliRunner.OpenFolder(connections))));
         PageHost.Children.Add(Card(Strings.Advanced_Logs, _logsDir, Link(Strings.Advanced_OpenLogs, () => CliRunner.OpenFolder(_logsDir))));
+        // Reset, with a backup first; switching between sets of settings is just replacing the files (applied live).
+        async Task ResetAsync(bool everything)
+        {
+            var dialog = new ContentDialog
+            {
+                XamlRoot = Root.XamlRoot, Title = everything ? Strings.Advanced_ResetAllTitle : Strings.Advanced_ResetTitle,
+                Content = new TextBlock { Text = everything ? Strings.Advanced_ResetAllBody : Strings.Advanced_ResetBody, TextWrapping = TextWrapping.Wrap },
+                PrimaryButtonText = Strings.Advanced_ResetConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+            };
+            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
+            try
+            {
+                var (backup, removed) = _settings.Reset(everything);
+                foreach (var id in removed)
+                {
+                    _secrets.Set(SecretKeys.ApiKey(id), null);
+                    await _invalidate(id);
+                }
+                ShowPage("Advanced");
+                PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Success, Message = L.F(Strings.Advanced_ResetDone, backup) });
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _log.Error("settings reset failed", ex);
+                PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Error, Message = ex.Message });
+            }
+        }
+        PageHost.Children.Add(Card(Strings.Advanced_Reset, L.F(Strings.Advanced_Reset_Desc, folder, Hotline.Core.Settings.SettingsReset.DefaultsPath(folder)),
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { Link(Strings.Advanced_ResetSettings, () => _ = ResetAsync(false)), Link(Strings.Advanced_ResetAll, () => _ = ResetAsync(true)) },
+            }));
     }
 
     // ---- prompts page ----------------------------------------------------------------------
