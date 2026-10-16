@@ -1,5 +1,6 @@
 using Hotline.Core.Activation;
 using Hotline.Core.Text.Localization;
+using Hotline.Core.Theming;
 
 namespace Hotline.Core.Settings;
 
@@ -22,7 +23,11 @@ public sealed record ChoiceOption(string Value, string Label);
 
 public sealed record ChoiceItem(SettingsPage Page, string Header, string? Description, IReadOnlyList<ChoiceOption> Options,
     Func<HotlineSettings, string> Get, Action<HotlineSettings, string> Set, bool RequiresRestart = false)
-    : SettingItem(Page, Header, Description, RequiresRestart);
+    : SettingItem(Page, Header, Description, RequiresRestart)
+{
+    /// <summary>Other controls on the page show what this one changes, so the page is rebuilt after a change.</summary>
+    public bool RefreshPage { get; init; }
+}
 
 public sealed record TextItem(SettingsPage Page, string Header, string? Description, string? Placeholder,
     Func<HotlineSettings, string?> Get, Action<HotlineSettings, string?> Set, bool RequiresRestart = false)
@@ -34,6 +39,13 @@ public sealed record TextItem(SettingsPage Page, string Header, string? Descript
     public string? Invalid { get; init; }
 }
 
+/// <summary>
+/// A global hotkey, set by pressing it (Settings shows a key binder; see Activation.HotkeyCapture). The value is the
+/// text settings.json holds, e.g. "Ctrl+Alt+H"; null = none.
+/// </summary>
+public sealed record HotkeyItem(SettingsPage Page, string Header, string? Description, Func<HotlineSettings, string?> Get,
+    Action<HotlineSettings, string?> Set, bool RequiresRestart = false) : SettingItem(Page, Header, Description, RequiresRestart);
+
 public static class SettingsSchema
 {
     private static ChoiceItem Choice<T>(SettingsPage page, string header, string? description, (T Value, string Label)[] options,
@@ -42,6 +54,9 @@ public static class SettingsSchema
             s => get(s).ToString(), (s, v) => set(s, Enum.Parse<T>(v)), restart);
 
     private static string? Blank(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
+
+    /// <summary>The accent picker's "Custom" entry (settings.json stores the colour itself).</summary>
+    private const string CustomAccent = "custom";
 
     private static readonly (KeyAction, string)[] KeyActions =
     [
@@ -74,16 +89,36 @@ public static class SettingsSchema
             s => s.Activation.Hold == KeyAction.Voice,
             (s, v) => { if (v) s.Activation.Hold = KeyAction.Voice; else if (s.Activation.Hold == KeyAction.Voice) s.Activation.Hold = KeyAction.NewChat; })
         { RefreshPage = true },
-        new TextItem(SettingsPage.General, nameof(Strings.Set_Hotkey), nameof(Strings.Set_Hotkey_Desc), "Ctrl+Alt+H",
-            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true)
-        { Validate = v => Activation.Hotkey.TryParse(v, out _), Invalid = nameof(Strings.Set_Hotkey_Invalid) },
+        new HotkeyItem(SettingsPage.General, nameof(Strings.Set_Hotkey), nameof(Strings.Set_Hotkey_Press_Desc),
+            s => s.Activation.FallbackHotkey, (s, v) => s.Activation.FallbackHotkey = Blank(v), RequiresRestart: true),
         new ToggleItem(SettingsPage.General, nameof(Strings.Set_HideOnBlur), nameof(Strings.Set_HideOnBlur_Desc),
             s => s.Window.HideOnBlur, (s, v) => s.Window.HideOnBlur = v),
         new ToggleItem(SettingsPage.General, nameof(Strings.Set_OnTop), null, s => s.Window.AlwaysOnTop, (s, v) => s.Window.AlwaysOnTop = v),
 
-        Choice(SettingsPage.Appearance, nameof(Strings.Set_Theme), null,
-            [(ThemeChoice.System, nameof(Strings.Set_Theme_System)), (ThemeChoice.Light, nameof(Strings.Set_Theme_Light)), (ThemeChoice.Dark, nameof(Strings.Set_Theme_Dark))],
+        Choice(SettingsPage.Appearance, nameof(Strings.Set_Theme), nameof(Strings.Set_Theme_Desc),
+            [(ThemeChoice.System, nameof(Strings.Set_Theme_System)), (ThemeChoice.Light, nameof(Strings.Set_Theme_Light)), (ThemeChoice.Dark, nameof(Strings.Set_Theme_Dark)),
+             (ThemeChoice.HighContrast, nameof(Strings.Set_Theme_HighContrast))],
             s => s.Window.Theme, (s, v) => s.Window.Theme = v),
+        new ChoiceItem(SettingsPage.Appearance, nameof(Strings.Set_Accent), nameof(Strings.Set_Accent_Desc),
+            [new(AccentChoice.Hotline, nameof(Strings.Set_Accent_Hotline)), new(AccentChoice.Windows, nameof(Strings.Set_Accent_Windows)),
+             new(CustomAccent, nameof(Strings.Set_Accent_Custom))],
+            s => AccentChoice.IsCustomColor(s.Window.Accent) ? CustomAccent
+                : string.Equals(s.Window.Accent?.Trim(), AccentChoice.Windows, StringComparison.OrdinalIgnoreCase) ? AccentChoice.Windows : AccentChoice.Hotline,
+            (s, v) =>
+            {
+                if (v != CustomAccent) s.Window.Accent = v;
+                else if (!AccentChoice.IsCustomColor(s.Window.Accent)) s.Window.Accent = Theming.ThemeTokens.Dark.Accent.Replace("#FF", "#"); // start from the purple
+            })
+        { RefreshPage = true },
+        new TextItem(SettingsPage.Appearance, nameof(Strings.Set_AccentColor), nameof(Strings.Set_AccentColor_Desc), "#E81123",
+            s => AccentChoice.IsCustomColor(s.Window.Accent) ? s.Window.Accent.Trim().ToUpperInvariant() : null,
+            (s, v) =>
+            {
+                if (AccentChoice.IsCustomColor(v)) s.Window.Accent = v!.Trim().ToUpperInvariant();
+                else if (AccentChoice.IsCustomColor(s.Window.Accent)) s.Window.Accent = AccentChoice.Hotline; // cleared: back to purple
+                // otherwise ("hotline" / "windows" chosen above) an empty box changes nothing
+            })
+        { Validate = AccentChoice.IsCustomColor, Invalid = nameof(Strings.Set_AccentColor_Invalid) },
         Choice(SettingsPage.Appearance, nameof(Strings.Set_Backdrop), nameof(Strings.Set_Backdrop_Desc),
             [(BackdropKind.Acrylic, nameof(Strings.Set_Backdrop_Acrylic)), (BackdropKind.AcrylicThin, nameof(Strings.Set_Backdrop_AcrylicThin)),
              (BackdropKind.Mica, nameof(Strings.Set_Backdrop_Mica)), (BackdropKind.Solid, nameof(Strings.Set_Backdrop_Solid))],

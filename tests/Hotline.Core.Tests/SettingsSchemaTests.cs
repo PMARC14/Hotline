@@ -62,8 +62,10 @@ public class SettingsSchemaTests
         foreach (var t in SettingsSchema.Items.OfType<TextItem>())
         {
             var s = new HotlineSettings();
-            t.Set(s, "Ctrl+Alt+H");
-            Assert.Equal("Ctrl+Alt+H", t.Get(s));
+            // A value the item accepts: its placeholder when it checks the format (e.g. a colour).
+            var sample = t.Validate is { } valid && !valid("Ctrl+Alt+H") ? t.Placeholder! : "Ctrl+Alt+H";
+            t.Set(s, sample);
+            Assert.Equal(sample, t.Get(s));
             t.Set(s, "  ");
             // Unset, or (for settings that always need a value) the default shown as the placeholder.
             Assert.True(t.Get(s) is null || t.Get(s) == t.Placeholder, $"{t.Header}: {t.Get(s)}");

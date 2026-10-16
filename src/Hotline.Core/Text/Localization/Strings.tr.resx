@@ -32,6 +32,16 @@
   <data name="Set_Theme_System" xml:space="preserve"><value>Windows ayarını kullan</value></data>
   <data name="Set_Theme_Light" xml:space="preserve"><value>Açık</value></data>
   <data name="Set_Theme_Dark" xml:space="preserve"><value>Koyu</value></data>
+  <data name="Set_Accent" xml:space="preserve"><value>Vurgu rengi</value></data>
+  <data name="Set_Accent_Desc" xml:space="preserve"><value>Bağlantılar, mesajlarınız ve Gönder düğmesi.</value></data>
+  <data name="Set_Accent_Hotline" xml:space="preserve"><value>Hotline moru</value></data>
+  <data name="Set_Accent_Windows" xml:space="preserve"><value>Windows vurgu rengini kullan</value></data>
+  <data name="Set_Accent_Custom" xml:space="preserve"><value>Özel</value></data>
+  <data name="Set_AccentColor" xml:space="preserve"><value>Özel vurgu rengi</value></data>
+  <data name="Set_AccentColor_Desc" xml:space="preserve"><value>#E81123 gibi bir renk; vurgu rengi Özel olduğunda kullanılır.</value></data>
+  <data name="Set_AccentColor_Invalid" xml:space="preserve"><value>#RRGGBB biçimini kullanın, örneğin #E81123.</value></data>
+  <data name="Set_Override_Contrast" xml:space="preserve"><value>Bir Windows karşıtlık teması açık: Hotline onun renklerini ve opak bir arka plan kullanır.</value></data>
+  <data name="Set_Override_Transparency" xml:space="preserve"><value>Windows'ta saydamlık efektleri kapalı, bu yüzden Hotline opak bir arka plan kullanır.</value></data>
   <data name="Set_Backdrop" xml:space="preserve"><value>Arka plan</value></data>
   <data name="Set_Backdrop_Desc" xml:space="preserve"><value>Akrilik yarı saydamdır; Düz opaktır.</value></data>
   <data name="Set_Backdrop_Acrylic" xml:space="preserve"><value>Akrilik</value></data>
@@ -320,6 +330,7 @@ Reddet:
   <data name="Recent_OpenFailed" xml:space="preserve"><value>Bu konuşma açılamadı.</value></data>
   <data name="Recent_HistoryOff" xml:space="preserve"><value>Sohbet geçmişi kapalı</value></data>
   <data name="Recent_None" xml:space="preserve"><value>Henüz kaydedilmiş sohbet yok</value></data>
+  <data name="Recent_NoMatch" xml:space="preserve"><value>Başlığında “{0}” geçen yakın tarihli sohbet yok.</value></data>
   <data name="Recent_Tip" xml:space="preserve"><value>{0} ileti, son {1:g}</value></data>
   <data name="Recent_OpenFolder" xml:space="preserve"><value>Geçmiş klasörünü aç</value></data>
   <data name="Recent_JustNow" xml:space="preserve"><value>az önce</value></data>
@@ -465,4 +476,29 @@ Reddet:
   <data name="Conn_Temperature" xml:space="preserve"><value>Sıcaklık</value></data>
   <data name="Conn_Temperature_Desc" xml:space="preserve"><value>Yanıtların ne kadar çeşitli olduğu: 0 = odaklı ve tekrarlanabilir, daha yüksek = daha çeşitli (en fazla 2). Boş = modelin varsayılanı.</value></data>
   <data name="Conn_ModelDefault" xml:space="preserve"><value>Modelin varsayılanı</value></data>
+  <data name="Action_remember_Desc" xml:space="preserve"><value>Belleğe not kaydet — her sohbet görür</value></data>
+  <data name="Action_resume_Desc" xml:space="preserve"><value>Geçmişten bir sohbeti yeniden aç</value></data>
+  <data name="Action_bullets_Desc" xml:space="preserve"><value>Madde işaretli listeye çevir</value></data>
+  <data name="Action_explain_Desc" xml:space="preserve"><value>Sade bir dille açıkla</value></data>
+  <data name="Action_fix_Desc" xml:space="preserve"><value>Yazım ve dil bilgisini düzelt</value></data>
+  <data name="Action_formal_Desc" xml:space="preserve"><value>Profesyonel bir dille yeniden yaz</value></data>
+  <data name="Action_reply_Desc" xml:space="preserve"><value>Bir yanıt taslağı yaz</value></data>
+  <data name="Action_shorter_Desc" xml:space="preserve"><value>Daha kısa ve net yap</value></data>
+  <data name="Action_summarize_Desc" xml:space="preserve"><value>Birkaç maddede özetle</value></data>
+  <data name="Action_translate_Desc" xml:space="preserve"><value>Çevir (İngilizceye veya belirttiğin dile)</value></data>
+  <data name="Set_Theme_HighContrast" xml:space="preserve"><value>Yüksek karşıtlık</value></data>
+  <data name="Set_Theme_Desc" xml:space="preserve"><value>Yüksek karşıtlık Hotline'ın kendi temasıdır; Windows karşıtlık temaları otomatik olarak izlenir.</value></data>
+  <data name="History_Search" xml:space="preserve"><value>Sohbetlerde ara</value></data>
+  <data name="Set_Hotkey_Press_Desc" xml:space="preserve"><value>Hotline'ı da açar. Tıklayın, sonra tuşlara basın. Esc iptal eder, Geri tuşu temizler.</value></data>
+  <data name="Hotkey_Press" xml:space="preserve"><value>Bir kısayola basın…</value></data>
+  <data name="Hotkey_NotSet" xml:space="preserve"><value>Ayarlanmadı</value></data>
+  <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift veya Win ekleyin</value></data>
+  <data name="Hotkey_Unsupported" xml:space="preserve"><value>Bu tuş kullanılamaz</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Varsayılan eylemleri geri yükle</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} varsayılan eylem eklendi veya güncellendi.</value></data>
+  <data name="Actions_Rename" xml:space="preserve"><value>Yeniden adlandır</value></data>
+  <data name="Actions_RenameInvalid" xml:space="preserve"><value>Harf, rakam, - ve _ kullanın ve henüz kullanılmayan bir ad seçin.</value></data>
+  <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
+  <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
+  <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
 </root>

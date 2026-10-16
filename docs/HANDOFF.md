@@ -10,58 +10,46 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 the user picks — Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-10-12)
+## State (2026-10-16)
 
-- **Released:** the Microsoft Store listing **Hotline AI** is certified (first submission 0.2.4.0). The next Store
-  package is built by hand (`scripts/build-msix.sh --store …`, docs/RELEASING.md) until automatic submission is set up
-  (`.github/workflows/store.yml`, secrets and `STORE_PRODUCT_ID`). GitHub releases stay self-signed test builds.
-- **Merged since the Store submission** (PRs #10–#21, #14):
-  - ARM64 builds; x64 + ARM64 `.msixbundle` (#10). Store listing text in 17 languages (`store/listings/`).
-  - 17 interface languages (#4, #16; Plan 8; model-drafted, every language spot-checked by Gemini; no RTL yet).
-  - Donations: GitHub Sponsors / Ko-fi buttons in About and the README; a one-time "Enjoying Hotline?" note
-    (`general.supportReminder`) (#12, #17).
-  - Windows notification when an answer finishes in the background (`chat.notifyWhenDone`, `hotline://answer`) (#18).
-  - First run: no connection chosen (`chat.defaultBackend` empty) and a "Choose how Hotline connects" card; no CLI
-    runs until one is picked; Copilot key guide (docs/copilot-key.md) and a button to the Windows page (#19, #20).
-  - **Plan 9 (#21):** chats with a CLI live in the CLI's own history, one conversation per chat, resumed after a
-    restart and from Recent chats; `keepCliSessions` (default on) / `keepInHotline` (default off, Hotline then keeps
-    `history\<id>.meta.json` only); chat-only folders `…\agy|claude|codex\Hotline`; agy project "Hotline";
-    Recent chats › **Continue this chat in ▸** a terminal. Settings schema v11.
-  - **Connection options pass** (#23, #24): every CLI has *Approve everything* and *Launch flags*; API connections have
-    *Maximum answer length* (`maxTokens`) and, except the Claude API, *Temperature*; Local gets *Effort* (also sent as
-    `chat_template_kwargs.reasoning_effort` for llama-server). Request rules were checked against the providers' docs
-    (configuration.md lists them).
-  - **OpenAI Codex CLI** connection (#14), on the same session design. Merged without a live Codex test (the owner
-    doesn't use Codex): the first person with a Codex sign-in should run its checklist in the PR #14 description.
-- Tests: 863 Core unit tests; `tests/smoke/smoke.ps1 -Install` 22/22 (the "agy exits with Hotline" check fails if any
-  other `agy` is running, e.g. an agy review).
-- Local scripts: `scripts/install.sh` builds, installs and starts in the tray; `scripts/build-msix.sh` (its cleanup
-  no longer ends the script when there are no old bundles).
+- **Released:** GitHub **v0.2.24** (2026-10-15) and, from this branch, **v0.2.25** (the history hotfix and the two
+  history features below). GitHub releases are normal releases signed with Hotline's long-lived self-signed
+  certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; repo secrets `HOTLINE_SIGNING_PFX_BASE64` /
+  `_PASSWORD`; the owner keeps `certs/release/hotline-release.pfx` + password, git-ignored, and a backup in
+  `Documents\Hotline-release-certificate\`): users trust `Hotline.cer` once, then `.appinstaller` updates work.
+- **Microsoft Store** **Hotline AI** (Store ID `9PMW5CR6G3BC`, also `winget install 9PMW5CR6G3BC`): uploads are by
+  hand (no Partner Center automation, by the owner's choice): `scripts/build-msix.sh --store --arch all --version
+  X.Y.Z.0 …` (docs/RELEASING.md), then upload with the 17 listings in `store/listings/`.
+- **In v0.2.24** (#26, #27): accent colour, High contrast theme, Windows contrast/transparency followed, code blocks
+  scroll sideways, the transcript follows answers until you scroll, the panel expands to half after the first
+  message and then with the text, the history list (🕘 / Ctrl+↑ / `/resume`), a key binder for the extra hotkey,
+  quick-action defaults/restore/rename/translated descriptions.
+- **In v0.2.25** (branch `hotfix-history-list`):
+  - Fix: the history list opened from Ctrl+↑ or `/resume` closed at once (a window resize closes a flyout: focus
+    leaving the message box changed its outline thickness, which resized the panel). The outline now changes colour
+    only, and `PopupWindow.HoldResize()` (taken only by the list) defers resizes while it's open.
+  - Fix: clicking or pressing Enter on a chat in the list did nothing (`ItemClick` reports a directly added
+    `ListViewItem`'s *content*); the same bug in the `/` suggestion list.
+  - `/resume` + space opens the list and the search continues there (`chat.resumeWhileTyping`).
+  - Reopened CLI chats show their earlier messages from the CLI's own history (`CliTranscripts`;
+    `chat.cliTranscripts`). `chat.historyListSize` sets how many chats the list reads. All three are settings.json only.
+- **Open PR #29** (`continue-in-targets`): Continue in to web pages, Open WebUI (a real chat) and apps; built from
+  `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed, **awaiting the owner's hand test**. It
+  predates v0.2.25: merge `main` into it before merging (expect a HANDOFF/README conflict).
+- Tests: ~968 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
+  off-screen self-test `hotline://selftest` builds every settings page.
 
 ## Next work
 
-1. **Store update:** upload the package from the last build (docs/RELEASING.md › Microsoft Store), with the
-   translated listings from `store/listings/`. Then set up automatic submission (store.yml).
-2. **Windows 11 26H2 follow-ups** (PR #9, draft) once 26H2 reaches the dev PC (it was rolling out from 2026-09-29).
-3. **Codex:** a live check with a Codex sign-in (PR #14 checklist).
-4. **Continue in a web page** (llama.cpp / a routing page): to be designed (Plan 9 left it open).
-5. Native-speaker review of the translations; right-to-left languages.
-6. Still open from earlier: region capture on multi-monitor / mixed DPI; `odr.exe` (Windows agent connectors) needs
-   build 26220.7262+.
-
-The personal branch `personal/gemini-web` (a WebView2 Gemini window, never released) is kept up to date by merging
-`main` into it (no force-push).
-
-UI follow-ups the user deferred (only fix if they become big problems): provider name shrinks very small in the bar;
-full-fidelity SVG (Windows' renderer drops text); code blocks wrap instead of scrolling; panel-growth smoothness;
-caret visibility on all themes.
-
-Self-test links for headless checks: `hotline://selftest` (+ `?tools` starts the mcp.json servers, `?selection` reads
-the foreground app's selection via UIA and logs only its length, `?voice` checks dictation setup without the mic).
-
-**Languages:** interface text is in `Hotline.Core/Text/Localization/Strings*.resx` (generated `Strings` class; schema
-text is keys looked up at render time; XAML uses `{local:Loc Key=…}`); `general.language` picks one or follows
-Windows. See docs/TRANSLATING.md.
+1. **Hand test** PR #29 (Continue in), merge `main` into it, then merge.
+2. **Windows 11 26H2 follow-ups** (PR #9, draft) once 26H2 reaches the dev PC — part of 1.0.
+3. **Region capture on multi-monitor / mixed DPI** on the owner's desktop — part of 1.0.
+4. **Version 1.0** when: Continue in merged, hand tests done, multi-monitor capture OK, a Store update certified with
+   all languages, 26H2 merged, and settings files staying compatible from then on.
+5. **Codex:** a live check with a Codex sign-in (PR #14 checklist).
+6. Known: the first off-screen layout after a fresh start logs a `LayoutCycleException` (kept running; older too).
+   No native-speaker reviews or RTL planned. Paid signing (winget-pkgs) only if Hotline gets popular.
+7. Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
 
 ## Architecture map
 
@@ -93,6 +81,20 @@ Windows. See docs/TRANSLATING.md.
 
 ## Hard-won facts (don't relearn these)
 
+- **A window resize closes an open WinUI flyout** (including `ShouldConstrainToRootBounds=false` ones). The panel
+  sizes itself to its content, so anything that changes layout while a flyout is open (even a 0.5 px border change on
+  focus) closes it. Use `PopupWindow.HoldResize()` around flyouts; keep focus styling layout-neutral.
+- **`ListView.ItemClick` with `ListViewItem`s added directly** reports the item's *Content*, not the `ListViewItem`:
+  put the `Tag` on the content too and match `FrameworkElement { Tag: … }`. `SelectedItem` is the `ListViewItem`.
+- **CLI histories:** Claude Code `~/.claude/projects/<folder>/<session>.jsonl` (type user/assistant, `message.content`
+  string or blocks; skip `isMeta`, `isSidechain`, `tool_result`); Codex `~/.codex/sessions/YYYY/MM/DD/rollout-*-<thread>.jsonl`
+  (`response_item` › `message`; skip `<environment_context>`-style turns); agy
+  `~/.gemini/antigravity-cli/conversations/<id>.db`, SQLite table `steps`: type 14 = user (protobuf field 19›2),
+  15 = answer (20›1), 101 = system notice. No agy command exports a conversation.
+- **OpenSSL on Windows writes `\r\n`:** strip `\r` too when making password files (`tr -d '\r\n'`), or Windows and
+  signtool see a different password than OpenSSL ("The specified PFX password is not correct").
+- **agy model quotas:** Opus/Sonnet via agy can run out for the week; Gemini 4 Argon (`gemini-4-argon-high`) is the
+  deep-review fallback, Gemini 3.8 Flash the everyday one.
 - Antigravity reviews: the agy MCP tool can return nothing and can't pick a model. What works: `agy --model
   <claude-opus-5-5-high | gemini-3.8-flash-high> -p "<prompt>"` with the code pasted INTO the prompt and "do not use any
   tools" (headless agy aborts silently when it tries a shell command). Windows caps the command line at ~32k chars, so

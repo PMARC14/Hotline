@@ -18,6 +18,7 @@ risposta in tempo reale, premi di nuovo il tasto e sparisce. Nessuna scheda del 
 
 USA L'IA CHE HAI GIÀ
 • Claude Code: usa il tuo Claude Code installato e il suo accesso, quindi il tuo piano Claude funziona senza chiave API.
+• CLI OpenAI Codex: usa il tuo Codex installato e il suo accesso, quindi il tuo piano ChatGPT funziona senza chiave API.
 • CLI di Antigravity (agy): Gemini con il tuo account Google.
 • La tua chiave API: Anthropic, Google Gemini, OpenAI e altri servizi compatibili con OpenAI come OpenRouter.
 • Modelli locali: qualsiasi server in stile OpenAI sul tuo PC (ad esempio llama.cpp o LM Studio), così nulla lascia il tuo computer.
@@ -50,12 +51,16 @@ Windows; cronologia, impostazioni e memoria restano sul tuo PC. Gratuito e open 
 Niente tasto Copilot? Imposta la scorciatoia che preferisci, ad esempio Ctrl+Alt+H.
 
 Hotline AI è un'app indipendente e non è affiliata né approvata da Microsoft, Anthropic, Google o OpenAI. Per usare
-Claude Code, la CLI di Antigravity o un'API di IA serve un tuo account presso quel servizio.
+Claude Code, Codex, la CLI di Antigravity o un'API di IA serve un tuo account presso quel servizio.
+
+## Novità di questa versione
+
+Scegli il colore principale (viola Hotline, quello di Windows o qualsiasi colore) e il nuovo tema Contrasto elevato; Hotline segue anche i temi a contrasto e la trasparenza di Windows. La cronologia delle chat si apre come elenco con ricerca (pulsante Cronologia, Ctrl+↑ o /resume). Imposta la scorciatoia aggiuntiva semplicemente premendola. Nuove azioni rapide: /reply, /shorter, /formal e /bullets. I blocchi di codice scorrono in orizzontale e il pannello segue le risposte mentre arrivano.
 
 ## Caratteristiche del prodotto
 
 1. Si apre con il tasto Copilot (o qualsiasi scorciatoia) sul monitor su cui lavori, pronto per scrivere
-2. Funziona con il tuo accesso a Claude Code o Gemini (CLI di Antigravity): nessuna chiave API
+2. Funziona con il tuo accesso a Claude Code, ChatGPT (CLI di Codex) o Gemini (CLI di Antigravity): nessuna chiave API
 3. La tua chiave: Anthropic, Google Gemini, OpenAI e API compatibili con OpenAI
 4. Modelli locali: qualsiasi server in stile OpenAI sul tuo PC, nulla lascia il computer
 5. Scegli modello, provider e impegno di ragionamento dal pannello

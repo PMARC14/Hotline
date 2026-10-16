@@ -39,8 +39,9 @@ configurable in plain files.
 - **Memory** — `/remember I prefer metric units` (or "remember that…" to an API model, which asks you first) saves a
   note to `memory.md`; every chat sees it, whichever AI you use.
 - **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
-- **Recent chats** — reopen the last chats from the 🕘 menu or with Ctrl+↑. A chat with Claude Code, Codex or
-  Antigravity lives in that tool's own history (grouped under *Hotline*), so it picks up where it left off, even after
+- **Chat history** — the 🕘 button, Ctrl+↑ or `/resume` open a searchable list of your chats. A chat with Claude
+  Code, Codex or Antigravity lives in that tool's own history (grouped under *Hotline*), shows its earlier messages
+  when you reopen it, and picks up where it left off, even after
   a restart, and **Continue this chat in ▸** opens it in a terminal window.
 - **Answers in the background** — ask something long, switch away, and a Windows notification says when it's ready.
 - **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits
@@ -64,8 +65,8 @@ Windows 11 22H2 or later, on x64 or ARM64 (Windows on ARM runs the native ARM64 
 
 ### From the Microsoft Store
 
-Search for **Hotline AI** in the Microsoft Store (or `winget install -s msstore "Hotline AI"`). Store installs are
-signed by Microsoft and update automatically.
+Search for **Hotline AI** in the Microsoft Store, or run `winget install 9PMW5CR6G3BC`. Store installs are signed by
+Microsoft and update automatically (also through `winget upgrade`).
 
 ### From Releases
 
@@ -73,11 +74,11 @@ Download the latest `.msixbundle` from [Releases](https://github.com/PMARC14/Hot
 App Installer opens with an **Install** button). To get automatic updates instead, download `Hotline.appinstaller`
 and open that.
 
-> **Test builds** (pre-releases) are signed with a throwaway self-signed certificate, so Windows refuses them until
-> you trust that build's `Hotline.cer` once (admin PowerShell, in the download folder):
+> **GitHub releases are self-signed** (the Microsoft Store version is signed by Microsoft), so Windows refuses them
+> until you trust `Hotline.cer` once (admin PowerShell, in the download folder):
 > `Import-Certificate -FilePath .\Hotline.cer -CertStoreLocation Cert:\LocalMachine\TrustedPeople`.
-> Each test build has its own certificate, and test builds don't update automatically. Trusted-signed releases
-> need none of this.
+> Releases from v0.2.24 on share one certificate (valid until 2036): trust it once, and installs from
+> `Hotline.appinstaller` then update themselves.
 
 The first time you open it, Hotline asks which AI to use: the ones installed on your PC (Claude Code, Codex,
 Antigravity) or an API key. Nothing runs or is sent until you pick one.
@@ -164,12 +165,12 @@ Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status
 
 Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
 to `main` publishes a release with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
-(`.github/workflows/release.yml`); until the signing secrets are set these are self-signed pre-release test builds.
+(`.github/workflows/release.yml`), signed with Hotline's long-lived self-signed certificate (trust `Hotline.cer` once).
 Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
 
-Automatic Microsoft Store updates from each release, Windows 11 26H2 follow-ups, continuing a chat in a local web page
+Windows 11 26H2 follow-ups, continuing a chat in a local web page
 (llama.cpp), and native-speaker reviews of the translations. See [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## Support Hotline

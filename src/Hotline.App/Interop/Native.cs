@@ -49,6 +49,7 @@ internal static class Native
         finally { AttachThreadInput(me, fgThread, false); }
     }
     [DllImport("user32.dll")] public static extern bool RegisterHotKey(nint hWnd, int id, uint modifiers, uint vk);
+    [DllImport("user32.dll")] public static extern bool UnregisterHotKey(nint hWnd, int id);
     [DllImport("user32.dll")] public static extern bool PostMessage(nint hWnd, uint msg, nint wParam, nint lParam);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern uint RegisterWindowMessage(string name);
     [DllImport("user32.dll")] public static extern nint MonitorFromWindow(nint hWnd, uint flags);
