@@ -65,7 +65,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
         {
             popup.HideForDialog(); // the normal Windows dialog, not one boxed in by the small always-on-top panel
             try { files = await picker.PickMultipleFilesAsync(); }
-            finally { popup.ShowPopup(); }
+            finally { popup.ShowPopup(readSelection: false); } // back from the dialog: never copy from whatever had focus
             await AddFilesAsync(files);
         }
     }

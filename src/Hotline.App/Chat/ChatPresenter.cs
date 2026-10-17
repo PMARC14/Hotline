@@ -78,6 +78,7 @@ internal sealed class ChatPresenter
         _memory = new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
         _composer = new Composer(popup, _theme, actions, _tasks, () => settings.Chat.ResumeWhileTyping);
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
+        popup.KeepOnKeyPress = () => _voice.Active || settings.Activation.Tap != Hotline.Core.Activation.KeyAction.TogglePopup;
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log, () => settings.Chat.HistoryListSize);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
