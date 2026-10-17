@@ -49,7 +49,8 @@ Spec: `docs/superpowers/specs/2026-10-16-panel-placement-design.md`. Branch `pan
    - `PlaceOnActiveMonitor` uses `PanelPlacement`, including a saved monitor and the fallback to `active`;
    - every placement is logged at Info;
    - the session rect while pinned;
-   - unpin or restart goes back to the default.
+   - unpinning, clicking into another app (a deactivation that is not Hotline's own: not a flyout, dialog, capture or a
+     program Hotline started) or a restart goes back to the default.
 4. **Up/down layout:** `PanelLayout.Apply(direction)`.
    - Swap rows, the scroll anchoring (`MessagesPanel.VerticalAlignment`, the follow logic in `TranscriptView`), the
      jump button and the notices.
