@@ -45,8 +45,9 @@ public sealed class SettingsStore(string directory)
     public string FilePath => Path.Combine(directory, FileName);
 
     /// <summary>
-    /// Reads settings.json without any side effects (no defaults written, no backup, no write-back): null when the
-    /// file is missing, unreadable or not valid JSON — e.g. half-saved by an editor. Used for live reloads.
+    /// Reads settings.json without writing anything (no defaults, no backup, no write-back; it only notes which
+    /// connection files are unreadable now): null when the file is missing, unreadable or not valid JSON — e.g.
+    /// half-saved by an editor. Used for live reloads.
     /// </summary>
     public HotlineSettings? TryRead()
     {
@@ -59,6 +60,7 @@ public sealed class SettingsStore(string directory)
             s.Chat ??= new ChatSettings();
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
             var (files, broken) = ReadConnectionFiles();
+            BrokenConnectionFiles = broken; // a file broken (or fixed) since start: the next save must leave it alone
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
@@ -237,6 +239,8 @@ public sealed class SettingsStore(string directory)
         foreach (var id in _ownedIds.Where(id => !current.Contains(id)).ToList())
         {
             var path = Path.GetFullPath(ConnectionPath(id));
+            if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
+                continue; // unreadable right now (an editor mid-save): its connection only looks removed; keep owning it
             if (!inUse.Contains(path)) // two ids can map to one file name: never delete a file a remaining connection uses
                 try { File.Delete(path); } catch (IOException) { }
             _ownedIds.Remove(id);
