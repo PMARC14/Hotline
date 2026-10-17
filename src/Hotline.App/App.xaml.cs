@@ -396,9 +396,9 @@ public partial class App : Application
     {
         var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
         if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
-        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
+        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _popup.TopToolbarItems.SequenceEqual(config.Top) && _toolbarApplied) return;
         _toolbarApplied = true;
-        try { _popup.ApplyToolbar(config.Items); }
+        try { _popup.ApplyToolbar(config.Items, config.Top); }
         catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
     }
 

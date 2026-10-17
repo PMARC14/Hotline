@@ -4,8 +4,8 @@ using Microsoft.UI.Xaml.Controls;
 namespace Hotline.App.Chat;
 
 /// <summary>
-/// The panel's rows for the chat's direction. Up (as always): chat, notices, message box, button row. Down: message box
-/// and button row on top, then notices and the chat. Only rows change: no control is moved to another parent, so the
+/// The panel's rows for the chat's direction. Up (as always): chat, notices, the bar (top button row and message box),
+/// bottom button row. Down: the bar and bottom row on top, then notices and the chat. Only rows change: no control is moved to another parent, so the
 /// message box keeps its focus, caret and draft through a swap.
 /// </summary>
 internal static class PanelLayout
@@ -21,14 +21,14 @@ internal static class PanelLayout
         {
             SetRows(chat, 0);
             Grid.SetRow(popup.NoticesPanel, 1);
-            Grid.SetRow(popup.Composer, 2);
+            Grid.SetRow(popup.BarStack, 2);
             Grid.SetRow(popup.Toolbar, 3);
             rows[0].Height = new GridLength(1, GridUnitType.Star);
             rows[3].Height = GridLength.Auto;
         }
         else
         {
-            Grid.SetRow(popup.Composer, 0);
+            Grid.SetRow(popup.BarStack, 0);
             Grid.SetRow(popup.Toolbar, 1);
             Grid.SetRow(popup.NoticesPanel, 2);
             SetRows(chat, 3);

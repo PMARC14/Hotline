@@ -345,8 +345,8 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
-        var bar = _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 8 + 20;
-        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
+        var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + 8 + 20; // BarStack: the top row (if any) and the message box
+        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
             conversation: !_transcript.IsEmpty, barDip: bar);
     }
 

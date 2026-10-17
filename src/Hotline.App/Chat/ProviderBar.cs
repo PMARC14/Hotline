@@ -141,9 +141,9 @@ internal sealed class ProviderBar(
         var effortAvailable = popup.EffortBox.Items.Count > 0;
         var widths = ToolbarLayout.Compute(bar.ActualWidth, fixedWidth, popup.PickersPanel.Spacing,
             [
-                new("effort", 72, 56, effortAvailable && popup.ToolbarItems.Contains("effort")),
-                new("model", 150, 84, popup.ToolbarItems.Contains("model")),
-                new("provider", 128, 72, popup.ToolbarItems.Contains("provider")),
+                new("effort", 72, 56, effortAvailable && Shown("effort")),
+                new("model", 150, 84, Shown("model")),
+                new("provider", 128, 72, Shown("provider")),
             ], HideOrder);
         Apply(popup.EffortBox, widths["effort"]);
         Apply(popup.ModelBox, widths["model"]);
@@ -271,4 +271,7 @@ internal sealed class ProviderBar(
         popup.PromptMenu.Items.Add(create);
         popup.PromptMenu.Items.Add(folder);
     }
+
+    /// <summary>An item is in either button row.</summary>
+    private bool Shown(string item) => popup.ToolbarItems.Contains(item) || popup.TopToolbarItems.Contains(item);
 }

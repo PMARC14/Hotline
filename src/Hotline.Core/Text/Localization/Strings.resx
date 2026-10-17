@@ -519,4 +519,10 @@ Deny:
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Done. The previous files are in {0}.</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>Continue in</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Nothing to continue this chat in yet: no AI command-line tool is installed, or the chat has no messages.</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Button rows</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Above the message box</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Below the message box</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Empty</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Move above the message box</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Move below the message box</value></data>
 </root>

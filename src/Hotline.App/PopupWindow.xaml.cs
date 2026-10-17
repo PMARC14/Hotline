@@ -116,40 +116,54 @@ public sealed partial class PopupWindow : Window
     /// <summary>The bar's items in order (from toolbar.json); the provider bar reads which pickers are shown.</summary>
     public IReadOnlyList<string> ToolbarItems { get; private set; } = Hotline.Core.Windowing.ToolbarConfig.Defaults;
 
-    /// <summary>Rebuilds the bottom bar: one column per item in order, a flexible column for each "spacer".</summary>
-    public void ApplyToolbar(IReadOnlyList<string> items)
+    /// <summary>The top row's items (toolbar.json "top").</summary>
+    public IReadOnlyList<string> TopToolbarItems { get; private set; } = [];
+
+    /// <summary>
+    /// Rebuilds both button rows: one column per item in order, a flexible column for each "spacer". The pickers sit
+    /// together in the row of the first one listed.
+    /// </summary>
+    public void ApplyToolbar(IReadOnlyList<string> items, IReadOnlyList<string> top)
     {
-        ToolbarItems = items;
+        (ToolbarItems, TopToolbarItems) = (items, top);
         var elements = new Dictionary<string, FrameworkElement>
         {
             ["pin"] = PinButton, ["captureWindow"] = CaptureWindowButton, ["captureScreen"] = CaptureScreenButton,
             ["captureRegion"] = CaptureRegionButton, ["prompt"] = PromptButton, ["recent"] = RecentButton, ["continueIn"] = ContinueInButton,
             ["newChat"] = NewChatButton, ["settings"] = SettingsButton,
         };
-        Toolbar.Children.Clear();
-        Toolbar.ColumnDefinitions.Clear();
+        foreach (var row in new[] { Toolbar, TopToolbar }) { row.Children.Clear(); row.ColumnDefinitions.Clear(); }
+        foreach (var e in elements.Values.Append(PickersPanel)) e.Visibility = Visibility.Collapsed; // shown again where listed
         var pickersPlaced = false;
-        foreach (var item in items)
+        var all = top.Concat(items).ToList();
+        void Fill(Microsoft.UI.Xaml.Controls.Grid row, IReadOnlyList<string> list)
         {
-            FrameworkElement? element;
-            var star = false;
-            if (item == "spacer") { element = new Microsoft.UI.Xaml.Controls.Border { Tag = "spacer" }; star = true; }
-            else if (item is "effort" or "model" or "provider")
+            foreach (var item in list)
             {
-                if (pickersPlaced) continue; // the pickers sit together, in the order listed
-                pickersPlaced = true;
-                element = PickersPanel;
-                var order = items.Where(i => i is "effort" or "model" or "provider").ToList();
-                var boxes = new Dictionary<string, Microsoft.UI.Xaml.Controls.ComboBox> { ["effort"] = EffortBox, ["model"] = ModelBox, ["provider"] = ProviderBox };
-                PickersPanel.Children.Clear();
-                foreach (var name in order) PickersPanel.Children.Add(boxes[name]);
+                FrameworkElement? element;
+                var star = false;
+                if (item == "spacer") { element = new Microsoft.UI.Xaml.Controls.Border { Tag = "spacer" }; star = true; }
+                else if (item is "effort" or "model" or "provider")
+                {
+                    if (pickersPlaced) continue; // the pickers sit together, in the order listed
+                    pickersPlaced = true;
+                    element = PickersPanel;
+                    var order = all.Where(i => i is "effort" or "model" or "provider").ToList();
+                    var boxes = new Dictionary<string, Microsoft.UI.Xaml.Controls.ComboBox> { ["effort"] = EffortBox, ["model"] = ModelBox, ["provider"] = ProviderBox };
+                    PickersPanel.Children.Clear();
+                    foreach (var name in order) PickersPanel.Children.Add(boxes[name]);
+                }
+                else if (!elements.TryGetValue(item, out element)) continue;
+                row.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = star ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
+                Microsoft.UI.Xaml.Controls.Grid.SetColumn(element, row.ColumnDefinitions.Count - 1);
+                element.Visibility = Visibility.Visible;
+                row.Children.Add(element);
             }
-            else if (!elements.TryGetValue(item, out element)) continue;
-            Toolbar.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = star ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
-            Microsoft.UI.Xaml.Controls.Grid.SetColumn(element, Toolbar.ColumnDefinitions.Count - 1);
-            element.Visibility = Visibility.Visible;
-            Toolbar.Children.Add(element);
         }
+        Fill(TopToolbar, top);
+        Fill(Toolbar, items);
+        TopToolbar.Visibility = TopToolbar.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        Toolbar.Visibility = Toolbar.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
         ToolbarChanged?.Invoke();
     }
 

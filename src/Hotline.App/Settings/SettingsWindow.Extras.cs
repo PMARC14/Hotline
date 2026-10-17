@@ -6,7 +6,7 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Hotline.App.Settings;
 
-/// <summary>Settings pages for the files next to settings.json: the bottom bar (toolbar.json) and quick actions (actions\).</summary>
+/// <summary>Settings pages for the files next to settings.json: the button rows (toolbar.json) and quick actions (actions\).</summary>
 public sealed partial class SettingsWindow
 {
     /// <summary>A bar item's name ("captureWindow" → Bar_captureWindow); unknown ids show as they are.</summary>
@@ -15,12 +15,15 @@ public sealed partial class SettingsWindow
     private string DataDirectory => Path.GetDirectoryName(_settingsFile)!;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
-    /// <summary>Appearance › Bottom bar: show, hide and order the bar's buttons (saved to toolbar.json, applied at once).</summary>
+    /// <summary>
+    /// Appearance › Button rows: show, hide, order and move the buttons between the row above the message box and the
+    /// one below it (saved to toolbar.json, applied at once).
+    /// </summary>
     private void BuildToolbarSection()
     {
         PageHost.Children.Add(new TextBlock
         {
-            Text = Strings.Bar_Title, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
+            Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
         var config = ToolbarConfig.Load(ToolbarPath);
         if (config.Error is { } error)
@@ -28,39 +31,54 @@ public sealed partial class SettingsWindow
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        var items = config.Items;
-        void Save(IReadOnlyList<string> next)
+        var (top, items) = (config.Top, config.Items);
+        void Save(IReadOnlyList<string> nextTop, IReadOnlyList<string> nextItems)
         {
-            try { ToolbarConfig.Save(ToolbarPath, next); }
+            try { ToolbarConfig.Save(ToolbarPath, nextItems, nextTop); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
             ShowPage(_currentPage);
         }
-        var list = new StackPanel { Spacing = 4 };
-        for (var i = 0; i < items.Count; i++)
+        var total = top.Count + items.Count;
+        void AddRow(string heading, IReadOnlyList<string> row, bool isTop)
         {
-            var index = i;
-            var row = new Grid { ColumnSpacing = 4 };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            for (var c = 0; c < 3; c++) row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            row.Children.Add(new TextBlock { Text = ToolbarName(items[i]), VerticalAlignment = VerticalAlignment.Center });
-            AddIconButton(row, 1, "\uE76B", Strings.Bar_MoveLeft, index > 0, () => Save(ToolbarConfig.Move(items, index, -1)));
-            AddIconButton(row, 2, "\uE76C", Strings.Bar_MoveRight, index < items.Count - 1, () => Save(ToolbarConfig.Move(items, index, +1)));
-            AddIconButton(row, 3, "\uE711", Strings.Bar_Remove, items.Count > 1, () =>
-                Save(items.Where((_, j) => j != index).ToList()));
-            list.Children.Add(row);
+            PageHost.Children.Add(new TextBlock { Text = heading, Opacity = 0.8, Margin = new Thickness(0, 8, 0, 2) });
+            var list = new StackPanel { Spacing = 4 };
+            if (row.Count == 0) list.Children.Add(new TextBlock { Text = Strings.Bar_RowEmpty, Opacity = 0.6 });
+            for (var i = 0; i < row.Count; i++)
+            {
+                var index = i;
+                var item = row[i];
+                var line = new Grid { ColumnSpacing = 4 };
+                line.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+                for (var c = 0; c < 4; c++) line.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+                line.Children.Add(new TextBlock { Text = ToolbarName(item), VerticalAlignment = VerticalAlignment.Center });
+                IReadOnlyList<string> With(IReadOnlyList<string> changed) => changed;
+                void SaveRow(IReadOnlyList<string> changed) { if (isTop) Save(changed, items); else Save(top, changed); }
+                AddIconButton(line, 1, "\uE76B", Strings.Bar_MoveLeft, index > 0, () => SaveRow(With(ToolbarConfig.Move(row, index, -1))));
+                AddIconButton(line, 2, "\uE76C", Strings.Bar_MoveRight, index < row.Count - 1, () => SaveRow(With(ToolbarConfig.Move(row, index, +1))));
+                AddIconButton(line, 3, isTop ? "\uE74B" : "\uE74A", isTop ? Strings.Bar_ToBottom : Strings.Bar_ToTop, true, () =>
+                {
+                    var (t, b) = ToolbarConfig.ToRow(top, items, item, toTop: !isTop);
+                    Save(t, b);
+                });
+                AddIconButton(line, 4, "\uE711", Strings.Bar_Remove, total > 1, () => SaveRow(row.Where((_, j) => j != index).ToList()));
+                list.Children.Add(line);
+            }
+            PageHost.Children.Add(new Border { Child = list, Style = (Style)Root.Resources["CardStyle"] });
         }
-        PageHost.Children.Add(new Border { Child = list, Style = (Style)Root.Resources["CardStyle"] });
+        AddRow(Strings.Bar_TopRow, top, isTop: true);
+        AddRow(Strings.Bar_BottomRow, items, isTop: false);
 
         var add = new DropDownButton { Content = Strings.Bar_Add };
         var menu = new MenuFlyout();
-        foreach (var item in ToolbarConfig.Available.Where(a => a == "spacer" || !items.Contains(a)))
+        foreach (var item in ToolbarConfig.Available.Where(a => a == "spacer" || !items.Contains(a) && !top.Contains(a)))
         {
             var entry = new MenuFlyoutItem { Text = ToolbarName(item) };
-            entry.Click += (_, _) => Save(ToolbarConfig.Show(items, item));
+            entry.Click += (_, _) => Save(top, ToolbarConfig.Show(items, item)); // added below the message box; move it up from there
             menu.Items.Add(entry);
         }
         add.Flyout = menu;
-        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { add, ResetToolbarButton() } });
+        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { add, ResetToolbarButton() } });
     }
 
     private Button ResetToolbarButton()

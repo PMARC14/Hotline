@@ -75,7 +75,10 @@
 
         <StackPanel x:Name="NoticesPanel" x:FieldModifier="internal" Grid.Row="1" Spacing="6" />
 
-        <Border x:Name="Composer" x:FieldModifier="internal" Grid.Row="2" CornerRadius="12" Padding="4" BorderThickness="1"
+        <!-- The bar: the top button row (toolbar.json "top"; collapsed when empty) and the message box. -->
+        <StackPanel x:Name="BarStack" x:FieldModifier="internal" Grid.Row="2">
+        <Grid x:Name="TopToolbar" x:FieldModifier="internal" ColumnSpacing="2" Margin="0,0,0,8" Visibility="Collapsed" />
+        <Border x:Name="Composer" x:FieldModifier="internal" CornerRadius="12" Padding="4" BorderThickness="1"
                 Background="{ThemeResource ComposerSurface}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
             <StackPanel Spacing="4">
                 <!-- Quick actions: typing "/" lists ~/.hotline/actions/*.md (Up/Down, Tab or Enter to pick, Esc to close). -->
@@ -116,6 +119,7 @@
                 </Grid>
             </StackPanel>
         </Border>
+        </StackPanel>
 
         <!-- Bottom toolbar: room for more features (model/effort picker arrives in Plan 3b). -->
         <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings. -->
