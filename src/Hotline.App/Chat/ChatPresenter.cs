@@ -102,7 +102,8 @@ internal sealed class ChatPresenter
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };
-        _popup.PinButton.Unchecked += (_, _) => { _popup.Pinned = false; _popup.PinButton.Content = Glyphs.Pin; };
+        _popup.PinButton.Unchecked += (_, _) => { _popup.Pinned = false; _popup.PinButton.Content = Glyphs.Pin; _popup.ForgetSessionSpot(); };
+        _popup.DirectionChanged += up => PanelLayout.Apply(_popup, up);
         _popup.NewChatButton.Click += (_, _) => NewChat();
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
@@ -344,8 +345,9 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
+        var bar = _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 8 + 20;
         _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
-            conversation: !_transcript.IsEmpty);
+            conversation: !_transcript.IsEmpty, barDip: bar);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

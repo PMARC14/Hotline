@@ -142,6 +142,22 @@ internal static class Native
     [DllImport("dwmapi.dll")] public static extern int DwmGetWindowAttribute(nint hWnd, int attr, out RECT value, int size);
     [DllImport("dwmapi.dll", EntryPoint = "DwmGetWindowAttribute")] public static extern int DwmGetWindowAttributeInt(nint hWnd, int attr, out int value, int size);
     public const int DWMWA_CLOAKED = 14;
+    public const uint MONITOR_DEFAULTTONULL = 0;
+    [DllImport("user32.dll")] public static extern nint MonitorFromRect(ref RECT rect, uint flags);
+    [StructLayout(LayoutKind.Sequential, CharSet = CharSet.Unicode)]
+    public struct MONITORINFOEX
+    {
+        public int Size; public RECT Monitor, Work; public uint Flags;
+        [MarshalAs(UnmanagedType.ByValTStr, SizeConst = 32)] public string Device;
+    }
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern bool GetMonitorInfo(nint monitor, ref MONITORINFOEX info);
+
+    /// <summary>A monitor's device name (e.g. \\.\DISPLAY2), or null.</summary>
+    public static string? MonitorDevice(nint monitor)
+    {
+        var info = new MONITORINFOEX { Size = Marshal.SizeOf<MONITORINFOEX>() };
+        return monitor != 0 && GetMonitorInfo(monitor, ref info) ? info.Device : null;
+    }
     [DllImport("user32.dll")] public static extern bool IsWindowVisible(nint hWnd);
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] public static extern nint CreateJobObject(nint attrs, string? name);
     [DllImport("kernel32.dll")] public static extern bool SetInformationJobObject(nint job, int cls, ref JOBOBJECT_EXTENDED_LIMIT_INFORMATION info, int size);

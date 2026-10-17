@@ -138,6 +138,16 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             composer.Text = "/";
             await Step("quick actions");
             log.Info($"selftest quick actions: {composer.SuggestionCount} suggestion(s)");
+            composer.Text = "draft kept through a swap";
+            var up = popup.GrowsUp;
+            PanelLayout.Apply(popup, up: false); // the chat growing down from the bar: rendered like the rest
+            await Step("layout down");
+            var keptDown = composer.Text == "draft kept through a swap";
+            PanelLayout.Apply(popup, up: true);
+            await Step("layout up");
+            if (!keptDown || composer.Text != "draft kept through a swap") log.Error("selftest FAILED: the draft changed in a layout swap");
+            else log.Info("selftest layout swap ok");
+            PanelLayout.Apply(popup, up); // back to the panel's own direction
             composer.Text = draft;
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }

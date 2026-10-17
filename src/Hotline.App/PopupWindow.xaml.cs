@@ -293,10 +293,12 @@ public sealed partial class PopupWindow : Window
 
     /// <summary>Content height (DIPs) of the conversation; the panel grows upward from its baseline.</summary>
     /// <param name="conversation">The chat has messages: the panel then expands to halfway at once, and past it with the text.</param>
-    public void SetContentHeight(double dip, bool conversation)
+    /// <param name="barDip">The bar alone (message box and button rows): kept in place when the chat grows down.</param>
+    public void SetContentHeight(double dip, bool conversation, double barDip)
     {
         _contentDip = dip; // DIPs: converted with the current monitor scale in ApplyHeight
         _conversation = conversation;
+        _barDip = barDip;
         if (AppWindow.IsVisible) ApplyHeight();
     }
 
@@ -349,6 +351,17 @@ public sealed partial class PopupWindow : Window
 
     private void OnActivated(object sender, WindowActivatedEventArgs e)
     {
+        if (e.WindowActivationState == WindowActivationState.Deactivated && Pinned && _modal == 0 && _session is not null)
+            DispatcherQueue.TryEnqueue(() =>
+            {
+                // Clicking into another app while pinned forgets the moved spot (owner, 2026-10-17); the shell (the
+                // key, the taskbar) and programs Hotline started don't count.
+                var fg = Native.GetForegroundWindow();
+                if (fg == 0 || fg == Hwnd || Hotline.Core.Windowing.ShellSurfaces.IsShell(Native.ClassNameOf(fg))) return;
+                Native.GetWindowThreadProcessId(fg, out var pid);
+                if (pid == Environment.ProcessId || IsOurProcess?.Invoke(pid) == true) return;
+                ForgetSessionSpot();
+            });
         if (e.WindowActivationState != WindowActivationState.Deactivated || !_settings.HideOnBlur || _modal != 0 || Pinned) return;
         // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
         // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show; up to
@@ -443,18 +456,21 @@ public sealed partial class PopupWindow : Window
         if (_resizeHolds > 0 && !force) { _resizeHeld = true; return; } // a flyout is open: see HoldResize
         if (_bar.Width == 0) return;
         _resizeHeld = false; // this resize settles any held one
-        var maxPx = Math.Min((int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0), _work.Height);
+        var maxPx = MaxPx;
+        var bar = _growUp ? _bar : DownBar;
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
         if (GrowMode == GrowMode.Grow)
         {
-            var previous = _targetRect.Height > 0 ? _targetRect.Height : _bar.Height;
-            contentPx = PopupGeometry.TwoStep(previous, contentPx, _bar.Height, Math.Max(_bar.Height, maxPx), _conversation);
+            var previous = _targetRect.Height > 0 ? _targetRect.Height : bar.Height;
+            contentPx = PopupGeometry.TwoStep(previous, contentPx, bar.Height, Math.Max(bar.Height, maxPx), _conversation);
         }
-        _targetRect = PopupGeometry.GrowUp(_bar, contentPx, maxPx, _work, GrowMode);
+        _targetRect = _growUp ? PopupGeometry.GrowUp(bar, contentPx, maxPx, _work, GrowMode) : PopupGeometry.GrowDown(bar, contentPx, maxPx, _work, GrowMode);
         // During a chat the panel slides to its new height; anything else (no message yet, a new chat, placing) moves at once.
+        // The bar's edge stays put: the bottom when growing up, the top when growing down.
         if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
-            && current.Width == _targetRect.Width && current.Y + current.Height == _targetRect.Y + _targetRect.Height)
+            && current.Width == _targetRect.Width
+            && (_growUp ? current.Y + current.Height == _targetRect.Y + _targetRect.Height : current.Y == _targetRect.Y))
         {
             if (current == _targetRect || _animating) return; // already there, or the running slide retargets next frame
             _animating = true;
@@ -498,7 +514,7 @@ public sealed partial class PopupWindow : Window
         }
         var height = (int)Math.Round(_animatedHeight);
         if (_currentRect is { } current && current.Height == height) return; // sub-pixel step: nothing to move yet
-        MoveTo(_targetRect with { Y = _targetRect.Y + _targetRect.Height - height, Height = height });
+        MoveTo(_growUp ? _targetRect with { Y = _targetRect.Y + _targetRect.Height - height, Height = height } : _targetRect with { Height = height });
     }
 
     private void MoveTo(RectI r)
@@ -507,8 +523,91 @@ public sealed partial class PopupWindow : Window
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 
+    private double _barDip;
+    private bool _growUp = true;
+
+    /// <summary>The bar alone, in pixels (measured; a sane minimum before the first layout).</summary>
+    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, 56) * _scale));
+
+    /// <summary>
+    /// The bar's rectangle: its bottom edge is the placement line in both directions, kept inside the work area (a line
+    /// near the top has no room for the bar above it).
+    /// </summary>
+    private RectI DownBar => Hotline.Core.Windowing.PanelPlacement.Clamp(new RectI(_bar.X, _bar.Y + _bar.Height - BarPx, _bar.Width, BarPx), _work);
+
+    /// <summary>The tallest the panel may be: the bar plus window.chatHeight, else maxHeightPercent of the work area.</summary>
+    private int MaxPx => Math.Min(_work.Height, _settings.ChatHeight is { } chat
+        ? BarPx + (int)Math.Round(chat * _scale)
+        : (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0));
+
+    /// <summary>While pinned, the spot the panel was moved/resized to this session (never saved; see ForgetSessionSpot).</summary>
+    private sealed record SessionSpot(RectI Bar, RectI Work, double Scale);
+    private SessionSpot? _session;
+
+    /// <summary>The panel goes back to its saved default on the next open (unpinned, clicked into another app).</summary>
+    public void ForgetSessionSpot()
+    {
+        if (_session is null) return;
+        _session = null;
+        _log.Info("pinned spot forgotten: the next open uses the default");
+    }
+
+    /// <summary>Picks the chat's direction for the current bar and lays the panel out for it.</summary>
+    private void ChooseDirection()
+    {
+        var chatPx = Math.Max(0, MaxPx - BarPx);
+        var up = Hotline.Core.Windowing.PanelPlacement.GrowsUp(_settings.GrowDirection, DownBar, _work, chatPx);
+        if (up == _growUp) return;
+        _growUp = up;
+        DirectionChanged?.Invoke(up);
+    }
+
+    /// <summary>The chat now grows up (true) or down: the presenter swaps the layout.</summary>
+    public event Action<bool>? DirectionChanged;
+    public bool GrowsUp => _growUp;
+
     private void PlaceOnActiveMonitor()
     {
+        if (Pinned && _session is { } spot && MonitorAt(spot.Work) is { } still)
+        {
+            // Pinned and moved this session: the same spot (pulled inside its monitor again, in case its work area changed).
+            (_work, _scale) = (still.Work, still.Scale);
+            _bar = Hotline.Core.Windowing.PanelPlacement.Clamp(Hotline.Core.Windowing.PanelPlacement.Rescale(spot.Bar, spot.Scale, still.Scale), still.Work);
+            ChooseDirection();
+            _log.Info($"place: pinned spot {_bar} on {still.Device} scale={still.Scale} up={_growUp}");
+            ApplyHeight(force: true);
+            return;
+        }
+        var (area, monitor, how) = HomeMonitor();
+        var wa = area.WorkArea;
+        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
+        var widthDip = _settings.Width ?? PopupGeometry.RelativeWidthDip(wa.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
+        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthDip, _settings.Height, scale, _settings.Anchor);
+        (_bar, _work, _scale) = (r, work, scale);
+        ChooseDirection();
+        _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
+        ApplyHeight(force: true);
+    }
+
+    /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>
+    private (DisplayArea Area, nint Monitor, string How) HomeMonitor()
+    {
+        var wanted = _settings.Anchor.Monitor;
+        if (string.Equals(wanted, Hotline.Core.Settings.PanelAnchor.Primary, StringComparison.OrdinalIgnoreCase))
+        {
+            var primary = DisplayArea.Primary;
+            return (primary, Win32Interop.GetMonitorFromDisplayId(primary.DisplayId), "primary");
+        }
+        if (!string.Equals(wanted, Hotline.Core.Settings.PanelAnchor.Active, StringComparison.OrdinalIgnoreCase))
+        {
+            foreach (var a in DisplayArea.FindAll())
+            {
+                var m = Win32Interop.GetMonitorFromDisplayId(a.DisplayId);
+                if (string.Equals(Native.MonitorDevice(m), wanted, StringComparison.OrdinalIgnoreCase)) return (a, m, "saved monitor");
+            }
+            _log.Info($"saved monitor {wanted} isn't connected; using the active one");
+        }
         // A remembered window may have closed since (stale handle): its monitor/DPI lookups then fail and the
         // popup came out at 100% scale ("occasionally small"). Only trust live windows; otherwise use the cursor.
         if (PreviousForeground != 0 && !Native.IsWindow(PreviousForeground))
@@ -528,14 +627,20 @@ public sealed partial class PopupWindow : Window
             area = DisplayArea.GetFromPoint(new PointInt32(pt.X, pt.Y), DisplayAreaFallback.Nearest) ?? DisplayArea.Primary;
             monitor = Native.MonitorFromPoint(pt, Native.MONITOR_DEFAULTTONEAREST);
         }
+        return (area, monitor, "active");
+    }
+
+    /// <summary>The monitor that still holds a work area (null when it was unplugged): its current work area and scale.</summary>
+    private static (RectI Work, double Scale, string? Device)? MonitorAt(RectI work)
+    {
+        var rect = new Native.RECT { Left = work.X, Top = work.Y, Right = work.X + work.Width, Bottom = work.Y + work.Height };
+        var monitor = Native.MonitorFromRect(ref rect, Native.MONITOR_DEFAULTTONULL);
+        if (monitor == 0) return null;
+        var area = DisplayArea.GetFromDisplayId(Win32Interop.GetDisplayIdFromMonitor(monitor));
+        if (area is null) return null;
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-
-        var widthDip = PopupGeometry.RelativeWidthDip(wa.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.Anchor.Y);
-        _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
-        (_bar, _work, _scale) = (r, new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale);
-        ApplyHeight(force: true);
+        return (new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale, Native.MonitorDevice(monitor));
     }
 
     private sealed class Releaser(Action release) : IDisposable
