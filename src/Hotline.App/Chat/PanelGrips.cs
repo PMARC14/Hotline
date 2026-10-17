@@ -121,7 +121,9 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     {
         if (!popup.IsShown) { _timer?.Stop(); return; }
         var alt = (Native.GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
-        var show = _forced || _dragging || _menuOpen || alt && !popup.IsResizeHeld && (Native.GetForegroundWindow() == popup.Hwnd || PointerOver());
+        var fg = Native.GetForegroundWindow();
+        var ours = fg == popup.Hwnd || Native.ClassNameOf(fg) == "CopilotKeyPressFocusFrame"; // 26H2: the key holds focus a moment
+        var show = _forced || _dragging || _menuOpen || alt && !popup.IsResizeHeld && (ours || PointerOver());
         SetVisible(show);
     }
 

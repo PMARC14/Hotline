@@ -11,6 +11,7 @@ public class ShellSurfacesTests
     [InlineData("WorkerW")]
     [InlineData("Windows.UI.Core.CoreWindow")]   // Start / Search flyouts
     [InlineData("XamlExplorerHostIslandWindow")] // Win11 shell flyouts (task view, widgets)
+    [InlineData("CopilotKeyPressFocusFrame")]    // 26H2: Explorer holds focus for a moment on each Copilot key press
     public void Shell_surfaces_are_not_capture_targets(string cls)
         => Assert.True(ShellSurfaces.IsShell(cls));
 

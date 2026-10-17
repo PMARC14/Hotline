@@ -125,6 +125,11 @@ public sealed partial class PopupWindow : Window
     /// </summary>
     public void ApplyToolbar(IReadOnlyList<string> items, IReadOnlyList<string> top)
     {
+        // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
+        // focused pin button and turned pinning off.
+        foreach (var b in new Microsoft.UI.Xaml.Controls.Control[] { PinButton, CaptureWindowButton, CaptureScreenButton, CaptureRegionButton,
+                     PromptButton, RecentButton, ContinueInButton, NewChatButton, SettingsButton })
+            b.AllowFocusOnInteraction = false;
         (ToolbarItems, TopToolbarItems) = (items, top);
         var elements = new Dictionary<string, FrameworkElement>
         {
@@ -234,7 +239,7 @@ public sealed partial class PopupWindow : Window
             // The content must fit the client area (2026-10-17: the window frame wasn't counted and the bottom of the
             // panel, with the move grip, was cut off).
             var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale), MaxPx - FramePx);
-            if (_fixedPx is null && !_animating && AppWindow.ClientSize.Height + 1 < needPx)
+            if (_fixedPx is null && !_animating && AppWindow.ClientSize.Height > 0 && AppWindow.ClientSize.Height + 1 < needPx)
                 _log.Error($"panel content cut off: client {AppWindow.ClientSize.Height} px < content {needPx} px");
             if (visible && drawn) return;
             _log.Error($"panel opened but isn't on screen ({state}); showing it again");
