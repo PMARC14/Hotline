@@ -67,3 +67,16 @@ public sealed class SettingsResetTests : IDisposable
         Assert.Empty(loaded.Chat.Backends);
     }
 }
+
+public sealed class GuideTests
+{
+    [Fact]
+    public void Every_guide_section_has_a_title_and_a_body()
+    {
+        foreach (var section in Hotline.Core.Settings.Guide.Sections)
+        {
+            Assert.False(string.IsNullOrWhiteSpace(Hotline.Core.Text.Localization.Strings.ResourceManager.GetString(Hotline.Core.Settings.Guide.TitleKey(section), System.Globalization.CultureInfo.InvariantCulture)), section);
+            Assert.False(string.IsNullOrWhiteSpace(Hotline.Core.Text.Localization.Strings.ResourceManager.GetString(Hotline.Core.Settings.Guide.BodyKey(section), System.Globalization.CultureInfo.InvariantCulture)), section);
+        }
+    }
+}

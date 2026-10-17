@@ -552,4 +552,39 @@
   <data name="Sound_Play" xml:space="preserve"><value>再生</value></data>
   <data name="Sound_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>ガイド</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>開く/閉じる</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Copilot キーを押してパネルを開閉します。長押しすると新しいチャットを開始します。設定 › 全般 で押したときと長押ししたときの動作を変更でき (長押しを音声入力にすることも可能)、追加のショートカットも登録できます。
+パネルは作業中のモニター上に開き、すぐに入力できます。ピン留めされていない限り、Esc を押すか他の場所をクリックすると閉じます。</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>AI の選択</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>ボタン行でエフォート、モデル、プロバイダーを選択します。
+設定 › AI 接続 でこれらを追加できます: この PC にインストールされている Claude Code、Codex、Antigravity (独自のサインインを使用)、API キー (Anthropic、Gemini、OpenAI 互換)、またはローカル モデル サーバー。[テスト] でキーとモデルを確認できます。</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>画面、ファイル、選択したテキスト</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>+ ボタンでファイル、直前に開いていたウィンドウ、画面全体、またはドラッグした領域を添付できます。画像やファイルを貼り付けたりドラッグ&amp;ドロップしたりすることも可能です。
+元のアプリで選択していたテキストは自動的に引き継がれます。画像を認識できないモデルには、代わりにスクリーンショット内のテキストが渡されます。</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>音声</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>長押しを音声入力に設定し (設定 › 全般)、キーを押しながら話します。離すと停止します。設定 › チャット で、すぐに送信するかどうかを指定できます。</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>クイック アクションとプロンプト</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>/ を入力して /translate、/summarize、/fix、/explain または独自のアクションを呼び出します (設定 › クイック アクション)。
+ドキュメント ボタンでシステム プロンプトを選択します (設定 › プロンプト)。</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>メモリ</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember とメモを入力すると、どの AI を使用していても、すべてのチャットに記憶されます。設定 › チャット から memory.md を開いて編集できます。</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>履歴と再開</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>時計ボタン、空のメッセージ ボックスでの Ctrl+Up、または /resume でチャットを開きます。入力して検索できます。
+Claude Code、Codex、Antigravity でのチャットはそのツール独自の履歴に残り、前回の続きから再開できます。「次で続行」(リスト内またはそのボタン) でターミナルで開きます。その他のツールは [その他…] にあります。</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>バックグラウンドでの回答</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>長い質問をして別の作業に移っても、準備ができると Windows の通知でお知らせします。Esc で回答を停止できます。AI が考え中の間はカーソルが回転します。</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>移動とサイズ変更</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Alt を長押し: メッセージ バーの端にあるグリップをドラッグしてパネルを移動するか、端をドラッグしてサイズを変更します。グリップを右クリックすると、位置とサイズを既定値として保存したり、既定値に戻したりできます。
+移動したパネルは、ピン留め (ピン ボタン) されていない限り、次回は既定の位置で開きます。ピン留めされている場合は、ピン留めを解除するか、別のアプリをクリックするか、Hotline を再起動するまでその位置にとどまります。</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 外観 › ボタン行 で、メッセージ ボックスの上または下にあるボタンの表示、非表示、並べ替えを設定できます。</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>すべてが .hotline フォルダーに保存され、保存時にすぐ適用されます: settings.json、接続ごとに 1 つのファイル、プロンプト、クイック アクション、toolbar.json。ファイルを置き換えて設定を切り替えることができます。設定 › 詳細設定 › リセット で、バックアップを作成して最初からやり直せます。
+API キーは Windows Credential Locker に保管され、ファイルに保存されることはありません。</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Hotline の機能を簡潔に紹介。各項目で「設定」のどこで変更できるかを案内します。</value></data>
 </root>

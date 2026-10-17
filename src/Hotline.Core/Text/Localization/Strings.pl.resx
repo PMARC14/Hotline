@@ -552,4 +552,39 @@ Zabroń:
   <data name="Sound_Play" xml:space="preserve"><value>Odtwórz</value></data>
   <data name="Sound_Title" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Przewodnik</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Otwieranie i zamykanie</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Naciśnij klawisz Copilot, aby otworzyć lub zamknąć panel; przytrzymaj go, aby rozpocząć nowy czat. Ustawienia › Ogólne zmienia działanie naciśnięcia i przytrzymania (przytrzymanie może być też wprowadzaniem głosowym) oraz dodaje dodatkowy skrót.
+Panel otwiera się na monitorze, na którym pracujesz, gotowy do pisania. Klawisz Esc lub kliknięcie w innym miejscu zamyka go, chyba że jest przypięty.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Wybór AI</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Wybierz poziom wysiłku, model i dostawcę w rzędzie przycisków.
+Ustawienia › Połączenia AI pozwala je dodać: Claude Code, Codex lub Antigravity zainstalowane na tym komputerze (używają własnego logowania), klucz API (Anthropic, Gemini, zgodny z OpenAI) lub lokalny serwer modeli. Test sprawdza klucz i model.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Ekrany, pliki i zaznaczony tekst</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>Przycisk + dołącza pliki, aktywne okno, cały ekran lub zaznaczony przeciągnięciem obszar. Możesz też wklejać lub upuszczać obrazy i pliki.
+Tekst zaznaczony w aplikacji, z której przechodzisz, dołącza się samoczynnie. Modele, które nie widzą obrazów, otrzymują w zamian tekst ze zrzutu ekranu.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Głos</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Ustaw długie naciśnięcie na Wprowadzanie głosowe (Ustawienia › Ogólne), przytrzymaj klawisz i mów; puść, aby zakończyć. Ustawienia › Czat decyduje, czy wiadomość jest wysyłana od razu.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Szybkie akcje i monity</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Wpisz /, aby wybrać /translate, /summarize, /fix, /explain lub własne (Ustawienia › Szybkie akcje).
+Przycisk dokumentu wybiera monit systemowy (Ustawienia › Monity).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Pamięć</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember wraz z notatką zapisuje ją dla każdego czatu, bez względu na wybranego AI. Ustawienia › Czat otwiera plik memory.md, aby go edytować.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Historia i kontynuowanie</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Przycisk zegara, Ctrl+Up w pustym polu wiadomości lub /resume otwiera Twoje czaty; zacznij pisać, aby wyszukać.
+Czat z Claude Code, Codex lub Antigravity znajduje się we własnej historii danego narzędzia i wznawia się w miejscu, w którym został przerwany. Kontynuuj w (na liście lub jej przycisk) otwiera go w terminalu; pozostałe narzędzia są pod Więcej….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Odpowiedzi w tle</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Zadaj dłuższe pytanie i przełącz się na inną aplikację: powiadomienie Windows poinformuje Cię, gdy odpowiedź będzie gotowa. Klawisz Esc zatrzymuje odpowiedź; gdy AI myśli, kursor się obraca.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Przesuwanie i zmiana rozmiaru</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Przytrzymaj klawisz Alt: przeciągnij uchwyt na krawędzi paska wiadomości, aby przesunąć panel, lub krawędź boczną, aby zmienić jego rozmiar. Kliknij uchwyt prawym przyciskiem myszy, aby zapisać miejsce i rozmiar jako domyślne lub do nich powrócić.
+Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba że jest przypięty (przycisk pinezki): wtedy pozostanie na swoim miejscu, dopóki go nie odepniesz, nie klikniesz w innej aplikacji lub nie uruchomisz ponownie Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>W górę lub w dół</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>Czat rozwija się od paska wiadomości: w górę, chyba że zabraknie miejsca powyżej, a wtedy w dół. Ustawienia › Okno pozwala utrzymać go w górze lub w dole oraz ustawia położenie, szerokość i wysokość czatu.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Rzędy przycisków</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Rzędy przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Dźwięki</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Dźwięki odtwarza dźwięk przy otwieraniu lub zamykaniu panelu: dźwięk Windows lub plik .wav w Twoim folderze dźwięków. Domyślnie wyłączone.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Ustawienia to pliki</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Wszystko znajduje się w Twoim folderze .hotline i jest stosowane przy zapisywaniu: settings.json, jeden plik na połączenie, monity, szybkie akcje i toolbar.json. Zastąp plik, aby przełączyć konfigurację; Ustawienia › Zaawansowane › Resetuj rozpoczyna od nowa z kopią zapasową.
+Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Wszystko, co robi Hotline, w skrócie. Każda część wskazuje, gdzie w Ustawieniach można to zmienić.</value></data>
 </root>

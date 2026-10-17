@@ -552,4 +552,39 @@ Verweigern:
   <data name="Sound_Play" xml:space="preserve"><value>Wiedergeben</value></data>
   <data name="Sound_Title" xml:space="preserve"><value>Sounds</value></data>
   <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Anleitung</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Öffnen und Schließen</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Drücken Sie die Copilot-Taste, um das Panel zu öffnen oder zu schließen; halten Sie sie gedrückt, um einen neuen Chat zu starten. Unter Einstellungen › Allgemein passen Sie das Verhalten bei Tastendruck und Gedrückthalten an (Gedrückthalten kann auch die Spracheingabe sein) und richten ein weiteres Tastenkürzel ein.
+Das Panel öffnet sich auf dem Bildschirm, auf dem Sie gerade arbeiten, direkt bereit zum Tippen. Esc oder ein Klick an eine andere Stelle schließt es, es sei denn, es ist angeheftet.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>KI auswählen</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Wählen Sie Aufwand, Modell und Anbieter in der Schaltflächenleiste.
+Unter Einstellungen › KI-Verbindungen fügen Sie sie hinzu: auf diesem PC installiertes Claude Code, Codex oder Antigravity (diese nutzen ihre eigene Anmeldung), einen API-Schlüssel (Anthropic, Gemini, OpenAI-kompatibel) oder einen lokalen Modellserver. „Testen“ prüft Schlüssel und Modell.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Bildschirme, Dateien und markierter Text</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>Über die +-Schaltfläche können Sie Dateien, das aktive Fenster, den gesamten Bildschirm oder einen ausgewählten Bereich anfügen. Sie können Bilder und Dateien auch einfügen oder hineinziehen.
+Text, den Sie in der vorherigen App markiert hatten, wird automatisch übernommen. Modelle, die keine Bilder verarbeiten können, erhalten stattdessen den Text aus dem Screenshot.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Sprache</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Legen Sie für langes Drücken die Spracheingabe fest (Einstellungen › Allgemein), halten Sie die Taste gedrückt und sprechen Sie; lassen Sie los, um zu beenden. Einstellungen › Chat legt fest, ob die Nachricht sofort gesendet wird.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Schnellaktionen und Prompts</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Geben Sie / für /translate, /summarize, /fix, /explain oder eigene Aktionen ein (Einstellungen › Schnellaktionen).
+Die Dokumentschaltfläche wählt den System-Prompt aus (Einstellungen › Prompts).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Gedächtnis</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>Mit /remember und einer Notiz speichern Sie Angaben für jeden Chat – unabhängig von der verwendeten KI. Einstellungen › Chat öffnet memory.md zum Bearbeiten.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Verlauf und Fortsetzen</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Die Uhrenschaltfläche, Ctrl+Up in einem leeren Nachrichtenfeld oder /resume öffnet Ihre Chats; tippen Sie, um zu suchen.
+Ein Chat mit Claude Code, Codex oder Antigravity wird im Verlauf des jeweiligen Tools gespeichert und setzt dort an, wo Sie aufgehört haben. „Fortsetzen in“ (in der Liste oder über die entsprechende Schaltfläche) öffnet ihn im Terminal; weitere Tools finden Sie unter Mehr….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Antworten im Hintergrund</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Stellen Sie eine längere Frage und wechseln Sie das Fenster: Eine Windows-Benachrichtigung gibt Bescheid, sobald die Antwort fertig ist. Esc bricht eine Antwort ab; während die KI nachdenkt, dreht sich der Cursor.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Verschieben und Größe ändern</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Alt gedrückt halten: Ziehen Sie den Ziehpunkt am Rand der Nachrichtenleiste, um das Panel zu verschieben, oder an einer Seite, um die Größe zu ändern. Klicken Sie mit der rechten Maustaste auf den Ziehpunkt, um Position und Größe als Standard zu speichern oder darauf zurückzusetzen.
+Ein verschobenes Panel öffnet sich beim nächsten Mal an seiner Standardposition – es sei denn, es ist angeheftet (die Pinnadel-Schaltfläche): Dann bleibt es dort, bis Sie es lösen, in eine andere App klicken oder Hotline neu starten.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Nach oben oder unten</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>Der Chat wächst ausgehend von der Nachrichtenleiste: nach oben, sofern dort Platz ist, ansonsten nach unten. Unter Einstellungen › Fenster lässt sich die Richtung festlegen sowie Position, Breite und Chathöhe anpassen.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Schaltflächenzeilen</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Unter Einstellungen › Darstellung › Schaltflächenzeilen können Sie die Schaltflächen über oder unter dem Nachrichtenfeld einblenden, ausblenden und anordnen.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Unter Einstellungen › Darstellung › Sounds wird beim Öffnen oder Schließen des Panels ein Ton abgespielt: ein Windows-Sound oder eine .wav in Ihrem Sounds-Ordner. Standardmäßig deaktiviert.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Einstellungen sind Dateien</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Alles befindet sich in Ihrem .hotline-Ordner und wird beim Speichern sofort angewendet: settings.json, eine Datei pro Verbindung, Prompts, Schnellaktionen und toolbar.json. Ersetzen Sie eine Datei, um die Konfiguration zu wechseln; Einstellungen › Erweitert › Zurücksetzen beginnt von vorn, mit einem Backup.
+API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer Datei.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Alles, was Hotline tut, in Kürze. Jeder Abschnitt zeigt, wo es in den Einstellungen geändert werden kann.</value></data>
 </root>

@@ -120,6 +120,25 @@ public sealed partial class SettingsWindow
         PageHost.Children.Add(Card(Strings.Sound_Folder, L.F(Strings.Sound_Folder_Desc, folder), open));
     }
 
+    /// <summary>Settings › Guide: every feature in short (Core Settings.Guide lists the sections; texts in every language).</summary>
+    private void BuildGuidePage()
+    {
+        PageHost.Children.Add(new TextBlock { Text = Strings.Guide_Intro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8) });
+        string Text(string key) => Strings.ResourceManager.GetString(key, System.Globalization.CultureInfo.CurrentUICulture) ?? key;
+        foreach (var section in Hotline.Core.Settings.Guide.Sections)
+        {
+            var body = new StackPanel { Spacing = 6 };
+            body.Children.Add(new TextBlock
+            {
+                Text = Text(Hotline.Core.Settings.Guide.TitleKey(section)),
+                Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"],
+            });
+            foreach (var paragraph in Text(Hotline.Core.Settings.Guide.BodyKey(section)).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                body.Children.Add(new TextBlock { Text = paragraph, TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true });
+            PageHost.Children.Add(new Border { Child = body, Style = (Style)Root.Resources["CardStyle"] });
+        }
+    }
+
     private Button ResetToolbarButton()
     {
         var reset = new Button { Content = Strings.Bar_Reset };

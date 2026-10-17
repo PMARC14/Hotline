@@ -552,4 +552,39 @@ Deny:
   <data name="Sound_Folder" xml:space="preserve"><value>Your own sounds</value></data>
   <data name="Sound_Folder_Desc" xml:space="preserve"><value>Put .wav files in {0}; they appear in the lists above.</value></data>
   <data name="Sound_OpenFolder" xml:space="preserve"><value>Open sounds folder</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Guide</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Everything Hotline does, in short. Each part says where in Settings to change it.</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Opening and closing</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Press the Copilot key to open or close the panel; hold it to start a new chat. Settings › General changes what a press and a hold do (a hold can also be voice input) and adds an extra shortcut.
+The panel opens on the monitor you're working on, ready to type. Esc or clicking elsewhere closes it, unless it's pinned.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Choosing an AI</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Pick the effort, model and provider in the button row.
+Settings › AI connections adds them: Claude Code, Codex or Antigravity installed on this PC (they use their own sign-in), an API key (Anthropic, Gemini, OpenAI-compatible) or a local model server. Test checks a key and model.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Screens, files and selected text</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>The + button attaches files, the window you were in, the whole screen or a region you drag out. You can also paste or drop images and files.
+Text you had selected in the app you came from comes along by itself. Models that can't see images get the text in the screenshot instead.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Voice</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Set the long press to Voice input (Settings › General), hold the key and talk; let go to stop. Settings › Chat decides whether it sends right away.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Quick actions and prompts</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Type / for /translate, /summarize, /fix, /explain or your own (Settings › Quick actions).
+The document button picks the system prompt (Settings › Prompts).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Memory</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember and a note saves it for every chat, whichever AI you use. Settings › Chat opens memory.md to edit it.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>History and continuing</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>The clock button, Ctrl+Up in an empty message box, or /resume opens your chats; type to search.
+A chat with Claude Code, Codex or Antigravity lives in that tool's own history and picks up where it left off. Continue in (in the list, or its button) opens it in a terminal; the other tools are under More….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Answers in the background</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Ask something long and switch away: a Windows notification says when it's ready. Esc stops an answer; while the AI is thinking, the cursor spins.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Moving and resizing</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Hold Alt: drag the grip on the message bar's edge to move the panel, or a side to resize it. Right-click the grip to save the spot and size as the default, or to go back to it.
+A moved panel opens at its default the next time, unless it's pinned (the pin button): then it stays where you put it until you unpin it, click into another app or restart Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Up or down</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>The chat grows from the message bar: up, unless there's no room above, then down. Settings › Window can keep it up or down and sets the position, width and chat height.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Button rows</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Appearance › Button rows shows, hides and orders the buttons, above or below the message box.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Settings › Appearance › Sounds plays a sound when the panel opens or closes: a Windows sound or a .wav in your sounds folder. Off by default.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Settings are files</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Everything is in your .hotline folder and applies as you save: settings.json, one file per connection, prompts, quick actions and toolbar.json. Replace a file to switch setups; Settings › Advanced › Reset starts over, with a backup.
+API keys are kept in Windows Credential Locker, never in a file.</value></data>
 </root>

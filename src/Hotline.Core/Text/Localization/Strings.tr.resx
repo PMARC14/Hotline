@@ -552,4 +552,39 @@ Reddet:
   <data name="Sound_Play" xml:space="preserve"><value>Çal</value></data>
   <data name="Sound_Title" xml:space="preserve"><value>Sesler</value></data>
   <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Kılavuz</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Açma ve kapatma</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Paneli açmak veya kapatmak için Copilot tuşuna basın; yeni bir sohbet başlatmak için basılı tutun. Ayarlar › Genel menüsü, basma ve basılı tutma eylemlerinin ne yapacağını değiştirir (basılı tutma ses girişi de olabilir) ve ek bir kısayol ekler.
+Panel, çalıştığınız monitörde açılır ve yazmaya hazırdır. Sabitlenmediği sürece Esc veya başka bir yere tıklamak paneli kapatır.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Bir AI seçme</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Düğme satırında çaba düzeyini, modeli ve sağlayıcıyı seçin.
+Ayarlar › AI bağlantıları yenilerini ekler: Bu bilgisayarda yüklü Claude Code, Codex veya Antigravity (kendi oturumlarını kullanırlar), bir API anahtarı (Anthropic, Gemini, OpenAI uyumlu) veya yerel bir model sunucusu. Test, anahtarı ve modeli denetler.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Ekranlar, dosyalar ve seçilen metin</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>+ düğmesi dosyaları, içinde bulunduğunuz pencereyi, tüm ekranı veya sürükleyerek seçtiğiniz bir alanı ekler. Resimleri ve dosyaları yapıştırabilir veya sürükleyip bırakabilirsiniz.
+Geldiğiniz uygulamada seçtiğiniz metin kendiliğinden eklenir. Resimleri göremeyen modeller, bunun yerine ekran görüntüsündeki metni alır.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Ses</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Uzun basmayı Ses girişi (Ayarlar › Genel) olarak ayarlayın, tuşu basılı tutarak konuşun; durdurmak için bırakın. Ayarlar › Sohbet, hemen gönderilip gönderilmeyeceğini belirler.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Hızlı eylemler ve istemler</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>/translate, /summarize, /fix, /explain veya kendi eylemleriniz için / yazın (Ayarlar › Hızlı eylemler).
+Belge düğmesi sistem istemini seçer (Ayarlar › İstemler).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Bellek</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember ve bir not, hangi AI'ı kullanırsanız kullanın bunu her sohbet için kaydeder. Ayarlar › Sohbet, düzenlemeniz için memory.md dosyasını açar.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Geçmiş ve devam etme</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Saat düğmesi, boş bir ileti kutusunda Ctrl+Up veya /resume sohbetlerinizi açar; aramak için yazın.
+Claude Code, Codex veya Antigravity ile yapılan bir sohbet, o aracın kendi geçmişinde yer alır ve kaldığı yerden devam eder. Şurada devam et (listede veya düğmesinde) bir terminalde açar; diğer araçlar Daha fazla… altındadır.</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Arka planda yanıtlar</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Uzun bir soru sorun ve başka bir uygulamaya geçin: hazır olduğunda bir Windows bildirimi haber verir. Esc yanıtı durdurur; AI düşünürken imleç döner.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Taşıma ve yeniden boyutlandırma</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Alt tuşunu basılı tutun: paneli taşımak için ileti çubuğunun kenarındaki tutamacı veya yeniden boyutlandırmak için bir kenarı sürükleyin. Konumu ve boyutu varsayılan olarak kaydetmek veya varsayılana dönmek için tutamaca sağ tıklayın.
+Taşınan bir panel, sabitlenmediği sürece (sabitleme düğmesi) bir sonraki açılışta varsayılan konumunda açılır: sabitlendiğinde ise siz sabitlemeyi kaldırana, başka bir uygulamaya tıklayana veya Hotline uygulamasını yeniden başlatana kadar bıraktığınız yerde kalır.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Yukarı veya aşağı</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>Sohbet ileti çubuğundan genişler: yukarıda yer yoksa aşağı, aksi takdirde yukarı doğru. Ayarlar › Pencere bunu yukarı veya aşağı olarak sabitleyebilir; konumu, genişliği ve sohbet yüksekliğini belirler.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Düğme satırları</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Düğme satırları ileti kutusunun üstündeki veya altındaki düğmeleri gösterir, gizler ve sıralar.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sesler</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Sesler panel açıldığında veya kapandığında bir ses çalar: bir Windows sesi veya sesler klasörünüzdeki bir .wav dosyası. Varsayılan olarak kapalıdır.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Ayarlar birer dosyadır</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Her şey .hotline klasörünüzdedir ve kaydettiğiniz anda uygulanır: settings.json, bağlantı başına bir dosya, istemler, hızlı eylemler ve toolbar.json. Yapılandırmaları değiştirmek için bir dosyanın yerine yenisini koyun; Ayarlar › Gelişmiş › Sıfırla bir yedek alarak baştan başlatır.
+API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada tutulmaz.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Hotline'ın yaptığı her şey, kısaca. Her bölüm, bunu Ayarlar'da nereden değiştireceğinizi belirtir.</value></data>
 </root>
