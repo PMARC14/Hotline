@@ -83,7 +83,7 @@ public sealed partial class LocalizationTests
     public void Settings_text_is_resource_keys()
     {
         static bool Plain(string? s) => s is null or "px" or "%" or "DIP" || !s.Any(char.IsLetter) || s.StartsWith("Ctrl", StringComparison.Ordinal)
-            || s is "Esc" or "Segoe UI Variable" || s.StartsWith('#'); // a colour code
+            || s is "Esc" or "Segoe UI Variable" or "active" || s.StartsWith('#'); // a colour code
         var missing = new List<string>();
         void Check(string? key) { if (!Plain(key) && !English.ContainsKey(key!)) missing.Add(key!); }
         foreach (var item in SettingsSchema.Items)
@@ -119,7 +119,8 @@ public sealed partial class LocalizationTests
         finally { CultureInfo.CurrentUICulture = before; }
         Assert.Equal("px", L.Get("px")); // not a key: shown as is
         Assert.Equal("Low", L.Effort("low"));
-        Assert.Equal("ultra", L.Effort("ultra"));
+        Assert.Equal("Ultra", L.Effort("ultra"));
+        Assert.Equal("turbo", L.Effort("turbo")); // unknown level: shown as is
     }
 
     [Theory]

@@ -14,7 +14,7 @@ namespace Hotline.Core.Backends.ClaudeCode;
 /// unknown ID, prompt change without kept sessions) the next turn starts a fresh process and replays the
 /// conversation as text. Images go inline as base64 content blocks.
 /// </summary>
-public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> locateExe, string workspace, ILineProcessFactory processes,
+public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> locateExe, ILineProcessFactory processes,
     FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
@@ -121,7 +121,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     {
         await StopAsync();
         var inherit = profile.Tools == ToolMode.Inherit;
-        var cwd = inherit ? WorkingDirectory() : workspace;
+        var cwd = inherit ? WorkingDirectory() : homeDirectory; // chat only has no tools; home: `claude --resume` there finds it
         if (resume is { WorkingDirectory: { Length: > 0 } was } && Path.IsPathFullyQualified(was)) cwd = was; // Claude Code finds sessions by folder (recreated below if gone)
         Directory.CreateDirectory(cwd);
         var args = ClaudeCodeProtocol.BuildArgs(profile, prompt).ToList();

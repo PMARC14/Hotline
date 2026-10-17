@@ -59,7 +59,8 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         IReadOnlyList<string> images = workspace.SaveImages(user.Id, user.Attachments.Where(a => a.Kind == AttachmentKind.Image).ToList());
         var texts = user.Attachments.Where(a => a.Kind == AttachmentKind.Text).Select(a => (a.Name, a.AsText())).ToList();
         var inheritMode = profile.Tools == ToolMode.Inherit;
-        if (inheritMode) images = images.Select(p => Path.Combine(workspace.Root, p.Replace('/', Path.DirectorySeparatorChar))).ToList();
+        // agy runs in the home folder (or the user's own), so the added workspace's files go by full path.
+        images = images.Select(p => Path.Combine(workspace.Root, p.Replace('/', Path.DirectorySeparatorChar))).ToList();
 
         for (var attempt = 0; ; attempt++)
         {
@@ -134,12 +135,14 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         workspace.Ensure(prompt);
         _startedPrompt = prompt;
         var inherit = profile.Tools == ToolMode.Inherit;
-        var cwd = inherit ? WorkingDirectory() : workspace.Root;
+        // Chat only runs in the home folder too (so `agy --conversation` from a home terminal finds it); the workspace
+        // (the hotline agent, attachments) is added to it.
+        var cwd = inherit ? WorkingDirectory() : homeDirectory;
         if (resume is { WorkingDirectory: { Length: > 0 } was } && Directory.Exists(was)) cwd = was; // where it began
-        var args = AgyProtocol.BuildArgs(profile, inherit ? workspace.Root : null).ToList();
+        var args = AgyProtocol.BuildArgs(profile, workspace.Root).ToList();
         if (resume is not null) args.AddRange(["--conversation", resume.Id]);
-        // Group new chat-only conversations in the "Hotline" project; leave the user's own folders (Inherit) alone.
-        else if (!inherit && projects is not null) args.AddRange(projects.ArgsFor(cwd));
+        // Group new chat-only conversations in the "Hotline" project when it exists; leave the user's own folders alone.
+        else if (!inherit && projects is not null) args.AddRange(projects.ArgsFor(workspace.Root));
         _process = processes.Start(exe, args, cwd);
         _cwd = cwd;
         _sessionId = null;

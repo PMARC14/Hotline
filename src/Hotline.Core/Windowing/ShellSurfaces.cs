@@ -10,6 +10,7 @@ public static class ShellSurfaces
     {
         "Shell_TrayWnd", "Shell_SecondaryTrayWnd", "Progman", "WorkerW",
         "Windows.UI.Core.CoreWindow", "XamlExplorerHostIslandWindow",
+        "CopilotKeyPressFocusFrame", // Windows 11 26H2: Explorer takes focus for a moment on each Copilot key press
     };
 
     public static bool IsShell(string className) => Classes.Contains(className);

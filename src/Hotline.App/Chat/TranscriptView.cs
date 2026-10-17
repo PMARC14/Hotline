@@ -16,7 +16,8 @@ namespace Hotline.App.Chat;
 /// updates remove and re-append paragraphs at the end. Also keeps the view scrolled to the newest text while the
 /// user is at the bottom. No TextHighlighters: drawing them crashes WinUI (access violation in Microsoft.UI.Xaml.dll).
 /// </summary>
-internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, AttachmentVisuals visuals, NoticeArea notices, Action onRetry)
+internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, AttachmentVisuals visuals, NoticeArea notices, Action onRetry,
+    Func<(bool Enabled, int DelayMs)> thinking)
 {
     private abstract class Entry;
 
@@ -34,6 +35,10 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         /// <summary>Per rendered markdown block: how many paragraphs it added.</summary>
         public List<int> Rendered { get; } = [];
         public Paragraph? CaretParagraph { get; set; }
+        /// <summary>The caret shows the thinking spinner instead of the bar.</summary>
+        public bool Spinning { get; set; }
+        /// <summary>Environment.TickCount64 when the answer started or last got text.</summary>
+        public long LastTextAt { get; set; } = Environment.TickCount64;
         public string Text { get; set; } = "";
         public string? Error { get; set; }
         public bool Streaming { get; set; } = true;
@@ -46,6 +51,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private readonly List<Entry> _entries = [];
     private RichTextBlock _block = null!;
     private RenderTimer? _timer;
+    private RenderTimer? _thinkingTimer;
     private readonly ScrollFollow _follow = new();
 
     public bool IsEmpty => _block is null || _block.Blocks.Count == 0;
@@ -58,7 +64,20 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         popup.MessagesPanel.Children.Clear();
         popup.MessagesPanel.Children.Add(_block);
         _timer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(50), RenderDirty);
+        _thinkingTimer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(200), UpdateThinking);
         popup.MessagesPanel.SizeChanged += (_, _) => { if (_follow.Following) ScrollToBottomNow(); };
+        // The viewport changes height too (the panel grows, the chat swaps direction, a button row or notice comes or
+        // goes): keep the newest text in view. After the size event, never inside it.
+        popup.MessagesScroll.SizeChanged += (_, _) =>
+        {
+            // Not animated: an animated scroll started while the window is still growing gets cut short by the next resize.
+            if (!_follow.Following || _scrollQueued) return;
+            _scrollQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                _scrollQueued = false;
+                if (_follow.Following) ScrollToBottomNow(animate: false); // still following: the user may have scrolled up
+            });
+        };
         popup.MessagesScroll.ViewChanged += OnViewChanged;
         WatchReaderScrolling(popup.MessagesScroll);
         popup.JumpToLatestButton.Click += (_, _) => { _follow.Follow(); UpdateJumpButton(); ScrollToBottomNow(); };
@@ -130,14 +149,20 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         _entries.Add(view);
         AppendHeader(view);
         _timer?.Start();
+        _thinkingTimer?.Start();
     }
 
     public bool HasAnswer(string id) => _assistants.ContainsKey(id);
 
+    /// <summary>The streaming answer's caret is the thinking spinner (self-test).</summary>
+    public bool IsThinking => _entries.Count > 0 && _entries[^1] is AssistantView { Streaming: true, Spinning: true };
+
     public void AppendToAnswer(string id, string text, bool replace)
     {
         if (!_assistants.TryGetValue(id, out var view)) return;
-        view.Text = replace ? text : view.Text + text;
+        var next = replace ? text : view.Text + text;
+        if (next != view.Text) view.LastTextAt = Environment.TickCount64; // a repeated snapshot isn't new text
+        view.Text = next;
         view.Dirty = true;
         _timer?.Start();
     }
@@ -245,15 +270,57 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         view.Blocks = blocks;
         if (view.Streaming)
         {
-            view.CaretParagraph = new Paragraph();
-            view.CaretParagraph.Inlines.Add(new Run { Text = "▍", Foreground = theme.Style.Accent });
+            // A fixed line height, so swapping the bar for the spinner never changes the transcript's height.
+            view.CaretParagraph = new Paragraph { LineHeight = theme.Tokens.FontSizePx * 1.5, LineStackingStrategy = LineStackingStrategy.BlockLineHeight };
+            view.Spinning = false;
+            FillCaret(view, spinning: ThinkingFor(view));
             _block.Blocks.Add(view.CaretParagraph);
         }
+    }
+
+    private bool ThinkingFor(AssistantView view)
+    {
+        var (enabled, delay) = thinking();
+        return ThinkingIndicator.Show(enabled, view.Streaming, Environment.TickCount64 - view.LastTextAt, delay);
+    }
+
+    /// <summary>The caret: the accent bar, or a small spinner while the model works without writing.</summary>
+    private void FillCaret(AssistantView view, bool spinning)
+    {
+        var p = view.CaretParagraph!;
+        StopSpinner(p);
+        p.Inlines.Clear();
+        view.Spinning = spinning;
+        if (!spinning) { p.Inlines.Add(new Run { Text = "▍", Foreground = theme.Style.Accent }); return; }
+        double size = theme.Tokens.FontSizePx;
+        p.Inlines.Add(new InlineUIContainer
+        {
+            Child = new ProgressRing
+            {
+                IsActive = true, IsIndeterminate = true, Width = size, Height = size, MinWidth = 0, MinHeight = 0,
+                Foreground = theme.Style.Accent, Margin = new Thickness(0, 0, 0, -3),
+            },
+        });
+    }
+
+    /// <summary>Every 200 ms while an answer streams: swap the caret when the thinking state changes.</summary>
+    private void UpdateThinking()
+    {
+        if (_entries.Count == 0 || _entries[^1] is not AssistantView { Streaming: true } view) { _thinkingTimer?.Stop(); return; }
+        if (view.CaretParagraph is null) return; // not rendered yet
+        var spin = ThinkingFor(view);
+        if (spin != view.Spinning) FillCaret(view, spin);
+    }
+
+    private static void StopSpinner(Paragraph p)
+    {
+        foreach (var ring in p.Inlines.OfType<InlineUIContainer>().Select(i => i.Child).OfType<ProgressRing>()) ring.IsActive = false;
     }
 
     private void RemoveCaret(AssistantView view)
     {
         if (view.CaretParagraph is null) return;
+        StopSpinner(view.CaretParagraph);
         _block.Blocks.Remove(view.CaretParagraph);
         view.CaretParagraph = null;
     }
@@ -273,10 +340,14 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private void UpdateJumpButton() =>
         popup.JumpToLatestButton.Visibility = !_follow.Following && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-    private void ScrollToBottomNow()
+    private bool _scrollQueued;
+
+    private void ScrollToBottomNow() => ScrollToBottomNow(animate: true);
+
+    private void ScrollToBottomNow(bool animate)
     {
         var sv = popup.MessagesScroll;
-        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: false); // animated: no jolts while streaming
+        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: !animate); // animated while streaming: no jolts
     }
 
     private void OnViewChanged(object? sender, ScrollViewerViewChangedEventArgs e)

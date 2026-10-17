@@ -79,6 +79,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
     /// <summary>hotline://demo[?scene=…]: the scene name, or null.</summary>
     public event Action<string?>? DemoRequested;
+    /// <summary>hotline://grips?show=1|0 (tests and screenshots): the Alt grips without holding Alt.</summary>
+    public event Action<bool>? GripsRequested;
     public event Action? OpenSettingsRequested;
     /// <summary>The Voice key action: start (hold), stop (release) or toggle (short press).</summary>
     public event Action<VoiceCommand>? VoiceRequested;
@@ -90,6 +92,12 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
         {
             DemoRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["scene"]);
+            return;
+        }
+        if (string.Equals(request.Uri?.Host, "grips", StringComparison.OrdinalIgnoreCase))
+        {
+            // Test link: show (show=1) or hide the Alt grips on the open panel through the same code as Alt.
+            GripsRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["show"] != "0");
             return;
         }
         if (string.Equals(request.Uri?.Host, "selftest", StringComparison.OrdinalIgnoreCase))

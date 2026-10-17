@@ -71,4 +71,15 @@ public class ToolbarLayoutTests
             last = used;
         }
     }
+
+    [Fact]
+    public void Spare_room_grows_pickers_up_to_their_maximum()
+    {
+        PickerSpec[] growing = [new("effort", 76, 60, Max: 100), new("model", 160, 90, Max: 260), new("provider", 140, 80, Max: 240)];
+        var some = ToolbarLayout.Compute(Fixed + 376 + 3 * Gap + 100, Fixed, Gap, growing, HideOrder); // 100 spare
+        Assert.True(some["model"] > 160 && some["provider"] > 140 && some["effort"] >= 76);
+        Assert.True(Used(some) <= 376 + 100 + 3 * Gap + 0.001);
+        var lots = ToolbarLayout.Compute(5000, Fixed, Gap, growing, HideOrder);
+        Assert.Equal((100.0, 260.0, 240.0), (lots["effort"], lots["model"], lots["provider"]));
+    }
 }

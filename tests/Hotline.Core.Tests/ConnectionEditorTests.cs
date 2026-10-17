@@ -5,7 +5,7 @@ namespace Hotline.Core.Tests;
 
 public class ConnectionEditorTests
 {
-    private static ChatSettings Chat() => new(); // contains the default agy connection
+    private static ChatSettings Chat() => new() { Backends = [new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" }] };
 
     [Fact]
     public void Add_uses_type_defaults_and_unique_ids_and_names()
@@ -41,11 +41,13 @@ public class ConnectionEditorTests
     }
 
     [Fact]
-    public void Cannot_remove_last()
+    public void Can_remove_the_last_one()
     {
         var chat = Chat();
-        Assert.False(ConnectionEditor.Remove(chat, "agy"));
-        Assert.Single(chat.Backends);
+        ConnectionEditor.SetDefault(chat, "agy");
+        Assert.True(ConnectionEditor.Remove(chat, "agy"));
+        Assert.Empty(chat.Backends);
+        Assert.Equal("", chat.DefaultBackend);
     }
 
     [Fact]
@@ -71,7 +73,7 @@ public class ConnectionEditorTests
     [Fact]
     public void Move_reorders_the_dropdown_and_records_the_order()
     {
-        var chat = new ChatSettings();
+        var chat = Chat();
         var b = ConnectionEditor.Add(chat, BackendType.Gemini);
         var c = ConnectionEditor.Add(chat, BackendType.Anthropic);
         Assert.True(ConnectionEditor.Move(chat, c.Id, -1));

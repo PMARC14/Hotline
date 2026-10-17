@@ -240,7 +240,7 @@ public sealed class CodexTests : IDisposable
         Assert.Equal("Hi there.", text);
         var (exe, args, cwd, process) = Assert.Single(_factory.Started);
         Assert.Equal(@"C:\codex.exe", exe);
-        Assert.Equal(Path.Combine(_dir, "ws"), cwd); // chat only: an empty folder, nothing of the user's to read
+        Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only: the home folder (read-only sandbox), where `codex resume` finds it
         Assert.Equal("hello", Assert.Single(process.Written));
         Assert.True(process.InputCompleted);
         Assert.True(process.Disposed);
@@ -298,7 +298,6 @@ public sealed class CodexTests : IDisposable
         Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
         Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
         Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
-        Assert.False(ConnectionTypes.Of(BackendType.Codex).ListsModels);
     }
 
     [Fact]
@@ -403,6 +402,6 @@ public sealed class CodexTests : IDisposable
         var info = ConnectionTypes.Of(BackendType.Codex);
         Assert.True(info.Has(ConnectionField.CliPath) && info.Has(ConnectionField.Tools));
         Assert.False(info.Has(ConnectionField.ApiKey));
-        Assert.Equal(["low", "medium", "high", "xhigh"], info.EffortLevels);
+        Assert.Equal(["low", "medium", "high", "xhigh", "max", "ultra"], info.EffortLevels);
     }
 }

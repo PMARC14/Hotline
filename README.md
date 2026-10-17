@@ -51,7 +51,10 @@ configurable in plain files.
   else asks you in the panel (*Allow once / Always / Deny*). CLI connections can use their own tools under their own
   permission rules.
 - **System prompts** as Markdown files you can switch from the bar.
-- **Your bar, your way** — `toolbar.json` picks which buttons and pickers the bar shows, and in what order.
+- **Your panel, your way** — hold Alt to move or resize it, save its spot as the default, pin it where you work; the
+  chat grows up or down from the message bar. `toolbar.json` puts the buttons above or below the message box, in the
+  order you like. Optional open/close sounds (a Windows sound or your own .wav).
+- **Built-in guide** — Settings › Guide explains every feature; Settings › Advanced › Reset starts over (with a backup).
 - **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly. API keys live in
   Windows Credential Locker.
 

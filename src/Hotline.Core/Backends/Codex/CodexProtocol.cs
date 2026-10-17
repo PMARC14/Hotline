@@ -13,7 +13,7 @@ namespace Hotline.Core.Backends.Codex;
 /// </summary>
 public static class CodexProtocol
 {
-    public static IReadOnlyList<string> EffortLevels { get; } = ["low", "medium", "high", "xhigh"];
+    public static IReadOnlyList<string> EffortLevels { get; } = ["low", "medium", "high", "xhigh", "max", "ultra"];
 
     /// <param name="resumeThread">Thread id to continue (only when the user keeps Codex sessions), else a new session.</param>
     /// <param name="imagePaths">Image files to attach (codex takes paths, not data).</param>

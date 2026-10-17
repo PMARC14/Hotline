@@ -13,6 +13,33 @@ public sealed record CliCommand(string Exe, IReadOnlyList<string> Args, string W
 /// </summary>
 public static class CliHandoff
 {
+    /// <summary>How a CLI entry continues the chat: its own conversation resumed, or a new session reading a file.</summary>
+    public enum Way { Resume, Handoff }
+
+    /// <summary>One "Continue this chat in ▸" CLI entry; <paramref name="More"/>: listed under "More…".</summary>
+    public sealed record Choice(BackendType Type, Way Way, bool More);
+
+    /// <summary>
+    /// The CLI entries for a chat on a connection of type <paramref name="own"/>: that CLI first (resuming its
+    /// conversation when there is one, else reading the chat from a file), and the other installed CLIs under "More…"
+    /// (file handoffs, so only when the panel has the whole chat). A chat on an API connection has no own CLI: the
+    /// handoffs are then listed directly.
+    /// </summary>
+    public static IReadOnlyList<Choice> Choices(BackendType? own, bool hasSession, bool wholeChat, IReadOnlyCollection<BackendType> installed)
+    {
+        var choices = new List<Choice>();
+        var ownCli = own is { } o && CanResume(o) && installed.Contains(o) ? o : (BackendType?)null;
+        if (ownCli is { } mine)
+        {
+            if (hasSession) choices.Add(new(mine, Way.Resume, false));
+            else if (wholeChat) choices.Add(new(mine, Way.Handoff, false));
+        }
+        if (!wholeChat) return choices;
+        foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
+            if (type != ownCli && installed.Contains(type)) choices.Add(new(type, Way.Handoff, ownCli is not null));
+        return choices;
+    }
+
     public static bool CanResume(BackendType type) => type is BackendType.Antigravity or BackendType.ClaudeCode or BackendType.Codex;
 
     public static CliCommand Resume(BackendType type, string exe, CliSession session)
