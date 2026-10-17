@@ -150,6 +150,12 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
     /// <summary>OCR the rendered (off-screen) transcript and check its heading is read back.</summary>
     private async Task CheckOcrAsync()
     {
+        try { await CheckOcrCoreAsync().WaitAsync(TimeSpan.FromSeconds(10)); }
+        catch (TimeoutException) { log.Error("selftest ocr FAILED: no result in 10 s (rendering or OCR hung)"); }
+    }
+
+    private async Task CheckOcrCoreAsync()
+    {
         try
         {
             if (OcrReader.TryCreateEngine() is not { } engine) { log.Info("selftest ocr: no OCR language installed"); return; }
