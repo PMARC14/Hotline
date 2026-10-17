@@ -85,6 +85,33 @@ public sealed class ConnectionFilesTests : IDisposable
     }
 
     [Fact]
+    public void A_file_broken_while_running_survives_a_live_read_and_the_next_save()
+    {
+        WithAgy();
+        var store = new SettingsStore(_dir);
+        store.Load(); // agy.json was fine at start
+        File.WriteAllText(Conn("agy"), "{ half-saved"); // the user's editor, mid-save
+        var live = store.TryRead()!; // a live reload drops the unreadable connection...
+        store.Save(live);            // ...and the next save must not delete its file
+        Assert.Equal("{ half-saved", File.ReadAllText(Conn("agy")));
+    }
+
+    [Fact]
+    public void A_broken_file_fixed_while_running_saves_normally_again()
+    {
+        var store = new SettingsStore(_dir);
+        store.Load();
+        File.WriteAllText(Conn("agy"), "{ broken");
+        var s = new SettingsStore(_dir); s.Load();
+        File.WriteAllText(Conn("agy"), """{ "type": "antigravity", "name": "Fixed" }""");
+        var live = s.TryRead()!;
+        Assert.Empty(s.BrokenConnectionFiles);
+        live.Chat.Backends.Single(b => b.Id == "agy").Name = "Renamed";
+        s.Save(live);
+        Assert.Contains("Renamed", File.ReadAllText(Conn("agy")));
+    }
+
+    [Fact]
     public void Live_read_sees_hand_added_files_without_writing_anything()
     {
         var store = new SettingsStore(_dir);

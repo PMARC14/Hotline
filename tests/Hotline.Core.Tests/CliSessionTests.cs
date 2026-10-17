@@ -83,6 +83,22 @@ public sealed class CliSessionTests : IDisposable
     }
 
     [Fact]
+    public async Task Switching_from_a_record_only_cli_to_a_kept_connection_keeps_the_earlier_turns_too()
+    {
+        // Turn 1 on a CLI (Hotline keeps only the record), turn 2 on an API connection (kept): the saved transcript
+        // must hold both turns, or reopening the chat shows only turn 2.
+        var history = History();
+        var cli = new FakeCli();
+        var api = new FakeBackend(new ChatDelta("api answer"));
+        var c = new ChatController(id => id == "cli" ? cli : id == "fake" ? api : null, history, new ManualTimeProvider(),
+            new FileLog(Path.Combine(_dir, "h.log")), id => id != "cli") { BackendId = "cli" };
+        await c.SendAsync("first question", []);
+        c.BackendId = "fake";
+        await c.SendAsync("second question", []);
+        Assert.Equal(["first question", "ok", "second question", "api answer"], history.Load(c.ConversationId).Select(e => e.Text));
+    }
+
+    [Fact]
     public async Task A_record_only_chat_resumes_its_cli_conversation_with_an_empty_panel()
     {
         var history = History();

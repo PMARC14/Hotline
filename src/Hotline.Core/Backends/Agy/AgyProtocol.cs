@@ -29,6 +29,8 @@ public static class AgyProtocol
                 sb.Append(m.Role == ChatRole.User ? "User: " : "Assistant: ").AppendLine(m.Text);
             sb.AppendLine().AppendLine("New message:");
         }
+        // Instructions span paragraphs (memory adds its own): the marker tells where the user's message starts.
+        else if (!string.IsNullOrWhiteSpace(instructions)) sb.AppendLine("New message:");
         if (imagePaths.Count > 0)
         {
             sb.AppendLine("Attached images (in the workspace; use view_file to look at them):");
