@@ -554,7 +554,10 @@ public sealed partial class PopupWindow : Window
     /// The bar's rectangle: its bottom edge is the placement line in both directions, kept inside the work area (a line
     /// near the top has no room for the bar above it).
     /// </summary>
-    private RectI DownBar => Hotline.Core.Windowing.PanelPlacement.Clamp(new RectI(_bar.X, _bar.Y + _bar.Height - BarPx, _bar.Width, BarPx), _work);
+    private RectI DownBar => Hotline.Core.Windowing.PanelPlacement.Clamp(new RectI(_bar.X, _downTop ?? _bar.Y + _bar.Height - BarPx, _bar.Width, BarPx), _work);
+
+    /// <summary>Growing down: the bar's top edge, fixed when the direction is chosen (so typing more lines grows it downward).</summary>
+    private int? _downTop;
 
     /// <summary>The tallest the panel may be: the bar plus window.chatHeight, else maxHeightPercent of the work area.</summary>
     private int MaxPx => Math.Min(_work.Height, _settings.ChatHeight is { } chat
@@ -603,14 +606,28 @@ public sealed partial class PopupWindow : Window
         var native = new Native.RECT { Left = rect.X, Top = rect.Y, Right = rect.X + rect.Width, Bottom = rect.Y + rect.Height };
         var monitor = Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST);
         if (MonitorAt(MonitorWork(monitor)) is not { } m) return;
-        _work = m.Work;
-        _scale = Native.GetDpiForWindow(Hwnd) is var dpi and > 0 ? dpi / 96.0 : m.Scale; // Windows already resized it for that monitor
+        var oldScale = _scale;
+        (_work, _scale) = (m.Work, m.Scale); // the monitor it's pulled onto decides the scale
+        if (_fixedPx is { } kept && !resized && Math.Abs(m.Scale - oldScale) > 0.001) _fixedPx = (int)Math.Round(kept * m.Scale / oldScale);
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
-        var line = _growUp ? rect.Y + rect.Height : rect.Y + Math.Min(BarPx, rect.Height);
         var h = (int)Math.Round(_settings.Height * _scale);
-        _bar = new RectI(rect.X, line - h, rect.Width, h);
+        _bar = new RectI(rect.X, rect.Y, rect.Width, h); // BarPx below reads this monitor's bar height
+        // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
+        void BarAt(bool up)
+        {
+            var line = up ? rect.Y + rect.Height : rect.Y + Math.Min(BarPx, rect.Height);
+            _bar = new RectI(rect.X, line - h, rect.Width, h);
+        }
+        BarAt(_growUp);
+        var wasUp = _growUp;
         ChooseDirection();
+        if (_growUp != wasUp)
+        {
+            // Flipped: keep the window where it was dropped, the bar now on its other edge.
+            BarAt(_growUp);
+            _downTop = _growUp ? null : rect.Y;
+        }
         _session = new SessionSpot(_bar, _work, _scale, _fixedPx);
         ApplyHeight(force: true);
     }
@@ -647,8 +664,7 @@ public sealed partial class PopupWindow : Window
     public void ForgetSessionSpot()
     {
         if (_session is null) return;
-        _session = null;
-        _fixedPx = null;
+        _session = null; // the open panel keeps its size; the next open uses the default
         _log.Info("pinned spot forgotten: the next open uses the default");
     }
 
@@ -657,6 +673,8 @@ public sealed partial class PopupWindow : Window
     {
         var chatPx = Math.Max(0, MaxPx - BarPx);
         var up = Hotline.Core.Windowing.PanelPlacement.GrowsUp(_settings.GrowDirection, DownBar, _work, chatPx);
+        _downTop = null;
+        if (!up) _downTop = DownBar.Y; // now, from the bar line
         if (up == _growUp) return;
         _growUp = up;
         DirectionChanged?.Invoke(up);
@@ -671,7 +689,8 @@ public sealed partial class PopupWindow : Window
         if (Pinned && _session is { } spot && MonitorAt(spot.Work) is { } still)
         {
             // Pinned and moved this session: the same spot (pulled inside its monitor again, in case its work area changed).
-            (_work, _scale, _fixedPx) = (still.Work, still.Scale, spot.FixedPx);
+            (_work, _scale) = (still.Work, still.Scale);
+            _fixedPx = spot.FixedPx is { } f ? (int)Math.Round(f * still.Scale / spot.Scale) : null;
             _bar = Hotline.Core.Windowing.PanelPlacement.Clamp(Hotline.Core.Windowing.PanelPlacement.Rescale(spot.Bar, spot.Scale, still.Scale), still.Work);
             ChooseDirection();
             _log.Info($"place: pinned spot {_bar} on {still.Device} scale={still.Scale} up={_growUp}");

@@ -73,6 +73,7 @@ public static class PanelPlacement
     /// </summary>
     public static RectI Resize(RectI start, ResizeEdge edges, int dx, int dy, int minWidth, int minHeight, RectI work)
     {
+        start = Clamp(start, work); // a window dragged partly off-screen starts from its on-screen part
         int left = start.X, top = start.Y, right = start.X + start.Width, bottom = start.Y + start.Height;
         int workRight = work.X + work.Width, workBottom = work.Y + work.Height;
         if (edges.HasFlag(ResizeEdge.Left)) left = Math.Clamp(left + dx, work.X, Math.Max(work.X, right - minWidth));

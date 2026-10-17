@@ -82,6 +82,7 @@ internal sealed class ProviderBar(
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(_effortByLabel.GetValueOrDefault(e, e)); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
         popup.Toolbar.SizeChanged += (_, _) => Layout();
+        popup.TopToolbar.SizeChanged += (_, _) => Layout(); // the pickers may sit in the top row
         popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(() => { popup.Toolbar.UpdateLayout(); Layout(); });
         Refresh();
         _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
@@ -134,7 +135,7 @@ internal sealed class ProviderBar(
     /// </summary>
     private void Layout()
     {
-        var bar = popup.Toolbar;
+        var bar = popup.PickersPanel.Parent as Grid ?? popup.Toolbar; // the row the pickers are in
         if (bar.ActualWidth <= 0) return;
         var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag)).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
                          + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);

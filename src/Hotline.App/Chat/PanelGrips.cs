@@ -25,7 +25,6 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     private ResizeEdge _edges;
     private Native.POINT _start;
     private RectI _startRect;
-    private double _gripRatio;
 
     /// <summary>Saves where the panel is now as its default spot and size (the panel's owner writes the settings).</summary>
     public Action? SaveAsDefault { get; set; }
@@ -76,8 +75,9 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         home.Click += (_, _) => popup.BackToDefaultSpot();
         menu.Items.Add(save);
         menu.Items.Add(home);
-        menu.Opened += (_, _) => _menuOpen = true;
-        menu.Closed += (_, _) => _menuOpen = false;
+        IDisposable? hold = null;
+        menu.Opened += (_, _) => { _menuOpen = true; hold = popup.HoldResize(); }; // a resize would close the menu
+        menu.Closed += (_, _) => { _menuOpen = false; hold?.Dispose(); hold = null; };
         grip.ContextFlyout = menu;
         _grip = grip;
         layer.Children.Add(grip);
@@ -86,6 +86,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         _timer.Interval = TimeSpan.FromMilliseconds(80);
         _timer.Tick += (_, _) => Update();
         popup.Shown += () => _timer.Start();
+        popup.DirectionChanged += _ => { if (popup.GripLayer.Visibility == Visibility.Visible) SyncDirection(); };
         popup.Hidden += () => { _timer.Stop(); SetVisible(false); };
     }
 
@@ -110,15 +111,16 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     {
         var layer = popup.GripLayer;
         var wanted = visible ? Visibility.Visible : Visibility.Collapsed;
-        if (layer.Visibility == wanted) return;
-        if (visible)
-        {
-            // The grip on the bar's outer edge; the edges that resize for this direction.
-            _grip.VerticalAlignment = popup.GrowsUp ? VerticalAlignment.Bottom : VerticalAlignment.Top;
-            foreach (var (element, up, down) in _handles)
-                element.Visibility = (popup.GrowsUp ? up : down) == ResizeEdge.None ? Visibility.Collapsed : Visibility.Visible;
-        }
-        layer.Visibility = wanted;
+        if (visible) SyncDirection();
+        if (layer.Visibility != wanted) layer.Visibility = wanted;
+    }
+
+    /// <summary>The grip on the bar's outer edge; the edges that resize for this direction (also after a flip while shown).</summary>
+    private void SyncDirection()
+    {
+        _grip.VerticalAlignment = popup.GrowsUp ? VerticalAlignment.Bottom : VerticalAlignment.Top;
+        foreach (var (element, up, down) in _handles)
+            element.Visibility = (popup.GrowsUp ? up : down) == ResizeEdge.None ? Visibility.Collapsed : Visibility.Visible;
     }
 
     private void Wire(FrameworkElement element, Func<ResizeEdge> edges)
@@ -132,7 +134,6 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             _resized = false;
             Native.GetCursorPos(out _start);
             _startRect = popup.WindowRect;
-            _gripRatio = _startRect.Width > 0 ? (double)(_start.X - _startRect.X) / _startRect.Width : 0.5;
             popup.BeginUserDrag();
             e.Handled = true;
         };
@@ -141,16 +142,18 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             if (!_dragging) return;
             Native.GetCursorPos(out var now);
             int dx = now.X - _start.X, dy = now.Y - _start.Y;
+            if (dx == 0 && dy == 0) return; // a click without a move changes nothing
             if (_edges == ResizeEdge.None)
             {
-                // Moving: keep the cursor at the same share of the width (the size may change on a monitor with another
-                // scale), and let Windows resize for that monitor.
+                // Moving: by the pointer's travel (never re-anchored to a size Windows changes on a monitor with another
+                // scale, which would bounce it across the boundary); growing up, the bottom edge (where the grip is) follows.
                 var size = popup.AppWindow.Size;
-                popup.DragMoveTo((int)Math.Round(now.X - _gripRatio * size.Width), _startRect.Y + dy);
+                var y = popup.GrowsUp ? _startRect.Y + _startRect.Height + dy - size.Height : _startRect.Y + dy;
+                popup.DragMoveTo(_startRect.X + dx, y);
             }
             else
             {
-                _resized = true;
+                if ((_edges & (ResizeEdge.Top | ResizeEdge.Bottom)) != 0 && dy != 0) _resized = true; // a height chosen by hand
                 popup.DragResizeTo(PanelPlacement.Resize(_startRect, _edges, dx, dy, popup.MinDragWidthPx, popup.MinDragHeightPx, popup.WorkArea));
             }
             e.Handled = true;

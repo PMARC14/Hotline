@@ -35,8 +35,13 @@ internal static class SoundPlayer
     /// <summary>A Windows sound event's .wav in the current scheme (empty when the event has no sound).</summary>
     public static string? EventPath(string name)
     {
-        try { return Registry.CurrentUser.OpenSubKey($@"{Scheme}\{name}\.Current")?.GetValue("") as string; }
-        catch (Exception ex) when (ex is System.Security.SecurityException or UnauthorizedAccessException or IOException) { return null; }
+        if (!Sounds.IsEventName(name)) return null; // never a path into other keys
+        try
+        {
+            using var key = Registry.CurrentUser.OpenSubKey($@"{Scheme}\{name}\.Current");
+            return key?.GetValue("") as string;
+        }
+        catch (Exception ex) when (ex is System.Security.SecurityException or UnauthorizedAccessException or IOException or ArgumentException) { return null; }
     }
 
     /// <summary>The Windows sound events that have a sound in the current scheme (for the Settings picker).</summary>

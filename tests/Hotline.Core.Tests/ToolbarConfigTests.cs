@@ -97,10 +97,10 @@ public sealed class ToolbarConfigTests : IDisposable
         var config = ToolbarConfig.Load(PathFor);
         Assert.Equal(["model"], config.Top);
         Assert.Equal(["pin", "settings"], config.Items);
-        var (top, items) = ToolbarConfig.ToRow(config.Top, config.Items, "pin", toTop: true);
+        var (top, items) = ToolbarConfig.ToRow(config.Top, config.Items, index: 0, fromTop: false) /* pin */;
         Assert.Equal(["model", "pin"], top);
         Assert.Equal(["settings"], items);
-        (top, items) = ToolbarConfig.ToRow(top, items, "model", toTop: false);
+        (top, items) = ToolbarConfig.ToRow(top, items, index: 0, fromTop: true) /* model */;
         Assert.Equal(["pin"], top);
         Assert.Equal(["settings", "model"], items);
     }

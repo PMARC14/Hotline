@@ -58,7 +58,7 @@ public sealed partial class SettingsWindow
                 AddIconButton(line, 2, "\uE76C", Strings.Bar_MoveRight, index < row.Count - 1, () => SaveRow(With(ToolbarConfig.Move(row, index, +1))));
                 AddIconButton(line, 3, isTop ? "\uE74B" : "\uE74A", isTop ? Strings.Bar_ToBottom : Strings.Bar_ToTop, true, () =>
                 {
-                    var (t, b) = ToolbarConfig.ToRow(top, items, item, toTop: !isTop);
+                    var (t, b) = ToolbarConfig.ToRow(top, items, index, fromTop: isTop);
                     Save(t, b);
                 });
                 AddIconButton(line, 4, "\uE711", Strings.Bar_Remove, total > 1, () => SaveRow(row.Where((_, j) => j != index).ToList()));
@@ -99,12 +99,14 @@ public sealed partial class SettingsWindow
         {
             var box = new ComboBox { MinWidth = 260 };
             foreach (var (label, _) in choices) box.Items.Add(label);
-            var current = choices.FindIndex(c => string.Equals(c.Value, get(), StringComparison.OrdinalIgnoreCase));
-            if (current < 0) { box.Items.Add(get()); current = box.Items.Count - 1; } // a value typed into settings.json
+            var initial = get();
+            var current = choices.FindIndex(c => string.Equals(c.Value, initial, StringComparison.OrdinalIgnoreCase));
+            if (current < 0) { box.Items.Add(initial); current = box.Items.Count - 1; } // a value typed into settings.json
             box.SelectedIndex = current;
             box.SelectionChanged += (_, _) =>
             {
                 if (box.SelectedIndex >= 0 && box.SelectedIndex < choices.Count) set(choices[box.SelectedIndex].Value);
+                else if (box.SelectedIndex == choices.Count) set(initial);
             };
             var play = new Button { Content = new FontIcon { Glyph = "\uE768", FontSize = 12 }, Padding = new Thickness(8, 4, 8, 4) };
             ToolTipService.SetToolTip(play, Strings.Sound_Play);

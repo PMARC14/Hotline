@@ -29,7 +29,7 @@ public static class Sounds
     /// The .wav to play, or null (off, missing, outside the sounds folder, not a .wav, or an event without a sound).
     /// <paramref name="windowsEvent"/> returns an event's .wav path from the sound scheme (registry), or null/empty.
     /// </summary>
-    public static string? Resolve(string soundsDirectory, SoundChoice choice, Func<string, string?> windowsEvent)
+    public static string? Resolve(string soundsDirectory, SoundChoice choice, Func<string, string?> windowsEvent, string? mediaFolder = null)
     {
         switch (choice.Kind)
         {
@@ -47,16 +47,24 @@ public static class Sounds
             }
             case SoundKind.Windows:
             {
-                if (!choice.Name.All(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '-')) return null; // an event name, not a path
+                if (!IsEventName(choice.Name)) return null; // an event name, not a path
                 var path = windowsEvent(choice.Name);
                 if (string.IsNullOrWhiteSpace(path)) return null;
-                path = Environment.ExpandEnvironmentVariables(path);
+                path = Environment.ExpandEnvironmentVariables(path.Trim().Trim('"'));
+                // The scheme often names just a file in Windows\Media.
+                if (!Path.IsPathFullyQualified(path))
+                    path = Path.Combine(mediaFolder ?? Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "Media"), path);
+                if (path.StartsWith(@"\\", StringComparison.Ordinal) || !path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)) return null; // local .wav only
                 return File.Exists(path) ? path : null;
             }
             default:
                 return null;
         }
     }
+
+    /// <summary>A Windows sound event's registry name: letters, digits, spaces and . _ - (never a path).</summary>
+    public static bool IsEventName(string name) =>
+        name.Length > 0 && name.All(c => char.IsLetterOrDigit(c) || c is '.' or '_' or '-' or ' ');
 
     /// <summary>Puts Hotline's own sound in the sounds folder once (never over the user's file of that name).</summary>
     public static void EnsureShipped(string soundsDirectory, byte[] wav)

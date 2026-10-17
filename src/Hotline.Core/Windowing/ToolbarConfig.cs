@@ -46,13 +46,15 @@ public sealed class ToolbarConfig
         File.Move(tmp, path, overwrite: true);
     }
 
-    /// <summary>Moves an item to the end of the other row (spacers stay where they are).</summary>
-    public static (IReadOnlyList<string> Top, IReadOnlyList<string> Items) ToRow(IReadOnlyList<string> top, IReadOnlyList<string> items, string item, bool toTop)
+    /// <summary>Moves the item at <paramref name="index"/> of one row to the end of the other (only that one: spacers repeat).</summary>
+    public static (IReadOnlyList<string> Top, IReadOnlyList<string> Items) ToRow(IReadOnlyList<string> top, IReadOnlyList<string> items, int index, bool fromTop)
     {
-        var t = top.Where(i => i != item).ToList();
-        var b = items.Where(i => i != item).ToList();
-        (toTop ? t : b).Add(item);
-        return (t, b);
+        var from = (fromTop ? top : items).ToList();
+        var to = (fromTop ? items : top).ToList();
+        if (index < 0 || index >= from.Count) return (top, items);
+        to.Add(from[index]);
+        from.RemoveAt(index);
+        return fromTop ? (from, to) : (to, from);
     }
 
     /// <summary>Adds an item next to the item that precedes it in the default order (or first).</summary>
