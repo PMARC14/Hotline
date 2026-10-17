@@ -12,11 +12,7 @@ default**. Optional sounds play when it opens and closes.
 
 ## Open questions for the owner (answer before the matching task starts)
 
-1. **"If you click out with pin it goes back to default when launched."** Read as: *turning pin off* (clicking the
-   pin button again) sends the panel home on the next open. The other reading: clicking into another app while pinned
-   also forgets the spot. The spec assumes the first, because otherwise pin couldn't keep a spot while you work in
-   another app. (Argon flagged it.)
-2. **Auto direction at the default spot.** At `y = 0.8` the chat grows up, as today. Going down is only for a bar in
+1. **Auto direction at the default spot.** At `y = 0.8` the chat grows up, as today. Going down is only for a bar in
    the upper half, or when there's no room above. Confirm, or say if down should be the default everywhere it fits.
 
 ## Already decided (2026-10-16)
@@ -24,6 +20,8 @@ default**. Optional sounds play when it opens and closes.
 - The owner's button layout is the default (no spacer), with **Continue in** added after the history button (done on
   this branch); `window.backdrop` defaults to `acrylicThin` (done). Position and size defaults stay as they are today.
 - The pin's spot lasts only while pinned and only until Hotline restarts. Only "Save as default" writes a spot.
+- "Click out with pin" means **clicking into another app** (owner, 2026-10-17). The pinned panel stays visible over
+  it, but the moved spot is forgotten: the next open goes back to the default.
 - Sounds: Windows sound events *and* .wav files from `~/.hotline/sounds`, plus one shipped sound picked by the owner.
 
 ## Behaviour
@@ -65,9 +63,11 @@ default**. Optional sounds play when it opens and closes.
   panel has focus.
 - A move or resize only changes this opening, unless pinned or saved:
   - **Not pinned:** the next open (the key, the tray, a link) uses the saved default.
-  - **Pinned:** the panel stays where you put it, at that size, while it is closed and reopened with the key. It goes
-    back to the saved default once you **unpin**, and after Hotline restarts (pinning is per session and is never
-    written to a file).
+  - **Pinned:** the panel stays where you put it, at that size, while it is closed and reopened with the key. Any of
+    these sends it back to the saved default on the next open:
+    - clicking into another app (the pinned panel stays visible meanwhile, but the spot is forgotten);
+    - unpinning;
+    - Hotline restarting (the spot is kept per session and never written to a file).
 
 ### Growing up or down
 

@@ -53,7 +53,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     (the focused element) and `previous=`. Next: the owner pins, closes with the key and notes the time; read those
     lines. See the panel plan's task 1 for the candidates.
 - **Branch `panel-placement`** (stacked on #32, the rest of 0.3): spec
-  `docs/superpowers/specs/2026-10-16-panel-placement-design.md` (two open questions at the top) and plan
+  `docs/superpowers/specs/2026-10-16-panel-placement-design.md` (one open question at the top) and plan
   `docs/superpowers/plans/2026-10-16-panel-placement.md`. Done so far: the toolbar's Continue in button (in the default
   bar), and the owner's layout (no spacer) and `acrylicThin` as the defaults. Work paused 2026-10-16 at the owner's
   request (weekly usage).

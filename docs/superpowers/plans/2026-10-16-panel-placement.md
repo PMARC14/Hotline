@@ -9,7 +9,8 @@ Spec: `docs/superpowers/specs/2026-10-16-panel-placement-design.md`. Branch `pan
 - the owner's layout (no spacer) and `acrylicThin` as the defaults (7fdd5c3).
 
 **Before starting:**
-- Read the spec's two open questions; the owner answers them.
+- Read the spec's open question (the auto direction at the default spot); the owner answers it. The pin question was
+  answered on 2026-10-17: clicking into another app forgets the moved spot.
 - Read HANDOFF's hard-won facts (a resize closes flyouts; `HoldResize`; no `TextHighlighter`; self-test off-screen).
 
 **Pitfalls to design for** (from the Argon second opinion, 2026-10-16):
