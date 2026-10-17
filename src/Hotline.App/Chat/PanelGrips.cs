@@ -62,9 +62,9 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
 
         var grip = new Handle(InputSystemCursorShape.SizeAll)
         {
-            Width = 160, Height = 18, HorizontalAlignment = HorizontalAlignment.Center,
+            Width = 160, Height = 10, HorizontalAlignment = HorizontalAlignment.Center, // within the panel's 10-px edge, clear of the buttons
             Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent),
-            Children = { new Border { Width = 64, Height = 6, CornerRadius = new CornerRadius(3), Background = accent, VerticalAlignment = VerticalAlignment.Center } },
+            Children = { new Border { Width = 56, Height = 4, CornerRadius = new CornerRadius(2), Background = accent, VerticalAlignment = VerticalAlignment.Center } },
         };
         ToolTipService.SetToolTip(grip, Strings.Grip_Tip);
         Wire(grip, () => ResizeEdge.None);

@@ -80,7 +80,10 @@ internal sealed class ChatPresenter
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
-            (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll());
+            (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll())
+        {
+            SnapshotDirectory = Path.Combine(dataDirectory, "logs"),
+        };
     }
 
     public void Initialize()
@@ -117,6 +120,7 @@ internal sealed class ChatPresenter
             },
         };
         _grips.Initialize();
+        _selfTest.ShowGrips = _grips.SetVisible;
         _popup.NewChatButton.Click += (_, _) => NewChat();
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
@@ -358,9 +362,15 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
+        var (noticesGap, chatGap) = PanelLayout.Gaps(_popup, !_transcript.IsEmpty);
+        // The gaps follow what's shown; set after this size event (never inside it), only when they change.
+        if (_popup.NoticesPanel.Margin.Top + _popup.NoticesPanel.Margin.Bottom != noticesGap
+            || _popup.MessagesScroll.Margin.Top + _popup.MessagesScroll.Margin.Bottom != chatGap)
+            _popup.DispatcherQueue.TryEnqueue(() => PanelLayout.UpdateSpacing(_popup, _popup.GrowsUp, !_transcript.IsEmpty));
+        // Padding 20 (10 + 10); the button row's 8 is its own margin.
         var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + 8 + 20; // BarStack: the top row (if any) and the message box
-        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
-            conversation: !_transcript.IsEmpty, barDip: bar);
+        _popup.SetContentHeight(messages + chatGap + _popup.NoticesPanel.ActualHeight + noticesGap + _popup.BarStack.ActualHeight
+            + _popup.Toolbar.ActualHeight + 8 + 20, conversation: !_transcript.IsEmpty, barDip: bar);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

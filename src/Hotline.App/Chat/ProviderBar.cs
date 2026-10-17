@@ -81,9 +81,12 @@ internal sealed class ProviderBar(
         popup.ModelBox.DropDownOpened += (_, _) => _ = LoadModelsAsync();
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(_effortByLabel.GetValueOrDefault(e, e)); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
-        popup.Toolbar.SizeChanged += (_, _) => Layout();
-        popup.TopToolbar.SizeChanged += (_, _) => Layout(); // the pickers may sit in the top row
-        popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(() => { popup.Toolbar.UpdateLayout(); Layout(); });
+        // Never inside a layout pass: sizing the pickers from a size event fed back into that size (a layout cycle, which
+        // stops WinUI drawing the window for good). Queued after layout, once per batch of events.
+        popup.Root.SizeChanged += (_, _) => QueueLayout();
+        popup.Toolbar.SizeChanged += (_, _) => QueueLayout();
+        popup.ToolbarChanged += QueueLayout;
+        popup.TopToolbar.SizeChanged += (_, _) => QueueLayout(); // the pickers may sit in the top row
         Refresh();
         _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
     }
@@ -121,7 +124,7 @@ internal sealed class ProviderBar(
             SetEnabled(_enabled);
         }
         finally { _updating = false; }
-        Layout();
+        QueueLayout();
     }
 
     private static void NameTip(ComboBox box, string what) =>
@@ -133,14 +136,26 @@ internal sealed class ProviderBar(
     /// Gives the pickers explicit widths from the space the fixed buttons leave (see ToolbarLayout): the bar never
     /// reflows when a picker's text changes and the buttons on the right never get pushed off the edge.
     /// </summary>
+    private bool _layoutQueued;
+
+    private void QueueLayout()
+    {
+        if (_layoutQueued) return;
+        _layoutQueued = true;
+        popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => { _layoutQueued = false; Layout(); });
+    }
+
     private void Layout()
     {
         var bar = popup.PickersPanel.Parent as Grid ?? popup.Toolbar; // the row the pickers are in
-        if (bar.ActualWidth <= 0) return;
+        // The room is the row's container width (the panel minus its padding), never the row's own width: that one grows
+        // with the pickers when the buttons don't fit, and sizing from it shrank them a little on every pass.
+        var room = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
+        if (room <= 0) return;
         var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag)).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
                          + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
         var effortAvailable = popup.EffortBox.Items.Count > 0;
-        var widths = ToolbarLayout.Compute(bar.ActualWidth, fixedWidth, popup.PickersPanel.Spacing,
+        var widths = ToolbarLayout.Compute(room, fixedWidth, popup.PickersPanel.Spacing,
             [
                 new("effort", 72, 56, effortAvailable && Shown("effort")),
                 new("model", 150, 84, Shown("model")),
@@ -152,8 +167,9 @@ internal sealed class ProviderBar(
 
         static void Apply(ComboBox box, double width)
         {
-            box.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
-            if (width > 0) box.Width = width;
+            var visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (box.Visibility != visibility) box.Visibility = visibility;
+            if (width > 0 && box.Width != width) box.Width = width; // unchanged values never start another layout
         }
     }
 
@@ -241,7 +257,7 @@ internal sealed class ProviderBar(
         catch (ModelListException ex) { log.Info($"model list: {ex.Message}"); if (!quiet) notify(ex.Message, InfoBarSeverity.Warning); }
         catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }
         finally { _updating = false; }
-        Layout();
+        QueueLayout();
     }
 
     private void BuildPromptMenu()

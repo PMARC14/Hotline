@@ -36,13 +36,21 @@ public partial class App : Application
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
     private string? _odrPath;
     private FileSystemWatcher? _settingsWatcher;
+    /// <summary>Layout cycles since start (each one can leave the window undrawable).</summary>
+    internal static int LayoutCycles;
 
     public App(AppActivationArguments initialActivation)
     {
         _initialActivation = initialActivation;
         InitializeComponent();
         // Log and keep running: an exception in one button handler must not take the whole app down.
-        UnhandledException += (_, e) => { _log?.Error("unhandled UI exception (kept running)", e.Exception); e.Handled = true; };
+        UnhandledException += (_, e) =>
+        {
+            // A layout cycle can stop WinUI drawing the window for good: count it so the self-test fails loudly.
+            if (e.Exception is LayoutCycleException) Interlocked.Increment(ref LayoutCycles);
+            _log?.Error("unhandled UI exception (kept running)", e.Exception);
+            e.Handled = true;
+        };
         // Last chance: record anything that is about to terminate the process.
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
