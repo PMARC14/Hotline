@@ -78,6 +78,7 @@ internal sealed class ChatPresenter
         _memory = new MemoryStore(Path.Combine(dataDirectory, "memory.md"));
         _composer = new Composer(popup, _theme, actions, _tasks, () => settings.Chat.ResumeWhileTyping);
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
+        popup.KeepOnKeyPress = () => _voice.Active || settings.Activation.Tap != Hotline.Core.Activation.KeyAction.TogglePopup;
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log, () => settings.Chat.HistoryListSize);
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
@@ -128,7 +129,9 @@ internal sealed class ChatPresenter
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
         _popup.NoticesPanel.SizeChanged += (_, _) => ReportHeight();
-        _popup.Composer.SizeChanged += (_, _) => ReportHeight();
+        // The whole bar (top row + message box) and the bottom row: toolbar.json can move buttons between the rows.
+        _popup.BarStack.SizeChanged += (_, _) => ReportHeight();
+        _popup.Toolbar.SizeChanged += (_, _) => ReportHeight();
         _log.Info("chat view ready");
     }
 

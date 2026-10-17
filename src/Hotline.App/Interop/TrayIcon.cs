@@ -11,6 +11,7 @@ internal sealed class TrayIcon : IDisposable
     private readonly WindowMessageHook _hook;
     private readonly Dictionary<uint, Action> _commands;
     private Native.NOTIFYICONDATA _data;
+    private long _lastMenuMs = -1000;
 
     public TrayIcon(WindowMessageHook hook, string iconPath, Action onToggle, Action onOpenSettings, Action onRestart, Action onQuit, Action? onGeminiWeb = null)
     {
@@ -38,7 +39,12 @@ internal sealed class TrayIcon : IDisposable
             switch ((uint)(lParam & 0xFFFF)) // NOTIFYICON_VERSION_4: LOWORD(lParam) = event
             {
                 case Native.WM_LBUTTONUP: onToggle(); break;
-                case Native.WM_RBUTTONUP or Native.WM_CONTEXTMENU: ShowMenu(); break;
+                // Version 4 sends WM_CONTEXTMENU after WM_RBUTTONUP for one right-click (and alone for the keyboard): one
+                // menu per click, whichever arrives first.
+                case Native.WM_RBUTTONUP or Native.WM_CONTEXTMENU:
+                    if (Environment.TickCount64 - _lastMenuMs > 500) ShowMenu();
+                    _lastMenuMs = Environment.TickCount64; // after the menu closes: the click's second message is now stale too
+                    break;
             }
             return true;
         });

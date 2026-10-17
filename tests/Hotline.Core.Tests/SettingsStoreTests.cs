@@ -236,4 +236,19 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 7 }""");
         Assert.DoesNotContain(New().Load().Chat.Backends, b => b.Type == BackendType.ClaudeCode);
     }
+
+    [Fact]
+    public void A_schema_upgrade_keeps_the_old_file_with_its_comments_as_a_backup()
+    {
+        var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
+        try
+        {
+            Directory.CreateDirectory(dir);
+            var file = Path.Combine(dir, SettingsStore.FileName);
+            File.WriteAllText(file, "{ \"schemaVersion\": 12, // my note\n \"window\": { \"width\": 700 } }");
+            new SettingsStore(dir).Load();
+            Assert.Contains("// my note", File.ReadAllText(file + ".bak"));
+        }
+        finally { if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true); }
+    }
 }

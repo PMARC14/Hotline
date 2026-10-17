@@ -150,10 +150,10 @@ public sealed class CliResumeTests : IDisposable
 
     private string ProjectsDir => Path.Combine(_dir, "home", ".gemini", "config", "projects");
 
-    private AgyBackend Agy(bool keep = true, ToolMode tools = ToolMode.ChatOnly) =>
+    private AgyBackend Agy(bool keep = true, ToolMode tools = ToolMode.ChatOnly, Func<string>? prompt = null) =>
         new(new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline", KeepCliSessions = keep, Tools = tools }, () => @"C:\agy.exe",
             new AgyWorkspace(Path.Combine(_dir, "agy", "Hotline"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")),
-            _ => "SYSTEM", Path.Combine(_dir, "home"), new AgyProjects(ProjectsDir, Path.Combine(_dir, "old", "agy", "Hotline")));
+            _ => prompt?.Invoke() ?? "SYSTEM", Path.Combine(_dir, "home"), new AgyProjects(ProjectsDir, Path.Combine(_dir, "old", "agy", "Hotline")));
 
     [Fact]
     public async Task Agy_chat_only_runs_in_the_home_folder_with_its_workspace_added()
@@ -220,6 +220,35 @@ public sealed class CliResumeTests : IDisposable
         Assert.DoesNotContain("--conversation", _factory.Started[1].Args);
         Assert.Contains("remember pelican", _factory.Started[1].Process.Written.Single());
         Assert.Equal(SessionB, Assert.Single(sessions).Id);
+    }
+
+    [Fact]
+    public async Task Agy_quota_error_on_a_resumed_chat_says_quota_not_cant_resume()
+    {
+        _factory.Create = () => new FakeLineProcess
+        {
+            Respond = _ => ["""{"event":"result","result":{"status":"ERROR","response":"","error":"RESOURCE_EXHAUSTED: quota"}}"""],
+        };
+        var backend = Agy();
+        backend.Resume = new CliSession(SessionA, "");
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(backend.StreamAsync([U("1", "what word?")], default)));
+        Assert.Equal(BackendErrorKind.RateLimited, ex.Kind);
+        Assert.Single(_factory.Started); // no restart and replay just to fail again
+    }
+
+    [Fact]
+    public async Task Agy_inherit_mode_sends_a_changed_prompt_again_when_it_restarts_to_resume()
+    {
+        Directory.CreateDirectory(Path.Combine(_dir, "home"));
+        _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "ok") };
+        var prompt = "BE BRIEF";
+        var backend = Agy(tools: ToolMode.Inherit, prompt: () => prompt);
+        var (_, sessions) = await Collect(backend.StreamAsync([U("1", "hi")], default));
+        prompt = "BE BRIEF. The user's name is Pat."; // memory saved: the prompt changed
+        backend.Resume = sessions.Single();
+        await Collect(backend.StreamAsync([U("1", "hi"), A("2", "ok"), U("3", "my name?")], default));
+        Assert.Equal(2, _factory.Started.Count);
+        Assert.Contains("Pat", _factory.Started[1].Process.Written.Single());
     }
 
     [Fact]

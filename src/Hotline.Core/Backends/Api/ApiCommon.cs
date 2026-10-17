@@ -144,7 +144,8 @@ public static partial class ApiCommon
             if (root.TryGetProperty("error", out var error))
             {
                 if (error.ValueKind == JsonValueKind.String) return error.GetString();
-                if (error.ValueKind == JsonValueKind.Object && error.TryGetProperty("message", out var m)) return m.GetString();
+                if (error.ValueKind == JsonValueKind.Object && error.TryGetProperty("message", out var m))
+                    return m.ValueKind == JsonValueKind.String ? m.GetString() : m.GetRawText(); // FastAPI-style servers send a list
             }
             return root.TryGetProperty("message", out var msg) && msg.ValueKind == JsonValueKind.String ? msg.GetString() : null;
         }

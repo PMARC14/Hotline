@@ -16,7 +16,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; repo secrets `HOTLINE_SIGNING_PFX_BASE64` /
   `_PASSWORD`; the owner keeps `certs/release/hotline-release.pfx` + password, git-ignored, and a backup in
   `Documents\Hotline-release-certificate\`): users trust `Hotline.cer` once, then `.appinstaller` updates work.
-- **Microsoft Store** **Hotline AI** (Store ID `9PMW5CR6G3BC`, also `winget install 9PMW5CR6G3BC`): uploads are by
+- **Microsoft Store** **Hotline AI** (Store ID `9PMW5CR6G3BC`, also `winget install 9PMW5CR6G3BC`): the last bundle
+  built is **0.3.0.0** (2026-10-17, in Downloads). **No more Store bundles until just short of 1.0** (owner,
+  2026-10-17); GitHub releases continue on every push to `main`. Uploads are by
   hand (no Partner Center automation, by the owner's choice): `scripts/build-msix.sh --store --arch all --version
   X.Y.Z.0 …` (docs/RELEASING.md), then upload with the 17 listings in `store/listings/`.
 - **In v0.2.24** (#26, #27): accent colour, High contrast theme, Windows contrast/transparency followed, code blocks
@@ -76,9 +78,23 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
    `CopilotKeyPressFocusFrame`, see the hard-won facts), re-run TESTING.md, new APIs behind `PlatformSupport` checks.
    Also on the list from the 0.3 work: the pickers are cramped at the default 600-DIP width ("H…", "Gemini 3…"):
    decide a wider default or an earlier hide; the owner picks the shipped open/close sound.
-2. Then PR #29 (Continue in: web pages, Open WebUI, apps; merge `main` into it first, expect conflicts in
-   `ContinueIn.cs` and `RecentChatsMenu.cs`) and region capture on multi-monitor / mixed DPI plus the panel's hand test
+2. Then PR #29 (Continue in: web pages, Open WebUI, apps; merge `main` into it first: on 2026-10-17 that conflicted in
+   20 files — the 17 `Strings*.resx` (both sides added strings: keep both), `App.xaml.cs`, `SettingsWindow.xaml.cs`
+   and `docs/HANDOFF.md`, so it was left for that chat) and region capture on multi-monitor / mixed DPI plus the panel's hand test
    (on the owner's desktop: clone, dev certificate (README), `scripts/install.sh`). Version numbers when ordered.
+   - **Left from the whole-codebase review (2026-10-17, Argon, 48 findings; the real Critical/Important ones are fixed
+     in PR "after 0.3")** — check these on the desktop / when touching the code:
+     - Mixed-DPI drags: a drop across monitors may keep the old monitor's width in pixels; a live move between a
+       top/bottom pair of different DPIs can jitter; a tall auto-direction panel dragged to the top edge may not flip
+       to growing down; `FramePx` is read before the panel moves to its monitor (one show may be a few px short).
+     - The window frame on the first open: `_barDip` is 0 until the first layout, so a grow-down panel's bar line
+       can be set from the fallback height.
+     - Settings: a `settings.json` without `schemaVersion` is treated as current (skips migrations); connection ids are
+       case-sensitive in a few places (`defaultBackend`); the Language box is blank for `"en-us"` (case).
+     - Minor: scheme-less endpoints throw a raw error; MCP `cwd`/`displayName` of the wrong JSON type drop the file's
+       other servers; `ModelFamilies.Resolve` maps `xhigh`/`ultra` to the lowest variant; MCP approval keys differ by
+       case; SVG `style` with CSS escapes; code-fence parity in `MarkdownModel`; sounds don't reload a replaced .wav;
+       the fallback hotkey isn't re-registered on a settings change; transcript spinner not stopped on Clear.
 3. **Brainstorm** anything else wanted before 1.0, then decide on it. (The Codex live check was done by the owner on
    2026-10-16; its feedback is 0.3.)
 4. **Version 1.0** when: hand tests done, multi-monitor capture OK, 26H2 merged, a Store update certified with all
@@ -97,8 +113,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **The plan:**
   - **0.3** (released 2026-10-17) — the Codex-test feedback and the movable, resizable panel.
   - **0.4** — the Windows 11 26H2 work (#9), next (owner, 2026-10-17).
-  - **0.5** — Continue in (PR #29) and the multi-monitor / mixed-DPI region capture fix: feature complete for 1.0;
-    after that only fixes, polish and a Store update certified with all 17 languages.
+  - **0.5** — everything else left: Continue in (PR #29, now with a ready-made Gemini entry), the multi-monitor /
+    mixed-DPI region capture fix, the panel's desktop hand test, the shipped sound. Feature complete for 1.0; after
+    that only fixes, polish and one Store update (the first since 0.3.0.0) certified with all 17 languages.
   - **1.0** — when that Store update is through and nothing that breaks existing settings files is pending. From 1.0
     on, settings files must keep working across updates (migrations, never breaking changes).
 

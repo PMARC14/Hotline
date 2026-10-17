@@ -324,6 +324,19 @@ public sealed class CodexTests : IDisposable
     }
 
     [Fact]
+    public async Task Signed_out_on_a_resumed_chat_says_so_instead_of_replaying()
+    {
+        _factory.Create = () => _factory.Started.Count == 1 // the resume dies at once: signed out
+            ? new FakeLineProcess { ExitWhenInputCompletes = true, StandardErrorTail = "Error: Not logged in. Run codex login." }
+            : new FakeLineProcess { ExitWhenInputCompletes = true, Respond = _ => Answer("ok") };
+        var b = New(profile: new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
+        b.Resume = await SessionOf(b.StreamAsync([U("u1", "first")], default));
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("u1", "first"), A("a1", "ok"), U("u2", "second")], default)));
+        Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
+        Assert.Equal(2, _factory.Started.Count); // the thread is kept: no new session started
+    }
+
+    [Fact]
     public async Task Images_go_as_temporary_files_that_are_removed_afterwards()
     {
         string? path = null;

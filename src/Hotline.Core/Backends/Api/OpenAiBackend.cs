@@ -62,27 +62,29 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
                     catch (JsonException) { continue; }
                     if (root.TryGetProperty("error", out _))
                         throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: {ApiCommon.ErrorMessage(data)}");
-                    if (!root.TryGetProperty("choices", out var choices) || choices.ValueKind != JsonValueKind.Array || choices.GetArrayLength() == 0) continue;
+                    if (!root.TryGetProperty("choices", out var choices) || choices.ValueKind != JsonValueKind.Array || choices.GetArrayLength() == 0
+                        || choices[0].ValueKind != JsonValueKind.Object) continue;
                     if (choices[0].TryGetProperty("finish_reason", out var fr) && fr.ValueKind == JsonValueKind.String) finish = fr.GetString();
-                    if (!choices[0].TryGetProperty("delta", out var delta)) continue;
+                    // Proxies (vLLM, LiteLLM) send null for absent parts: "delta": null, "id": null, "function": null.
+                    if (!choices[0].TryGetProperty("delta", out var delta) || delta.ValueKind != JsonValueKind.Object) continue;
                     if (delta.TryGetProperty("content", out var content) && content.ValueKind == JsonValueKind.String && content.GetString() is { Length: > 0 } piece)
                     {
                         text.Append(piece);
                         yield return new ChatDelta(piece);
                     }
                     if (delta.TryGetProperty("tool_calls", out var toolCalls) && toolCalls.ValueKind == JsonValueKind.Array)
-                        foreach (var tc in toolCalls.EnumerateArray())
+                        foreach (var tc in toolCalls.EnumerateArray().Where(t => t.ValueKind == JsonValueKind.Object))
                         {
                             // Some servers omit "index" on continuation chunks: those belong to the current call; a new id starts the next.
-                            var newId = tc.TryGetProperty("id", out var idProp) && idProp.GetString() is { Length: > 0 } idText && !calls.Values.Any(c => c.Id == idText);
+                            var newId = Str(tc, "id") is { Length: > 0 } idText && !calls.Values.Any(c => c.Id == idText);
                             var index = tc.TryGetProperty("index", out var i) && i.TryGetInt32(out var n) ? n
                                 : calls.Count == 0 || newId ? calls.Count : calls.Keys.Max();
                             if (!calls.TryGetValue(index, out var call)) calls[index] = call = new PendingCall();
-                            if (tc.TryGetProperty("id", out var id) && id.GetString() is { Length: > 0 } callId) call.Id = callId;
-                            if (tc.TryGetProperty("function", out var fn))
+                            if (Str(tc, "id") is { Length: > 0 } callId) call.Id = callId;
+                            if (tc.TryGetProperty("function", out var fn) && fn.ValueKind == JsonValueKind.Object)
                             {
-                                if (fn.TryGetProperty("name", out var name) && name.GetString() is { Length: > 0 } fnName) call.Name = fnName;
-                                if (fn.TryGetProperty("arguments", out var args) && args.GetString() is { } part) call.Arguments.Append(part);
+                                if (Str(fn, "name") is { Length: > 0 } fnName) call.Name = fnName;
+                                if (Str(fn, "arguments") is { } part) call.Arguments.Append(part);
                             }
                         }
                 }
@@ -188,4 +190,8 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+
+    /// <summary>A string property, or null when it is missing or not a string (null, a number…).</summary>
+    private static string? Str(JsonElement e, string name) =>
+        e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 }

@@ -25,6 +25,16 @@ public sealed class HistoryStoreTests : IDisposable
     }
 
     [Fact]
+    public void A_damaged_line_skips_only_that_line()
+    {
+        // A crash mid-append leaves a cut-off last line; a hand edit can leave "null" or blanks.
+        var store = new HistoryStore(_dir, _clock);
+        store.Append("c1", new ChatMessage("m1", ChatRole.User, "kept", [], _clock.GetUtcNow()));
+        File.AppendAllText(store.PathFor("c1"), "null\n   \n{\"id\":\"m2\",\"role\":\"ass");
+        Assert.Equal(["kept"], store.Load("c1").Select(e => e.Text));
+    }
+
+    [Fact]
     public void Missing_conversation_loads_empty()
         => Assert.Empty(new HistoryStore(_dir, _clock).Load("nope"));
 
