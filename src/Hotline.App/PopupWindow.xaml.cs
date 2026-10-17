@@ -392,17 +392,31 @@ public sealed partial class PopupWindow : Window
 
     private void OnActivated(object sender, WindowActivatedEventArgs e)
     {
+        if (e.WindowActivationState == WindowActivationState.Deactivated)
+        {
+            // Who took focus (the pinned-close sound and the forgotten spot were both about this moment).
+            var taker = Native.GetForegroundWindow();
+            _log.Info($"deactivated: focus went to {Describe(taker)} (pinned={Pinned})");
+        }
         if (e.WindowActivationState == WindowActivationState.Deactivated && Pinned && _modal == 0 && _session is not null)
-            DispatcherQueue.TryEnqueue(() =>
+        {
+            // Clicking into another app while pinned forgets the moved spot (owner, 2026-10-17). Decided a moment later:
+            // the Copilot key itself takes focus briefly (and then closes the panel), which is not clicking away.
+            var timer = DispatcherQueue.CreateTimer();
+            timer.Interval = TimeSpan.FromMilliseconds(600);
+            timer.IsRepeating = false;
+            timer.Tick += (_, _) =>
             {
-                // Clicking into another app while pinned forgets the moved spot (owner, 2026-10-17); the shell (the
-                // key, the taskbar) and programs Hotline started don't count.
+                if (!AppWindow.IsVisible || !Pinned) return; // closed by the key (or unpinned, which forgets anyway)
                 var fg = Native.GetForegroundWindow();
                 if (fg == 0 || fg == Hwnd || Hotline.Core.Windowing.ShellSurfaces.IsShell(Native.ClassNameOf(fg))) return;
                 Native.GetWindowThreadProcessId(fg, out var pid);
-                if (pid == Environment.ProcessId || IsOurProcess?.Invoke(pid) == true) return;
+                if (pid == Environment.ProcessId || IsOurProcess?.Invoke(pid) == true || IsHotline(pid)) return;
+                _log.Info($"clicked into {Describe(fg)} while pinned");
                 ForgetSessionSpot();
-            });
+            };
+            timer.Start();
+        }
         if (e.WindowActivationState != WindowActivationState.Deactivated || !_settings.HideOnBlur || _modal != 0 || Pinned) return;
         // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
         // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show; up to
@@ -415,6 +429,24 @@ public sealed partial class PopupWindow : Window
             return;
         }
         ConsiderBlur(retried: false);
+    }
+
+    /// <summary>Another Hotline process (the key's launcher instance) never counts as another app.</summary>
+    private static bool IsHotline(uint pid)
+    {
+        try { using var p = System.Diagnostics.Process.GetProcessById((int)pid); return string.Equals(p.ProcessName, "Hotline", StringComparison.OrdinalIgnoreCase); }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException) { return false; }
+    }
+
+    /// <summary>A window for the log: class and process name.</summary>
+    private static string Describe(nint hwnd)
+    {
+        if (hwnd == 0) return "none";
+        Native.GetWindowThreadProcessId(hwnd, out var pid);
+        string name;
+        try { using var p = System.Diagnostics.Process.GetProcessById((int)pid); name = p.ProcessName; }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException) { name = "?"; }
+        return $"{Native.ClassNameOf(hwnd)} ({name})";
     }
 
     /// <summary>Whether a process is one Hotline started (a CLI, or something it started); set by App.</summary>

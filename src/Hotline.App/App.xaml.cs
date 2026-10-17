@@ -277,6 +277,9 @@ public partial class App : Application
         try { Hotline.Core.Windowing.Sounds.EnsureShipped(soundsDir, File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Sounds", Hotline.Core.Windowing.Sounds.ShippedFile))); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("could not set up the sounds folder", ex); }
         _popup.PlayOpenClose = open => Interop.SoundPlayer.Play(open ? _settingsService!.Current.Window.OpenSound : _settingsService!.Current.Window.CloseSound, soundsDir, _log);
+        void PreloadSounds() => Interop.SoundPlayer.Preload([_settingsService!.Current.Window.OpenSound, _settingsService.Current.Window.CloseSound], soundsDir, _log);
+        PreloadSounds();
+        _settingsService!.Changed += () => _popup.DispatcherQueue.TryEnqueue(PreloadSounds);
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
         // Alt alone would open the (hidden) window menu and swallow the next keys, or beep: Alt is for the panel's grips.
         hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);
