@@ -231,6 +231,11 @@ public sealed partial class PopupWindow : Window
             var p = AppWindow.Position;
             var state = $"visible={visible} cloaked={cloaked} drawn={drawn} at {p.X},{p.Y} {AppWindow.Size.Width}x{AppWindow.Size.Height}";
             if (cloaked) _log.Info($"panel open but cloaked ({state})"); // e.g. another virtual desktop: leave it
+            // The content must fit the client area (2026-10-17: the window frame wasn't counted and the bottom of the
+            // panel, with the move grip, was cut off).
+            var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale), MaxPx - FramePx);
+            if (_fixedPx is null && !_animating && AppWindow.ClientSize.Height + 1 < needPx)
+                _log.Error($"panel content cut off: client {AppWindow.ClientSize.Height} px < content {needPx} px");
             if (visible && drawn) return;
             _log.Error($"panel opened but isn't on screen ({state}); showing it again");
             var modal = Modal(); // the brief hide isn't the user clicking away
@@ -495,7 +500,7 @@ public sealed partial class PopupWindow : Window
         var maxPx = MaxPx;
         var bar = _growUp ? _bar : DownBar;
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
-        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
+        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale) + FramePx;
         if (_fixedPx is { } fixedPx) contentPx = fixedPx; // resized by hand: that height until the next open
         else if (GrowMode == GrowMode.Grow)
         {
@@ -563,8 +568,14 @@ public sealed partial class PopupWindow : Window
     private double _barDip;
     private bool _growUp = true;
 
-    /// <summary>The bar alone, in pixels (measured; a sane minimum before the first layout).</summary>
-    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, 56) * _scale));
+    /// <summary>
+    /// The window's frame height (window minus client area): the window rectangle must be this much taller than the
+    /// content, or the bottom of the panel (its padding, the move grip) is cut off. 13 px at 200 % on Windows 11.
+    /// </summary>
+    private int FramePx => Math.Max(0, AppWindow.Size.Height - AppWindow.ClientSize.Height);
+
+    /// <summary>The bar alone as a window height, in pixels (measured; a sane minimum before the first layout).</summary>
+    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, 56) * _scale) + FramePx);
 
     /// <summary>
     /// The bar's rectangle: its bottom edge is the placement line in both directions, kept inside the work area (a line
@@ -593,7 +604,8 @@ public sealed partial class PopupWindow : Window
     public RectI WorkArea => _work;
     public bool IsResizeHeld => _resizeHolds > 0;
     public int MinDragWidthPx => (int)Math.Round(360 * _scale);
-    public int MinDragHeightPx => BarPx + (int)Math.Round(48 * _scale);
+    /// <summary>A resize may go down to the bar alone (the panel as it first opens).</summary>
+    public int MinDragHeightPx => Hotline.Core.Windowing.PanelPlacement.MinResizeHeight(BarPx);
     private bool _dragging;
 
     public void BeginUserDrag()

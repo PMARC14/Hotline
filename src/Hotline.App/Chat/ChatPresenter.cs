@@ -48,6 +48,9 @@ internal sealed class ChatPresenter
     /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
     public Action<Action<HotlineSettings>>? UpdateSettings { set { _support.UpdateSettings = value; _updateSettings = value; } }
     private Action<Action<HotlineSettings>>? _updateSettings;
+
+    /// <summary>hotline://grips: shows the Alt grips on the open panel until hidden again (tests, screenshots).</summary>
+    internal void ShowGrips(bool show) => _grips.Force(show);
     private PanelGrips _grips = null!;
     public bool IsBusy { get; private set; }
 

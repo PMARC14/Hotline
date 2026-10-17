@@ -83,6 +83,9 @@ public static class PanelPlacement
         return new RectI(left, top, right - left, bottom - top);
     }
 
+    /// <summary>The shortest a resize may make the panel: the bar alone, as it first opens (never taller than that).</summary>
+    public static int MinResizeHeight(int barPx) => Math.Max(1, barPx);
+
     /// <summary>A rectangle moved to a monitor with another scale keeps its DIP size (its origin stays).</summary>
     public static RectI Rescale(RectI r, double fromScale, double toScale)
     {

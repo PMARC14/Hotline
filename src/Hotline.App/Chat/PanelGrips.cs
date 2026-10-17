@@ -21,7 +21,15 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     private readonly List<(FrameworkElement Element, ResizeEdge Up, ResizeEdge Down)> _handles = [];
     private FrameworkElement _grip = null!;
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _timer;
-    private bool _dragging, _menuOpen, _resized;
+    private bool _dragging, _menuOpen, _resized, _forced;
+
+    /// <summary>Shows the grips without Alt until turned off (hotline://grips, for tests and screenshots).</summary>
+    public void Force(bool show)
+    {
+        _forced = show;
+        SetVisible(show);
+        log.Info($"grips {(show ? "shown" : "hidden")} by a test link");
+    }
     private ResizeEdge _edges;
     private Native.POINT _start;
     private RectI _startRect;
@@ -33,38 +41,56 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     {
         var layer = popup.GripLayer;
         var accent = (Brush)Application.Current.Resources["AccentFillColorDefaultBrush"];
-        Handle Edge(ResizeEdge up, ResizeEdge down, double w, double h, HorizontalAlignment ha, VerticalAlignment va, InputSystemCursorShape cursor)
+        // A thin rounded outline (the window's 8-DIP corners) shows the panel can be moved and resized now.
+        layer.Children.Add(new Border
+        {
+            BorderBrush = accent, BorderThickness = new Thickness(1.5), CornerRadius = new CornerRadius(8), Opacity = 0.6,
+            IsHitTestVisible = false,
+        });
+        // Each handle: a generous transparent hit area; what shows is a small rounded pill or dot in its middle.
+        Handle Edge(ResizeEdge up, ResizeEdge down, double w, double h, HorizontalAlignment ha, VerticalAlignment va,
+            InputSystemCursorShape cursor, double markW, double markH)
         {
             var handle = new Handle(cursor)
             {
                 Width = w, Height = h, HorizontalAlignment = ha, VerticalAlignment = va,
                 Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent),
-                Children = { new Border { Background = accent, Opacity = 0.55, CornerRadius = new CornerRadius(2), Margin = new Thickness(2) } },
+                Children =
+                {
+                    new Border
+                    {
+                        Width = markW, Height = markH, CornerRadius = new CornerRadius(Math.Min(markW, markH) / 2), Background = accent,
+                        HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center,
+                    },
+                },
             };
             Wire(handle, () => popup.GrowsUp ? up : down);
             _handles.Add((handle, up, down));
             layer.Children.Add(handle);
             return handle;
         }
-        const double thick = 8, corner = 18;
+        const double edge = 10, corner = 16, pill = 24, line = 4, dot = 7;
         var stretch = double.NaN;
         // Edges: left/right change the width; the chat-side edge (top when growing up) the chat height; the bar side
-        // carries the grip and doesn't resize.
-        Edge(ResizeEdge.Left, ResizeEdge.Left, thick, stretch, HorizontalAlignment.Left, VerticalAlignment.Stretch, InputSystemCursorShape.SizeWestEast);
-        Edge(ResizeEdge.Right, ResizeEdge.Right, thick, stretch, HorizontalAlignment.Right, VerticalAlignment.Stretch, InputSystemCursorShape.SizeWestEast);
-        Edge(ResizeEdge.Top, ResizeEdge.None, stretch, thick, HorizontalAlignment.Stretch, VerticalAlignment.Top, InputSystemCursorShape.SizeNorthSouth);
-        Edge(ResizeEdge.None, ResizeEdge.Bottom, stretch, thick, HorizontalAlignment.Stretch, VerticalAlignment.Bottom, InputSystemCursorShape.SizeNorthSouth);
-        // Corners: chat-side corners change both; bar-side corners only the width.
-        Edge(ResizeEdge.Top | ResizeEdge.Left, ResizeEdge.Left, corner, corner, HorizontalAlignment.Left, VerticalAlignment.Top, InputSystemCursorShape.SizeNorthwestSoutheast);
-        Edge(ResizeEdge.Top | ResizeEdge.Right, ResizeEdge.Right, corner, corner, HorizontalAlignment.Right, VerticalAlignment.Top, InputSystemCursorShape.SizeNortheastSouthwest);
-        Edge(ResizeEdge.Left, ResizeEdge.Bottom | ResizeEdge.Left, corner, corner, HorizontalAlignment.Left, VerticalAlignment.Bottom, InputSystemCursorShape.SizeNortheastSouthwest);
-        Edge(ResizeEdge.Right, ResizeEdge.Bottom | ResizeEdge.Right, corner, corner, HorizontalAlignment.Right, VerticalAlignment.Bottom, InputSystemCursorShape.SizeNorthwestSoutheast);
+        // carries the move grip and doesn't resize.
+        Edge(ResizeEdge.Left, ResizeEdge.Left, edge, stretch, HorizontalAlignment.Left, VerticalAlignment.Stretch, InputSystemCursorShape.SizeWestEast, line, pill);
+        Edge(ResizeEdge.Right, ResizeEdge.Right, edge, stretch, HorizontalAlignment.Right, VerticalAlignment.Stretch, InputSystemCursorShape.SizeWestEast, line, pill);
+        Edge(ResizeEdge.Top, ResizeEdge.None, stretch, edge, HorizontalAlignment.Stretch, VerticalAlignment.Top, InputSystemCursorShape.SizeNorthSouth, pill, line);
+        Edge(ResizeEdge.None, ResizeEdge.Bottom, stretch, edge, HorizontalAlignment.Stretch, VerticalAlignment.Bottom, InputSystemCursorShape.SizeNorthSouth, pill, line);
+        // Corners: chat-side corners change both; bar-side corners only the width (and show a sideways cursor).
+        Edge(ResizeEdge.Top | ResizeEdge.Left, ResizeEdge.Left, corner, corner, HorizontalAlignment.Left, VerticalAlignment.Top, InputSystemCursorShape.SizeNorthwestSoutheast, dot, dot);
+        Edge(ResizeEdge.Top | ResizeEdge.Right, ResizeEdge.Right, corner, corner, HorizontalAlignment.Right, VerticalAlignment.Top, InputSystemCursorShape.SizeNortheastSouthwest, dot, dot);
+        Edge(ResizeEdge.Left, ResizeEdge.Bottom | ResizeEdge.Left, corner, corner, HorizontalAlignment.Left, VerticalAlignment.Bottom, InputSystemCursorShape.SizeNortheastSouthwest, dot, dot);
+        Edge(ResizeEdge.Right, ResizeEdge.Bottom | ResizeEdge.Right, corner, corner, HorizontalAlignment.Right, VerticalAlignment.Bottom, InputSystemCursorShape.SizeNorthwestSoutheast, dot, dot);
 
+        // The move grip: a neutral grabber (like Windows 11's drag handles), wider than the accent resize pills so the two
+        // read as different controls; centred on the bar's outer edge, in the panel's padding, clear of the message box.
+        var grabber = (Brush)Application.Current.Resources["TextFillColorSecondaryBrush"];
         var grip = new Handle(InputSystemCursorShape.SizeAll)
         {
-            Width = 160, Height = 10, HorizontalAlignment = HorizontalAlignment.Center, // within the panel's 10-px edge, clear of the buttons
+            Width = 160, Height = 8, HorizontalAlignment = HorizontalAlignment.Center,
             Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent),
-            Children = { new Border { Width = 56, Height = 4, CornerRadius = new CornerRadius(2), Background = accent, VerticalAlignment = VerticalAlignment.Center } },
+            Children = { new Border { Width = 64, Height = line, CornerRadius = new CornerRadius(line / 2.0), Background = grabber, VerticalAlignment = VerticalAlignment.Center } },
         };
         ToolTipService.SetToolTip(grip, Strings.Grip_Tip);
         Wire(grip, () => ResizeEdge.None);
@@ -95,7 +121,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     {
         if (!popup.IsShown) { _timer?.Stop(); return; }
         var alt = (Native.GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
-        var show = _dragging || _menuOpen || alt && !popup.IsResizeHeld && (Native.GetForegroundWindow() == popup.Hwnd || PointerOver());
+        var show = _forced || _dragging || _menuOpen || alt && !popup.IsResizeHeld && (Native.GetForegroundWindow() == popup.Hwnd || PointerOver());
         SetVisible(show);
     }
 

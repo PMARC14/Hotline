@@ -107,4 +107,14 @@ public class PanelPlacementTests
         Assert.Equal(new RectI(600, 100, 700, 60), PopupGeometry.GrowDown(bar, 10, 800, Work));
         Assert.Equal(new RectI(600, 100, 700, 940), PopupGeometry.GrowDown(bar, 2000, 2000, Work)); // the work area's bottom
     }
+
+    [Fact]
+    public void A_resize_can_go_back_down_to_the_bar_alone()
+    {
+        const int bar = 198; // the panel as it first opens (bar + frame), at 200 %
+        var tall = new RectI(600, 100, 1200, 900); // inside the 1920x1040 work area
+        var r = PanelPlacement.Resize(tall, ResizeEdge.Top, 0, 5000, 720, PanelPlacement.MinResizeHeight(bar), Work);
+        Assert.Equal(bar, r.Height);
+        Assert.Equal(tall.Y + tall.Height, r.Y + r.Height); // the bar's edge stays put
+    }
 }
