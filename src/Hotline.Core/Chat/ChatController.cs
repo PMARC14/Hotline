@@ -205,6 +205,10 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     {
         if (conversationId != ConversationId) return; // a new chat started meanwhile: drop the old turn
         var transcript = keepTranscript?.Invoke(backend.Id) ?? true;
+        // The chat moved here from a connection Hotline kept only the record for: save the earlier turns first, or the
+        // reopened chat would start at this one.
+        if (transcript && !_partial && history is not null && !File.Exists(history.PathFor(conversationId)))
+            foreach (var earlier in _messages.TakeWhile(m => !ReferenceEquals(m, user))) TryHistory(conversationId, earlier);
         if (transcript) TryHistory(conversationId, user);
         if (keepEmptyReply)
         {
