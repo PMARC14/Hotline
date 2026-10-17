@@ -99,7 +99,8 @@ public sealed class SystemLineProcess : ILineProcess
                 await WaitForExitAsync(TimeSpan.FromSeconds(3)); // bounded: a stray grandchild holding the pipes must not hang cancel/quit
             }
         }
-        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception) { /* already gone / exiting */ }
-        _process.Dispose();
+        // AggregateException: a child of the CLI exited (or couldn't be opened) while the tree was being killed.
+        catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or AggregateException) { /* already gone / exiting */ }
+        finally { _process.Dispose(); }
     }
 }
