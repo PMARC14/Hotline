@@ -328,7 +328,14 @@ public sealed class SettingsStore(string directory)
         s.Chat.ThinkingDelayMs = Math.Clamp(s.Chat.ThinkingDelayMs, 0, 10_000);
         if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";
         if (s.Window.FontSize is { } fontSize) s.Window.FontSize = Math.Clamp(fontSize, 10, 32);
-        s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
+        s.Window.Anchor ??= new PanelAnchor();
+        // → v13: the vertical position became the anchor's Y.
+        if (s.Window.VerticalPosition is { } vertical) { s.Window.Anchor.Y = vertical; s.Window.VerticalPosition = null; }
+        if (string.IsNullOrWhiteSpace(s.Window.Anchor.Monitor)) s.Window.Anchor.Monitor = PanelAnchor.Active;
+        s.Window.Anchor.X = double.IsFinite(s.Window.Anchor.X) ? Math.Clamp(s.Window.Anchor.X, 0.0, 1.0) : 0.5;
+        s.Window.Anchor.Y = double.IsFinite(s.Window.Anchor.Y) ? Math.Clamp(s.Window.Anchor.Y, 0.0, 1.0) : 0.8;
+        if (s.Window.Width is { } width) s.Window.Width = Math.Clamp(width, 320, 8000);
+        if (s.Window.ChatHeight is { } chat) s.Window.ChatHeight = Math.Clamp(chat, 60, 8000);
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
         Migrate(s);

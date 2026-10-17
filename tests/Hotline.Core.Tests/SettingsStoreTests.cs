@@ -128,7 +128,7 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(BackdropKind.AcrylicThin, s.Window.Backdrop);
         Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
         Assert.False(s.Diagnostics.VerboseLogging);
-        Assert.Equal(0.8, s.Window.VerticalPosition);
+        Assert.Equal(0.8, s.Window.Anchor.Y);
     }
 
     [Theory]

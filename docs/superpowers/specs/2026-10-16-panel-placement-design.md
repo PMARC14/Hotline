@@ -10,11 +10,6 @@ grows out of it, **up or down**. Holding **Alt** shows a grip bar to move it and
 resize it. A move or resize is temporary unless you **pin** (it then stays for the session) or **save it as the
 default**. Optional sounds play when it opens and closes.
 
-## Open questions for the owner (answer before the matching task starts)
-
-1. **Auto direction at the default spot.** At `y = 0.8` the chat grows up, as today. Going down is only for a bar in
-   the upper half, or when there's no room above. Confirm, or say if down should be the default everywhere it fits.
-
 ## Already decided (2026-10-16)
 
 - The owner's button layout is the default (no spacer), with **Continue in** added after the history button (done on
@@ -73,11 +68,9 @@ default**. Optional sounds play when it opens and closes.
 
 - `window.growDirection`: `auto` (default), `up` or `down`.
 - `up` and `down` **lock** the direction.
-- `auto` (one rule, used when the panel opens and after each move or resize):
-  - The preferred side is up when the bar's centre is in the lower half of its monitor's work area, else down.
-  - If the chat at its full height (`chatHeight`) would go off the screen on the preferred side and the other side
-    has more room, it swaps. It never swaps in the middle of an answer: an answer in progress finishes in its direction, and
-  the swap happens at the next open, move or resize.
+- `auto` (the default; one rule, used when the panel opens and after each move or resize): **up** whenever the chat
+  at its full height (`chatHeight`) fits above the bar; otherwise **down** when it fits below; when neither fits, the
+  side with more room (up on a tie). Owner, 2026-10-17.
 - The bar keeps its place and the chat grows away from it. The growth animation, `growMode` (`grow` / `full`) and the
   half-then-content step (`PopupGeometry.TwoStep`) work the same in both directions.
 - `PopupGeometry` gains `GrowDown` (keeps the bar's top edge, never past the work area's bottom). `GrowUp` is

@@ -532,7 +532,7 @@ public sealed partial class PopupWindow : Window
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
 
         var widthDip = PopupGeometry.RelativeWidthDip(wa.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.VerticalPosition);
+        var r = PopupGeometry.Place(new RectI(wa.X, wa.Y, wa.Width, wa.Height), widthDip, _settings.Height, scale, _settings.Anchor.Y);
         _log.Debug($"place: anchor=0x{anchor:X} ({Native.ClassNameOf(anchor)}) workArea={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} -> {r}");
         (_bar, _work, _scale) = (r, new RectI(wa.X, wa.Y, wa.Width, wa.Height), scale);
         ApplyHeight(force: true);

@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 12;
+    public const int CurrentSchemaVersion = 13;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -58,8 +58,17 @@ public sealed class WindowSettings
     public int Height { get; set; }
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
     public double MaxHeightPercent { get; set; } = 70;
-    /// <summary>Where the popup sits vertically: 0 = top, 0.5 = centered, 1 = bottom of the free space.</summary>
-    public double VerticalPosition { get; set; } = 0.8;
+    /// <summary>Where the panel opens (its saved default spot): monitor and fractions of the free work area.</summary>
+    public PanelAnchor Anchor { get; set; } = new();
+    /// <summary>Panel width in DIPs; null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
+    public int? Width { get; set; }
+    /// <summary>Most the chat grows to, in DIPs; null = MaxHeightPercent of the screen.</summary>
+    public int? ChatHeight { get; set; }
+    /// <summary>Which way the chat grows from the bar: Auto (up unless there's no room above), or locked Up/Down.</summary>
+    public GrowDirection GrowDirection { get; set; } = GrowDirection.Auto;
+    /// <summary>Before v13: the vertical position, now Anchor.Y (read once, then dropped from the file).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public double? VerticalPosition { get; set; }
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
@@ -199,6 +208,21 @@ public sealed class ChatSettings
 public enum ScrollbarStyle { Auto, Visible, Hidden }
 
 public enum GrowMode { Grow, Full }
+
+/// <summary>Auto = up unless the chat has no room above (then down); Up/Down lock the direction.</summary>
+public enum GrowDirection { Auto, Up, Down }
+
+/// <summary>
+/// The panel's home spot. Monitor: "active" (where you're working), "primary", or a monitor's device name (falls back
+/// to active when it isn't connected). X/Y: fractions of the monitor's free work area (0 = left/top, 1 = right/bottom).
+/// </summary>
+public sealed class PanelAnchor
+{
+    public const string Active = "active", Primary = "primary";
+    public string Monitor { get; set; } = Active;
+    public double X { get; set; } = 0.5;
+    public double Y { get; set; } = 0.8;
+}
 
 /// <summary>
 /// Auto = read the selection through UI Automation (no keystrokes, clipboard untouched; some apps don't expose it);

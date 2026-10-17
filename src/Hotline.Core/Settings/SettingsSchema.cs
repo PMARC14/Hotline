@@ -143,7 +143,7 @@ public static class SettingsSchema
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxHeight), nameof(Strings.Set_MaxHeight_Desc), 30, 95, 1, "%",
             s => s.Window.MaxHeightPercent, (s, v) => s.Window.MaxHeightPercent = v),
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_Position), nameof(Strings.Set_Position_Desc), 0, 1, 0.05, null,
-            s => s.Window.VerticalPosition, (s, v) => s.Window.VerticalPosition = v),
+            s => s.Window.Anchor.Y, (s, v) => s.Window.Anchor.Y = v),
         Choice(SettingsPage.Window, nameof(Strings.Set_Growth), null, [(GrowMode.Grow, nameof(Strings.Set_Growth_Fit)), (GrowMode.Full, nameof(Strings.Set_Growth_Full))],
             s => s.Chat.GrowMode, (s, v) => s.Chat.GrowMode = v),
 
