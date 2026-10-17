@@ -157,9 +157,9 @@ internal sealed class ProviderBar(
         var effortAvailable = popup.EffortBox.Items.Count > 0;
         var widths = ToolbarLayout.Compute(room, fixedWidth, popup.PickersPanel.Spacing,
             [
-                new("effort", 72, 56, effortAvailable && Shown("effort")),
-                new("model", 150, 84, Shown("model")),
-                new("provider", 128, 72, Shown("provider")),
+                new("effort", 72, 56, effortAvailable && Shown("effort"), Max: 96),
+                new("model", 150, 84, Shown("model"), Max: 260),
+                new("provider", 128, 72, Shown("provider"), Max: 240),
             ], HideOrder);
         Apply(popup.EffortBox, widths["effort"]);
         Apply(popup.ModelBox, widths["model"]);

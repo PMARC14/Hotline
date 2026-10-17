@@ -176,8 +176,26 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await Step("narrow panel");
             await Task.Delay(400);
             await SnapshotAsync("4-narrow");
+            popup.ResizeOffscreen(1000);
+            await Step("wide panel");
+            await SnapshotAsync("5-wide");
             popup.ResizeOffscreen(720);
             await Step("normal width");
+            // The button rows: all above the message box, then split across both, then back to the user's own.
+            var (bottomRow, topRow) = (popup.ToolbarItems, popup.TopToolbarItems);
+            var all = topRow.Concat(bottomRow).ToList();
+            popup.ApplyToolbar([], all);
+            await Step("buttons above");
+            await SnapshotAsync("6-buttons-above");
+            popup.ApplyToolbar(all.Skip(all.Count / 2).ToList(), all.Take(all.Count / 2).ToList());
+            await Step("buttons split");
+            await SnapshotAsync("7-buttons-split");
+            PanelLayout.Apply(popup, up: false);
+            await Step("buttons split, down");
+            await SnapshotAsync("8-buttons-split-down");
+            PanelLayout.Apply(popup, popup.GrowsUp);
+            popup.ApplyToolbar(bottomRow, topRow);
+            await Step("buttons restored");
             _renderCheck?.Invoke();
             _renderCheck = null;
             composer.Text = draft;
