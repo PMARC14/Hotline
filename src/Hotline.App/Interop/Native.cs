@@ -159,6 +159,7 @@ internal static class Native
         return monitor != 0 && GetMonitorInfo(monitor, ref info) ? info.Device : null;
     }
     [DllImport("user32.dll")] public static extern bool IsWindowVisible(nint hWnd);
+    [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);
     [DllImport("kernel32.dll", CharSet = CharSet.Unicode)] public static extern nint CreateJobObject(nint attrs, string? name);
     [DllImport("kernel32.dll")] public static extern bool SetInformationJobObject(nint job, int cls, ref JOBOBJECT_EXTENDED_LIMIT_INFORMATION info, int size);
     [DllImport("kernel32.dll")] public static extern bool AssignProcessToJobObject(nint job, nint process);

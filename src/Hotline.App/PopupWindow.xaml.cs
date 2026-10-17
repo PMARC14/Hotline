@@ -266,6 +266,7 @@ public sealed partial class PopupWindow : Window
     public void HidePopup()
     {
         if (!AppWindow.IsVisible) return;
+        if (!Pinned) _session = null; // moved but not pinned: the next open uses the default
         AppWindow.Hide();
         _guard.NoteHidden();
         Hidden?.Invoke();
@@ -468,13 +469,14 @@ public sealed partial class PopupWindow : Window
     {
         if (_offscreen) return; // never move the off-screen self-test window onto a monitor
         if (_resizeHolds > 0 && !force) { _resizeHeld = true; return; } // a flyout is open: see HoldResize
-        if (_bar.Width == 0) return;
+        if (_bar.Width == 0 || _dragging) return;
         _resizeHeld = false; // this resize settles any held one
         var maxPx = MaxPx;
         var bar = _growUp ? _bar : DownBar;
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
         var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale);
-        if (GrowMode == GrowMode.Grow)
+        if (_fixedPx is { } fixedPx) contentPx = fixedPx; // resized by hand: that height until the next open
+        else if (GrowMode == GrowMode.Grow)
         {
             var previous = _targetRect.Height > 0 ? _targetRect.Height : bar.Height;
             contentPx = PopupGeometry.TwoStep(previous, contentPx, bar.Height, Math.Max(bar.Height, maxPx), _conversation);
@@ -554,15 +556,94 @@ public sealed partial class PopupWindow : Window
         ? BarPx + (int)Math.Round(chat * _scale)
         : (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0));
 
-    /// <summary>While pinned, the spot the panel was moved/resized to this session (never saved; see ForgetSessionSpot).</summary>
-    private sealed record SessionSpot(RectI Bar, RectI Work, double Scale);
+    /// <summary>The spot the panel was moved/resized to this session; reused only while pinned (never saved).</summary>
+    private sealed record SessionSpot(RectI Bar, RectI Work, double Scale, int? FixedPx);
     private SessionSpot? _session;
+    /// <summary>A resize fixes the panel's height for this opening (content no longer resizes it).</summary>
+    private int? _fixedPx;
+
+    // ---- user drags (Chat/PanelGrips) ---------------------------------------------------------
+
+    /// <summary>The window's rectangle now (physical pixels).</summary>
+    public RectI WindowRect => new(AppWindow.Position.X, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
+    public RectI WorkArea => _work;
+    public bool IsResizeHeld => _resizeHolds > 0;
+    public int MinDragWidthPx => (int)Math.Round(360 * _scale);
+    public int MinDragHeightPx => BarPx + (int)Math.Round(48 * _scale);
+    private bool _dragging;
+
+    public void BeginUserDrag()
+    {
+        _dragging = true;
+        StopAnimation();
+    }
+
+    public void DragMoveTo(int x, int y)
+    {
+        AppWindow.Move(new PointInt32(x, y));
+        _currentRect = WindowRect;
+    }
+
+    public void DragResizeTo(RectI r) => MoveTo(r);
+
+    /// <summary>
+    /// The drag ended: the window is pulled inside the monitor it's on, the bar line follows it (the bar's bottom edge),
+    /// the direction is chosen again, and the spot is kept for this session (used while pinned).
+    /// </summary>
+    public void EndUserDrag(bool resized)
+    {
+        _dragging = false;
+        if (_offscreen) return;
+        var rect = WindowRect;
+        var native = new Native.RECT { Left = rect.X, Top = rect.Y, Right = rect.X + rect.Width, Bottom = rect.Y + rect.Height };
+        var monitor = Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST);
+        if (MonitorAt(MonitorWork(monitor)) is not { } m) return;
+        _work = m.Work;
+        _scale = Native.GetDpiForWindow(Hwnd) is var dpi and > 0 ? dpi / 96.0 : m.Scale; // Windows already resized it for that monitor
+        rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
+        if (resized) _fixedPx = rect.Height;
+        var line = _growUp ? rect.Y + rect.Height : rect.Y + Math.Min(BarPx, rect.Height);
+        var h = (int)Math.Round(_settings.Height * _scale);
+        _bar = new RectI(rect.X, line - h, rect.Width, h);
+        ChooseDirection();
+        _session = new SessionSpot(_bar, _work, _scale, _fixedPx);
+        ApplyHeight(force: true);
+    }
+
+    private static RectI MonitorWork(nint monitor)
+    {
+        var info = new Native.MONITORINFOEX { Size = System.Runtime.InteropServices.Marshal.SizeOf<Native.MONITORINFOEX>() };
+        return Native.GetMonitorInfo(monitor, ref info)
+            ? new RectI(info.Work.Left, info.Work.Top, info.Work.Right - info.Work.Left, info.Work.Bottom - info.Work.Top)
+            : default;
+    }
+
+    /// <summary>Back to the saved default spot and size now (the grip's menu).</summary>
+    public void BackToDefaultSpot()
+    {
+        _session = null;
+        _fixedPx = null;
+        PlaceOnActiveMonitor();
+    }
+
+    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width and chat height in DIPs.</summary>
+    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthDip, int? ChatHeightDip) CurrentSpot()
+    {
+        var anchor = Hotline.Core.Windowing.PanelPlacement.AnchorFor(_bar, _work);
+        var native = new Native.RECT { Left = _work.X, Top = _work.Y, Right = _work.X + _work.Width, Bottom = _work.Y + _work.Height };
+        anchor.Monitor = DisplayArea.FindAll().Count > 1
+            ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST)) ?? _settings.Anchor.Monitor
+            : _settings.Anchor.Monitor;
+        int? chat = _fixedPx is { } f ? Math.Max(60, (int)Math.Round((f - BarPx) / _scale)) : _settings.ChatHeight;
+        return (anchor, (int)Math.Round(_bar.Width / _scale), chat);
+    }
 
     /// <summary>The panel goes back to its saved default on the next open (unpinned, clicked into another app).</summary>
     public void ForgetSessionSpot()
     {
         if (_session is null) return;
         _session = null;
+        _fixedPx = null;
         _log.Info("pinned spot forgotten: the next open uses the default");
     }
 
@@ -585,13 +666,14 @@ public sealed partial class PopupWindow : Window
         if (Pinned && _session is { } spot && MonitorAt(spot.Work) is { } still)
         {
             // Pinned and moved this session: the same spot (pulled inside its monitor again, in case its work area changed).
-            (_work, _scale) = (still.Work, still.Scale);
+            (_work, _scale, _fixedPx) = (still.Work, still.Scale, spot.FixedPx);
             _bar = Hotline.Core.Windowing.PanelPlacement.Clamp(Hotline.Core.Windowing.PanelPlacement.Rescale(spot.Bar, spot.Scale, still.Scale), still.Work);
             ChooseDirection();
             _log.Info($"place: pinned spot {_bar} on {still.Device} scale={still.Scale} up={_growUp}");
             ApplyHeight(force: true);
             return;
         }
+        _fixedPx = null;
         var (area, monitor, how) = HomeMonitor();
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;

@@ -191,5 +191,7 @@
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
         </Grid>
+        <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
+        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-12,-10,-12,-10" Visibility="Collapsed" />
     </Grid>
 </Window>

@@ -46,7 +46,9 @@ internal sealed class ChatPresenter
     public event Action? SettingsRequested;
 
     /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
-    public Action<Action<HotlineSettings>>? UpdateSettings { set => _support.UpdateSettings = value; }
+    public Action<Action<HotlineSettings>>? UpdateSettings { set { _support.UpdateSettings = value; _updateSettings = value; } }
+    private Action<Action<HotlineSettings>>? _updateSettings;
+    private PanelGrips _grips = null!;
     public bool IsBusy { get; private set; }
 
     /// <summary>Recent conversations from the history (set by the app; null when history is off).</summary>
@@ -104,6 +106,17 @@ internal sealed class ChatPresenter
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };
         _popup.PinButton.Unchecked += (_, _) => { _popup.Pinned = false; _popup.PinButton.Content = Glyphs.Pin; _popup.ForgetSessionSpot(); };
         _popup.DirectionChanged += up => PanelLayout.Apply(_popup, up);
+        _grips = new PanelGrips(_popup, _log)
+        {
+            SaveAsDefault = () =>
+            {
+                var (anchor, width, chat) = _popup.CurrentSpot();
+                _updateSettings?.Invoke(s => { s.Window.Anchor = anchor; s.Window.Width = width; s.Window.ChatHeight = chat; });
+                _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
+                Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+            },
+        };
+        _grips.Initialize();
         _popup.NewChatButton.Click += (_, _) => NewChat();
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();

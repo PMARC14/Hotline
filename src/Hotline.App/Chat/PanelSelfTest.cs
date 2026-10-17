@@ -148,6 +148,13 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             if (!keptDown || composer.Text != "draft kept through a swap") log.Error("selftest FAILED: the draft changed in a layout swap");
             else log.Info("selftest layout swap ok");
             PanelLayout.Apply(popup, up); // back to the panel's own direction
+            var barBefore = popup.BarStack.ActualHeight;
+            popup.GripLayer.Visibility = Microsoft.UI.Xaml.Visibility.Visible; // the Alt grips, drawn over the content
+            await Step("grips shown");
+            var barWithGrips = popup.BarStack.ActualHeight;
+            popup.GripLayer.Visibility = Microsoft.UI.Xaml.Visibility.Collapsed;
+            if (Math.Abs(barWithGrips - barBefore) > 0.5) log.Error($"selftest FAILED: the grips changed the layout ({barBefore} -> {barWithGrips})");
+            else log.Info($"selftest grips ok ({popup.GripLayer.Children.Count} handles)");
             composer.Text = draft;
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }

@@ -264,6 +264,8 @@ public partial class App : Application
         };
 
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
+        // Alt alone would open the (hidden) window menu and swallow the next keys, or beep: Alt is for the panel's grips.
+        hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
         HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);

@@ -525,4 +525,8 @@ Deny:
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Empty</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Move above the message box</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Move below the message box</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Drag to move; right-click to save this spot</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Save position and size as default</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Back to the default spot</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Saved: Hotline now opens here, at this size.</value></data>
 </root>
