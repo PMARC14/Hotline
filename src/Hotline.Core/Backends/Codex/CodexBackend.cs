@@ -85,6 +85,9 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
                     await process.WaitForExitAsync(TimeSpan.FromSeconds(2));
                     var tail = process.StandardErrorTail;
                     await StopAsync();
+                    var reason = parser.LastError ?? (tail.Length > 0 ? tail : null);
+                    // Signed out, rate-limited…: say so, resuming or not (not "couldn't resume", and no replay).
+                    if (reason is not null && CodexErrors.Map(reason) is { Kind: not BackendErrorKind.Failed } mapped) throw mapped;
                     if (resume is not null && !parser.SawEvent)
                     {
                         // The saved session is gone (deleted, or codex can't read it): start over with the chat as text.
@@ -96,8 +99,6 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
                         Directory.CreateDirectory(cwd);
                         goto attempt;
                     }
-                    var reason = parser.LastError ?? (tail.Length > 0 ? tail : null);
-                    if (reason is not null && CodexErrors.Map(reason) is { Kind: not BackendErrorKind.Failed } mapped) throw mapped;
                     throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_Stopped, "Codex") + (reason is null ? "" : " " + reason));
                 }
                 foreach (var delta in parser.Feed(output)) yield return delta;

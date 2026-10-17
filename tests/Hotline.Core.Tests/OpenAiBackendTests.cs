@@ -70,6 +70,17 @@ public sealed class OpenAiBackendTests : IDisposable
     }
 
     [Fact]
+    public async Task Null_fields_from_a_proxy_are_skipped_not_fatal()
+    {
+        // vLLM / LiteLLM-style proxies send "delta": null on the last chunk, or null ids and functions.
+        var (b, _, _) = New(new BackendProfile { Id = "l", Type = BackendType.Local, Model = "qwen" }, (_, _) => Sse(Chunk("ok"),
+            """{"choices":[{"delta":null,"finish_reason":"stop"}]}""",
+            """{"choices":[{"delta":{"content":null,"tool_calls":[{"index":0,"id":null,"function":null}]}}]}""",
+            """{"choices":[null]}""", "[DONE]"));
+        Assert.Equal("ok", await Collect(b.StreamAsync([U("1", "hi")], default)));
+    }
+
+    [Fact]
     public async Task Images_go_as_data_urls_in_content_parts()
     {
         var (b, handler, _) = New(new BackendProfile { Id = "l", Type = BackendType.Local, Model = "qwen" }, (_, _) => Sse(Chunk("ok"), "[DONE]"));

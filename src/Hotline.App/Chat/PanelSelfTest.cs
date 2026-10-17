@@ -124,7 +124,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                 log.Info($"selftest step: {name}");
                 await Task.Delay(120); // let the frame be laid out and drawn
             }
-            apply(new ConversationReset());
+            newChat(); // a real reset (stops any answer, clears the controller), as the demo does
             await Step("reset");
             apply(new UserMessageAdded(new ChatMessage("st-u", ChatRole.User, "self test\nsecond line", [], DateTimeOffset.Now)));
             await Step("user message");
@@ -134,7 +134,9 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             // rendering crash would show here), then the first text turns it back into the bar.
             for (var waited = 0; waited < 3000 && !transcript.IsThinking; waited += 100) await Task.Delay(100);
             await Step($"thinking spinner shown={transcript.IsThinking}");
-            if (!transcript.IsThinking) log.Error("selftest FAILED: the thinking spinner didn't show");
+            // Only when it's on and due within the wait (chat.thinkingIndicator / chat.thinkingDelayMs).
+            if (!transcript.IsThinking && settings.Chat.ThinkingIndicator && settings.Chat.ThinkingDelayMs < 2500)
+                log.Error("selftest FAILED: the thinking spinner didn't show");
             for (var i = 0; i < TestAnswer.Length; i += 23)
             {
                 apply(new AssistantDelta("st-a", TestAnswer.Substring(i, Math.Min(23, TestAnswer.Length - i)), false));
@@ -212,7 +214,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             if (!popup.ToolbarItems.SequenceEqual(userBottom) || !popup.TopToolbarItems.SequenceEqual(userTop)) popup.ApplyToolbar(userBottom, userTop);
             PanelLayout.Apply(popup, userUp);
             composer.Text = userDraft;
-            apply(new ConversationReset());
+            newChat();
             popup.EndOffscreen();
         }
     }

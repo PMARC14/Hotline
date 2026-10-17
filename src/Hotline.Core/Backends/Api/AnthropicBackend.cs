@@ -65,7 +65,7 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
                         if (!await stream.MoveNextAsync()) break;
                         ev = stream.Current;
                     }
-                    catch (Exception ex) when (Map(ex) is { } mapped) { throw mapped; }
+                    catch (Exception ex) when (Map(ex, ct) is { } mapped) { throw mapped; }
 
                     if (ev.TryPickContentBlockStart(out var start))
                     {
@@ -217,9 +217,12 @@ public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, IS
     // Whitespace-only text (e.g. a reply cancelled after its first "\n\n") is rejected by the API too.
     private static string Nonempty(string text) => string.IsNullOrWhiteSpace(text) ? "(no text)" : text;
 
-    private BackendException? Map(Exception ex) => ex switch
+    private BackendException? Map(Exception ex, CancellationToken ct) => ex switch
     {
         BackendException => null,
+        // Not the user's cancel: the HTTP client gave up (connect timeout), as ApiCommon maps it for the other APIs.
+        TaskCanceledException when !ct.IsCancellationRequested
+            => new(BackendErrorKind.ServerDown, L.F(Strings.Api_Timeout, ApiCommon.Name(profile)), ex),
         OperationCanceledException => null,
         AnthropicUnauthorizedException or AnthropicForbiddenException
             => new(BackendErrorKind.Unauthorized, L.F(Strings.Api_KeyRejected, ApiCommon.Name(profile), ex.Message), ex),

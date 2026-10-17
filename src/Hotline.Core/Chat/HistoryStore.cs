@@ -89,7 +89,14 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
     {
         var path = PathFor(conversationId);
         if (!File.Exists(path)) return [];
-        return File.ReadLines(path).Where(l => l.Length > 0).Select(l => JsonSerializer.Deserialize<Entry>(l, Json)!).ToList();
+        // One damaged line (a crash mid-append, a hand edit) skips only that line, never the whole chat.
+        return File.ReadLines(path).Where(l => !string.IsNullOrWhiteSpace(l)).Select(TryEntry).OfType<Entry>().ToList();
+    }
+
+    private static Entry? TryEntry(string line)
+    {
+        try { return JsonSerializer.Deserialize<Entry>(line, Json) is { Id: not null, Text: not null } e ? e : null; }
+        catch (JsonException) { return null; }
     }
 
     public void SaveMeta(string conversationId, Meta meta)

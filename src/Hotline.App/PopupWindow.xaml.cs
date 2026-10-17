@@ -182,7 +182,9 @@ public sealed partial class PopupWindow : Window
     /// <param name="readSelection">False when the caller brings the content itself (an App Action).</param>
     public void ShowPopup(bool readSelection = true)
     {
-        var wasShown = AppWindow.IsVisible && !_offscreen; // the open sound plays only when it really opens
+        // The open sound plays only when it really opens (not back from the file picker).
+        var wasShown = AppWindow.IsVisible && !_offscreen || _hiddenForDialog;
+        _hiddenForDialog = false;
         var fg = Native.GetForegroundWindow();
         if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
         {
@@ -298,14 +300,16 @@ public sealed partial class PopupWindow : Window
     {
         if (!AppWindow.IsVisible) return;
         PlayOpenClose?.Invoke(false);
-        if (!Pinned) _session = null; // moved but not pinned: the next open uses the default
+        if (!Pinned || _forgetOnHide) _session = null; // moved but not pinned (or forgotten): the next open uses the default
+        _forgetOnHide = false;
         AppWindow.Hide();
         _guard.NoteHidden();
         Hidden?.Invoke();
     }
 
     /// <summary>Hides for a system dialog (file picker) without counting as a user dismissal.</summary>
-    public void HideForDialog() => AppWindow.Hide();
+    public void HideForDialog() { _hiddenForDialog = true; AppWindow.Hide(); }
+    private bool _hiddenForDialog; // the next show is the panel coming back: no open sound
 
     public void Toggle()
     {
@@ -407,7 +411,7 @@ public sealed partial class PopupWindow : Window
             // toggle ~0.1 s later. A panel still showing when the toggle hides it (pinned, or kept because Hotline's own
             // Settings window took focus) made Explorer play its warning sound. So any open panel closes now; the pinned
             // spot is kept, and the toggle that follows counts as this close. A long press reopens it through its action.
-            if (AppWindow.IsVisible && _modal == 0 && Native.ClassNameOf(taker) == "CopilotKeyPressFocusFrame")
+            if (AppWindow.IsVisible && _modal == 0 && Native.ClassNameOf(taker) == "CopilotKeyPressFocusFrame" && KeepOnKeyPress?.Invoke() != true)
             {
                 _log.Info("Copilot key pressed while the panel is open: closing now");
                 HidePopup();
@@ -446,6 +450,12 @@ public sealed partial class PopupWindow : Window
         }
         ConsiderBlur(retried: false);
     }
+
+    /// <summary>
+    /// True when a Copilot key press must not close the open panel early (set by the presenter): dictation is running
+    /// (the key stops it), or the key's tap does something other than toggling the panel.
+    /// </summary>
+    public Func<bool>? KeepOnKeyPress { get; set; }
 
     /// <summary>Another Hotline process (the key's launcher instance) never counts as another app.</summary>
     private static bool IsHotline(uint pid)
@@ -705,6 +715,7 @@ public sealed partial class PopupWindow : Window
             _downTop = _growUp ? null : rect.Y;
         }
         _session = new SessionSpot(_bar, _work, _scale, _fixedPx);
+        _forgetOnHide = false; // moved again: this is the spot now
         ApplyHeight(force: true);
     }
 
@@ -732,7 +743,8 @@ public sealed partial class PopupWindow : Window
         anchor.Monitor = DisplayArea.FindAll().Count > 1
             ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST)) ?? _settings.Anchor.Monitor
             : _settings.Anchor.Monitor;
-        int? chat = _fixedPx is { } f ? Math.Max(60, (int)Math.Round((f - BarPx) / _scale)) : _settings.ChatHeight;
+        // Sized down to the bar alone: no chat height to save (60 would cap every future chat); keep the setting.
+        int? chat = _fixedPx is { } f && (f - BarPx) / _scale >= 60 ? (int)Math.Round((f - BarPx) / _scale) : _settings.ChatHeight;
         return (anchor, (int)Math.Round(_bar.Width / _scale), chat);
     }
 
@@ -740,9 +752,12 @@ public sealed partial class PopupWindow : Window
     public void ForgetSessionSpot()
     {
         if (_session is null) return;
-        _session = null; // the open panel keeps its size; the next open uses the default
+        // Open: it stays where it is until it closes (a settings change while open must not move it); then forgotten.
+        if (AppWindow.IsVisible) _forgetOnHide = true; else _session = null;
         _log.Info("pinned spot forgotten: the next open uses the default");
     }
+
+    private bool _forgetOnHide;
 
     /// <summary>Picks the chat's direction for the current bar and lays the panel out for it.</summary>
     private void ChooseDirection()
@@ -762,9 +777,11 @@ public sealed partial class PopupWindow : Window
 
     private void PlaceOnActiveMonitor()
     {
-        if (Pinned && _session is { } spot && MonitorAt(spot.Work) is { } still)
+        // A moved spot: kept across closes only while pinned (HidePopup drops it otherwise), and kept while open, so a
+        // settings change (a model picked in the bar) doesn't snap a moved panel back to its default spot.
+        if (_session is { } spot && MonitorAt(spot.Work) is { } still)
         {
-            // Pinned and moved this session: the same spot (pulled inside its monitor again, in case its work area changed).
+            // The same spot (pulled inside its monitor again, in case its work area changed).
             (_work, _scale) = (still.Work, still.Scale);
             _fixedPx = spot.FixedPx is { } f ? (int)Math.Round(f * still.Scale / spot.Scale) : null;
             _bar = Hotline.Core.Windowing.PanelPlacement.Clamp(Hotline.Core.Windowing.PanelPlacement.Rescale(spot.Bar, spot.Scale, still.Scale), still.Work);

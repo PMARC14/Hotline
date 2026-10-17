@@ -120,6 +120,15 @@ public sealed class AnthropicBackendTests : IDisposable
     }
 
     [Fact]
+    public async Task A_connection_timeout_is_a_timeout_not_a_cancel()
+    {
+        // HttpClient reports its own timeout as a TaskCanceledException while the user's token is not cancelled.
+        var (b, _) = New(Claude(), _ => throw new TaskCanceledException("connect timed out"));
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.ServerDown, ex.Kind);
+    }
+
+    [Fact]
     public async Task Missing_key_is_not_configured_and_nothing_is_sent()
     {
         var (b, handler) = New(Claude(), _ => Stream(texts: ["x"]), key: null);

@@ -371,9 +371,11 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                filling = true;
                 var list = await _models.GetAsync(p, refresh, CancellationToken.None);
-                var current = model.SelectedItem as string ?? def;
+                // Only while refilling: a pick made during the (slow) load must still save. A typed model isn't an item,
+                // so its text is the current choice.
+                filling = true;
+                var current = model.SelectedItem as string ?? (string.IsNullOrWhiteSpace(model.Text) ? def : model.Text.Trim());
                 model.Items.Clear();
                 model.Items.Add(def);
                 foreach (var m in list) model.Items.Add(m.Id);
