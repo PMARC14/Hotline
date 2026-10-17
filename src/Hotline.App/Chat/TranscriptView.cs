@@ -71,7 +71,12 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         popup.MessagesScroll.SizeChanged += (_, _) =>
         {
             // Not animated: an animated scroll started while the window is still growing gets cut short by the next resize.
-            if (_follow.Following) popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => ScrollToBottomNow(animate: false));
+            if (!_follow.Following || _scrollQueued) return;
+            _scrollQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                _scrollQueued = false;
+                if (_follow.Following) ScrollToBottomNow(animate: false); // still following: the user may have scrolled up
+            });
         };
         popup.MessagesScroll.ViewChanged += OnViewChanged;
         WatchReaderScrolling(popup.MessagesScroll);
@@ -334,6 +339,8 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
 
     private void UpdateJumpButton() =>
         popup.JumpToLatestButton.Visibility = !_follow.Following && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
+
+    private bool _scrollQueued;
 
     private void ScrollToBottomNow() => ScrollToBottomNow(animate: true);
 

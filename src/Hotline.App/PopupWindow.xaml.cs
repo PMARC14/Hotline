@@ -255,17 +255,21 @@ public sealed partial class PopupWindow : Window
         _offscreen = true;
         // A realistic panel size for the primary monitor's scale (700x700 physical pixels was a 350-DIP-wide panel at
         // 200 %, narrower than the button row: the self-test then ran layouts no real panel ever does).
-        var scale = Native.GetDpiForMonitor(Win32Interop.GetMonitorFromDisplayId(DisplayArea.Primary.DisplayId), Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        var size = (int)Math.Round(720 * scale);
+        // Windows gives a window at (-32000, -32000) the scale of the monitor nearest it (not always the primary one).
+        AppWindow.Move(new PointInt32(-32000, -32000));
+        var size = (int)Math.Round(720 * OffscreenScale);
         AppWindow.MoveAndResize(new RectInt32(-32000, -32000, size, size));
         AppWindow.Show(activateWindow: false);
     }
+
+    /// <summary>The scale of the monitor the off-screen window belongs to (its own DPI).</summary>
+    private double OffscreenScale => Native.GetDpiForWindow(Hwnd) is var dpi and > 0 ? dpi / 96.0 : 1.0;
 
     /// <summary>Self-test only: the off-screen panel at another width (DIPs at the primary monitor's scale).</summary>
     public void ResizeOffscreen(int widthDip)
     {
         if (!_offscreen) return;
-        var scale = Native.GetDpiForMonitor(Win32Interop.GetMonitorFromDisplayId(DisplayArea.Primary.DisplayId), Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        var scale = OffscreenScale;
         AppWindow.Resize(new SizeInt32((int)Math.Round(widthDip * scale), (int)Math.Round(720 * scale)));
     }
 

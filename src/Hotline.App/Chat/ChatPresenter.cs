@@ -367,10 +367,11 @@ internal sealed class ChatPresenter
         if (_popup.NoticesPanel.Margin.Top + _popup.NoticesPanel.Margin.Bottom != noticesGap
             || _popup.MessagesScroll.Margin.Top + _popup.MessagesScroll.Margin.Bottom != chatGap)
             _popup.DispatcherQueue.TryEnqueue(() => PanelLayout.UpdateSpacing(_popup, _popup.GrowsUp, !_transcript.IsEmpty));
-        // Padding 20 (10 + 10); the button row's 8 is its own margin.
-        var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + 8 + 20; // BarStack: the top row (if any) and the message box
+        // Padding 20 (10 + 10); the bottom button row's 8 is its own margin (none when that row is empty and collapsed).
+        var toolbarGap = _popup.Toolbar.Visibility == Microsoft.UI.Xaml.Visibility.Visible ? _popup.Toolbar.Margin.Top : 0;
+        var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + toolbarGap + 20; // BarStack: the top row (if any) and the message box
         _popup.SetContentHeight(messages + chatGap + _popup.NoticesPanel.ActualHeight + noticesGap + _popup.BarStack.ActualHeight
-            + _popup.Toolbar.ActualHeight + 8 + 20, conversation: !_transcript.IsEmpty, barDip: bar);
+            + _popup.Toolbar.ActualHeight + toolbarGap + 20, conversation: !_transcript.IsEmpty, barDip: bar);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

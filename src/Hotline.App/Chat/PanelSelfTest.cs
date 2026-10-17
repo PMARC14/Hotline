@@ -96,6 +96,11 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
     public async Task RunAsync()
     {
         if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
+        // What the test changes, restored in finally whatever happens: the user's draft, button rows and direction.
+        var userDraft = composer.Text;
+        var (userBottom, userTop) = (popup.ToolbarItems.ToList(), popup.TopToolbarItems.ToList());
+        var userUp = popup.GrowsUp;
+        Action? stopCounting = null;
         try
         {
             popup.ShowOffscreen();
@@ -105,9 +110,10 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             var frames = 0;
             void OnFrame(object? s, object e) => frames++;
             Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+            stopCounting = () => Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
             _renderCheck = () =>
             {
-                Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
+                stopCounting();
                 var cycles = App.LayoutCycles - cyclesBefore;
                 if (cycles > 0) log.Error($"selftest FAILED: {cycles} layout cycle(s) during the test (the window may stop drawing)");
                 if (frames < 10) log.Error($"selftest FAILED: only {frames} frame(s) drawn (the window isn't rendering)");
@@ -149,7 +155,6 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             log.Info($"selftest rebuild ok: {transcript.ParagraphCount} paragraphs");
             apply(new AssistantStatus("st-b", "Self test is rate limited, retrying in 0 s…"));
             await Step("status note");
-            var draft = composer.Text;
             composer.Text = "/";
             await Step("quick actions");
             log.Info($"selftest quick actions: {composer.SuggestionCount} suggestion(s)");
@@ -182,8 +187,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             popup.ResizeOffscreen(720);
             await Step("normal width");
             // The button rows: all above the message box, then split across both, then back to the user's own.
-            var (bottomRow, topRow) = (popup.ToolbarItems, popup.TopToolbarItems);
-            var all = topRow.Concat(bottomRow).ToList();
+            var all = userTop.Concat(userBottom).ToList();
             popup.ApplyToolbar([], all);
             await Step("buttons above");
             await SnapshotAsync("6-buttons-above");
@@ -193,16 +197,21 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             PanelLayout.Apply(popup, up: false);
             await Step("buttons split, down");
             await SnapshotAsync("8-buttons-split-down");
-            PanelLayout.Apply(popup, popup.GrowsUp);
-            popup.ApplyToolbar(bottomRow, topRow);
+            PanelLayout.Apply(popup, userUp);
+            popup.ApplyToolbar(userBottom, userTop);
             await Step("buttons restored");
             _renderCheck?.Invoke();
             _renderCheck = null;
-            composer.Text = draft;
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }
         finally
         {
+            stopCounting?.Invoke();
+            _renderCheck = null;
+            ShowGrips?.Invoke(false);
+            if (!popup.ToolbarItems.SequenceEqual(userBottom) || !popup.TopToolbarItems.SequenceEqual(userTop)) popup.ApplyToolbar(userBottom, userTop);
+            PanelLayout.Apply(popup, userUp);
+            composer.Text = userDraft;
             apply(new ConversationReset());
             popup.EndOffscreen();
         }

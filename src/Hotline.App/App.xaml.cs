@@ -47,7 +47,7 @@ public partial class App : Application
         UnhandledException += (_, e) =>
         {
             // A layout cycle can stop WinUI drawing the window for good: count it so the self-test fails loudly.
-            if (e.Exception is LayoutCycleException) Interlocked.Increment(ref LayoutCycles);
+            if (e.Exception is LayoutCycleException || e.Exception?.HResult == unchecked((int)0x802B0014)) Interlocked.Increment(ref LayoutCycles); // E_LAYOUTCYCLE
             _log?.Error("unhandled UI exception (kept running)", e.Exception);
             e.Handled = true;
         };

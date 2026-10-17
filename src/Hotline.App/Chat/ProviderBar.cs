@@ -141,8 +141,12 @@ internal sealed class ProviderBar(
     private void QueueLayout()
     {
         if (_layoutQueued) return;
-        _layoutQueued = true;
-        popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => { _layoutQueued = false; Layout(); });
+        _layoutQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        {
+            _layoutQueued = false;
+            popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
+            Layout();
+        });
     }
 
     private void Layout()
@@ -152,7 +156,8 @@ internal sealed class ProviderBar(
         // with the pickers when the buttons don't fit, and sizing from it shrank them a little on every pass.
         var room = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
         if (room <= 0) return;
-        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag)).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
+        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag) && c.Visibility == Visibility.Visible)
+                             .Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
                          + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
         var effortAvailable = popup.EffortBox.Items.Count > 0;
         var widths = ToolbarLayout.Compute(room, fixedWidth, popup.PickersPanel.Spacing,
