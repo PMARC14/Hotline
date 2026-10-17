@@ -402,6 +402,16 @@ public sealed partial class PopupWindow : Window
             // Who took focus (the pinned-close sound and the forgotten spot were both about this moment).
             var taker = Native.GetForegroundWindow();
             _log.Info($"deactivated: focus went to {Describe(taker)} (pinned={Pinned})");
+            // Windows 11 26H2: a Copilot key press first gives focus to Explorer's focus frame, then sends Hotline the
+            // toggle ~0.1 s later. Unpinned, the panel hides on that focus change and the toggle does nothing. Pinned, it
+            // stayed until the toggle hid it, and Explorer then played its warning sound. So a pinned panel hides now too,
+            // like an unpinned one (the pinned spot is kept, and the toggle that follows counts as this close).
+            if (Pinned && AppWindow.IsVisible && _modal == 0 && Native.ClassNameOf(taker) == "CopilotKeyPressFocusFrame")
+            {
+                _log.Info("Copilot key pressed while pinned: closing now");
+                HidePopup();
+                return;
+            }
         }
         if (e.WindowActivationState == WindowActivationState.Deactivated && Pinned && _modal == 0 && _session is not null)
         {
