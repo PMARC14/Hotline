@@ -174,6 +174,13 @@ public sealed partial class PopupWindow : Window
             }
         }
 
+        if (_offscreen)
+        {
+            // A self-test that never finished (it once hung in its OCR step) must not keep the panel parked off-screen:
+            // every later open "showed" it at -32000 and nothing appeared.
+            _log.Error("opening while the off-screen self-test still held the panel; ending it");
+            _offscreen = false;
+        }
         PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;
         _reclaimed = 0;

@@ -110,11 +110,16 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await Step("user message");
             apply(new AssistantStarted("st-a", "Self test"));
             await Step("answer started");
+            // No text yet: the caret becomes the thinking spinner (a ProgressRing in the transcript; drawn, so a
+            // rendering crash would show here), then the first text turns it back into the bar.
+            for (var waited = 0; waited < 3000 && !transcript.IsThinking; waited += 100) await Task.Delay(100);
+            await Step($"thinking spinner shown={transcript.IsThinking}");
             for (var i = 0; i < TestAnswer.Length; i += 23)
             {
                 apply(new AssistantDelta("st-a", TestAnswer.Substring(i, Math.Min(23, TestAnswer.Length - i)), false));
                 transcript.RenderDirty();
                 await Step($"delta {i}");
+                if (i == 0) log.Info($"selftest thinking spinner after text={transcript.IsThinking}");
             }
             apply(new AssistantCompleted("st-a"));
             await Step("completed");
@@ -144,6 +149,12 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
 
     /// <summary>OCR the rendered (off-screen) transcript and check its heading is read back.</summary>
     private async Task CheckOcrAsync()
+    {
+        try { await CheckOcrCoreAsync().WaitAsync(TimeSpan.FromSeconds(10)); }
+        catch (TimeoutException) { log.Error("selftest ocr FAILED: no result in 10 s (rendering or OCR hung)"); }
+    }
+
+    private async Task CheckOcrCoreAsync()
     {
         try
         {
