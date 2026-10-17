@@ -142,6 +142,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
 
     public bool HasAnswer(string id) => _assistants.ContainsKey(id);
 
+    /// <summary>The streaming answer's caret is the thinking spinner (self-test).</summary>
+    public bool IsThinking => _entries.Count > 0 && _entries[^1] is AssistantView { Streaming: true, Spinning: true };
+
     public void AppendToAnswer(string id, string text, bool replace)
     {
         if (!_assistants.TryGetValue(id, out var view)) return;

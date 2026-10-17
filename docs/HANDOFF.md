@@ -45,7 +45,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Continue in: only the chat's own CLI on top; the other CLIs under **More…**.
   - Settings › Advanced › Reset settings / Reset everything (backups in `~/.hotline/backups`), hidden defaults copy
     in `~/.hotline/.defaults/settings.json`; switching settings = replacing the file (applies live).
-  - Panel open check (logs + re-shows if it drew nothing / is cloaked; seen after Modern Standby) and a toggle log
+  - Panel open check (logs + re-shows if Windows says hidden or nothing was drawn; seen after Modern Standby) and a toggle log
     line (pinned state, focused window) to find the sound some hear when the key toggles a pinned panel.
   - Still to come in 0.3: the movable, pinnable panel (own spec).
 - **Open PR #29** (`continue-in-targets`, ships as **0.4**): Continue in to web pages, Open WebUI (a real chat) and apps,
@@ -60,7 +60,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   6. A very long chat with a web target: the notice that only the last message went and the chat is on the clipboard.
   7. A wrong Open WebUI key or address: a clear "Couldn't open…" notice.
   A Gemini API connection has no default target (Gemini's site takes no message in its link); add one to test it.
-- Tests: ~998 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
+- Tests: ~1004 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
   off-screen self-test `hotline://selftest` builds every settings page.
 
 ## Next work
