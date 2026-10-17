@@ -244,6 +244,7 @@ public sealed partial class PopupWindow : Window
 
     public void EndOffscreen()
     {
+        if (!_offscreen) return; // a real open already ended it: never hide the panel the user is looking at
         AppWindow.Hide();
         _offscreen = false;
     }
@@ -263,7 +264,11 @@ public sealed partial class PopupWindow : Window
     {
         // Evidence for the sound some hear when the key toggles a pinned panel: what had focus at the time.
         var fg = Native.GetForegroundWindow();
-        _log.Info($"toggle: visible={AppWindow.IsVisible} pinned={Pinned} foreground={(fg == Hwnd ? "panel" : Native.ClassNameOf(fg))}");
+        var focused = Content?.XamlRoot is { } root ? Microsoft.UI.Xaml.Input.FocusManager.GetFocusedElement(root) : null;
+        var focusName = focused is FrameworkElement { Name.Length: > 0 } named ? named.Name : focused?.GetType().Name ?? "none";
+        var previous = PreviousForeground == 0 ? "none" : Native.ClassNameOf(PreviousForeground);
+        var foreground = fg == Hwnd ? "panel" : Native.ClassNameOf(fg);
+        _log.Info($"toggle: visible={AppWindow.IsVisible} pinned={Pinned} foreground={foreground} focus={focusName} previous={previous}");
         if (_guard.ShouldShowOnToggle(AppWindow.IsVisible)) ShowPopup();
         else
         {

@@ -114,12 +114,13 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             // rendering crash would show here), then the first text turns it back into the bar.
             for (var waited = 0; waited < 3000 && !transcript.IsThinking; waited += 100) await Task.Delay(100);
             await Step($"thinking spinner shown={transcript.IsThinking}");
+            if (!transcript.IsThinking) log.Error("selftest FAILED: the thinking spinner didn't show");
             for (var i = 0; i < TestAnswer.Length; i += 23)
             {
                 apply(new AssistantDelta("st-a", TestAnswer.Substring(i, Math.Min(23, TestAnswer.Length - i)), false));
                 transcript.RenderDirty();
                 await Step($"delta {i}");
-                if (i == 0) log.Info($"selftest thinking spinner after text={transcript.IsThinking}");
+                if (i == 0 && transcript.IsThinking) log.Error("selftest FAILED: the thinking spinner stayed after text came");
             }
             apply(new AssistantCompleted("st-a"));
             await Step("completed");
