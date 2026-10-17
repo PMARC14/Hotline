@@ -65,7 +65,8 @@ Markdown transcript (titles `## User` / `## Assistant`, attachments by name).
 
 **Ready-made entries** (Settings › Add from a list): llama.cpp web UI (asks for the address, default
 `http://127.0.0.1:8080`), Open WebUI (default `http://localhost:3000`), LM Studio (app, copy chat), ChatGPT
-(`https://chatgpt.com/?q={chat}`), Claude (`https://claude.ai/new?q={chat}`).
+(`https://chatgpt.com/?q={chat}`), Claude (`https://claude.ai/new?q={chat}`), Gemini (`https://gemini.google.com/app`,
+copy chat: its site takes no message in the link, so the chat is pasted).
 
 **The CLIs** (Claude Code, Codex, agy) keep their entries exactly as today — the chat's own CLI resumes its session,
 other installed CLIs read the handoff file — and the list's targets follow them.

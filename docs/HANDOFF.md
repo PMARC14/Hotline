@@ -44,7 +44,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   5. Per connection: *None* on one connection and *Own list* on another; each chat shows only its own targets.
   6. A very long chat with a web target: the notice that only the last message went and the chat is on the clipboard.
   7. A wrong Open WebUI key or address: a clear "Couldn't open…" notice.
-  A Gemini API connection has no default target (Gemini's site takes no message in its link); add one to test it.
+  A Gemini API connection has no default target (Gemini's site takes no message in its link); add the ready-made
+  **Gemini** entry (opens gemini.google.com with the chat on the clipboard to paste) to test it. The owner's
+  `personal/gemini-web` branch gets it when #29 reaches `main`.
 - Tests: ~998 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
   off-screen self-test `hotline://selftest` builds every settings page.
 

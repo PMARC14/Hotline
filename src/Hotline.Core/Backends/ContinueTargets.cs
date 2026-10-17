@@ -120,5 +120,7 @@ public static partial class ContinueTargets
         ("lmstudio", new(ContinueKind.App, "LM Studio", Command: @"""%LOCALAPPDATA%\Programs\LM Studio\LM Studio.exe""", CopyChat: true)),
         ("chatgpt", new(ContinueKind.Web, "ChatGPT", Url: "https://chatgpt.com/?q={chat}")),
         ("claude", new(ContinueKind.Web, "Claude", Url: "https://claude.ai/new?q={chat}")),
+        // Gemini's site takes no message in its link, so the chat goes on the clipboard to paste.
+        ("gemini", new(ContinueKind.Web, "Gemini", Url: "https://gemini.google.com/app", CopyChat: true)),
     ];
 }

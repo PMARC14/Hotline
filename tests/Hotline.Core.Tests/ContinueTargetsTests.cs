@@ -170,5 +170,8 @@ public sealed class ContinueTargetsTests : IDisposable
             (r["lmstudio"].Kind, r["lmstudio"].Command, r["lmstudio"].CopyChat));
         Assert.Equal("https://chatgpt.com/?q={chat}", r["chatgpt"].Url);
         Assert.Equal("https://claude.ai/new?q={chat}", r["claude"].Url);
+        // Gemini's site takes no message in its link: it opens Gemini with the chat on the clipboard to paste.
+        Assert.Equal((ContinueKind.Web, "Gemini", "https://gemini.google.com/app", true),
+            (r["gemini"].Kind, r["gemini"].Name, r["gemini"].Url, r["gemini"].CopyChat));
     }
 }
