@@ -52,11 +52,22 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     (e863bd2) didn't help: that path didn't run, because the previous window was none. Each toggle now logs `focus=`
     (the focused element) and `previous=`. Next: the owner pins, closes with the key and notes the time; read those
     lines. See the panel plan's task 1 for the candidates.
-- **Branch `panel-placement`** (stacked on #32, the rest of 0.3): spec
-  `docs/superpowers/specs/2026-10-16-panel-placement-design.md` (one open question at the top) and plan
-  `docs/superpowers/plans/2026-10-16-panel-placement.md`. Done so far: the toolbar's Continue in button (in the default
-  bar), and the owner's layout (no spacer) and `acrylicThin` as the defaults. Work paused 2026-10-16 at the owner's
-  request (weekly usage).
+- **Branch `panel-placement`** (stacked on #32; the rest of 0.3; spec and plan in `docs/superpowers/`):
+  - The panel opens at `window.anchor` (`monitor`, `x`, `y`), size `window.width` / `chatHeight`.
+  - The chat grows up or down from a fixed message bar (`window.growDirection`; auto = up unless there's no room
+    above).
+  - **Alt grips** move and resize it. The grip's right-click menu has Save as default / Back to the default spot.
+  - A moved spot is kept only while pinned: forgotten on unpin, on clicking into another app, and on restart.
+  - The top button row is toolbar.json `top`. The Continue in button is in the default bar, and the owner's layout
+    plus `acrylicThin` are the defaults.
+  - Open/close sounds: Windows sound events or .wav files in `~/.hotline/sounds`. `hotline.wav` is a generated
+    placeholder until the owner picks one: replace `src/Hotline.App/Assets/Sounds/hotline.wav`.
+  - Schema v13 moves `verticalPosition` into `anchor.y`.
+  - Argon-reviewed (4 parts); the confirmed findings are fixed.
+  - **Hand test on the desktop** (mixed DPI, multi-monitor), the spec's list: drag across monitors, every resize
+    edge, pin → key → same spot, click another app → key → default, Save as default → restart, a monitor unplugged
+    while pinned, sounds.
+  - Real drags were never exercised automatically (that needs mouse input).
 - **Open PR #29** (`continue-in-targets`, ships as **0.4**): Continue in to web pages, Open WebUI (a real chat) and apps,
   from a shared list or per connection; built from `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed,
   998 tests. Waits for 0.3 (the Codex feedback branch); bump `version.txt` to `0.4` when it merges. Hand-test list:
@@ -125,7 +136,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `Settings/` `HotlineSettings` (schema v11), `SettingsStore` (settings.json + `connections/*.json`, migrations,
     side-effect-free `TryRead`), `SettingsService` (live Update/Reload with merge-by-id), `SettingsSchema`.
   - `Text/` `MarkdownModel` (Markdig → block model; math, SVG, task lists), `LatexText`, `SvgSanitizer`.
-  - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`: process start, stderr throttle). `Windowing/` geometry, `ToolbarLayout`. `Processes/` line processes.
+  - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`: process start, stderr throttle). `Windowing/` geometry (`PopupGeometry` GrowUp/GrowDown, `PanelPlacement`: anchor, direction, clamp, resize, rescale), `ToolbarLayout`, `ToolbarConfig` (top + bottom rows), `Sounds` (what may play). `Processes/` line processes.
 - `src/Hotline.App` (WinUI 3, packaged MSIX, full trust):
   - `App.xaml.cs` composition root; `PopupWindow` (sizing, eased growth, focus, off-screen mode); `ActivationRouter`.
   - `Chat/ChatPresenter*.cs` (single selectable `RichTextBlock` transcript, attachments, recent chats, self-test,
@@ -135,7 +146,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `Chat/` one job per class: `ChatPresenter` (coordinator, send flow), `Composer`, `AttachmentPanel`,
     `AttachmentVisuals`, `TranscriptView`, `NoticeArea`, `VoiceInput` + `WindowsSpeech`, `RecentChatsMenu`,
     `PanelSelfTest`, `FirstRunNote`, `ConnectionChooser` (first run), `SupportNote`, `AnswerNotifier`, `ContinueIn`,
-    `PanelTheme`, `UiTasks`, `OcrReader`. `SelfTestLinks` (hotline://selftest),
+    `PanelTheme`, `UiTasks`, `OcrReader`, `PanelLayout` (rows for up/down), `PanelGrips` (Alt move/resize), `Interop/SoundPlayer`. `SelfTestLinks` (hotline://selftest),
     `Interop/CopilotKeyHook` (Right Ctrl mode).
 
 ## Hard-won facts (don't relearn these)
