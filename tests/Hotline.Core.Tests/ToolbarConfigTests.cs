@@ -67,4 +67,41 @@ public sealed class ToolbarConfigTests : IDisposable
         Assert.Equal(["model", "pin", "settings"], ToolbarConfig.Move(["pin", "model", "settings"], 1, -1));
         Assert.Equal(["pin", "model", "settings"], ToolbarConfig.Move(["pin", "model", "settings"], 0, -1)); // at the edge: unchanged
     }
+
+    [Fact]
+    public void Top_row_loads_and_an_item_in_both_rows_stays_in_the_bottom_one()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(PathFor, """{ "top": ["model", "pin", "bogus"], "items": ["pin", "settings"] }""");
+        var config = ToolbarConfig.Load(PathFor);
+        Assert.Equal(["model"], config.Top);
+        Assert.Equal(["pin", "settings"], config.Items);
+    }
+
+    [Fact]
+    public void Old_files_have_no_top_row_and_everything_may_move_to_the_top()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(PathFor, """{ "items": ["pin"] }""");
+        Assert.Empty(ToolbarConfig.Load(PathFor).Top);
+        File.WriteAllText(PathFor, """{ "top": ["pin"], "items": [] }""");
+        var config = ToolbarConfig.Load(PathFor);
+        Assert.Equal(["pin"], config.Top);
+        Assert.Empty(config.Items);
+    }
+
+    [Fact]
+    public void Save_writes_both_rows_and_items_move_between_them()
+    {
+        ToolbarConfig.Save(PathFor, ["pin", "settings"], top: ["model"]);
+        var config = ToolbarConfig.Load(PathFor);
+        Assert.Equal(["model"], config.Top);
+        Assert.Equal(["pin", "settings"], config.Items);
+        var (top, items) = ToolbarConfig.ToRow(config.Top, config.Items, index: 0, fromTop: false) /* pin */;
+        Assert.Equal(["model", "pin"], top);
+        Assert.Equal(["settings"], items);
+        (top, items) = ToolbarConfig.ToRow(top, items, index: 0, fromTop: true) /* model */;
+        Assert.Equal(["pin"], top);
+        Assert.Equal(["settings", "model"], items);
+    }
 }

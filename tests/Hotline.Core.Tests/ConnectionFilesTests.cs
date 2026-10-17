@@ -11,14 +11,21 @@ public sealed class ConnectionFilesTests : IDisposable
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private string SettingsFile => Path.Combine(_dir, SettingsStore.FileName);
 
+    /// <summary>An install with the agy connection (new installs start with none).</summary>
+    private void WithAgy()
+    {
+        Directory.CreateDirectory(Path.Combine(_dir, "connections"));
+        File.WriteAllText(Conn("agy"), """{ "type": "antigravity", "name": "Gemini (Antigravity)", "agent": "hotline" }""");
+    }
+
     [Fact]
-    public void Fresh_install_writes_one_file_per_connection_and_no_backends_in_settings()
+    public void Fresh_install_writes_no_connection_and_no_backends_in_settings()
     {
         var s = new SettingsStore(_dir).Load();
-        Assert.True(File.Exists(Conn("agy")));
+        Assert.False(Directory.Exists(Path.Combine(_dir, "connections")) && Directory.EnumerateFiles(Path.Combine(_dir, "connections")).Any());
         Assert.DoesNotContain("\"backends\"", File.ReadAllText(SettingsFile));
         Assert.Contains("\"order\"", File.ReadAllText(SettingsFile));
-        Assert.Equal("agy", s.Chat.Backends[0].Id);
+        Assert.Empty(s.Chat.Backends);
     }
 
     [Fact]
@@ -37,6 +44,7 @@ public sealed class ConnectionFilesTests : IDisposable
     [Fact]
     public void Order_comes_from_settings_and_unlisted_files_follow_by_name()
     {
+        WithAgy();
         var store = new SettingsStore(_dir);
         store.Load();
         File.WriteAllText(Conn("zeta"), """{ "type": "local", "name": "Zeta" }""");
@@ -51,6 +59,7 @@ public sealed class ConnectionFilesTests : IDisposable
     [Fact]
     public void Removing_a_connection_deletes_its_file()
     {
+        WithAgy();
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Local);
@@ -90,8 +99,11 @@ public sealed class ConnectionFilesTests : IDisposable
     [Fact]
     public void Connection_files_omit_unset_options()
     {
-        new SettingsStore(_dir).Load();
-        var json = File.ReadAllText(Conn("agy"));
+        var store = new SettingsStore(_dir);
+        var s = store.Load();
+        var agy = Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Antigravity);
+        store.Save(s);
+        var json = File.ReadAllText(Conn(agy.Id));
         Assert.DoesNotContain("\"endpoint\"", json);
         Assert.Contains("\"agent\": \"hotline\"", json);
     }

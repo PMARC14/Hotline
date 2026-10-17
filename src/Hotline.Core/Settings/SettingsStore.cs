@@ -58,11 +58,13 @@ public sealed class SettingsStore(string directory)
             if (s is null) return null;
             s.Chat ??= new ChatSettings();
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
-            var (files, _) = ReadConnectionFiles();
+            var (files, broken) = ReadConnectionFiles();
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
-            s.Chat.Backends = Ordered(files.Count > 0 ? files : ChatSettings.DefaultBackends(),
+            if (files.Count == 0 && s.SchemaVersion < 12 && broken.Count == 0)
+                files = ChatSettings.LegacyDefaultBackends(); // a pre-v12 file ran on the built-in agy (as in Load)
+            s.Chat.Backends = Ordered(files,
                 s.Chat.Order is { Count: > 0 } order ? order : legacy?.Select(p => p.Id).ToList());
             return Normalize(s);
         }
@@ -74,7 +76,7 @@ public sealed class SettingsStore(string directory)
         if (!File.Exists(FilePath))
         {
             var fresh = new HotlineSettings();
-            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order);
+            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order, keepLegacyDefault: false);
             Normalize(fresh);
             TrySave(fresh);
             return fresh;
@@ -88,7 +90,7 @@ public sealed class SettingsStore(string directory)
             s.Chat ??= new ChatSettings();
             var loadedVersion = s.SchemaVersion;
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
-            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
+            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order, keepLegacyDefault: loadedVersion < 12);
             Normalize(s);
             if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null)
                 TrySave(s); // writes the connection files and drops "backends" from settings.json
@@ -113,7 +115,7 @@ public sealed class SettingsStore(string directory)
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
             var fallback = new HotlineSettings();
-            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
+            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order, keepLegacyDefault: false);
             return Normalize(fallback);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -129,6 +131,9 @@ public sealed class SettingsStore(string directory)
         SaveConnections(s.Chat.Backends);        // first: if this fails, settings.json still has the old list
         WriteAtomic(FilePath, SerializeMain(s));
     }
+
+    /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
+    public static string Serialize(HotlineSettings s) => SerializeMain(s);
 
     /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
     private static string SerializeMain(HotlineSettings s)
@@ -189,8 +194,11 @@ public sealed class SettingsStore(string directory)
         return (profiles, broken);
     }
 
-    /// <summary>Connections for Load: the files, or (once) the old settings.json list, or the defaults.</summary>
-    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order)
+    /// <summary>
+    /// Connections for Load: the files, or (once) the old settings.json list. A file from before v12 with neither
+    /// (<paramref name="keepLegacyDefault"/>) ran on the built-in agy connection, which it keeps; otherwise none.
+    /// </summary>
+    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order, bool keepLegacyDefault)
     {
         var (files, broken) = ReadConnectionFiles();
         BrokenConnectionFiles = broken;
@@ -198,7 +206,7 @@ public sealed class SettingsStore(string directory)
         if (legacy is not null)
             foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                 files.Add(p); // moved into files on the next save
-        var list = files.Count > 0 ? files : broken.Count > 0 ? [] : ChatSettings.DefaultBackends();
+        var list = files.Count > 0 || broken.Count > 0 || !keepLegacyDefault ? files : ChatSettings.LegacyDefaultBackends();
         return Ordered(list, order is { Count: > 0 } ? order : legacy?.Select(p => p.Id).ToList() ?? []);
     }
 
@@ -272,6 +280,7 @@ public sealed class SettingsStore(string directory)
 
     private static void Migrate(HotlineSettings s)
     {
+        // → v12: no built-in connection any more (AssembleConnections keeps it for older files that relied on it).
         // → v11: CLI chats live in the CLI's own history by default (resumable); Hotline keeps only a record unless
         // keepInHotline. Existing CLI connections switch over, keeping what Hotline already saved.
         if (s.SchemaVersion < 11)
@@ -305,7 +314,6 @@ public sealed class SettingsStore(string directory)
         s.Diagnostics ??= new DiagnosticsSettings();
         s.Chat ??= new ChatSettings();
         s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).ToList();
-        if (s.Chat.Backends.Count == 0) s.Chat.Backends = ChatSettings.DefaultBackends();
         foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
         foreach (var b in s.Chat.Backends)
         {
@@ -313,12 +321,23 @@ public sealed class SettingsStore(string directory)
             if (b.Temperature is { } t) b.Temperature = double.IsFinite(t) ? Math.Clamp(t, 0, 2) : null;
         }
         s.Chat.DefaultBackend = s.Chat.DefaultBackend?.Trim() ?? "";
-        if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend)) s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
+        if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend))
+            s.Chat.DefaultBackend = s.Chat.Backends.FirstOrDefault()?.Id ?? "";
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
+        s.Chat.ThinkingDelayMs = Math.Clamp(s.Chat.ThinkingDelayMs, 0, 10_000);
         if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";
         if (s.Window.FontSize is { } fontSize) s.Window.FontSize = Math.Clamp(fontSize, 10, 32);
-        s.Window.VerticalPosition = Math.Clamp(s.Window.VerticalPosition, 0.0, 1.0);
+        s.Window.Anchor ??= new PanelAnchor();
+        // → v13: the vertical position became the anchor's Y.
+        if (s.Window.VerticalPosition is { } vertical) { s.Window.Anchor.Y = vertical; s.Window.VerticalPosition = null; }
+        if (string.IsNullOrWhiteSpace(s.Window.Anchor.Monitor)) s.Window.Anchor.Monitor = PanelAnchor.Active;
+        s.Window.Anchor.X = double.IsFinite(s.Window.Anchor.X) ? Math.Clamp(s.Window.Anchor.X, 0.0, 1.0) : 0.5;
+        s.Window.Anchor.Y = double.IsFinite(s.Window.Anchor.Y) ? Math.Clamp(s.Window.Anchor.Y, 0.0, 1.0) : 0.8;
+        if (s.Window.Width is { } width) s.Window.Width = Math.Clamp(width, 320, 8000);
+        if (s.Window.ChatHeight is { } chat) s.Window.ChatHeight = Math.Clamp(chat, 60, 8000);
+        s.Window.OpenSound = string.IsNullOrWhiteSpace(s.Window.OpenSound) ? Windowing.Sounds.Off : s.Window.OpenSound.Trim();
+        s.Window.CloseSound = string.IsNullOrWhiteSpace(s.Window.CloseSound) ? Windowing.Sounds.Off : s.Window.CloseSound.Trim();
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
         Migrate(s);

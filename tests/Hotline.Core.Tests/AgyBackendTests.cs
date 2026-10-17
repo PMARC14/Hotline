@@ -56,9 +56,9 @@ public sealed class AgyBackendTests : IDisposable
         var (exe, args, cwd, proc) = Assert.Single(_factory.Started);
         Assert.Equal(@"C:\agy.exe", exe);
         Assert.Contains("stream-json", args);
-        Assert.EndsWith("ws", cwd);
+        Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only runs in the home folder, the workspace added to it
         Assert.Equal("hi", PromptOf(Assert.Single(proc.Written)));
-        Assert.True(File.Exists(Path.Combine(cwd, ".agents", "agents", "hotline.md")));
+        Assert.True(File.Exists(Path.Combine(_dir, "ws", ".agents", "agents", "hotline.md")));
     }
 
     [Fact]
@@ -138,9 +138,9 @@ public sealed class AgyBackendTests : IDisposable
         await Collect(New().StreamAsync([U("m1", "what number?", img, txt)], default));
 
         var prompt = PromptOf(_factory.Started[0].Process.Written[0]);
-        Assert.Contains("attachments/m1/num.png", prompt);
+        Assert.Contains(Path.Combine(_dir, "ws", "attachments", "m1", "num.png"), prompt);
         Assert.Contains("# hi", prompt);
-        Assert.True(File.Exists(Path.Combine(_factory.Started[0].Cwd, "attachments", "m1", "num.png")));
+        Assert.True(File.Exists(Path.Combine(_dir, "ws", "attachments", "m1", "num.png")));
     }
 
     [Fact]

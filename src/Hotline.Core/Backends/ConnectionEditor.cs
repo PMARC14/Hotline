@@ -36,12 +36,14 @@ public static class ConnectionEditor
         return copy;
     }
 
-    /// <summary>Removes a connection; the last one can't be removed. The default moves to the first remaining one.</summary>
+    /// <summary>
+    /// Removes a connection. The default moves to the first remaining one; removing the last leaves none chosen (the
+    /// panel then asks for one, as on first run).
+    /// </summary>
     public static bool Remove(ChatSettings chat, string id)
     {
-        if (chat.Backends.Count <= 1) return false;
         if (chat.Backends.RemoveAll(b => b.Id == id) == 0) return false;
-        if (chat.DefaultBackend == id) chat.DefaultBackend = chat.Backends[0].Id;
+        if (chat.DefaultBackend == id) chat.DefaultBackend = chat.Backends.FirstOrDefault()?.Id ?? "";
         return true;
     }
 

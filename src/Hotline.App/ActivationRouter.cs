@@ -79,6 +79,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
     /// <summary>hotline://demo[?scene=…]: the scene name, or null.</summary>
     public event Action<string?>? DemoRequested;
+    /// <summary>hotline://grips?show=1|0 (tests and screenshots): the Alt grips without holding Alt.</summary>
+    public event Action<bool>? GripsRequested;
     public event Action? OpenSettingsRequested;
     /// <summary>hotline://gemini: the personal Gemini web window (branch personal/gemini-web).</summary>
     public event Action? GeminiWebRequested;
@@ -97,6 +99,12 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         if (string.Equals(request.Uri?.Host, "gemini", StringComparison.OrdinalIgnoreCase))
         {
             GeminiWebRequested?.Invoke();
+            return;
+        }
+        if (string.Equals(request.Uri?.Host, "grips", StringComparison.OrdinalIgnoreCase))
+        {
+            // Test link: show (show=1) or hide the Alt grips on the open panel through the same code as Alt.
+            GripsRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["show"] != "0");
             return;
         }
         if (string.Equals(request.Uri?.Host, "selftest", StringComparison.OrdinalIgnoreCase))

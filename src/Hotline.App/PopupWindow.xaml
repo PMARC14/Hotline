@@ -4,7 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Hotline.App"
     Title="Hotline">
-    <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="8"
+    <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="0"
           AllowDrop="True" KeyDown="Root_KeyDown">
         <Grid.Resources>
           <ResourceDictionary>
@@ -70,12 +70,15 @@
                 CornerRadius="17" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,22,6"
                 FontFamily="Segoe Fluent Icons" FontSize="14" Content="&#xE74B;" Visibility="Collapsed"
                 ToolTipService.ToolTip="{local:Loc Key=Popup_JumpLatest}" />
-        <TextBlock x:Name="StatusText" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
+        <TextBlock x:Name="StatusText" x:FieldModifier="internal" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
                    Style="{StaticResource CaptionTextBlockStyle}" Visibility="Collapsed" />
 
         <StackPanel x:Name="NoticesPanel" x:FieldModifier="internal" Grid.Row="1" Spacing="6" />
 
-        <Border x:Name="Composer" x:FieldModifier="internal" Grid.Row="2" CornerRadius="12" Padding="4" BorderThickness="1"
+        <!-- The bar: the top button row (toolbar.json "top"; collapsed when empty) and the message box. -->
+        <StackPanel x:Name="BarStack" x:FieldModifier="internal" Grid.Row="2">
+        <Grid x:Name="TopToolbar" x:FieldModifier="internal" ColumnSpacing="2" Margin="0,0,0,8" Visibility="Collapsed" />
+        <Border x:Name="Composer" x:FieldModifier="internal" CornerRadius="12" Padding="4" BorderThickness="1"
                 Background="{ThemeResource ComposerSurface}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
             <StackPanel Spacing="4">
                 <!-- Quick actions: typing "/" lists ~/.hotline/actions/*.md (Up/Down, Tab or Enter to pick, Esc to close). -->
@@ -116,10 +119,11 @@
                 </Grid>
             </StackPanel>
         </Border>
+        </StackPanel>
 
         <!-- Bottom toolbar: room for more features (model/effort picker arrives in Plan 3b). -->
         <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings. -->
-        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2">
+        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2" Margin="0,8,0,0">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
                 <ColumnDefinition Width="*" />
@@ -180,10 +184,14 @@
             </Button>
             <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
                     Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
+            <Button x:Name="ContinueInButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" Visibility="Collapsed" />
             <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
         </Grid>
+        <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
+        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-12,-10,-12,-10" Visibility="Collapsed" />
     </Grid>
 </Window>

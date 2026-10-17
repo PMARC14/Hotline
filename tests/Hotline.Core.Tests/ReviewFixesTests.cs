@@ -155,8 +155,7 @@ public sealed class ApiReviewFixesTests : IDisposable
     [Fact]
     public void Ids_that_differ_only_in_case_are_unique()
     {
-        var chat = new ChatSettings();
-        chat.Backends[0].Id = "LOCAL-MODEL";
+        var chat = new ChatSettings { Backends = [new BackendProfile { Id = "LOCAL-MODEL", Type = BackendType.Local, Name = "L" }] };
         var added = Hotline.Core.Backends.ConnectionEditor.Add(chat, BackendType.Local);
         Assert.NotEqual("local-model", added.Id, StringComparer.OrdinalIgnoreCase);
     }
