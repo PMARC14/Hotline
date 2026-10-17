@@ -22,8 +22,11 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
 
     public IReadOnlyList<Target> Targets()
     {
-        // The chat's own CLI comes from its connection, with or without a conversation yet (CliHandoff.Choices).
-        var profile = (chat.CurrentSession is { } s ? Profile(s.BackendId) : null) ?? Profile(chat.BackendId);
+        // The chat's own CLI comes from its connection, with or without a conversation yet (CliHandoff.Choices). Its
+        // CLI conversation counts only while the chat is still on that connection: after a switch, later turns aren't in
+        // it, so the chat goes over as a handoff instead.
+        var own = chat.CurrentSession is { } s && s.BackendId == chat.BackendId ? s : ((CliSession Session, string BackendId)?)null;
+        var profile = Profile(chat.BackendId);
         var exes = new Dictionary<BackendType, (BackendProfile Profile, string Exe)>();
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
         {
@@ -32,14 +35,14 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
             if (Locate(p) is { } exe) exes[type] = (p, exe);
         }
         var targets = new List<Target>();
-        var choices = CliHandoff.Choices(profile?.Type, chat.CurrentSession is not null,
+        var choices = CliHandoff.Choices(profile?.Type, own is not null,
             chat.Messages.Count > 0 && chat.HasWholeTranscript, exes.Keys);
         foreach (var choice in choices)
         {
             var (p, exe) = exes[choice.Type];
             if (choice.Way == CliHandoff.Way.Resume)
             {
-                var current = chat.CurrentSession!.Value;
+                var current = own!.Value;
                 var command = CliHandoff.Resume(choice.Type, exe, current.Session);
                 targets.Add(new(p.Name, async () =>
                 {

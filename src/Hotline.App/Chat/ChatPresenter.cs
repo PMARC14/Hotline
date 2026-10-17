@@ -128,7 +128,9 @@ internal sealed class ChatPresenter
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
         _popup.NoticesPanel.SizeChanged += (_, _) => ReportHeight();
-        _popup.Composer.SizeChanged += (_, _) => ReportHeight();
+        // The whole bar (top row + message box) and the bottom row: toolbar.json can move buttons between the rows.
+        _popup.BarStack.SizeChanged += (_, _) => ReportHeight();
+        _popup.Toolbar.SizeChanged += (_, _) => ReportHeight();
         _log.Info("chat view ready");
     }
 

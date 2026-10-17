@@ -125,15 +125,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
         {
             e.Handled = true;
             tasks.Run("paste image", async () =>
-            {
-                var reference = await content.GetBitmapAsync();
-                using var stream = await reference.OpenReadAsync();
-                var bytes = new byte[stream.Size];
-                using var reader = new DataReader(stream);
-                await reader.LoadAsync((uint)stream.Size);
-                reader.ReadBytes(bytes);
-                await AddBytesAsync($"pasted-{DateTime.Now:HHmmss}.png", "image/png", bytes);
-            });
+                await AddBytesAsync($"pasted-{DateTime.Now:HHmmss}.png", "image/png", await BitmapBytesAsync(content)));
         }
     }
 
@@ -150,9 +142,22 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
         try
         {
             if (e.DataView.Contains(StandardDataFormats.StorageItems)) await AddStorageItemsAsync(await e.DataView.GetStorageItemsAsync());
+            else if (e.DataView.Contains(StandardDataFormats.Bitmap)) // an image dragged from a browser or viewer, no file
+                await AddBytesAsync($"dropped-{DateTime.Now:HHmmss}.png", "image/png", await BitmapBytesAsync(e.DataView));
         }
         catch (Exception ex) { log.Error("drop failed", ex); notices.Show($"Couldn't attach dropped items: {ex.Message}", InfoBarSeverity.Error); }
         finally { deferral.Complete(); }
+    }
+
+    private static async Task<byte[]> BitmapBytesAsync(DataPackageView content)
+    {
+        var reference = await content.GetBitmapAsync();
+        using var stream = await reference.OpenReadAsync();
+        var bytes = new byte[stream.Size];
+        using var reader = new DataReader(stream);
+        await reader.LoadAsync((uint)stream.Size);
+        reader.ReadBytes(bytes);
+        return bytes;
     }
 
     private async Task AddStorageItemsAsync(IReadOnlyList<IStorageItem> items)
