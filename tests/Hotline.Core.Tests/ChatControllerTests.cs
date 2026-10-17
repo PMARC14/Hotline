@@ -158,6 +158,20 @@ public sealed class ChatControllerTests : IDisposable
     }
 
     [Fact]
+    public async Task Old_turn_unwinding_after_new_chat_sends_no_events_into_it()
+    {
+        // The presenter turns Stop back into Send on Cancelled/Completed: an old turn's must not reach the new chat.
+        var gate = new TaskCompletionSource();
+        var c = New(new FakeBackend(new ChatDelta("old")) { Gate = gate, SlowCancel = true });
+        var send = c.SendAsync("q", []);
+        c.NewChat();
+        var afterReset = _events.Count;
+        gate.TrySetResult();
+        await send;
+        Assert.DoesNotContain(_events.Skip(afterReset), e => e is AssistantCancelled or AssistantCompleted or AssistantDelta or AssistantStatus);
+    }
+
+    [Fact]
     public async Task Late_failure_of_old_turn_does_not_reach_new_chat()
     {
         var gate = new TaskCompletionSource();

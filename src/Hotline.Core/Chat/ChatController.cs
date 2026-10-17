@@ -144,6 +144,9 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         if (backend is ICliSessionBackend cli) cli.Resume = _sessionBackendId == backend.Id ? _session : null;
         Emit(new AssistantStarted(assistantId, backend.DisplayName, BackendId));
         var cts = _cts = new CancellationTokenSource();
+        // After New chat the old turn unwinds on its own: none of its events may reach the new chat (a late
+        // "cancelled" would turn the new chat's Stop button back into Send while it answers).
+        void Current(ChatEvent e) { if (conversationId == ConversationId) Emit(e); }
         var reply = new StringBuilder();
         try
         {
@@ -151,7 +154,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             {
                 if (d.Status is { } status)
                 {
-                    Emit(new AssistantStatus(assistantId, status));
+                    Current(new AssistantStatus(assistantId, status));
                     continue;
                 }
                 if (d.Session is { } session)
@@ -165,16 +168,16 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
                 }
                 if (d.ResetBefore) reply.Clear();
                 reply.Append(d.Text);
-                Emit(new AssistantDelta(assistantId, d.Text, d.ResetBefore));
+                Current(new AssistantDelta(assistantId, d.Text, d.ResetBefore));
             }
             Keep(conversationId, user, assistantId, backend, reply.ToString());
-            Emit(new AssistantCompleted(assistantId));
+            Current(new AssistantCompleted(assistantId));
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested)
         {
             // Keep the question in context even with no reply, so a follow-up ("shorter please") still makes sense.
             Keep(conversationId, user, assistantId, backend, reply.ToString(), keepEmptyReply: reply.Length > 0);
-            Emit(new AssistantCancelled(assistantId));
+            Current(new AssistantCancelled(assistantId));
         }
         catch (Exception ex) when (conversationId != ConversationId)
         {
