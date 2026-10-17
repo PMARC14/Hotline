@@ -519,4 +519,37 @@
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>답변이 준비 중이지만 잠시 동안 텍스트가 표시되지 않을 때 멈추지 않았음을 알 수 있도록 커서가 회전합니다</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>다음에서 계속</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>이 채팅을 계속할 대상이 없습니다. AI 명령줄 도구가 설치되어 있지 않거나 채팅에 메시지가 없습니다.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>메시지 상자 위</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>메시지 상자 위로 이동</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>기본 위치로 복원</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>저장됨: 이제 Hotline이 이 위치와 크기로 열립니다.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>위치 및 크기를 기본값으로 저장</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>드래그하여 이동, 마우스 오른쪽 단추로 클릭하여 이 위치 저장</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>채팅 높이</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>채팅이 늘어나는 최대 높이입니다. 0 = 자동(위의 최대 높이 비율).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>채팅 확장 방향</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>자동</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>자동: 위쪽에 공간이 부족하지 않은 한 위로 확장됩니다. Up 또는 Down으로 설정하면 해당 방향으로 고정됩니다.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>아래로</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>위로</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>너비</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 자동(위의 너비 비율). Alt 키를 누른 채 가장자리를 드래그하여 크기를 조정합니다.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>모니터</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active(작업 중인 모니터), primary 또는 모니터 이름(그립의 '기본값으로 저장'으로 저장됨)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>가로 위치</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>화면에서 패널이 열리는 위치: 0 = 왼쪽, 0.5 = 가운데, 1 = 오른쪽. Alt 키를 누른 채 그립을 드래그하여 이동한 후 마우스 오른쪽 단추로 클릭하여 위치를 저장합니다.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>패널이 닫힐 때</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline 사운드: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>사용자 지정 사운드</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>.wav 파일을 {0}에 넣으면 위의 목록에 표시됩니다.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>꺼짐</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>패널이 열릴 때</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>사운드 폴더 열기</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>재생</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>사운드</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>

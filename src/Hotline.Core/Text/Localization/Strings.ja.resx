@@ -519,4 +519,37 @@
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>回答の生成中でテキストがまだ表示されない間、停止していないことがわかるようにカーソルが回転します</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>次で続行</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>このチャットを続行できる場所がまだありません: AI コマンドライン ツールがインストールされていないか、チャットにメッセージがありません。</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>メッセージ ボックスの上</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>メッセージ ボックスの上に移動</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>既定の位置に戻す</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>保存完了: 次回から Hotline はこの位置とサイズで開きます。</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>位置とサイズを既定として保存</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>ドラッグで移動、右クリックでこの位置を保存</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>チャットの高さ</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>チャットの最大拡大サイズ。0 = 自動 (上記の最大高さの割合)。</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>チャットの展開方向</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>自動: 上に十分なスペースがない場合を除き上向き。Up または Down でその方向に固定されます。</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>下</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>上</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>幅</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 自動 (上記の幅の割合)。Alt を押しながら端をドラッグしてサイズ変更。</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>モニター</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (作業中のモニター)、primary、またはモニター名 (グリップの [既定として保存] で保存)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>水平位置</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>画面上のパネルの表示位置: 0 = 左、0.5 = 中央、1 = 右。Alt を押しながらグリップをドラッグして移動し、右クリックで位置を保存します。</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>パネルを閉じたとき</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline サウンド: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>カスタム サウンド</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>.wav ファイルを {0} に配置すると、上のリストに表示されます。</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>パネルを開いたとき</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>サウンド フォルダーを開く</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>再生</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>サウンド</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>

@@ -529,4 +529,27 @@ Deny:
   <data name="Grip_SaveDefault" xml:space="preserve"><value>Save position and size as default</value></data>
   <data name="Grip_BackHome" xml:space="preserve"><value>Back to the default spot</value></data>
   <data name="Grip_Saved" xml:space="preserve"><value>Saved: Hotline now opens here, at this size.</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Horizontal position</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Where the panel opens across the screen: 0 = left, 0.5 = centred, 1 = right. Hold Alt and drag the grip to move it, then right-click the grip to save the spot.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (the monitor you're working on), primary, or a monitor's name (saved by the grip's Save as default)</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Width</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Chat height</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>The most the chat grows to. 0 = automatic (the maximum height percentage above).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Chat grows</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatic: up, unless there's no room above. Up or Down keeps it that way.</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatically</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Up</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Down</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Sounds</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Off</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline sounds: {0}</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Play</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>When the panel opens</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>When the panel closes</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Your own sounds</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Put .wav files in {0}; they appear in the lists above.</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Open sounds folder</value></data>
 </root>

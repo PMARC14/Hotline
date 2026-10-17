@@ -519,4 +519,37 @@
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>正在產生回覆但暫時未出現文字時，游標會旋轉，以便您確認系統並未停滯</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>在以下位置繼續</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>尚無可用位置繼續此聊天：未安裝任何 AI 命令列工具，或聊天中沒有任何訊息。</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>訊息方塊上方</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>移至訊息方塊上方</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>回到預設位置</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>已儲存：Hotline 現在將在此處以這個大小開啟。</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>將位置與大小儲存為預設值</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>拖曳以移動；按一下滑鼠右鍵以儲存此位置</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>聊天高度</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>聊天展開的最大高度。0 = 自動 (即上方的最大高度百分比)。</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>聊天展開方向</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>自動：向上展開，除非上方沒有足夠空間。Up 或 Down 會固定為該方向。</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>向下</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>向上</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>寬度</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 自動 (即上方的寬度百分比)。按住 Alt 並拖曳兩側邊緣以調整大小。</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>顯示器</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (目前操作的顯示器)、primary 或顯示器名稱 (透過控制項的「儲存為預設值」儲存)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>水平位置</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>面板在螢幕上開啟的位置：0 = 靠左、0.5 = 置中、1 = 靠右。按住 Alt 並拖曳控制項以移動，接著按一下滑鼠右鍵以儲存此位置。</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>面板關閉時</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline 音效：{0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>自訂音效</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>將 .wav 檔案放入 {0}；這些檔案將會顯示於上方的清單中。</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>關閉</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>面板開啟時</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>開啟音效資料夾</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>播放</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>音效</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows：{0}</value></data>
 </root>

@@ -519,4 +519,37 @@ Reddet:
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Yanıt hazırlanırken ancak henüz metin gelmediğinde, yanıtın takılmadığını anlamanız için imleç döner</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>Şurada devam et</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Bu sohbeti devam ettirecek bir yer henüz yok: yüklü bir yapay zeka komut satırı aracı yok veya sohbette ileti bulunmuyor.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>İleti kutusunun altında</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Boş</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Düğme satırları</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>İleti kutusunun altına taşı</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>İleti kutusunun üstünde</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>İleti kutusunun üstüne taşı</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Varsayılan konuma dön</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Kaydedildi: Hotline artık burada, bu boyutta açılacak.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Konumu ve boyutu varsayılan olarak kaydet</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Taşımak için sürükleyin; bu konumu kaydetmek için sağ tıklayın</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Sohbet yüksekliği</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Sohbetin en fazla büyüyeceği boyut. 0 = otomatik (yukarıdaki maksimum yükseklik yüzdesi).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Sohbet genişleme yönü</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatik olarak</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatik: yukarıda yer kalmadığı durumlar dışında yukarı doğru. Up veya Down bu yönü korur.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Aşağı</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Yukarı</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Genişlik</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = otomatik (yukarıdaki genişlik yüzdesi). Yeniden boyutlandırmak için Alt tuşunu basılı tutup yan kenarı sürükleyin.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Monitör</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (üzerinde çalıştığınız monitör), primary veya bir monitörün adı (tutamağın Varsayılan olarak kaydet seçeneğiyle kaydedilir)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Yatay konum</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Panelin ekranda açılacağı yer: 0 = sol, 0,5 = ortalanmış, 1 = sağ. Taşımak için Alt tuşunu basılı tutup tutamağı sürükleyin, ardından konumu kaydetmek için sağ tıklayın.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Panel kapandığında</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline sesleri: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Kendi sesleriniz</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>.wav dosyalarını {0} içine yerleştirin; yukarıdaki listelerde görünürler.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Kapalı</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Panel açıldığında</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Sesler klasörünü aç</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Çal</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Sesler</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>

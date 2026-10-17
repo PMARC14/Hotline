@@ -81,6 +81,43 @@ public sealed partial class SettingsWindow
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { add, ResetToolbarButton() } });
     }
 
+    /// <summary>
+    /// Appearance › Sounds: what plays when the panel opens and closes. Off, a Windows sound (the current sound scheme)
+    /// or a .wav from ~/.hotline/sounds; ▶ plays it; the folder button opens the sounds folder.
+    /// </summary>
+    private void BuildSoundsSection()
+    {
+        PageHost.Children.Add(new TextBlock
+        {
+            Text = Strings.Sound_Title, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
+        });
+        var folder = Interop.SoundPlayer.Directory(DataDirectory);
+        var choices = new List<(string Label, string Value)> { (Strings.Sound_Off, Hotline.Core.Windowing.Sounds.Off) };
+        choices.AddRange(Interop.SoundPlayer.Files(folder).Select(f => (L.F(Strings.Sound_File, f), f)));
+        choices.AddRange(Interop.SoundPlayer.WindowsEvents().Select(e => (L.F(Strings.Sound_Windows, e), Hotline.Core.Windowing.Sounds.WindowsPrefix + e)));
+        UIElement Picker(Func<string> get, Action<string> set)
+        {
+            var box = new ComboBox { MinWidth = 260 };
+            foreach (var (label, _) in choices) box.Items.Add(label);
+            var current = choices.FindIndex(c => string.Equals(c.Value, get(), StringComparison.OrdinalIgnoreCase));
+            if (current < 0) { box.Items.Add(get()); current = box.Items.Count - 1; } // a value typed into settings.json
+            box.SelectedIndex = current;
+            box.SelectionChanged += (_, _) =>
+            {
+                if (box.SelectedIndex >= 0 && box.SelectedIndex < choices.Count) set(choices[box.SelectedIndex].Value);
+            };
+            var play = new Button { Content = new FontIcon { Glyph = "\uE768", FontSize = 12 }, Padding = new Thickness(8, 4, 8, 4) };
+            ToolTipService.SetToolTip(play, Strings.Sound_Play);
+            play.Click += (_, _) => Interop.SoundPlayer.Play(get(), folder, _log);
+            return new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { box, play } };
+        }
+        PageHost.Children.Add(Card(Strings.Sound_Open, null, Picker(() => _settings.Current.Window.OpenSound, v => _settings.Update(s => s.Window.OpenSound = v))));
+        PageHost.Children.Add(Card(Strings.Sound_Close, null, Picker(() => _settings.Current.Window.CloseSound, v => _settings.Update(s => s.Window.CloseSound = v))));
+        var open = new Button { Content = Strings.Sound_OpenFolder };
+        open.Click += (_, _) => { System.IO.Directory.CreateDirectory(folder); CliRunner.OpenFolder(folder); };
+        PageHost.Children.Add(Card(Strings.Sound_Folder, L.F(Strings.Sound_Folder_Desc, folder), open));
+    }
+
     private Button ResetToolbarButton()
     {
         var reset = new Button { Content = Strings.Bar_Reset };

@@ -519,4 +519,37 @@ Weigeren:
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Wanneer een antwoord onderweg is maar er nog even geen tekst verschijnt, draait de cursor zodat u weet dat het proces niet is vastgelopen</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>Doorgaan in</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Er is nog niets om deze chat in voort te zetten: er is geen AI-opdrachtregelprogramma geïnstalleerd of de chat bevat geen berichten.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Boven het berichtvak</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Naar boven het berichtvak verplaatsen</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Terug naar standaardpositie</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Opgeslagen: Hotline opent nu hier, met deze grootte.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Positie en grootte als standaard opslaan</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Sleep om te verplaatsen; klik met de rechtermuisknop om deze positie op te slaan</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Chathoogte</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maximale chathoogte. 0 = automatisch (het bovenstaande maximale hoogtepercentage).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Chat breidt uit</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatisch</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatisch: omhoog, tenzij er bovenaan geen ruimte is. Up of Down houdt die richting aan.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Omlaag</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Omhoog</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Breedte</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatisch (het bovenstaande breedtepercentage). Houd Alt ingedrukt en versleep een zijkant om het formaat te wijzigen.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Beeldscherm</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (het beeldscherm waarop u werkt), primary of de naam van een beeldscherm (opgeslagen via Als standaard opslaan op de greep)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Horizontale positie</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Waar het paneel op het scherm opent: 0 = links, 0,5 = gecentreerd, 1 = rechts. Houd Alt ingedrukt en sleep de greep om te verplaatsen, en klik met de rechtermuisknop om de positie op te slaan.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Wanneer het paneel sluit</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline-geluiden: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Eigen geluiden</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Plaats .wav-bestanden in {0}; ze verschijnen in de bovenstaande lijsten.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Uit</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Wanneer het paneel opent</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Geluidenmap openen</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Afspelen</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Geluiden</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>

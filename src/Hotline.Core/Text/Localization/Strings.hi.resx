@@ -519,4 +519,37 @@
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>जब कोई उत्तर आने वाला हो लेकिन कुछ देर के लिए कोई टेक्स्ट न दिखे, तो कर्सर घूमता है, ताकि आप जान सकें कि यह रुका नहीं है</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>इसमें जारी रखें</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>इस चैट को अभी कहीं जारी नहीं रखा जा सकता: कोई AI कमांड-लाइन टूल इंस्टॉल नहीं है या चैट में कोई संदेश नहीं है।</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>संदेश बॉक्स के नीचे</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>खाली</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>संदेश बॉक्स के ऊपर</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>संदेश बॉक्स के ऊपर ले जाएँ</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>डिफ़ॉल्ट स्थान पर वापस जाएँ</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>सहेजा गया: Hotline अब यहाँ इसी आकार में खुलेगा।</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>स्थिति और आकार को डिफ़ॉल्ट के रूप में सहेजें</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>स्थानांतरित करने के लिए खींचें; इस स्थान को सहेजने के लिए राइट-क्लिक करें</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>चैट की ऊँचाई</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>चैट का अधिकतम विस्तार। 0 = स्वचालित (ऊपर दिया गया अधिकतम ऊँचाई प्रतिशत)।</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>चैट का विस्तार</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>स्वचालित रूप से</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>स्वचालित: ऊपर की ओर, जब तक कि ऊपर जगह न हो। Up या Down इसे उसी दिशा में रखता है।</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>नीचे</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>ऊपर</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>चौड़ाई</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = स्वचालित (ऊपर दिया गया चौड़ाई प्रतिशत)। आकार बदलने के लिए Alt दबाकर रखें और किनारे को खींचें।</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>मॉनिटर</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (जिस मॉनिटर पर आप काम कर रहे हैं), primary या किसी मॉनिटर का नाम (ग्रिप के डिफ़ॉल्ट के रूप में सहेजें द्वारा सहेजा गया)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>क्षैतिज स्थिति</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>स्क्रीन पर पैनल कहाँ खुलता है: 0 = बाएँ, 0.5 = बीच में, 1 = दाएँ। स्थानांतरित करने के लिए Alt दबाकर रखें और ग्रिप खींचें, फिर स्थान सहेजने के लिए राइट-क्लिक करें।</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>पैनल बंद होने पर</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline ध्वनियाँ: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>आपकी अपनी ध्वनियाँ</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>.wav फ़ाइलों को {0} में रखें; वे ऊपर दी गई सूचियों में दिखाई देंगी।</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>बंद</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>पैनल खुलने पर</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>ध्वनि फ़ोल्डर खोलें</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>चलाएँ</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>

@@ -519,4 +519,37 @@ Từ chối:
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Trong khi câu trả lời đang được tạo nhưng chưa xuất hiện văn bản, con trỏ sẽ xoay để bạn biết hệ thống không bị treo</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>Tiếp tục trong</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Chưa có nơi nào để tiếp tục cuộc trò chuyện này: chưa cài đặt công cụ dòng lệnh AI hoặc cuộc trò chuyện không có tin nhắn.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Bên dưới hộp tin nhắn</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Trống</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Các hàng nút</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Di chuyển xuống dưới hộp tin nhắn</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Bên trên hộp tin nhắn</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Di chuyển lên trên hộp tin nhắn</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Trở về vị trí mặc định</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Đã lưu: Hotline hiện mở tại đây với kích thước này.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Lưu vị trí và kích thước làm mặc định</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Kéo để di chuyển; nhấp chuột phải để lưu vị trí này</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Chiều cao đoạn chat</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Mức tối đa đoạn chat có thể mở rộng. 0 = tự động (phần trăm chiều cao tối đa ở trên).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Chiều mở rộng của đoạn chat</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Tự động</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Tự động: hướng lên trên, trừ khi không còn chỗ ở phía trên. Up hoặc Down sẽ giữ nguyên hướng đó.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Xuống dưới</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Lên trên</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Chiều rộng</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = tự động (phần trăm chiều rộng ở trên). Giữ Alt và kéo cạnh bên để đổi kích thước.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Màn hình</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (màn hình bạn đang làm việc), primary hoặc tên của màn hình (được lưu bởi Lưu làm mặc định của chốt kéo)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Vị trí nằm ngang</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Nơi bảng điều khiển mở trên màn hình: 0 = bên trái, 0.5 = ở giữa, 1 = bên phải. Giữ Alt và kéo chốt để di chuyển, sau đó nhấp chuột phải để lưu vị trí.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Khi đóng bảng điều khiển</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Âm thanh Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Âm thanh của bạn</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Đặt các tệp .wav vào {0}; chúng sẽ xuất hiện trong danh sách phía trên.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Tắt</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Khi mở bảng điều khiển</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Mở thư mục âm thanh</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Phát</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Âm thanh</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>

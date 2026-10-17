@@ -519,4 +519,37 @@ Refuser :
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Lorsqu'une réponse est en cours mais qu'aucun texte n'apparaît, le curseur tourne pour vous indiquer que le processus n'est pas bloqué</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>Continuer dans</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Impossible de continuer ce chat pour l'instant : aucun outil en ligne de commande IA n'est installé ou le chat ne contient aucun message.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Sous la zone de message</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Vide</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Lignes de boutons</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Déplacer sous la zone de message</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Au-dessus de la zone de message</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Déplacer au-dessus de la zone de message</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Revenir à l'emplacement par défaut</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Enregistré : Hotline s'ouvre maintenant ici, à cette taille.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Définir la position et la taille par défaut</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Faites glisser pour déplacer ; clic droit pour enregistrer cet emplacement</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Hauteur du chat</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Taille maximale atteinte par le chat. 0 = automatique (le pourcentage de hauteur maximale ci-dessus).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Déploiement du chat</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatiquement</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatique : vers le haut, sauf s'il n'y a plus de place au-dessus. Haut ou Bas conserve ce sens.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Bas</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Haut</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Largeur</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatique (le pourcentage de largeur ci-dessus). Maintenez Alt enfoncée et faites glisser un bord latéral pour redimensionner.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Moniteur</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (le moniteur sur lequel vous travaillez), primary ou le nom d'un moniteur (enregistré via « Définir par défaut » de la poignée)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Position horizontale</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Où le volet s'ouvre sur l'écran : 0 = gauche, 0,5 = centré, 1 = droite. Maintenez Alt enfoncée et faites glisser la poignée pour le déplacer, puis faites un clic droit pour enregistrer l'emplacement.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>À la fermeture du volet</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Sons de Hotline : {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Vos propres sons</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Placez des fichiers .wav dans {0} ; ils apparaîtront dans les listes ci-dessus.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Désactivé</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>À l'ouverture du volet</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Ouvrir le dossier des sons</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Lire</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Sons</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows : {0}</value></data>
 </root>

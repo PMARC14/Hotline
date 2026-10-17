@@ -519,4 +519,37 @@ Tolak:
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Saat jawaban sedang diproses tetapi teks belum muncul, kursor akan berputar agar Anda tahu proses tidak terhenti</value></data>
   <data name="Bar_continueIn" xml:space="preserve"><value>Lanjutkan di</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Belum ada tempat untuk melanjutkan obrolan ini: tidak ada alat baris perintah AI yang terinstal, atau obrolan tidak memiliki pesan.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Di bawah kotak pesan</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Kosong</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Baris tombol</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Pindahkan ke bawah kotak pesan</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Di atas kotak pesan</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Pindahkan ke atas kotak pesan</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Kembali ke lokasi default</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Disimpan: Hotline kini terbuka di sini, dengan ukuran ini.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Simpan posisi dan ukuran sebagai default</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Tarik untuk memindahkan; klik kanan untuk menyimpan posisi ini</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Tinggi obrolan</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Tinggi maksimal bentangan obrolan. 0 = otomatis (persentase tinggi maksimum di atas).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Arah obrolan membesar</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatis</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatis: ke atas, kecuali tidak ada ruang di atas. Up atau Down mempertahankannya pada arah tersebut.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Bawah</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Atas</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Lebar</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = otomatis (persentase lebar di atas). Tahan Alt dan tarik tepi samping untuk mengubah ukuran.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (monitor yang sedang Anda gunakan), primary, atau nama monitor (disimpan melalui Simpan sebagai default pada pegangan)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Posisi horizontal</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Tempat panel terbuka di layar: 0 = kiri, 0,5 = tengah, 1 = kanan. Tahan Alt dan tarik pegangan untuk memindahkan, lalu klik kanan untuk menyimpan posisi.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Saat panel ditutup</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Suara Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Suara Anda sendiri</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Letakkan file .wav di {0}; file akan muncul di daftar di atas.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Mati</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Saat panel dibuka</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Buka folder suara</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Putar</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Suara</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
 </root>
