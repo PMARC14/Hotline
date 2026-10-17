@@ -517,4 +517,6 @@ Denegar:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Más…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Mostrar cuando la IA está pensando</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Mientras se genera una respuesta pero aún no aparece texto, el cursor gira para que sepas que no se ha detenido</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Continuar en</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Aún no hay dónde continuar este chat: no hay ninguna herramienta de línea de comandos de IA instalada o el chat no tiene mensajes.</value></data>
 </root>

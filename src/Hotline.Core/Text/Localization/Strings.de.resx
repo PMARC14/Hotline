@@ -517,4 +517,6 @@ Verweigern:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Mehr…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Anzeigen, wenn die KI nachdenkt</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Während eine Antwort vorbereitet wird, aber kurzzeitig kein Text erscheint, dreht sich der Cursor, damit Sie sehen, dass der Vorgang nicht hängen geblieben ist</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Fortsetzen in</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Dieser Chat kann noch nirgendwo fortgesetzt werden: Es ist kein KI-Befehlszeilentool installiert oder der Chat enthält keine Nachrichten.</value></data>
 </root>

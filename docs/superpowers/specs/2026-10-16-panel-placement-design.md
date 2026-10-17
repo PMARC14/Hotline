@@ -10,12 +10,30 @@ grows out of it, **up or down**. Holding **Alt** shows a grip bar to move it and
 resize it. A move or resize is temporary unless you **pin** (it then stays for the session) or **save it as the
 default**. Optional sounds play when it opens and closes.
 
+## Open questions for the owner (answer before the matching task starts)
+
+1. **"If you click out with pin it goes back to default when launched."** Read as: *turning pin off* (clicking the
+   pin button again) sends the panel home on the next open. The other reading: clicking into another app while pinned
+   also forgets the spot. The spec assumes the first, because otherwise pin couldn't keep a spot while you work in
+   another app. (Argon flagged it.)
+2. **Auto direction at the default spot.** At `y = 0.8` the chat grows up, as today. Going down is only for a bar in
+   the upper half, or when there's no room above. Confirm, or say if down should be the default everywhere it fits.
+
+## Already decided (2026-10-16)
+
+- The owner's button layout is the default (no spacer), with **Continue in** added after the history button (done on
+  this branch); `window.backdrop` defaults to `acrylicThin` (done). Position and size defaults stay as they are today.
+- The pin's spot lasts only while pinned and only until Hotline restarts. Only "Save as default" writes a spot.
+- Sounds: Windows sound events *and* .wav files from `~/.hotline/sounds`, plus one shipped sound picked by the owner.
+
 ## Behaviour
 
 ### Home spot and size (the saved default)
 
 - `window.anchor`: `{ "monitor": "active", "x": 0.5, "y": 0.8 }`.
-  - `monitor`: `active` (the monitor you're working on, as today) or `primary`.
+  - `monitor`: `active` (the monitor you're working on, as today), `primary`, or a monitor's device name (what
+    "Save as default" writes when the panel sits on a specific monitor). A saved monitor that isn't connected falls
+    back to `active`.
   - `x`: where the bar's centre sits across the monitor's free work area (0 = left, 1 = right).
   - `y`: where the bar sits down it (0 = top, 1 = bottom).
   - Default: centred, 0.8 down, which is today's placement.
@@ -35,8 +53,11 @@ default**. Optional sounds play when it opens and closes.
 - The panel's layout never changes size while they show (they're drawn over the content).
 - **Drag the grip** to move. **Drag an edge or corner** to resize:
   - Left/right edges change the width.
-  - The chat-side edge changes the chat height.
-  - Corners do both.
+  - The chat-side edge changes the chat height. The bar-side edge carries the grip: it moves the panel and doesn't
+    resize it.
+  - The chat-side corners change both. The bar-side corners change the width only.
+  - A resize fixes the panel at that height for the current opening (like `growMode: full`), so streaming content
+    never fights the drag. The next open goes back to content-driven growth.
   - Every size has limits: at least `minWidth` × one line of chat, at most the work area.
 - On release, the panel is pulled fully inside one monitor's work area. Dropped on a monitor with a different scale, it
   keeps its DIP size on the new monitor.
@@ -52,9 +73,10 @@ default**. Optional sounds play when it opens and closes.
 
 - `window.growDirection`: `auto` (default), `up` or `down`.
 - `up` and `down` **lock** the direction.
-- `auto` picks the side with more room for the chat (`chatHeight`) when the panel opens and after each move or resize.
-  It swaps when the chat would otherwise go off the screen: a bar in the top half of a monitor grows down, one in the
-  bottom half grows up. It never swaps in the middle of an answer: an answer in progress finishes in its direction, and
+- `auto` (one rule, used when the panel opens and after each move or resize):
+  - The preferred side is up when the bar's centre is in the lower half of its monitor's work area, else down.
+  - If the chat at its full height (`chatHeight`) would go off the screen on the preferred side and the other side
+    has more room, it swaps. It never swaps in the middle of an answer: an answer in progress finishes in its direction, and
   the swap happens at the next open, move or resize.
 - The bar keeps its place and the chat grows away from it. The growth animation, `growMode` (`grow` / `full`) and the
   half-then-content step (`PopupGeometry.TwoStep`) work the same in both directions.

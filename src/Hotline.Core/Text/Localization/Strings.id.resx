@@ -517,4 +517,6 @@ Tolak:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Lainnya…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Tampilkan saat AI sedang berpikir</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Saat jawaban sedang diproses tetapi teks belum muncul, kursor akan berputar agar Anda tahu proses tidak terhenti</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Lanjutkan di</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Belum ada tempat untuk melanjutkan obrolan ini: tidak ada alat baris perintah AI yang terinstal, atau obrolan tidak memiliki pesan.</value></data>
 </root>

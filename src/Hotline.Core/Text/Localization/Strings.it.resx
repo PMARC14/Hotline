@@ -517,4 +517,6 @@ Nega:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Altro…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Mostra quando l'IA sta elaborando</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Mentre una risposta è in preparazione ma non compare ancora testo, il cursore ruota per indicare che il processo non è bloccato</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Continua in</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Non c'è ancora nulla in cui continuare questa chat: nessuno strumento da riga di comando IA installato o la chat non contiene messaggi.</value></data>
 </root>

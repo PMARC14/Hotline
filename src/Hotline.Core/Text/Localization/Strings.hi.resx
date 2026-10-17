@@ -517,4 +517,6 @@
   <data name="Recent_ContinueMore" xml:space="preserve"><value>अधिक…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>दिखाएं कि AI कब सोच रहा है</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>जब कोई उत्तर आने वाला हो लेकिन कुछ देर के लिए कोई टेक्स्ट न दिखे, तो कर्सर घूमता है, ताकि आप जान सकें कि यह रुका नहीं है</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>इसमें जारी रखें</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>इस चैट को अभी कहीं जारी नहीं रखा जा सकता: कोई AI कमांड-लाइन टूल इंस्टॉल नहीं है या चैट में कोई संदेश नहीं है।</value></data>
 </root>

@@ -517,4 +517,6 @@ Weigeren:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Meer…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Weergeven wanneer de AI nadenkt</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Wanneer een antwoord onderweg is maar er nog even geen tekst verschijnt, draait de cursor zodat u weet dat het proces niet is vastgelopen</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Doorgaan in</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Er is nog niets om deze chat in voort te zetten: er is geen AI-opdrachtregelprogramma geïnstalleerd of de chat bevat geen berichten.</value></data>
 </root>

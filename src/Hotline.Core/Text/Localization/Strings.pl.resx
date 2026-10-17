@@ -517,4 +517,6 @@ Zabroń:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Więcej…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Pokazuj, gdy AI myśli</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Gdy odpowiedź jest generowana, ale przez chwilę nie pojawia się tekst, kursor obraca się, sygnalizując, że proces nie został zatrzymany</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Kontynuuj w</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Brak miejsca do kontynuowania tego czatu: nie zainstalowano żadnego narzędzia wiersza poleceń AI lub czat nie zawiera wiadomości.</value></data>
 </root>

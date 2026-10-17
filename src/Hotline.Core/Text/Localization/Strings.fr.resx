@@ -517,4 +517,6 @@ Refuser :
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Plus…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Indiquer quand l'IA réfléchit</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Lorsqu'une réponse est en cours mais qu'aucun texte n'apparaît, le curseur tourne pour vous indiquer que le processus n'est pas bloqué</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Continuer dans</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Impossible de continuer ce chat pour l'instant : aucun outil en ligne de commande IA n'est installé ou le chat ne contient aucun message.</value></data>
 </root>

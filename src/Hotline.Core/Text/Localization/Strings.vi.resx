@@ -517,4 +517,6 @@ Từ chối:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Thêm…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Hiển thị khi AI đang suy nghĩ</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Trong khi câu trả lời đang được tạo nhưng chưa xuất hiện văn bản, con trỏ sẽ xoay để bạn biết hệ thống không bị treo</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Tiếp tục trong</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Chưa có nơi nào để tiếp tục cuộc trò chuyện này: chưa cài đặt công cụ dòng lệnh AI hoặc cuộc trò chuyện không có tin nhắn.</value></data>
 </root>

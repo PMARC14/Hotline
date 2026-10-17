@@ -517,4 +517,6 @@
   <data name="Recent_ContinueMore" xml:space="preserve"><value>更多…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>在 AI 思考时显示</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>正在生成回复但暂未显示文字时，光标将旋转，以便您知道程序并未卡死</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>继续在</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>尚无可用位置继续此聊天：未安装任何 AI 命令行工具，或聊天中没有任何消息。</value></data>
 </root>
