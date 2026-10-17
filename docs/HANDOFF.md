@@ -172,6 +172,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   from a container whose size doesn't depend on what you set. `diagnostics`: WinUI's
   `DebugSettings.LayoutCycleTracingLevel = High` writes the cycle to OutputDebugString (catch it with a DBWIN listener;
   see the 2026-10-17 session) and names the element.
+- **The panel's window rectangle includes a frame** (`AppWindow.Size` − `ClientSize`: 13 px tall at 200 %). Sizing the
+  window to the content height cut the bottom padding off, and with it the move grip (fixed 2026-10-17: `FramePx`).
+  The open check logs `panel content cut off` if it ever happens again. `hotline://grips?show=1|0` shows the Alt grips
+  without a keystroke (screenshots, tests).
 - **Before 0.3, a self-test that hung left the panel parked at (-32000, -32000)**, invisible on every later open. A
   real open now always ends off-screen mode. When "nothing appears", check the window rect first (`EnumWindows`; a
   non-DPI-aware PowerShell reports logical pixels: -16000 at 200 %).
