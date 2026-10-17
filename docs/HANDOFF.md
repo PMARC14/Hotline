@@ -10,10 +10,9 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 the user picks — Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-10-16)
+## State (2026-10-17)
 
-- **Released:** GitHub **v0.2.24** (2026-10-15), **v0.2.25** (2026-10-16; the history hotfix and the two
-  history features below). GitHub releases are normal releases signed with Hotline's long-lived self-signed
+- **Released:** GitHub **v0.3.0** (2026-10-17: PRs #32 and #33, below), before it v0.2.25 and v0.2.24. GitHub releases are normal releases signed with Hotline's long-lived self-signed
   certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; repo secrets `HOTLINE_SIGNING_PFX_BASE64` /
   `_PASSWORD`; the owner keeps `certs/release/hotline-release.pfx` + password, git-ignored, and a backup in
   `Documents\Hotline-release-certificate\`): users trust `Hotline.cer` once, then `.appinstaller` updates work.
@@ -33,44 +32,31 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `/resume` + space opens the list and the search continues there (`chat.resumeWhileTyping`).
   - Reopened CLI chats show their earlier messages from the CLI's own history (`CliTranscripts`;
     `chat.cliTranscripts`). `chat.historyListSize` sets how many chats the list reads. All three are settings.json only.
-- **In v0.3.0** (branch `codex-feedback`, from the owner's Codex test on 2026-10-16):
-  - Thinking indicator: the streaming cursor spins while no text has come for `chat.thinkingDelayMs` (700 ms;
-    `chat.thinkingIndicator`).
+- **In v0.3.0** (PR #32 `codex-feedback` + PR #33 `panel-placement`, merged 2026-10-17):
+  - Thinking indicator (the cursor spins while no text comes; `chat.thinkingIndicator`, `chat.thinkingDelayMs`).
   - Codex lists its models (`CodexModels`: `codex app-server` `model/list`, else `~/.codex/models_cache.json`, else a
-    curated list); efforts up to `max`/`ultra`. Slash commands can't pass through `codex exec` (a TUI feature).
-  - No built-in agy connection: a new install has none and the panel offers the CLIs it finds; every connection can be
-    removed (warning on the last). Schema v12 keeps agy for older files that ran on the built-in one.
-  - CLI chats (chat-only too) run in the home folder, so `claude --resume` / `codex resume` / `agy --conversation` from a
-    home terminal find them; scratch files in `~/.hotline/scratch` (agy's agent + attachments via `--add-dir`).
-  - Continue in: only the chat's own CLI on top; the other CLIs under **More…**.
-  - Settings › Advanced › Reset settings / Reset everything (backups in `~/.hotline/backups`), hidden defaults copy
-    in `~/.hotline/.defaults/settings.json`; switching settings = replacing the file (applies live).
-  - Fix: the panel "opened" invisibly at (-32000, -32000) after a `hotline://selftest` whose OCR step hung (its cleanup
-    never ran). A real open now always ends off-screen mode, and the OCR check gives up after 10 s. This was also the
-    2026-10-16 "nothing pops up" report at 18:52. A panel open check also logs and re-shows a panel that drew nothing.
-  - **Open: the Windows warning sound when the key closes a *pinned* panel.** Giving focus back to the previous app
-    (e863bd2) didn't help: that path didn't run, because the previous window was none. Each toggle now logs `focus=`
-    (the focused element) and `previous=`. Next: the owner pins, closes with the key and notes the time; read those
-    lines. See the panel plan's task 1 for the candidates.
-- **Branch `panel-placement`** (stacked on #32; the rest of 0.3; spec and plan in `docs/superpowers/`):
-  - The panel opens at `window.anchor` (`monitor`, `x`, `y`), size `window.width` / `chatHeight`.
-  - The chat grows up or down from a fixed message bar (`window.growDirection`; auto = up unless there's no room
-    above).
-  - **Alt grips** move and resize it. The grip's right-click menu has Save as default / Back to the default spot.
-  - A moved spot is kept only while pinned: forgotten on unpin, on clicking into another app, and on restart.
-  - The top button row is toolbar.json `top`. The Continue in button is in the default bar, and the owner's layout
-    plus `acrylicThin` are the defaults.
-  - Open/close sounds: Windows sound events or .wav files in `~/.hotline/sounds`. `hotline.wav` is a generated
-    placeholder until the owner picks one: replace `src/Hotline.App/Assets/Sounds/hotline.wav`.
-  - Schema v13 moves `verticalPosition` into `anchor.y`.
-  - Argon-reviewed (4 parts); the confirmed findings are fixed.
-  - **Hand test on the desktop** (mixed DPI, multi-monitor), the spec's list: drag across monitors, every resize
-    edge, pin → key → same spot, click another app → key → default, Save as default → restart, a monitor unplugged
-    while pinned, sounds.
-  - Real drags were never exercised automatically (that needs mouse input).
-- **Open PR #29** (`continue-in-targets`, ships as **0.4**): Continue in to web pages, Open WebUI (a real chat) and apps,
+    curated list).
+  - No built-in agy connection (new installs ask; every connection can be removed; schema v12 keeps it for old files).
+  - CLI chats run in the home folder; scratch files in `~/.hotline/scratch` (agy's agent via `--add-dir`).
+  - Continue in: the chat's own CLI on top, the others under More…; a Continue in toolbar button.
+  - Settings › Advanced › Reset settings / Reset everything (backed up), hidden defaults copy in `~/.hotline/.defaults`.
+  - The panel: `window.anchor` (monitor, x, y), `width`, `chatHeight`; the chat grows up or down from a fixed message
+    bar (`growDirection`, auto = up unless no room above); **Alt grips** move and resize it (a resize fixes the height
+    for that opening; it can go back down to the bar alone); the grip's menu saves the spot as default; a moved spot
+    is kept only while pinned (forgotten on unpin, clicking into another app, restart). Schema v13.
+  - Button rows: toolbar.json `top` (above the message box) and `items` (below); the owner's layout and
+    `acrylicThin` are the defaults.
+  - Open/close sounds (off by default): Windows sound events or .wav files in `~/.hotline/sounds`, preloaded media
+    players. `hotline.wav` is a generated placeholder until the owner picks one
+    (`src/Hotline.App/Assets/Sounds/hotline.wav`).
+  - Settings › Guide: every feature in 13 sections, 17 languages (page names checked per language by Gemini Flash).
+  - Fixes: the layout cycle that stopped the panel drawing for good; the window frame now counted in the panel's
+    height (the bottom padding and move grip were cut off); no empty band beside an empty panel; the newest text
+    stays in view; the panel never left off-screen by the self-test; 26H2's Copilot-key focus frame (below).
+  - **Not yet hand-tested by the owner:** real Alt-drags across monitors with mixed DPI (on the desktop).
+- **Open PR #29** (`continue-in-targets`, ships as **0.5**): Continue in to web pages, Open WebUI (a real chat) and apps,
   from a shared list or per connection; built from `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed,
-  998 tests. Waits for 0.3 (the Codex feedback branch); bump `version.txt` to `0.4` when it merges. Hand-test list:
+  998 tests. Waits for 0.4 (26H2); bump `version.txt` when it merges. Hand-test list:
   1. llama.cpp web UI (default target of a Local connection): opens with the conversation as the first message.
   2. Open WebUI (if run): Settings › Chat › Continue in › Add › Open WebUI, address + API key, **Test** shows the model
      count; continuing creates a real Open WebUI chat with every message.
@@ -80,22 +66,19 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   6. A very long chat with a web target: the notice that only the last message went and the chat is on the clipboard.
   7. A wrong Open WebUI key or address: a clear "Couldn't open…" notice.
   A Gemini API connection has no default target (Gemini's site takes no message in its link); add one to test it.
-- Tests: ~1004 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
+- Tests: ~1043 Core unit tests; `tests/smoke/smoke.ps1 -Install` (the owner sometimes asks to skip it); the
   off-screen self-test `hotline://selftest` builds every settings page.
 
 ## Next work
 
-1. **0.3:**
-   - Merge PR #32 when the owner approves (publishes v0.3.0). Then merge `main` into `panel-placement`,
-     `personal/gemini-web`, `windows-26h2` and `continue-in-targets` (expect a `ContinueIn.cs` conflict there), build
-     the 0.3.0.0 Store bundle, and reinstall from `main`.
-   - Then PR #33 (the panel: built, Argon-reviewed in code and by eye; still open: the warning sound, plan task 1,
-     and the owner's hand test of real drags on the desktop).
-2. **Next: Windows 11 26H2** — the dev laptop got 26H2 on 2026-10-17, so this comes right after 0.3, here: PR #9
-   (draft, branch `windows-26h2`, kept up to date with `main`): agent connectors (`odr.exe`), App Actions, the Copilot
-   key, re-run TESTING.md, new APIs behind `PlatformSupport` checks.
-   - Then PR #29 (Continue in) and region capture on multi-monitor / mixed DPI (on the owner's desktop: clone, dev
-     certificate (README), `scripts/install.sh`). Version numbers to be set when these are ordered.
+1. **Next (new chat): Windows 11 26H2** — the dev laptop runs 26H2 since 2026-10-17. PR #9 (draft, branch
+   `windows-26h2`, kept up to date with `main`): agent connectors (`odr.exe`), App Actions, the Copilot key (26H2's
+   `CopilotKeyPressFocusFrame`, see the hard-won facts), re-run TESTING.md, new APIs behind `PlatformSupport` checks.
+   Also on the list from the 0.3 work: the pickers are cramped at the default 600-DIP width ("H…", "Gemini 3…"):
+   decide a wider default or an earlier hide; the owner picks the shipped open/close sound.
+2. Then PR #29 (Continue in: web pages, Open WebUI, apps; merge `main` into it first, expect conflicts in
+   `ContinueIn.cs` and `RecentChatsMenu.cs`) and region capture on multi-monitor / mixed DPI plus the panel's hand test
+   (on the owner's desktop: clone, dev certificate (README), `scripts/install.sh`). Version numbers when ordered.
 3. **Brainstorm** anything else wanted before 1.0, then decide on it. (The Codex live check was done by the owner on
    2026-10-16; its feedback is 0.3.)
 4. **Version 1.0** when: hand tests done, multi-monitor capture OK, 26H2 merged, a Store update certified with all
@@ -112,11 +95,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **The Store only needs each submission's version, compared as a whole (left to right), to be higher than the last**,
   and the fourth part to be `0`: `0.3.0.0` follows `0.2.25.0` fine.
 - **The plan:**
-  - **0.3** — the Codex-test feedback (thinking indicator, Codex models, connections, folders, reset) and the movable,
-    pinnable panel.
-  - **0.4** — Continue in (PR #29): the last big feature before 1.0.
-  - **0.5** — when the Windows 11 26H2 work (#9) and the multi-monitor / mixed-DPI region capture fix land: feature
-    complete for 1.0; after that only fixes, polish and a Store update certified with all 17 languages.
+  - **0.3** (released 2026-10-17) — the Codex-test feedback and the movable, resizable panel.
+  - **0.4** — the Windows 11 26H2 work (#9), next (owner, 2026-10-17).
+  - **0.5** — Continue in (PR #29) and the multi-monitor / mixed-DPI region capture fix: feature complete for 1.0;
+    after that only fixes, polish and a Store update certified with all 17 languages.
   - **1.0** — when that Store update is through and nothing that breaks existing settings files is pending. From 1.0
     on, settings files must keep working across updates (migrations, never breaking changes).
 
@@ -172,6 +154,12 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   from a container whose size doesn't depend on what you set. `diagnostics`: WinUI's
   `DebugSettings.LayoutCycleTracingLevel = High` writes the cycle to OutputDebugString (catch it with a DBWIN listener;
   see the 2026-10-17 session) and names the element.
+- **Windows 11 26H2 gives focus to Explorer's `CopilotKeyPressFocusFrame` on each Copilot key press**, ~0.1 s before
+  Hotline's toggle arrives. A panel still showing when the toggle hid it (pinned, or kept because Hotline's own
+  Settings window took focus) made Explorer play the Windows warning sound, and the key's keystrokes reached a focused
+  pin button and unpinned it. Now: any open panel closes when that frame takes focus (the toggle that follows counts
+  as that close, within the 300-ms guard), bar buttons never keep keyboard focus, the frame is a shell surface, and the
+  log names who takes focus on each deactivation (`deactivated: focus went to …`).
 - **The panel's window rectangle includes a frame** (`AppWindow.Size` − `ClientSize`: 13 px tall at 200 %). Sizing the
   window to the content height cut the bottom padding off, and with it the move grip (fixed 2026-10-17: `FramePx`).
   The open check logs `panel content cut off` if it ever happens again. `hotline://grips?show=1|0` shows the Alt grips
