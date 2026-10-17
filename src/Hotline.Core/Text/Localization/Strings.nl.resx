@@ -563,12 +563,12 @@ Instellingen › AI-verbindingen voegt ze toe: Claude Code, Codex of Antigravity
   <data name="Guide_Attach_Body" xml:space="preserve"><value>De +-knop voegt bestanden toe, het venster waarin je was, het hele scherm of een gebied dat je sleept. Je kunt ook afbeeldingen en bestanden plakken of neerzetten.
 Tekst die je had geselecteerd in de app waar je vandaan kwam, gaat vanzelf mee. Modellen die geen afbeeldingen kunnen zien, krijgen in plaats daarvan de tekst in de schermopname.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Spraak</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Stel lang indrukken in op Spraakinvoer (Instellingen › Algemeen), houd de toets ingedrukt en praat; laat los om te stoppen. Instellingen › Chat bepaalt of dit meteen wordt verzonden.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Stel lang indrukken in op Spraakinvoer (Instellingen › Algemeen), houd de toets ingedrukt en praat; laat los om te stoppen. Instellingen › Chat en geschiedenis bepaalt of dit meteen wordt verzonden.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Snelle acties en prompts</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Typ / voor /translate, /summarize, /fix, /explain of je eigen acties (Instellingen › Snelle acties).
 De documentknop kiest de systeemprompt (Instellingen › Prompts).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Geheugen</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember en een notitie slaat dit op voor elke chat, welke AI je ook gebruikt. Instellingen › Chat opent memory.md om het te bewerken.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember en een notitie slaat dit op voor elke chat, welke AI je ook gebruikt. Instellingen › Chat en geschiedenis opent memory.md om het te bewerken.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Geschiedenis en doorgaan</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>De klokknop, Ctrl+Up in een leeg berichtvak of /resume opent je chats; typ om te zoeken.
 Een chat met Claude Code, Codex of Antigravity bevindt zich in de eigen geschiedenis van die tool en gaat verder waar deze gebleven was. Doorgaan in (in de lijst of via de bijbehorende knop) opent deze in een terminal; de andere tools staan onder Meer….</value></data>

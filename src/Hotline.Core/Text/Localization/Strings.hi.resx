@@ -563,12 +563,12 @@
   <data name="Guide_Attach_Body" xml:space="preserve"><value>+ बटन फ़ाइलें, वह विंडो जिसमें आप काम कर रहे थे, पूरी स्क्रीन या आपके द्वारा खींचा गया क्षेत्र संलग्न करता है। आप छवियों और फ़ाइलों को पेस्ट या ड्रॉप भी कर सकते हैं।
 आप जिस ऐप से आए थे, उसमें चुना गया टेक्स्ट अपने आप यहाँ आ जाता है। जो मॉडल छवियां नहीं देख सकते, उन्हें इसके बजाय स्क्रीनशॉट का टेक्स्ट मिलता है।</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>वॉइस</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>लंबे समय तक दबाने को वॉइस इनपुट पर सेट करें (सेटिंग्स › सामान्य), कुंजी दबाए रखें और बोलें; रोकने के लिए छोड़ दें। सेटिंग्स › चैट तय करता है कि इसे तुरंत भेजा जाए या नहीं।</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>लंबे समय तक दबाने को वॉइस इनपुट पर सेट करें (सेटिंग्स › सामान्य), कुंजी दबाए रखें और बोलें; रोकने के लिए छोड़ दें। सेटिंग्स › चैट और इतिहास तय करता है कि इसे तुरंत भेजा जाए या नहीं।</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>त्वरित क्रियाएँ और प्रॉम्प्ट</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>/translate, /summarize, /fix, /explain या अपने स्वयं के लिए / टाइप करें (सेटिंग्स › त्वरित क्रियाएँ)।
 दस्तावेज़ बटन सिस्टम प्रॉम्प्ट चुनता है (सेटिंग्स › प्रॉम्प्ट)।</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>मेमोरी</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember और एक नोट इसे हर चैट के लिए सहेजता है, चाहे आप किसी भी AI का उपयोग करें। सेटिंग्स › चैट इसे संपादित करने के लिए memory.md खोलता है।</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember और एक नोट इसे हर चैट के लिए सहेजता है, चाहे आप किसी भी AI का उपयोग करें। सेटिंग्स › चैट और इतिहास इसे संपादित करने के लिए memory.md खोलता है।</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>इतिहास और जारी रखना</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>घड़ी का बटन, खाली संदेश बॉक्स में Ctrl+Up, या /resume आपकी चैट खोलता है; खोजने के लिए टाइप करें।
 Claude Code, Codex या Antigravity के साथ की गई चैट उस टूल के अपने इतिहास में रहती है और वहीं से शुरू होती है जहाँ छूटी थी। इसमें जारी रखें (सूची में, या इसका बटन) इसे टर्मिनल में खोलता है; अन्य टूल अधिक… में हैं।</value></data>
@@ -580,9 +580,9 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
   <data name="Guide_Direction_Title" xml:space="preserve"><value>ऊपर या नीचे</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>चैट संदेश बार से बढ़ती है: ऊपर की ओर, जब तक कि ऊपर जगह न हो, फिर नीचे की ओर। सेटिंग्स › विंडो इसे ऊपर या नीचे रख सकती है और स्थिति, चौड़ाई और चैट की ऊंचाई सेट करती है।</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › रंग-रूप › बटन पंक्तियाँ संदेश बॉक्स के ऊपर या नीचे बटन दिखाती, छिपाती और व्यवस्थित करती हैं।</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › रूप › बटन पंक्तियाँ संदेश बॉक्स के ऊपर या नीचे बटन दिखाती, छिपाती और व्यवस्थित करती हैं।</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
-  <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रंग-रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>सेटिंग्स फ़ाइलें हैं</value></data>
   <data name="Guide_Files_Body" xml:space="preserve"><value>सब कुछ आपके .hotline फ़ोल्डर में है और सहेजते ही लागू होता है: settings.json, प्रति कनेक्शन एक फ़ाइल, प्रॉम्प्ट, त्वरित क्रियाएँ और toolbar.json। सेटअप बदलने के लिए किसी फ़ाइल को बदलें; सेटिंग्स › उन्नत › रीसेट करें बैकअप के साथ फिर से शुरुआत करता है।
 API कुंजियाँ Windows Credential Locker में रखी जाती हैं, फ़ाइल में कभी नहीं।</value></data>

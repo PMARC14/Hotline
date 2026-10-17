@@ -563,12 +563,12 @@ Configurações › Conexões de IA adiciona essas opções: Claude Code, Codex 
   <data name="Guide_Attach_Body" xml:space="preserve"><value>O botão + anexa arquivos, a janela em que você estava, a tela inteira ou uma região selecionada por você. Você também pode colar ou soltar imagens e arquivos.
 O texto que você havia selecionado no aplicativo de origem é incluído automaticamente. Modelos que não veem imagens recebem o texto da captura de tela.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Voz</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Defina o toque longo como Entrada de voz (Configurações › Geral), mantenha a tecla pressionada e fale; solte para parar. Configurações › Chat decide se o envio é feito na hora.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Defina o toque longo como Entrada de voz (Configurações › Geral), mantenha a tecla pressionada e fale; solte para parar. Configurações › Chat e histórico decide se o envio é feito na hora.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Ações rápidas e prompts</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Digite / para /translate, /summarize, /fix, /explain ou seus próprios comandos (Configurações › Ações rápidas).
 O botão de documento escolhe o prompt do sistema (Configurações › Prompts).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Memória</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember e uma anotação salvam a informação para todos os chats, qualquer que seja a IA usada. Configurações › Chat abre o memory.md para edição.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember e uma anotação salvam a informação para todos os chats, qualquer que seja a IA usada. Configurações › Chat e histórico abre o memory.md para edição.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Histórico e continuidade</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>O botão de relógio, Ctrl+Up em uma caixa de mensagens vazia ou /resume abre seus chats; digite para pesquisar.
 Um chat com Claude Code, Codex ou Antigravity fica no histórico próprio dessa ferramenta e continua de onde parou. Continuar em (na lista ou em seu botão) o abre em um terminal; as outras ferramentas ficam em Mais….</value></data>

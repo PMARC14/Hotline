@@ -563,12 +563,12 @@ Ustawienia › Połączenia AI pozwala je dodać: Claude Code, Codex lub Antigra
   <data name="Guide_Attach_Body" xml:space="preserve"><value>Przycisk + dołącza pliki, aktywne okno, cały ekran lub zaznaczony przeciągnięciem obszar. Możesz też wklejać lub upuszczać obrazy i pliki.
 Tekst zaznaczony w aplikacji, z której przechodzisz, dołącza się samoczynnie. Modele, które nie widzą obrazów, otrzymują w zamian tekst ze zrzutu ekranu.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Głos</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Ustaw długie naciśnięcie na Wprowadzanie głosowe (Ustawienia › Ogólne), przytrzymaj klawisz i mów; puść, aby zakończyć. Ustawienia › Czat decyduje, czy wiadomość jest wysyłana od razu.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Ustaw długie naciśnięcie na Wprowadzanie głosowe (Ustawienia › Ogólne), przytrzymaj klawisz i mów; puść, aby zakończyć. Ustawienia › Czat i historia decyduje, czy wiadomość jest wysyłana od razu.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Szybkie akcje i monity</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Wpisz /, aby wybrać /translate, /summarize, /fix, /explain lub własne (Ustawienia › Szybkie akcje).
-Przycisk dokumentu wybiera monit systemowy (Ustawienia › Monity).</value></data>
+Przycisk dokumentu wybiera monit systemowy (Ustawienia › Prompty).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Pamięć</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember wraz z notatką zapisuje ją dla każdego czatu, bez względu na wybranego AI. Ustawienia › Czat otwiera plik memory.md, aby go edytować.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember wraz z notatką zapisuje ją dla każdego czatu, bez względu na wybranego AI. Ustawienia › Czat i historia otwiera plik memory.md, aby go edytować.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Historia i kontynuowanie</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Przycisk zegara, Ctrl+Up w pustym polu wiadomości lub /resume otwiera Twoje czaty; zacznij pisać, aby wyszukać.
 Czat z Claude Code, Codex lub Antigravity znajduje się we własnej historii danego narzędzia i wznawia się w miejscu, w którym został przerwany. Kontynuuj w (na liście lub jej przycisk) otwiera go w terminalu; pozostałe narzędzia są pod Więcej….</value></data>
@@ -580,7 +580,7 @@ Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba
   <data name="Guide_Direction_Title" xml:space="preserve"><value>W górę lub w dół</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Czat rozwija się od paska wiadomości: w górę, chyba że zabraknie miejsca powyżej, a wtedy w dół. Ustawienia › Okno pozwala utrzymać go w górze lub w dole oraz ustawia położenie, szerokość i wysokość czatu.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rzędy przycisków</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Rzędy przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Wiersze przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Dźwięki odtwarza dźwięk przy otwieraniu lub zamykaniu panelu: dźwięk Windows lub plik .wav w Twoim folderze dźwięków. Domyślnie wyłączone.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ustawienia to pliki</value></data>

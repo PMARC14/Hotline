@@ -563,12 +563,12 @@
   <data name="Guide_Attach_Body" xml:space="preserve"><value>Кнопка «+» вкладає файли, вікно, у якому ви працювали, весь екран або виділену область. Також можна вставляти або перетягувати зображення та файли.
 Текст, виділений у попередній програмі, додається автоматично. Моделі, які не розпізнають зображення, замість цього отримують текст зі знімка екрана.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Голос</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Установіть для тривалого натискання дію «Голосове введення» (Параметри › Загальні), утримуйте клавішу та говоріть; відпустіть, щоб зупинити. Параметри › Чат визначає, чи надсилати повідомлення одразу.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Установіть для тривалого натискання дію «Голосове введення» (Параметри › Загальні), утримуйте клавішу та говоріть; відпустіть, щоб зупинити. Параметри › Чат та історія визначає, чи надсилати повідомлення одразу.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Швидкі дії та підказки</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Введіть / для /translate, /summarize, /fix, /explain або власних дій (Параметри › Швидкі дії).
-Кнопка з документом вибирає системну підказку (Параметри › Підказки).</value></data>
+Кнопка з документом вибирає системну підказку (Параметри › Промпти).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Пам'ять</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>Команда /remember з приміткою зберігає її для всіх чатів, незалежно від вибраного ШІ. Параметри › Чат відкриває memory.md для редагування.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>Команда /remember з приміткою зберігає її для всіх чатів, незалежно від вибраного ШІ. Параметри › Чат та історія відкриває memory.md для редагування.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Історія та продовження</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Кнопка з годинником, Ctrl+Up у порожньому полі повідомлення або /resume відкриває ваші чати; почніть вводити для пошуку.
 Чат із Claude Code, Codex або Antigravity зберігається у власній історії цього інструмента й продовжується з місця зупинки. Пункт «Продовжити в» (у списку або відповідна кнопка) відкриває його в терміналі; інші інструменти доступні в меню «Більше…».</value></data>
@@ -580,11 +580,11 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Угору чи вниз</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Чат розгортається від рядка повідомлення: угору, якщо є місце, або вниз, якщо місця вгорі немає. Параметри › Вікно дозволяє зафіксувати напрямок угору чи вниз і налаштовує розташування, ширину та висоту чату.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Оформлення › Рядки кнопок показує, приховує та впорядковує кнопки над або під полем повідомлення.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вигляд › Рядки кнопок показує, приховує та впорядковує кнопки над або під полем повідомлення.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Звуки</value></data>
-  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Оформлення › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Вигляд › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Параметри — це файли</value></data>
-  <data name="Guide_Files_Body" xml:space="preserve"><value>Усе зберігається у вашій папці .hotline і застосовується під час збереження: settings.json, по одному файлу на кожне підключення, підказки, швидкі дії та toolbar.json. Замініть файл, щоб змінити конфігурацію; Параметри › Додатково › Скидання повертає все до початкового стану зі створенням резервної копії.
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Усе зберігається у вашій папці .hotline і застосовується під час збереження: settings.json, по одному файлу на кожне підключення, підказки, швидкі дії та toolbar.json. Замініть файл, щоб змінити конфігурацію; Параметри › Додатково › Скинути повертає все до початкового стану зі створенням резервної копії.
 Ключі API зберігаються в Windows Credential Locker і ніколи не потрапляють у файли.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Коротко про все, що робить Hotline. У кожному розділі зазначено, де це можна змінити в Параметрах.</value></data>
 </root>

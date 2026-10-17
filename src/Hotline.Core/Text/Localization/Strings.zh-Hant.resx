@@ -563,12 +563,12 @@
   <data name="Guide_Attach_Body" xml:space="preserve"><value>+ 按鈕可附加檔案、您剛剛所在的視窗、整個螢幕或拖曳選取的區域。您也可以直接貼上或拖放影像與檔案。
 在原本應用程式中選取的文字會自動一併帶入。無法檢視影像的模型會改為接收螢幕擷取畫面中的文字。</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>語音</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>將長按設定為語音輸入（設定 › 一般），按住按鍵即可說話；放開即可停止。設定 › 聊天可決定是否立即傳送。</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>將長按設定為語音輸入（設定 › 一般），按住按鍵即可說話；放開即可停止。設定 › 聊天與記錄可決定是否立即傳送。</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>快速動作與提示詞</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>輸入 / 即可使用 /translate、/summarize、/fix、/explain 或您的自訂動作（設定 › 快速動作）。
 文件按鈕用於選擇系統提示詞（設定 › 提示詞）。</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>記憶</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>輸入 /remember 加上備忘即可在每次聊天中儲存該內容，無論使用哪種 AI。設定 › 聊天可開啟 memory.md 進行編輯。</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>輸入 /remember 加上備忘即可在每次聊天中儲存該內容，無論使用哪種 AI。設定 › 聊天與記錄可開啟 memory.md 進行編輯。</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>歷程記錄與繼續</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>時鐘按鈕、在空白訊息方塊中按 Ctrl+Up 或輸入 /resume 即可開啟您的聊天；輸入文字即可搜尋。
 與 Claude Code、Codex 或 Antigravity 的聊天會保留在該工具自有的歷程記錄中，並從中斷處繼續。「繼續於」（位於清單中或其按鈕）可在終端機中開啟；其他工具則位於「更多…」下方。</value></data>

@@ -563,12 +563,12 @@ Paramètres › Connexions IA permet de les ajouter : Claude Code, Codex ou Anti
   <data name="Guide_Attach_Body" xml:space="preserve"><value>Le bouton + joint des fichiers, la fenêtre active, l'écran entier ou une zone délimitée par glissement. Vous pouvez aussi coller ou glisser-déposer des images et des fichiers.
 Le texte que vous aviez sélectionné dans l'application d'origine est inclus automatiquement. Les modèles qui ne gèrent pas les images reçoivent à la place le texte présent dans la capture d'écran.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Voix</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Attribuez l'appui long à Saisie vocale (Paramètres › Général), maintenez la touche enfoncée et parlez ; relâchez pour arrêter. Paramètres › Chat détermine si l'envoi se fait immédiatement.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Attribuez l'appui long à Saisie vocale (Paramètres › Général), maintenez la touche enfoncée et parlez ; relâchez pour arrêter. Paramètres › Conversation et historique détermine si l'envoi se fait immédiatement.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Actions rapides et prompts</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Tapez / pour /translate, /summarize, /fix, /explain ou vos propres actions (Paramètres › Actions rapides).
 Le bouton document sélectionne le prompt système (Paramètres › Prompts).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Mémoire</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember avec une note l'enregistre pour chaque discussion, quelle que soit l'IA utilisée. Paramètres › Chat ouvre memory.md pour le modifier.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember avec une note l'enregistre pour chaque discussion, quelle que soit l'IA utilisée. Paramètres › Conversation et historique ouvre memory.md pour le modifier.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Historique et reprise</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Le bouton horloge, Ctrl+Up dans une zone de message vide ou /resume ouvre vos discussions ; tapez pour rechercher.
 Une discussion avec Claude Code, Codex ou Antigravity vit dans l'historique propre à cet outil et reprend là où elle s'était arrêtée. Continuer dans (dans la liste ou via son bouton) l'ouvre dans un terminal ; les autres outils figurent sous Plus….</value></data>
@@ -580,7 +580,7 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Vers le haut ou vers le bas</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La discussion se développe à partir de la barre de message : vers le haut, sauf s'il n'y a pas assez de place, puis vers le bas. Paramètres › Fenêtre permet de la maintenir vers le haut ou vers le bas et définit la position, la largeur et la hauteur de la discussion.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rangées de boutons</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Apparence › Rangées de boutons affiche, masque et réorganise les boutons, au-dessus ou au-dessous de la zone de message.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Apparence › Lignes de boutons affiche, masque et réorganise les boutons, au-dessus ou au-dessous de la zone de message.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Paramètres › Apparence › Sons émet un son à l'ouverture ou à la fermeture du panneau : un son Windows ou un .wav dans votre dossier de sons. Désactivé par défaut.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Les paramètres sont des fichiers</value></data>

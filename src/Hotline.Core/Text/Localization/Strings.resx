@@ -564,12 +564,12 @@ Settings › AI connections adds them: Claude Code, Codex or Antigravity install
   <data name="Guide_Attach_Body" xml:space="preserve"><value>The + button attaches files, the window you were in, the whole screen or a region you drag out. You can also paste or drop images and files.
 Text you had selected in the app you came from comes along by itself. Models that can't see images get the text in the screenshot instead.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Voice</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Set the long press to Voice input (Settings › General), hold the key and talk; let go to stop. Settings › Chat decides whether it sends right away.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Set the long press to Voice input (Settings › General), hold the key and talk; let go to stop. Settings › Chat and history decides whether it sends right away.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Quick actions and prompts</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Type / for /translate, /summarize, /fix, /explain or your own (Settings › Quick actions).
 The document button picks the system prompt (Settings › Prompts).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Memory</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember and a note saves it for every chat, whichever AI you use. Settings › Chat opens memory.md to edit it.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember and a note saves it for every chat, whichever AI you use. Settings › Chat and history opens memory.md to edit it.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>History and continuing</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>The clock button, Ctrl+Up in an empty message box, or /resume opens your chats; type to search.
 A chat with Claude Code, Codex or Antigravity lives in that tool's own history and picks up where it left off. Continue in (in the list, or its button) opens it in a terminal; the other tools are under More….</value></data>

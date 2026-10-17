@@ -563,12 +563,12 @@ Pengaturan › Koneksi AI menambahkannya: Claude Code, Codex, atau Antigravity y
   <data name="Guide_Attach_Body" xml:space="preserve"><value>Tombol + melampirkan file, jendela tempat Anda berada sebelumnya, seluruh layar, atau area yang Anda pilih dengan menyeret. Anda juga dapat menempelkan atau menjatuhkan gambar dan file.
 Teks yang Anda pilih di aplikasi sebelumnya akan otomatis disertakan. Model yang tidak dapat melihat gambar akan menerima teks dalam tangkapan layar sebagai gantinya.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Suara</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Atur tekan lama ke Input suara (Pengaturan › Umum), tahan tombol dan bicaralah; lepaskan untuk berhenti. Pengaturan › Obrolan menentukan apakah pesan langsung dikirim.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Atur tekan lama ke Input suara (Pengaturan › Umum), tahan tombol dan bicaralah; lepaskan untuk berhenti. Pengaturan › Obrolan dan riwayat menentukan apakah pesan langsung dikirim.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Tindakan cepat dan prompt</value></data>
-  <data name="Guide_Actions_Body" xml:space="preserve"><value>Ketik / untuk /translate, /summarize, /fix, /explain, atau tindakan Anda sendiri (Pengaturan › Tindakan cepat).
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Ketik / untuk /translate, /summarize, /fix, /explain, atau tindakan Anda sendiri (Pengaturan › Aksi cepat).
 Tombol dokumen memilih prompt sistem (Pengaturan › Prompt).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Memori</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember beserta catatan menyimpannya untuk setiap obrolan, AI apa pun yang Anda gunakan. Pengaturan › Obrolan membuka memory.md untuk mengeditnya.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember beserta catatan menyimpannya untuk setiap obrolan, AI apa pun yang Anda gunakan. Pengaturan › Obrolan dan riwayat membuka memory.md untuk mengeditnya.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Riwayat dan melanjutkan</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Tombol jam, Ctrl+Up di kotak pesan kosong, atau /resume membuka obrolan Anda; ketik untuk mencari.
 Obrolan dengan Claude Code, Codex, atau Antigravity tersimpan di riwayat alat itu sendiri dan melanjutkan dari bagian terakhir yang ditinggalkan. Lanjutkan di (dalam daftar, atau tombolnya) membukanya di terminal; alat lainnya ada di bawah Lainnya….</value></data>
@@ -584,7 +584,7 @@ Panel yang dipindahkan akan terbuka di posisi default berikutnya, kecuali jika d
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suara</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Pengaturan › Tampilan › Suara memutar suara saat panel terbuka atau tertutup: suara Windows atau file .wav di folder suara Anda. Dinonaktifkan secara default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Pengaturan berupa file</value></data>
-  <data name="Guide_Files_Body" xml:space="preserve"><value>Semua konfigurasi ada di folder .hotline Anda dan diterapkan saat disimpan: settings.json, satu file per koneksi, prompt, tindakan cepat, dan toolbar.json. Ganti file untuk beralih konfigurasi; Pengaturan › Tingkat lanjut › Reset memulai ulang dari awal dengan cadangan.
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Semua konfigurasi ada di folder .hotline Anda dan diterapkan saat disimpan: settings.json, satu file per koneksi, prompt, tindakan cepat, dan toolbar.json. Ganti file untuk beralih konfigurasi; Pengaturan › Lanjutan › Reset memulai ulang dari awal dengan cadangan.
 Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Semua yang dilakukan Hotline, secara singkat. Setiap bagian menjelaskan tempat mengubahnya di Pengaturan.</value></data>
 </root>

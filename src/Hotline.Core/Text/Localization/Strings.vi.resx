@@ -563,12 +563,12 @@ Cài đặt › Kết nối AI để thêm: Claude Code, Codex hoặc Antigravit
   <data name="Guide_Attach_Body" xml:space="preserve"><value>Nút + dùng để đính kèm tệp, cửa sổ bạn vừa làm việc, toàn bộ màn hình hoặc một vùng kéo chọn. Bạn cũng có thể dán hoặc thả hình ảnh và tệp vào.
 Văn bản bạn đã chọn trong ứng dụng trước đó sẽ tự động được đưa vào. Các mô hình không hỗ trợ hình ảnh sẽ nhận văn bản trích xuất từ ảnh chụp màn hình.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Giọng nói</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Thiết lập thao tác nhấn giữ thành Nhập bằng giọng nói (Cài đặt › Chung), giữ phím và nói; thả tay để dừng. Cài đặt › Trò chuyện quyết định xem tin nhắn có được gửi ngay hay không.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Thiết lập thao tác nhấn giữ thành Nhập bằng giọng nói (Cài đặt › Chung), giữ phím và nói; thả tay để dừng. Cài đặt › Trò chuyện và lịch sử quyết định xem tin nhắn có được gửi ngay hay không.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Tác vụ nhanh và lời nhắc</value></data>
-  <data name="Guide_Actions_Body" xml:space="preserve"><value>Nhập / để gọi /translate, /summarize, /fix, /explain hoặc tác vụ của riêng bạn (Cài đặt › Tác vụ nhanh).
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Nhập / để gọi /translate, /summarize, /fix, /explain hoặc tác vụ của riêng bạn (Cài đặt › Thao tác nhanh).
 Nút tài liệu dùng để chọn lời nhắc hệ thống (Cài đặt › Lời nhắc).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Bộ nhớ</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>Dùng /remember kèm ghi chú để lưu lại cho mọi cuộc trò chuyện, bất kể bạn dùng AI nào. Cài đặt › Trò chuyện sẽ mở tệp memory.md để chỉnh sửa.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>Dùng /remember kèm ghi chú để lưu lại cho mọi cuộc trò chuyện, bất kể bạn dùng AI nào. Cài đặt › Trò chuyện và lịch sử sẽ mở tệp memory.md để chỉnh sửa.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Lịch sử và tiếp tục</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Nút đồng hồ, tổ hợp phím Ctrl+Up trong hộp thông báo trống hoặc /resume sẽ mở các cuộc trò chuyện của bạn; nhập để tìm kiếm.
 Cuộc trò chuyện với Claude Code, Codex hoặc Antigravity nằm trong lịch sử riêng của công cụ đó và sẽ tiếp tục từ vị trí tạm dừng. Mục Tiếp tục trong (trong danh sách hoặc nút tương ứng) sẽ mở cuộc trò chuyện trong cửa sổ dòng lệnh; các công cụ khác nằm trong mục Thêm….</value></data>
@@ -580,7 +580,7 @@ Bảng điều khiển đã di chuyển sẽ mở ở vị trí mặc định v�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Lên trên hoặc xuống dưới</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Khung trò chuyện mở rộng từ thanh tin nhắn: hướng lên trên, trừ khi phía trên không còn chỗ thì sẽ mở xuống dưới. Cài đặt › Cửa sổ có thể cố định hướng lên hoặc xuống và thiết lập vị trí, chiều rộng cùng chiều cao cuộc trò chuyện.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Hàng nút</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Hàng nút dùng để hiển thị, ẩn và sắp xếp thứ tự các nút ở phía trên hoặc phía dưới hộp thông báo.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Các hàng nút dùng để hiển thị, ẩn và sắp xếp thứ tự các nút ở phía trên hoặc phía dưới hộp thông báo.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Âm thanh</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Âm thanh sẽ phát âm thanh khi mở hoặc đóng bảng điều khiển: âm thanh của Windows hoặc tệp .wav trong thư mục âm thanh của bạn. Mặc định là tắt.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Cài đặt là các tệp</value></data>

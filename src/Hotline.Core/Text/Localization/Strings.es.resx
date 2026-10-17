@@ -563,12 +563,12 @@ Configuración › Conexiones de IA permite añadirlos: Claude Code, Codex o Ant
   <data name="Guide_Attach_Body" xml:space="preserve"><value>El botón + adjunta archivos, la ventana en la que estabas, la pantalla completa o un área que selecciones arrastrando. También puedes pegar o soltar imágenes y archivos.
 El texto que tenías seleccionado en la app de origen se incluye automáticamente. Los modelos que no admiten imágenes reciben el texto de la captura de pantalla en su lugar.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Voz</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Asigna la pulsación larga a Entrada de voz (Configuración › General), mantén presionada la tecla y habla; suéltala para parar. Configuración › Chat decide si se envía de inmediato.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Asigna la pulsación larga a Entrada de voz (Configuración › General), mantén presionada la tecla y habla; suéltala para parar. Configuración › Chat e historial decide si se envía de inmediato.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Acciones rápidas y prompts</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Escribe / para /translate, /summarize, /fix, /explain o tus propias acciones (Configuración › Acciones rápidas).
 El botón de documento elige el mensaje del sistema (Configuración › Prompts).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Memoria</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember y una nota lo guardan para cada chat, independientemente de la IA que uses. Configuración › Chat abre memory.md para editarlo.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember y una nota lo guardan para cada chat, independientemente de la IA que uses. Configuración › Chat e historial abre memory.md para editarlo.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Historial y reanudación</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>El botón del reloj, Ctrl+Up en un cuadro de mensaje vacío o /resume abre tus chats; escribe para buscar.
 Un chat con Claude Code, Codex o Antigravity se guarda en el historial propio de esa herramienta y continúa donde lo dejaste. Continuar en (en la lista o con su botón) lo abre en un terminal; el resto de herramientas están en Más….</value></data>
@@ -584,7 +584,7 @@ Un panel desplazado se abrirá en su posición predeterminada la próxima vez, a
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sonidos</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configuración › Apariencia › Sonidos reproduce un sonido cuando el panel se abre o se cierra: un sonido de Windows o un .wav en tu carpeta de sonidos. Desactivado de forma predeterminada.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>La configuración son archivos</value></data>
-  <data name="Guide_Files_Body" xml:space="preserve"><value>Todo está en tu carpeta .hotline y se aplica al guardar: settings.json, un archivo por conexión, prompts, acciones rápidas y toolbar.json. Reemplaza un archivo para cambiar de configuración; Configuración › Opciones avanzadas › Restablecer empieza de cero, con una copia de seguridad.
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Todo está en tu carpeta .hotline y se aplica al guardar: settings.json, un archivo por conexión, prompts, acciones rápidas y toolbar.json. Reemplaza un archivo para cambiar de configuración; Configuración › Avanzado › Restablecer empieza de cero, con una copia de seguridad.
 Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Todo lo que hace Hotline, en resumen. Cada parte indica dónde cambiarlo en Configuración.</value></data>
 </root>

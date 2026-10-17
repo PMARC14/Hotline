@@ -563,12 +563,12 @@
   <data name="Guide_Attach_Body" xml:space="preserve"><value>+ 按钮可附加文件、当前所在窗口、整个屏幕或拖选的区域。你也可以直接粘贴或拖放图片与文件。
 在原应用中选中的文本会自动一并附带。无法查看图像的模型将改为接收屏幕截图中的文本。</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>语音</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>将长按操作设为语音输入（设置 › 常规），按住按键即可说话，松开即停止。设置 › 聊天可决定是否立即发送。</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>将长按操作设为语音输入（设置 › 常规），按住按键即可说话，松开即停止。设置 › 聊天和记录可决定是否立即发送。</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>快捷操作与提示词</value></data>
-  <data name="Guide_Actions_Body" xml:space="preserve"><value>输入 / 即可调用 /translate、/summarize、/fix、/explain 或自定义操作（设置 › 快捷操作）。
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>输入 / 即可调用 /translate、/summarize、/fix、/explain 或自定义操作（设置 › 快速操作）。
 文档按钮用于选择系统提示词（设置 › 提示词）。</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>记忆</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>输入 /remember 加上备注即可在每次聊天中保存该内容，无论使用哪种 AI。设置 › 聊天可打开 memory.md 进行编辑。</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>输入 /remember 加上备注即可在每次聊天中保存该内容，无论使用哪种 AI。设置 › 聊天和记录可打开 memory.md 进行编辑。</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>历史记录与继续</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>时钟按钮、在空消息框中按 Ctrl+Up 或输入 /resume 均可打开历史聊天；键入即可搜索。
 与 Claude Code、Codex 或 Antigravity 的聊天会保存在该工具自带的历史记录中，并从上次中断处继续。“在…中继续”（位于列表中或其按钮）可在终端中将其打开；其他工具位于“更多…”下。</value></data>
@@ -585,6 +585,6 @@
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>设置 › 外观 › 声音可在面板打开或关闭时播放提示音：Windows 系统声音或声音文件夹中的 .wav 文件。默认关闭。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>设置即文件</value></data>
   <data name="Guide_Files_Body" xml:space="preserve"><value>所有内容均存放在你的 .hotline 文件夹中，保存即生效：settings.json、每个连接对应的文件、提示词、快捷操作以及 toolbar.json。替换文件即可切换配置；设置 › 高级 › 重置可重新开始，并保留备份。
-API 密钥保存在 Windows Credential Locker 中，绝不会写入文件。</value></data>
+API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>简要介绍 Hotline 的所有功能。各部分均说明了可在“设置”中的何处进行更改。</value></data>
 </root>

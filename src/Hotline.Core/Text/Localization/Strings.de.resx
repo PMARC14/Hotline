@@ -563,12 +563,12 @@ Unter Einstellungen › KI-Verbindungen fügen Sie sie hinzu: auf diesem PC inst
   <data name="Guide_Attach_Body" xml:space="preserve"><value>Über die +-Schaltfläche können Sie Dateien, das aktive Fenster, den gesamten Bildschirm oder einen ausgewählten Bereich anfügen. Sie können Bilder und Dateien auch einfügen oder hineinziehen.
 Text, den Sie in der vorherigen App markiert hatten, wird automatisch übernommen. Modelle, die keine Bilder verarbeiten können, erhalten stattdessen den Text aus dem Screenshot.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Sprache</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Legen Sie für langes Drücken die Spracheingabe fest (Einstellungen › Allgemein), halten Sie die Taste gedrückt und sprechen Sie; lassen Sie los, um zu beenden. Einstellungen › Chat legt fest, ob die Nachricht sofort gesendet wird.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Legen Sie für langes Drücken die Spracheingabe fest (Einstellungen › Allgemein), halten Sie die Taste gedrückt und sprechen Sie; lassen Sie los, um zu beenden. Einstellungen › Chat und Verlauf legt fest, ob die Nachricht sofort gesendet wird.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Schnellaktionen und Prompts</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>Geben Sie / für /translate, /summarize, /fix, /explain oder eigene Aktionen ein (Einstellungen › Schnellaktionen).
 Die Dokumentschaltfläche wählt den System-Prompt aus (Einstellungen › Prompts).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Gedächtnis</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>Mit /remember und einer Notiz speichern Sie Angaben für jeden Chat – unabhängig von der verwendeten KI. Einstellungen › Chat öffnet memory.md zum Bearbeiten.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>Mit /remember und einer Notiz speichern Sie Angaben für jeden Chat – unabhängig von der verwendeten KI. Einstellungen › Chat und Verlauf öffnet memory.md zum Bearbeiten.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Verlauf und Fortsetzen</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Die Uhrenschaltfläche, Ctrl+Up in einem leeren Nachrichtenfeld oder /resume öffnet Ihre Chats; tippen Sie, um zu suchen.
 Ein Chat mit Claude Code, Codex oder Antigravity wird im Verlauf des jeweiligen Tools gespeichert und setzt dort an, wo Sie aufgehört haben. „Fortsetzen in“ (in der Liste oder über die entsprechende Schaltfläche) öffnet ihn im Terminal; weitere Tools finden Sie unter Mehr….</value></data>

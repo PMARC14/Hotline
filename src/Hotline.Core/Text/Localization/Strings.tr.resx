@@ -558,17 +558,17 @@ Reddet:
 Panel, çalıştığınız monitörde açılır ve yazmaya hazırdır. Sabitlenmediği sürece Esc veya başka bir yere tıklamak paneli kapatır.</value></data>
   <data name="Guide_Connections_Title" xml:space="preserve"><value>Bir AI seçme</value></data>
   <data name="Guide_Connections_Body" xml:space="preserve"><value>Düğme satırında çaba düzeyini, modeli ve sağlayıcıyı seçin.
-Ayarlar › AI bağlantıları yenilerini ekler: Bu bilgisayarda yüklü Claude Code, Codex veya Antigravity (kendi oturumlarını kullanırlar), bir API anahtarı (Anthropic, Gemini, OpenAI uyumlu) veya yerel bir model sunucusu. Test, anahtarı ve modeli denetler.</value></data>
+Ayarlar › Yapay zekâ bağlantıları yenilerini ekler: Bu bilgisayarda yüklü Claude Code, Codex veya Antigravity (kendi oturumlarını kullanırlar), bir API anahtarı (Anthropic, Gemini, OpenAI uyumlu) veya yerel bir model sunucusu. Test, anahtarı ve modeli denetler.</value></data>
   <data name="Guide_Attach_Title" xml:space="preserve"><value>Ekranlar, dosyalar ve seçilen metin</value></data>
   <data name="Guide_Attach_Body" xml:space="preserve"><value>+ düğmesi dosyaları, içinde bulunduğunuz pencereyi, tüm ekranı veya sürükleyerek seçtiğiniz bir alanı ekler. Resimleri ve dosyaları yapıştırabilir veya sürükleyip bırakabilirsiniz.
 Geldiğiniz uygulamada seçtiğiniz metin kendiliğinden eklenir. Resimleri göremeyen modeller, bunun yerine ekran görüntüsündeki metni alır.</value></data>
   <data name="Guide_Voice_Title" xml:space="preserve"><value>Ses</value></data>
-  <data name="Guide_Voice_Body" xml:space="preserve"><value>Uzun basmayı Ses girişi (Ayarlar › Genel) olarak ayarlayın, tuşu basılı tutarak konuşun; durdurmak için bırakın. Ayarlar › Sohbet, hemen gönderilip gönderilmeyeceğini belirler.</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Uzun basmayı Ses girişi (Ayarlar › Genel) olarak ayarlayın, tuşu basılı tutarak konuşun; durdurmak için bırakın. Ayarlar › Sohbet ve geçmiş, hemen gönderilip gönderilmeyeceğini belirler.</value></data>
   <data name="Guide_Actions_Title" xml:space="preserve"><value>Hızlı eylemler ve istemler</value></data>
   <data name="Guide_Actions_Body" xml:space="preserve"><value>/translate, /summarize, /fix, /explain veya kendi eylemleriniz için / yazın (Ayarlar › Hızlı eylemler).
 Belge düğmesi sistem istemini seçer (Ayarlar › İstemler).</value></data>
   <data name="Guide_Memory_Title" xml:space="preserve"><value>Bellek</value></data>
-  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember ve bir not, hangi AI'ı kullanırsanız kullanın bunu her sohbet için kaydeder. Ayarlar › Sohbet, düzenlemeniz için memory.md dosyasını açar.</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember ve bir not, hangi AI'ı kullanırsanız kullanın bunu her sohbet için kaydeder. Ayarlar › Sohbet ve geçmiş, düzenlemeniz için memory.md dosyasını açar.</value></data>
   <data name="Guide_History_Title" xml:space="preserve"><value>Geçmiş ve devam etme</value></data>
   <data name="Guide_History_Body" xml:space="preserve"><value>Saat düğmesi, boş bir ileti kutusunda Ctrl+Up veya /resume sohbetlerinizi açar; aramak için yazın.
 Claude Code, Codex veya Antigravity ile yapılan bir sohbet, o aracın kendi geçmişinde yer alır ve kaldığı yerden devam eder. Şurada devam et (listede veya düğmesinde) bir terminalde açar; diğer araçlar Daha fazla… altındadır.</value></data>
