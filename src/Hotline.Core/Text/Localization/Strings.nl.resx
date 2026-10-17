@@ -219,6 +219,7 @@ Weigeren:
   <data name="Effort_high" xml:space="preserve"><value>Hoog</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Zeer hoog</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Maximaal</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Vastmaken</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Venster vastleggen</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Scherm vastleggen</value></data>
@@ -501,4 +502,89 @@ Weigeren:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} verwijderen?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nieuwe naam</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Een andere app gebruikt die sneltoets al</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Opnieuw instellen</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Hiermee herstelt u de instellingen zoals ze waren bij de installatie. Alles wordt eerst gekopieerd naar {0}\backups. Als u wilt schakelen tussen instellingen, vervangt u settings.json (of een bestand in connections) door een ander exemplaar: Hotline past dit direct toe. De standaardwaarden staan in {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Alles opnieuw instellen</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, elke verbinding (en de bijbehorende API-sleutel), de werkbalk en mcp.json worden teruggezet naar de installatiestatus. Prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt (zonder API-sleutels).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Alles opnieuw instellen?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json wordt hersteld naar de standaardwaarden. Uw verbindingen, prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Opnieuw instellen</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Gereed. De vorige bestanden staan in {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Instellingen opnieuw instellen</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Instellingen opnieuw instellen?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Nog geen verbindingen. Voeg hierboven een toe of open het paneel: hier vindt u de AI-opdrachtregelprogramma's die op deze pc zijn geïnstalleerd.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} is uw laatste verbinding. Zonder verbinding kan Hotline niet chatten: het paneel vraagt u om een geïnstalleerde CLI te kiezen of een API-sleutel toe te voegen.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Meer…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Weergeven wanneer de AI nadenkt</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Wanneer een antwoord onderweg is maar er nog even geen tekst verschijnt, draait de cursor zodat u weet dat het proces niet is vastgelopen</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Doorgaan in</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Er is nog niets om deze chat in voort te zetten: er is geen AI-opdrachtregelprogramma geïnstalleerd of de chat bevat geen berichten.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Boven het berichtvak</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Naar boven het berichtvak verplaatsen</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Terug naar standaardpositie</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Opgeslagen: Hotline opent nu hier, met deze grootte.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Positie en grootte als standaard opslaan</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Sleep om te verplaatsen; klik met de rechtermuisknop om deze positie op te slaan</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Chathoogte</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maximale chathoogte. 0 = automatisch (het bovenstaande maximale hoogtepercentage).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Chat breidt uit</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatisch</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatisch: omhoog, tenzij er bovenaan geen ruimte is. Up of Down houdt die richting aan.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Omlaag</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Omhoog</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Breedte</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatisch (het bovenstaande breedtepercentage). Houd Alt ingedrukt en versleep een zijkant om het formaat te wijzigen.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Beeldscherm</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (het beeldscherm waarop u werkt), primary of de naam van een beeldscherm (opgeslagen via Als standaard opslaan op de greep)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Horizontale positie</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Waar het paneel op het scherm opent: 0 = links, 0,5 = gecentreerd, 1 = rechts. Houd Alt ingedrukt en sleep de greep om te verplaatsen, en klik met de rechtermuisknop om de positie op te slaan.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Wanneer het paneel sluit</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline-geluiden: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Eigen geluiden</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Plaats .wav-bestanden in {0}; ze verschijnen in de bovenstaande lijsten.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Uit</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Wanneer het paneel opent</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Geluidenmap openen</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Afspelen</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Geluiden</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Handleiding</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Openen en sluiten</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Druk op de Copilot-toets om het paneel te openen of te sluiten; houd deze ingedrukt om een nieuwe chat te starten. Instellingen › Algemeen bepaalt wat indrukken en ingedrukt houden doen (ingedrukt houden kan ook spraakinvoer zijn) en voegt een extra sneltoets toe.
+Het paneel opent op het beeldscherm waarop je werkt, klaar om te typen. Esc of ergens anders klikken sluit het, tenzij het is vastgemaakt.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Een AI kiezen</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Kies de denkkracht, het model en de provider in de knoppenrij.
+Instellingen › AI-verbindingen voegt ze toe: Claude Code, Codex of Antigravity geïnstalleerd op deze pc (ze gebruiken hun eigen aanmelding), een API-sleutel (Anthropic, Gemini, OpenAI-compatibel) of een lokale modelserver. Test controleert een sleutel en model.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Schermen, bestanden en geselecteerde tekst</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>De +-knop voegt bestanden toe, het venster waarin je was, het hele scherm of een gebied dat je sleept. Je kunt ook afbeeldingen en bestanden plakken of neerzetten.
+Tekst die je had geselecteerd in de app waar je vandaan kwam, gaat vanzelf mee. Modellen die geen afbeeldingen kunnen zien, krijgen in plaats daarvan de tekst in de schermopname.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Spraak</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Stel lang indrukken in op Spraakinvoer (Instellingen › Algemeen), houd de toets ingedrukt en praat; laat los om te stoppen. Instellingen › Chat en geschiedenis bepaalt of dit meteen wordt verzonden.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Snelle acties en prompts</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Typ / voor /translate, /summarize, /fix, /explain of je eigen acties (Instellingen › Snelle acties).
+De documentknop kiest de systeemprompt (Instellingen › Prompts).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Geheugen</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember en een notitie slaat dit op voor elke chat, welke AI je ook gebruikt. Instellingen › Chat en geschiedenis opent memory.md om het te bewerken.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Geschiedenis en doorgaan</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>De klokknop, Ctrl+Up in een leeg berichtvak of /resume opent je chats; typ om te zoeken.
+Een chat met Claude Code, Codex of Antigravity bevindt zich in de eigen geschiedenis van die tool en gaat verder waar deze gebleven was. Doorgaan in (in de lijst of via de bijbehorende knop) opent deze in een terminal; de andere tools staan onder Meer….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Antwoorden op de achtergrond</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Stel een lange vraag en schakel over naar iets anders: een Windows-melding geeft aan wanneer het antwoord klaar is. Esc stopt een antwoord; terwijl de AI nadenkt, draait de cursor.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Verplaatsen en formaat wijzigen</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Houd Alt ingedrukt: sleep de greep aan de rand van de berichtenbalk om het paneel te verplaatsen, of een zijkant om het formaat te wijzigen. Klik met de rechtermuisknop op de greep om de positie en het formaat als standaard op te slaan, of om ernaar terug te keren.
+Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij het is vastgemaakt (de speldknop): dan blijft het staan waar je het neerzet totdat je het losmaakt, in een andere app klikt of Hotline opnieuw start.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Omhoog of omlaag</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>De chat groeit vanaf de berichtenbalk: omhoog, tenzij er daarboven geen ruimte is, en dan omlaag. Instellingen › Venster kan dit vastzetten op omhoog of omlaag en stelt de positie, breedte en chathoogte in.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Knoppenrijen</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Weergave › Knoppenrijen toont, verbergt en ordent de knoppen, boven of onder het berichtvak.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Geluiden</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Instellingen › Weergave › Geluiden speelt een geluid af wanneer het paneel opent of sluit: een Windows-geluid of een .wav in je geluidenmap. Standaard uitgeschakeld.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Instellingen zijn bestanden</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Alles staat in je .hotline-map en is van toepassing zodra je opslaat: settings.json, één bestand per verbinding, prompts, snelle acties en toolbar.json. Vervang een bestand om van configuratie te wisselen; Instellingen › Geavanceerd › Opnieuw instellen begint opnieuw, met een back-up.
+API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Alles wat Hotline doet, in het kort. Elk onderdeel geeft aan waar in Instellingen u dit kunt wijzigen.</value></data>
 </root>

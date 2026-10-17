@@ -219,6 +219,7 @@
   <data name="Effort_high" xml:space="preserve"><value>高</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>非常に高い</value></data>
   <data name="Effort_max" xml:space="preserve"><value>最大</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>ウルトラ</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>ピン留め</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>ウィンドウをキャプチャ</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>画面をキャプチャ</value></data>
@@ -501,4 +502,89 @@
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>リセット</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>設定をインストール時の状態に戻します。最初にすべてが {0}\backups にコピーされます。設定セットを切り替えるには、settings.json (または connections 内のファイル) を別のコピーに置き換えます。Hotline はすぐにそれを適用します。既定値は {1} にあります。</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>すべてリセット</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、すべての接続 (およびその API キー)、ツール バー、mcp.json がインストール時の状態に戻ります。プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます (API キーは含まれません)。</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>すべてリセットしますか?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json は既定値に戻ります。接続、プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます。</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>リセット</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>完了しました。以前のファイルは {0} にあります。</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>設定をリセット</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>設定をリセットしますか?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>接続はまだありません。上部で追加するか、パネルを開いてください。この PC にインストールされている AI コマンドライン ツールが表示されます。</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} は最後の接続です。接続がないと Hotline はチャットできません。パネルで、インストール済みの CLI を選択するか API キーを追加するよう求められます。</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>詳細…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>AI の思考中に表示する</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>回答の生成中でテキストがまだ表示されない間、停止していないことがわかるようにカーソルが回転します</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>次で続行</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>このチャットを続行できる場所がまだありません: AI コマンドライン ツールがインストールされていないか、チャットにメッセージがありません。</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>メッセージ ボックスの上</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>メッセージ ボックスの上に移動</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>既定の位置に戻す</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>保存完了: 次回から Hotline はこの位置とサイズで開きます。</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>位置とサイズを既定として保存</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>ドラッグで移動、右クリックでこの位置を保存</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>チャットの高さ</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>チャットの最大拡大サイズ。0 = 自動 (上記の最大高さの割合)。</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>チャットの展開方向</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>自動: 上に十分なスペースがない場合を除き上向き。Up または Down でその方向に固定されます。</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>下</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>上</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>幅</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 自動 (上記の幅の割合)。Alt を押しながら端をドラッグしてサイズ変更。</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>モニター</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (作業中のモニター)、primary、またはモニター名 (グリップの [既定として保存] で保存)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>水平位置</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>画面上のパネルの表示位置: 0 = 左、0.5 = 中央、1 = 右。Alt を押しながらグリップをドラッグして移動し、右クリックで位置を保存します。</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>パネルを閉じたとき</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline サウンド: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>カスタム サウンド</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>.wav ファイルを {0} に配置すると、上のリストに表示されます。</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>オフ</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>パネルを開いたとき</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>サウンド フォルダーを開く</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>再生</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>サウンド</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>ガイド</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>開く/閉じる</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Copilot キーを押してパネルを開閉します。長押しすると新しいチャットを開始します。設定 › 全般 で押したときと長押ししたときの動作を変更でき (長押しを音声入力にすることも可能)、追加のショートカットも登録できます。
+パネルは作業中のモニター上に開き、すぐに入力できます。ピン留めされていない限り、Esc を押すか他の場所をクリックすると閉じます。</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>AI の選択</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>ボタン行でエフォート、モデル、プロバイダーを選択します。
+設定 › AI 接続 でこれらを追加できます: この PC にインストールされている Claude Code、Codex、Antigravity (独自のサインインを使用)、API キー (Anthropic、Gemini、OpenAI 互換)、またはローカル モデル サーバー。[テスト] でキーとモデルを確認できます。</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>画面、ファイル、選択したテキスト</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>+ ボタンでファイル、直前に開いていたウィンドウ、画面全体、またはドラッグした領域を添付できます。画像やファイルを貼り付けたりドラッグ&amp;ドロップしたりすることも可能です。
+元のアプリで選択していたテキストは自動的に引き継がれます。画像を認識できないモデルには、代わりにスクリーンショット内のテキストが渡されます。</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>音声</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>長押しを音声入力に設定し (設定 › 全般)、キーを押しながら話します。離すと停止します。設定 › チャットと履歴 で、すぐに送信するかどうかを指定できます。</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>クイック アクションとプロンプト</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>/ を入力して /translate、/summarize、/fix、/explain または独自のアクションを呼び出します (設定 › クイック アクション)。
+ドキュメント ボタンでシステム プロンプトを選択します (設定 › プロンプト)。</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>メモリ</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember とメモを入力すると、どの AI を使用していても、すべてのチャットに記憶されます。設定 › チャットと履歴 から memory.md を開いて編集できます。</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>履歴と再開</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>時計ボタン、空のメッセージ ボックスでの Ctrl+Up、または /resume でチャットを開きます。入力して検索できます。
+Claude Code、Codex、Antigravity でのチャットはそのツール独自の履歴に残り、前回の続きから再開できます。「次で続行」(リスト内またはそのボタン) でターミナルで開きます。その他のツールは [その他…] にあります。</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>バックグラウンドでの回答</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>長い質問をして別の作業に移っても、準備ができると Windows の通知でお知らせします。Esc で回答を停止できます。AI が考え中の間はカーソルが回転します。</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>移動とサイズ変更</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Alt を長押し: メッセージ バーの端にあるグリップをドラッグしてパネルを移動するか、端をドラッグしてサイズを変更します。グリップを右クリックすると、位置とサイズを既定値として保存したり、既定値に戻したりできます。
+移動したパネルは、ピン留め (ピン ボタン) されていない限り、次回は既定の位置で開きます。ピン留めされている場合は、ピン留めを解除するか、別のアプリをクリックするか、Hotline を再起動するまでその位置にとどまります。</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 外観 › ボタン行 で、メッセージ ボックスの上または下にあるボタンの表示、非表示、並べ替えを設定できます。</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>すべてが .hotline フォルダーに保存され、保存時にすぐ適用されます: settings.json、接続ごとに 1 つのファイル、プロンプト、クイック アクション、toolbar.json。ファイルを置き換えて設定を切り替えることができます。設定 › 詳細 › リセット で、バックアップを作成して最初からやり直せます。
+API キーは Windows Credential Locker に保管され、ファイルに保存されることはありません。</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Hotline の機能を簡潔に紹介。各項目で「設定」のどこで変更できるかを案内します。</value></data>
 </root>

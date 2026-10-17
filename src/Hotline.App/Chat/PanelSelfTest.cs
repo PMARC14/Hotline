@@ -96,9 +96,29 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
     public async Task RunAsync()
     {
         if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
+        // What the test changes, restored in finally whatever happens: the user's draft, button rows and direction.
+        var userDraft = composer.Text;
+        var (userBottom, userTop) = (popup.ToolbarItems.ToList(), popup.TopToolbarItems.ToList());
+        var userUp = popup.GrowsUp;
+        Action? stopCounting = null;
         try
         {
             popup.ShowOffscreen();
+            // Rendering health: frames drawn and layout cycles during the test. A layout cycle can leave the window
+            // undrawable for good (2026-10-17: every later open was blank), so either one fails the test.
+            var cyclesBefore = App.LayoutCycles;
+            var frames = 0;
+            void OnFrame(object? s, object e) => frames++;
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+            stopCounting = () => Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
+            _renderCheck = () =>
+            {
+                stopCounting();
+                var cycles = App.LayoutCycles - cyclesBefore;
+                if (cycles > 0) log.Error($"selftest FAILED: {cycles} layout cycle(s) during the test (the window may stop drawing)");
+                if (frames < 10) log.Error($"selftest FAILED: only {frames} frame(s) drawn (the window isn't rendering)");
+                else log.Info($"selftest rendering ok: {frames} frames, no layout cycle");
+            };
             async Task Step(string name)
             {
                 log.Info($"selftest step: {name}");
@@ -110,14 +130,21 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await Step("user message");
             apply(new AssistantStarted("st-a", "Self test"));
             await Step("answer started");
+            // No text yet: the caret becomes the thinking spinner (a ProgressRing in the transcript; drawn, so a
+            // rendering crash would show here), then the first text turns it back into the bar.
+            for (var waited = 0; waited < 3000 && !transcript.IsThinking; waited += 100) await Task.Delay(100);
+            await Step($"thinking spinner shown={transcript.IsThinking}");
+            if (!transcript.IsThinking) log.Error("selftest FAILED: the thinking spinner didn't show");
             for (var i = 0; i < TestAnswer.Length; i += 23)
             {
                 apply(new AssistantDelta("st-a", TestAnswer.Substring(i, Math.Min(23, TestAnswer.Length - i)), false));
                 transcript.RenderDirty();
                 await Step($"delta {i}");
+                if (i == 0 && transcript.IsThinking) log.Error("selftest FAILED: the thinking spinner stayed after text came");
             }
             apply(new AssistantCompleted("st-a"));
             await Step("completed");
+            await SnapshotAsync("1-answer-up");
             await CheckOcrAsync();
             apply(new AssistantStarted("st-b", "Self test"));
             apply(new AssistantFailed("st-b", BackendErrorKind.Failed, "simulated failure"));
@@ -128,22 +155,106 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             log.Info($"selftest rebuild ok: {transcript.ParagraphCount} paragraphs");
             apply(new AssistantStatus("st-b", "Self test is rate limited, retrying in 0 s…"));
             await Step("status note");
-            var draft = composer.Text;
             composer.Text = "/";
             await Step("quick actions");
             log.Info($"selftest quick actions: {composer.SuggestionCount} suggestion(s)");
-            composer.Text = draft;
+            composer.Text = "draft kept through a swap";
+            var up = popup.GrowsUp;
+            PanelLayout.Apply(popup, up: false); // the chat growing down from the bar: rendered like the rest
+            await Step("layout down");
+            await SnapshotAsync("2-answer-down");
+            var keptDown = composer.Text == "draft kept through a swap";
+            PanelLayout.Apply(popup, up: true);
+            await Step("layout up");
+            if (!keptDown || composer.Text != "draft kept through a swap") log.Error("selftest FAILED: the draft changed in a layout swap");
+            else log.Info("selftest layout swap ok");
+            PanelLayout.Apply(popup, up); // back to the panel's own direction
+            var barBefore = popup.BarStack.ActualHeight;
+            double barWithGrips;
+            ShowGrips?.Invoke(true); // the Alt grips, through the same code as Alt (placed for the direction)
+            try { await Step("grips shown"); barWithGrips = popup.BarStack.ActualHeight; await SnapshotAsync("3-alt-grips"); }
+            finally { ShowGrips?.Invoke(false); }
+            if (Math.Abs(barWithGrips - barBefore) > 0.5) log.Error($"selftest FAILED: the grips changed the layout ({barBefore} -> {barWithGrips})");
+            else log.Info($"selftest grips ok ({popup.GripLayer.Children.Count} handles)");
+            // Narrower than the button row (the condition of the 2026-10-17 layout cycle), then back.
+            popup.ResizeOffscreen(360);
+            await Step("narrow panel");
+            await Task.Delay(400);
+            await SnapshotAsync("4-narrow");
+            popup.ResizeOffscreen(1000);
+            await Step("wide panel");
+            await SnapshotAsync("5-wide");
+            popup.ResizeOffscreen(720);
+            await Step("normal width");
+            // The button rows: all above the message box, then split across both, then back to the user's own.
+            var all = userTop.Concat(userBottom).ToList();
+            popup.ApplyToolbar([], all);
+            await Step("buttons above");
+            await SnapshotAsync("6-buttons-above");
+            popup.ApplyToolbar(all.Skip(all.Count / 2).ToList(), all.Take(all.Count / 2).ToList());
+            await Step("buttons split");
+            await SnapshotAsync("7-buttons-split");
+            PanelLayout.Apply(popup, up: false);
+            await Step("buttons split, down");
+            await SnapshotAsync("8-buttons-split-down");
+            PanelLayout.Apply(popup, userUp);
+            popup.ApplyToolbar(userBottom, userTop);
+            await Step("buttons restored");
+            _renderCheck?.Invoke();
+            _renderCheck = null;
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }
         finally
         {
+            stopCounting?.Invoke();
+            _renderCheck = null;
+            ShowGrips?.Invoke(false);
+            if (!popup.ToolbarItems.SequenceEqual(userBottom) || !popup.TopToolbarItems.SequenceEqual(userTop)) popup.ApplyToolbar(userBottom, userTop);
+            PanelLayout.Apply(popup, userUp);
+            composer.Text = userDraft;
             apply(new ConversationReset());
             popup.EndOffscreen();
         }
     }
 
     /// <summary>OCR the rendered (off-screen) transcript and check its heading is read back.</summary>
+    private Action? _renderCheck;
+
+    /// <summary>
+    /// What the panel looked like at a step, as a PNG in logs\selftest\ (for a review by eye or by a vision model).
+    /// Gives up after 5 s: the snapshot must never hang the test.
+    /// </summary>
+    private async Task SnapshotAsync(string name)
+    {
+        try
+        {
+            async Task Save()
+            {
+                var rtb = new Microsoft.UI.Xaml.Media.Imaging.RenderTargetBitmap();
+                await rtb.RenderAsync(popup.Root);
+                var pixels = (await rtb.GetPixelsAsync()).ToArray();
+                var png = await Capture.ImageProcessor.EncodeBgraPngAsync(pixels, rtb.PixelWidth, rtb.PixelHeight, 4096);
+                var dir = Directory.CreateDirectory(Path.Combine(SnapshotDirectory, "selftest")).FullName;
+                await File.WriteAllBytesAsync(Path.Combine(dir, name + ".png"), png);
+            }
+            await Save().WaitAsync(TimeSpan.FromSeconds(5));
+        }
+        catch (Exception ex) { log.Error($"selftest FAILED: snapshot {name}", ex); }
+    }
+
+    /// <summary>Shows or hides the Alt grips as Alt does (set by the presenter).</summary>
+    public Action<bool>? ShowGrips { get; set; }
+
+    /// <summary>Where snapshots go (the logs folder).</summary>
+    public string SnapshotDirectory { get; set; } = Path.GetTempPath();
+
     private async Task CheckOcrAsync()
+    {
+        try { await CheckOcrCoreAsync().WaitAsync(TimeSpan.FromSeconds(10)); }
+        catch (TimeoutException) { log.Error("selftest FAILED: the OCR check got no image or text in 10 s (the window may not be rendering)"); }
+    }
+
+    private async Task CheckOcrCoreAsync()
     {
         try
         {

@@ -36,13 +36,21 @@ public partial class App : Application
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
     private string? _odrPath;
     private FileSystemWatcher? _settingsWatcher;
+    /// <summary>Layout cycles since start (each one can leave the window undrawable).</summary>
+    internal static int LayoutCycles;
 
     public App(AppActivationArguments initialActivation)
     {
         _initialActivation = initialActivation;
         InitializeComponent();
         // Log and keep running: an exception in one button handler must not take the whole app down.
-        UnhandledException += (_, e) => { _log?.Error("unhandled UI exception (kept running)", e.Exception); e.Handled = true; };
+        UnhandledException += (_, e) =>
+        {
+            // A layout cycle can stop WinUI drawing the window for good: count it so the self-test fails loudly.
+            if (e.Exception is LayoutCycleException || e.Exception?.HResult == unchecked((int)0x802B0014)) Interlocked.Increment(ref LayoutCycles); // E_LAYOUTCYCLE
+            _log?.Error("unhandled UI exception (kept running)", e.Exception);
+            e.Handled = true;
+        };
         // Last chance: record anything that is about to terminate the process.
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
@@ -99,6 +107,8 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
+        try { SettingsReset.WriteDefaults(dataDir); } // the hidden copy of the defaults (Settings › Advanced › Reset)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Debug.WriteLine(ex); }
         ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
@@ -121,7 +131,11 @@ public partial class App : Application
         foreach (var old in new[] { "agy-workspace", "claude-workspace" })
             try { if (Directory.Exists(Path.Combine(privateDir, old))) Directory.Delete(Path.Combine(privateDir, old), recursive: true); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error($"could not remove the old {old} folder", ex); }
-        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy", "Hotline"), TimeProvider.System);
+        // CLI chats run in the home folder; their scratch files (agy's agent and attachments, Codex images, handoff
+        // files) live in ~/.hotline/scratch. Earlier versions' folders under the package's LocalState stay: chats begun
+        // there still resume there.
+        var scratchDir = Path.Combine(dataDir, "scratch");
+        var agyWorkspace = new AgyWorkspace(Path.Combine(scratchDir, "agy", "Hotline"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
@@ -135,9 +149,9 @@ public partial class App : Application
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
-            home, Path.Combine(privateDir, "claude", "Hotline"), _secrets, BackendFactory.CreateApiHttpClient(), tools,
-            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home)),
-            Path.Combine(privateDir, "codex", "Hotline"));
+            home, _secrets, BackendFactory.CreateApiHttpClient(), tools,
+            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home), Path.Combine(privateDir, "agy", "Hotline")),
+            Path.Combine(scratchDir, "codex", "Hotline"));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -165,7 +179,7 @@ public partial class App : Application
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
-        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log);
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(scratchDir, "handoff"), InvalidateBackend, _log);
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 
@@ -174,7 +188,14 @@ public partial class App : Application
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
                       ?? throw new ModelListException(Strings.Agy_NotInstalled);
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
-        }, TimeProvider.System);
+        }, TimeProvider.System, new Hotline.Core.Backends.Codex.CodexModelLister(new SystemLineProcessFactory(job.Add),
+            p => Hotline.Core.Backends.Codex.CodexLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("PATH"),
+                System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64"),
+            () =>
+            {
+                var cache = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".codex", "models_cache.json");
+                return File.Exists(cache) ? File.ReadAllText(cache) : null;
+            }, typeof(App).Assembly.GetName().Version?.ToString(3) ?? "0.0.0").ListAsync);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         chat.Event += e => { if (e is ConversationResumed) _providerBar.Refresh(); }; // a CLI chat brings its connection back
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
@@ -199,6 +220,7 @@ public partial class App : Application
         var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
         _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += scene => _presenter.Demo(scene);
+        _router.GripsRequested += show => _presenter.ShowGrips(show);
         _router.VoiceRequested += command => _presenter.Voice(command);
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
@@ -250,7 +272,17 @@ public partial class App : Application
             });
         };
 
+        // Open/close sounds (off by default); Hotline's own sound is put in ~/.hotline/sounds for the pickers.
+        var soundsDir = Interop.SoundPlayer.Directory(DataDirectory);
+        try { Hotline.Core.Windowing.Sounds.EnsureShipped(soundsDir, File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Sounds", Hotline.Core.Windowing.Sounds.ShippedFile))); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("could not set up the sounds folder", ex); }
+        _popup.PlayOpenClose = open => Interop.SoundPlayer.Play(open ? _settingsService!.Current.Window.OpenSound : _settingsService!.Current.Window.CloseSound, soundsDir, _log);
+        void PreloadSounds() => Interop.SoundPlayer.Preload([_settingsService!.Current.Window.OpenSound, _settingsService.Current.Window.CloseSound], soundsDir, _log);
+        PreloadSounds();
+        _settingsService!.Changed += () => _popup.DispatcherQueue.TryEnqueue(PreloadSounds);
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
+        // Alt alone would open the (hidden) window menu and swallow the next keys, or beep: Alt is for the panel's grips.
+        hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
         HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
@@ -383,9 +415,9 @@ public partial class App : Application
     {
         var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
         if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
-        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
+        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _popup.TopToolbarItems.SequenceEqual(config.Top) && _toolbarApplied) return;
         _toolbarApplied = true;
-        try { _popup.ApplyToolbar(config.Items); }
+        try { _popup.ApplyToolbar(config.Items, config.Top); }
         catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
     }
 

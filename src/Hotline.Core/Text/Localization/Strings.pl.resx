@@ -219,6 +219,7 @@ Zabroń:
   <data name="Effort_high" xml:space="preserve"><value>Wysoki</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Bardzo wysoki</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Maksymalny</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Przypnij</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Przechwyć okno</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Przechwyć ekran</value></data>
@@ -501,4 +502,89 @@ Zabroń:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Usunąć /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nowa nazwa</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Inna aplikacja już używa tego skrótu</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Resetuj</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Przywraca ustawienia do stanu z momentu instalacji. Wszystko zostanie najpierw skopiowane do {0}\backups. Aby przełączać się między zestawami ustawień, zastąp settings.json (lub plik w connections) inną kopią: Hotline zastosuje ją natychmiast. Ustawienia domyślne znajdują się w {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Zresetuj wszystko</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, wszystkie połączenia (oraz ich klucze API), pasek narzędzi i mcp.json wrócą do stanu z momentu instalacji. Monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa (bez kluczy API).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Zresetować wszystko?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json powróci do wartości domyślnych. Twoje połączenia, monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Resetuj</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Gotowe. Poprzednie pliki znajdują się w {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Resetuj ustawienia</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>Zresetować ustawienia?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Brak połączeń. Dodaj połączenie powyżej lub otwórz panel: zawiera on narzędzia wiersza polecenia AI zainstalowane na tym komputerze.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} to Twoje ostatnie połączenie. Bez połączenia Hotline nie może czatować: w panelu pojawi się prośba o wybranie zainstalowanego CLI lub dodanie klucza API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Więcej…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Pokazuj, gdy AI myśli</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Gdy odpowiedź jest generowana, ale przez chwilę nie pojawia się tekst, kursor obraca się, sygnalizując, że proces nie został zatrzymany</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Kontynuuj w</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Brak miejsca do kontynuowania tego czatu: nie zainstalowano żadnego narzędzia wiersza poleceń AI lub czat nie zawiera wiadomości.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Poniżej pola wiadomości</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Puste</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Wiersze przycisków</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Przenieś poniżej pola wiadomości</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Powyżej pola wiadomości</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Przenieś powyżej pola wiadomości</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Wróć do domyślnego miejsca</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Zapisano: Hotline otwiera się teraz tutaj, w tym rozmiarze.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Zapisz położenie i rozmiar jako domyślne</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Przeciągnij, aby przesunąć; kliknij prawym przyciskiem myszy, aby zapisać to miejsce</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Wysokość czatu</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maksymalny rozmiar, do którego rozwija się czat. 0 = automatycznie (maksymalny procent wysokości powyżej).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Rozwijanie czatu</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatycznie</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatycznie: w górę, chyba że brakuje miejsca u góry. Up lub Down utrzymuje stały kierunek.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>W dół</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>W górę</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Szerokość</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatycznie (procent szerokości powyżej). Przytrzymaj klawisz Alt i przeciągnij krawędź boczną, aby zmienić rozmiar.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (monitor, na którym pracujesz), primary lub nazwa monitora (zapisana za pomocą opcji Zapisz jako domyślne na uchwycie)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Położenie poziome</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Miejsce otwarcia panelu na ekranie: 0 = po lewej, 0,5 = na środku, 1 = po prawej. Przytrzymaj klawisz Alt i przeciągnij uchwyt, aby go przesunąć, a następnie kliknij prawym przyciskiem myszy, aby zapisać miejsce.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Przy zamykaniu panelu</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Dźwięki Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Własne dźwięki</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Umieść pliki .wav w folderze {0}; pojawią się one na powyższych listach.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Wyłączone</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Przy otwieraniu panelu</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Otwórz folder dźwięków</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Odtwórz</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Dźwięki</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Przewodnik</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Otwieranie i zamykanie</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Naciśnij klawisz Copilot, aby otworzyć lub zamknąć panel; przytrzymaj go, aby rozpocząć nowy czat. Ustawienia › Ogólne zmienia działanie naciśnięcia i przytrzymania (przytrzymanie może być też wprowadzaniem głosowym) oraz dodaje dodatkowy skrót.
+Panel otwiera się na monitorze, na którym pracujesz, gotowy do pisania. Klawisz Esc lub kliknięcie w innym miejscu zamyka go, chyba że jest przypięty.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Wybór AI</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Wybierz poziom wysiłku, model i dostawcę w rzędzie przycisków.
+Ustawienia › Połączenia AI pozwala je dodać: Claude Code, Codex lub Antigravity zainstalowane na tym komputerze (używają własnego logowania), klucz API (Anthropic, Gemini, zgodny z OpenAI) lub lokalny serwer modeli. Test sprawdza klucz i model.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Ekrany, pliki i zaznaczony tekst</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>Przycisk + dołącza pliki, aktywne okno, cały ekran lub zaznaczony przeciągnięciem obszar. Możesz też wklejać lub upuszczać obrazy i pliki.
+Tekst zaznaczony w aplikacji, z której przechodzisz, dołącza się samoczynnie. Modele, które nie widzą obrazów, otrzymują w zamian tekst ze zrzutu ekranu.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Głos</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Ustaw długie naciśnięcie na Wprowadzanie głosowe (Ustawienia › Ogólne), przytrzymaj klawisz i mów; puść, aby zakończyć. Ustawienia › Czat i historia decyduje, czy wiadomość jest wysyłana od razu.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Szybkie akcje i monity</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Wpisz /, aby wybrać /translate, /summarize, /fix, /explain lub własne (Ustawienia › Szybkie akcje).
+Przycisk dokumentu wybiera monit systemowy (Ustawienia › Prompty).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Pamięć</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember wraz z notatką zapisuje ją dla każdego czatu, bez względu na wybranego AI. Ustawienia › Czat i historia otwiera plik memory.md, aby go edytować.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Historia i kontynuowanie</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Przycisk zegara, Ctrl+Up w pustym polu wiadomości lub /resume otwiera Twoje czaty; zacznij pisać, aby wyszukać.
+Czat z Claude Code, Codex lub Antigravity znajduje się we własnej historii danego narzędzia i wznawia się w miejscu, w którym został przerwany. Kontynuuj w (na liście lub jej przycisk) otwiera go w terminalu; pozostałe narzędzia są pod Więcej….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Odpowiedzi w tle</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Zadaj dłuższe pytanie i przełącz się na inną aplikację: powiadomienie Windows poinformuje Cię, gdy odpowiedź będzie gotowa. Klawisz Esc zatrzymuje odpowiedź; gdy AI myśli, kursor się obraca.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Przesuwanie i zmiana rozmiaru</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Przytrzymaj klawisz Alt: przeciągnij uchwyt na krawędzi paska wiadomości, aby przesunąć panel, lub krawędź boczną, aby zmienić jego rozmiar. Kliknij uchwyt prawym przyciskiem myszy, aby zapisać miejsce i rozmiar jako domyślne lub do nich powrócić.
+Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba że jest przypięty (przycisk pinezki): wtedy pozostanie na swoim miejscu, dopóki go nie odepniesz, nie klikniesz w innej aplikacji lub nie uruchomisz ponownie Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>W górę lub w dół</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>Czat rozwija się od paska wiadomości: w górę, chyba że zabraknie miejsca powyżej, a wtedy w dół. Ustawienia › Okno pozwala utrzymać go w górze lub w dole oraz ustawia położenie, szerokość i wysokość czatu.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Rzędy przycisków</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Wiersze przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Dźwięki</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Dźwięki odtwarza dźwięk przy otwieraniu lub zamykaniu panelu: dźwięk Windows lub plik .wav w Twoim folderze dźwięków. Domyślnie wyłączone.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Ustawienia to pliki</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Wszystko znajduje się w Twoim folderze .hotline i jest stosowane przy zapisywaniu: settings.json, jeden plik na połączenie, monity, szybkie akcje i toolbar.json. Zastąp plik, aby przełączyć konfigurację; Ustawienia › Zaawansowane › Resetuj rozpoczyna od nowa z kopią zapasową.
+Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Wszystko, co robi Hotline, w skrócie. Każda część wskazuje, gdzie w Ustawieniach można to zmienić.</value></data>
 </root>

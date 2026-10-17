@@ -125,10 +125,10 @@ public sealed class SettingsStoreTests : IDisposable
     public void Defaults_are_translucent_acrylic_and_quiet_logging()
     {
         var s = New().Load();
-        Assert.Equal(BackdropKind.Acrylic, s.Window.Backdrop);
+        Assert.Equal(BackdropKind.AcrylicThin, s.Window.Backdrop);
         Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
         Assert.False(s.Diagnostics.VerboseLogging);
-        Assert.Equal(0.8, s.Window.VerticalPosition);
+        Assert.Equal(0.8, s.Window.Anchor.Y);
     }
 
     [Theory]

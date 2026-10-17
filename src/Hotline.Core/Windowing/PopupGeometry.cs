@@ -37,6 +37,20 @@ public static class PopupGeometry
     }
 
     /// <summary>
+    /// Grows the popup downward from its bar: keeps the bar's top edge, height = content clamped to
+    /// [bar height, maxPx], and never below the work area's bottom.
+    /// </summary>
+    public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode)
+        => GrowDown(bar, mode == Settings.GrowMode.Full && contentPx > bar.Height ? maxPx : contentPx, maxPx, workArea);
+
+    public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea)
+    {
+        var room = workArea.Y + workArea.Height - bar.Y;
+        var h = Math.Clamp(contentPx, bar.Height, Math.Max(bar.Height, Math.Min(maxPx, room)));
+        return bar with { Height = h };
+    }
+
+    /// <summary>
     /// The panel height for <paramref name="contentPx"/> given the height it has now: after the first message it
     /// expands to halfway between the bar and <paramref name="maxPx"/> at once (so a short answer never resizes it
     /// again), and only when the text outgrows that does it grow with the text, up to the maximum. It holds its height

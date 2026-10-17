@@ -219,6 +219,7 @@ Denegar:
   <data name="Effort_high" xml:space="preserve"><value>Alto</value></data>
   <data name="Effort_xhigh" xml:space="preserve"><value>Muy alto</value></data>
   <data name="Effort_max" xml:space="preserve"><value>Máximo</value></data>
+  <data name="Effort_ultra" xml:space="preserve"><value>Ultra</value></data>
   <data name="Bar_pin" xml:space="preserve"><value>Anclar</value></data>
   <data name="Bar_captureWindow" xml:space="preserve"><value>Capturar ventana</value></data>
   <data name="Bar_captureScreen" xml:space="preserve"><value>Capturar pantalla</value></data>
@@ -501,4 +502,89 @@ Denegar:
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>¿Eliminar /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nuevo nombre</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Otra aplicación ya usa ese atajo</value></data>
+  <data name="Advanced_Reset" xml:space="preserve"><value>Restablecer</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Restaura la configuración a su estado original tras la instalación. Primero se copia todo en {0}\backups. Para alternar entre conjuntos de configuraciones, reemplaza settings.json (o un archivo en connections) por otra copia: Hotline lo aplicará de inmediato. Los valores predeterminados están en {1}.</value></data>
+  <data name="Advanced_ResetAll" xml:space="preserve"><value>Restablecer todo</value></data>
+  <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, todas las conexiones (y sus claves de API), la barra de herramientas y mcp.json volverán al estado de la instalación. Se conservan las solicitudes, acciones rápidas, memoria e historial. Primero se crea una copia de seguridad (sin las claves de API).</value></data>
+  <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>¿Restablecer todo?</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json vuelve a los valores predeterminados. Se conservan tus conexiones, solicitudes, acciones rápidas, memoria e historial. Primero se crea una copia de seguridad.</value></data>
+  <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Restablecer</value></data>
+  <data name="Advanced_ResetDone" xml:space="preserve"><value>Listo. Los archivos anteriores están en {0}.</value></data>
+  <data name="Advanced_ResetSettings" xml:space="preserve"><value>Restablecer configuración</value></data>
+  <data name="Advanced_ResetTitle" xml:space="preserve"><value>¿Restablecer configuración?</value></data>
+  <data name="Conn_None" xml:space="preserve"><value>Aún no hay conexiones. Agrega una arriba o abre el panel: muestra las herramientas de línea de comandos de IA instaladas en este equipo.</value></data>
+  <data name="Conn_RemoveLast" xml:space="preserve"><value>{0} es tu última conexión. Sin ninguna, Hotline no puede chatear: el panel te pedirá que elijas una CLI instalada o agregues una clave de API.</value></data>
+  <data name="Recent_ContinueMore" xml:space="preserve"><value>Más…</value></data>
+  <data name="Set_Thinking" xml:space="preserve"><value>Mostrar cuando la IA está pensando</value></data>
+  <data name="Set_Thinking_Desc" xml:space="preserve"><value>Mientras se genera una respuesta pero aún no aparece texto, el cursor gira para que sepas que no se ha detenido</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Continuar en</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Aún no hay dónde continuar este chat: no hay ninguna herramienta de línea de comandos de IA instalada o el chat no tiene mensajes.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Debajo del cuadro de mensaje</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Vacío</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Filas de botones</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Mover debajo del cuadro de mensaje</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Encima del cuadro de mensaje</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Mover encima del cuadro de mensaje</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Volver a la posición predeterminada</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Guardado: Hotline ahora se abrirá aquí con este tamaño.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Guardar posición y tamaño como predeterminados</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Arrastra para mover; haz clic derecho para guardar esta posición</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Altura del chat</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Altura máxima del chat. 0 = automática (el porcentaje de altura máxima superior).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Expansión del chat</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automáticamente</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automático: hacia arriba, salvo que no haya espacio. Arriba o Abajo lo fija en esa dirección.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Hacia abajo</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Hacia arriba</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Ancho</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automático (el porcentaje de ancho superior). Mantén presionado Alt y arrastra un borde lateral para cambiar el tamaño.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (el monitor en el que estás trabajando), primary o el nombre de un monitor (guardado con «Guardar como predeterminado» del control de arrastre)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Posición horizontal</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Dónde se abre el panel en la pantalla: 0 = izquierda, 0.5 = centrado, 1 = derecha. Mantén presionado Alt y arrastra el control para moverlo, luego haz clic derecho para guardar la posición.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Al cerrar el panel</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Sonidos de Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Tus propios sonidos</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Coloca archivos .wav en {0}; aparecerán en las listas anteriores.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Desactivado</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Al abrir el panel</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Abrir carpeta de sonidos</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Reproducir</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Sonidos</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Guía</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Abrir y cerrar</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Presiona la tecla Copilot para abrir o cerrar el panel; mantenla presionada para iniciar un nuevo chat. Configuración › General cambia lo que hacen la pulsación y la pulsación larga (esta última también puede ser entrada de voz) y añade un atajo adicional.
+El panel se abre en el monitor en el que estés trabajando, listo para escribir. Esc o hacer clic en otra parte lo cierra, a menos que esté anclado.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Elegir una IA</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Elige el nivel de esfuerzo, el modelo y el proveedor en la fila de botones.
+Configuración › Conexiones de IA permite añadirlos: Claude Code, Codex o Antigravity instalados en este equipo (usan su propio inicio de sesión), una clave de API (Anthropic, Gemini, compatible con OpenAI) o un servidor local de modelos. Probar comprueba la clave y el modelo.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Pantallas, archivos y texto seleccionado</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>El botón + adjunta archivos, la ventana en la que estabas, la pantalla completa o un área que selecciones arrastrando. También puedes pegar o soltar imágenes y archivos.
+El texto que tenías seleccionado en la app de origen se incluye automáticamente. Los modelos que no admiten imágenes reciben el texto de la captura de pantalla en su lugar.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Voz</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Asigna la pulsación larga a Entrada de voz (Configuración › General), mantén presionada la tecla y habla; suéltala para parar. Configuración › Chat e historial decide si se envía de inmediato.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Acciones rápidas y prompts</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Escribe / para /translate, /summarize, /fix, /explain o tus propias acciones (Configuración › Acciones rápidas).
+El botón de documento elige el mensaje del sistema (Configuración › Prompts).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Memoria</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember y una nota lo guardan para cada chat, independientemente de la IA que uses. Configuración › Chat e historial abre memory.md para editarlo.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Historial y reanudación</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>El botón del reloj, Ctrl+Up en un cuadro de mensaje vacío o /resume abre tus chats; escribe para buscar.
+Un chat con Claude Code, Codex o Antigravity se guarda en el historial propio de esa herramienta y continúa donde lo dejaste. Continuar en (en la lista o con su botón) lo abre en un terminal; el resto de herramientas están en Más….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Respuestas en segundo plano</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Haz una consulta larga y cambia de ventana: una notificación de Windows te avisará cuando esté lista. Esc detiene una respuesta; mientras la IA piensa, el cursor gira.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Mover y cambiar de tamaño</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Mantén presionado Alt: arrastra el control en el borde de la barra de mensajes para mover el panel, o un lateral para cambiar su tamaño. Haz clic derecho en el control para guardar la posición y el tamaño como predeterminados, o para volver a ellos.
+Un panel desplazado se abrirá en su posición predeterminada la próxima vez, a menos que esté anclado (el botón de chincheta): en ese caso se quedará donde lo pongas hasta que lo desancles, hagas clic en otra app o reinicies Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Hacia arriba o hacia abajo</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>El chat se expande desde la barra de mensajes: hacia arriba, salvo que no haya espacio, y entonces hacia abajo. Configuración › Ventana permite fijarlo hacia arriba o hacia abajo y define la posición, el ancho y la altura del chat.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Filas de botones</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Apariencia › Filas de botones muestra, oculta y ordena los botones, encima o debajo del cuadro de mensaje.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sonidos</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configuración › Apariencia › Sonidos reproduce un sonido cuando el panel se abre o se cierra: un sonido de Windows o un .wav en tu carpeta de sonidos. Desactivado de forma predeterminada.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>La configuración son archivos</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Todo está en tu carpeta .hotline y se aplica al guardar: settings.json, un archivo por conexión, prompts, acciones rápidas y toolbar.json. Reemplaza un archivo para cambiar de configuración; Configuración › Avanzado › Restablecer empieza de cero, con una copia de seguridad.
+Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Todo lo que hace Hotline, en resumen. Cada parte indica dónde cambiarlo en Configuración.</value></data>
 </root>

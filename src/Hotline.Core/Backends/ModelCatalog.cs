@@ -4,7 +4,8 @@ using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Backends;
 
-public sealed record ModelInfo(string Id, string Label);
+/// <param name="Efforts">The reasoning efforts the model supports, when the source says (Codex).</param>
+public sealed record ModelInfo(string Id, string Label, IReadOnlyList<string>? Efforts = null);
 
 public sealed class ModelListException(string message) : Exception(message);
 
@@ -55,7 +56,8 @@ public static class ModelListParsers
 }
 
 /// <summary>Lists the models a connection offers, cached for 10 minutes per connection.</summary>
-public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<BackendProfile, CancellationToken, Task<string>> runAgyModels, TimeProvider clock)
+public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<BackendProfile, CancellationToken, Task<string>> runAgyModels, TimeProvider clock,
+    Func<BackendProfile, CancellationToken, Task<IReadOnlyList<ModelInfo>>>? listCodexModels = null)
 {
     private static readonly TimeSpan Ttl = TimeSpan.FromMinutes(10);
     private readonly Dictionary<string, (DateTimeOffset At, IReadOnlyList<ModelInfo> Models)> _cache = [];
@@ -99,7 +101,7 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
             case BackendType.ClaudeCode:
                 return ModelListParsers.ClaudeCodeAliases;
             case BackendType.Codex:
-                return []; // codex has no model list command: Default (codex's own choice) or a typed model name
+                return listCodexModels is null ? Codex.CodexModels.Curated : await listCodexModels(p, ct);
             case BackendType.Gemini:
                 return ModelListParsers.Gemini(await GetAsync(p, "models?pageSize=1000", (r, k) => r.Headers.Add("x-goog-api-key", k), ct));
             case BackendType.Anthropic:

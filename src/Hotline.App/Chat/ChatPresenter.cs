@@ -46,7 +46,12 @@ internal sealed class ChatPresenter
     public event Action? SettingsRequested;
 
     /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
-    public Action<Action<HotlineSettings>>? UpdateSettings { set => _support.UpdateSettings = value; }
+    public Action<Action<HotlineSettings>>? UpdateSettings { set { _support.UpdateSettings = value; _updateSettings = value; } }
+    private Action<Action<HotlineSettings>>? _updateSettings;
+
+    /// <summary>hotline://grips: shows the Alt grips on the open panel until hidden again (tests, screenshots).</summary>
+    internal void ShowGrips(bool show) => _grips.Force(show);
+    private PanelGrips _grips = null!;
     public bool IsBusy { get; private set; }
 
     /// <summary>Recent conversations from the history (set by the app; null when history is off).</summary>
@@ -64,7 +69,8 @@ internal sealed class ChatPresenter
         _tasks = new UiTasks(log, _notices);
         var visuals = new AttachmentVisuals(_theme, _notices, log);
         _attachments = new AttachmentPanel(popup, tray, settings, _notices, visuals, _theme, _tasks, log);
-        _transcript = new TranscriptView(popup, _theme, visuals, _notices, () => _tasks.Run("retry", chat.RetryAsync));
+        _transcript = new TranscriptView(popup, _theme, visuals, _notices, () => _tasks.Run("retry", chat.RetryAsync),
+            () => (_settings.Chat.ThinkingIndicator, _settings.Chat.ThinkingDelayMs));
         var actions = new QuickActions(Path.Combine(dataDirectory, "actions"));
         try { actions.EnsureDefaults(); } // first run writes the defaults
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("quick actions setup failed", ex); }
@@ -77,7 +83,10 @@ internal sealed class ChatPresenter
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
-            (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll());
+            (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll())
+        {
+            SnapshotDirectory = Path.Combine(dataDirectory, "logs"),
+        };
     }
 
     public void Initialize()
@@ -101,7 +110,20 @@ internal sealed class ChatPresenter
         _voice.SendRequested += () => _tasks.Run("send", SendAsync);
         _popup.NewChatRequested += NewChat;
         _popup.PinButton.Checked += (_, _) => { _popup.Pinned = true; _popup.PinButton.Content = Glyphs.Pinned; };
-        _popup.PinButton.Unchecked += (_, _) => { _popup.Pinned = false; _popup.PinButton.Content = Glyphs.Pin; };
+        _popup.PinButton.Unchecked += (_, _) => { _popup.Pinned = false; _popup.PinButton.Content = Glyphs.Pin; _popup.ForgetSessionSpot(); };
+        _popup.DirectionChanged += up => PanelLayout.Apply(_popup, up);
+        _grips = new PanelGrips(_popup, _log)
+        {
+            SaveAsDefault = () =>
+            {
+                var (anchor, width, chat) = _popup.CurrentSpot();
+                _updateSettings?.Invoke(s => { s.Window.Anchor = anchor; s.Window.Width = width; s.Window.ChatHeight = chat; });
+                _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
+                Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+            },
+        };
+        _grips.Initialize();
+        _selfTest.ShowGrips = _grips.SetVisible;
         _popup.NewChatButton.Click += (_, _) => NewChat();
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
@@ -343,8 +365,16 @@ internal sealed class ChatPresenter
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
-        _popup.SetContentHeight(messages + _popup.NoticesPanel.ActualHeight + _popup.Composer.ActualHeight + _popup.Toolbar.ActualHeight + 24 + 20,
-            conversation: !_transcript.IsEmpty);
+        var (noticesGap, chatGap) = PanelLayout.Gaps(_popup, !_transcript.IsEmpty);
+        // The gaps follow what's shown; set after this size event (never inside it), only when they change.
+        if (_popup.NoticesPanel.Margin.Top + _popup.NoticesPanel.Margin.Bottom != noticesGap
+            || _popup.MessagesScroll.Margin.Top + _popup.MessagesScroll.Margin.Bottom != chatGap)
+            _popup.DispatcherQueue.TryEnqueue(() => PanelLayout.UpdateSpacing(_popup, _popup.GrowsUp, !_transcript.IsEmpty));
+        // Padding 20 (10 + 10); the bottom button row's 8 is its own margin (none when that row is empty and collapsed).
+        var toolbarGap = _popup.Toolbar.Visibility == Microsoft.UI.Xaml.Visibility.Visible ? _popup.Toolbar.Margin.Top : 0;
+        var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + toolbarGap + 20; // BarStack: the top row (if any) and the message box
+        _popup.SetContentHeight(messages + chatGap + _popup.NoticesPanel.ActualHeight + noticesGap + _popup.BarStack.ActualHeight
+            + _popup.Toolbar.ActualHeight + toolbarGap + 20, conversation: !_transcript.IsEmpty, barDip: bar);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

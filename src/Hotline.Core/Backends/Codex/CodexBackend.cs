@@ -38,8 +38,8 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         var resume = profile.KeepCliSessions && Resume is { } r && CliSession.IsValidId(r.Id) ? r.Id : null;
 
         var inherit = profile.Tools == ToolMode.Inherit;
-        var cwd = inherit ? WorkingDirectory() : workspace;
-        if (resume is not null && Resume!.WorkingDirectory is { Length: > 0 } was && Path.IsPathFullyQualified(was)) cwd = was; // where it began
+        var cwd = inherit ? WorkingDirectory() : homeDirectory;
+        if (resume is not null && Resume!.WorkingDirectory is { Length: > 0 } was && Path.IsPathFullyQualified(was) && Directory.Exists(was)) cwd = was; // where it began (never recreate a deleted folder)
         Directory.CreateDirectory(cwd);
         string? reported = null;
         var images = new List<string>();
@@ -92,7 +92,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
                         if (prior.Count == 0) // Hotline kept only the record: nothing to replay
                             throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_ResumeFailed, profile.Name));
                         resume = null;
-                        cwd = inherit ? WorkingDirectory() : workspace;
+                        cwd = inherit ? WorkingDirectory() : homeDirectory;
                         Directory.CreateDirectory(cwd);
                         goto attempt;
                     }
