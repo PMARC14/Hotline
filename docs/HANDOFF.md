@@ -89,19 +89,18 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
    - Merge PR #32 when the owner approves (publishes v0.3.0). Then merge `main` into `panel-placement`,
      `personal/gemini-web`, `windows-26h2` and `continue-in-targets` (expect a `ContinueIn.cs` conflict there), build
      the 0.3.0.0 Store bundle, and reinstall from `main`.
-   - Then the panel plan (task 1 is the warning sound).
-   - **0.4:** PR #29 (Continue in).
-2. **0.5 on the owner's desktop** (it already has 26H2 and several monitors; the laptop dev PC doesn't):
-   - **Windows 11 26H2 follow-ups** (PR #9, draft, branch `windows-26h2`, kept up to date with `main`): agent
-     connectors (`odr.exe`), App Actions, the Copilot key, re-run TESTING.md, new APIs behind `PlatformSupport` checks.
-   - **Region capture on multi-monitor / mixed DPI.**
-   Set the desktop up first: clone, dev certificate (README), `scripts/install.sh`.
+   - Then PR #33 (the panel: built, Argon-reviewed in code and by eye; still open: the warning sound, plan task 1,
+     and the owner's hand test of real drags on the desktop).
+2. **Next: Windows 11 26H2** — the dev laptop got 26H2 on 2026-10-17, so this comes right after 0.3, here: PR #9
+   (draft, branch `windows-26h2`, kept up to date with `main`): agent connectors (`odr.exe`), App Actions, the Copilot
+   key, re-run TESTING.md, new APIs behind `PlatformSupport` checks.
+   - Then PR #29 (Continue in) and region capture on multi-monitor / mixed DPI (on the owner's desktop: clone, dev
+     certificate (README), `scripts/install.sh`). Version numbers to be set when these are ordered.
 3. **Brainstorm** anything else wanted before 1.0, then decide on it. (The Codex live check was done by the owner on
    2026-10-16; its feedback is 0.3.)
 4. **Version 1.0** when: hand tests done, multi-monitor capture OK, 26H2 merged, a Store update certified with all
    languages, and settings files staying compatible from then on.
-5. Known: the first off-screen layout after a fresh start logs a `LayoutCycleException` (kept running; older too).
-   No native-speaker reviews or RTL planned. Paid signing (winget-pkgs) only if Hotline gets popular.
+5. No native-speaker reviews or RTL planned. Paid signing (winget-pkgs) only if Hotline gets popular.
 6. Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
 
 ## Versions (toward 1.0)
@@ -165,10 +164,17 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   signtool see a different password than OpenSSL ("The specified PFX password is not correct").
 - **agy model quotas:** Opus/Sonnet via agy can run out for the week; Gemini 4 Argon (`gemini-4-argon-high`) is the
   deep-review fallback, Gemini 3.8 Flash the everyday one.
-- **`hotline://selftest` can hang in its OCR step** (RenderTargetBitmap/OCR never completing, probably with the screen
-  off). Before 0.3 that left the panel parked at (-32000, -32000), invisible on every later open. When a test or the
-  owner reports "nothing appears", check the window rect first. A PowerShell `EnumWindows` script works (it reports
-  logical pixels: -16000 at 200 %).
+- **A `LayoutCycleException` stops WinUI drawing that window for good** (it keeps running and toggling, but every
+  open is blank; RenderTargetBitmap/OCR then never complete). The "known first-start layout cycle" of earlier versions
+  was this: the pickers sized themselves from their own row's width inside its SizeChanged, shrinking 2 px per pass
+  when the buttons didn't fit (the self-test's 350-DIP off-screen window at 200 %). Rules: never change sizes inside a
+  size event; queue the work after layout (DispatcherQueue, coalesced) and set values only when they change; measure
+  from a container whose size doesn't depend on what you set. `diagnostics`: WinUI's
+  `DebugSettings.LayoutCycleTracingLevel = High` writes the cycle to OutputDebugString (catch it with a DBWIN listener;
+  see the 2026-10-17 session) and names the element.
+- **Before 0.3, a self-test that hung left the panel parked at (-32000, -32000)**, invisible on every later open. A
+  real open now always ends off-screen mode. When "nothing appears", check the window rect first (`EnumWindows`; a
+  non-DPI-aware PowerShell reports logical pixels: -16000 at 200 %).
 - **agy custom agents are found in the workspace, including `--add-dir` folders**: `agy --add-dir <dir> --agent
   hotline` works from any folder (verified 2026-10-16). An unknown `--project <name>` is silently ignored (no project
   is made); `--new-project` names the project after the folder agy runs in.
@@ -215,3 +221,15 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 Branch from GitHub `main` per feature → TDD in Core → build → `smoke.ps1 -Install` → commit + push → adversarial review
 (Antigravity via the agy MCP tool with a diff file, or a Sonnet subagent) → fix confirmed findings → PR/merge.
+
+**UI changes are verified by eye, not by window rectangles** (2026-10-17: a rect check passed while nothing was drawn):
+- `hotline://selftest` fails loudly on a layout cycle, too few frames or an OCR timeout, renders narrow/wide/both
+  directions/both button-row layouts, and saves PNGs to `~/.hotline/logs/selftest/`.
+- Real screenshots: a DPI-aware `CopyFromScreen` of the panel (open with `hotline://key?state=Tap` or `hotline://demo`,
+  then close it); Settings pages via UI Automation (select the nav item, capture, close the window).
+- Put both in one folder and run `agy --model gemini-4-argon-high` there with a prompt describing each state; it reads
+  the images with view_file. Text checks (translations, page names in the guide) go to `gemini-3.8-flash-high`.
+- **Clean up after testing:** restore any settings.json/toolbar.json you changed (back them up first), close every
+  panel/window you opened, and finally restart Hotline (`taskkill /IM Hotline.exe /F`, then `hotline://tray`) so
+  nothing a test did stays in the owner's running instance.
+- New features get a section in Settings › Guide (Core `Settings/Guide.cs` + `Guide_*` strings in all languages).
