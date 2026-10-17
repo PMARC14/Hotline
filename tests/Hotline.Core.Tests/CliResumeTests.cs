@@ -223,6 +223,20 @@ public sealed class CliResumeTests : IDisposable
     }
 
     [Fact]
+    public async Task Agy_quota_error_on_a_resumed_chat_says_quota_not_cant_resume()
+    {
+        _factory.Create = () => new FakeLineProcess
+        {
+            Respond = _ => ["""{"event":"result","result":{"status":"ERROR","response":"","error":"RESOURCE_EXHAUSTED: quota"}}"""],
+        };
+        var backend = Agy();
+        backend.Resume = new CliSession(SessionA, "");
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(backend.StreamAsync([U("1", "what word?")], default)));
+        Assert.Equal(BackendErrorKind.RateLimited, ex.Kind);
+        Assert.Single(_factory.Started); // no restart and replay just to fail again
+    }
+
+    [Fact]
     public async Task Agy_inherit_mode_gets_no_project_flags()
     {
         Directory.CreateDirectory(Path.Combine(_dir, "home"));

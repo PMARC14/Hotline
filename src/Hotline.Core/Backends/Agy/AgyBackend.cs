@@ -105,7 +105,9 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
                     yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
                 }
             }
-            if (!resumeFailed && resuming && parser.Error is not null && !answered) resumeFailed = true;
+            // Only a plain failure means the conversation couldn't be resumed; sign-in, quota… are said as they are.
+            if (!resumeFailed && resuming && parser.Error is { } resumeError && !answered
+                && AgyErrors.Map(resumeError) is { Kind: BackendErrorKind.Failed }) resumeFailed = true;
 
             if (resumeFailed)
             {
