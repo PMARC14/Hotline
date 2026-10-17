@@ -45,9 +45,18 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Continue in: only the chat's own CLI on top; the other CLIs under **More…**.
   - Settings › Advanced › Reset settings / Reset everything (backups in `~/.hotline/backups`), hidden defaults copy
     in `~/.hotline/.defaults/settings.json`; switching settings = replacing the file (applies live).
-  - Panel open check (logs + re-shows if Windows says hidden or nothing was drawn; seen after Modern Standby) and a toggle log
-    line (pinned state, focused window) to find the sound some hear when the key toggles a pinned panel.
-  - Still to come in 0.3: the movable, pinnable panel (own spec).
+  - Fix: the panel "opened" invisibly at (-32000, -32000) after a `hotline://selftest` whose OCR step hung (its cleanup
+    never ran). A real open now always ends off-screen mode, and the OCR check gives up after 10 s. This was also the
+    2026-10-16 "nothing pops up" report at 18:52. A panel open check also logs and re-shows a panel that drew nothing.
+  - **Open: the Windows warning sound when the key closes a *pinned* panel.** Giving focus back to the previous app
+    (e863bd2) didn't help: that path didn't run, because the previous window was none. Each toggle now logs `focus=`
+    (the focused element) and `previous=`. Next: the owner pins, closes with the key and notes the time; read those
+    lines. See the panel plan's task 1 for the candidates.
+- **Branch `panel-placement`** (stacked on #32, the rest of 0.3): spec
+  `docs/superpowers/specs/2026-10-16-panel-placement-design.md` (two open questions at the top) and plan
+  `docs/superpowers/plans/2026-10-16-panel-placement.md`. Done so far: the toolbar's Continue in button (in the default
+  bar), and the owner's layout (no spacer) and `acrylicThin` as the defaults. Work paused 2026-10-16 at the owner's
+  request (weekly usage).
 - **Open PR #29** (`continue-in-targets`, ships as **0.4**): Continue in to web pages, Open WebUI (a real chat) and apps,
   from a shared list or per connection; built from `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed,
   998 tests. Waits for 0.3 (the Codex feedback branch); bump `version.txt` to `0.4` when it merges. Hand-test list:
@@ -65,7 +74,12 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **0.3** — Codex feedback (branch `codex-feedback`), then panel placement. **0.4** — PR #29 (Continue in).
+1. **0.3:**
+   - Merge PR #32 when the owner approves (publishes v0.3.0). Then merge `main` into `panel-placement`,
+     `personal/gemini-web`, `windows-26h2` and `continue-in-targets` (expect a `ContinueIn.cs` conflict there), build
+     the 0.3.0.0 Store bundle, and reinstall from `main`.
+   - Then the panel plan (task 1 is the warning sound).
+   - **0.4:** PR #29 (Continue in).
 2. **0.5 on the owner's desktop** (it already has 26H2 and several monitors; the laptop dev PC doesn't):
    - **Windows 11 26H2 follow-ups** (PR #9, draft, branch `windows-26h2`, kept up to date with `main`): agent
      connectors (`odr.exe`), App Actions, the Copilot key, re-run TESTING.md, new APIs behind `PlatformSupport` checks.
@@ -140,6 +154,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   signtool see a different password than OpenSSL ("The specified PFX password is not correct").
 - **agy model quotas:** Opus/Sonnet via agy can run out for the week; Gemini 4 Argon (`gemini-4-argon-high`) is the
   deep-review fallback, Gemini 3.8 Flash the everyday one.
+- **`hotline://selftest` can hang in its OCR step** (RenderTargetBitmap/OCR never completing, probably with the screen
+  off). Before 0.3 that left the panel parked at (-32000, -32000), invisible on every later open. When a test or the
+  owner reports "nothing appears", check the window rect first. A PowerShell `EnumWindows` script works (it reports
+  logical pixels: -16000 at 200 %).
 - **agy custom agents are found in the workspace, including `--add-dir` folders**: `agy --add-dir <dir> --agent
   hotline` works from any folder (verified 2026-10-16). An unknown `--project <name>` is silently ignored (no project
   is made); `--new-project` names the project after the folder agy runs in.
