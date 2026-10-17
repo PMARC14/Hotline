@@ -31,6 +31,15 @@ public sealed class CliTranscriptsTests : IDisposable
     [InlineData("Please look at the attachment(s).", "")]
     public void Hotlines_own_wrapping_is_removed(string sent, string shown) => Assert.Equal(shown, CliTranscripts.Unwrap(sent));
 
+    [Fact]
+    public void Multi_paragraph_instructions_never_show_in_the_first_message()
+    {
+        // agy's inherit mode puts the system prompt (with saved memory: several paragraphs) in the first message.
+        var sent = Hotline.Core.Backends.Agy.AgyProtocol.ComposePrompt("what's my name?", [], [], [],
+            "Be brief.\n\n## Notes the user saved about themselves\n- name: Pat");
+        Assert.Equal("what's my name?", CliTranscripts.Unwrap(sent));
+    }
+
     // ---- Claude Code ------------------------------------------------------------------------------
 
     [Fact]
