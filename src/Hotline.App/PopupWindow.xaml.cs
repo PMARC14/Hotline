@@ -123,7 +123,7 @@ public sealed partial class PopupWindow : Window
         var elements = new Dictionary<string, FrameworkElement>
         {
             ["pin"] = PinButton, ["captureWindow"] = CaptureWindowButton, ["captureScreen"] = CaptureScreenButton,
-            ["captureRegion"] = CaptureRegionButton, ["prompt"] = PromptButton, ["recent"] = RecentButton,
+            ["captureRegion"] = CaptureRegionButton, ["prompt"] = PromptButton, ["recent"] = RecentButton, ["continueIn"] = ContinueInButton,
             ["newChat"] = NewChatButton, ["settings"] = SettingsButton,
         };
         Toolbar.Children.Clear();

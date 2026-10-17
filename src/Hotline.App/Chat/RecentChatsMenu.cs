@@ -32,7 +32,47 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private IReadOnlyList<HistoryStore.Summary> _all = [];
     private IDisposable? _modal, _resizeHold;
 
-    public void Initialize() => popup.RecentButton.Click += (_, _) => Show("");
+    public void Initialize()
+    {
+        popup.RecentButton.Click += (_, _) => Show("");
+        popup.ContinueInButton.Click += (_, _) => ShowContinueMenu(popup.ContinueInButton);
+    }
+
+    /// <summary>The toolbar's Continue in button: the same menu as in the history list, or a note when there's nowhere to go.</summary>
+    private void ShowContinueMenu(FrameworkElement at)
+    {
+        if (ContinueMenu() is not { } menu) { notices.Show(Strings.Recent_ContinueNothing, InfoBarSeverity.Informational); return; }
+        var hold = popup.HoldResize(); // a resize would close the menu (see PopupWindow.HoldResize)
+        menu.Closed += (_, _) => hold.Dispose();
+        menu.ShowAt(at);
+    }
+
+    /// <summary>"Continue this chat in ▸": the chat's own CLI, other CLIs under More…; null when there's nowhere to go.</summary>
+    private MenuFlyout? ContinueMenu()
+    {
+        var targets = ContinueIn?.Targets() ?? [];
+        if (targets.Count == 0) return null;
+        var menu = new MenuFlyout();
+        var more = new MenuFlyoutSubItem { Text = Strings.Recent_ContinueMore }; // other CLIs, reading the chat from a file
+        foreach (var t in targets)
+        {
+            var item = new MenuFlyoutItem { Text = t.Label };
+            item.Click += async (_, _) =>
+            {
+                _flyout?.Hide();
+                popup.HidePopup(); // the user is moving to the terminal
+                try { await t.Run(); }
+                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or IOException or UnauthorizedAccessException or InvalidOperationException)
+                {
+                    popup.ShowPopup(readSelection: false);
+                    notices.Show(L.F(Strings.Recent_ContinueFailed, t.Label, ex.Message), InfoBarSeverity.Warning);
+                }
+            };
+            (t.More ? more.Items : menu.Items).Add(item);
+        }
+        if (more.Items.Count > 0) menu.Items.Add(more);
+        return menu;
+    }
 
     /// <summary>Opens the list, filtered by <paramref name="query"/> (words that must all be in the title).</summary>
     /// <param name="fromTyping">Opened by typing "/resume ": keys typed in the message box meanwhile move to the search.</param>
@@ -175,28 +215,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private void BuildActions()
     {
         _actions.Children.Clear();
-        var targets = ContinueIn?.Targets() ?? [];
-        if (targets.Count > 0)
+        if (ContinueMenu() is { } menu)
         {
-            var menu = new MenuFlyout();
-            var more = new MenuFlyoutSubItem { Text = Strings.Recent_ContinueMore }; // other CLIs, reading the chat from a file
-            foreach (var t in targets)
-            {
-                var item = new MenuFlyoutItem { Text = t.Label };
-                item.Click += async (_, _) =>
-                {
-                    _flyout?.Hide();
-                    popup.HidePopup(); // the user is moving to the terminal
-                    try { await t.Run(); }
-                    catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or IOException or UnauthorizedAccessException or InvalidOperationException)
-                    {
-                        popup.ShowPopup(readSelection: false);
-                        notices.Show(L.F(Strings.Recent_ContinueFailed, t.Label, ex.Message), InfoBarSeverity.Warning);
-                    }
-                };
-                (t.More ? more.Items : menu.Items).Add(item);
-            }
-            if (more.Items.Count > 0) menu.Items.Add(more);
             _actions.Children.Add(new DropDownButton
             {
                 Content = new StackPanel

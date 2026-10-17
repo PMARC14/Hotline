@@ -180,6 +180,8 @@
             </Button>
             <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
                     Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
+            <Button x:Name="ContinueInButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" Visibility="Collapsed" />
             <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"

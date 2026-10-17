@@ -12,10 +12,11 @@ namespace Hotline.Core.Windowing;
 public sealed class ToolbarConfig
 {
     public static readonly IReadOnlyList<string> Available =
-        ["pin", "captureWindow", "captureScreen", "captureRegion", "spacer", "effort", "model", "provider", "prompt", "recent", "newChat", "settings"];
+        ["pin", "captureWindow", "captureScreen", "captureRegion", "spacer", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];
 
+    /// <summary>The owner's layout (2026-10-16): no spacer (the pickers follow the capture buttons), plus Continue in.</summary>
     public static readonly IReadOnlyList<string> Defaults =
-        ["pin", "captureWindow", "captureScreen", "captureRegion", "spacer", "effort", "model", "provider", "prompt", "recent", "newChat", "settings"];
+        ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];
 
     public IReadOnlyList<string> Items { get; init; } = Defaults;
     public string? Error { get; init; }

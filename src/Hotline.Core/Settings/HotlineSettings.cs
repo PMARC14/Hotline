@@ -70,7 +70,7 @@ public sealed class WindowSettings
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
     public string? FontFamily { get; set; }
     public ScrollbarStyle Scrollbar { get; set; } = ScrollbarStyle.Auto;
-    public BackdropKind Backdrop { get; set; } = BackdropKind.Acrylic;
+    public BackdropKind Backdrop { get; set; } = BackdropKind.AcrylicThin;
     /// <summary>Acrylic tint strength, 0 (clear) to 1 (opaque tint).</summary>
     public double TintOpacity { get; set; } = 0.15;
     /// <summary>Acrylic luminosity layer, 0 (most see-through) to 1.</summary>

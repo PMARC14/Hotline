@@ -517,4 +517,6 @@ Deny:
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, every connection (and its API key), the toolbar and mcp.json go back to how they were on install. Prompts, quick actions, memory and history stay. A backup is made first (API keys aren't in it).</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reset</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Done. The previous files are in {0}.</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Continue in</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Nothing to continue this chat in yet: no AI command-line tool is installed, or the chat has no messages.</value></data>
 </root>
