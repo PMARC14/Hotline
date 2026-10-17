@@ -94,12 +94,10 @@ public sealed class SettingsStore(string directory)
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
             s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order, keepLegacyDefault: loadedVersion < 12);
             Normalize(s);
-            if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null)
-                TrySave(s); // writes the connection files and drops "backends" from settings.json
-            else if (HasMissingOptions(text, s))
+            // An upgrade (connection files, dropping "backends") or newly added options rewrite the file: every setting
+            // stays visible and editable there. Keep the previous file (it may hold comments) as settings.json.bak.
+            if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null || HasMissingOptions(text, s))
             {
-                // The file is the configuration: write newly added options into it so every setting is visible and
-                // editable there. Keep the previous file (it may hold comments) as settings.json.bak.
                 try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (IOException) { }
                 TrySave(s);
             }
