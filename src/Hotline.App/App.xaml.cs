@@ -263,6 +263,11 @@ public partial class App : Application
             });
         };
 
+        // Open/close sounds (off by default); Hotline's own sound is put in ~/.hotline/sounds for the pickers.
+        var soundsDir = Interop.SoundPlayer.Directory(DataDirectory);
+        try { Hotline.Core.Windowing.Sounds.EnsureShipped(soundsDir, File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Sounds", Hotline.Core.Windowing.Sounds.ShippedFile))); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("could not set up the sounds folder", ex); }
+        _popup.PlayOpenClose = open => Interop.SoundPlayer.Play(open ? _settingsService!.Current.Window.OpenSound : _settingsService!.Current.Window.CloseSound, soundsDir, _log);
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
         // Alt alone would open the (hidden) window menu and swallow the next keys, or beep: Alt is for the panel's grips.
         hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);

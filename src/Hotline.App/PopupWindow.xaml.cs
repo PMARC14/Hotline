@@ -202,6 +202,7 @@ public sealed partial class PopupWindow : Window
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         Shown?.Invoke();
+        PlayOpenClose?.Invoke(true);
         CheckShown();
     }
 
@@ -263,9 +264,13 @@ public sealed partial class PopupWindow : Window
         _offscreen = false;
     }
 
+    /// <summary>Plays the open (true) or close (false) sound; only for a real open or close, never a re-show.</summary>
+    public Action<bool>? PlayOpenClose { get; set; }
+
     public void HidePopup()
     {
         if (!AppWindow.IsVisible) return;
+        PlayOpenClose?.Invoke(false);
         if (!Pinned) _session = null; // moved but not pinned: the next open uses the default
         AppWindow.Hide();
         _guard.NoteHidden();

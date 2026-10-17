@@ -66,6 +66,10 @@ public sealed class WindowSettings
     public int? ChatHeight { get; set; }
     /// <summary>Which way the chat grows from the bar: Auto (up unless there's no room above), or locked Up/Down.</summary>
     public GrowDirection GrowDirection { get; set; } = GrowDirection.Auto;
+    /// <summary>Sound when the panel opens: "off", "windows:&lt;event&gt;" (the Windows sound scheme) or a .wav in ~/.hotline/sounds.</summary>
+    public string OpenSound { get; set; } = "off";
+    /// <summary>Sound when the panel closes (same values as OpenSound).</summary>
+    public string CloseSound { get; set; } = "off";
     /// <summary>Before v13: the vertical position, now Anchor.Y (read once, then dropped from the file).</summary>
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
     public double? VerticalPosition { get; set; }
