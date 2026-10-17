@@ -517,4 +517,74 @@
   <data name="Recent_ContinueMore" xml:space="preserve"><value>更多…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>在 AI 思考時顯示</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>正在產生回覆但暫時未出現文字時，游標會旋轉，以便您確認系統並未停滯</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>在以下位置繼續</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>尚無可用位置繼續此聊天：未安裝任何 AI 命令列工具，或聊天中沒有任何訊息。</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>訊息方塊上方</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>移至訊息方塊上方</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>回到預設位置</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>已儲存：Hotline 現在將在此處以這個大小開啟。</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>將位置與大小儲存為預設值</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>拖曳以移動；按一下滑鼠右鍵以儲存此位置</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>聊天高度</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>聊天展開的最大高度。0 = 自動 (即上方的最大高度百分比)。</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>聊天展開方向</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>自動：向上展開，除非上方沒有足夠空間。Up 或 Down 會固定為該方向。</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>向下</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>向上</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>寬度</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 自動 (即上方的寬度百分比)。按住 Alt 並拖曳兩側邊緣以調整大小。</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>顯示器</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (目前操作的顯示器)、primary 或顯示器名稱 (透過控制項的「儲存為預設值」儲存)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>水平位置</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>面板在螢幕上開啟的位置：0 = 靠左、0.5 = 置中、1 = 靠右。按住 Alt 並拖曳控制項以移動，接著按一下滑鼠右鍵以儲存此位置。</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>面板關閉時</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline 音效：{0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>自訂音效</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>將 .wav 檔案放入 {0}；這些檔案將會顯示於上方的清單中。</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>關閉</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>面板開啟時</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>開啟音效資料夾</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>播放</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>音效</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows：{0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>指南</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>開啟與關閉</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>按 Copilot 鍵可開啟或關閉面板；長按可開始新聊天。設定 › 一般可變更按一下與長按的作用（長按亦可設為語音輸入），並新增額外快速鍵。
+面板會在您當前操作的螢幕上開啟，隨時可輸入文字。按 Esc 或按一下其他地方可關閉面板（釘選狀態除外）。</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>選擇 AI</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>在按鈕列中選擇思考程度、模型與提供者。
+設定 › AI 連線可新增選項：安裝在此電腦上的 Claude Code、Codex 或 Antigravity（使用各自的登入資訊）、API 金鑰（Anthropic、Gemini、相容 OpenAI 的金鑰）或本機模型伺服器。「測試」可檢查金鑰與模型。</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>螢幕、檔案與選取文字</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>+ 按鈕可附加檔案、您剛剛所在的視窗、整個螢幕或拖曳選取的區域。您也可以直接貼上或拖放影像與檔案。
+在原本應用程式中選取的文字會自動一併帶入。無法檢視影像的模型會改為接收螢幕擷取畫面中的文字。</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>語音</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>將長按設定為語音輸入（設定 › 一般），按住按鍵即可說話；放開即可停止。設定 › 聊天與記錄可決定是否立即傳送。</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>快速動作與提示詞</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>輸入 / 即可使用 /translate、/summarize、/fix、/explain 或您的自訂動作（設定 › 快速動作）。
+文件按鈕用於選擇系統提示詞（設定 › 提示詞）。</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>記憶</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>輸入 /remember 加上備忘即可在每次聊天中儲存該內容，無論使用哪種 AI。設定 › 聊天與記錄可開啟 memory.md 進行編輯。</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>歷程記錄與繼續</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>時鐘按鈕、在空白訊息方塊中按 Ctrl+Up 或輸入 /resume 即可開啟您的聊天；輸入文字即可搜尋。
+與 Claude Code、Codex 或 Antigravity 的聊天會保留在該工具自有的歷程記錄中，並從中斷處繼續。「繼續於」（位於清單中或其按鈕）可在終端機中開啟；其他工具則位於「更多…」下方。</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>背景回答</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>詢問較長的問題並切換至其他應用程式：Windows 通知會在準備就緒時通知您。按 Esc 可停止回答；AI 思考時，游標會旋轉。</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>移動與調整大小</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>按住 Alt：拖曳訊息列邊緣的抓手可移動面板，或拖曳邊緣調整大小。在抓手上按一下滑鼠右鍵可將當前位置與大小儲存為預設值，或恢復預設值。
+移動後的面板下次會在預設位置開啟，除非已釘選（釘選按鈕）：釘選後它會留在您放置的位置，直到您取消釘選、按一下其他應用程式或重新啟動 Hotline。</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 外觀 › 按鈕列可顯示、隱藏及排列訊息方塊上方或下方的按鈕順序。</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>所有內容都在您的 .hotline 資料夾中，並在儲存時立即套用：settings.json、每個連線一個檔案、提示詞、快速動作以及 toolbar.json。取代檔案即可切換配置；設定 › 進階 › 重設可重新開始，並建立備份。
+API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>簡要介紹 Hotline 的所有功能。各部分均說明了可在「設定」中的何處進行更改。</value></data>
 </root>

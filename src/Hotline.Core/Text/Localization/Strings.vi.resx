@@ -517,4 +517,74 @@ Từ chối:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Thêm…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Hiển thị khi AI đang suy nghĩ</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Trong khi câu trả lời đang được tạo nhưng chưa xuất hiện văn bản, con trỏ sẽ xoay để bạn biết hệ thống không bị treo</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Tiếp tục trong</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Chưa có nơi nào để tiếp tục cuộc trò chuyện này: chưa cài đặt công cụ dòng lệnh AI hoặc cuộc trò chuyện không có tin nhắn.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Bên dưới hộp tin nhắn</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Trống</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Các hàng nút</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Di chuyển xuống dưới hộp tin nhắn</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Bên trên hộp tin nhắn</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Di chuyển lên trên hộp tin nhắn</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Trở về vị trí mặc định</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Đã lưu: Hotline hiện mở tại đây với kích thước này.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Lưu vị trí và kích thước làm mặc định</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Kéo để di chuyển; nhấp chuột phải để lưu vị trí này</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Chiều cao đoạn chat</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Mức tối đa đoạn chat có thể mở rộng. 0 = tự động (phần trăm chiều cao tối đa ở trên).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Chiều mở rộng của đoạn chat</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Tự động</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Tự động: hướng lên trên, trừ khi không còn chỗ ở phía trên. Up hoặc Down sẽ giữ nguyên hướng đó.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Xuống dưới</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Lên trên</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Chiều rộng</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = tự động (phần trăm chiều rộng ở trên). Giữ Alt và kéo cạnh bên để đổi kích thước.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Màn hình</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (màn hình bạn đang làm việc), primary hoặc tên của màn hình (được lưu bởi Lưu làm mặc định của chốt kéo)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Vị trí nằm ngang</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Nơi bảng điều khiển mở trên màn hình: 0 = bên trái, 0.5 = ở giữa, 1 = bên phải. Giữ Alt và kéo chốt để di chuyển, sau đó nhấp chuột phải để lưu vị trí.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Khi đóng bảng điều khiển</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Âm thanh Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Âm thanh của bạn</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Đặt các tệp .wav vào {0}; chúng sẽ xuất hiện trong danh sách phía trên.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Tắt</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Khi mở bảng điều khiển</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Mở thư mục âm thanh</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Phát</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Âm thanh</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Hướng dẫn</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Mở và đóng</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Nhấn phím Copilot để mở hoặc đóng bảng điều khiển; nhấn giữ để bắt đầu cuộc trò chuyện mới. Cài đặt › Chung cho phép thay đổi thao tác nhấn và nhấn giữ (nhấn giữ cũng có thể là nhập bằng giọng nói) và thêm phím tắt phụ.
+Bảng điều khiển sẽ mở trên màn hình bạn đang làm việc, sẵn sàng để nhập văn bản. Nhấn Esc hoặc nhấp ra ngoài để đóng bảng điều khiển, trừ khi bảng đã được ghim.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Chọn AI</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Chọn mức độ nỗ lực, mô hình và nhà cung cấp trên hàng nút.
+Cài đặt › Kết nối AI để thêm: Claude Code, Codex hoặc Antigravity đã cài đặt trên PC này (dùng tài khoản đăng nhập riêng), khóa API (Anthropic, Gemini, tương thích với OpenAI) hoặc máy chủ mô hình cục bộ. Nút Kiểm tra giúp xác minh khóa và mô hình.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Màn hình, tệp và văn bản đã chọn</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>Nút + dùng để đính kèm tệp, cửa sổ bạn vừa làm việc, toàn bộ màn hình hoặc một vùng kéo chọn. Bạn cũng có thể dán hoặc thả hình ảnh và tệp vào.
+Văn bản bạn đã chọn trong ứng dụng trước đó sẽ tự động được đưa vào. Các mô hình không hỗ trợ hình ảnh sẽ nhận văn bản trích xuất từ ảnh chụp màn hình.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Giọng nói</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Thiết lập thao tác nhấn giữ thành Nhập bằng giọng nói (Cài đặt › Chung), giữ phím và nói; thả tay để dừng. Cài đặt › Trò chuyện và lịch sử quyết định xem tin nhắn có được gửi ngay hay không.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Tác vụ nhanh và lời nhắc</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Nhập / để gọi /translate, /summarize, /fix, /explain hoặc tác vụ của riêng bạn (Cài đặt › Thao tác nhanh).
+Nút tài liệu dùng để chọn lời nhắc hệ thống (Cài đặt › Lời nhắc).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Bộ nhớ</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>Dùng /remember kèm ghi chú để lưu lại cho mọi cuộc trò chuyện, bất kể bạn dùng AI nào. Cài đặt › Trò chuyện và lịch sử sẽ mở tệp memory.md để chỉnh sửa.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Lịch sử và tiếp tục</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Nút đồng hồ, tổ hợp phím Ctrl+Up trong hộp thông báo trống hoặc /resume sẽ mở các cuộc trò chuyện của bạn; nhập để tìm kiếm.
+Cuộc trò chuyện với Claude Code, Codex hoặc Antigravity nằm trong lịch sử riêng của công cụ đó và sẽ tiếp tục từ vị trí tạm dừng. Mục Tiếp tục trong (trong danh sách hoặc nút tương ứng) sẽ mở cuộc trò chuyện trong cửa sổ dòng lệnh; các công cụ khác nằm trong mục Thêm….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Trả lời ở chế độ nền</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Hỏi câu hỏi dài rồi chuyển sang ứng dụng khác: thông báo Windows sẽ cho biết khi câu trả lời đã sẵn sàng. Phím Esc giúp dừng câu trả lời; trong khi AI đang suy nghĩ, con trỏ chuột sẽ quay tròn.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Di chuyển và đổi kích thước</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Giữ Alt: kéo phần tay cầm ở mép thanh tin nhắn để di chuyển bảng điều khiển, hoặc kéo một cạnh để đổi kích thước. Nhấp chuột phải vào tay cầm để lưu vị trí và kích thước làm mặc định, hoặc để quay lại vị trí đó.
+Bảng điều khiển đã di chuyển sẽ mở ở vị trí mặc định vào lần sau, trừ khi đã được ghim (nút ghim): khi đó bảng sẽ giữ nguyên vị trí bạn đặt cho đến khi bạn bỏ ghim, nhấp sang ứng dụng khác hoặc khởi động lại Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Lên trên hoặc xuống dưới</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>Khung trò chuyện mở rộng từ thanh tin nhắn: hướng lên trên, trừ khi phía trên không còn chỗ thì sẽ mở xuống dưới. Cài đặt › Cửa sổ có thể cố định hướng lên hoặc xuống và thiết lập vị trí, chiều rộng cùng chiều cao cuộc trò chuyện.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Hàng nút</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Các hàng nút dùng để hiển thị, ẩn và sắp xếp thứ tự các nút ở phía trên hoặc phía dưới hộp thông báo.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Âm thanh</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Âm thanh sẽ phát âm thanh khi mở hoặc đóng bảng điều khiển: âm thanh của Windows hoặc tệp .wav trong thư mục âm thanh của bạn. Mặc định là tắt.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Cài đặt là các tệp</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Mọi thứ đều nằm trong thư mục .hotline của bạn và áp dụng ngay khi lưu: settings.json, mỗi kết nối một tệp, lời nhắc, tác vụ nhanh và toolbar.json. Thay thế một tệp để đổi cấu hình; Cài đặt › Nâng cao › Đặt lại để bắt đầu lại cùng bản sao lưu.
+Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ nằm trong tệp.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Tóm tắt mọi chức năng của Hotline. Mỗi phần đều nêu rõ nơi thay đổi trong Cài đặt.</value></data>
 </root>

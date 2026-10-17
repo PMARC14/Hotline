@@ -47,7 +47,7 @@ public partial class App : Application
         UnhandledException += (_, e) =>
         {
             // A layout cycle can stop WinUI drawing the window for good: count it so the self-test fails loudly.
-            if (e.Exception is LayoutCycleException) Interlocked.Increment(ref LayoutCycles);
+            if (e.Exception is LayoutCycleException || e.Exception?.HResult == unchecked((int)0x802B0014)) Interlocked.Increment(ref LayoutCycles); // E_LAYOUTCYCLE
             _log?.Error("unhandled UI exception (kept running)", e.Exception);
             e.Handled = true;
         };
@@ -220,6 +220,7 @@ public partial class App : Application
         var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
         _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += scene => _presenter.Demo(scene);
+        _router.GripsRequested += show => _presenter.ShowGrips(show);
         _router.VoiceRequested += command => _presenter.Voice(command);
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
@@ -271,7 +272,17 @@ public partial class App : Application
             });
         };
 
+        // Open/close sounds (off by default); Hotline's own sound is put in ~/.hotline/sounds for the pickers.
+        var soundsDir = Interop.SoundPlayer.Directory(DataDirectory);
+        try { Hotline.Core.Windowing.Sounds.EnsureShipped(soundsDir, File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Sounds", Hotline.Core.Windowing.Sounds.ShippedFile))); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("could not set up the sounds folder", ex); }
+        _popup.PlayOpenClose = open => Interop.SoundPlayer.Play(open ? _settingsService!.Current.Window.OpenSound : _settingsService!.Current.Window.CloseSound, soundsDir, _log);
+        void PreloadSounds() => Interop.SoundPlayer.Preload([_settingsService!.Current.Window.OpenSound, _settingsService.Current.Window.CloseSound], soundsDir, _log);
+        PreloadSounds();
+        _settingsService!.Changed += () => _popup.DispatcherQueue.TryEnqueue(PreloadSounds);
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
+        // Alt alone would open the (hidden) window menu and swallow the next keys, or beep: Alt is for the panel's grips.
+        hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
         HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
@@ -404,9 +415,9 @@ public partial class App : Application
     {
         var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
         if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
-        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
+        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _popup.TopToolbarItems.SequenceEqual(config.Top) && _toolbarApplied) return;
         _toolbarApplied = true;
-        try { _popup.ApplyToolbar(config.Items); }
+        try { _popup.ApplyToolbar(config.Items, config.Top); }
         catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
     }
 

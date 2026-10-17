@@ -86,6 +86,7 @@ internal sealed class ProviderBar(
         popup.Root.SizeChanged += (_, _) => QueueLayout();
         popup.Toolbar.SizeChanged += (_, _) => QueueLayout();
         popup.ToolbarChanged += QueueLayout;
+        popup.TopToolbar.SizeChanged += (_, _) => QueueLayout(); // the pickers may sit in the top row
         Refresh();
         _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
     }
@@ -140,25 +141,30 @@ internal sealed class ProviderBar(
     private void QueueLayout()
     {
         if (_layoutQueued) return;
-        _layoutQueued = true;
-        popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => { _layoutQueued = false; Layout(); });
+        _layoutQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        {
+            _layoutQueued = false;
+            popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
+            Layout();
+        });
     }
 
     private void Layout()
     {
-        var bar = popup.Toolbar;
+        var bar = popup.PickersPanel.Parent as Grid ?? popup.Toolbar; // the row the pickers are in
         // The room is the row's container width (the panel minus its padding), never the row's own width: that one grows
         // with the pickers when the buttons don't fit, and sizing from it shrank them a little on every pass.
         var room = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
         if (room <= 0) return;
-        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag)).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
+        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag) && c.Visibility == Visibility.Visible)
+                             .Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
                          + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
         var effortAvailable = popup.EffortBox.Items.Count > 0;
         var widths = ToolbarLayout.Compute(room, fixedWidth, popup.PickersPanel.Spacing,
             [
-                new("effort", 72, 56, effortAvailable && popup.ToolbarItems.Contains("effort")),
-                new("model", 150, 84, popup.ToolbarItems.Contains("model")),
-                new("provider", 128, 72, popup.ToolbarItems.Contains("provider")),
+                new("effort", 72, 56, effortAvailable && Shown("effort"), Max: 96),
+                new("model", 150, 84, Shown("model"), Max: 260),
+                new("provider", 128, 72, Shown("provider"), Max: 240),
             ], HideOrder);
         Apply(popup.EffortBox, widths["effort"]);
         Apply(popup.ModelBox, widths["model"]);
@@ -287,4 +293,7 @@ internal sealed class ProviderBar(
         popup.PromptMenu.Items.Add(create);
         popup.PromptMenu.Items.Add(folder);
     }
+
+    /// <summary>An item is in either button row.</summary>
+    private bool Shown(string item) => popup.ToolbarItems.Contains(item) || popup.TopToolbarItems.Contains(item);
 }

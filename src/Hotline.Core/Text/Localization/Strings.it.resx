@@ -517,4 +517,74 @@ Nega:
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Altro…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Mostra quando l'IA sta elaborando</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Mentre una risposta è in preparazione ma non compare ancora testo, il cursore ruota per indicare che il processo non è bloccato</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Continua in</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Non c'è ancora nulla in cui continuare questa chat: nessuno strumento da riga di comando IA installato o la chat non contiene messaggi.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Sotto la casella del messaggio</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Vuoto</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Righe di pulsanti</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Sposta sotto la casella del messaggio</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Sopra la casella del messaggio</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Sposta sopra la casella del messaggio</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Torna alla posizione predefinita</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Salvato: ora Hotline si aprirà qui, con queste dimensioni.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Salva posizione e dimensioni come predefinite</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Trascina per spostare; fai clic con il pulsante destro del mouse per salvare questa posizione</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Altezza della chat</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Altezza massima raggiunta dalla chat. 0 = automatica (la percentuale di altezza massima sopra indicata).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Espansione della chat</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Automaticamente</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatica: verso l'alto, a meno che non ci sia spazio sopra. Su o Giù mantiene tale direzione.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Giù</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Su</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Larghezza</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatica (la percentuale di larghezza sopra indicata). Tieni premuto Alt e trascina un bordo laterale per ridimensionare.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (il monitor su cui stai lavorando), primary o il nome di un monitor (salvato con «Salva come predefinito» del controllo di trascinamento)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Posizione orizzontale</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Punto dello schermo in cui si apre il pannello: 0 = sinistra, 0,5 = al centro, 1 = destra. Tieni premuto Alt e trascina l'indicatore per spostarlo, quindi fai clic con il pulsante destro del mouse per salvare la posizione.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Alla chiusura del pannello</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Suoni di Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Suoni personalizzati</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Inserisci i file .wav in {0}; verranno visualizzati negli elenchi sopra.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Disattivato</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>All'apertura del pannello</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Apri cartella dei suoni</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Riproduci</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Suoni</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Guida</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Apertura e chiusura</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Premi il tasto Copilot per aprire o chiudere il pannello; tienilo premuto per avviare una nuova chat. Impostazioni › Generale modifica l'azione della pressione breve e prolungata (la pressione prolungata può attivare anche l'input vocale) e aggiunge una scorciatoia aggiuntiva.
+Il pannello si apre sullo schermo su cui stai lavorando, pronto per digitare. Esc o un clic altrove lo chiude, a meno che non sia bloccato.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Scegliere un'IA</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Scegli il livello di impegno, il modello e il provider nella riga dei pulsanti.
+Impostazioni › Connessioni IA li aggiunge: Claude Code, Codex o Antigravity installati su questo PC (usano il proprio account di accesso), una chiave API (Anthropic, Gemini, compatibile con OpenAI) o un server di modelli locale. Testa verifica la chiave e il modello.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Schermate, file e testo selezionato</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>Il pulsante + allega file, la finestra attiva, l'intero schermo o un'area ritagliata. Puoi anche incollare o trascinare immagini e file.
+Il testo selezionato nell'app da cui provieni viene incluso automaticamente. I modelli che non supportano le immagini ricevono invece il testo nello screenshot.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Voce</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Imposta la pressione prolungata su Input vocale (Impostazioni › Generale), tieni premuto il tasto e parla; rilascialo per fermarti. Impostazioni › Chat e cronologia stabilisce se inviare subito il messaggio.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Azioni rapide e prompt</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Digita / per /translate, /summarize, /fix, /explain o per i tuoi comandi personalizzati (Impostazioni › Azioni rapide).
+Il pulsante del documento sceglie il prompt di sistema (Impostazioni › Prompt).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Memoria</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember e una nota lo salvano per ogni chat, qualunque sia l'IA usata. Impostazioni › Chat e cronologia apre memory.md per modificarlo.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Cronologia e ripresa</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Il pulsante dell'orologio, Ctrl+Up in una casella di messaggio vuota o /resume apre le tue chat; digita per cercare.
+Una chat con Claude Code, Codex o Antigravity risiede nella cronologia di quello strumento e riprende da dove si era interrotta. Continua in (nell'elenco o tramite il relativo pulsante) la apre in un terminale; gli altri strumenti sono sotto Altro….</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Risposte in background</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Fai una domanda lunga e passa ad altro: una notifica di Windows ti avviserà quando la risposta è pronta. Esc interrompe una risposta; mentre l'IA elabora, il cursore ruota.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Spostamento e ridimensionamento</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Tieni premuto Alt: trascina la maniglia sul bordo della barra dei messaggi per spostare il pannello, oppure un lato per ridimensionarlo. Fai clic con il pulsante destro del mouse sulla maniglia per salvare posizione e dimensioni come predefinite o per ripristinarle.
+Un pannello spostato si aprirà alla posizione predefinita la volta successiva, a meno che non sia bloccato (il pulsante della puntina): in tal caso rimarrà dove lo posizioni finché non lo sblocchi, fai clic su un'altra app o riavvii Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>In alto o in basso</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>La chat cresce a partire dalla barra dei messaggi: verso l'alto, a meno che non manchi spazio, quindi verso il basso. Impostazioni › Finestra può mantenerla verso l'alto o verso il basso e imposta la posizione, la larghezza e l'altezza della chat.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Righe di pulsanti</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Righe di pulsanti mostra, nasconde e riordina i pulsanti, sopra o sotto la casella dei messaggi.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suoni</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Suoni riproduce un suono quando il pannello si apre o si chiude: un suono di Windows o un .wav nella cartella dei suoni. Disattivato per impostazione predefinita.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Le impostazioni sono file</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Tutto si trova nella cartella .hotline e viene applicato non appena salvi: settings.json, un file per connessione, prompt, azioni rapide e toolbar.json. Sostituisci un file per cambiare configurazione; Impostazioni › Avanzate › Reimposta riparte da capo, con una backup.
+Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Tutto quello che fa Hotline, in breve. Ogni parte indica dove modificarlo in Impostazioni.</value></data>
 </root>

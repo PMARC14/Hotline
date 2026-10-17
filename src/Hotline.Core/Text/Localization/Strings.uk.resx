@@ -517,4 +517,74 @@
   <data name="Recent_ContinueMore" xml:space="preserve"><value>Більше…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>Показувати, коли ШІ думає</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>Поки відповідь готується, але текст тимчасово не з'являється, курсор обертається, показуючи, що процес не завис</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>Продовжити в</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>Поки що немає де продовжити цей чат: не інстальовано жодного засобу командного рядка ШІ або в чаті немає повідомлень.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>Під полем повідомлення</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>Порожньо</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>Рядки кнопок</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>Перемістити під поле повідомлення</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>Над полем повідомлення</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>Перемістити над полем повідомлення</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>Повернутися до стандартного розташування</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>Збережено: тепер Hotline відкриватиметься тут із цим розміром.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>Зберегти положення та розмір як стандартні</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>Перетягніть для переміщення; клацніть правою кнопкою миші, щоб зберегти розташування</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>Висота чату</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Максимальна висота розгортання чату. 0 = автоматично (максимальний відсоток висоти вище).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>Напрямок розгортання чату</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>Автоматично</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>Автоматично: вгору, якщо вистачає місця над панеллю. Up або Down фіксує напрямок.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>Униз</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>Угору</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>Ширина</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = автоматично (відсоток ширини вище). Утримуйте Alt і перетягніть бічний край, щоб змінити розмір.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>Монітор</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (монітор, на якому ви працюєте), primary або назва монітора (зберігається за допомогою команди «Зберегти як стандартні» маркера)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>Горизонтальне положення</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>Де на екрані відкривається панель: 0 = ліворуч, 0,5 = по центру, 1 = праворуч. Утримуйте Alt і перетягніть маркер, щоб перемістити її, потім клацніть правою кнопкою миші для збереження.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>Коли панель закривається</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Звуки Hotline: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>Власні звуки</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>Помістіть файли .wav у {0}; вони з'являться у списках вище.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>Вимк.</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>Коли панель відкривається</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>Відкрити папку звуків</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>Відтворити</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>Звуки</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>Посібник</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>Відкриття та закриття</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Натисніть клавішу Copilot, щоб відкрити або закрити панель; утримуйте її, щоб почати новий чат. Параметри › Загальні змінює дію для натискання й утримування (утримування також може бути голосовим введенням) і додає додаткове сполучення клавіш.
+Панель відкривається на моніторі, де ви працюєте, і готова до введення тексту. Esc або клацання в іншому місці закриває її, якщо вона не закріплена.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>Вибір ШІ</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>Оберіть рівень зусиль, модель і постачальника в рядку кнопок.
+Параметри › Підключення ШІ додає їх: Claude Code, Codex або Antigravity, установлені на цьому ПК (вони використовують власний вхід), ключ API (Anthropic, Gemini, сумісний з OpenAI) або локальний сервер моделей. Кнопка «Тест» перевіряє ключ і модель.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>Екрани, файли та виділений текст</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>Кнопка «+» вкладає файли, вікно, у якому ви працювали, весь екран або виділену область. Також можна вставляти або перетягувати зображення та файли.
+Текст, виділений у попередній програмі, додається автоматично. Моделі, які не розпізнають зображення, замість цього отримують текст зі знімка екрана.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>Голос</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>Установіть для тривалого натискання дію «Голосове введення» (Параметри › Загальні), утримуйте клавішу та говоріть; відпустіть, щоб зупинити. Параметри › Чат та історія визначає, чи надсилати повідомлення одразу.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>Швидкі дії та підказки</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>Введіть / для /translate, /summarize, /fix, /explain або власних дій (Параметри › Швидкі дії).
+Кнопка з документом вибирає системну підказку (Параметри › Промпти).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>Пам'ять</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>Команда /remember з приміткою зберігає її для всіх чатів, незалежно від вибраного ШІ. Параметри › Чат та історія відкриває memory.md для редагування.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>Історія та продовження</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>Кнопка з годинником, Ctrl+Up у порожньому полі повідомлення або /resume відкриває ваші чати; почніть вводити для пошуку.
+Чат із Claude Code, Codex або Antigravity зберігається у власній історії цього інструмента й продовжується з місця зупинки. Пункт «Продовжити в» (у списку або відповідна кнопка) відкриває його в терміналі; інші інструменти доступні в меню «Більше…».</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>Відповіді у фоновому режимі</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>Запитайте щось об'ємне та перемкніться на інші справи: сповіщення Windows повідомить, коли відповідь буде готова. Esc зупиняє відповідь; поки ШІ думає, курсор обертається.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>Переміщення та зміна розміру</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Утримуйте Alt: потягніть за маркер на краю рядка повідомлення, щоб перемістити панель, або за край, щоб змінити її розмір. Клацніть маркер правою кнопкою миші, щоб зберегти розташування та розмір за замовчуванням або повернутися до них.
+Переміщена панель наступного разу відкриється на стандартному місці, якщо її не закріплено (кнопка закріплення): тоді вона залишатиметься там, де ви її розмістили, доки ви її не відкріпите, не перейдете в іншу програму або не перезапустите Hotline.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>Угору чи вниз</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>Чат розгортається від рядка повідомлення: угору, якщо є місце, або вниз, якщо місця вгорі немає. Параметри › Вікно дозволяє зафіксувати напрямок угору чи вниз і налаштовує розташування, ширину та висоту чату.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>Рядки кнопок</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вигляд › Рядки кнопок показує, приховує та впорядковує кнопки над або під полем повідомлення.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>Звуки</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Вигляд › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>Параметри — це файли</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>Усе зберігається у вашій папці .hotline і застосовується під час збереження: settings.json, по одному файлу на кожне підключення, підказки, швидкі дії та toolbar.json. Замініть файл, щоб змінити конфігурацію; Параметри › Додатково › Скинути повертає все до початкового стану зі створенням резервної копії.
+Ключі API зберігаються в Windows Credential Locker і ніколи не потрапляють у файли.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Коротко про все, що робить Hotline. У кожному розділі зазначено, де це можна змінити в Параметрах.</value></data>
 </root>

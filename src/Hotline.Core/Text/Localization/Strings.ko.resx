@@ -517,4 +517,74 @@
   <data name="Recent_ContinueMore" xml:space="preserve"><value>자세히…</value></data>
   <data name="Set_Thinking" xml:space="preserve"><value>AI가 생각 중일 때 표시</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>답변이 준비 중이지만 잠시 동안 텍스트가 표시되지 않을 때 멈추지 않았음을 알 수 있도록 커서가 회전합니다</value></data>
+  <data name="Bar_continueIn" xml:space="preserve"><value>다음에서 계속</value></data>
+  <data name="Recent_ContinueNothing" xml:space="preserve"><value>이 채팅을 계속할 대상이 없습니다. AI 명령줄 도구가 설치되어 있지 않거나 채팅에 메시지가 없습니다.</value></data>
+  <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
+  <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
+  <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
+  <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
+  <data name="Bar_TopRow" xml:space="preserve"><value>메시지 상자 위</value></data>
+  <data name="Bar_ToTop" xml:space="preserve"><value>메시지 상자 위로 이동</value></data>
+  <data name="Grip_BackHome" xml:space="preserve"><value>기본 위치로 복원</value></data>
+  <data name="Grip_Saved" xml:space="preserve"><value>저장됨: 이제 Hotline이 이 위치와 크기로 열립니다.</value></data>
+  <data name="Grip_SaveDefault" xml:space="preserve"><value>위치 및 크기를 기본값으로 저장</value></data>
+  <data name="Grip_Tip" xml:space="preserve"><value>드래그하여 이동, 마우스 오른쪽 단추로 클릭하여 이 위치 저장</value></data>
+  <data name="Set_ChatHeight" xml:space="preserve"><value>채팅 높이</value></data>
+  <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>채팅이 늘어나는 최대 높이입니다. 0 = 자동(위의 최대 높이 비율).</value></data>
+  <data name="Set_Direction" xml:space="preserve"><value>채팅 확장 방향</value></data>
+  <data name="Set_Direction_Auto" xml:space="preserve"><value>자동</value></data>
+  <data name="Set_Direction_Desc" xml:space="preserve"><value>자동: 위쪽에 공간이 부족하지 않은 한 위로 확장됩니다. Up 또는 Down으로 설정하면 해당 방향으로 고정됩니다.</value></data>
+  <data name="Set_Direction_Down" xml:space="preserve"><value>아래로</value></data>
+  <data name="Set_Direction_Up" xml:space="preserve"><value>위로</value></data>
+  <data name="Set_FixedWidth" xml:space="preserve"><value>너비</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 자동(위의 너비 비율). Alt 키를 누른 채 가장자리를 드래그하여 크기를 조정합니다.</value></data>
+  <data name="Set_Monitor" xml:space="preserve"><value>모니터</value></data>
+  <data name="Set_Monitor_Desc" xml:space="preserve"><value>active(작업 중인 모니터), primary 또는 모니터 이름(그립의 '기본값으로 저장'으로 저장됨)</value></data>
+  <data name="Set_PositionX" xml:space="preserve"><value>가로 위치</value></data>
+  <data name="Set_PositionX_Desc" xml:space="preserve"><value>화면에서 패널이 열리는 위치: 0 = 왼쪽, 0.5 = 가운데, 1 = 오른쪽. Alt 키를 누른 채 그립을 드래그하여 이동한 후 마우스 오른쪽 단추로 클릭하여 위치를 저장합니다.</value></data>
+  <data name="Sound_Close" xml:space="preserve"><value>패널이 닫힐 때</value></data>
+  <data name="Sound_File" xml:space="preserve"><value>Hotline 사운드: {0}</value></data>
+  <data name="Sound_Folder" xml:space="preserve"><value>사용자 지정 사운드</value></data>
+  <data name="Sound_Folder_Desc" xml:space="preserve"><value>.wav 파일을 {0}에 넣으면 위의 목록에 표시됩니다.</value></data>
+  <data name="Sound_Off" xml:space="preserve"><value>꺼짐</value></data>
+  <data name="Sound_Open" xml:space="preserve"><value>패널이 열릴 때</value></data>
+  <data name="Sound_OpenFolder" xml:space="preserve"><value>사운드 폴더 열기</value></data>
+  <data name="Sound_Play" xml:space="preserve"><value>재생</value></data>
+  <data name="Sound_Title" xml:space="preserve"><value>사운드</value></data>
+  <data name="Sound_Windows" xml:space="preserve"><value>Windows: {0}</value></data>
+  <data name="Nav_Guide" xml:space="preserve"><value>가이드</value></data>
+  <data name="Guide_Open_Title" xml:space="preserve"><value>열기 및 닫기</value></data>
+  <data name="Guide_Open_Body" xml:space="preserve"><value>Copilot 키를 눌러 패널을 열거나 닫을 수 있으며, 길게 누르면 새 채팅을 시작합니다. 설정 › 일반에서 누르기 및 길게 누르기 동작을 변경하고(길게 누르기를 음성 입력으로 설정 가능) 추가 바로 가기 키를 지정할 수 있습니다.
+패널은 작업 중인 모니터에 바로 입력할 수 있는 상태로 열립니다. 고정되어 있지 않은 한 Esc를 누르거나 다른 곳을 클릭하면 닫힙니다.</value></data>
+  <data name="Guide_Connections_Title" xml:space="preserve"><value>AI 선택</value></data>
+  <data name="Guide_Connections_Body" xml:space="preserve"><value>단추 행에서 effort, 모델 및 공급자를 선택하세요.
+설정 › AI 연결에서 다음 항목을 추가할 수 있습니다: 이 PC에 설치된 Claude Code, Codex 또는 Antigravity(자체 로그인 사용), API 키(Anthropic, Gemini, OpenAI 호환) 또는 로컬 모델 서버. 테스트를 통해 키와 모델을 확인합니다.</value></data>
+  <data name="Guide_Attach_Title" xml:space="preserve"><value>화면, 파일 및 선택한 텍스트</value></data>
+  <data name="Guide_Attach_Body" xml:space="preserve"><value>+ 단추로 파일, 작업 중이던 창, 전체 화면 또는 드래그한 영역을 첨부할 수 있습니다. 이미지와 파일을 붙여넣거나 끌어다 놓을 수도 있습니다.
+이전에 사용하던 앱에서 선택한 텍스트는 자동으로 함께 가져옵니다. 이미지를 볼 수 없는 모델은 스크린샷 대신 스크린샷의 텍스트를 받게 됩니다.</value></data>
+  <data name="Guide_Voice_Title" xml:space="preserve"><value>음성</value></data>
+  <data name="Guide_Voice_Body" xml:space="preserve"><value>길게 누르기를 음성 입력으로 설정하고(설정 › 일반), 키를 누른 채 말한 뒤 손을 떼면 중지됩니다. 설정 › 채팅 및 기록에서 바로 전송할지 여부를 결정합니다.</value></data>
+  <data name="Guide_Actions_Title" xml:space="preserve"><value>빠른 작업 및 프롬프트</value></data>
+  <data name="Guide_Actions_Body" xml:space="preserve"><value>/를 입력하여 /translate, /summarize, /fix, /explain 또는 사용자 지정 작업을 사용할 수 있습니다(설정 › 빠른 동작).
+문서 단추로 시스템 프롬프트를 선택합니다(설정 › 프롬프트).</value></data>
+  <data name="Guide_Memory_Title" xml:space="preserve"><value>메모리</value></data>
+  <data name="Guide_Memory_Body" xml:space="preserve"><value>/remember와 메모를 입력하면 어떤 AI를 사용하든 모든 채팅에 저장됩니다. 설정 › 채팅 및 기록에서 memory.md를 열어 편집할 수 있습니다.</value></data>
+  <data name="Guide_History_Title" xml:space="preserve"><value>기록 및 계속하기</value></data>
+  <data name="Guide_History_Body" xml:space="preserve"><value>시계 단추, 빈 메시지 상자에서 Ctrl+Up 또는 /resume을 사용하여 채팅을 열 수 있으며, 입력하여 검색할 수 있습니다.
+Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기록에 유지되며 중단한 지점부터 다시 시작됩니다. '다음에서 계속'(목록 또는 해당 단추)을 누르면 터미널에서 열리며, 다른 도구는 자세히…에 있습니다.</value></data>
+  <data name="Guide_Background_Title" xml:space="preserve"><value>백그라운드 응답</value></data>
+  <data name="Guide_Background_Body" xml:space="preserve"><value>긴 질문을 입력하고 다른 작업을 하세요. 답변이 준비되면 Windows 알림으로 알려 드립니다. Esc를 누르면 답변이 중단되며, AI가 생각하는 동안에는 커서가 회전합니다.</value></data>
+  <data name="Guide_Move_Title" xml:space="preserve"><value>이동 및 크기 조정</value></data>
+  <data name="Guide_Move_Body" xml:space="preserve"><value>Alt 키를 누른 상태에서 메시지 표시줄 가장자리의 그립을 드래그하여 패널을 이동하거나, 가장자리를 드래그하여 크기를 조정하세요. 그립을 마우스 오른쪽 단추로 클릭하여 위치와 크기를 기본값으로 저장하거나 기본값으로 되돌릴 수 있습니다.
+이동한 패널은 고정(고정 단추)되어 있지 않은 한 다음번에 기본 위치에서 열립니다. 고정된 경우 고정을 해제하거나, 다른 앱을 클릭하거나, Hotline을 다시 시작할 때까지 지정한 위치에 유지됩니다.</value></data>
+  <data name="Guide_Direction_Title" xml:space="preserve"><value>위 또는 아래</value></data>
+  <data name="Guide_Direction_Body" xml:space="preserve"><value>채팅은 메시지 표시줄을 기준으로 확장됩니다. 위쪽에 공간이 없는 경우가 아니면 위로, 공간이 없으면 아래로 확장됩니다. 설정 › 창에서 위 또는 아래로 고정할 수 있으며 위치, 너비 및 채팅 높이도 설정할 수 있습니다.</value></data>
+  <data name="Guide_Rows_Title" xml:space="preserve"><value>단추 행</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 모양 › 단추 행에서 메시지 상자 위 또는 아래의 단추를 표시, 숨김 및 순서 변경할 수 있습니다.</value></data>
+  <data name="Guide_Sounds_Title" xml:space="preserve"><value>소리</value></data>
+  <data name="Guide_Sounds_Body" xml:space="preserve"><value>설정 › 모양 › 사운드에서 패널이 열리거나 닫힐 때 소리를 재생합니다: Windows 소리 또는 소리 폴더의 .wav 파일. 기본적으로 꺼져 있습니다.</value></data>
+  <data name="Guide_Files_Title" xml:space="preserve"><value>설정 파일</value></data>
+  <data name="Guide_Files_Body" xml:space="preserve"><value>모든 항목은 .hotline 폴더에 저장되며 저장 즉시 적용됩니다: settings.json, 연결당 하나의 파일, 프롬프트, 빠른 작업 및 toolbar.json. 파일을 교체하여 구성을 전환할 수 있습니다. 설정 › 고급 › 초기화를 사용하면 백업과 함께 처음부터 다시 시작할 수 있습니다.
+API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장되지 않습니다.</value></data>
+  <data name="Guide_Intro" xml:space="preserve"><value>Hotline의 모든 기능을 간략히 요약했습니다. 각 부분마다 설정의 어디에서 변경할 수 있는지 안내합니다.</value></data>
 </root>

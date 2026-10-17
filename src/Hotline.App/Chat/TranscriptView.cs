@@ -66,6 +66,18 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         _timer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(50), RenderDirty);
         _thinkingTimer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(200), UpdateThinking);
         popup.MessagesPanel.SizeChanged += (_, _) => { if (_follow.Following) ScrollToBottomNow(); };
+        // The viewport changes height too (the panel grows, the chat swaps direction, a button row or notice comes or
+        // goes): keep the newest text in view. After the size event, never inside it.
+        popup.MessagesScroll.SizeChanged += (_, _) =>
+        {
+            // Not animated: an animated scroll started while the window is still growing gets cut short by the next resize.
+            if (!_follow.Following || _scrollQueued) return;
+            _scrollQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+            {
+                _scrollQueued = false;
+                if (_follow.Following) ScrollToBottomNow(animate: false); // still following: the user may have scrolled up
+            });
+        };
         popup.MessagesScroll.ViewChanged += OnViewChanged;
         WatchReaderScrolling(popup.MessagesScroll);
         popup.JumpToLatestButton.Click += (_, _) => { _follow.Follow(); UpdateJumpButton(); ScrollToBottomNow(); };
@@ -328,10 +340,14 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private void UpdateJumpButton() =>
         popup.JumpToLatestButton.Visibility = !_follow.Following && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-    private void ScrollToBottomNow()
+    private bool _scrollQueued;
+
+    private void ScrollToBottomNow() => ScrollToBottomNow(animate: true);
+
+    private void ScrollToBottomNow(bool animate)
     {
         var sv = popup.MessagesScroll;
-        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: false); // animated: no jolts while streaming
+        sv.ChangeView(null, sv.ScrollableHeight, null, disableAnimation: !animate); // animated while streaming: no jolts
     }
 
     private void OnViewChanged(object? sender, ScrollViewerViewChangedEventArgs e)

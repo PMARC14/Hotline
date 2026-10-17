@@ -11,7 +11,8 @@ same files). Comments and trailing commas are allowed.
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
-| `toolbar.json` | The bottom bar: which items, in what order |
+| `toolbar.json` | The button rows around the message box: which items, in what order |
+| `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
@@ -35,8 +36,12 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
 | `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
-| `window.verticalPosition` | `0.8` | 0 = top, 0.5 = centered, 1 = bottom of the free space |
-| `window.backdrop` | `acrylic` | `acrylic`, `acrylicThin`, `mica`, `solid` |
+| `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
+| `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule |
+| `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
+| `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
+| `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
+| `window.backdrop` | `acrylicThin` | `acrylic`, `acrylicThin`, `mica`, `solid` |
 | `window.tintOpacity` / `luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` / `alwaysOnTop` | `true` / `true` | Hide when you click elsewhere; keep on top |
 | `window.fontSize` / `fontFamily` | Windows default / Segoe UI Variable | Text size (10–32; empty follows Windows' text size) and font |
@@ -149,13 +154,23 @@ the description in the list. Add your own by dropping in a file (letters, digits
 edit the defaults freely: they're written only when the folder doesn't exist yet. Settings › **Quick actions** lists,
 creates, edits and deletes them.
 
+## Moving and resizing the panel
+
+Hold **Alt** while the panel has focus (or with the pointer over it): a grip appears on the message bar's outer edge
+and handles on the sides. Drag the grip to move the panel; drag a side to change the width, the chat side to change
+how tall the chat gets (that height stays until the panel is closed). Right-click the grip for **Save position and
+size as default** (writes `window.anchor`, `width`, `chatHeight`) or **Back to the default spot**. A moved panel goes
+back to its default the next time it opens, unless it's **pinned**: then the key reopens it where you left it, until
+you unpin it, click into another app, or Hotline restarts.
+
 ## toolbar.json
 
-`{ "items": ["pin", "captureWindow", "captureScreen", "captureRegion", "spacer", "effort", "model", "provider", "prompt", "recent", "newChat", "settings"] }`
-— left to right; remove an item to hide it; `spacer` takes the free space (repeatable). The pickers (effort, model,
-provider) sit together in the order listed. Settings › Appearance › **Bottom bar** edits this file (the previous version
-is kept as `toolbar.json.bak`). `captureRegion` (drag out a part of the screen) is in the default bar since Plan 6; an
-older toolbar.json keeps its own list, so add it there if you want the button.
+`{ "top": [], "items": ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"] }`
+— `top` is the row above the message box, `items` the row below it; left to right; an item sits in one row only; remove an item to hide it; `spacer` takes the free space (repeatable). `continueIn` opens the
+"Continue this chat in" menu (the chat's own CLI, others under More…). The pickers (effort, model,
+provider) sit together in the order listed. Settings › Appearance › **Button rows** edits this file (the previous version
+is kept as `toolbar.json.bak`). An existing toolbar.json keeps its own list, so add new
+items (`captureRegion` since Plan 6, `continueIn` since 0.3) there if you want them.
 
 ## Codex
 
