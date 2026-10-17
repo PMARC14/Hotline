@@ -82,6 +82,19 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
    20 files — the 17 `Strings*.resx` (both sides added strings: keep both), `App.xaml.cs`, `SettingsWindow.xaml.cs`
    and `docs/HANDOFF.md`, so it was left for that chat) and region capture on multi-monitor / mixed DPI plus the panel's hand test
    (on the owner's desktop: clone, dev certificate (README), `scripts/install.sh`). Version numbers when ordered.
+   - **Left from the whole-codebase review (2026-10-17, Argon, 48 findings; the real Critical/Important ones are fixed
+     in PR "after 0.3")** — check these on the desktop / when touching the code:
+     - Mixed-DPI drags: a drop across monitors may keep the old monitor's width in pixels; a live move between a
+       top/bottom pair of different DPIs can jitter; a tall auto-direction panel dragged to the top edge may not flip
+       to growing down; `FramePx` is read before the panel moves to its monitor (one show may be a few px short).
+     - The window frame on the first open: `_barDip` is 0 until the first layout, so a grow-down panel's bar line
+       can be set from the fallback height.
+     - Settings: a `settings.json` without `schemaVersion` is treated as current (skips migrations); connection ids are
+       case-sensitive in a few places (`defaultBackend`); the Language box is blank for `"en-us"` (case).
+     - Minor: scheme-less endpoints throw a raw error; MCP `cwd`/`displayName` of the wrong JSON type drop the file's
+       other servers; `ModelFamilies.Resolve` maps `xhigh`/`ultra` to the lowest variant; MCP approval keys differ by
+       case; SVG `style` with CSS escapes; code-fence parity in `MarkdownModel`; sounds don't reload a replaced .wav;
+       the fallback hotkey isn't re-registered on a settings change; transcript spinner not stopped on Clear.
 3. **Brainstorm** anything else wanted before 1.0, then decide on it. (The Codex live check was done by the owner on
    2026-10-16; its feedback is 0.3.)
 4. **Version 1.0** when: hand tests done, multi-monitor capture OK, 26H2 merged, a Store update certified with all
