@@ -238,8 +238,20 @@ public sealed partial class PopupWindow : Window
     public void ShowOffscreen()
     {
         _offscreen = true;
-        AppWindow.MoveAndResize(new RectInt32(-32000, -32000, 700, 700));
+        // A realistic panel size for the primary monitor's scale (700x700 physical pixels was a 350-DIP-wide panel at
+        // 200 %, narrower than the button row: the self-test then ran layouts no real panel ever does).
+        var scale = Native.GetDpiForMonitor(Win32Interop.GetMonitorFromDisplayId(DisplayArea.Primary.DisplayId), Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        var size = (int)Math.Round(720 * scale);
+        AppWindow.MoveAndResize(new RectInt32(-32000, -32000, size, size));
         AppWindow.Show(activateWindow: false);
+    }
+
+    /// <summary>Self-test only: the off-screen panel at another width (DIPs at the primary monitor's scale).</summary>
+    public void ResizeOffscreen(int widthDip)
+    {
+        if (!_offscreen) return;
+        var scale = Native.GetDpiForMonitor(Win32Interop.GetMonitorFromDisplayId(DisplayArea.Primary.DisplayId), Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        AppWindow.Resize(new SizeInt32((int)Math.Round(widthDip * scale), (int)Math.Round(720 * scale)));
     }
 
     public void EndOffscreen()

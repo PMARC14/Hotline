@@ -99,6 +99,20 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         try
         {
             popup.ShowOffscreen();
+            // Rendering health: frames drawn and layout cycles during the test. A layout cycle can leave the window
+            // undrawable for good (2026-10-17: every later open was blank), so either one fails the test.
+            var cyclesBefore = App.LayoutCycles;
+            var frames = 0;
+            void OnFrame(object? s, object e) => frames++;
+            Microsoft.UI.Xaml.Media.CompositionTarget.Rendering += OnFrame;
+            _renderCheck = () =>
+            {
+                Microsoft.UI.Xaml.Media.CompositionTarget.Rendering -= OnFrame;
+                var cycles = App.LayoutCycles - cyclesBefore;
+                if (cycles > 0) log.Error($"selftest FAILED: {cycles} layout cycle(s) during the test (the window may stop drawing)");
+                if (frames < 10) log.Error($"selftest FAILED: only {frames} frame(s) drawn (the window isn't rendering)");
+                else log.Info($"selftest rendering ok: {frames} frames, no layout cycle");
+            };
             async Task Step(string name)
             {
                 log.Info($"selftest step: {name}");
@@ -138,6 +152,14 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             composer.Text = "/";
             await Step("quick actions");
             log.Info($"selftest quick actions: {composer.SuggestionCount} suggestion(s)");
+            // Narrower than the button row (the condition of the 2026-10-17 layout cycle), then back.
+            popup.ResizeOffscreen(360);
+            await Step("narrow panel");
+            await Task.Delay(400);
+            popup.ResizeOffscreen(720);
+            await Step("normal width");
+            _renderCheck?.Invoke();
+            _renderCheck = null;
             composer.Text = draft;
         }
         catch (Exception ex) { log.Error("selftest FAILED", ex); }
@@ -149,10 +171,12 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
     }
 
     /// <summary>OCR the rendered (off-screen) transcript and check its heading is read back.</summary>
+    private Action? _renderCheck;
+
     private async Task CheckOcrAsync()
     {
         try { await CheckOcrCoreAsync().WaitAsync(TimeSpan.FromSeconds(10)); }
-        catch (TimeoutException) { log.Error("selftest ocr FAILED: no result in 10 s (rendering or OCR hung)"); }
+        catch (TimeoutException) { log.Error("selftest FAILED: the OCR check got no image or text in 10 s (the window may not be rendering)"); }
     }
 
     private async Task CheckOcrCoreAsync()
