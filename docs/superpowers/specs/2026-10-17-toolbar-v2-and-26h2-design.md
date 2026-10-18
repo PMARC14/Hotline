@@ -26,6 +26,19 @@ Windows 11 26H2. What the owner asked for (2026-10-17), and what I assumed:
 | Picker width | Fixed by the wider default (no earlier hide). |
 | Default layout | **Later** (migrated files keep their look; new installs get today's layout until decided). |
 
+## Compatibility policy for 0.4 (owner, 2026-10-17)
+
+Pre-1.0, so old `settings.json` and `toolbar.json` may be made redundant or replaced on the first run of 0.4: **the old
+files are archived first** to `~/.hotline/backups/pre-0.4-<time>/` (same convention as `pre-0.3-*` and `reset-*`), then
+the new ones are written. Best-effort conversion stays where it is cheap (the v1 toolbar migration, kept settings values),
+but nothing may be kept at the price of complexity.
+**Connections are the exception: they must not break.** `connections/*.json` (ids, names, types, models, endpoints,
+efforts, MCP/tool settings) are carried over unchanged, `defaultBackend` keeps pointing at the same id, and API keys stay
+in the Credential Locker (no key is touched, moved or re-prompted). A test loads a v13 settings folder with connections of
+every type and asserts every connection is byte-identical (or semantically equal) after the 0.4 migration, and that the
+archive exists and holds the originals. If conversion of a connection file ever fails, that file is left as it is and
+reported in the log and This PC, never dropped or rewritten.
+
 ## Out of scope
 
 Agent workspace, Ask Copilot taskbar and new App Actions work (research: no public API or no schema change). Phi Silica is
@@ -65,7 +78,7 @@ Rules:
   font 15 (today) · wide 46×32, font 15.
 - **Migration v1 → v2** (on first load of a file without `version`): `items`/`top` arrays become `left`; the first
   `spacer` in a row splits it (items after it go `right`), further spacers are dropped. The v1 file is copied to
-  `toolbar.json.bak`; the rendered bar is identical. Files with `version` higher than 2 are read tolerantly and never
+  `backups/pre-0.4-<time>/` (and `toolbar.json.bak`); the rendered bar is identical. Files with `version` higher than 2 are read tolerantly and never
   rewritten. `Save` (Settings editor) writes v2 with the comment header, keeping `style`, `overrides`, `buttons`.
 - **Defaults** (new installs, Reset): the owner's current layout (no spacer; pickers top row), `style` normal, no
   outline. The default layout is decided later; until then the defaults are today's layout unchanged.
@@ -152,8 +165,9 @@ Windows (KB5127648 on 26H2, 25H2 and 24H2) can remap the key in Settings > Bluet
 low-level hook is no longer needed (it also relied on Win+Shift+F23 arriving, and hook code risks Defender false positives).
 - Delete `CopilotKeyHook`, `CopilotKeyRemap`, `CopilotKeyMode` and `CopilotKeyRemapTests`, the `ActivationRouter` branch,
   the `App.xaml.cs` wiring, the `activation.copilotKey` setting and its `SettingsSchema` entry.
-- **Settings compatibility:** schema v13 to v14; an existing `"copilotKey"` entry (any value) is ignored on read and gone
-  after the next save (the migration already keeps `settings.json.bak`); unknown keys never make a file fail. Tested.
+- **Settings compatibility:** schema v13 to v14 under the compatibility policy above: the old `settings.json` is archived
+  to `backups/pre-0.4-<time>/`, an existing `"copilotKey"` entry (any value) is dropped, connections are untouched. Unknown
+  keys never make a file fail. Tested.
 - Remove the `Set_CopilotKey_*` strings from the 17 resx files; `docs/configuration.md`, `docs/TESTING.md`,
   `store/listing.md` and the Guide drop the mode.
 - `docs/copilot-key.md` is rewritten: the Windows remap path and its options (Right Ctrl / Context menu / Search / an
@@ -195,7 +209,8 @@ section is filled in from its report, and the owner decides whether it is built 
     hide/show from "Not shown", custom add/edit/delete, `Save` round trip, order preserved.
   - `ToolbarLayout` with icon buttons: a property test over widths 200-1600 DIP x presets x quadrants: no overlap, total
     width within the room, right group never dropped before the left's overflow, overflow keeps order, stable under repeats.
-  - Settings migration v13 to v14 (`copilotKey` present, absent, odd values), defaults, Reset (settings and toolbar, with
+  - Settings migration v13 to v14 (`copilotKey` present, absent, odd values), the archive, **connections of every type
+    unchanged and `defaultBackend` intact**, defaults, Reset (settings and toolbar, with
     backups), the `.defaults` copy, `EverythingFiles`.
   - ThisPc wording branches and `PlatformSupport` thresholds.
 - **Resource tests:** every `Bar_*`/`Guide_*` key exists in all 17 languages; no `Set_CopilotKey_*` left; Guide page names match.
