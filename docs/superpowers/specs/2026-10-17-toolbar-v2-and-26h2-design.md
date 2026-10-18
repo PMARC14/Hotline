@@ -29,14 +29,16 @@ Windows 11 26H2. What the owner asked for (2026-10-17), and what I assumed:
 ## Compatibility policy for 0.4 (owner, 2026-10-17)
 
 Pre-1.0, so old `settings.json` and `toolbar.json` may be made redundant or replaced on the first run of 0.4: **the old
-files are archived first** to `~/.hotline/backups/pre-0.4-<time>/` (same convention as `pre-0.3-*` and `reset-*`), then
+files are archived first** by keeping the file next to the new one with `.old` added to its name (`settings.json.old`,
+`toolbar.json.old`; this applies to any file the migration replaces; if `X.old` already exists the next free `X.old2`, `X.old3`
+… is used, never overwriting an archive), then
 the new ones are written. Best-effort conversion stays where it is cheap (the v1 toolbar migration, kept settings values),
 but nothing may be kept at the price of complexity.
 **Connections are the exception: they must not break.** `connections/*.json` (ids, names, types, models, endpoints,
 efforts, MCP/tool settings) are carried over unchanged, `defaultBackend` keeps pointing at the same id, and API keys stay
 in the Credential Locker (no key is touched, moved or re-prompted). A test loads a v13 settings folder with connections of
 every type and asserts every connection is byte-identical (or semantically equal) after the 0.4 migration, and that the
-archive exists and holds the originals. If conversion of a connection file ever fails, that file is left as it is and
+`.old` archives exist and hold the originals. If conversion of a connection file ever fails, that file is left as it is and
 reported in the log and This PC, never dropped or rewritten.
 
 ## Out of scope
@@ -78,7 +80,7 @@ Rules:
   font 15 (today) · wide 46×32, font 15.
 - **Migration v1 → v2** (on first load of a file without `version`): `items`/`top` arrays become `left`; the first
   `spacer` in a row splits it (items after it go `right`), further spacers are dropped. The v1 file is copied to
-  `backups/pre-0.4-<time>/` (and `toolbar.json.bak`); the rendered bar is identical. Files with `version` higher than 2 are read tolerantly and never
+  `toolbar.json.old` (not `.bak`); the rendered bar is identical. Files with `version` higher than 2 are read tolerantly and never
   rewritten. `Save` (Settings editor) writes v2 with the comment header, keeping `style`, `overrides`, `buttons`.
 - **Defaults** (new installs, Reset): the owner's current layout (no spacer; pickers top row), `style` normal, no
   outline. The default layout is decided later; until then the defaults are today's layout unchanged.
@@ -118,7 +120,7 @@ never throws):
   buttons exceed the room, the right group is kept and the left group's last buttons move into a "..." overflow flyout
   (pickers shrink first, as today, then hide in `HideOrder`), so nothing is pushed off-screen. `Resolve` and `Compute`
   are pure and idempotent (same input, same output; tested), so the layout can't oscillate.
-- **Never rewritten by accident:** the file on disk changes only through Settings or the v1 migration (with `.bak`). A
+- **Never rewritten by accident:** the file on disk changes only through Settings or the v1 migration (which leaves `toolbar.json.old`). A
   hand edit that needed fixing is applied from the resolved model in memory; This PC lists the warnings and the log has
   one line per warning. Saving from Settings writes the resolved model, which repairs the file.
 - **Half-written files:** the 400-ms debounce stays; a parse error keeps the last good bar.
@@ -166,7 +168,7 @@ low-level hook is no longer needed (it also relied on Win+Shift+F23 arriving, an
 - Delete `CopilotKeyHook`, `CopilotKeyRemap`, `CopilotKeyMode` and `CopilotKeyRemapTests`, the `ActivationRouter` branch,
   the `App.xaml.cs` wiring, the `activation.copilotKey` setting and its `SettingsSchema` entry.
 - **Settings compatibility:** schema v13 to v14 under the compatibility policy above: the old `settings.json` is archived
-  to `backups/pre-0.4-<time>/`, an existing `"copilotKey"` entry (any value) is dropped, connections are untouched. Unknown
+  to `settings.json.old`, an existing `"copilotKey"` entry (any value) is dropped, connections are untouched. Unknown
   keys never make a file fail. Tested.
 - Remove the `Set_CopilotKey_*` strings from the 17 resx files; `docs/configuration.md`, `docs/TESTING.md`,
   `store/listing.md` and the Guide drop the mode.
@@ -211,13 +213,11 @@ pages and local files by it, not yet re-verified by me.
   a client API. The documented contract is `odr.exe list` (JSON) then a plain MCP stdio client against
   `manifest.server.mcp_config`; connectors need 26220.7262+ and run in a contained agent session. Undocumented RPC/COM
   interfaces of `AgentService` were not decoded and there is no documented reason to.
-- **Recommendation:** both are **deferred out of 0.4**. Phi Silica / Aion: a later, opt-in "Windows on-device" connection
-  type (Core `ILocalModelBackend` with a probe / ensure-ready / stream surface; an App adapter that wraps every WinRT call
-  against `TypeLoadException`/`COMException`; hidden unless the probe says supported; never downloads without a consent
-  dialog; refusals shown as "blocked by Windows content safety"), built only after an on-device smoke test on this PC
-  once the model (or Aion) is installed and the unlock status is known. `odr.exe`: a later "discover servers via
-  `odr.exe list`" feature in the existing MCP host, gated on the binary existing. 0.4 only fixes the This PC wording
-  (section 5b). The owner may overrule and pull the Windows on-device connection into 0.4.
+- **Decision (owner, 2026-10-17): both are deferred out of 0.4 and may never be built.** Phi Silica is Microsoft's own
+  Copilot model; Hotline's on-device route is a local API connection (the Local connection type), to be made deeper and
+  more robust later, not a Windows AI connection. The same goes for `odr.exe` discovery. 0.4 only fixes the This PC
+  wording (section 5b). If ever revisited: code to the stable `LanguageModel` surface, never a model name, hide unless
+  probed supported, no download without consent.
 
 ## 7. Testing (extensive)
 
@@ -227,7 +227,7 @@ pages and local files by it, not yet re-verified by me.
     and trailing commas; BOM; case-insensitive ids; version higher than 2; fuzzing (5,000 generated random JSON cases:
     never throws, output always valid, `Resolve` idempotent: resolving its own written output returns the same model).
   - Migration v1 to v2 (no/one/many spacers, spacer first/last, pickers split, both rows, duplicates, junk); the rendered
-    order equals v1's; `.bak` made; v2 files untouched; broken files untouched; read-only folder tolerated.
+    order equals v1's; `toolbar.json.old` made (and `.old2` when `.old` exists); v2 files untouched; broken files untouched; read-only folder tolerated.
   - The editing model (the one Settings uses): move within a quadrant, between quadrants (all 4x4 pairs), the arrows at
     the edges, drop at an index (before, after, past the end, onto itself, into the other row), the pickers block,
     hide/show from "Not shown", custom add/edit/delete, `Save` round trip, order preserved.
