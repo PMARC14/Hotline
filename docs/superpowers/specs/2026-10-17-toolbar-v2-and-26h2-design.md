@@ -189,11 +189,35 @@ From the research (a subagent's report, sources in the PR description):
 
 ## 6. Phi Silica and the undocumented APIs
 
-A research agent is covering: the WinAppSDK `Microsoft.Windows.AI.Text` surface, minimum builds, Copilot+ and Limited
-Access Feature requirements, what shipped metadata on this PC shows about the agent registry (`odr.exe`, `AgentService`,
-`CoreAI`), and a minimal design for a gated "Windows on-device" connection. Boundary: public docs and packages and shipped
-metadata only; no bypass of the LAF token or any hardware or licensing gate (a blocker is documented as a blocker). This
-section is filled in from its report, and the owner decides whether it is built in 0.4 or later.
+Research (a subagent's report, 2026-10-17; public docs, shipped metadata and read-only inspection of this PC; nothing
+installed or called; no attempt to bypass any gate). Claims below are the agent's, checked against Microsoft Learn
+pages and local files by it, not yet re-verified by me.
+
+- **This PC:** Intel Core Ultra X7 358H with a working NPU, build 26300. The OS ships the model plumbing (AIFabric,
+  `WSAIFabricSvc` running), but **the Phi Silica model packages are not installed**, so `GetReadyState` is probably
+  `NotReady`. The public `Microsoft.Windows.AI.Text` WinMD is not on this PC (it comes with the Windows App SDK; 2.5.1
+  and 1.8 runtimes are installed).
+- **API:** `LanguageModel.GetReadyState()` (Ready / NotReady / DisabledByUser / NotSupportedOnCurrentSystem),
+  `EnsureReadyAsync()`, `CreateAsync()`, `GenerateResponseAsync`, with progress (streaming), context sessions, skills
+  (Summarize / Rewrite / TextToTable) and content-safety options. Needs the `systemAIModels` capability and a
+  `MaxVersionTested` of 26226 or higher in the manifest. An unpackaged app is shown working in Learn's examples.
+- **Gates:** Copilot+ NPU (or a recent 6 GB+ GPU on Insider builds); a several-GB on-demand model download; Phi Silica
+  is still documented as a Limited Access Feature needing an unlock token (the newer get-started page no longer says so);
+  whether it is enforced today is untested. Microsoft's Learn page (dated 2026-10-12) announces **Phi Silica is replaced by
+  "Aion Instruct"** (Insider November 2026, retail January 2027) with no unlock token. So code to the stable
+  `LanguageModel` surface, never to a model name.
+- **Agent registry (`odr.exe`):** the registry value `HKLM\...\CurrentVersion\Mcp` names `odr.exe mcp` but the
+  binary is absent; `McpManagementService` exists (stopped); the OS WinMD only shows a message-filter hook for hosts, not
+  a client API. The documented contract is `odr.exe list` (JSON) then a plain MCP stdio client against
+  `manifest.server.mcp_config`; connectors need 26220.7262+ and run in a contained agent session. Undocumented RPC/COM
+  interfaces of `AgentService` were not decoded and there is no documented reason to.
+- **Recommendation:** both are **deferred out of 0.4**. Phi Silica / Aion: a later, opt-in "Windows on-device" connection
+  type (Core `ILocalModelBackend` with a probe / ensure-ready / stream surface; an App adapter that wraps every WinRT call
+  against `TypeLoadException`/`COMException`; hidden unless the probe says supported; never downloads without a consent
+  dialog; refusals shown as "blocked by Windows content safety"), built only after an on-device smoke test on this PC
+  once the model (or Aion) is installed and the unlock status is known. `odr.exe`: a later "discover servers via
+  `odr.exe list`" feature in the existing MCP host, gated on the binary existing. 0.4 only fixes the This PC wording
+  (section 5b). The owner may overrule and pull the Windows on-device connection into 0.4.
 
 ## 7. Testing (extensive)
 
