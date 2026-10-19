@@ -40,7 +40,7 @@ public sealed record ToolbarModel(
         ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];
 
     /// <summary>One block in the renderer (PickersPanel): they always end up adjacent.</summary>
-    private static readonly string[] Pickers = ["effort", "model", "provider"];
+    internal static readonly string[] Pickers = ["effort", "model", "provider"];
 
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
@@ -223,7 +223,7 @@ public sealed record ToolbarModel(
         {
             if (buttons.Count == MaxButtons) { warnings.Add($"More than {MaxButtons} custom buttons; the rest are ignored"); break; }
             var name = Clean(id, MaxLabel, false);
-            if (id.Length is 0 or > MaxId || !id.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '-'))
+            if (!IsCustomId(id))
                 { warnings.Add($"Custom button id \"{name}\" must be 1-{MaxId} characters a-z, 0-9 or -; ignored"); continue; }
             if (BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase)) { warnings.Add($"Custom button \"{name}\" has a built-in id; ignored"); continue; }
             if (def is not JsonObject b) { warnings.Add($"Custom button \"{id}\" should be an object; ignored"); continue; }
@@ -239,6 +239,10 @@ public sealed record ToolbarModel(
         }
         return buttons;
     }
+
+    /// <summary>The form of a custom button id: 1-32 characters a-z, 0-9 or - (whether it collides with a built-in is checked apart).</summary>
+    internal static bool IsCustomId(string? id) =>
+        id is { Length: > 0 and <= MaxId } && id.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '-');
 
     /// <summary>A plain file-name stem, never a path, so it can only name a file inside actions\.</summary>
     private static bool IsActionName(string name) =>
