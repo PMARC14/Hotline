@@ -61,14 +61,19 @@ public static class ToolbarLayout
     /// (items - 1), plus one more before <paramref name="reservedWidth"/> when it is above 0 and any item is shown.
     /// The Grid's star spacer column is not counted. Takes the largest LeftShown that fits (so it never decreases as
     /// <paramref name="room"/> grows). If the right group (+ reserved) alone exceeds the room, LeftShown = 0 and
-    /// Overflow = (any left buttons). Negative or NaN inputs count as 0.
+    /// Overflow = (any left buttons). Negative or NaN inputs count as 0 (a non-finite spacing too).
+    /// Overshoot contract: when the right group + reserved fits but adding the overflow button (and its gap) does not,
+    /// the result is (0, true) and the total can exceed <paramref name="room"/> by at most overflowWidth + one spacing
+    /// (the button stays so hidden left items remain reachable). The caller must then drop the pickers (call again with
+    /// reservedWidth = 0) and only accept an overshoot that remains.
+    /// The Grid's star spacer column is not counted.
     /// </summary>
     public static FitResult Fit(
         double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
         double reservedWidth, double overflowWidth = 32)
     {
         static double Clean(double v) => double.IsNaN(v) || v < 0 ? 0 : v;
-        room = Clean(room); spacing = Clean(spacing); reservedWidth = Clean(reservedWidth); overflowWidth = Clean(overflowWidth);
+        room = Clean(room); spacing = double.IsFinite(spacing) ? Clean(spacing) : 0; reservedWidth = Clean(reservedWidth); overflowWidth = Clean(overflowWidth);
         var left = (leftWidths ?? []).Select(Clean).ToArray();
         var right = (rightWidths ?? []).Select(Clean).ToArray();
 

@@ -81,6 +81,34 @@ public class ToolbarFitTests
     }
 
     [Fact]
+    public void Overshoot_when_right_fits_but_button_does_not()
+    {
+        // right alone = 60 + 4 = 64 <= 70; with the button 60 + 32 + 8 = 100 > 70 -> (0, true), over by 30 <= 32 + 4
+        double[] left = [30], right = [30, 30];
+        var r = ToolbarLayout.Fit(70, Gap, left, right, 0);
+        Assert.Equal(new FitResult(0, true), r);
+        Assert.Equal(100, Total(r, left, right, 0));
+    }
+
+    [Fact]
+    public void Dropping_the_pickers_can_remove_the_overshoot()
+    {
+        double[] left = [30], right = [30, 30];
+        var with = ToolbarLayout.Fit(100, Gap, left, right, 10); // right+reserved = 78 fits, button version 114 does not
+        Assert.Equal(new FitResult(0, true), with);
+        Assert.True(Total(with, left, right, 10) > 100);
+        var without = ToolbarLayout.Fit(100, Gap, left, right, 0);
+        Assert.Equal(new FitResult(1, false), without);
+        Assert.True(Total(without, left, right, 0) <= 100);
+    }
+
+    [Fact]
+    public void Infinite_spacing_does_not_produce_nan()
+    {
+        Assert.Equal(new FitResult(2, false), ToolbarLayout.Fit(100, double.PositiveInfinity, [30, 30], [], 0));
+    }
+
+    [Fact]
     public void Property_over_widths_presets_and_button_counts()
     {
         var rng = new Random(26);
@@ -100,8 +128,18 @@ public class ToolbarFitTests
                     Assert.Equal(r.LeftShown < count, r.Overflow);
                     Assert.True(r.LeftShown >= prev, $"not monotonic at {room}");
                     prev = r.LeftShown;
+                    var total = Total(r, left, right, reserved);
                     var floor = Total(new FitResult(0, count > 0), left, right, reserved);
-                    if (floor <= room) Assert.True(Total(r, left, right, reserved) <= room, $"overflows room {room} size {size} n {count}");
+                    if (floor <= room) Assert.True(total <= room, $"overflows room {room} size {size} n {count}");
+                    // Only overshoot allowed: (0, true) when right + reserved fits but the button does not.
+                    var rightOnly = Total(new FitResult(0, false), left, right, reserved);
+                    if (total > room && rightOnly <= room)
+                    {
+                        Assert.Equal(new FitResult(0, true), r);
+                        Assert.True(total <= room + 32 + Gap, $"overshoot too large at {room}");
+                    }
+                    if (reserved == 0 && rightOnly <= room && !(r.LeftShown == 0 && r.Overflow))
+                        Assert.True(total <= room, $"overflows room {room} size {size} n {count}");
                 }
             }
         }
