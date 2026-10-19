@@ -1,20 +1,26 @@
+using Hotline.Core.Windowing;
+
 namespace Hotline.Core.Settings;
 
 /// <summary>
-/// Settings › Advanced › Reset. Everything is copied to backups\reset-&lt;time&gt;\ first. "Settings" puts settings.json back
-/// to the defaults but keeps the connections (and which one is used); "everything" also removes the connections,
-/// toolbar.json and mcp.json. Prompts, quick actions, memory and history are never touched. A copy of the default
-/// settings.json is kept in the hidden .defaults folder (rewritten at startup, so it always matches this version).
+/// Settings › Advanced › Reset. Everything is copied to backups\reset-&lt;time&gt;\ first. "Settings" puts settings.json and
+/// toolbar.json back to the defaults but keeps the connections (and which one is used); "everything" also removes the
+/// connections, toolbar.json (recreated on the next load) and mcp.json. Prompts, quick actions, memory and history are
+/// never touched. Copies of the default settings.json and toolbar.json are kept in the hidden .defaults folder (rewritten
+/// at startup, so they always match this version).
 /// </summary>
 public static class SettingsReset
 {
     public const string DefaultsFolder = ".defaults";
     public const string BackupsFolder = "backups";
-    private static readonly string[] EverythingFiles = ["toolbar.json", "mcp.json"];
+    private const string ToolbarFileName = "toolbar.json";
+    private static readonly string[] EverythingFiles = [ToolbarFileName, "mcp.json"];
 
     public static string DefaultsPath(string directory) => Path.Combine(directory, DefaultsFolder, SettingsStore.FileName);
 
-    /// <summary>Writes the hidden copy of the default settings.json when it's missing or out of date.</summary>
+    public static string DefaultsToolbarPath(string directory) => Path.Combine(directory, DefaultsFolder, ToolbarFileName);
+
+    /// <summary>Writes the hidden copies of the default settings.json and toolbar.json when missing or out of date.</summary>
     public static void WriteDefaults(string directory)
     {
         var folder = Directory.CreateDirectory(Path.Combine(directory, DefaultsFolder));
@@ -22,6 +28,9 @@ public static class SettingsReset
         var json = SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings()));
         var path = DefaultsPath(directory);
         if (!File.Exists(path) || File.ReadAllText(path) != json) File.WriteAllText(path, json);
+        var bar = ToolbarModel.Defaults.ToJson();
+        var barPath = DefaultsToolbarPath(directory);
+        if (!File.Exists(barPath) || File.ReadAllText(barPath) != bar) File.WriteAllText(barPath, bar);
     }
 
     /// <summary>
@@ -64,6 +73,7 @@ public static class SettingsReset
         {
             fresh.Chat.Backends = current.Chat.Backends;
             fresh.Chat.DefaultBackend = current.Chat.DefaultBackend;
+            ToolbarFile.Save(Path.Combine(directory, ToolbarFileName), ToolbarModel.Defaults); // the backup copy above has the old one
         }
         store.Save(SettingsStore.Normalize(fresh));
         return (backup, removed);
