@@ -11,20 +11,21 @@ same files). Comments and trailing commas are allowed.
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
-| `toolbar.json` | The button rows around the message box: which items, in what order |
+| `toolbar.json` | The button rows around the message box (four groups): which items, in what order, how they look, and your own buttons. Version 2 since 0.4, see *toolbar.json* below |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
-| `.defaults\settings.json` | (hidden) The default settings.json of this version, rewritten at every start |
+| `settings.json.old`, `toolbar.json.old` | The previous file, kept when 0.4 replaced it (see *Upgrading to 0.4*). A later replacement is kept as `.old2`, `.old3`, and so on; an archive is never overwritten |
+| `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current
 one and Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset
-settings** puts settings.json back to the defaults (connections stay); **Reset everything** also removes the
+settings** puts settings.json and toolbar.json back to the defaults (connections stay); **Reset everything** also removes the
 connections and their API keys, `toolbar.json` and `mcp.json`. Prompts, quick actions, memory and history are never
-reset, and the previous files are kept in `backups\`.
+reset, and the previous files are kept in `backups\reset-<time>\`.
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
 
@@ -37,7 +38,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
-| `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule |
+| `window.width` | `680` | Panel width in DIPs; `null` = the `widthPercent` rule. A width you saved yourself is kept |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
@@ -48,7 +49,6 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
 | `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
-| `activation.copilotKey` | `hotline` | `hotline`: the key opens Hotline (tap/hold above). `rightCtrl`: the key is a plain Right Ctrl (Copilot+C = Ctrl+C) and no longer opens Hotline — use the extra hotkey or the tray. Works on keyboards whose Copilot key sends Win+Shift+F23 (most do) |
 | `chat.defaultBackend` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
@@ -68,6 +68,8 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: in apps that don't share text through UI Automation, also send Ctrl+C and put your clipboard back afterwards (never in terminals or password fields; Visual Studio/VS Code whole-line copies are ignored; the app's copy can show up in clipboard history, the restore doesn't; opening can take up to about half a second). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
+
+settings.json is schema version 14 (0.4). See *Upgrading to 0.4* below for what the first start does with an older file.
 
 A half-saved or broken `settings.json` is ignored while Hotline runs (your file is never overwritten without a
 timestamped backup); at startup a broken file is copied to `settings.json.bad` and defaults are used in memory.
@@ -165,12 +167,91 @@ you unpin it, click into another app, or Hotline restarts.
 
 ## toolbar.json
 
-`{ "top": [], "items": ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"] }`
-— `top` is the row above the message box, `items` the row below it; left to right; an item sits in one row only; remove an item to hide it; `spacer` takes the free space (repeatable). `continueIn` opens the
-"Continue this chat in" menu (the chat's own CLI, others under More…). The pickers (effort, model,
-provider) sit together in the order listed. Settings › Appearance › **Button rows** edits this file (the previous version
-is kept as `toolbar.json.bak`). An existing toolbar.json keeps its own list, so add new
-items (`captureRegion` since Plan 6, `continueIn` since 0.3) there if you want them.
+The button rows around the message box. There are four groups, called quadrants: **top left** and **top right** sit in
+the row above the message box, **bottom left** and **bottom right** in the row below it. Within a group, items run left
+to right. Settings › **Window** › **Button rows** edits this file (planned UI, see below); you can also edit it by hand.
+
+```jsonc
+{
+  "version": 2,
+  "top":   { "left": ["effort", "model", "provider"], "right": [] },
+  "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn"],
+             "right": ["newChat", "settings"] },
+  "style": { "size": "normal", "outline": false, "filled": false },
+  "overrides": { "pin": { "outline": true } },
+  "buttons": {
+    "summarise": { "label": "Summarise", "icon": "E8A5", "quickAction": "summarise" },
+    "thanks":    { "label": "Say thanks", "icon": "E8BD", "text": "Thanks!", "send": false }
+  }
+}
+```
+
+| Key | Meaning |
+|---|---|
+| `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left` and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
+| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…) |
+| `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide`; `outline` and `filled` are `true` or `false` |
+| `overrides` | Per item id, the same `size`, `outline` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
+| `buttons` | Your own buttons, by id (see below) |
+
+**The pickers.** `effort`, `model` and `provider` always stay together as one block, in the group where the first of
+them is listed, in the order listed. They ignore `style` and `overrides`.
+
+**Custom buttons.** Each entry in `buttons` is a button you can list in any group by its id:
+
+- The id is 1-32 characters from `a-z`, `0-9` and `-`, and not a built-in id.
+- `label` is the button's name (at most 40 characters). `icon` is a Segoe Fluent Icons code in hex, four to six digits
+  in the range E000-F8FF; anything else gives a default star.
+- Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarise"` for
+  `actions\summarise.md`; never a path); it runs that quick action on the current message and attachments. `text` is
+  put in the message box (up to 2000 characters), and `"send": true` also sends it. If the action file is missing, the
+  button shows a notice.
+- Nothing else can be run from a button: no URLs, files, programs or shell commands.
+
+**Limits.** At most 24 custom buttons and 40 items per group. `width` and `height` are kept between 20 and 80, an
+unknown `size` becomes `normal`, and labels lose control characters. A bar too narrow for its buttons is meant to move
+the last of the left group into a "..." menu rather than push anything off the panel.
+
+**A hand-edited file.** Comments and trailing commas are allowed. A bad value is replaced by its default on its own,
+and the rest of the file still applies; the file is never thrown away for one mistake. In detail:
+
+- An unknown id, an id that isn't text, or an item listed twice or in two groups is ignored; the first place wins
+  (checked in the order bottom left, bottom right, top left, top right). A v1 `"spacer"` left in the file is ignored.
+- A key written twice: the last one wins.
+- A wrong type for `outline`, `filled` or `size` gives the default for that key. A custom button that is invalid is
+  skipped. An override for an item that isn't shown is ignored.
+- If the file shows nothing at all by mistake (or only unknown ids), the default layout is used. An empty bar is kept
+  only when all four groups are present and empty.
+- A file that isn't valid JSON, or whose top level isn't an object, is left untouched and the defaults run until you fix
+  it; a half-written file keeps the bar it had.
+- Hotline does not rewrite the file by itself. What it had to fix is listed under Settings › This PC and in the log;
+  saving from Settings writes the corrected version.
+- A `version` higher than 2 is read as far as it makes sense and never rewritten.
+
+**Settings › Window › Button rows (planned).** The editor shows the four groups as cards, each a strip of its items.
+Drag an item to another place in its group or into another group (a marker shows where it lands), or use the buttons
+on an item: left and right to reorder, up and down to change rows, and to the other side. Items you removed wait in a
+"Not shown" strip. Size, outline and fill can be set for the whole bar or per item, and custom buttons are added,
+edited and deleted there. Moving a picker moves all three together.
+
+**Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json`, with the previous file
+in `backups\reset-<time>\`. A hidden copy of the default file is rewritten at every start in
+`.defaults\toolbar.json`. New installs get the same layout as before 0.4 (pickers in the top row, the other buttons
+bottom left).
+
+**Upgrading from the old format.** Before 0.4, `toolbar.json` had `top` and `items` as plain arrays and a `spacer`
+item. On the first start of 0.4 the old file is copied to `toolbar.json.old` and a version 2 file is written that
+looks the same: the items before the first `spacer` of a row go left, the ones after it right, further spacers are
+dropped. A file that already has `"version": 2` is not touched.
+
+## Upgrading to 0.4
+
+Hotline is pre-1.0, so old files may be replaced rather than converted: the first start of 0.4 keeps `settings.json` as
+`settings.json.old` (schema 13 to 14) and writes the new one, and does the same for `toolbar.json` as above. If a
+`.old` already exists the copy is called `.old2`, then `.old3`; an archive is never overwritten. Kept values carry
+over where that is cheap. The `activation.copilotKey` setting no longer exists (an old entry is dropped; see
+[copilot-key.md](copilot-key.md)). **Connections are untouched**: `connections\*.json`, the default connection and the
+API keys in Windows Credential Locker stay exactly as they were.
 
 ## Codex
 

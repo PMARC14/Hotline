@@ -49,8 +49,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Button rows: toolbar.json `top` (above the message box) and `items` (below); the owner's layout and
     `acrylicThin` are the defaults.
   - Open/close sounds (off by default): Windows sound events or .wav files in `~/.hotline/sounds`, preloaded media
-    players. `hotline.wav` is a generated placeholder until the owner picks one
-    (`src/Hotline.App/Assets/Sounds/hotline.wav`).
+    players. The generated `hotline.wav` (`src/Hotline.App/Assets/Sounds/hotline.wav`) ships as the default sound;
+    sounds stay off by default (owner decision, 2026-10-17).
   - Settings › Guide: every feature in 13 sections, 17 languages (page names checked per language by Gemini Flash).
   - Fixes: the layout cycle that stopped the panel drawing for good; the window frame now counted in the panel's
     height (the bottom padding and move grip were cut off); no empty band beside an empty panel; the newest text
@@ -76,8 +76,6 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 1. **Next (new chat): Windows 11 26H2** — the dev laptop runs 26H2 since 2026-10-17. PR #9 (draft, branch
    `windows-26h2`, kept up to date with `main`): agent connectors (`odr.exe`), App Actions, the Copilot key (26H2's
    `CopilotKeyPressFocusFrame`, see the hard-won facts), re-run TESTING.md, new APIs behind `PlatformSupport` checks.
-   Also on the list from the 0.3 work: the pickers are cramped at the default 600-DIP width ("H…", "Gemini 3…"):
-   decide a wider default or an earlier hide; the owner picks the shipped open/close sound.
 2. Then PR #29 (Continue in: web pages, Open WebUI, apps; merge `main` into it first: on 2026-10-17 that conflicted in
    20 files — the 17 `Strings*.resx` (both sides added strings: keep both), `App.xaml.cs`, `SettingsWindow.xaml.cs`
    and `docs/HANDOFF.md`, so it was left for that chat) and region capture on multi-monitor / mixed DPI plus the panel's hand test
@@ -144,8 +142,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `Chat/` one job per class: `ChatPresenter` (coordinator, send flow), `Composer`, `AttachmentPanel`,
     `AttachmentVisuals`, `TranscriptView`, `NoticeArea`, `VoiceInput` + `WindowsSpeech`, `RecentChatsMenu`,
     `PanelSelfTest`, `FirstRunNote`, `ConnectionChooser` (first run), `SupportNote`, `AnswerNotifier`, `ContinueIn`,
-    `PanelTheme`, `UiTasks`, `OcrReader`, `PanelLayout` (rows for up/down), `PanelGrips` (Alt move/resize), `Interop/SoundPlayer`. `SelfTestLinks` (hotline://selftest),
-    `Interop/CopilotKeyHook` (Right Ctrl mode).
+    `PanelTheme`, `UiTasks`, `OcrReader`, `PanelLayout` (rows for up/down), `PanelGrips` (Alt move/resize), `Interop/SoundPlayer`. `SelfTestLinks` (hotline://selftest).
 
 ## Hard-won facts (don't relearn these)
 
