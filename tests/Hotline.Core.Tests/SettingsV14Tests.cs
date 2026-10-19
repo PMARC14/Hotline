@@ -103,6 +103,27 @@ public sealed class SettingsV14Tests : IDisposable
     }
 
     [Fact]
+    public void Own_panel_width_is_unaffected_by_the_new_min_width()
+    {
+        WriteSettings("""{ "schemaVersion": 13, "window": { "width": 640, "minWidth": 600 } }""");
+        var s = New().Load();
+        Assert.Equal(640, s.Window.Width);
+        Assert.Equal(680, s.Window.MinWidth);
+        Assert.Equal(640, New().Load().Window.Width);
+    }
+
+    [Fact]
+    public void DefaultBackend_in_other_casing_points_at_the_same_connection()
+    {
+        var connections = Path.Combine(_dir, SettingsStore.ConnectionsFolder);
+        Directory.CreateDirectory(connections);
+        File.WriteAllText(Path.Combine(connections, "a.json"), """{ "id": "a", "type": "gemini", "name": "A" }""");
+        File.WriteAllText(Path.Combine(connections, "My-Claude.json"), """{ "id": "My-Claude", "type": "claudeCode", "name": "B" }""");
+        WriteSettings("""{ "schemaVersion": 14, "chat": { "defaultBackend": "my-claude", "order": ["a", "My-Claude"] } }""");
+        Assert.Equal("My-Claude", New().Load().Chat.DefaultBackend);
+    }
+
+    [Fact]
     public void Min_width_600_chosen_on_v14_is_kept()
     {
         WriteSettings("""{ "schemaVersion": 14, "window": { "minWidth": 600 } }""");

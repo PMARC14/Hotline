@@ -112,6 +112,8 @@ public partial class App : Application
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
+        foreach (var broken in store.BrokenConnectionFiles) // left exactly as it is; never dropped or rewritten
+            _log.Error($"connection file {broken} could not be read; it is left as it is (fix it and Hotline picks it up)");
         _ = LogStartupStateAsync();
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
