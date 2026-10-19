@@ -151,22 +151,45 @@ public sealed class ToolbarPlanTests
         Assert.Equal(new RowFit(0, true, false, 78), fit);
     }
 
+    // Right group 72 + its gaps fit from 78 DIP; with the overflow button the smallest row is 116 (right 72 + "..." 36 +
+    // 4 gaps around the pickers' and the flexible column). Below 116 the row really overshoots (Fit's documented case).
     [Theory]
-    [InlineData(0)]
-    [InlineData(80)]
-    [InlineData(150)]
-    [InlineData(199)]
-    [InlineData(240)]
-    [InlineData(330)]
-    [InlineData(500)]
-    public void FitRow_fits_the_room_and_keeps_its_result_in_exactly_the_room_it_uses(double room)
+    [InlineData(80, true)]
+    [InlineData(90, true)]
+    [InlineData(115, true)]
+    [InlineData(116, false)]
+    [InlineData(150, false)]
+    [InlineData(199, false)]
+    [InlineData(240, false)]
+    [InlineData(330, false)] // pickers keep their room, 2 left buttons
+    [InlineData(500, false)] // everything fits
+    public void FitRow_fits_the_room_or_overshoots_only_as_documented(double room, bool overshoots)
+    {
+        const double spacing = 2, pickersMin = 120, overflow = 36;
+        double[] left = [36, 30, 46, 36], right = [36, 36];
+        // Even with no left button and the pickers hidden: right group + "..." + the gaps of right, "...", pickers and * columns.
+        var smallest = right.Sum() + overflow + spacing * (right.Length + 2);
+        Assert.Equal(overshoots, smallest > room); // the InlineData says which case it is: both groups stay covered
+        var fit = ToolbarPlan.FitRow(room, spacing, left, right, hasPickers: true, pickersMin, overflow);
+        if (overshoots)
+        {
+            Assert.Equal(new RowFit(0, true, false, smallest), fit);
+            Assert.True(Used(fit, pickersMin) <= room + overflow + spacing, $"{fit} at {room}");
+        }
+        else
+        {
+            Assert.True(Used(fit, pickersMin) <= room, $"{fit} at {room}");
+            // Re-fitted in just the room it uses (the panel shrunk to the row): the same buttons stay.
+            Assert.Equal(fit, ToolbarPlan.FitRow(Used(fit, pickersMin), spacing, left, right, hasPickers: true, pickersMin, overflow));
+        }
+    }
+
+    [Fact]
+    public void FitRow_property_rooms_cover_kept_and_dropped_pickers()
     {
         double[] left = [36, 30, 46, 36], right = [36, 36];
-        var fit = ToolbarPlan.FitRow(room, 2, left, right, hasPickers: true, 120, 36);
-        var acceptedOvershoot = fit is { LeftShown: 0, Overflow: true, PickersKept: false };
-        if (!acceptedOvershoot) Assert.True(Used(fit, 120) <= room, $"{fit} at {room}");
-        // Re-fitted in just the room it uses (the panel shrunk to the row): the same buttons stay.
-        if (!acceptedOvershoot) Assert.Equal(fit, ToolbarPlan.FitRow(Used(fit, 120), 2, left, right, hasPickers: true, 120, 36));
+        Assert.True(ToolbarPlan.FitRow(330, 2, left, right, hasPickers: true, 120, 36).PickersKept);
+        Assert.False(ToolbarPlan.FitRow(199, 2, left, right, hasPickers: true, 120, 36).PickersKept);
     }
 
     [Fact]

@@ -469,6 +469,9 @@ public sealed class ToolbarEditorTests
         var random = new Random(20261017);
         var changed = 0;
         string[] junk = ["", "nope", "PIN", "Model", "x y", "../a", "\uD800", "spacer", new string('z', 40)];
+        // Quick action names: valid, then what QuickActions can't parse ("/x y" would run "x") or isn't a file name.
+        string[] actionNames = ["act", "act", "x y", "a.b", "", new string('q', 65)];
+        var invalidActions = 0;
         for (var run = 0; run < 2000; run++)
         {
             var m = random.Next(3) switch { 0 => ToolbarModel.Defaults, 1 => Grid, _ => WithTopLeft("continueIn", "effort", "model", "provider") };
@@ -479,6 +482,8 @@ public sealed class ToolbarEditorTests
                 var q = (Quadrant)random.Next(-1, 5);
                 var id = Id();
                 var op = random.Next(10);
+                var action = actionNames[random.Next(actionNames.Length)];
+                var useAction = random.Next(2) == 0;
                 ToolbarModel next = op switch
                 {
                     0 => ToolbarEditor.Move(m, id, random.Next(-5, 6)),
@@ -487,8 +492,10 @@ public sealed class ToolbarEditorTests
                     3 => ToolbarEditor.Hide(m, id),
                     4 => ToolbarEditor.Show(m, id, q),
                     5 => ToolbarEditor.AddCustom(m, new CustomButton(id, junk[random.Next(junk.Length)], random.Next(2) == 0 ? "E8A5" : "zz",
-                        random.Next(2) == 0 ? "act" : null, random.Next(3) == 0 ? null : "txt", random.Next(2) == 0)),
-                    6 => ToolbarEditor.UpdateCustom(m, new CustomButton(id, "L", "E8BD", null, "t", true)),
+                        useAction ? action : null, random.Next(3) == 0 ? null : "txt", random.Next(2) == 0)),
+                    6 => ToolbarEditor.UpdateCustom(m, useAction
+                        ? new CustomButton(id, "L", "E8BD", action, null, false)
+                        : new CustomButton(id, "L", "E8BD", null, "t", true)),
                     7 => ToolbarEditor.RemoveCustom(m, id),
                     8 => ToolbarEditor.SetStyle(m, random.Next(3) == 0 ? null : id,
                         new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(4), null, random.Next(2) == 0, random.Next(-50, 200), null)),
@@ -496,6 +503,11 @@ public sealed class ToolbarEditorTests
                 };
 
                 Assert.Equal(next, ToolbarModel.Resolve(next.ToJson()));
+                if (op is 5 or 6 && useAction && action != "act")
+                {
+                    invalidActions++;
+                    Assert.Same(m, next); // refused: the file could never hold it
+                }
                 var placed = Enum.GetValues<Quadrant>().SelectMany(next.Items).ToList();
                 Assert.Equal(placed.Count, placed.Distinct(StringComparer.OrdinalIgnoreCase).Count());
                 var all = ToolbarModel.BuiltIn.Concat(next.Buttons.Select(b => b.Id)).ToList();
@@ -510,5 +522,6 @@ public sealed class ToolbarEditorTests
             }
         }
         Assert.True(changed > 5000, $"only {changed} of 24000 edits changed the model");
+        Assert.True(invalidActions > 500, $"only {invalidActions} edits tried an invalid quick action name");
     }
 }
