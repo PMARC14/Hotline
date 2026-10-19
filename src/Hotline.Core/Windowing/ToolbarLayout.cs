@@ -4,6 +4,9 @@ namespace Hotline.Core.Windowing;
 /// <param name="Max">How wide it may grow into spare room (null = never past Preferred).</param>
 public sealed record PickerSpec(string Name, double Preferred, double Min, bool Available = true, double? Max = null);
 
+/// <summary>How many left-group buttons stay on the bar, and whether the "more" button is needed for the rest.</summary>
+public sealed record FitResult(int LeftShown, bool Overflow);
+
 /// <summary>
 /// Lays out the bottom bar's pickers in the space left after the fixed buttons. The fixed buttons always fit
 /// (pickers never push them off the edge). Pickers shrink evenly toward their minimum; if even that doesn't fit,
@@ -47,5 +50,39 @@ public static class ToolbarLayout
             visible.RemoveAll(p => p.Name == drop);
         }
         return result; // nothing fits: all hidden
+    }
+
+    /// <summary>
+    /// Decides how many left-group buttons fit in <paramref name="room"/>. The right group is always kept whole; left
+    /// buttons are dropped from the end (behind an overflow button) until everything fits. Pure and idempotent.
+    /// Needed width = sum(right) + sum(shown left) + [overflowWidth if any left button is dropped]
+    /// + <paramref name="spacing"/> * gaps + <paramref name="reservedWidth"/>.
+    /// Gaps: one between each pair of adjacent shown items in the flat row [shown left..., overflow button?, right...]
+    /// (items - 1), plus one more before <paramref name="reservedWidth"/> when it is above 0 and any item is shown.
+    /// The Grid's star spacer column is not counted. Takes the largest LeftShown that fits (so it never decreases as
+    /// <paramref name="room"/> grows). If the right group (+ reserved) alone exceeds the room, LeftShown = 0 and
+    /// Overflow = (any left buttons). Negative or NaN inputs count as 0.
+    /// </summary>
+    public static FitResult Fit(
+        double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
+        double reservedWidth, double overflowWidth = 32)
+    {
+        static double Clean(double v) => double.IsNaN(v) || v < 0 ? 0 : v;
+        room = Clean(room); spacing = Clean(spacing); reservedWidth = Clean(reservedWidth); overflowWidth = Clean(overflowWidth);
+        var left = (leftWidths ?? []).Select(Clean).ToArray();
+        var right = (rightWidths ?? []).Select(Clean).ToArray();
+
+        double Needed(int shown, bool overflow)
+        {
+            var items = shown + right.Length + (overflow ? 1 : 0);
+            var gaps = Math.Max(0, items - 1) + (reservedWidth > 0 && items > 0 ? 1 : 0);
+            var sum = right.Sum() + left.Take(shown).Sum() + (overflow ? overflowWidth : 0);
+            return sum + spacing * gaps + reservedWidth;
+        }
+
+        if (Needed(left.Length, false) <= room) return new FitResult(left.Length, false);
+        for (var shown = left.Length - 1; shown > 0; shown--)
+            if (Needed(shown, true) <= room) return new FitResult(shown, true);
+        return new FitResult(0, left.Length > 0);
     }
 }
