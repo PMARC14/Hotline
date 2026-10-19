@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Een gebied vastleggen</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Spraakinvoer (ingedrukt houden om te praten)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Niets doen</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot-toets</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Als rechter Ctrl is Copilot+C gelijk aan Ctrl+C en opent de toets Hotline niet meer (gebruik de extra sneltoets hieronder of het pictogram in het systeemvak). Werkt op toetsenborden waarvan de Copilot-toets Win+Shift+F23 verstuurt (de meeste).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Opent Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Werkt als rechter Ctrl</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Kort drukken op de Copilot-toets</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Lang drukken op de Copilot-toets</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Spraakinvoer</value></data>

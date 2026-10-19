@@ -95,11 +95,20 @@ public sealed class SettingsStore(string directory)
             s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order, keepLegacyDefault: loadedVersion < 12);
             Normalize(s);
             // An upgrade (connection files, dropping "backends") or newly added options rewrite the file: every setting
-            // stays visible and editable there. Keep the previous file (it may hold comments) as settings.json.bak.
+            // stays visible and editable there. Keep the previous file (it may hold comments): an upgrade to v14 (0.4)
+            // archives it as settings.json.old (.old2, … never overwritten), other rewrites as settings.json.bak.
             if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null || HasMissingOptions(text, s))
             {
-                try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (IOException) { }
-                TrySave(s);
+                if (loadedVersion < 14)
+                {
+                    if (FileArchive.KeepOld(FilePath) is null) return s; // no archive, no rewrite: run on it in memory
+                }
+                else
+                    try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (IOException) { }
+                // Connection files are written only when the upgrade moves or changes connections (the old "backends"
+                // list, or files from before v12); otherwise they stay exactly as they are, byte for byte.
+                if (legacy is not null || loadedVersion < 12) TrySave(s);
+                else TrySaveMain(s);
             }
             return s;
         }
@@ -280,8 +289,23 @@ public sealed class SettingsStore(string directory)
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
     }
 
+    /// <summary>Writes settings.json only, leaving every connection file as it is.</summary>
+    private void TrySaveMain(HotlineSettings s)
+    {
+        try
+        {
+            s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
+            WriteAtomic(FilePath, SerializeMain(s));
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
+    }
+
     private static void Migrate(HotlineSettings s)
     {
+        // → v14: the Copilot key's Right Ctrl mode is gone (Windows remaps the key itself); "copilotKey" is no longer
+        // read, so the rewrite drops it. The default width is 680: move users still on the old default of 600.
+        if (s.SchemaVersion < 14 && s.Window.MinWidth == 600)
+            s.Window.MinWidth = 680;
         // → v12: no built-in connection any more (AssembleConnections keeps it for older files that relied on it).
         // → v11: CLI chats live in the CLI's own history by default (resumable); Hotline keeps only a record unless
         // keepInHotline. Existing CLI connections switch over, keeping what Hotline already saved.
@@ -323,8 +347,10 @@ public sealed class SettingsStore(string directory)
             if (b.Temperature is { } t) b.Temperature = double.IsFinite(t) ? Math.Clamp(t, 0, 2) : null;
         }
         s.Chat.DefaultBackend = s.Chat.DefaultBackend?.Trim() ?? "";
-        if (s.Chat.DefaultBackend.Length > 0 && !s.Chat.Backends.Any(b => b.Id == s.Chat.DefaultBackend))
-            s.Chat.DefaultBackend = s.Chat.Backends.FirstOrDefault()?.Id ?? "";
+        if (s.Chat.DefaultBackend.Length > 0) // ids match case-insensitively (as their files do); keep the connection's spelling
+            s.Chat.DefaultBackend = (s.Chat.Backends.FirstOrDefault(b => b.Id == s.Chat.DefaultBackend)
+                                     ?? s.Chat.Backends.FirstOrDefault(b => b.Id.Equals(s.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))
+                                     ?? s.Chat.Backends.FirstOrDefault())?.Id ?? "";
         s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
         s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
         s.Chat.ThinkingDelayMs = Math.Clamp(s.Chat.ThinkingDelayMs, 0, 10_000);

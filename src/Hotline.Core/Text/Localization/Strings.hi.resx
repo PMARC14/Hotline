@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>कोई क्षेत्र कैप्चर करें</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>वॉइस इनपुट (बोलने के लिए दबाए रखें)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>कुछ न करें</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot कुंजी</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>दाएँ Ctrl के रूप में, Copilot+C, Ctrl+C बन जाता है और कुंजी अब Hotline नहीं खोलती (नीचे की अतिरिक्त हॉटकी या सिस्टम ट्रे आइकन का उपयोग करें)। उन कीबोर्ड पर काम करता है जिनकी Copilot कुंजी Win+Shift+F23 भेजती है (अधिकांश)।</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline खोलती है</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>दाएँ Ctrl की तरह काम करती है</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Copilot कुंजी को कुछ पल दबाना</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Copilot कुंजी को देर तक दबाना</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>वॉइस इनपुट</value></data>

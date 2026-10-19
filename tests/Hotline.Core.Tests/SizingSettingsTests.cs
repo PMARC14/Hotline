@@ -18,7 +18,7 @@ public sealed class SizingSettingsTests : IDisposable
     public void Defaults()
     {
         var w = new SettingsStore(_dir).Load().Window;
-        Assert.Equal((40.0, 600, 1000, 0, 70.0), (w.WidthPercent, w.MinWidth, w.MaxWidth, w.Height, w.MaxHeightPercent));
+        Assert.Equal((40.0, 680, 1000, 0, 70.0), (w.WidthPercent, w.MinWidth, w.MaxWidth, w.Height, w.MaxHeightPercent));
     }
 
     [Theory]

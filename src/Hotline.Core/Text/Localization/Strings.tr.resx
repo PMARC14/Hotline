@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Bir bölge yakala</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Sesle giriş (konuşmak için basılı tutun)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Hiçbir şey yapma</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot tuşu</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Sağ Ctrl olarak Copilot+C, Ctrl+C olur ve tuş artık Hotline'ı açmaz (aşağıdaki ek kısayolu veya bildirim alanı simgesini kullanın). Copilot tuşu Win+Shift+F23 gönderen klavyelerde çalışır (çoğu).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline'ı açar</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Sağ Ctrl gibi davranır</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Copilot tuşuna kısa basma</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Copilot tuşuna uzun basma</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Sesle giriş</value></data>

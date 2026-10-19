@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Tangkap area</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Input suara (tahan untuk berbicara)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Tidak melakukan apa pun</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Tombol Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Sebagai Ctrl Kanan, Copilot+C menjadi Ctrl+C dan tombol tidak lagi membuka Hotline (gunakan tombol pintas tambahan di bawah, atau ikon baki sistem). Berfungsi pada keyboard yang tombol Copilot-nya mengirim Win+Shift+F23 (sebagian besar).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Membuka Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Berfungsi sebagai Ctrl Kanan</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Tekan singkat tombol Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Tekan lama tombol Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Input suara</value></data>

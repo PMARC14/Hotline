@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Chụp một vùng</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Nhập bằng giọng nói (giữ để nói)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Không làm gì</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Phím Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Khi dùng làm Ctrl phải, Copilot+C thành Ctrl+C và phím không còn mở Hotline (hãy dùng phím tắt bổ sung bên dưới hoặc biểu tượng khay hệ thống). Hoạt động với bàn phím có phím Copilot gửi Win+Shift+F23 (hầu hết).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Mở Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Hoạt động như Ctrl phải</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Nhấn nhanh phím Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Nhấn giữ phím Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Nhập bằng giọng nói</value></data>

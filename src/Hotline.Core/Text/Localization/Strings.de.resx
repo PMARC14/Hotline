@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Bereich aufnehmen</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Spracheingabe (gedrückt halten zum Sprechen)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Nichts tun</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot-Taste</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Als rechte STRG-Taste ist Copilot+C gleich STRG+C, und die Taste öffnet Hotline nicht mehr (nutze die zusätzliche Tastenkombination unten oder das Infobereichssymbol). Funktioniert mit Tastaturen, deren Copilot-Taste Win+Umschalt+F23 sendet (die meisten).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Öffnet Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Wirkt als rechte STRG-Taste</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Kurzes Drücken der Copilot-Taste</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Langes Drücken der Copilot-Taste</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Spracheingabe</value></data>

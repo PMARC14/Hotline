@@ -118,7 +118,7 @@ public sealed class SettingsStoreTests : IDisposable
 
         var s = New().Load();
 
-        Assert.Equal(600, s.Window.MinWidth);
+        Assert.Equal(680, s.Window.MinWidth);
     }
 
     [Fact]
@@ -238,7 +238,7 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
-    public void A_schema_upgrade_keeps_the_old_file_with_its_comments_as_a_backup()
+    public void A_schema_upgrade_keeps_the_old_file_with_its_comments_as_an_old_archive()
     {
         var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
         try
@@ -247,7 +247,7 @@ public sealed class SettingsStoreTests : IDisposable
             var file = Path.Combine(dir, SettingsStore.FileName);
             File.WriteAllText(file, "{ \"schemaVersion\": 12, // my note\n \"window\": { \"width\": 700 } }");
             new SettingsStore(dir).Load();
-            Assert.Contains("// my note", File.ReadAllText(file + ".bak"));
+            Assert.Contains("// my note", File.ReadAllText(file + ".old"));
         }
         finally { if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true); }
     }

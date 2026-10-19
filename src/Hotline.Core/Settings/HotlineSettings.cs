@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 13;
+    public const int CurrentSchemaVersion = 14;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -35,8 +35,6 @@ public sealed class ActivationSettings
     public KeyAction Hold { get; set; } = KeyAction.NewChat;
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
     public string? FallbackHotkey { get; set; }
-    /// <summary>Hotline = the key opens Hotline (tap/hold actions above); RightCtrl = it's a plain Right Ctrl key.</summary>
-    public Activation.CopilotKeyMode CopilotKey { get; set; } = Activation.CopilotKeyMode.Hotline;
 }
 
 public enum PopupLayout { QuickView, CommandBar, SidePanel }
@@ -52,7 +50,7 @@ public sealed class WindowSettings
     public PopupLayout Layout { get; set; } = PopupLayout.QuickView;
     /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
     public double WidthPercent { get; set; } = 40;
-    public int MinWidth { get; set; } = 600;
+    public int MinWidth { get; set; } = 680;
     public int MaxWidth { get; set; } = 1000;
     /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
     public int Height { get; set; }

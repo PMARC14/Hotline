@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>範囲をキャプチャ</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>音声入力 (押している間話す)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>何もしない</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot キー</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>右 Ctrl として使うと、Copilot+C は Ctrl+C になり、キーで Hotline は開かなくなります (下の追加ホットキーか通知領域のアイコンを使ってください)。Copilot キーが Win+Shift+F23 を送るキーボード (ほとんど) で動作します。</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline を開く</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>右 Ctrl として動作</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Copilot キーの短押し</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Copilot キーの長押し</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>音声入力</value></data>

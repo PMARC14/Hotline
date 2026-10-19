@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Capturer une zone</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Saisie vocale (maintenir pour parler)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Ne rien faire</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Touche Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>En tant que Ctrl droit, Copilot+C équivaut à Ctrl+C et la touche n'ouvre plus Hotline (utilisez le raccourci supplémentaire ci-dessous ou l'icône de la zone de notification). Fonctionne avec les claviers dont la touche Copilot envoie Win+Maj+F23 (la plupart).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Ouvre Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Agit comme Ctrl droit</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Appui court sur la touche Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Appui long sur la touche Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Saisie vocale</value></data>

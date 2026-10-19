@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>영역 캡처</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>음성 입력(누르고 있는 동안 말하기)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>아무것도 안 함</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot 키</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>오른쪽 Ctrl로 쓰면 Copilot+C가 Ctrl+C가 되고 키로 Hotline이 더 이상 열리지 않습니다(아래의 추가 바로 가기 키나 알림 영역 아이콘을 사용하세요). Copilot 키가 Win+Shift+F23을 보내는 키보드(대부분)에서 작동합니다.</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Hotline 열기</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>오른쪽 Ctrl로 작동</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Copilot 키 짧게 누르기</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Copilot 키 길게 누르기</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>음성 입력</value></data>

@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Przechwyć obszar</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Wprowadzanie głosowe (przytrzymaj, aby mówić)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Nic nie rób</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Klawisz Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Jako prawy Ctrl kombinacja Copilot+C działa jak Ctrl+C, a klawisz nie otwiera już Hotline (użyj dodatkowego skrótu poniżej lub ikony w zasobniku). Działa z klawiaturami, których klawisz Copilot wysyła Win+Shift+F23 (większość).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Otwiera Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Działa jak prawy Ctrl</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Krótkie naciśnięcie klawisza Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Długie naciśnięcie klawisza Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Wprowadzanie głosowe</value></data>

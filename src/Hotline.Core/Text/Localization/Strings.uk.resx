@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Знімок області</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Голосове введення (утримуйте, щоб говорити)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Нічого не робити</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Клавіша Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>У режимі правого Ctrl комбінація Copilot+C працює як Ctrl+C, і клавіша більше не відкриває Hotline (скористайтеся додатковою комбінацією нижче або піктограмою в області сповіщень). Працює з клавіатурами, клавіша Copilot яких надсилає Win+Shift+F23 (більшість).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Відкриває Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Працює як правий Ctrl</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Коротке натискання клавіші Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Довге натискання клавіші Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Голосове введення</value></data>

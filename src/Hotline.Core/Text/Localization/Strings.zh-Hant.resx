@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>擷取區域</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>語音輸入 (按住說話)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>不執行任何動作</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot 鍵</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>作為右 Ctrl 時,Copilot+C 等於 Ctrl+C,且此鍵不再開啟 Hotline (請使用下方的額外快速鍵或通知區域圖示)。適用於 Copilot 鍵會傳送 Win+Shift+F23 的鍵盤 (大多數皆是)。</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>開啟 Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>作為右 Ctrl</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>短按 Copilot 鍵</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>長按 Copilot 鍵</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>語音輸入</value></data>
