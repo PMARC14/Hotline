@@ -145,8 +145,12 @@ internal sealed class ProviderBar(
         _layoutQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
         {
             _layoutQueued = false;
-            popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
-            Layout();
+            try
+            {
+                popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
+                Layout();
+            }
+            catch (Exception ex) { log.Error("laying out the button rows failed", ex); } // escaping a queued callback ends the process
         });
     }
 

@@ -1,4 +1,5 @@
 using Hotline.App.Chat;
+using Hotline.Core.Diagnostics;
 using Hotline.Core.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -28,15 +29,16 @@ internal sealed class ToolbarRenderer
 
     private readonly PopupWindow _popup;
     private readonly Action<CustomButton> _custom;
+    private readonly FileLog _log;
     private readonly Dictionary<string, ButtonBase> _builtIn;
     private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = [];
     private readonly Row _top, _bottom;
 
     public ToolbarModel Model { get; private set; } = ToolbarModel.Defaults;
 
-    public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom)
+    public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom, FileLog log)
     {
-        (_popup, _custom) = (popup, custom);
+        (_popup, _custom, _log) = (popup, custom, log);
         _builtIn = new Dictionary<string, ButtonBase>
         {
             ["pin"] = popup.PinButton, ["captureWindow"] = popup.CaptureWindowButton, ["captureScreen"] = popup.CaptureScreenButton,
@@ -84,7 +86,7 @@ internal sealed class ToolbarRenderer
         {
             row.Plan = ToolbarPlan.Row(model, top);
             row.Arranged = null;
-            Arrange(row, row.Plan.Left.Count, overflow: false);
+            Arrange(row, row.Plan.Left.Count(id => !ToolbarPlan.IsPicker(id)), overflow: false); // as Fit counts them
             var visibility = row.Plan.Left.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
@@ -219,7 +221,12 @@ internal sealed class ToolbarRenderer
         }
         var entry = new MenuFlyoutItem { Text = text, Icon = icon };
         // After this menu has closed, so a menu the button opens isn't closed with it.
-        entry.Click += (_, _) => _popup.DispatcherQueue.TryEnqueue(() => Invoke((Button)button, row));
+        entry.Click += (_, _) => _popup.DispatcherQueue.TryEnqueue(() =>
+        {
+            // An exception escaping a DispatcherQueue callback ends the process.
+            try { Invoke((Button)button, row); }
+            catch (Exception ex) { _log.Error($"bar item {id} from the overflow menu failed", ex); }
+        });
         return entry;
     }
 

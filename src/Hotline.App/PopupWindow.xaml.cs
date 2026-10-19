@@ -48,7 +48,7 @@ public sealed partial class PopupWindow : Window
         _log = log;
         InitializeComponent();
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
-        _rows = new ToolbarRenderer(this, b => CustomButtonClicked?.Invoke(b));
+        _rows = new ToolbarRenderer(this, b => CustomButtonClicked?.Invoke(b), log);
 
         ExtendsContentIntoTitleBar = true;
 
