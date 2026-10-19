@@ -34,7 +34,7 @@ public sealed record ToolbarModel(
     public const int CurrentVersion = 2;
     /// <summary>The glyph of a custom button whose icon is missing or invalid (Segoe Fluent Icons "FavoriteStar").</summary>
     public const string DefaultIcon = "E734";
-    private const int MaxLabel = 40, MaxText = 2000, MaxButtons = 24, MaxItems = 40, MaxId = 32, MinDip = 20, MaxDip = 80;
+    private const int MaxLabel = 40, MaxText = 2000, MaxButtons = 24, MaxItems = 40, MaxId = 32, MaxActionName = 64, MinDip = 20, MaxDip = 80;
 
     public static readonly IReadOnlyList<string> BuiltIn =
         ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];
@@ -87,7 +87,9 @@ public sealed record ToolbarModel(
 
     // ---- Reading ----
 
-    private static readonly JsonDocumentOptions ParseOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
+    private static readonly JsonDocumentOptions ParseOptions =
+        new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true, AllowDuplicateProperties = false };
+    private static readonly JsonDocumentOptions RepeatedKeys = ParseOptions with { AllowDuplicateProperties = true };
 
     /// <summary>Reads toolbar.json text. Never throws: unparsable text or a root that isn't an object gives
     /// <see cref="Defaults"/>; anything else is fixed per field.</summary>
@@ -96,18 +98,43 @@ public sealed record ToolbarModel(
         try
         {
             json ??= "";
-            var root = JsonNode.Parse(json.StartsWith('\uFEFF') ? json[1..] : json, documentOptions: ParseOptions);
-            return root is JsonObject o ? Read(o) : Defaults with { Warnings = ["toolbar.json isn't a JSON object; the defaults are used"] };
+            if (json.StartsWith('\uFEFF')) json = json[1..];
+            var warnings = new List<string>();
+            JsonNode? root;
+            try { root = JsonNode.Parse(json, documentOptions: ParseOptions); }
+            catch (JsonException strict)
+            {
+                // Valid apart from a repeated key: read it with the last value winning, a per-field fix like any other.
+                using var doc = JsonDocument.Parse(json, RepeatedKeys);
+                root = LastWins(doc.RootElement.Clone());
+                warnings.Add($"Repeated key in toolbar.json ({Clean(strict.Message, 200, false)}); the last value is used");
+            }
+            return root is JsonObject o ? Read(o, warnings) : Defaults with { Warnings = ["toolbar.json isn't a JSON object; the defaults are used"] };
         }
-        catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException or ArgumentException or FormatException)
+        catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {
-            return Defaults with { Warnings = [$"toolbar.json can't be read ({ex.Message}); the defaults are used"] };
+            return Defaults with { Warnings = [$"toolbar.json can't be read ({Clean(ex.Message, 200, false)}); the defaults are used"] };
         }
     }
 
-    private static ToolbarModel Read(JsonObject root)
+    /// <summary>The tree of a document with repeated keys (JsonObject itself rejects them): a later key replaces an earlier one.</summary>
+    private static JsonNode? LastWins(JsonElement e)
     {
-        var warnings = new List<string>();
+        switch (e.ValueKind)
+        {
+            case JsonValueKind.Object:
+                var o = new JsonObject();
+                foreach (var p in e.EnumerateObject()) o[p.Name] = LastWins(p.Value);
+                return o;
+            case JsonValueKind.Array:
+                return new JsonArray([.. e.EnumerateArray().Select(LastWins)]);
+            default:
+                return JsonValue.Create(e);
+        }
+    }
+
+    private static ToolbarModel Read(JsonObject root, List<string> warnings)
+    {
         int? version = root["version"] is JsonValue v && v.TryGetValue<int>(out var n) ? n : null;
         // A v1 file (no version, rows as plain arrays) is converted by the migration, not read here.
         if ((root["version"] is null || version < CurrentVersion) && (root["items"] is JsonArray || root["top"] is JsonArray))
@@ -189,7 +216,9 @@ public sealed record ToolbarModel(
             if (def is not JsonObject b) { warnings.Add($"Custom button \"{id}\" should be an object; ignored"); continue; }
 
             var label = Clean(String(b, "label", id, warnings) ?? "", MaxLabel, false);
-            var quickAction = String(b, "quickAction", id, warnings) is { } qa && Clean(qa, int.MaxValue, false) is { Length: > 0 } q ? q : null;
+            var quickAction = String(b, "quickAction", id, warnings) is { } qa ? Clean(qa, int.MaxValue, false) : null;
+            if (quickAction is not null && !IsActionName(quickAction))
+                { warnings.Add($"Custom button \"{id}\": \"quickAction\" must be the name of a file in actions\\ (no path, at most {MaxActionName} characters); ignored"); continue; }
             var text = String(b, "text", id, warnings) is { } t && Clean(t, MaxText, true) is { Length: > 0 } x ? x : null;
             if ((quickAction is null) == (text is null)) { warnings.Add($"Custom button \"{id}\" needs exactly one of \"quickAction\" and \"text\"; ignored"); continue; }
             buttons.Add(new CustomButton(id, label.Length > 0 ? label : id, Icon(b["icon"], id, warnings), quickAction, text,
@@ -197,6 +226,13 @@ public sealed record ToolbarModel(
         }
         return buttons;
     }
+
+    /// <summary>A plain file-name stem, never a path, so it can only name a file inside actions\.</summary>
+    private static bool IsActionName(string name) =>
+        name.Length is > 0 and <= MaxActionName && name.IndexOfAny(InvalidNameChars) < 0
+        && name[0] is not ('.' or ' ') && name[^1] is not ('.' or ' '); // also rules out "." and ".."
+
+    private static readonly char[] InvalidNameChars = [.. Path.GetInvalidFileNameChars(), '/', '\\', ':'];
 
     private static string? String(JsonObject o, string key, string id, List<string> warnings)
     {

@@ -237,15 +237,59 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
-    public void Duplicate_keys_give_the_defaults_with_a_warning()
+    public void Repeated_keys_are_fixed_per_field_with_a_warning()
     {
-        // JsonObject rejects a repeated key, so the file counts as unreadable (like a parse error).
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["settings"] },
+            { "version": 2, "items": { "left": ["pin"], "left": ["settings", "a"] },
+              "style": { "size": "wide" },
+              "overrides": { "settings": { "outline": true }, "settings": { "filled": true } },
               "buttons": { "a": { "label": "x", "text": "t" }, "a": { "label": "y", "text": "u" } } }
             """);
-        Assert.Equal(ToolbarModel.Defaults, m);
-        Assert.NotEmpty(m.Warnings);
+        Assert.Equal(["settings", "a"], m.Items(Quadrant.BottomLeft)); // the last value wins
+        Assert.Equal("y", Assert.Single(m.Buttons).Label);
+        Assert.Equal(new ButtonStyle(Filled: true), m.Overrides["settings"]);
+        Assert.Equal(ButtonSize.Wide, m.Style.Size); // the rest of the file still applies
+        Assert.Contains(m.Warnings, w => w.Contains("Repeated key"));
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+    }
+
+    [Theory]
+    [InlineData(@"..\..\x")]
+    [InlineData("a/b")]
+    [InlineData(@"a\b")]
+    [InlineData("..")]
+    [InlineData(@"C:\actions\x")]
+    [InlineData("C:x")]
+    [InlineData("x.")]
+    [InlineData(".x")]
+    [InlineData("a*b")]
+    public void Quick_actions_must_be_plain_names(string name)
+    {
+        var m = Bottom("\"b\"", $$""", "buttons": { "b": { "label": "x", "quickAction": {{System.Text.Json.JsonSerializer.Serialize(name)}} } }""");
+        Assert.Empty(m.Buttons);
+        Assert.Contains(m.Warnings, w => w.Contains("quickAction"));
+    }
+
+    [Theory]
+    [InlineData("summarise")]
+    [InlineData("fix my text")]
+    [InlineData("to-do list")]
+    [InlineData("résumé 日本")]
+    public void Quick_action_names_may_have_spaces_hyphens_and_unicode(string name) =>
+        Assert.Equal(name, Button($$"""{ "label": "x", "quickAction": {{System.Text.Json.JsonSerializer.Serialize(name)}} }""")!.QuickAction);
+
+    [Fact]
+    public void Quick_action_names_are_at_most_64_characters()
+    {
+        Assert.NotNull(Button($$"""{ "label": "x", "quickAction": "{{new string('q', 64)}}" }"""));
+        Assert.Null(Button($$"""{ "label": "x", "quickAction": "{{new string('q', 65)}}" }"""));
+    }
+
+    [Fact]
+    public void Unreadable_file_warning_is_short()
+    {
+        var m = ToolbarModel.Resolve("{ \"" + new string('k', 5000) + "\" nope");
+        Assert.True(Assert.Single(m.Warnings).Length < 300);
     }
 
     [Fact]
