@@ -435,6 +435,7 @@ Từ chối:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>không thể khởi động {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Không thể đọc toolbar.json: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Không tìm thấy thao tác nhanh '{0}'</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Hãy đọc chính tả xong trước, rồi dùng nút này.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json của agy không phải đối tượng JSON; sẽ không được thay đổi.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" trong settings.json của agy không phải đối tượng; sẽ không được thay đổi.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" trong settings.json của agy không phải danh sách; sẽ không được thay đổi.</value></data>

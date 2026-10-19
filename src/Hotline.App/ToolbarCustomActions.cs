@@ -9,8 +9,9 @@ namespace Hotline.App;
 /// <summary>
 /// What a custom button (toolbar.json "buttons") does. A quick action puts its instruction, applied to the draft (or the
 /// attachments), in the message box, as typing <c>/name</c> before the draft would; a text button puts its text at the
-/// caret. Either is sent at once only when <see cref="CustomButton.Send"/> (toolbar.json allows it for text only). The
-/// file's strings are only ever text in the message box, never markup, paths or commands. Nothing here throws: a missing
+/// caret. Either is sent at once only when <see cref="CustomButton.Send"/> (toolbar.json allows it for text only), as
+/// plain text: the file's strings are only ever text in the message box, never markup, paths or commands (a text
+/// starting with "/" is sent as it is, not run). Nothing here throws: a missing
 /// action is a notice.
 /// </summary>
 internal sealed class ToolbarCustomActions(Composer composer, QuickActions actions, Func<bool> hasAttachments, NoticeArea notices,
@@ -20,6 +21,11 @@ internal sealed class ToolbarCustomActions(Composer composer, QuickActions actio
     {
         try
         {
+            if (composer.IsReadOnly) // dictation is writing into the message box
+            {
+                notices.Show(Strings.Bar_ActionBusy, InfoBarSeverity.Informational);
+                return;
+            }
             var put = button.QuickAction is { } name ? PutAction(name) : Insert(button.Text);
             if (put && button.Send) send();
         }
@@ -31,7 +37,7 @@ internal sealed class ToolbarCustomActions(Composer composer, QuickActions actio
     {
         var draft = composer.Text.Trim();
         // A missing or unreadable file, or a name Hotline handles itself (remember, resume), isn't an action file.
-        if (actions.Expand($"/{name} {draft}", hasAttachments()) is not { } expanded)
+        if (actions.Apply(name, draft, hasAttachments()) is not { } expanded)
         {
             log.Info($"custom button: quick action {name} not found");
             notices.Show(L.F(Strings.Bar_ActionMissing, name), InfoBarSeverity.Warning);

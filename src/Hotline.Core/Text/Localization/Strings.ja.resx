@@ -435,6 +435,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>クイック アクション '{0}' が見つかりません</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>先に音声入力を終えてから、このボタンを使ってください。</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy の settings.json が JSON オブジェクトではないため、変更しません。</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy の settings.json の「permissions」がオブジェクトではないため、変更しません。</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy の settings.json の「permissions.{0}」がリストではないため、変更しません。</value></data>

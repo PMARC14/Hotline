@@ -28,4 +28,11 @@ public sealed class SendRouter(QuickActions actions)
             return expanded.Text is { } message ? new SendRoute.Message(message, expanded.Action.Name) : new SendRoute.NeedsText(expanded.Action.Name);
         return new SendRoute.Message(text, null);
     }
+
+    /// <summary>The text as a message, never a command (a custom button's text from toolbar.json).</summary>
+    public static SendRoute Plain(string typed, bool hasAttachments)
+    {
+        var text = typed.Trim();
+        return text.Length == 0 && !hasAttachments ? new SendRoute.Nothing() : new SendRoute.Message(text, null);
+    }
 }

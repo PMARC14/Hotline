@@ -435,6 +435,7 @@ Refuser :
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossible de démarrer {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossible de lire toolbar.json : {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Action rapide « {0} » introuvable</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Terminez d'abord la dictée, puis utilisez ce bouton.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Le settings.json d'agy n'est pas un objet JSON ; il n'est pas modifié.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>« permissions » dans le settings.json d'agy n'est pas un objet ; il n'est pas modifié.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>« permissions.{0} » dans le settings.json d'agy n'est pas une liste ; il n'est pas modifié.</value></data>

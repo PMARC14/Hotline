@@ -231,7 +231,7 @@ public sealed record ToolbarModel(
             var label = Clean(String(b, "label", id, warnings) ?? "", MaxLabel, false);
             var quickAction = String(b, "quickAction", id, warnings) is { } qa ? Clean(qa, int.MaxValue, false) : null;
             if (quickAction is not null && !IsActionName(quickAction))
-                { warnings.Add($"Custom button \"{id}\": \"quickAction\" must be the name of a file in actions\\ (no path, at most {MaxActionName} characters); ignored"); continue; }
+                { warnings.Add($"Custom button \"{id}\": \"quickAction\" must be the name of a file in actions\\ (letters, digits, _ and -, at most {MaxActionName} characters); ignored"); continue; }
             var text = String(b, "text", id, warnings) is { } t && Clean(t, MaxText, true) is { Length: > 0 } x ? x : null;
             if ((quickAction is null) == (text is null)) { warnings.Add($"Custom button \"{id}\" needs exactly one of \"quickAction\" and \"text\"; ignored"); continue; }
             buttons.Add(new CustomButton(id, label.Length > 0 ? label : id, Icon(b["icon"], id, warnings), quickAction, text,
@@ -244,12 +244,8 @@ public sealed record ToolbarModel(
     internal static bool IsCustomId(string? id) =>
         id is { Length: > 0 and <= MaxId } && id.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '-');
 
-    /// <summary>A plain file-name stem, never a path, so it can only name a file inside actions\.</summary>
-    private static bool IsActionName(string name) =>
-        name.Length is > 0 and <= MaxActionName && name.IndexOfAny(InvalidNameChars) < 0
-        && name[0] is not ('.' or ' ') && name[^1] is not ('.' or ' '); // also rules out "." and ".."
-
-    private static readonly char[] InvalidNameChars = [.. Path.GetInvalidFileNameChars(), '/', '\\', ':'];
+    /// <summary>The name of a file in actions\ as QuickActions reads and parses it (never a path), at most 64 characters.</summary>
+    internal static bool IsActionName(string name) => name.Length <= MaxActionName && Chat.QuickActions.IsName(name);
 
     private static string? String(JsonObject o, string key, string id, List<string> warnings)
     {

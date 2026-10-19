@@ -435,6 +435,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>त्वरित क्रिया '{0}' नहीं मिली</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>पहले बोलकर लिखना पूरा करें, फिर इस बटन का उपयोग करें।</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy की settings.json एक JSON ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy की settings.json में "permissions" एक ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy की settings.json में "permissions.{0}" एक सूची नहीं है; इसे नहीं बदला जा रहा।</value></data>

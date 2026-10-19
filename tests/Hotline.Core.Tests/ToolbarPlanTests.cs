@@ -1,11 +1,10 @@
-using Hotline.Core.Settings;
 using Hotline.Core.Text.Localization;
 using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
 /// <summary>What the renderer does with a resolved toolbar.json: rows, sizes, overflow and the This PC line.</summary>
-public sealed class ToolbarPlanTests : IDisposable
+public sealed class ToolbarPlanTests
 {
     private static ToolbarModel With(params (Quadrant Q, string[] Items)[] places) =>
         ToolbarModel.Defaults with
@@ -102,37 +101,54 @@ public sealed class ToolbarPlanTests : IDisposable
         Assert.Equal(["pin", "prompt"], dropped);
     }
 
+    // FitRow takes the whole room: the Grid's flexible column and the pickers' column (kept even when the pickers hide)
+    // each cost a ColumnSpacing that Fit doesn't count. Used = everything but the pickers + the pickers' room when kept.
+    private static double Used(RowFit fit, double pickersMin) => fit.FixedWidth + (fit.PickersKept ? pickersMin : 0);
+
     [Fact]
     public void FitRow_keeps_the_pickers_room_when_the_buttons_can_overflow_into_the_rest()
     {
-        // room 300: right 36, reserved 150 (+gap), overflow 36: 1 left button of 36 fits besides the button.
-        var fit = ToolbarPlan.FitRow(300, 2, [36, 36, 36, 36], [36], 150, 36);
-        Assert.Equal(new RowFit(1, true, true), fit);
+        // 1 left button (36) + overflow (36) + right (36) + 5 columns' gaps (pickers, star) = 116, + pickers 150 = 266 of 302.
+        var fit = ToolbarPlan.FitRow(302, 2, [36, 36, 36, 36], [36], hasPickers: true, 150, 36);
+        Assert.Equal(new RowFit(1, true, true, 116), fit);
+        Assert.True(Used(fit, 150) <= 302);
     }
 
     [Fact]
     public void FitRow_drops_the_pickers_before_letting_the_overflow_button_stick_out()
     {
-        // right 36 + reserved 150 + gap = 188 fits in 200, but the overflow button (36 + gap) does not: Fit's overshoot.
-        // Without the pickers' room all three left buttons fit again (the pickers then hide in ToolbarLayout.Compute).
-        var fit = ToolbarPlan.FitRow(200, 2, [36, 36, 36], [36], 150, 36);
-        Assert.Equal(new RowFit(3, false, false), fit);
-        Assert.True(Needed(fit, 2, [36, 36, 36], [36], 150, 36) <= 200);
+        // With the pickers' room the overflow button would stick out; without it all three left buttons fit
+        // (the pickers then hide in ToolbarLayout.Compute).
+        var fit = ToolbarPlan.FitRow(202, 2, [36, 36, 36], [36], hasPickers: true, 150, 36);
+        Assert.Equal(new RowFit(3, false, false, 154), fit);
+        Assert.True(Used(fit, 150) <= 202);
     }
 
     [Fact]
-    public void FitRow_without_pickers_is_Fit()
+    public void FitRow_budgets_the_pickers_column_gap_when_their_room_is_not_reserved()
     {
-        Assert.Equal(new RowFit(1, true, false), ToolbarPlan.FitRow(100, 2, [36, 36, 36], [], 0, 36));
-        Assert.Equal(new RowFit(3, false, false), ToolbarPlan.FitRow(1000, 2, [36, 36, 36], [36], 0, 36));
+        // No picker available (pickersMin 0) but the pickers' column is still in the Grid: 2 buttons need 72 + 3 gaps = 78.
+        Assert.Equal(new RowFit(2, false, false, 78), ToolbarPlan.FitRow(78, 2, [36, 36], [], hasPickers: true, 0, 36));
+        var narrow = ToolbarPlan.FitRow(77, 2, [36, 36], [], hasPickers: true, 0, 36);
+        Assert.Equal(new RowFit(0, true, false, 40), narrow);
+        Assert.True(narrow.FixedWidth <= 77);
+    }
+
+    [Fact]
+    public void FitRow_without_pickers_counts_only_the_flexible_column()
+    {
+        Assert.Equal(new RowFit(1, true, false, 76), ToolbarPlan.FitRow(102, 2, [36, 36, 36], [], hasPickers: false, 0, 36));
+        Assert.Equal(new RowFit(3, false, false, 152), ToolbarPlan.FitRow(1000, 2, [36, 36, 36], [36], hasPickers: false, 0, 36));
+        // Exactly the width of the whole row: everything stays.
+        Assert.Equal(new RowFit(3, false, false, 152), ToolbarPlan.FitRow(152, 2, [36, 36, 36], [36], hasPickers: false, 0, 36));
     }
 
     [Fact]
     public void FitRow_accepts_an_overshoot_that_remains_without_the_pickers()
     {
         // Even the right group alone doesn't fit: the overflow button stays so the left buttons remain reachable.
-        var fit = ToolbarPlan.FitRow(40, 2, [36], [36], 100, 36);
-        Assert.Equal(new RowFit(0, true, false), fit);
+        var fit = ToolbarPlan.FitRow(40, 2, [36], [36], hasPickers: true, 100, 36);
+        Assert.Equal(new RowFit(0, true, false, 78), fit);
     }
 
     [Theory]
@@ -143,20 +159,31 @@ public sealed class ToolbarPlanTests : IDisposable
     [InlineData(240)]
     [InlineData(330)]
     [InlineData(500)]
-    public void FitRow_never_overshoots_while_the_pickers_are_kept_and_is_idempotent(double room)
+    public void FitRow_fits_the_room_and_keeps_its_result_in_exactly_the_room_it_uses(double room)
     {
         double[] left = [36, 30, 46, 36], right = [36, 36];
-        var fit = ToolbarPlan.FitRow(room, 2, left, right, 120, 36);
-        if (fit.PickersKept) Assert.True(Needed(fit, 2, left, right, 120, 36) <= room, $"{fit} at {room}");
-        Assert.Equal(fit, ToolbarPlan.FitRow(room, 2, left, right, 120, 36));
+        var fit = ToolbarPlan.FitRow(room, 2, left, right, hasPickers: true, 120, 36);
+        var acceptedOvershoot = fit is { LeftShown: 0, Overflow: true, PickersKept: false };
+        if (!acceptedOvershoot) Assert.True(Used(fit, 120) <= room, $"{fit} at {room}");
+        // Re-fitted in just the room it uses (the panel shrunk to the row): the same buttons stay.
+        if (!acceptedOvershoot) Assert.Equal(fit, ToolbarPlan.FitRow(Used(fit, 120), 2, left, right, hasPickers: true, 120, 36));
     }
 
-    private static double Needed(RowFit fit, double spacing, double[] left, double[] right, double reserved, double overflow)
+    [Fact]
+    public void Row_skips_ids_that_are_neither_built_in_nor_defined_and_reports_them()
     {
-        var items = fit.LeftShown + right.Length + (fit.Overflow ? 1 : 0);
-        reserved = fit.PickersKept ? reserved : 0;
-        var gaps = Math.Max(0, items - 1) + (reserved > 0 && items > 0 ? 1 : 0);
-        return left.Take(fit.LeftShown).Sum() + right.Sum() + (fit.Overflow ? overflow : 0) + spacing * gaps + reserved;
+        var m = With((Quadrant.BottomLeft, ["pin", "ghost", "mine"])) with { Buttons = [new CustomButton("mine", "Mine", "E734", null, "hi", false)] };
+        Assert.Equal(new RowPlan(["pin", "mine"], []), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(["ghost"], ToolbarPlan.Unknown(m));
+        Assert.Empty(ToolbarPlan.Unknown(ToolbarModel.Defaults));
+    }
+
+    [Fact]
+    public void Row_places_an_id_listed_twice_only_where_it_is_first()
+    {
+        var m = With((Quadrant.BottomLeft, ["pin"]), (Quadrant.TopLeft, ["pin", "recent"]));
+        Assert.Equal(new RowPlan(["pin"], []), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan(["recent"], []), ToolbarPlan.Row(m, top: true));
     }
 
     // ---- This PC ----
@@ -193,38 +220,5 @@ public sealed class ToolbarPlanTests : IDisposable
         var (ok, detail) = ToolbarPlan.Report(ToolbarModel.Defaults, "toolbar.json couldn't be read: x");
         Assert.False(ok);
         Assert.Equal("toolbar.json couldn't be read: x", detail);
-    }
-
-    // ---- settings.json archive (carry-forward) ----
-
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
-
-    [Fact]
-    public void Settings_upgrade_that_cannot_be_archived_is_reported_and_left_as_it_is()
-    {
-        Directory.CreateDirectory(_dir);
-        var path = Path.Combine(_dir, SettingsStore.FileName);
-        const string original = """{ "schemaVersion": 13 }""";
-        File.WriteAllText(path, original);
-        Directory.CreateDirectory(path + ".old"); // the archive can't be written there
-        var store = new SettingsStore(_dir);
-
-        store.Load();
-
-        Assert.True(store.ArchiveFailed);
-        Assert.Equal(original, File.ReadAllText(path));
-    }
-
-    [Fact]
-    public void Settings_upgrade_that_is_archived_is_not_reported()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 13 }""");
-        var store = new SettingsStore(_dir);
-
-        store.Load();
-
-        Assert.False(store.ArchiveFailed);
     }
 }

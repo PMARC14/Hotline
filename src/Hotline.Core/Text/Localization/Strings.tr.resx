@@ -435,6 +435,7 @@ Reddet:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>'{0}' hızlı eylemi bulunamadı</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Önce dikteyi bitirin, sonra bu düğmeyi kullanın.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyası bir JSON nesnesi değil; değiştirilmiyor.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions" bir nesne değil; değiştirilmiyor.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions.{0}" bir liste değil; değiştirilmiyor.</value></data>

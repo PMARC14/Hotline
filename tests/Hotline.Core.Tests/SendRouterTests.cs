@@ -68,4 +68,13 @@ public sealed class SendRouterTests : IDisposable
     [Fact]
     public void A_quick_action_with_nothing_to_work_on_asks_for_text() =>
         Assert.Equal(new SendRoute.NeedsText("summarize"), Router().Route("/summarize", hasAttachments: false));
+
+    [Fact]
+    public void Plain_text_is_sent_as_it_is_even_when_it_looks_like_a_command()
+    {
+        Assert.Equal(new SendRoute.Message("/remember my PIN", null), SendRouter.Plain(" /remember my PIN ", hasAttachments: false));
+        Assert.Equal(new SendRoute.Message("/fix teh", null), SendRouter.Plain("/fix teh", hasAttachments: false));
+        Assert.IsType<SendRoute.Nothing>(SendRouter.Plain("  ", hasAttachments: false));
+        Assert.Equal(new SendRoute.Message("", null), SendRouter.Plain("", hasAttachments: true));
+    }
 }

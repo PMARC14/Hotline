@@ -435,6 +435,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>не вдалося запустити {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Швидку дію '{0}' не знайдено</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Спершу завершіть диктування, а потім скористайтеся цією кнопкою.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json agy не є об'єктом JSON; файл не змінено.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» у settings.json agy не є об'єктом; файл не змінено.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» у settings.json agy не є списком; файл не змінено.</value></data>

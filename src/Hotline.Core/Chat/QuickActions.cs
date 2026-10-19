@@ -182,6 +182,10 @@ public sealed partial class QuickActions(string directory)
     public static string? SuggestionQuery(string text) =>
         text.StartsWith('/') && SafeNameOrEmpty().IsMatch(text[1..]) ? text[1..] : null;
 
+    /// <summary>What an action's name may be: what "/name" parses (letters of any script, digits, _ and -), so every
+    /// valid name is also a file in actions\ (never a path) and can be typed. toolbar.json's quickAction uses it too.</summary>
+    public static bool IsName(string name) => SafeName().IsMatch(name);
+
     /// <summary>
     /// "/name message" → the action's instruction applied to the message. With no message the instruction applies to
     /// the attachments, or Text is null when there are none (nothing to apply it to). Null when the text doesn't start
@@ -190,11 +194,20 @@ public sealed partial class QuickActions(string directory)
     public (QuickAction Action, string? Text)? Expand(string text, bool hasAttachments)
     {
         var m = Command().Match(text);
-        if (!m.Success) return null;
-        if (BuiltIns.Any(b => b.Name.Equals(m.Groups[1].Value, StringComparison.OrdinalIgnoreCase))) return null; // handled by Hotline
-        var action = List().FirstOrDefault(a => string.Equals(a.Name, m.Groups[1].Value, StringComparison.OrdinalIgnoreCase));
+        return m.Success ? Apply(m.Groups[1].Value, text[m.Length..], hasAttachments) : null;
+    }
+
+    /// <summary>
+    /// The action called <paramref name="name"/> applied to <paramref name="message"/> (as <see cref="Expand"/>, without
+    /// parsing a command out of text, so the message may itself start with "/"). Null for an unknown or invalid name and
+    /// for Hotline's own commands.
+    /// </summary>
+    public (QuickAction Action, string? Text)? Apply(string name, string message, bool hasAttachments)
+    {
+        if (!IsName(name) || BuiltIns.Any(b => b.Name.Equals(name, StringComparison.OrdinalIgnoreCase))) return null; // handled by Hotline
+        var action = List().FirstOrDefault(a => string.Equals(a.Name, name, StringComparison.OrdinalIgnoreCase));
         if (action is null) return null;
-        var rest = text[m.Length..].Trim();
+        var rest = message.Trim();
         if (rest.Length > 0) return (action, $"{action.Instruction}\n\n---\n\n{rest}");
         return (action, hasAttachments ? $"{action.Instruction}\n\n{AttachmentsNote}" : null);
     }

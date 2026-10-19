@@ -435,6 +435,7 @@ Zabroń:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>nie można uruchomić {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Nie można odczytać toolbar.json: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Nie znaleziono szybkiej akcji '{0}'</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Najpierw zakończ dyktowanie, a potem użyj tego przycisku.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Plik settings.json agy nie jest obiektem JSON; nie zostanie zmieniony.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>„permissions” w pliku settings.json agy nie jest obiektem; plik nie zostanie zmieniony.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>„permissions.{0}” w pliku settings.json agy nie jest listą; plik nie zostanie zmieniony.</value></data>

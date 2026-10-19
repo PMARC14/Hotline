@@ -435,6 +435,7 @@ Weigeren:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Snelle actie '{0}' niet gevonden</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Rond eerst het dicteren af en gebruik dan deze knop.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>De settings.json van agy is geen JSON-object; er wordt niets gewijzigd.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" in de settings.json van agy is geen object; er wordt niets gewijzigd.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in de settings.json van agy is geen lijst; er wordt niets gewijzigd.</value></data>

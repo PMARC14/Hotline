@@ -263,6 +263,9 @@ public sealed class ToolbarModelTests
     [InlineData("x.")]
     [InlineData(".x")]
     [InlineData("a*b")]
+    [InlineData("fix my text")] // "/fix my text" would run "fix": names are what QuickActions parses ([\w-]+)
+    [InlineData("a.b")]
+    [InlineData("résumé 日本")]
     public void Quick_actions_must_be_plain_names(string name)
     {
         var m = Bottom("\"b\"", $$""", "buttons": { "b": { "label": "x", "quickAction": {{System.Text.Json.JsonSerializer.Serialize(name)}} } }""");
@@ -272,10 +275,10 @@ public sealed class ToolbarModelTests
 
     [Theory]
     [InlineData("summarise")]
-    [InlineData("fix my text")]
-    [InlineData("to-do list")]
-    [InlineData("résumé 日本")]
-    public void Quick_action_names_may_have_spaces_hyphens_and_unicode(string name) =>
+    [InlineData("to-do-list")]
+    [InlineData("my_action")]
+    [InlineData("résumé日本")] // \w takes letters of any script
+    public void Quick_action_names_may_have_hyphens_underscores_and_unicode_letters(string name) =>
         Assert.Equal(name, Button($$"""{ "label": "x", "quickAction": {{System.Text.Json.JsonSerializer.Serialize(name)}} }""")!.QuickAction);
 
     [Fact]

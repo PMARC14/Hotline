@@ -84,7 +84,7 @@ internal sealed class ChatPresenter
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
-        _customButtons = new ToolbarCustomActions(_composer, actions, () => _attachments.Items.Count > 0, _notices, () => _tasks.Run("send", SendAsync), log);
+        _customButtons = new ToolbarCustomActions(_composer, actions, () => _attachments.Items.Count > 0, _notices, () => _tasks.Run("send", () => SendAsync(plain: true)), log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
             (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll())
         {
@@ -229,14 +229,18 @@ internal sealed class ChatPresenter
         return held;
     }
 
-    private async Task SendAsync()
+    private Task SendAsync() => SendAsync(plain: false);
+
+    /// <param name="plain">Send the box as text, never as a command (a custom button's text from toolbar.json).</param>
+    private async Task SendAsync(bool plain)
     {
         if (_chat.IsBusy) return; // stopping is the Stop button's or the stop shortcut's job, never a send's
         if (_preparingSend) return; // a second Enter/click while OCR runs
         if (_voice.Active) { await _voice.FinishAndSendAsync(); return; } // it sends once the dictation is final
         if (string.IsNullOrEmpty(_chat.BackendId)) { ConnectionMissing?.Invoke(); return; } // the text stays in the box
         var typed = _composer.Text;
-        switch (_router.Route(typed, _attachments.Items.Count > 0))
+        var hasAttachments = _attachments.Items.Count > 0;
+        switch (plain ? SendRouter.Plain(typed, hasAttachments) : _router.Route(typed, hasAttachments))
         {
             case SendRoute.Nothing:
                 return;

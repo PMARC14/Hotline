@@ -435,6 +435,7 @@ Nega:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossibile avviare {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossibile leggere toolbar.json: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Azione rapida '{0}' non trovata</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Termina prima la dettatura, poi usa questo pulsante.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Il settings.json di agy non è un oggetto JSON; non viene modificato.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» nel settings.json di agy non è un oggetto; non viene modificato.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» nel settings.json di agy non è un elenco; non viene modificato.</value></data>

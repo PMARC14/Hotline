@@ -435,6 +435,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>无法启动 {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>无法读取 toolbar.json:{0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>找不到快速操作“{0}”</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>请先完成听写，再使用此按钮。</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy 的 settings.json 不是 JSON 对象;不做更改。</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy 的 settings.json 中的“permissions”不是对象;不做更改。</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy 的 settings.json 中的“permissions.{0}”不是列表;不做更改。</value></data>

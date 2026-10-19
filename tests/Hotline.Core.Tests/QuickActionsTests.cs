@@ -206,4 +206,28 @@ public sealed class QuickActionsTests : IDisposable
         Assert.Equal(ok, actions.Rename(from, to));
         if (ok) Assert.Contains(actions.List(), a => a.Name == to);
     }
+
+    [Theory]
+    [InlineData("fix", true)]
+    [InlineData("to-do_2", true)]
+    [InlineData("résumé", true)]
+    [InlineData("fix my", false)]
+    [InlineData("a.b", false)]
+    [InlineData("", false)]
+    [InlineData("../x", false)]
+    public void Names_are_what_the_command_line_parses(string name, bool valid) => Assert.Equal(valid, QuickActions.IsName(name));
+
+    [Fact]
+    public void Apply_finds_the_action_by_its_name_without_parsing_text()
+    {
+        var actions = new QuickActions(_dir);
+        actions.EnsureDefaults();
+        var result = actions.Apply("fix", "  /remember this  ", hasAttachments: false);
+        Assert.Equal("fix", result?.Action.Name);
+        Assert.EndsWith("\n\n---\n\n/remember this", result?.Text);
+        Assert.Null(actions.Apply("fix", "", hasAttachments: false)?.Text); // nothing to apply it to
+        Assert.Null(actions.Apply("nope", "x", hasAttachments: false));
+        Assert.Null(actions.Apply("remember", "x", hasAttachments: false)); // Hotline's own command, not a file
+        Assert.Null(actions.Apply("fix my", "x", hasAttachments: false));
+    }
 }

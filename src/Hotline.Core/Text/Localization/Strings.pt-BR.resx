@@ -435,6 +435,7 @@ Negar:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>não foi possível iniciar {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Não foi possível ler o toolbar.json: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Ação rápida '{0}' não encontrada</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Termine o ditado primeiro e depois use este botão.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>O settings.json do agy não é um objeto JSON; ele não será alterado.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" no settings.json do agy não é um objeto; ele não será alterado.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" no settings.json do agy não é uma lista; ele não será alterado.</value></data>

@@ -428,8 +428,13 @@ public partial class App : Application
             if (_toolbarApplied) return; // keep the current bar
         }
         else ThisPc.Toolbar = (load.Model, null);
+        // Logged whenever they change, also when the layout doesn't (an edit adding only invalid entries); the file is left as it is.
+        if (load.Error is null && !load.Model.Warnings.SequenceEqual(_toolbarWarnings))
+        {
+            _toolbarWarnings = load.Model.Warnings;
+            foreach (var warning in _toolbarWarnings) _log?.Info($"toolbar.json: {warning}");
+        }
         if (_toolbarApplied && load.Model.Equals(_popup.ToolbarModel)) return;
-        foreach (var warning in load.Model.Warnings) _log?.Info($"toolbar.json: {warning}"); // the file itself is left as it is
         if (!Enum.GetValues<Hotline.Core.Windowing.Quadrant>().SelectMany(load.Model.Items).Contains("settings"))
             _log?.Info("toolbar.json places no Settings button: Settings opens from the tray icon only");
         _toolbarApplied = true;
@@ -438,6 +443,7 @@ public partial class App : Application
     }
 
     private bool _toolbarApplied;
+    private IReadOnlyList<string> _toolbarWarnings = [];
 
     /// <summary>MCP servers are started by the MCP SDK (not in the kill-on-close job): stop them before a restart.</summary>
     private void StopToolServers()

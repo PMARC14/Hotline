@@ -435,6 +435,7 @@ Tolak:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Aksi cepat '{0}' tidak ditemukan</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Selesaikan dikte terlebih dahulu, lalu gunakan tombol ini.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json milik agy bukan objek JSON; tidak diubah.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" di settings.json milik agy bukan objek; tidak diubah.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" di settings.json milik agy bukan daftar; tidak diubah.</value></data>

@@ -251,4 +251,32 @@ public sealed class SettingsStoreTests : IDisposable
         }
         finally { if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true); }
     }
+
+    [Fact]
+    public void Settings_upgrade_that_cannot_be_archived_is_reported_and_left_as_it_is()
+    {
+        Directory.CreateDirectory(_dir);
+        var path = Path.Combine(_dir, SettingsStore.FileName);
+        const string original = """{ "schemaVersion": 13 }""";
+        File.WriteAllText(path, original);
+        Directory.CreateDirectory(path + ".old"); // the archive can't be written there
+        var store = New();
+
+        store.Load();
+
+        Assert.True(store.ArchiveFailed);
+        Assert.Equal(original, File.ReadAllText(path));
+    }
+
+    [Fact]
+    public void Settings_upgrade_that_is_archived_is_not_reported()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 13 }""");
+        var store = New();
+
+        store.Load();
+
+        Assert.False(store.ArchiveFailed);
+    }
 }

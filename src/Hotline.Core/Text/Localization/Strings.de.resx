@@ -435,6 +435,7 @@ Verweigern:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} konnte nicht gestartet werden</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json konnte nicht gelesen werden: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Schnellaktion '{0}' nicht gefunden</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Beenden Sie zuerst das Diktat und verwenden Sie dann diese Schaltfläche.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Die settings.json von agy ist kein JSON-Objekt; sie wird nicht geändert.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>„permissions“ in der settings.json von agy ist kein Objekt; sie wird nicht geändert.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>„permissions.{0}“ in der settings.json von agy ist keine Liste; sie wird nicht geändert.</value></data>

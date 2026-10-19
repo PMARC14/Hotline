@@ -34,7 +34,12 @@ internal sealed class ToolbarRenderer
     private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = [];
     private readonly Row _top, _bottom;
 
+    /// <summary>The model the rows show; set only once a whole apply has succeeded.</summary>
     public ToolbarModel Model { get; private set; } = ToolbarModel.Defaults;
+
+    /// <summary>The last fit's room and pickers' minimum: an apply fits to them at once, so a changed bar isn't drawn too
+    /// wide for a frame before the queued layout (which then fits to the current width).</summary>
+    private (double Room, double PickersMin)? _lastFit;
 
     public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom, FileLog log)
     {
@@ -62,10 +67,11 @@ internal sealed class ToolbarRenderer
         return more;
     }
 
-    /// <summary>Rebuilds both rows from the model, every item shown (the next <see cref="Fit"/> moves what doesn't fit).</summary>
+    /// <summary>Rebuilds both rows from the model and fits them to the last known width (the queued layout follows).</summary>
     public void Apply(ToolbarModel model)
     {
-        Model = model;
+        if (ToolbarPlan.Unknown(model) is { Count: > 0 } unknown) // only a model built in memory can have these
+            _log.Error($"button rows: no such item {string.Join(", ", unknown)}; left out");
         foreach (var row in new[] { _top, _bottom }) { row.Grid.Children.Clear(); row.Grid.ColumnDefinitions.Clear(); }
         foreach (var (button, _) in _customButtons.Values) button.Click -= OnCustomClick;
         _customButtons.Clear();
@@ -95,6 +101,9 @@ internal sealed class ToolbarRenderer
         foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id));
         ApplyStyle(_top.More, model.Style);
         ApplyStyle(_bottom.More, model.Style);
+        Model = model;
+        // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
+        if (_lastFit is { } last) Fit(last.Room, last.PickersMin);
     }
 
     private void OnCustomClick(object sender, RoutedEventArgs e)
@@ -145,22 +154,18 @@ internal sealed class ToolbarRenderer
     /// </summary>
     public double Fit(double room, double pickersMin)
     {
+        _lastFit = (room, pickersMin);
         var fixedWidth = 0.0;
         foreach (var row in new[] { _top, _bottom })
         {
             var (left, right) = (row.Plan.Left, row.Plan.Right);
             if (left.Count + right.Count == 0) continue;
-            var spacing = row.Grid.ColumnSpacing;
             var hasPickers = left.Concat(right).Any(ToolbarPlan.IsPicker);
             var leftWidths = left.Where(id => !ToolbarPlan.IsPicker(id)).Select(Width).ToList();
             var rightWidths = right.Where(id => !ToolbarPlan.IsPicker(id)).Select(Width).ToList();
-            // Fit doesn't count the flexible column's gap: take it off the room.
-            var fit = ToolbarPlan.FitRow(room - spacing, spacing, leftWidths, rightWidths, hasPickers ? pickersMin : 0, MoreWidth);
+            var fit = ToolbarPlan.FitRow(room, row.Grid.ColumnSpacing, leftWidths, rightWidths, hasPickers, pickersMin, MoreWidth);
             Arrange(row, fit.LeftShown, fit.Overflow);
-            if (!hasPickers) continue;
-            var buttons = leftWidths.Take(fit.LeftShown).Concat(rightWidths).ToList();
-            var columns = buttons.Count + (fit.Overflow ? 1 : 0) + 2; // + the pickers and the flexible column
-            fixedWidth = buttons.Sum() + (fit.Overflow ? MoreWidth : 0) + spacing * (columns - 1);
+            if (hasPickers) fixedWidth = fit.FixedWidth;
         }
         return fixedWidth;
     }
@@ -238,7 +243,12 @@ internal sealed class ToolbarRenderer
             var hold = _popup.HoldResize();
             void Closed(object? s, object e) { flyout.Closed -= Closed; hold.Dispose(); }
             flyout.Closed += Closed;
-            flyout.ShowAt(row.More);
+            try { flyout.ShowAt(row.More); }
+            catch
+            {
+                Closed(null, EventArgs.Empty); // it never opened: release the hold now
+                throw;
+            }
             return;
         }
         new ButtonAutomationPeer(button).Invoke(); // raises its Click: the same handlers as the button

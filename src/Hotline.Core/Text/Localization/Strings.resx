@@ -435,6 +435,7 @@ Deny:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>couldn't start {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json couldn't be read: {0}</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Quick action '{0}' not found</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Finish dictating first, then use this button.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy's settings.json isn't a JSON object; not changing it.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" in agy's settings.json isn't an object; not changing it.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in agy's settings.json isn't a list; not changing it.</value></data>
