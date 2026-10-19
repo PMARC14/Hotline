@@ -52,9 +52,10 @@ configurable in plain files.
   permission rules.
 - **System prompts** as Markdown files you can switch from the bar.
 - **Your panel, your way** — hold Alt to move or resize it, save its spot as the default, pin it where you work; the
-  chat grows up or down from the message bar. The buttons sit in four groups (top left and right above the message box,
-  bottom left and right below it): arrange, resize and outline them in Settings › Window › Button rows, add buttons
-  of your own that run a quick action or insert saved text, or edit `toolbar.json`. Optional open/close sounds (a Windows sound or your own .wav).
+  chat grows up or down from the message bar. The buttons sit in four groups (top left and right above the message
+  box, bottom left and right below it): arrange, resize and outline them in Settings › Window › Button rows, add
+  buttons of your own that run a quick action or insert saved text, or edit `toolbar.json`. Optional open/close
+  sounds (a Windows sound or your own .wav).
 - **Built-in guide** — Settings › Guide explains every feature; Settings › Advanced › Reset starts over (with a backup).
 - **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly. API keys live in
   Windows Credential Locker.

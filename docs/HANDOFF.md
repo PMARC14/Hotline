@@ -45,8 +45,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - The panel: `window.anchor` (monitor, x, y), `width`, `chatHeight`; the chat grows up or down from a fixed message
     bar (`growDirection`, auto = up unless no room above); **Alt grips** move and resize it (a resize fixes the height
     for that opening; it can go back down to the bar alone); the grip's menu saves the spot as default; a moved spot
-    is kept only while pinned (forgotten on unpin, clicking into another app, restart). Schema v13.
-  - Button rows: toolbar.json `top` (above the message box) and `items` (below); the owner's layout and
+    is kept only while pinned (forgotten on unpin, clicking into another app, restart). Schema v14.
+  - Button rows: toolbar.json `top` (above the message box) and `items` (below), each with `left` and `right`; the owner's layout and
     `acrylicThin` are the defaults.
   - Open/close sounds (off by default): Windows sound events or .wav files in `~/.hotline/sounds`, preloaded media
     players. The generated `hotline.wav` (`src/Hotline.App/Assets/Sounds/hotline.wav`) ships as the default sound;

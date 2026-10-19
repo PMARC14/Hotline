@@ -35,10 +35,10 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 |---|---|---|
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
+| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `680` / `1000` | Panel width: % of the screen, clamped (DIPs). On upgrading to 0.4, a `minWidth` of exactly 600 (the old default) becomes 680; any other value you set stays |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
-| `window.width` | `680` | Panel width in DIPs; `null` = the `widthPercent` rule. A width you saved yourself is kept |
+| `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule. A width you saved yourself is kept |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
@@ -180,7 +180,7 @@ to right. Settings › **Window** › **Button rows** edits this file (planned U
   "style": { "size": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
   "buttons": {
-    "summarise": { "label": "Summarise", "icon": "E8A5", "quickAction": "summarise" },
+    "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize" },
     "thanks":    { "label": "Say thanks", "icon": "E8BD", "text": "Thanks!", "send": false }
   }
 }
@@ -190,20 +190,23 @@ to right. Settings › **Window** › **Button rows** edits this file (planned U
 |---|---|
 | `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left` and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…) |
-| `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide`; `outline` and `filled` are `true` or `false` |
+| `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide`; `outline` and `filled` are `true` or `false`; `width` and `height` (20-80 DIPs) can also be set bar-wide |
 | `overrides` | Per item id, the same `size`, `outline` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
 | `buttons` | Your own buttons, by id (see below) |
 
-**The pickers.** `effort`, `model` and `provider` always stay together as one block, in the group where the first of
-them is listed, in the order listed. They ignore `style` and `overrides`.
+**The pickers.** `effort`, `model` and `provider` always stay together as one block. The block goes in the first group
+(checked in the order bottom left, bottom right, top left, top right) that lists one of them, at that picker's
+position, with the pickers in the order they are listed in the file: `effort` in top left plus `model` in bottom
+right puts the block in bottom right. They ignore `style` and `overrides`.
 
 **Custom buttons.** Each entry in `buttons` is a button you can list in any group by its id:
 
-- The id is 1-32 characters from `a-z`, `0-9` and `-`, and not a built-in id.
-- `label` is the button's name (at most 40 characters). `icon` is a Segoe Fluent Icons code in hex, four to six digits
+- The id is 1-32 characters from `a-z`, `0-9` and `-` (lowercase only), and not a built-in id. Built-in ids in the
+  groups are not case-sensitive.
+- `label` is the button's name (at most 40 characters; it defaults to the id). `icon` is a Segoe Fluent Icons code in hex, four to six digits
   in the range E000-F8FF; anything else gives a default star.
-- Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarise"` for
-  `actions\summarise.md`; never a path); it runs that quick action on the current message and attachments. `text` is
+- Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarize"` for
+  `actions\summarize.md`, at most 64 characters; never a path; the file must exist); it runs that quick action on the current message and attachments. `text` is
   put in the message box (up to 2000 characters), and `"send": true` also sends it. If the action file is missing, the
   button shows a notice.
 - Nothing else can be run from a button: no URLs, files, programs or shell commands.
@@ -224,7 +227,8 @@ and the rest of the file still applies; the file is never thrown away for one mi
   only when all four groups are present and empty.
 - A file that isn't valid JSON, or whose top level isn't an object, is left untouched and the defaults run until you fix
   it; a half-written file keeps the bar it had.
-- Hotline does not rewrite the file by itself. What it had to fix is listed under Settings › This PC and in the log;
+- Hotline does not rewrite a version 2 file by itself. A missing file is created with the defaults (delete
+  `toolbar.json` to get the default bar back at the next start), and a version 1 file is migrated (below). What it had to fix is listed under Settings › This PC and in the log;
   saving from Settings writes the corrected version.
 - A `version` higher than 2 is read as far as it makes sense and never rewritten.
 
@@ -242,7 +246,8 @@ bottom left).
 **Upgrading from the old format.** Before 0.4, `toolbar.json` had `top` and `items` as plain arrays and a `spacer`
 item. On the first start of 0.4 the old file is copied to `toolbar.json.old` and a version 2 file is written that
 looks the same: the items before the first `spacer` of a row go left, the ones after it right, further spacers are
-dropped. A file that already has `"version": 2` is not touched.
+dropped. A file that already has `"version": 2` is not touched. The rewrite happens only if the `.old` copy could be
+made; otherwise the old file stays, the converted result runs in memory and the next start tries again.
 
 ## Upgrading to 0.4
 
@@ -251,7 +256,8 @@ Hotline is pre-1.0, so old files may be replaced rather than converted: the firs
 `.old` already exists the copy is called `.old2`, then `.old3`; an archive is never overwritten. Kept values carry
 over where that is cheap. The `activation.copilotKey` setting no longer exists (an old entry is dropped; see
 [copilot-key.md](copilot-key.md)). **Connections are untouched**: `connections\*.json`, the default connection and the
-API keys in Windows Credential Locker stay exactly as they were.
+API keys in Windows Credential Locker stay exactly as they were. As with `toolbar.json`, `settings.json` is
+replaced only if its `.old` copy could be made; otherwise it stays and the next start tries again.
 
 ## Codex
 
