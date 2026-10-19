@@ -97,23 +97,31 @@ public sealed record ToolbarModel(
     {
         try
         {
-            json ??= "";
-            if (json.StartsWith('\uFEFF')) json = json[1..];
             var warnings = new List<string>();
-            JsonNode? root;
-            try { root = JsonNode.Parse(json, documentOptions: ParseOptions); }
-            catch (JsonException strict)
-            {
-                // Valid apart from a repeated key: read it with the last value winning, a per-field fix like any other.
-                using var doc = JsonDocument.Parse(json, RepeatedKeys);
-                root = LastWins(doc.RootElement.Clone());
-                warnings.Add($"Repeated key in toolbar.json ({Clean(strict.Message, 200, false)}); the last value is used");
-            }
+            var root = Parse(json, warnings);
             return root is JsonObject o ? Read(o, warnings) : Defaults with { Warnings = ["toolbar.json isn't a JSON object; the defaults are used"] };
         }
         catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {
             return Defaults with { Warnings = [$"toolbar.json can't be read ({Clean(ex.Message, 200, false)}); the defaults are used"] };
+        }
+    }
+
+    /// <summary>The tolerant read shared by <see cref="Resolve"/> and the v1 migration: strips a BOM, accepts comments and
+    /// trailing commas, and lets the last of a repeated key win (noted in <paramref name="warnings"/>). Throws
+    /// <see cref="JsonException"/> for unparsable text (including empty text).</summary>
+    internal static JsonNode? Parse(string? json, List<string> warnings)
+    {
+        json ??= "";
+        if (json.StartsWith('﻿')) json = json[1..];
+        try { return JsonNode.Parse(json, documentOptions: ParseOptions); }
+        catch (JsonException strict)
+        {
+            // Valid apart from a repeated key: read it with the last value winning, a per-field fix like any other.
+            using var doc = JsonDocument.Parse(json, RepeatedKeys);
+            var root = LastWins(doc.RootElement.Clone());
+            warnings.Add($"Repeated key in toolbar.json ({Clean(strict.Message, 200, false)}); the last value is used");
+            return root;
         }
     }
 
@@ -133,11 +141,16 @@ public sealed record ToolbarModel(
         }
     }
 
+    /// <summary>A v1 file: no (or an older) version and a row given as a plain array.</summary>
+    internal static bool IsV1(JsonObject root) =>
+        (root["version"] is null || (root["version"] is JsonValue v && v.TryGetValue<int>(out var n) && n < CurrentVersion))
+        && (root["items"] is JsonArray || root["top"] is JsonArray);
+
     private static ToolbarModel Read(JsonObject root, List<string> warnings)
     {
         int? version = root["version"] is JsonValue v && v.TryGetValue<int>(out var n) ? n : null;
         // A v1 file (no version, rows as plain arrays) is converted by the migration, not read here.
-        if ((root["version"] is null || version < CurrentVersion) && (root["items"] is JsonArray || root["top"] is JsonArray))
+        if (IsV1(root))
             return Defaults with { Warnings = ["toolbar.json v1 needs migration"] };
         if (root["version"] is not null && version != CurrentVersion)
             warnings.Add($"toolbar.json version {Show(root["version"])} isn't {CurrentVersion}; read as far as it goes");
