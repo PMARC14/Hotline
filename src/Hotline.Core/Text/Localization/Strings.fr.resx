@@ -588,4 +588,54 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
   <data name="Guide_Files_Body" xml:space="preserve"><value>Tout se trouve dans votre dossier .hotline et s'applique dès l'enregistrement : settings.json, un fichier par connexion, prompts, actions rapides et toolbar.json. Remplacez un fichier pour changer de configuration ; Paramètres › Avancé › Réinitialiser repart à zéro, avec une sauvegarde.
 Les clés API sont stockées dans Windows Credential Locker, jamais dans un fichier.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Tout ce que fait Hotline, en bref. Chaque section indique où le modifier dans Paramètres.</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>En haut à gauche</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>En haut à droite</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>En bas à gauche</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>En bas à droite</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>Non affiché</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Glissez les éléments entre les quatre groupes ou utilisez les boutons sous chaque élément. Avec un élément sélectionné, Alt+touches de direction le déplace vers un autre groupe et Ctrl+Gauche ou Ctrl+Droite le déplace au sein de son groupe. Les modifications sont enregistrées dans toolbar.json et appliquées immédiatement.</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>Déplacer vers le groupe de gauche</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>Déplacer vers le groupe de droite</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>Sélecteurs</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>Effort</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>Modèle</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>Fournisseur</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>Taille et apparence</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>Barre entière</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>Taille</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>Compact</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>Normal</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>Large</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>Contour</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>Rempli</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>Comme la barre entière</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>Largeur</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>Hauteur</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>Auto</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>Utiliser l'apparence de la barre entière</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>Boutons personnalisés</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>Aucun bouton personnalisé pour l'instant.</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>Ajouter un bouton</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>Nouveau bouton</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>Modifier le bouton</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>Enregistrer</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>Libellé</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>Id : {0} (créé à partir du libellé ; ne pourra plus être modifié)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>Icône</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>Exécuter une action rapide</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>Insérer du texte</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>Envoyer immédiatement</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>Aucune action rapide pour l'instant (Paramètres › Actions rapides).</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>Exécute /{0}</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>Insère du texte</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>Envoie du texte</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>Supprimer le bouton "{0}" ?</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>Entrez un libellé.</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>Choisissez une action rapide ou entrez du texte.</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>Ce nom d'action rapide n'est pas valide.</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>Il y a déjà 24 boutons personnalisés ; supprimez-en un d'abord.</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Le groupe en bas à gauche est plein (40 éléments) ; faites de la place d'abord.</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>Impossible d'enregistrer ce bouton ; vérifiez son libellé, son icône et son action.</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>Impossible d'enregistrer toolbar.json : {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>Corrigé lors de la lecture de toolbar.json (enregistrer ici écrit le fichier corrigé) :</value></data>
 </root>

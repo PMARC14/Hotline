@@ -9,15 +9,14 @@ namespace Hotline.App.Settings;
 /// <summary>Settings pages for the files next to settings.json: the button rows (toolbar.json) and quick actions (actions\).</summary>
 public sealed partial class SettingsWindow
 {
-    /// <summary>A bar item's name ("captureWindow" → Bar_captureWindow); unknown ids show as they are.</summary>
-    private static string ToolbarName(string id) => Strings.ResourceManager.GetString("Bar_" + id, System.Globalization.CultureInfo.CurrentUICulture) ?? id;
-
     private string DataDirectory => Path.GetDirectoryName(_settingsFile)!;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
     /// <summary>
-    /// Appearance › Button rows: show, hide, order and move the buttons between the row above the message box and the
-    /// one below it (saved to toolbar.json, applied at once).
+    /// Window › Button rows: the quadrant editor (<see cref="ToolbarQuadrantEditor"/>) on toolbar.json, read anew each time
+    /// the page is shown (an edit made in the file while the page is open shows on the next visit; the bar itself follows
+    /// the file at once). An unreadable file gets only the error and Reset, so nothing overwrites it by accident; the fixes
+    /// Resolve made to a readable one are listed.
     /// </summary>
     private void BuildToolbarSection()
     {
@@ -25,60 +24,22 @@ public sealed partial class SettingsWindow
         {
             Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        var config = ToolbarConfig.Load(ToolbarPath);
-        if (config.Error is { } error)
+        var load = ToolbarFile.Load(ToolbarPath);
+        if (load.Error is { } error)
         {
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        var (top, items) = (config.Top, config.Items);
-        void Save(IReadOnlyList<string> nextTop, IReadOnlyList<string> nextItems)
-        {
-            try { ToolbarConfig.Save(ToolbarPath, nextItems, nextTop); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
-            ShowPage(_currentPage);
-        }
-        var total = top.Count + items.Count;
-        void AddRow(string heading, IReadOnlyList<string> row, bool isTop)
-        {
-            PageHost.Children.Add(new TextBlock { Text = heading, Opacity = 0.8, Margin = new Thickness(0, 8, 0, 2) });
-            var list = new StackPanel { Spacing = 4 };
-            if (row.Count == 0) list.Children.Add(new TextBlock { Text = Strings.Bar_RowEmpty, Opacity = 0.6 });
-            for (var i = 0; i < row.Count; i++)
+        if (load.Model.Warnings.Count > 0)
+            PageHost.Children.Add(new InfoBar
             {
-                var index = i;
-                var item = row[i];
-                var line = new Grid { ColumnSpacing = 4 };
-                line.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-                for (var c = 0; c < 4; c++) line.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-                line.Children.Add(new TextBlock { Text = ToolbarName(item), VerticalAlignment = VerticalAlignment.Center });
-                IReadOnlyList<string> With(IReadOnlyList<string> changed) => changed;
-                void SaveRow(IReadOnlyList<string> changed) { if (isTop) Save(changed, items); else Save(top, changed); }
-                AddIconButton(line, 1, "\uE76B", Strings.Bar_MoveLeft, index > 0, () => SaveRow(With(ToolbarConfig.Move(row, index, -1))));
-                AddIconButton(line, 2, "\uE76C", Strings.Bar_MoveRight, index < row.Count - 1, () => SaveRow(With(ToolbarConfig.Move(row, index, +1))));
-                AddIconButton(line, 3, isTop ? "\uE74B" : "\uE74A", isTop ? Strings.Bar_ToBottom : Strings.Bar_ToTop, true, () =>
-                {
-                    var (t, b) = ToolbarConfig.ToRow(top, items, index, fromTop: isTop);
-                    Save(t, b);
-                });
-                AddIconButton(line, 4, "\uE711", Strings.Bar_Remove, total > 1, () => SaveRow(row.Where((_, j) => j != index).ToList()));
-                list.Children.Add(line);
-            }
-            PageHost.Children.Add(new Border { Child = list, Style = (Style)Root.Resources["CardStyle"] });
-        }
-        AddRow(Strings.Bar_TopRow, top, isTop: true);
-        AddRow(Strings.Bar_BottomRow, items, isTop: false);
-
-        var add = new DropDownButton { Content = Strings.Bar_Add };
-        var menu = new MenuFlyout();
-        foreach (var item in ToolbarConfig.Available.Where(a => a == "spacer" || !items.Contains(a) && !top.Contains(a)))
-        {
-            var entry = new MenuFlyoutItem { Text = ToolbarName(item) };
-            entry.Click += (_, _) => Save(top, ToolbarConfig.Show(items, item)); // added below the message box; move it up from there
-            menu.Items.Add(entry);
-        }
-        add.Flyout = menu;
-        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { add, ResetToolbarButton() } });
+                IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
+                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", load.Model.Warnings),
+            });
+        var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
+        PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, model => ToolbarFile.Save(ToolbarPath, model),
+            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log));
+        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 
     /// <summary>
@@ -144,20 +105,15 @@ public sealed partial class SettingsWindow
         var reset = new Button { Content = Strings.Bar_Reset };
         reset.Click += (_, _) =>
         {
-            try { ToolbarConfig.Save(ToolbarPath, ToolbarConfig.Defaults); }
+            try
+            {
+                Hotline.Core.Settings.FileArchive.KeepOld(ToolbarPath); // the user's file stays as toolbar.json.old (or .old2…)
+                ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+            }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
             ShowPage(_currentPage);
         };
         return reset;
-    }
-
-    private static void AddIconButton(Grid row, int column, string glyph, string tip, bool enabled, Action click)
-    {
-        var button = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 12 }, IsEnabled = enabled, Padding = new Thickness(8, 4, 8, 4) };
-        ToolTipService.SetToolTip(button, tip);
-        button.Click += (_, _) => click();
-        Grid.SetColumn(button, column);
-        row.Children.Add(button);
     }
 
     /// <summary>About: version, license, where Hotline lives, and how to support it.</summary>

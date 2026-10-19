@@ -588,4 +588,54 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
   <data name="Guide_Files_Body" xml:space="preserve"><value>모든 항목은 .hotline 폴더에 저장되며 저장 즉시 적용됩니다: settings.json, 연결당 하나의 파일, 프롬프트, 빠른 작업 및 toolbar.json. 파일을 교체하여 구성을 전환할 수 있습니다. 설정 › 고급 › 초기화를 사용하면 백업과 함께 처음부터 다시 시작할 수 있습니다.
 API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장되지 않습니다.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Hotline의 모든 기능을 간략히 요약했습니다. 각 부분마다 설정의 어디에서 변경할 수 있는지 안내합니다.</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>왼쪽 위</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>오른쪽 위</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>왼쪽 아래</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>오른쪽 아래</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>표시 안 함</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>네 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>왼쪽 그룹으로 이동</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>오른쪽 그룹으로 이동</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>선택기</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>추론 강도</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>모델</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>공급자</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>크기 및 모양</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>막대 전체</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>크기</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>컴팩트</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>보통</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>넓게</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>윤곽선</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>채우기</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>막대 전체와 동일</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>너비</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>높이</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>자동</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>막대 전체 모양 사용</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>사용자 지정 단추</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>아직 사용자 지정 단추가 없습니다.</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>단추 추가</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>새 단추</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>단추 편집</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>저장</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>레이블</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>Id: {0} (레이블로 생성되며 나중에 변경할 수 없습니다)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>아이콘</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>빠른 동작 실행</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>텍스트 삽입</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>즉시 보내기</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>아직 빠른 동작이 없습니다 (설정 › 빠른 동작).</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>/{0} 실행</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>텍스트 삽입</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>텍스트 전송</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>"{0}" 단추를 삭제하시겠습니까?</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>레이블을 입력하세요.</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>빠른 동작을 선택하거나 텍스트를 입력하세요.</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>올바른 빠른 동작 이름이 아닙니다.</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>사용자 지정 단추가 이미 24개 있습니다. 먼저 하나를 삭제하세요.</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>왼쪽 아래 그룹이 가득 찼습니다 (40개 항목). 먼저 공간을 확보하세요.</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>이 단추를 저장할 수 없습니다. 레이블, 아이콘 및 동작을 확인하세요.</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json을 저장할 수 없습니다: {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json을 읽는 동안 수정됨(여기서 저장하면 수정된 파일이 저장됩니다):</value></data>
 </root>

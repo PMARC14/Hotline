@@ -588,4 +588,54 @@
   <data name="Guide_Files_Body" xml:space="preserve"><value>Усе зберігається у вашій папці .hotline і застосовується під час збереження: settings.json, по одному файлу на кожне підключення, підказки, швидкі дії та toolbar.json. Замініть файл, щоб змінити конфігурацію; Параметри › Додатково › Скинути повертає все до початкового стану зі створенням резервної копії.
 Ключі API зберігаються в Windows Credential Locker і ніколи не потрапляють у файли.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Коротко про все, що робить Hotline. У кожному розділі зазначено, де це можна змінити в Параметрах.</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>Вгорі ліворуч</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>Вгорі праворуч</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>Внизу ліворуч</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>Внизу праворуч</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>Не відображається</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Перетягуйте елементи між чотирма групами або використовуйте кнопки під кожним елементом. Якщо елемент у фокусі, Alt+стрілки переміщують його до іншої групи, а Ctrl+Left або Ctrl+Right — у межах групи. Зміни зберігаються в toolbar.json і застосовуються одразу.</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>Перемістити до лівої групи</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>Перемістити до правої групи</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>Списки вибору</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>Зусилля</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>Модель</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>Постачальник</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>Розмір і вигляд</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>Вся панель</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>Розмір</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>Компактний</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>Звичайний</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>Широкий</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>Контурний</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>Заповнений</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>Як уся панель</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>Ширина</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>Висота</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>Авто</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>Використовувати вигляд усієї панелі</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>Власні кнопки</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>Власних кнопок ще немає.</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>Додати кнопку</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>Нова кнопка</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>Редагувати кнопку</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>Зберегти</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>Підпис</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>Id: {0} (створюється з підпису; його не можна змінити пізніше)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>Піктограма</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>Виконати швидку дію</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>Вставити текст</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>Надіслати одразу</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>Швидких дій ще немає (Настройки › Швидкі дії).</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>Виконує /{0}</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>Вставляє текст</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>Надсилає текст</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>Видалити кнопку "{0}"?</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>Введіть підпис.</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>Виберіть швидку дію або введіть текст.</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>Ця назва швидкої дії неприпустима.</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>Уже є 24 власні кнопки; спочатку видаліть одну.</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Група внизу ліворуч заповнена (40 елементів); спочатку звільніть там місце.</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>Не вдалося зберегти цю кнопку; перевірте її підпис, піктограму та дію.</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>Не вдалося зберегти toolbar.json: {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>Виправлено під час читання toolbar.json (збереження тут запише виправлений файл):</value></data>
 </root>

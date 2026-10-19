@@ -106,7 +106,8 @@ public sealed partial class SettingsWindow : Window
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
-                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildToolbarSection(); BuildSoundsSection(); }
+                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildSoundsSection(); }
+                if (page == SettingsPage.Window) BuildToolbarSection();
                 if (page == SettingsPage.Chat) BuildMemoryCard();
                 break;
         }

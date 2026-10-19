@@ -54,12 +54,4 @@ public sealed class PanelReviewFixesTests : IDisposable
         File.WriteAllBytes(Path.Combine(media, "x.mp3"), [1]);
         Assert.Null(Sounds.Resolve(_dir, choice, _ => Path.Combine(media, "x.mp3"), media)); // .wav only
     }
-
-    [Fact]
-    public void Moving_a_spacer_between_rows_moves_only_that_one()
-    {
-        var (top, items) = ToolbarConfig.ToRow(["spacer", "pin"], ["spacer", "settings", "spacer"], index: 2, fromTop: false);
-        Assert.Equal(["spacer", "pin", "spacer"], top);
-        Assert.Equal(["spacer", "settings"], items);
-    }
 }

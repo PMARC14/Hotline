@@ -588,4 +588,54 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Files_Body" xml:space="preserve"><value>すべてが .hotline フォルダーに保存され、保存時にすぐ適用されます: settings.json、接続ごとに 1 つのファイル、プロンプト、クイック アクション、toolbar.json。ファイルを置き換えて設定を切り替えることができます。設定 › 詳細 › リセット で、バックアップを作成して最初からやり直せます。
 API キーは Windows Credential Locker に保管され、ファイルに保存されることはありません。</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Hotline の機能を簡潔に紹介。各項目で「設定」のどこで変更できるかを案内します。</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>左上</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>右上</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>非表示</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>4 つのグループ間で項目をドラッグするか、各項目の下にあるボタンを使用します。項目にフォーカスがある状態で、Alt+矢印キーで別のグループへ、Ctrl+Left または Ctrl+Right でグループ内を移動できます。変更は toolbar.json に保存され、すぐに適用されます。</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>左のグループに移動</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>右のグループに移動</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>ピッカー</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>思考量</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>モデル</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>プロバイダー</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>サイズと外観</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>バー全体</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>サイズ</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>コンパクト</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>標準</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>ワイド</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>アウトライン</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>塗りつぶし</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>バー全体と同じ</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>幅</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>高さ</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>バー全体の外観を使用</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>カスタム ボタン</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>カスタム ボタンはまだありません。</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>ボタンを追加</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>新しいボタン</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>ボタンの編集</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>保存</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>ラベル</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>Id: {0} (ラベルから作成され、後から変更できません)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>アイコン</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>クイック アクションを実行</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>テキストを挿入</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>すぐに送信</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>クイック アクションはまだありません (設定 › クイック アクション)。</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>/{0} を実行</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>テキストを挿入</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>テキストを送信</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>ボタン "{0}" を削除しますか?</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>ラベルを入力してください。</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>クイック アクションを選択するか、テキストを入力してください。</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>そのクイック アクション名は無効です。</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>カスタム ボタンがすでに 24 個あります。先に 1 つ削除してください。</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下のグループがいっぱいです (40 項目)。先に空きを作ってください。</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>このボタンを保存できませんでした。ラベル、アイコン、アクションを確認してください。</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json を保存できませんでした: {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json の読み込み時に修正されました (ここで保存すると修正されたファイルが書き込まれます):</value></data>
 </root>

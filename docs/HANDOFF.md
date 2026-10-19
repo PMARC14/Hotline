@@ -132,7 +132,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `Settings/` `HotlineSettings` (schema v11), `SettingsStore` (settings.json + `connections/*.json`, migrations,
     side-effect-free `TryRead`), `SettingsService` (live Update/Reload with merge-by-id), `SettingsSchema`.
   - `Text/` `MarkdownModel` (Markdig → block model; math, SVG, task lists), `LatexText`, `SvgSanitizer`.
-  - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`: process start, stderr throttle). `Windowing/` geometry (`PopupGeometry` GrowUp/GrowDown, `PanelPlacement`: anchor, direction, clamp, resize, rescale), `ToolbarLayout`, `ToolbarConfig` (top + bottom rows), `Sounds` (what may play). `Processes/` line processes.
+  - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`: process start, stderr throttle). `Windowing/` geometry (`PopupGeometry` GrowUp/GrowDown, `PanelPlacement`: anchor, direction, clamp, resize, rescale), `ToolbarLayout`, `ToolbarModel`/`ToolbarFile`/`ToolbarEditor` (toolbar.json v2; `ToolbarEditorView` feeds the Settings quadrant editor), `Sounds` (what may play). `Processes/` line processes.
 - `src/Hotline.App` (WinUI 3, packaged MSIX, full trust):
   - `App.xaml.cs` composition root; `PopupWindow` (sizing, eased growth, focus, off-screen mode); `ActivationRouter`.
   - `Chat/ChatPresenter*.cs` (single selectable `RichTextBlock` transcript, attachments, recent chats, self-test,

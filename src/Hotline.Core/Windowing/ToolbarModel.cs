@@ -34,7 +34,11 @@ public sealed record ToolbarModel(
     public const int CurrentVersion = 2;
     /// <summary>The glyph of a custom button whose icon is missing or invalid (Segoe Fluent Icons "FavoriteStar").</summary>
     public const string DefaultIcon = "E734";
-    private const int MaxLabel = 40, MaxText = 2000, MaxButtons = 24, MaxItems = 40, MaxId = 32, MaxActionName = 64, MinDip = 20, MaxDip = 80;
+    /// <summary>At most this many custom buttons, and items per quadrant (the rest of a longer list is ignored).</summary>
+    public const int MaxButtons = 24, MaxItems = 40;
+    /// <summary>A custom button id's longest length.</summary>
+    public const int MaxId = 32;
+    private const int MaxLabel = 40, MaxText = 2000, MaxActionName = 64, MinDip = 20, MaxDip = 80;
 
     public static readonly IReadOnlyList<string> BuiltIn =
         ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];

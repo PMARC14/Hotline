@@ -588,4 +588,54 @@
   <data name="Guide_Files_Body" xml:space="preserve"><value>所有内容均存放在你的 .hotline 文件夹中，保存即生效：settings.json、每个连接对应的文件、提示词、快捷操作以及 toolbar.json。替换文件即可切换配置；设置 › 高级 › 重置可重新开始，并保留备份。
 API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>简要介绍 Hotline 的所有功能。各部分均说明了可在“设置”中的何处进行更改。</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>左上</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>右上</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>不显示</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>在四个分组之间拖动项目，或使用每个项目下方的按钮。聚焦项目时，按 Alt+方向键可将其移至其他分组，按 Ctrl+Left 或 Ctrl+Right 可在其分组内移动。更改会保存到 toolbar.json 并立即生效。</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>移至左侧分组</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>移至右侧分组</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>选择器</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>推理强度</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>模型</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>提供方</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>大小与外观</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>整栏</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>大小</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>紧凑</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>常规</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>宽</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>轮廓</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>填充</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>与整栏一致</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>宽度</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>高度</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>自动</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>使用整栏外观</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>自定义按钮</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>暂无自定义按钮。</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>添加按钮</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>新建按钮</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>编辑按钮</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>保存</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>标签</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>Id: {0} (由标签生成；后续无法更改)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>图标</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>运行快速操作</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>插入文本</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>立即发送</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>暂无快速操作 (设置 › 快速操作)。</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>运行 /{0}</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>插入文本</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>发送文本</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>删除按钮 "{0}"？</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>请输入标签。</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>请选择快速操作或输入文本。</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>该快速操作名称无效。</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>已有 24 个自定义按钮，请先删除一个。</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下分组已满 (40 个项目)，请先腾出空间。</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>无法保存此按钮，请检查其标签、图标和操作。</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>无法保存 toolbar.json: {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>读取 toolbar.json 时已修复 (在此保存将写入修复后的文件):</value></data>
 </root>

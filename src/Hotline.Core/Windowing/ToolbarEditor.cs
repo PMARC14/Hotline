@@ -50,6 +50,30 @@ public static class ToolbarEditor
         return Strict(m, With(m, lists));
     }
 
+    /// <summary>A drop marker's gap in <paramref name="q"/> (counted as for <see cref="MoveTo"/>) that falls strictly inside
+    /// the picker block, moved to the block's nearer edge (a tie goes before it); any other gap is returned as it is.
+    /// <see cref="MoveTo"/> refuses a gap inside the block, so a drop there would otherwise do nothing.</summary>
+    public static int SnapIndex(ToolbarModel m, Quadrant q, int index)
+    {
+        if (m is null) return index;
+        var items = m.Items(q);
+        var start = items.ToList().FindIndex(ToolbarPlan.IsPicker);
+        if (start < 0) return index;
+        var end = start + items.Skip(start).TakeWhile(ToolbarPlan.IsPicker).Count();
+        if (index <= start || index >= end) return index;
+        return index - start <= end - index ? start : end;
+    }
+
+    /// <summary>A drag-and-drop in Settings: the item (shown or not) goes to gap <paramref name="index"/> of
+    /// <paramref name="q"/>, snapped out of the picker block (<see cref="SnapIndex"/>); if that is refused while the item is
+    /// elsewhere, to the end of <paramref name="q"/>. Never throws; a drop that changes nothing returns the input.</summary>
+    public static ToolbarModel Drop(ToolbarModel m, string id, Quadrant q, int index)
+    {
+        if (m is null || !Order.Contains(q) || Known(m, id) is not { } c) return m!;
+        var moved = MoveTo(m, c, q, SnapIndex(m, q, index));
+        return ReferenceEquals(moved, m) && !m.Items(q).Contains(c) ? MoveTo(m, c, q, int.MaxValue) : moved;
+    }
+
     /// <summary>The arrows: to the end of the neighbouring quadrant; nothing at the edge (e.g. Up from the top row).</summary>
     public static ToolbarModel ShiftTo(ToolbarModel m, string id, Shift direction)
     {
