@@ -269,6 +269,9 @@
   <data name="Pc_Actions" xml:space="preserve"><value>アプリ アクション (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>登録済み。Click to Do 自体には Copilot+ PC が必要です</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (ビルド 26100) 以降が必要です</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json に問題はありません</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json に {0} 件の問題があり、メモリ上で修正しました (ファイルは変更されていません): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>バーに設定ボタンがありません: 設定はトレイ アイコンからのみ開けます。</value></data>
   <data name="Startup_On" xml:space="preserve"><value>オン — サインイン時に Hotline が通知領域で起動します。</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>オフ (Windows の [設定] › [アプリ] › [スタートアップ] でオフ)。そこで Hotline をオンにしてください。</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>オフ (組織のポリシーによりブロック)。</value></data>
@@ -431,6 +434,7 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>サーバーが終了しました (終了コード {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>クイック アクション '{0}' が見つかりません</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy の settings.json が JSON オブジェクトではないため、変更しません。</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy の settings.json の「permissions」がオブジェクトではないため、変更しません。</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy の settings.json の「permissions.{0}」がリストではないため、変更しません。</value></data>

@@ -269,6 +269,9 @@ Nega:
   <data name="Pc_Actions" xml:space="preserve"><value>Azioni app (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registrate; Click to Do stesso richiede un PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>richiede Windows 11 24H2 (build 26100) o successivo</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json è a posto</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json ha {0} problema/i, corretto/i in memoria (il file non cambia): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Nessun pulsante Impostazioni nella barra: le Impostazioni si aprono solo dall'icona nell'area di notifica.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Attivato — Hotline si avvia nell'area di notifica all'accesso.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Disattivato (in Impostazioni di Windows › App › Avvio). Attiva Hotline da lì.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Disattivato (bloccato da un criterio della tua organizzazione).</value></data>
@@ -431,6 +434,7 @@ Nega:
   <data name="Mcp_Exited" xml:space="preserve"><value>il server è terminato (codice di uscita {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossibile avviare {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossibile leggere toolbar.json: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Azione rapida '{0}' non trovata</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Il settings.json di agy non è un oggetto JSON; non viene modificato.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» nel settings.json di agy non è un oggetto; non viene modificato.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» nel settings.json di agy non è un elenco; non viene modificato.</value></data>

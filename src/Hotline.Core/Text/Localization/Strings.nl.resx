@@ -269,6 +269,9 @@ Weigeren:
   <data name="Pc_Actions" xml:space="preserve"><value>App-acties (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>geregistreerd; Click to Do zelf vereist een Copilot+ pc</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>vereist Windows 11 24H2 (build 26100) of later</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json is in orde</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json heeft {0} probleem/problemen, in het geheugen opgelost (het bestand blijft ongewijzigd): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Geen knop Instellingen in de balk: Instellingen opent alleen via het systeemvakpictogram.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Aan — Hotline start in het systeemvak wanneer je je aanmeldt.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Uit (uitgeschakeld in Windows-instellingen › Apps › Opstarten). Schakel Hotline daar in.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Uit (geblokkeerd door een beleid van je organisatie).</value></data>
@@ -431,6 +434,7 @@ Weigeren:
   <data name="Mcp_Exited" xml:space="preserve"><value>de server is gestopt (afsluitcode {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Snelle actie '{0}' niet gevonden</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>De settings.json van agy is geen JSON-object; er wordt niets gewijzigd.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" in de settings.json van agy is geen object; er wordt niets gewijzigd.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in de settings.json van agy is geen lijst; er wordt niets gewijzigd.</value></data>

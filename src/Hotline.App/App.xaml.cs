@@ -114,6 +114,7 @@ public partial class App : Application
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
         foreach (var broken in store.BrokenConnectionFiles) // left exactly as it is; never dropped or rewritten
             _log.Error($"connection file {broken} could not be read; it is left as it is (fix it and Hotline picks it up)");
+        if (store.ArchiveFailed) _log.Error("settings.json could not be archived; left as it is");
         _ = LogStartupStateAsync();
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
@@ -409,14 +410,30 @@ public partial class App : Application
         return _toolHost;
     }
 
-    /// <summary>~/.hotline/toolbar.json → the bottom bar (written with the defaults on first run; applies live).</summary>
+    /// <summary>
+    /// ~/.hotline/toolbar.json → the button rows (written with the defaults on first run, a v1 file converted; applies
+    /// live). A file that can't be read keeps the current bar (the defaults at start); one that reads the same as the bar
+    /// in force changes nothing. Resolve already gives the defaults for an empty or all-invalid file, so a half-written
+    /// file never blanks the bar.
+    /// </summary>
     private void ApplyToolbarFile(string dataDir)
     {
-        var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
-        if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
-        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _popup.TopToolbarItems.SequenceEqual(config.Top) && _toolbarApplied) return;
+        if (_popup is null) return;
+        var load = Hotline.Core.Windowing.ToolbarFile.Load(Path.Combine(dataDir, "toolbar.json"));
+        if (load.Migrated) _log?.Info("toolbar.json converted to version 2 (the old file is kept as toolbar.json.old)");
+        if (load.Error is { } error)
+        {
+            _log?.Error(error);
+            ThisPc.Toolbar = (_popup.ToolbarModel, error);
+            if (_toolbarApplied) return; // keep the current bar
+        }
+        else ThisPc.Toolbar = (load.Model, null);
+        if (_toolbarApplied && load.Model.Equals(_popup.ToolbarModel)) return;
+        foreach (var warning in load.Model.Warnings) _log?.Info($"toolbar.json: {warning}"); // the file itself is left as it is
+        if (!Enum.GetValues<Hotline.Core.Windowing.Quadrant>().SelectMany(load.Model.Items).Contains("settings"))
+            _log?.Info("toolbar.json places no Settings button: Settings opens from the tray icon only");
         _toolbarApplied = true;
-        try { _popup.ApplyToolbar(config.Items, config.Top); }
+        try { _popup.ApplyToolbar(load.Model); }
         catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
     }
 

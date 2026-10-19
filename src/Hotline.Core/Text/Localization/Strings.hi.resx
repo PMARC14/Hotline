@@ -269,6 +269,9 @@
   <data name="Pc_Actions" xml:space="preserve"><value>ऐप क्रियाएँ (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>पंजीकृत; Click to Do के लिए स्वयं Copilot+ PC चाहिए</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (बिल्ड 26100) या बाद का चाहिए</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json ठीक है</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json में {0} समस्या(एँ) हैं, मेमोरी में ठीक की गईं (फ़ाइल नहीं बदली): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>बार पर सेटिंग्स बटन नहीं है: सेटिंग्स केवल ट्रे आइकन से खुलती हैं।</value></data>
   <data name="Startup_On" xml:space="preserve"><value>चालू — साइन इन करने पर Hotline सिस्टम ट्रे में शुरू होता है।</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>बंद (Windows सेटिंग्स › ऐप्स › स्टार्टअप में बंद किया गया)। वहाँ Hotline चालू करें।</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>बंद (आपके संगठन की नीति द्वारा अवरुद्ध)।</value></data>
@@ -431,6 +434,7 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>सर्वर बंद हो गया (निकास कोड {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>त्वरित क्रिया '{0}' नहीं मिली</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy की settings.json एक JSON ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy की settings.json में "permissions" एक ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy की settings.json में "permissions.{0}" एक सूची नहीं है; इसे नहीं बदला जा रहा।</value></data>

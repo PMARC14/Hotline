@@ -18,6 +18,9 @@ public sealed class SettingsStore(string directory)
     /// <summary>Connection files that couldn't be read (left untouched; never overwritten or deleted).</summary>
     public IReadOnlyList<string> BrokenConnectionFiles { get; private set; } = [];
 
+    /// <summary>An upgrade needed to rewrite settings.json but couldn't archive it first: the file was left as it is.</summary>
+    public bool ArchiveFailed { get; private set; }
+
     /// <summary>Ids whose files this store loaded or wrote: only these are ever deleted (when a connection is removed).</summary>
     private readonly HashSet<string> _ownedIds = new(StringComparer.OrdinalIgnoreCase);
 
@@ -101,7 +104,7 @@ public sealed class SettingsStore(string directory)
             {
                 if (loadedVersion < 14)
                 {
-                    if (FileArchive.KeepOld(FilePath) is null) return s; // no archive, no rewrite: run on it in memory
+                    if (FileArchive.KeepOld(FilePath) is null) { ArchiveFailed = true; return s; } // no archive, no rewrite: run on it in memory
                 }
                 else
                     try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (IOException) { }

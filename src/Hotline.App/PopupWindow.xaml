@@ -52,6 +52,33 @@
                 <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
                 <Setter Property="FontSize" Value="15" />
             </Style>
+            <!-- toolbar.json "style": outline and filled take the theme's own button brushes (contrast themes included);
+                 size is set per button (ToolbarRenderer). Hover and pressed keep the template's states. -->
+            <Style x:Key="ToolbarButtonOutline" TargetType="Button" BasedOn="{StaticResource ToolbarButton}">
+                <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" /><Setter Property="BorderThickness" Value="1" />
+            </Style>
+            <Style x:Key="ToolbarButtonFilled" TargetType="Button" BasedOn="{StaticResource ToolbarButton}">
+                <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+            </Style>
+            <Style x:Key="ToolbarButtonOutlineFilled" TargetType="Button" BasedOn="{StaticResource ToolbarButtonOutline}">
+                <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+            </Style>
+            <!-- The same for the pin (a toggle button). -->
+            <Style x:Key="ToolbarToggle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+                <Setter Property="Width" Value="36" /><Setter Property="Height" Value="32" />
+                <Setter Property="Padding" Value="0" /><Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
+                <Setter Property="FontSize" Value="15" />
+            </Style>
+            <Style x:Key="ToolbarToggleOutline" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggle}">
+                <Setter Property="BorderBrush" Value="{ThemeResource ToggleButtonBorderBrush}" /><Setter Property="BorderThickness" Value="1" />
+            </Style>
+            <Style x:Key="ToolbarToggleFilled" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggle}">
+                <Setter Property="Background" Value="{ThemeResource ToggleButtonBackground}" />
+            </Style>
+            <Style x:Key="ToolbarToggleOutlineFilled" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggleOutline}">
+                <Setter Property="Background" Value="{ThemeResource ToggleButtonBackground}" />
+            </Style>
           </ResourceDictionary>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -121,27 +148,20 @@
         </Border>
         </StackPanel>
 
-        <!-- Bottom toolbar: room for more features (model/effort picker arrives in Plan 3b). -->
-        <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings. -->
+        <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings.
+             Arranged at runtime from ~/.hotline/toolbar.json (ToolbarRenderer): [left group] [*] [right group] in each
+             row; a button listed nowhere is in no row. -->
         <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2" Margin="0,8,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Width="36" Height="32" Padding="0" BorderThickness="0"
-                          Background="Transparent" FontFamily="Segoe Fluent Icons" FontSize="15" Content="&#xE718;"
+            <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Style="{StaticResource ToolbarToggle}" Content="&#xE718;"
                           ToolTipService.ToolTip="{local:Loc Key=Popup_Pin}" />
-            <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Grid.Column="1" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7C4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureWindow}" />
-            <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7F4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureScreen}" />
-            <!-- Arranged at runtime from ~/.hotline/toolbar.json (see PopupWindow.ApplyToolbar). -->
-            <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
-                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" Visibility="Collapsed" />
+            <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
+                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" />
             <!-- Pickers blend into the bar (no fill/border) until hovered; order: effort, model, provider. -->
-            <StackPanel x:Name="PickersPanel" x:FieldModifier="internal" Grid.Column="3" Orientation="Horizontal" Spacing="2"
+            <StackPanel x:Name="PickersPanel" x:FieldModifier="internal" Orientation="Horizontal" Spacing="2"
                         VerticalAlignment="Center" HorizontalAlignment="Right">
                 <StackPanel.Resources>
                     <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
@@ -176,19 +196,19 @@
                           ToolTipService.ToolTip="{local:Loc Key=Popup_Model}" />
                 <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Popup_Provider}" />
             </StackPanel>
-            <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="PromptButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8A5;" ToolTipService.ToolTip="{local:Loc Key=Conn_SystemPrompt}">
                 <Button.Flyout>
                     <MenuFlyout x:Name="PromptMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
                 </Button.Flyout>
             </Button>
-            <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="RecentButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
-            <Button x:Name="ContinueInButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" Visibility="Collapsed" />
-            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="ContinueInButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" />
+            <Button x:Name="NewChatButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
-            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="SettingsButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
         </Grid>
         <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->

@@ -1,5 +1,6 @@
 using Hotline.App.Chat;
 using Hotline.Core.Platform;
+using Hotline.Core.Windowing;
 using Microsoft.Win32;
 using Windows.Media.Ocr;
 
@@ -31,6 +32,9 @@ internal static class ThisPc
         }
     }
 
+    /// <summary>The button rows in force and toolbar.json's read error, if any (set by App each time it reads the file).</summary>
+    public static (ToolbarModel Model, string? Error) Toolbar { get; set; } = (ToolbarModel.Defaults, null);
+
     public static async Task<IReadOnlyList<PcFeature>> CheckAsync(string? odrPath)
     {
         var build = Build;
@@ -53,6 +57,9 @@ internal static class ThisPc
         features.Add(PlatformSupport.AppActions(build)
             ? new PcFeature(Strings.Pc_Actions, true, Strings.Pc_ActionsOk)
             : new PcFeature(Strings.Pc_Actions, false, Strings.Pc_ActionsBuild));
+
+        var (toolbarOk, toolbar) = ToolbarPlan.Report(Toolbar.Model, Toolbar.Error); // warnings, and Settings only in the tray
+        features.Add(new PcFeature(Strings.Bar_RowsTitle, toolbarOk, toolbar));
         return features;
     }
 

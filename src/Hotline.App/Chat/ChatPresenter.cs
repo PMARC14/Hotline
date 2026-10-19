@@ -37,6 +37,7 @@ internal sealed class ChatPresenter
     private readonly FirstRunNote _firstRun;
     private readonly SupportNote _support;
     private readonly AnswerNotifier _notifier;
+    private readonly ToolbarCustomActions _customButtons;
     private readonly Dictionary<string, string> _answerBackends = [];
     private string? _lastLook;
     private bool _preparingSend;
@@ -83,6 +84,7 @@ internal sealed class ChatPresenter
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
+        _customButtons = new ToolbarCustomActions(_composer, actions, () => _attachments.Items.Count > 0, _notices, () => _tasks.Run("send", SendAsync), log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
             (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll())
         {
@@ -126,6 +128,7 @@ internal sealed class ChatPresenter
         _grips.Initialize();
         _selfTest.ShowGrips = _grips.SetVisible;
         _popup.NewChatButton.Click += (_, _) => NewChat();
+        _popup.CustomButtonClicked += _customButtons.Run;
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
         _popup.NoticesPanel.SizeChanged += (_, _) => ReportHeight();

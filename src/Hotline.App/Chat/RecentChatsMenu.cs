@@ -35,7 +35,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     public void Initialize()
     {
         popup.RecentButton.Click += (_, _) => Show("");
-        popup.ContinueInButton.Click += (_, _) => ShowContinueMenu(popup.ContinueInButton);
+        popup.ContinueInButton.Click += (_, _) => ShowContinueMenu(popup.ToolbarAnchor(popup.ContinueInButton)); // or "⋯" when it's in there
     }
 
     /// <summary>The toolbar's Continue in button: the same menu as in the history list, or a note when there's nowhere to go.</summary>

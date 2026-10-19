@@ -269,6 +269,9 @@
   <data name="Pc_Actions" xml:space="preserve"><value>應用程式動作 (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>已註冊;Click to Do 本身需要 Copilot+ PC</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>需要 Windows 11 24H2 (組建 26100) 或更新版本</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json 沒有問題</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json 有 {0} 個問題，已在記憶體中修正（檔案未變更）：{1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>列上沒有「設定」按鈕：只能從系統匣圖示開啟設定。</value></data>
   <data name="Startup_On" xml:space="preserve"><value>開啟 —— 登入時 Hotline 會在通知區域中啟動。</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>關閉 (已在 Windows [設定] › [應用程式] › [啟動] 中關閉)。請在那裡開啟 Hotline。</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>關閉 (遭你的組織原則封鎖)。</value></data>
@@ -431,6 +434,7 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>伺服器已結束 (結束代碼 {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>無法啟動 {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>無法讀取 toolbar.json:{0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>找不到快速動作「{0}」</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy 的 settings.json 不是 JSON 物件;不會變更。</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy 的 settings.json 中的「permissions」不是物件;不會變更。</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy 的 settings.json 中的「permissions.{0}」不是清單;不會變更。</value></data>

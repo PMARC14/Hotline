@@ -269,6 +269,9 @@ Refuser :
   <data name="Pc_Actions" xml:space="preserve"><value>Actions d'application (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>enregistrées ; Click to Do lui-même nécessite un PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>nécessite Windows 11 24H2 (build 26100) ou ultérieur</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json est correct</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json a {0} problème(s), corrigé(s) en mémoire (le fichier n'est pas modifié) : {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Pas de bouton Paramètres dans la barre : les Paramètres ne s'ouvrent que depuis l'icône de la zone de notification.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Activé — Hotline démarre dans la zone de notification à l'ouverture de session.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Désactivé (dans Paramètres Windows › Applications › Démarrage). Activez Hotline à cet endroit.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Désactivé (bloqué par une stratégie de votre organisation).</value></data>
@@ -431,6 +434,7 @@ Refuser :
   <data name="Mcp_Exited" xml:space="preserve"><value>le serveur s'est arrêté (code de sortie {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossible de démarrer {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossible de lire toolbar.json : {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Action rapide « {0} » introuvable</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Le settings.json d'agy n'est pas un objet JSON ; il n'est pas modifié.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>« permissions » dans le settings.json d'agy n'est pas un objet ; il n'est pas modifié.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>« permissions.{0} » dans le settings.json d'agy n'est pas une liste ; il n'est pas modifié.</value></data>

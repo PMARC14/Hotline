@@ -2,6 +2,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 
 namespace Hotline.App.Chat;
 
@@ -93,12 +94,21 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         apply(new AssistantCompleted("demo-a"));
     }
 
+    /// <summary>The user's bar with its items moved: <paramref name="top"/> above the message box, <paramref name="bottom"/> below (left groups).</summary>
+    private static ToolbarModel Rows(ToolbarModel bar, IReadOnlyList<string> top, IReadOnlyList<string> bottom) => bar with
+    {
+        Placed = new Dictionary<Quadrant, IReadOnlyList<string>>
+        {
+            [Quadrant.TopLeft] = top, [Quadrant.TopRight] = [], [Quadrant.BottomLeft] = bottom, [Quadrant.BottomRight] = [],
+        },
+    };
+
     public async Task RunAsync()
     {
         if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
         // What the test changes, restored in finally whatever happens: the user's draft, button rows and direction.
         var userDraft = composer.Text;
-        var (userBottom, userTop) = (popup.ToolbarItems.ToList(), popup.TopToolbarItems.ToList());
+        var userBar = popup.ToolbarModel;
         var userUp = popup.GrowsUp;
         Action? stopCounting = null;
         try
@@ -189,18 +199,18 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             popup.ResizeOffscreen(720);
             await Step("normal width");
             // The button rows: all above the message box, then split across both, then back to the user's own.
-            var all = userTop.Concat(userBottom).ToList();
-            popup.ApplyToolbar([], all);
+            var all = new[] { Quadrant.TopLeft, Quadrant.TopRight, Quadrant.BottomLeft, Quadrant.BottomRight }.SelectMany(userBar.Items).ToList();
+            popup.ApplyToolbar(Rows(userBar, top: all, bottom: []));
             await Step("buttons above");
             await SnapshotAsync("6-buttons-above");
-            popup.ApplyToolbar(all.Skip(all.Count / 2).ToList(), all.Take(all.Count / 2).ToList());
+            popup.ApplyToolbar(Rows(userBar, top: all.Take(all.Count / 2).ToList(), bottom: all.Skip(all.Count / 2).ToList()));
             await Step("buttons split");
             await SnapshotAsync("7-buttons-split");
             PanelLayout.Apply(popup, up: false);
             await Step("buttons split, down");
             await SnapshotAsync("8-buttons-split-down");
             PanelLayout.Apply(popup, userUp);
-            popup.ApplyToolbar(userBottom, userTop);
+            popup.ApplyToolbar(userBar);
             await Step("buttons restored");
             _renderCheck?.Invoke();
             _renderCheck = null;
@@ -211,7 +221,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             stopCounting?.Invoke();
             _renderCheck = null;
             ShowGrips?.Invoke(false);
-            if (!popup.ToolbarItems.SequenceEqual(userBottom) || !popup.TopToolbarItems.SequenceEqual(userTop)) popup.ApplyToolbar(userBottom, userTop);
+            if (!popup.ToolbarModel.Equals(userBar)) popup.ApplyToolbar(userBar);
             PanelLayout.Apply(popup, userUp);
             composer.Text = userDraft;
             newChat();

@@ -48,6 +48,7 @@ public sealed partial class PopupWindow : Window
         _log = log;
         InitializeComponent();
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        _rows = new ToolbarRenderer(this, b => CustomButtonClicked?.Invoke(b));
 
         ExtendsContentIntoTitleBar = true;
 
@@ -113,64 +114,28 @@ public sealed partial class PopupWindow : Window
         _scrollbarHide.Start();
     }
 
-    /// <summary>The bar's items in order (from toolbar.json); the provider bar reads which pickers are shown.</summary>
-    public IReadOnlyList<string> ToolbarItems { get; private set; } = Hotline.Core.Windowing.ToolbarConfig.Defaults;
+    private readonly ToolbarRenderer _rows;
 
-    /// <summary>The top row's items (toolbar.json "top").</summary>
-    public IReadOnlyList<string> TopToolbarItems { get; private set; } = [];
+    /// <summary>The button rows in force (toolbar.json, resolved); the provider bar reads which pickers are shown.</summary>
+    public ToolbarModel ToolbarModel => _rows.Model;
 
-    /// <summary>
-    /// Rebuilds both button rows: one column per item in order, a flexible column for each "spacer". The pickers sit
-    /// together in the row of the first one listed.
-    /// </summary>
-    public void ApplyToolbar(IReadOnlyList<string> items, IReadOnlyList<string> top)
+    /// <summary>Rebuilds both button rows from the model (see <see cref="ToolbarRenderer"/>); the fit to the panel's width
+    /// follows after layout (ProviderBar, through <see cref="ToolbarChanged"/>).</summary>
+    public void ApplyToolbar(ToolbarModel model)
     {
-        // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
-        // focused pin button and turned pinning off.
-        foreach (var b in new Microsoft.UI.Xaml.Controls.Control[] { PinButton, CaptureWindowButton, CaptureScreenButton, CaptureRegionButton,
-                     PromptButton, RecentButton, ContinueInButton, NewChatButton, SettingsButton })
-            b.AllowFocusOnInteraction = false;
-        (ToolbarItems, TopToolbarItems) = (items, top);
-        var elements = new Dictionary<string, FrameworkElement>
-        {
-            ["pin"] = PinButton, ["captureWindow"] = CaptureWindowButton, ["captureScreen"] = CaptureScreenButton,
-            ["captureRegion"] = CaptureRegionButton, ["prompt"] = PromptButton, ["recent"] = RecentButton, ["continueIn"] = ContinueInButton,
-            ["newChat"] = NewChatButton, ["settings"] = SettingsButton,
-        };
-        foreach (var row in new[] { Toolbar, TopToolbar }) { row.Children.Clear(); row.ColumnDefinitions.Clear(); }
-        foreach (var e in elements.Values.Append(PickersPanel)) e.Visibility = Visibility.Collapsed; // shown again where listed
-        var pickersPlaced = false;
-        var all = top.Concat(items).ToList();
-        void Fill(Microsoft.UI.Xaml.Controls.Grid row, IReadOnlyList<string> list)
-        {
-            foreach (var item in list)
-            {
-                FrameworkElement? element;
-                var star = false;
-                if (item == "spacer") { element = new Microsoft.UI.Xaml.Controls.Border { Tag = "spacer" }; star = true; }
-                else if (item is "effort" or "model" or "provider")
-                {
-                    if (pickersPlaced) continue; // the pickers sit together, in the order listed
-                    pickersPlaced = true;
-                    element = PickersPanel;
-                    var order = all.Where(i => i is "effort" or "model" or "provider").ToList();
-                    var boxes = new Dictionary<string, Microsoft.UI.Xaml.Controls.ComboBox> { ["effort"] = EffortBox, ["model"] = ModelBox, ["provider"] = ProviderBox };
-                    PickersPanel.Children.Clear();
-                    foreach (var name in order) PickersPanel.Children.Add(boxes[name]);
-                }
-                else if (!elements.TryGetValue(item, out element)) continue;
-                row.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = star ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
-                Microsoft.UI.Xaml.Controls.Grid.SetColumn(element, row.ColumnDefinitions.Count - 1);
-                element.Visibility = Visibility.Visible;
-                row.Children.Add(element);
-            }
-        }
-        Fill(TopToolbar, top);
-        Fill(Toolbar, items);
-        TopToolbar.Visibility = TopToolbar.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        Toolbar.Visibility = Toolbar.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        _rows.Apply(model);
         ToolbarChanged?.Invoke();
     }
+
+    /// <summary>After layout only (ProviderBar.Layout): moves what doesn't fit into the "⋯" menus; returns the width the
+    /// pickers' row needs besides the pickers.</summary>
+    public double FitToolbar(double room, double pickersMin) => _rows.Fit(room, pickersMin);
+
+    /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
+    public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);
+
+    /// <summary>A custom button (toolbar.json "buttons") or its "⋯" entry was clicked.</summary>
+    public event Action<CustomButton>? CustomButtonClicked;
 
     public event Action? ToolbarChanged;
 

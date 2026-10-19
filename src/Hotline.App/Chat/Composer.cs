@@ -37,6 +37,16 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         }
     }
 
+    /// <summary>Puts text at the caret (replacing a selection), as plain text; the caret ends after it.</summary>
+    public void Insert(string text)
+    {
+        var input = popup.Input;
+        var start = Math.Min(input.SelectionStart, input.Text.Length);
+        var end = Math.Min(start + input.SelectionLength, input.Text.Length);
+        input.Text = input.Text[..start] + text + input.Text[end..];
+        input.SelectionStart = start + text.Length;
+    }
+
     public bool IsReadOnly
     {
         get => popup.Input.IsReadOnly;

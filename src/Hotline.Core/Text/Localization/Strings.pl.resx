@@ -269,6 +269,9 @@ Zabroń:
   <data name="Pc_Actions" xml:space="preserve"><value>Akcje aplikacji (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>zarejestrowane; samo Click to Do wymaga komputera Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>wymaga systemu Windows 11 24H2 (kompilacja 26100) lub nowszego</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json jest w porządku</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json ma problemy ({0}), poprawione w pamięci (plik bez zmian): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Brak przycisku Ustawienia na pasku: Ustawienia otwierają się tylko z ikony w zasobniku.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Włączone — Hotline uruchamia się w zasobniku po zalogowaniu.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Wyłączone (wyłączono w Ustawienia systemu Windows › Aplikacje › Autostart). Włącz tam Hotline.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Wyłączone (zablokowane przez zasady organizacji).</value></data>
@@ -431,6 +434,7 @@ Zabroń:
   <data name="Mcp_Exited" xml:space="preserve"><value>serwer zakończył działanie (kod wyjścia {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>nie można uruchomić {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Nie można odczytać toolbar.json: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Nie znaleziono szybkiej akcji '{0}'</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Plik settings.json agy nie jest obiektem JSON; nie zostanie zmieniony.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>„permissions” w pliku settings.json agy nie jest obiektem; plik nie zostanie zmieniony.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>„permissions.{0}” w pliku settings.json agy nie jest listą; plik nie zostanie zmieniony.</value></data>

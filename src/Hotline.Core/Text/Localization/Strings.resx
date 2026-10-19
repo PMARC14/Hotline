@@ -269,6 +269,9 @@ Deny:
   <data name="Pc_Actions" xml:space="preserve"><value>App Actions (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registered; Click to Do itself needs a Copilot+ PC</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>needs Windows 11 24H2 (build 26100) or later</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json is fine</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json has {0} problem(s), fixed in memory (the file is unchanged): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>No Settings button on the bar: Settings opens from the tray icon only.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>On — Hotline starts in the tray when you sign in.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Off (turned off in Windows Settings › Apps › Startup). Turn Hotline on there.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Off (blocked by your organization's policy).</value></data>
@@ -431,6 +434,7 @@ Deny:
   <data name="Mcp_Exited" xml:space="preserve"><value>the server exited (exit code {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>couldn't start {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json couldn't be read: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Quick action '{0}' not found</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy's settings.json isn't a JSON object; not changing it.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" in agy's settings.json isn't an object; not changing it.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" in agy's settings.json isn't a list; not changing it.</value></data>

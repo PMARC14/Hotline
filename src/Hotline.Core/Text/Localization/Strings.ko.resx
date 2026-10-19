@@ -269,6 +269,9 @@
   <data name="Pc_Actions" xml:space="preserve"><value>앱 동작(Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>등록됨. Click to Do 자체는 Copilot+ PC가 필요합니다</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2(빌드 26100) 이상 필요</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json에 문제가 없습니다</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json에 문제 {0}개가 있어 메모리에서 수정했습니다(파일은 변경되지 않음): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>막대에 설정 단추가 없습니다: 설정은 트레이 아이콘에서만 열 수 있습니다.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>켜짐 — 로그인하면 Hotline이 알림 영역에서 시작됩니다.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>꺼짐(Windows 설정 › 앱 › 시작 프로그램에서 꺼짐). 그곳에서 Hotline을 켜세요.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>꺼짐(조직 정책으로 차단됨).</value></data>
@@ -431,6 +434,7 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>서버가 종료되었습니다(종료 코드 {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0}을(를) 시작할 수 없습니다</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>빠른 동작 '{0}'을(를) 찾을 수 없습니다</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy의 settings.json이 JSON 개체가 아니므로 변경하지 않습니다.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy의 settings.json에 있는 "permissions"가 개체가 아니므로 변경하지 않습니다.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy의 settings.json에 있는 "permissions.{0}"이(가) 목록이 아니므로 변경하지 않습니다.</value></data>

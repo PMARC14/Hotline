@@ -269,6 +269,9 @@ Tolak:
   <data name="Pc_Actions" xml:space="preserve"><value>Aksi Aplikasi (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>terdaftar; Click to Do sendiri memerlukan PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>perlu Windows 11 24H2 (build 26100) atau yang lebih baru</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json baik-baik saja</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json memiliki {0} masalah, diperbaiki di memori (file tidak berubah): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Tidak ada tombol Pengaturan di bilah: Pengaturan hanya terbuka dari ikon baki.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Aktif — Hotline dimulai di baki sistem saat Anda masuk.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Nonaktif (dimatikan di Pengaturan Windows › Aplikasi › Startup). Aktifkan Hotline di sana.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Nonaktif (diblokir oleh kebijakan organisasi Anda).</value></data>
@@ -431,6 +434,7 @@ Tolak:
   <data name="Mcp_Exited" xml:space="preserve"><value>server berhenti (kode keluar {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Aksi cepat '{0}' tidak ditemukan</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json milik agy bukan objek JSON; tidak diubah.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>"permissions" di settings.json milik agy bukan objek; tidak diubah.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>"permissions.{0}" di settings.json milik agy bukan daftar; tidak diubah.</value></data>

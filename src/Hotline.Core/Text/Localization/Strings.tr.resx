@@ -269,6 +269,9 @@ Reddet:
   <data name="Pc_Actions" xml:space="preserve"><value>Uygulama Eylemleri (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>kaydedildi; Click to Do'nun kendisi bir Copilot+ PC gerektirir</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (derleme 26100) veya sonrası gerekir</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json sorunsuz</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json dosyasında {0} sorun var, bellekte düzeltildi (dosya değişmedi): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Çubukta Ayarlar düğmesi yok: Ayarlar yalnızca tepsi simgesinden açılır.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Açık — Hotline oturum açtığınızda bildirim alanında başlar.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Kapalı (Windows Ayarlar › Uygulamalar › Başlangıç'ta kapatıldı). Hotline'ı orada açın.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Kapalı (kuruluşunuzun ilkesi tarafından engellendi).</value></data>
@@ -431,6 +434,7 @@ Reddet:
   <data name="Mcp_Exited" xml:space="preserve"><value>sunucu kapandı (çıkış kodu {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>'{0}' hızlı eylemi bulunamadı</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyası bir JSON nesnesi değil; değiştirilmiyor.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions" bir nesne değil; değiştirilmiyor.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy'nin settings.json dosyasındaki "permissions.{0}" bir liste değil; değiştirilmiyor.</value></data>

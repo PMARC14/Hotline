@@ -269,6 +269,9 @@
   <data name="Pc_Actions" xml:space="preserve"><value>Дії програм (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>зареєстровано; саме Click to Do потребує ПК Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>потрібна Windows 11 24H2 (збірка 26100) або новіша</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json у порядку</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>У toolbar.json проблем: {0}, виправлено в пам'яті (файл не змінено): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>На панелі немає кнопки «Налаштування»: налаштування відкриваються лише зі значка в області сповіщень.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Увімкнуто — Hotline запускається в області сповіщень після входу.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Вимкнуто (у Параметрах Windows › Програми › Автозавантаження). Увімкніть Hotline там.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Вимкнуто (заблоковано політикою вашої організації).</value></data>
@@ -431,6 +434,7 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>сервер завершив роботу (код виходу {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>не вдалося запустити {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Швидку дію '{0}' не знайдено</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json agy не є об'єктом JSON; файл не змінено.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» у settings.json agy не є об'єктом; файл не змінено.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» у settings.json agy не є списком; файл не змінено.</value></data>

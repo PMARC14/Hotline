@@ -133,8 +133,9 @@ internal sealed class ProviderBar(
     private static readonly string[] HideOrder =["effort", "provider", "model"];
 
     /// <summary>
-    /// Gives the pickers explicit widths from the space the fixed buttons leave (see ToolbarLayout): the bar never
-    /// reflows when a picker's text changes and the buttons on the right never get pushed off the edge.
+    /// Fits the button rows to the panel (left buttons that don't fit go into the "⋯" menu) and gives the pickers explicit
+    /// widths from the space the buttons leave (see ToolbarLayout): the bar never reflows when a picker's text changes and
+    /// no button gets pushed off the edge.
     /// </summary>
     private bool _layoutQueued;
 
@@ -151,21 +152,23 @@ internal sealed class ProviderBar(
 
     private void Layout()
     {
-        var bar = popup.PickersPanel.Parent as Grid ?? popup.Toolbar; // the row the pickers are in
-        // The room is the row's container width (the panel minus its padding), never the row's own width: that one grows
+        // The room is the rows' container width (the panel minus its padding), never a row's own width: that one grows
         // with the pickers when the buttons don't fit, and sizing from it shrank them a little on every pass.
         var room = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
         if (room <= 0) return;
-        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag) && c.Visibility == Visibility.Visible)
-                             .Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
-                         + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
         var effortAvailable = popup.EffortBox.Items.Count > 0;
-        var widths = ToolbarLayout.Compute(room, fixedWidth, popup.PickersPanel.Spacing,
-            [
-                new("effort", 72, 56, effortAvailable && Shown("effort"), Max: 96),
-                new("model", 150, 84, Shown("model"), Max: 260),
-                new("provider", 128, 72, Shown("provider"), Max: 240),
-            ], HideOrder);
+        PickerSpec[] pickers =
+        [
+            new("effort", 72, 56, effortAvailable && Shown("effort"), Max: 96),
+            new("model", 150, 84, Shown("model"), Max: 260),
+            new("provider", 128, 72, Shown("provider"), Max: 240),
+        ];
+        // The pickers at their minimum (as Compute counts their gaps): the buttons move into "⋯" before that room is taken.
+        var spacing = popup.PickersPanel.Spacing;
+        var available = pickers.Where(p => p.Available).ToList();
+        var pickersMin = available.Count == 0 ? 0 : available.Sum(p => p.Min) + spacing * available.Count;
+        var fixedWidth = popup.FitToolbar(room, pickersMin);
+        var widths = ToolbarLayout.Compute(room, fixedWidth, spacing, pickers, HideOrder);
         Apply(popup.EffortBox, widths["effort"]);
         Apply(popup.ModelBox, widths["model"]);
         Apply(popup.ProviderBox, widths["provider"]);
@@ -295,5 +298,5 @@ internal sealed class ProviderBar(
     }
 
     /// <summary>An item is in either button row.</summary>
-    private bool Shown(string item) => popup.ToolbarItems.Contains(item) || popup.TopToolbarItems.Contains(item);
+    private bool Shown(string item) => Enum.GetValues<Quadrant>().Any(q => popup.ToolbarModel.Items(q).Contains(item));
 }
