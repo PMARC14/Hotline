@@ -581,7 +581,7 @@ Panel yang dipindahkan akan terbuka di posisi default berikutnya, kecuali jika d
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Ke atas atau ke bawah</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Obrolan memanjang dari bilah pesan: ke atas, kecuali tidak ada ruang di atas, lalu ke bawah. Pengaturan › Jendela dapat menguncinya ke atas atau ke bawah serta mengatur posisi, lebar, dan tinggi obrolan.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Tampilan › Baris tombol menampilkan, menyembunyikan, dan menyusun tombol di atas atau di bawah kotak pesan.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan, menyembunyikan, dan menyusun tombol di atas atau di bawah kotak pesan.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suara</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Pengaturan › Tampilan › Suara memutar suara saat panel terbuka atau tertutup: suara Windows atau file .wav di folder suara Anda. Dinonaktifkan secara default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Pengaturan berupa file</value></data>

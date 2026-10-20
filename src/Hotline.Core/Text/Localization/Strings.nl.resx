@@ -581,7 +581,7 @@ Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij he
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Omhoog of omlaag</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>De chat groeit vanaf de berichtenbalk: omhoog, tenzij er daarboven geen ruimte is, en dan omlaag. Instellingen › Venster kan dit vastzetten op omhoog of omlaag en stelt de positie, breedte en chathoogte in.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Weergave › Knoppenrijen toont, verbergt en ordent de knoppen, boven of onder het berichtvak.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoppenrijen toont, verbergt en ordent de knoppen, boven of onder het berichtvak.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Instellingen › Weergave › Geluiden speelt een geluid af wanneer het paneel opent of sluit: een Windows-geluid of een .wav in je geluidenmap. Standaard uitgeschakeld.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Instellingen zijn bestanden</value></data>

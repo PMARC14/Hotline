@@ -581,7 +581,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天界面从消息栏展开：优先向上，若上方没有空间则向下展开。设置 › 窗口可将其固定为向上或向下，并设定位置、宽度和聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按钮行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>设置 › 外观 › 按钮行可显示、隐藏和排列消息框上方或下方的按钮。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>设置 › 窗口 › 按钮行可显示、隐藏和排列消息框上方或下方的按钮。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>声音</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>设置 › 外观 › 声音可在面板打开或关闭时播放提示音：Windows 系统声音或声音文件夹中的 .wav 文件。默认关闭。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>设置即文件</value></data>

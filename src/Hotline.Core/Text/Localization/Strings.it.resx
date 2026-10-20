@@ -581,7 +581,7 @@ Un pannello spostato si aprirà alla posizione predefinita la volta successiva, 
   <data name="Guide_Direction_Title" xml:space="preserve"><value>In alto o in basso</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La chat cresce a partire dalla barra dei messaggi: verso l'alto, a meno che non manchi spazio, quindi verso il basso. Impostazioni › Finestra può mantenerla verso l'alto o verso il basso e imposta la posizione, la larghezza e l'altezza della chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Righe di pulsanti</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Righe di pulsanti mostra, nasconde e riordina i pulsanti, sopra o sotto la casella dei messaggi.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Finestra › Righe di pulsanti mostra, nasconde e riordina i pulsanti, sopra o sotto la casella dei messaggi.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suoni</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Suoni riproduce un suono quando il pannello si apre o si chiude: un suono di Windows o un .wav nella cartella dei suoni. Disattivato per impostazione predefinita.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Le impostazioni sono file</value></data>

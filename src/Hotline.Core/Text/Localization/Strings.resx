@@ -582,7 +582,7 @@ A moved panel opens at its default the next time, unless it's pinned (the pin bu
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Up or down</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>The chat grows from the message bar: up, unless there's no room above, then down. Settings › Window can keep it up or down and sets the position, width and chat height.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Appearance › Button rows shows, hides and orders the buttons, above or below the message box.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows, hides and orders the buttons, above or below the message box.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Settings › Appearance › Sounds plays a sound when the panel opens or closes: a Windows sound or a .wav in your sounds folder. Off by default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Settings are files</value></data>

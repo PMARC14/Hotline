@@ -581,7 +581,7 @@ Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba
   <data name="Guide_Direction_Title" xml:space="preserve"><value>W górę lub w dół</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Czat rozwija się od paska wiadomości: w górę, chyba że zabraknie miejsca powyżej, a wtedy w dół. Ustawienia › Okno pozwala utrzymać go w górze lub w dole oraz ustawia położenie, szerokość i wysokość czatu.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rzędy przycisków</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Wiersze przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Okno › Wiersze przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Dźwięki odtwarza dźwięk przy otwieraniu lub zamykaniu panelu: dźwięk Windows lub plik .wav w Twoim folderze dźwięków. Domyślnie wyłączone.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ustawienia to pliki</value></data>

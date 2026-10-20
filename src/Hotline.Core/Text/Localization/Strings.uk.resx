@@ -581,7 +581,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Угору чи вниз</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Чат розгортається від рядка повідомлення: угору, якщо є місце, або вниз, якщо місця вгорі немає. Параметри › Вікно дозволяє зафіксувати напрямок угору чи вниз і налаштовує розташування, ширину та висоту чату.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вигляд › Рядки кнопок показує, приховує та впорядковує кнопки над або під полем повідомлення.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вікно › Рядки кнопок показує, приховує та впорядковує кнопки над або під полем повідомлення.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Звуки</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Вигляд › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Параметри — це файли</value></data>

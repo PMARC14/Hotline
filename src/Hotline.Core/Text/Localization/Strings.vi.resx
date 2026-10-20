@@ -581,7 +581,7 @@ Bảng điều khiển đã di chuyển sẽ mở ở vị trí mặc định v�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Lên trên hoặc xuống dưới</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Khung trò chuyện mở rộng từ thanh tin nhắn: hướng lên trên, trừ khi phía trên không còn chỗ thì sẽ mở xuống dưới. Cài đặt › Cửa sổ có thể cố định hướng lên hoặc xuống và thiết lập vị trí, chiều rộng cùng chiều cao cuộc trò chuyện.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Hàng nút</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Các hàng nút dùng để hiển thị, ẩn và sắp xếp thứ tự các nút ở phía trên hoặc phía dưới hộp thông báo.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Cửa sổ › Các hàng nút dùng để hiển thị, ẩn và sắp xếp thứ tự các nút ở phía trên hoặc phía dưới hộp thông báo.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Âm thanh</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Âm thanh sẽ phát âm thanh khi mở hoặc đóng bảng điều khiển: âm thanh của Windows hoặc tệp .wav trong thư mục âm thanh của bạn. Mặc định là tắt.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Cài đặt là các tệp</value></data>

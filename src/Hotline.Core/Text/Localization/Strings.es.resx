@@ -581,7 +581,7 @@ Un panel desplazado se abrirá en su posición predeterminada la próxima vez, a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Hacia arriba o hacia abajo</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>El chat se expande desde la barra de mensajes: hacia arriba, salvo que no haya espacio, y entonces hacia abajo. Configuración › Ventana permite fijarlo hacia arriba o hacia abajo y define la posición, el ancho y la altura del chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Filas de botones</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Apariencia › Filas de botones muestra, oculta y ordena los botones, encima o debajo del cuadro de mensaje.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Ventana › Filas de botones muestra, oculta y ordena los botones, encima o debajo del cuadro de mensaje.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sonidos</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configuración › Apariencia › Sonidos reproduce un sonido cuando el panel se abre o se cierra: un sonido de Windows o un .wav en tu carpeta de sonidos. Desactivado de forma predeterminada.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>La configuración son archivos</value></data>

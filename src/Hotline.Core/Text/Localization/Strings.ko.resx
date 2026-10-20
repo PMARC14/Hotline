@@ -581,7 +581,7 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>위 또는 아래</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>채팅은 메시지 표시줄을 기준으로 확장됩니다. 위쪽에 공간이 없는 경우가 아니면 위로, 공간이 없으면 아래로 확장됩니다. 설정 › 창에서 위 또는 아래로 고정할 수 있으며 위치, 너비 및 채팅 높이도 설정할 수 있습니다.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 모양 › 단추 행에서 메시지 상자 위 또는 아래의 단추를 표시, 숨김 및 순서 변경할 수 있습니다.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 단추 행에서 메시지 상자 위 또는 아래의 단추를 표시, 숨김 및 순서 변경할 수 있습니다.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>소리</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>설정 › 모양 › 사운드에서 패널이 열리거나 닫힐 때 소리를 재생합니다: Windows 소리 또는 소리 폴더의 .wav 파일. 기본적으로 꺼져 있습니다.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>설정 파일</value></data>

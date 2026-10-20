@@ -581,7 +581,7 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Vers le haut ou vers le bas</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La discussion se développe à partir de la barre de message : vers le haut, sauf s'il n'y a pas assez de place, puis vers le bas. Paramètres › Fenêtre permet de la maintenir vers le haut ou vers le bas et définit la position, la largeur et la hauteur de la discussion.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rangées de boutons</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Apparence › Lignes de boutons affiche, masque et réorganise les boutons, au-dessus ou au-dessous de la zone de message.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Lignes de boutons affiche, masque et réorganise les boutons, au-dessus ou au-dessous de la zone de message.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Paramètres › Apparence › Sons émet un son à l'ouverture ou à la fermeture du panneau : un son Windows ou un .wav dans votre dossier de sons. Désactivé par défaut.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Les paramètres sont des fichiers</value></data>

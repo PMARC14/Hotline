@@ -581,7 +581,7 @@ Taşınan bir panel, sabitlenmediği sürece (sabitleme düğmesi) bir sonraki a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Yukarı veya aşağı</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Sohbet ileti çubuğundan genişler: yukarıda yer yoksa aşağı, aksi takdirde yukarı doğru. Ayarlar › Pencere bunu yukarı veya aşağı olarak sabitleyebilir; konumu, genişliği ve sohbet yüksekliğini belirler.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Düğme satırları ileti kutusunun üstündeki veya altındaki düğmeleri gösterir, gizler ve sıralar.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Pencere › Düğme satırları ileti kutusunun üstündeki veya altındaki düğmeleri gösterir, gizler ve sıralar.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sesler</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Sesler panel açıldığında veya kapandığında bir ses çalar: bir Windows sesi veya sesler klasörünüzdeki bir .wav dosyası. Varsayılan olarak kapalıdır.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ayarlar birer dosyadır</value></data>

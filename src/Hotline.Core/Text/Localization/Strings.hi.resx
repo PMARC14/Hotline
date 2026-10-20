@@ -581,7 +581,7 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
   <data name="Guide_Direction_Title" xml:space="preserve"><value>ऊपर या नीचे</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>चैट संदेश बार से बढ़ती है: ऊपर की ओर, जब तक कि ऊपर जगह न हो, फिर नीचे की ओर। सेटिंग्स › विंडो इसे ऊपर या नीचे रख सकती है और स्थिति, चौड़ाई और चैट की ऊंचाई सेट करती है।</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › रूप › बटन पंक्तियाँ संदेश बॉक्स के ऊपर या नीचे बटन दिखाती, छिपाती और व्यवस्थित करती हैं।</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ संदेश बॉक्स के ऊपर या नीचे बटन दिखाती, छिपाती और व्यवस्थित करती हैं।</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>सेटिंग्स फ़ाइलें हैं</value></data>

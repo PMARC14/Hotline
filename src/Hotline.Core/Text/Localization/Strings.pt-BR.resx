@@ -581,7 +581,7 @@ Um painel movido abre no padrão na próxima vez, a menos que esteja fixado (o b
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Para cima ou para baixo</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>O chat se expande a partir da barra de mensagens: para cima, a menos que não haja espaço acima, e então para baixo. Configurações › Janela pode mantê-lo para cima ou para baixo e define a posição, largura e altura do chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Linhas de botões</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configurações › Aparência › Linhas de botões mostra, oculta e organiza os botões, acima ou abaixo da caixa de mensagens.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configurações › Janela › Linhas de botões mostra, oculta e organiza os botões, acima ou abaixo da caixa de mensagens.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configurações › Aparência › Sons reproduz um som quando o painel abre ou fecha: um som do Windows ou um arquivo .wav na sua pasta de sons. Desativado por padrão.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Configurações são arquivos</value></data>

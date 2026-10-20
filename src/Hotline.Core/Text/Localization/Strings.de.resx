@@ -581,7 +581,7 @@ Ein verschobenes Panel öffnet sich beim nächsten Mal an seiner Standardpositio
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Nach oben oder unten</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Der Chat wächst ausgehend von der Nachrichtenleiste: nach oben, sofern dort Platz ist, ansonsten nach unten. Unter Einstellungen › Fenster lässt sich die Richtung festlegen sowie Position, Breite und Chathöhe anpassen.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Schaltflächenzeilen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Unter Einstellungen › Darstellung › Schaltflächenzeilen können Sie die Schaltflächen über oder unter dem Nachrichtenfeld einblenden, ausblenden und anordnen.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Unter Einstellungen › Fenster › Schaltflächenzeilen können Sie die Schaltflächen über oder unter dem Nachrichtenfeld einblenden, ausblenden und anordnen.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Unter Einstellungen › Darstellung › Sounds wird beim Öffnen oder Schließen des Panels ein Ton abgespielt: ein Windows-Sound oder eine .wav in Ihrem Sounds-Ordner. Standardmäßig deaktiviert.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Einstellungen sind Dateien</value></data>
