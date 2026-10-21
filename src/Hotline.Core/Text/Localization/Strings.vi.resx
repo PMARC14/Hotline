@@ -393,6 +393,8 @@ Từ chối:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} không trả lời kịp thời.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Hãy thêm khóa API cho {0} trong Cài đặt › Kết nối AI.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Điểm cuối của {0} không phải địa chỉ http(s) hợp lệ: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} đã chạm giới hạn yêu cầu, thử lại sau {1} giây…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} đang bận, thử lại sau {1} giây…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} đã từ chối khóa API. {1}</value></data>

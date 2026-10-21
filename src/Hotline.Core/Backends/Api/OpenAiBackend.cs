@@ -54,7 +54,7 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             using (var response = sent!)
             {
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
-                await foreach (var data in ApiCommon.SseData(stream, ct))
+                await foreach (var data in ApiCommon.SseData(stream, ct, name: ApiCommon.Name(profile)))
                 {
                     if (data == "[DONE]") { done = true; break; }
                     JsonElement root;

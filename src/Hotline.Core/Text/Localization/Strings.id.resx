@@ -393,6 +393,8 @@ Tolak:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} tidak menjawab tepat waktu.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Tambahkan kunci API untuk {0} di Pengaturan › Koneksi AI.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Titik akhir untuk {0} bukan alamat http(s) yang valid: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} mencapai batas permintaan, mencoba lagi dalam {1} dtk…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} sedang sibuk, mencoba lagi dalam {1} dtk…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} menolak kunci API. {1}</value></data>

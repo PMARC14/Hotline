@@ -46,7 +46,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
             using (var response = sent!)
             {
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
-                await foreach (var data in ApiCommon.SseData(stream, ct))
+                await foreach (var data in ApiCommon.SseData(stream, ct, name: ApiCommon.Name(profile)))
                 {
                     JsonElement root;
                     try { root = JsonDocument.Parse(data).RootElement; }

@@ -393,6 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} ने समय पर उत्तर नहीं दिया।</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>सेटिंग्स › AI कनेक्शन में {0} के लिए API कुंजी जोड़ें।</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} का एंडपॉइंट मान्य http(s) पता नहीं है: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} की दर सीमा पूरी हो गई है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} व्यस्त है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ने API कुंजी अस्वीकार कर दी। {1}</value></data>

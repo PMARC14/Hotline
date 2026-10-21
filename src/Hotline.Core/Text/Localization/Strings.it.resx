@@ -393,6 +393,8 @@ Nega:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} non ha risposto in tempo.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Aggiungi una chiave API per {0} in Impostazioni › Connessioni IA.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>L'endpoint di {0} non è un indirizzo http(s) valido: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} ha raggiunto il limite di richieste, nuovo tentativo tra {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} è occupato, nuovo tentativo tra {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ha rifiutato la chiave API. {1}</value></data>

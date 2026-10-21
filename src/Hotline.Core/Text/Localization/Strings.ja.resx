@@ -393,6 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} が時間内に応答しませんでした。</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>[設定] › [AI 接続] で {0} の API キーを追加してください。</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} のエンドポイントは有効な http(s) アドレスではありません: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} はレート制限中です。{1} 秒後に再試行します…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} は混雑しています。{1} 秒後に再試行します…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} が API キーを拒否しました。{1}</value></data>

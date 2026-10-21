@@ -393,6 +393,8 @@ Reddet:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} zamanında yanıt vermedi.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Ayarlar › Yapay zekâ bağlantıları'nda {0} için bir API anahtarı ekleyin.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} için uç nokta geçerli bir http(s) adresi değil: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} istek sınırına ulaştı, {1} sn içinde yeniden deneniyor…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} meşgul, {1} sn içinde yeniden deneniyor…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} API anahtarını reddetti. {1}</value></data>

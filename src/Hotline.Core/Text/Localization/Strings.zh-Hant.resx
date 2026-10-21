@@ -393,6 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} 未及時回應。</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>請在 [設定] › [AI 連線] 中為 {0} 新增 API 金鑰。</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} 的端點不是有效的 http(s) 位址:{1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} 已達速率限制,{1} 秒後重試…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} 忙碌中,{1} 秒後重試…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} 拒絕了 API 金鑰。{1}</value></data>

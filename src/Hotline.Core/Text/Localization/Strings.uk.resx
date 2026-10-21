@@ -393,6 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} не відповів вчасно.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Додайте ключ API для {0} у Настройки › Підключення ШІ.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Кінцева точка для {0} не є дійсною адресою http(s): {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} досяг ліміту запитів, повторна спроба через {1} с…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} зайнятий, повторна спроба через {1} с…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} відхилив ключ API. {1}</value></data>

@@ -28,12 +28,46 @@ public static partial class ApiCommon
     /// <summary>A key only travels over https, or plain http to this PC (local servers).</summary>
     public static void RequireSafeTransport(BackendProfile p, string endpoint, string? key)
     {
-        if (key is null) return;
+        // Checked even without a key: a hand-edited endpoint must fail as a normal error, not as a UriFormatException later.
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
             throw new BackendException(BackendErrorKind.NotConfigured, L.F(Strings.Api_BadEndpoint, Name(p), endpoint));
+        if (key is null) return;
         if (uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
             throw new BackendException(BackendErrorKind.NotConfigured,
                 $"Not sending the API key for {Name(p)} over plain http to {uri.Host}; use an https:// endpoint.");
+    }
+
+    /// <summary>Caps on what a server can make us hold in memory: one SSE line or event, an error body, a model list.</summary>
+    public const int MaxSseChars = 8 * 1024 * 1024;
+    public const int MaxErrorBodyBytes = 256 * 1024;
+    public const int MaxModelListBytes = 4 * 1024 * 1024;
+
+    /// <summary>
+    /// Where a 3xx answer points, as scheme://host[:port] only (no path, query or credentials, which could carry
+    /// secrets), or null when the answer isn't a redirect. Redirects are never followed: the key headers would go along.
+    /// </summary>
+    public static string? RedirectTarget(HttpResponseMessage response, Uri? requestUri)
+    {
+        if ((int)response.StatusCode is not (300 or 301 or 302 or 303 or 307 or 308)) return null;
+        var location = response.Headers.Location;
+        if (location is { IsAbsoluteUri: false } && requestUri is not null && !Uri.TryCreate(requestUri, location, out location)) location = null;
+        return location is { IsAbsoluteUri: true } ? $"{location.Scheme}://{location.Authority}" : "another address";
+    }
+
+    /// <summary>Reads at most <paramref name="maxBytes"/> of a body (as UTF-8); Truncated says there was more.</summary>
+    public static async Task<(string Text, bool Truncated)> ReadCappedAsync(HttpContent content, int maxBytes, CancellationToken ct)
+    {
+        await using var stream = await content.ReadAsStreamAsync(ct);
+        using var buffered = new MemoryStream();
+        var chunk = new byte[8192];
+        while (buffered.Length <= maxBytes)
+        {
+            var n = await stream.ReadAsync(chunk.AsMemory(0, (int)Math.Min(chunk.Length, maxBytes + 1 - buffered.Length)), ct);
+            if (n == 0) break;
+            buffered.Write(chunk, 0, n);
+        }
+        var truncated = buffered.Length > maxBytes;
+        return (Encoding.UTF8.GetString(buffered.GetBuffer(), 0, (int)Math.Min(buffered.Length, maxBytes)), truncated);
     }
 
     public static string Name(BackendProfile p) => string.IsNullOrWhiteSpace(p.Name) ? p.Id : p.Name;
@@ -83,6 +117,11 @@ public static partial class ApiCommon
         {
             throw new BackendException(BackendErrorKind.ServerDown, L.F(Strings.Api_Timeout, Name(p)), ex);
         }
+        if (RedirectTarget(response, request.RequestUri) is { } target)
+        {
+            response.Dispose();
+            throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_Redirected, Name(p), target));
+        }
         if (response.IsSuccessStatusCode) return (response, default, "");
         var status = response.StatusCode;
         var reasonPhrase = response.ReasonPhrase;
@@ -91,7 +130,7 @@ public static partial class ApiCommon
         using (response)
         {
             body = "";
-            try { body = await response.Content.ReadAsStringAsync(ct); } catch (Exception ex) when (ex is not OperationCanceledException) { }
+            try { body = (await ReadCappedAsync(response.Content, MaxErrorBodyBytes, ct)).Text; } catch (Exception ex) when (ex is not OperationCanceledException) { }
             wait = RetryDelay(response, body, attempt, DateTimeOffset.UtcNow);
         }
         if (wait is { } w) return (null, w, status == HttpStatusCode.TooManyRequests ? RateLimited : "busy");
@@ -152,27 +191,66 @@ public static partial class ApiCommon
         catch (JsonException) { return body.Length is > 0 and < 300 ? body.Trim() : null; }
     }
 
-    /// <summary>Server-sent events: yields each event's data (multi-line data joined with \n).</summary>
-    public static async IAsyncEnumerable<string> SseData(Stream stream, [EnumeratorCancellation] CancellationToken ct)
+    /// <summary>
+    /// Server-sent events: yields each event's data (multi-line data joined with \n). A line or event longer than
+    /// <paramref name="maxChars"/> ends the stream with an error instead of growing without bound.
+    /// </summary>
+    public static async IAsyncEnumerable<string> SseData(Stream stream, [EnumeratorCancellation] CancellationToken ct,
+        int maxChars = MaxSseChars, string name = "The server")
     {
         using var reader = new StreamReader(stream, Encoding.UTF8);
         var data = new StringBuilder();
-        while (await reader.ReadLineAsync(ct) is { } line)
+        var line = new StringBuilder();
+        var buffer = new char[4096];
+        var skipLf = false; // the \n of a \r\n that straddled two reads
+        int n;
+        while ((n = await reader.ReadAsync(buffer.AsMemory(), ct)) > 0)
         {
-            if (line.Length == 0)
+            var start = 0;
+            while (start < n)
             {
-                if (data.Length > 0) { yield return data.ToString(); data.Clear(); }
-                continue;
-            }
-            if (line.StartsWith("data:", StringComparison.Ordinal))
-            {
-                if (data.Length > 0) data.Append('\n');
-                var value = line.AsSpan(5);
-                data.Append(value.StartsWith(" ") ? value[1..] : value); // the spec strips one space: keep indentation
+                if (skipLf)
+                {
+                    skipLf = false;
+                    if (buffer[start] == '\n') { start++; continue; }
+                }
+                var eol = buffer.AsSpan(start, n - start).IndexOfAny('\r', '\n');
+                var count = eol < 0 ? n - start : eol;
+                if (line.Length + count > maxChars) throw TooLarge(name);
+                line.Append(buffer, start, count);
+                if (eol < 0) break;
+                skipLf = buffer[start + eol] == '\r';
+                start += eol + 1;
+                if (EndLine(line, data, maxChars, name) is { } ev) yield return ev;
             }
         }
+        EndLine(line, data, maxChars, name);
         if (data.Length > 0) yield return data.ToString();
     }
+
+    /// <summary>One finished line: a blank line ends the event (returned), a data: line joins the event.</summary>
+    private static string? EndLine(StringBuilder lineBuilder, StringBuilder data, int maxChars, string name)
+    {
+        if (lineBuilder.Length == 0)
+        {
+            if (data.Length == 0) return null;
+            var ev = data.ToString();
+            data.Clear();
+            return ev;
+        }
+        var line = lineBuilder.ToString();
+        lineBuilder.Clear();
+        if (line.StartsWith("data:", StringComparison.Ordinal))
+        {
+            if (data.Length > 0) data.Append('\n');
+            var value = line.AsSpan(5);
+            data.Append(value.StartsWith(" ") ? value[1..] : value); // the spec strips one space: keep indentation
+            if (data.Length > maxChars) throw TooLarge(name);
+        }
+        return null;
+    }
+
+    private static BackendException TooLarge(string name) => new(BackendErrorKind.Failed, L.F(Strings.Api_TooLarge, name));
 
     /// <summary>
     /// Merges consecutive messages of the same role (e.g. a question whose answer was cancelled, then the next

@@ -393,6 +393,8 @@ Weigeren:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} heeft niet op tijd geantwoord.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Voeg een API-sleutel toe voor {0} via Instellingen › AI-verbindingen.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Het eindpunt voor {0} is geen geldig http(s)-adres: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} heeft de aanvraaglimiet bereikt, nieuwe poging over {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} is bezet, nieuwe poging over {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} heeft de API-sleutel geweigerd. {1}</value></data>

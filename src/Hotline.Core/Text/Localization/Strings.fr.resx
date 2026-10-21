@@ -393,6 +393,8 @@ Refuser :
   <data name="Api_Timeout" xml:space="preserve"><value>{0} n'a pas répondu à temps.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Ajoutez une clé API pour {0} dans Paramètres › Connexions IA.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Le point de terminaison de {0} n'est pas une adresse http(s) valide : {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} a atteint sa limite de requêtes, nouvel essai dans {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} est occupé, nouvel essai dans {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} a refusé la clé API. {1}</value></data>

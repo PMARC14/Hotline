@@ -393,6 +393,8 @@ Zabroń:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} nie odpowiedział na czas.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Dodaj klucz API dla {0} w Ustawienia › Połączenia AI.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Punkt końcowy dla {0} nie jest prawidłowym adresem http(s): {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} osiągnął limit żądań, ponowna próba za {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} jest zajęty, ponowna próba za {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} odrzucił klucz API. {1}</value></data>

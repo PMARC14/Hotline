@@ -393,6 +393,8 @@ Verweigern:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} hat nicht rechtzeitig geantwortet.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Füge unter Einstellungen › KI-Verbindungen einen API-Schlüssel für {0} hinzu.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Der Endpunkt für {0} ist keine gültige http(s)-Adresse: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} ist ausgelastet (Ratenlimit), neuer Versuch in {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} ist beschäftigt, neuer Versuch in {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} hat den API-Schlüssel abgelehnt. {1}</value></data>

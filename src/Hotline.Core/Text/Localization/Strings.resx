@@ -393,6 +393,8 @@ Deny:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} didn't answer in time.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Add an API key for {0} in Settings › AI connections.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>The endpoint for {0} isn't a valid http(s) address: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} is rate limited, retrying in {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} is busy, retrying in {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} rejected the API key. {1}</value></data>

@@ -393,6 +393,8 @@ Denegar:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} no respondió a tiempo.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Añade una clave de API para {0} en Configuración › Conexiones de IA.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>El punto de conexión de {0} no es una dirección http(s) válida: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} ha alcanzado el límite de solicitudes; reintentando en {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} está ocupado; reintentando en {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} rechazó la clave de API. {1}</value></data>

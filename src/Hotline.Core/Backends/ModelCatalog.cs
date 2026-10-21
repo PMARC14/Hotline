@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Text.Json;
 using Hotline.Core.Settings;
 using Hotline.Core.Text.Localization;
@@ -19,27 +20,28 @@ public static class ModelListParsers
         output.Split('\n').Select(l => l.TrimEnd('\r')).Where(l => l.Contains('\t'))
             .Select(l => l.Split('\t', 2)).Select(p => new ModelInfo(p[0].Trim(), p[1].Trim())).ToList();
 
+    /// <summary>A string property, or null when the entry isn't an object or the field is missing, null or not a string.</summary>
+    private static string? Text(JsonElement entry, string name) =>
+        entry.ValueKind == JsonValueKind.Object && entry.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
+
     public static IReadOnlyList<ModelInfo> OpenAi(string json) => Parse(json, root =>
-        root.GetProperty("data").EnumerateArray().Select(m => m.GetProperty("id").GetString()!)
+        root.GetProperty("data").EnumerateArray().Select(m => Text(m, "id")).OfType<string>().Where(id => id.Length > 0)
             .Order(StringComparer.Ordinal).Select(id => new ModelInfo(id, id)).ToList());
 
     public static IReadOnlyList<ModelInfo> Gemini(string json) => Parse(json, root =>
         root.TryGetProperty("models", out var models)
             ? models.EnumerateArray()
-                .Where(m => m.TryGetProperty("supportedGenerationMethods", out var g) && g.EnumerateArray().Any(x => x.GetString() == "generateContent"))
-                .Select(m =>
-                {
-                    var id = m.GetProperty("name").GetString()!.Replace("models/", "", StringComparison.Ordinal);
-                    return new ModelInfo(id, m.TryGetProperty("displayName", out var d) ? d.GetString() ?? id : id);
-                }).ToList()
+                .Where(m => m.ValueKind == JsonValueKind.Object && m.TryGetProperty("supportedGenerationMethods", out var g)
+                    && g.ValueKind == JsonValueKind.Array && g.EnumerateArray().Any(x => x.ValueKind == JsonValueKind.String && x.GetString() == "generateContent"))
+                .Select(m => Text(m, "name")?.Replace("models/", "", StringComparison.Ordinal) is { Length: > 0 } id
+                    ? new ModelInfo(id, Text(m, "displayName") ?? id) : null)
+                .OfType<ModelInfo>().ToList()
             : []);
 
     public static IReadOnlyList<ModelInfo> Anthropic(string json) => Parse(json, root =>
-        root.GetProperty("data").EnumerateArray().Select(m =>
-        {
-            var id = m.GetProperty("id").GetString()!;
-            return new ModelInfo(id, m.TryGetProperty("display_name", out var d) ? d.GetString() ?? id : id);
-        }).ToList());
+        root.GetProperty("data").EnumerateArray()
+            .Select(m => Text(m, "id") is { Length: > 0 } id ? new ModelInfo(id, Text(m, "display_name") ?? id) : null)
+            .OfType<ModelInfo>().ToList());
 
     private static IReadOnlyList<ModelInfo> Parse(string json, Func<JsonElement, IReadOnlyList<ModelInfo>> read)
     {
@@ -60,7 +62,11 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
     Func<BackendProfile, CancellationToken, Task<IReadOnlyList<ModelInfo>>>? listCodexModels = null)
 {
     private static readonly TimeSpan Ttl = TimeSpan.FromMinutes(10);
-    private readonly Dictionary<string, (DateTimeOffset At, IReadOnlyList<ModelInfo> Models)> _cache = [];
+    // Concurrent callers (the picker and the Test button) share it across awaits.
+    private readonly ConcurrentDictionary<string, (DateTimeOffset At, IReadOnlyList<ModelInfo> Models)> _cache = new();
+
+    /// <summary>Most bytes read from a model-list answer (injectable for tests).</summary>
+    public int MaxBodyBytes { get; init; } = Api.ApiCommon.MaxModelListBytes;
 
     public async Task<IReadOnlyList<ModelInfo>> GetAsync(BackendProfile p, bool refresh, CancellationToken ct)
     {
@@ -122,28 +128,39 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
         var key = secrets.Get(SecretKeys.ApiKey(p.Id));
         if (string.IsNullOrEmpty(key) && !info.ApiKeyOptional)
             throw new ModelListException(L.F(Strings.Models_NeedKey, p.Name));
-        var endpoint = (string.IsNullOrWhiteSpace(p.Endpoint) ? info.DefaultEndpoint : p.Endpoint)!.TrimEnd('/');
-        if (!string.IsNullOrEmpty(key) && Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) && uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
+        var endpoint = (string.IsNullOrWhiteSpace(p.Endpoint) ? info.DefaultEndpoint : p.Endpoint)!.Trim().TrimEnd('/');
+        // A hand-edited endpoint must end as a normal "couldn't list models", never as a UriFormatException.
+        if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https")
+            || !Uri.TryCreate($"{endpoint}/{path}", UriKind.Absolute, out var target))
+            throw new ModelListException(L.F(Strings.Api_BadEndpoint, p.Name, endpoint));
+        if (!string.IsNullOrEmpty(key) && uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
             throw new ModelListException($"Not sending the API key for {p.Name} over plain http to {uri.Host}; use an https:// endpoint.");
-        using var request = new HttpRequestMessage(HttpMethod.Get, $"{endpoint}/{path}");
+        using var request = new HttpRequestMessage(HttpMethod.Get, target);
         if (!string.IsNullOrEmpty(key)) addKey(request, key);
+        // Headers first, so the size cap applies before the whole body is buffered; the time limit then covers the body too.
+        using var limit = CancellationTokenSource.CreateLinkedTokenSource(ct);
+        limit.CancelAfter(TimeSpan.FromSeconds(30));
         try
         {
-            using var response = await http.SendAsync(request, ct);
+            using var response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, limit.Token);
+            // Never followed: the key headers would go along to wherever it points.
+            if (Api.ApiCommon.RedirectTarget(response, target) is { } moved)
+                throw new ModelListException(L.F(Strings.Api_Redirected, p.Name, moved));
             if (response.StatusCode is System.Net.HttpStatusCode.Unauthorized or System.Net.HttpStatusCode.Forbidden)
                 throw new ModelListException(L.F(Strings.Models_KeyRejected, p.Name));
             if (!response.IsSuccessStatusCode)
             {
-                var detail = Api.ApiCommon.ErrorMessage(await response.Content.ReadAsStringAsync(ct));
+                var detail = Api.ApiCommon.ErrorMessage((await Api.ApiCommon.ReadCappedAsync(response.Content, Api.ApiCommon.MaxErrorBodyBytes, limit.Token)).Text);
                 throw new ModelListException(L.F(Strings.Models_HttpError, p.Name, $"{(int)response.StatusCode} {response.ReasonPhrase}") + (detail is { Length: > 0 } ? $" {detail}" : ""));
             }
-            return await response.Content.ReadAsStringAsync(ct);
+            var (body, truncated) = await Api.ApiCommon.ReadCappedAsync(response.Content, MaxBodyBytes, limit.Token);
+            return truncated ? throw new ModelListException(L.F(Strings.Api_TooLarge, p.Name)) : body;
         }
-        catch (HttpRequestException ex)
+        catch (Exception ex) when (ex is HttpRequestException or IOException or InvalidOperationException)
         {
             throw new ModelListException(L.F(Strings.Api_Unreachable, endpoint, ex.Message));
         }
-        catch (TaskCanceledException) when (!ct.IsCancellationRequested)
+        catch (OperationCanceledException) when (!ct.IsCancellationRequested)
         {
             throw new ModelListException(L.F(Strings.Api_Timeout, endpoint));
         }
