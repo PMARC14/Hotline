@@ -206,6 +206,13 @@ left plus `model` in bottom right puts the block in bottom right, `model` first 
   groups are not case-sensitive.
 - `label` is the button's name (at most 40 characters; it defaults to the id). `icon` is a Segoe Fluent Icons code in hex, four to six digits
   in the range E000-F8FF; anything else gives a default star.
+- `iconFile` (optional) shows a picture instead of the `icon`: it is always `"<id>.png"` (`"summarize.png"` for the
+  button `summarize`), a file in `%USERPROFILE%\.hotline\icons\`. Any other name (another button's, a path, `.PNG`) is
+  ignored with a warning. Settings › Window › Button rows (add or edit a custom button) › **Choose a picture…** copies the PNG you pick there
+  under that name (your original is never changed) when you save; **Use a built-in icon instead** removes it, and
+  deleting the button deletes its picture. The picture must be a PNG of at most 256 KB, between 16 and 256 pixels on
+  each side (no SVG, ICO or animation); it is drawn at about 60% of the button's smaller side. If the file is missing,
+  damaged or outside those limits, the button shows its `icon` instead and the log says why (by file name).
 - Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarize"` for
   `actions\summarize.md`, at most 64 characters; never a path; the file must exist); it runs that quick action on the current message and attachments. `text` is
   put in the message box (up to 2000 characters), and `"send": true` also sends it. If the action file is missing, the
