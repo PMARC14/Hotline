@@ -10,12 +10,14 @@ $path = Join-Path $env:USERPROFILE '.hotline\toolbar.json'
 $backup = Join-Path ([IO.Path]::GetTempPath()) ('toolbar-editor-' + [guid]::NewGuid().ToString('N') + '.json')
 $failures = @()
 
+function Arr($x) { if ($null -eq $x) { ,@() } else { ,@($x) } } # a missing group (the centre is optional) is an empty list, not a list of one $null
+
 function Read-Bar {
     # toolbar.json has // comments; strip them, then read the four groups.
     $text = (Get-Content $path -Raw) -replace '(?m)^\s*//.*$', ''
     $bar = $text | ConvertFrom-Json
     [pscustomobject]@{
-        TL = @($bar.top.left); TR = @($bar.top.right); BL = @($bar.items.left); BR = @($bar.items.right)
+        TL = Arr $bar.top.left; TC = Arr $bar.top.center; TR = Arr $bar.top.right; BL = Arr $bar.items.left; BC = Arr $bar.items.center; BR = Arr $bar.items.right
     }
 }
 
@@ -83,10 +85,16 @@ try {
         Check 'move right: captureWindow, pin, prompt' (((Read-Bar).BL -join ',') -eq 'captureWindow,pin,prompt')
     }
     if (Press $settingsWindow 'bar-shift-right-pin') {
+        Wait-For 'pin in the centre group' { (Read-Bar).BC -contains 'pin' } | Out-Null
+        $bar = Read-Bar
+        Check 'shift right: bottom centre is pin' (($bar.BC -join ',') -eq 'pin')
+        Check 'shift right: bottom left keeps captureWindow, prompt' (($bar.BL -join ',') -eq 'captureWindow,prompt')
+    }
+    if (Press $settingsWindow 'bar-shift-right-pin') {
         Wait-For 'pin on the right side' { (Read-Bar).BR -contains 'pin' } | Out-Null
         $bar = Read-Bar
-        Check 'shift right: bottom right is settings, pin' (($bar.BR -join ',') -eq 'settings,pin')
-        Check 'shift right: bottom left keeps captureWindow, prompt' (($bar.BL -join ',') -eq 'captureWindow,prompt')
+        Check 'shift right again: bottom right is settings, pin' (($bar.BR -join ',') -eq 'settings,pin')
+        Check 'shift right again: bottom centre is empty' ($bar.BC.Count -eq 0)
     }
     if (Press $settingsWindow 'bar-shift-up-pin') {
         Wait-For 'pin in the top row' { (Read-Bar).TR -contains 'pin' } | Out-Null
@@ -95,9 +103,9 @@ try {
         Check 'shift up: bottom right is settings' (($bar.BR -join ',') -eq 'settings')
     }
     if (Press $settingsWindow 'bar-hide-pin') {
-        Wait-For 'pin hidden' { $b = Read-Bar; -not (($b.TL + $b.TR + $b.BL + $b.BR) -contains 'pin') } | Out-Null
+        Wait-For 'pin hidden' { $b = Read-Bar; -not (($b.TL + $b.TC + $b.TR + $b.BL + $b.BC + $b.BR) -contains 'pin') } | Out-Null
         $bar = Read-Bar
-        Check 'hide: pin is in no group' (-not (($bar.TL + $bar.TR + $bar.BL + $bar.BR) -contains 'pin'))
+        Check 'hide: pin is in no group' (-not (($bar.TL + $bar.TC + $bar.TR + $bar.BL + $bar.BC + $bar.BR) -contains 'pin'))
         Check 'hide: the pin chip is in "Not shown"' ($null -ne (Find-Element $settingsWindow 'bar-item-pin'))
     }
 }
