@@ -237,7 +237,7 @@ public sealed class ClaudeCodeTests : IDisposable
     [Fact]
     public void Custom_args_replace_the_mode_flags_but_not_the_protocol_or_safety()
     {
-        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Args = ["--tools", "Read", "--mcp-config", @"C:\mcp.json", "--dangerously-skip-permissions"] }, "x").ToList();
+        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, Args = ["--tools", "Read", "--mcp-config", @"C:\mcp.json", "--dangerously-skip-permissions"] }, "x").ToList();
         Assert.Equal("Read", args[args.IndexOf("--tools") + 1]);
         Assert.Contains(@"C:\mcp.json", args);
         Assert.DoesNotContain("--setting-sources", args);               // mode defaults replaced

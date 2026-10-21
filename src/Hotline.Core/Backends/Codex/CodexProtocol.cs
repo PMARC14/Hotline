@@ -25,13 +25,15 @@ public static class CodexProtocol
         if (inherit && p.ApproveAllTools) args.Add("--dangerously-bypass-approvals-and-sandbox");
         else args.AddRange(["--sandbox", inherit ? "workspace-write" : "read-only"]);
         args.AddRange(["-c", "approval_policy=\"never\""]); // nobody can answer a prompt in the background
-        if (p.Args is not null) AddSafe(args, p.Args); // the user's own launch flags replace the mode defaults
-        else if (!inherit) args.AddRange(["--ignore-user-config", "--ignore-rules"]);
+        if (p.Args is not null) AddSafe(args, p.Args, chatOnly: !inherit); // the user's own launch flags replace the mode defaults
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort))
             args.AddRange(["-c", $"model_reasoning_effort={Toml(effort)}"]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["-c", $"developer_instructions={Toml(systemPrompt.Trim())}"]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries), chatOnly: !inherit);
+        // Chat only: never the user's config.toml (MCP servers, profiles) or rules, whatever "args" say. Before "resume",
+        // whose own options these aren't.
+        if (!inherit) args.AddRange(["--ignore-user-config", "--ignore-rules"]);
         if (resumeThread is not null) args.AddRange(["resume", resumeThread]);
         foreach (var image in imagePaths) args.AddRange(["--image", image]);
         args.Add("-"); // read the prompt from stdin
@@ -59,26 +61,34 @@ public static class CodexProtocol
         return sb.Append('"').ToString();
     }
 
-    /// <summary>User-supplied flags, minus anything that would loosen the sandbox or approvals (only ApproveAllTools may).</summary>
-    private static void AddSafe(List<string> args, IReadOnlyList<string> extra)
+    /// <summary>
+    /// User-supplied flags, minus anything that would loosen the sandbox or approvals (only ApproveAllTools may) and, in
+    /// chat only, the config Hotline keeps out (profiles, MCP servers, its own --ignore flags).
+    /// </summary>
+    private static void AddSafe(List<string> args, IReadOnlyList<string> extra, bool chatOnly)
     {
         static bool Loosens(string a) =>
             a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a.Contains("full-access", StringComparison.OrdinalIgnoreCase)
-            || a.Equals("--yolo", StringComparison.OrdinalIgnoreCase) || a.Equals("--full-auto", StringComparison.OrdinalIgnoreCase);
-        static bool Setting(string a)
+            || a.Equals("--yolo", StringComparison.OrdinalIgnoreCase) || a.Equals("--full-auto", StringComparison.OrdinalIgnoreCase)
+            || a.Equals("--trust", StringComparison.OrdinalIgnoreCase);
+        bool Setting(string a)
         {
             var key = a.TrimStart(' ', '"', '\'', '[', '\t'); // also a quoted key or a table header
-            return key.StartsWith("sandbox", StringComparison.OrdinalIgnoreCase) || key.StartsWith("approval", StringComparison.OrdinalIgnoreCase);
+            return key.StartsWith("sandbox", StringComparison.OrdinalIgnoreCase) || key.StartsWith("approval", StringComparison.OrdinalIgnoreCase)
+                   || chatOnly && key.StartsWith("mcp_servers", StringComparison.OrdinalIgnoreCase);
         }
         for (var i = 0; i < extra.Count; i++)
         {
             var a = extra[i];
             if (Loosens(a)) continue;
+            // Added once by Hotline in chat only (a repeated switch is an error).
+            if (chatOnly && a is "--ignore-user-config" or "--ignore-rules") continue;
             // "-sX" / "-cX" (value attached to a short flag) are the same as "-s X" / "-c X".
-            var attached = a.Length > 2 && a[0] == '-' && a[1] is 's' or 'a' or 'c' or 'C' && a[2] != '-' && !a.StartsWith("--", StringComparison.Ordinal);
+            var attached = a.Length > 2 && a[0] == '-' && a[1] is 's' or 'a' or 'c' or 'C' or 'p' && a[2] != '-' && !a.StartsWith("--", StringComparison.Ordinal);
             var name = attached ? a[..2] : a.Split('=', 2)[0];
             var inline = attached ? a[2..].TrimStart('=') : a.Contains('=') ? a.Split('=', 2)[1] : null;
-            if (name is "-s" or "--sandbox" or "-a" or "--ask-for-approval" or "-C" or "--cd" or "--add-dir")
+            if (name is "-s" or "--sandbox" or "-a" or "--ask-for-approval" or "-C" or "--cd" or "--add-dir"
+                || chatOnly && name is "-p" or "--profile") // a config.toml profile: chat only ignores the user's config
             {
                 // Hotline sets the sandbox, approvals and folder; a different folder would escape the empty chat folder.
                 if (inline is null) i++; // and its separate value

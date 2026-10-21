@@ -124,7 +124,7 @@ public class AgyProtocolTests
     [Fact]
     public void Custom_args_replace_the_agent_flags_but_keep_the_protocol()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Agent = "hotline", Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Agent = "hotline", Tools = ToolMode.Inherit, Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
         Assert.Equal("mine", args[args.IndexOf("--agent") + 1]);
         Assert.Single(args, "--agent");
         Assert.Contains("stream-json", args);
