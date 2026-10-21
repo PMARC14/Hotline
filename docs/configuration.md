@@ -191,9 +191,28 @@ Within a group, items run left to right; the center group sits in the free space
 |---|---|
 | `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left`, `center` and `right` arrays of item ids (`center` is optional). Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…) |
-| `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide`; `outline` and `filled` are `true` or `false`; `width` and `height` (20-80 DIPs) can also be set bar-wide |
-| `overrides` | Per item id, the same `size`, `outline` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
+| `style` | The look of the whole bar: `size` is `compact`, `normal`, `wide`, `double` or `triple` (see the table below); `outline` and `filled` are `true` or `false`; `outlineColor` is the outline's colour as `"#RRGGBB"` (left out: the accent colour); `width` and `height` (20-80 DIPs) can also be set bar-wide |
+| `overrides` | Per item id, the same `size`, `outline`, `outlineColor` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
 | `buttons` | Your own buttons, by id (see below) |
+
+**Sizes** (width × height in DIPs, and the icon's size):
+
+| `size` | Built-in buttons | Custom buttons |
+|---|---|---|
+| `compact` | 30 × 28, icon 13 | 30 × 28, icon 13 |
+| `normal` (default) | 36 × 32, icon 15 | 36 × 32, icon 15 |
+| `wide` | 46 × 32, icon 15 | 46 × 32, icon 15 |
+| `double` | 72 × 64, icon 24 | 72 × 64, icon 22 |
+| `triple` | 108 × 96, icon 34 | 80 × 80, icon 22 |
+
+`width` and `height` win over the size but stay between 20 and 80, so only `double` and `triple` make a built-in button
+bigger than 80. Custom buttons never go past 80 × 80 (icon 22), whatever the size of the bar or of the button. The "..."
+button takes the bar's size.
+
+**Outline.** `"outline": true` draws a 1.5-DIP border in a colour: the accent colour (in a contrast theme, the system's
+highlight colour), or `outlineColor` for the whole bar or one item. `outlineColor` must be `#` and six hex digits
+(`"#E81123"`); anything else is ignored with a warning and the accent colour is used. With `filled` the button keeps
+both its background and its outline.
 
 **The pickers.** `effort`, `model` and `provider` always stay together as one block. The block goes in the first group
 (checked in the order bottom left, bottom center, bottom right, top left, top center, top right) that lists one of them, at that picker's
@@ -219,9 +238,11 @@ left plus `model` in bottom right puts the block in bottom right, `model` first 
   button shows a notice.
 - Nothing else can be run from a button: no URLs, files, programs or shell commands.
 
-**Limits.** At most 24 custom buttons and 40 items per group. `width` and `height` are kept between 20 and 80, an
-unknown `size` becomes `normal`, and labels lose control characters. A bar too narrow for its buttons is meant to move
-the last of the left group into a "..." menu rather than push anything off the panel.
+**Limits.** At most 24 custom buttons and 40 items per group. `width` and `height` are kept between 20 and 80 (custom
+buttons in every size), an unknown `size` becomes `normal`, and labels lose control characters. A bar too narrow for its
+buttons moves the last of the centre group, then of the left group, into a "..." menu rather than push anything off the
+panel. The right group always stays whole: only when it alone nearly fills the
+panel (say, several `triple` buttons) can the row stick out, by the "..." button or by the right group itself.
 
 **A hand-edited file.** Comments and trailing commas are allowed. A bad value is replaced by its default on its own,
 and the rest of the file still applies; the file is never thrown away for one mistake. In detail:
