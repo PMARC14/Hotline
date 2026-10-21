@@ -604,6 +604,19 @@ Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</val
   <data name="Quad_BottomLeft" xml:space="preserve"><value>In basso a sinistra</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>In basso al centro</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>In basso a destra</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Non mostrato</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Trascina gli elementi tra i quattro gruppi o usa i pulsanti sotto ciascun elemento. Con un elemento selezionato, Alt+tasti freccia lo spostano in un altro gruppo e Ctrl+Sinistra o Ctrl+Destra lo spostano all'interno del suo gruppo. Le modifiche vengono salvate in toolbar.json e applicate immediatamente.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Sposta nel gruppo a sinistra</value></data>

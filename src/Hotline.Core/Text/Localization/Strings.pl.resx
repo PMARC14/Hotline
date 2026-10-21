@@ -604,6 +604,19 @@ Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Dolny lewy</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Dolny środkowy</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Dolny prawy</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niepokazywane</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Przeciągaj elementy między czterema grupami lub używaj przycisków pod każdym elementem. Gdy element jest aktywny, Alt+strzałki przenoszą go do innej grupy, a Ctrl+strzałka w lewo lub Ctrl+strzałka w prawo przesuwają go w obrębie grupy. Zmiany są zapisywane w toolbar.json i wprowadzane od razu.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Przenieś do lewej grupy</value></data>

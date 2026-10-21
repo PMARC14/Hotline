@@ -604,6 +604,19 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Quad_BottomLeft" xml:space="preserve"><value>नीचे बाएँ</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>नीचे केंद्र</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>नीचे दाएँ</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>दिखाया नहीं गया</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>चारों समूहों के बीच आइटम खींचें, या प्रत्येक आइटम के नीचे दिए गए बटनों का उपयोग करें। किसी आइटम पर फ़ोकस होने पर, Alt+तीर कुंजियाँ उसे दूसरे समूह में ले जाती हैं और Ctrl+Left या Ctrl+Right उसे उसके समूह में ले जाते हैं। बदलाव toolbar.json में सहेजे जाते हैं और तुरंत लागू होते हैं।</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>बाएँ समूह में ले जाएँ</value></data>

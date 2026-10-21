@@ -604,6 +604,19 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Kiri bawah</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Tengah bawah</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Kanan bawah</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Tidak ditampilkan</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Tarik item di antara keempat grup, atau gunakan tombol di bawah setiap item. Saat item difokuskan, Alt+tombol panah memindahkannya ke grup lain dan Ctrl+Kiri atau Ctrl+Kanan memindahkannya di dalam grupnya. Perubahan disimpan ke toolbar.json dan langsung diterapkan.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Pindahkan ke grup kiri</value></data>

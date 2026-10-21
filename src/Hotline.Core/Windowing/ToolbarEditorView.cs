@@ -1,5 +1,6 @@
 using System.Globalization;
 using System.Text;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Windowing;
 
@@ -26,6 +27,43 @@ public static class ToolbarEditorView
     /// chat, lightning, code, mail, calendar, flag, heart, check mark, help.</summary>
     public static readonly IReadOnlyList<string> Icons =
         [ToolbarModel.DefaultIcon, "E8BD", "E8A5", "E70F", "E8C8", "E721", "E774", "E8F2", "E945", "E943", "E715", "E787", "E7C1", "EB51", "E8FB", "E897"];
+
+    /// <summary>The sizes the whole bar and each item can pick, smallest first.</summary>
+    public static readonly IReadOnlyList<ButtonSize> Sizes = Enum.GetValues<ButtonSize>();
+
+    public static string SizeName(ButtonSize size) => size switch
+    {
+        ButtonSize.Compact => Strings.Bar_SizeCompact,
+        ButtonSize.Wide => Strings.Bar_SizeWide,
+        ButtonSize.Double => Strings.Bar_SizeDouble,
+        ButtonSize.Triple => Strings.Bar_SizeTriple,
+        _ => Strings.Bar_SizeNormal,
+    };
+
+    /// <summary>A custom button: it offers every size but stops at 80 DIP (see <see cref="ToolbarPlan.Metrics(ButtonStyle, bool)"/>),
+    /// so its look shows a note.</summary>
+    public static bool SizeLimited(ToolbarModel m, string id) =>
+        m.Buttons.Any(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>The outline colour swatches besides the accent colour: red, orange, yellow, green, teal, blue, purple, pink
+    /// (the Windows accent palette's, readable on light and dark).</summary>
+    public static readonly IReadOnlyList<string> OutlineColors =
+        ["#E81123", "#F7630C", "#FFB900", "#107C10", "#00B7C3", "#0078D4", "#8764B8", "#E3008C"];
+
+    /// <summary>A colour's accessible name: the accent colour for null, a swatch's name, or the hex of one set by hand.</summary>
+    public static string ColorName(string? hex) => hex?.ToUpperInvariant() switch
+    {
+        null => Strings.Bar_ColorAccent,
+        "#E81123" => Strings.Bar_ColorRed,
+        "#F7630C" => Strings.Bar_ColorOrange,
+        "#FFB900" => Strings.Bar_ColorYellow,
+        "#107C10" => Strings.Bar_ColorGreen,
+        "#00B7C3" => Strings.Bar_ColorTeal,
+        "#0078D4" => Strings.Bar_ColorBlue,
+        "#8764B8" => Strings.Bar_ColorPurple,
+        "#E3008C" => Strings.Bar_ColorPink,
+        _ => hex!,
+    };
 
     /// <summary>A quadrant's strip: each item alone, the pickers as one block.</summary>
     public static IReadOnlyList<EditorUnit> Units(ToolbarModel m, Quadrant q)

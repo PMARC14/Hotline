@@ -29,17 +29,37 @@ public static class ToolbarPlan
 {
     public static bool IsPicker(string id) => ToolbarModel.Pickers.Contains(id);
 
-    /// <summary>The size presets (compact 30×28, normal 36×32, wide 46×32); an item's width/height wins over its preset.</summary>
-    public static ButtonMetrics Metrics(ButtonStyle style)
+    /// <summary>Explicit widths and heights, and every size of a custom button, stay within these (DIP).</summary>
+    public const int MinDip = 20, MaxDip = 80;
+    /// <summary>A custom button's largest glyph: its icon is one of a few plain ones, drawn no bigger than an 80-DIP button holds.</summary>
+    public const int MaxCustomFont = 22;
+
+    /// <summary>
+    /// The size presets (compact 30×28, normal 36×32, wide 46×32, double 72×64, triple 108×96). An item's width/height wins
+    /// over its preset but stays within 20-80 (only the presets go past 80). A custom button (<paramref name="isCustom"/>)
+    /// never goes past 80×80 and a glyph of 22, whatever the bar's or its own size: double and triple are for the built-in
+    /// buttons. The renderer and every fit measure through here, so what is drawn is what was fitted.
+    /// </summary>
+    public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom = false)
     {
         var (width, height, font) = style.Size switch
         {
             ButtonSize.Compact => (30, 28, 13),
             ButtonSize.Wide => (46, 32, 15),
+            ButtonSize.Double => (72, 64, 24),
+            ButtonSize.Triple => (108, 96, 34),
             _ => (36, 32, 15),
         };
-        return new ButtonMetrics(style.Width ?? width, style.Height ?? height, font);
+        // Resolve already clamps a file's width and height; a model built in memory (Settings, the self-test) may not be.
+        if (style.Width is { } w) width = Math.Clamp(w, MinDip, MaxDip);
+        if (style.Height is { } h) height = Math.Clamp(h, MinDip, MaxDip);
+        if (isCustom) (width, height, font) = (Math.Clamp(width, MinDip, MaxDip), Math.Clamp(height, MinDip, MaxDip), Math.Min(font, MaxCustomFont));
+        return new ButtonMetrics(width, height, font);
     }
+
+    /// <summary>The size of a placed item: its effective style, as a custom button when it is one.</summary>
+    public static ButtonMetrics Metrics(ToolbarModel model, string id) =>
+        Metrics(model.EffectiveStyle(id), model.Buttons.Any(b => b.Id == id));
 
     /// <summary>
     /// A row's groups in order. Resolve gives only valid models, but Settings and the self-test build them in memory, so

@@ -604,6 +604,19 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Unten links</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Unten Mitte</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Unten rechts</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Nicht angezeigt</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Ziehen Sie Elemente zwischen den vier Gruppen oder verwenden Sie die Schaltflächen unter jedem Element. Wenn ein Element fokussiert ist, verschieben Alt+Pfeiltasten es in eine andere Gruppe und Ctrl+Links oder Ctrl+Rechts innerhalb seiner Gruppe. Änderungen werden in toolbar.json gespeichert und sofort angewendet.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>In die linke Gruppe verschieben</value></data>

@@ -18,8 +18,40 @@ public sealed class ToolbarPlanTests
     [InlineData(ButtonSize.Compact, 30, 28, 13)]
     [InlineData(ButtonSize.Normal, 36, 32, 15)]
     [InlineData(ButtonSize.Wide, 46, 32, 15)]
+    [InlineData(ButtonSize.Double, 72, 64, 24)]
+    [InlineData(ButtonSize.Triple, 108, 96, 34)]
     public void Size_presets(ButtonSize size, double width, double height, double font) =>
         Assert.Equal(new ButtonMetrics(width, height, font), ToolbarPlan.Metrics(new ButtonStyle(size, false, false)));
+
+    [Theory]
+    [InlineData(ButtonSize.Compact, 30, 28, 13)]
+    [InlineData(ButtonSize.Normal, 36, 32, 15)]
+    [InlineData(ButtonSize.Wide, 46, 32, 15)]
+    [InlineData(ButtonSize.Double, 72, 64, 22)]
+    [InlineData(ButtonSize.Triple, 80, 80, 22)]
+    public void Custom_buttons_keep_the_80_dip_limit_whatever_the_preset(ButtonSize size, double width, double height, double font) =>
+        Assert.Equal(new ButtonMetrics(width, height, font), ToolbarPlan.Metrics(new ButtonStyle(size), isCustom: true));
+
+    [Fact]
+    public void Explicit_width_and_height_stay_within_20_to_80_even_in_memory()
+    {
+        Assert.Equal(new ButtonMetrics(80, 20, 34), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Triple, Width: 500, Height: -3)));
+        Assert.Equal(new ButtonMetrics(80, 80, 22), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Triple, Width: 80, Height: 80), isCustom: true));
+        Assert.Equal(new ButtonMetrics(20, 80, 15), ToolbarPlan.Metrics(new ButtonStyle(Width: 1, Height: 999), isCustom: true));
+        // A bad enum value from memory is normal.
+        Assert.Equal(new ButtonMetrics(36, 32, 15), ToolbarPlan.Metrics(new ButtonStyle((ButtonSize)42)));
+    }
+
+    [Fact]
+    public void Metrics_of_an_item_uses_its_effective_style_and_whether_it_is_custom()
+    {
+        var m = ToolbarModel.Resolve("""
+            { "version": 2, "items": { "left": ["pin", "mine"], "right": [] }, "style": { "size": "triple" },
+              "buttons": { "mine": { "label": "Mine", "text": "hi" } } }
+            """);
+        Assert.Equal(new ButtonMetrics(108, 96, 34), ToolbarPlan.Metrics(m, "pin"));
+        Assert.Equal(new ButtonMetrics(80, 80, 22), ToolbarPlan.Metrics(m, "mine"));
+    }
 
     [Fact]
     public void Width_and_height_overrides_win_over_the_preset_and_keep_its_font() =>

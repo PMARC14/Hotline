@@ -313,4 +313,42 @@ public sealed class ToolbarEditorViewTests
             if (ToolbarEditorView.Check(m, b, adding: true) == CustomProblem.None) Assert.NotSame(m, ToolbarEditor.AddCustom(m, b));
         }
     }
+
+    // ---- the look choices ----
+
+    [Fact]
+    public void Every_size_preset_is_offered_in_order_with_its_own_name()
+    {
+        Assert.Equal(Enum.GetValues<ButtonSize>(), ToolbarEditorView.Sizes);
+        var names = ToolbarEditorView.Sizes.Select(ToolbarEditorView.SizeName).ToList();
+        Assert.All(names, n => Assert.False(string.IsNullOrWhiteSpace(n)));
+        Assert.Equal(names.Count, names.Distinct().Count());
+    }
+
+    [Fact]
+    public void Outline_colors_are_eight_valid_distinct_swatches_with_names_and_survive_a_save()
+    {
+        Assert.Equal(8, ToolbarEditorView.OutlineColors.Count);
+        Assert.Equal(8, ToolbarEditorView.OutlineColors.Distinct().Count());
+        var names = ToolbarEditorView.OutlineColors.Select(ToolbarEditorView.ColorName).Append(ToolbarEditorView.ColorName(null)).ToList();
+        Assert.All(names, n => Assert.False(string.IsNullOrWhiteSpace(n)));
+        Assert.Equal(9, names.Distinct().Count());
+        foreach (var hex in ToolbarEditorView.OutlineColors)
+        {
+            Assert.Matches("^#[0-9A-F]{6}$", hex);
+            var m = ToolbarEditor.SetStyle(ToolbarModel.Defaults, null, ToolbarModel.Defaults.Style with { Outline = true, OutlineColor = hex });
+            Assert.Equal(hex, m.Style.OutlineColor);
+        }
+        Assert.Equal("#123456", ToolbarEditorView.ColorName("#123456")); // a colour set in the file by hand: shown as it is
+    }
+
+    [Fact]
+    public void Only_custom_buttons_get_the_size_limit_note()
+    {
+        var m = Model("\"pin\", \"mine\"", "", buttons: """ "mine": { "label": "Mine", "text": "hi" } """);
+        Assert.True(ToolbarEditorView.SizeLimited(m, "mine"));
+        Assert.True(ToolbarEditorView.SizeLimited(m, "MINE"));
+        Assert.False(ToolbarEditorView.SizeLimited(m, "pin"));
+        Assert.False(ToolbarEditorView.SizeLimited(m, "nope"));
+    }
 }

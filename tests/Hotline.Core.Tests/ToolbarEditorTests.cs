@@ -489,6 +489,23 @@ public sealed class ToolbarEditorTests
     }
 
     [Fact]
+    public void SetStyle_takes_the_new_sizes_and_an_outline_color_for_the_bar_and_an_item()
+    {
+        var bar = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(ButtonSize.Triple, true, null, OutlineColor: "#e81123"));
+        Assert.Equal(new ButtonStyle(ButtonSize.Triple, true, false, OutlineColor: "#E81123"), bar.Style);
+        var item = ToolbarEditor.SetStyle(bar, "pin", new ButtonStyle(ButtonSize.Double, OutlineColor: "#00B7C3"));
+        Assert.Equal(new ButtonStyle(ButtonSize.Double, true, false, OutlineColor: "#00B7C3"), item.EffectiveStyle("pin"));
+        AssertValid(item);
+        // An invalid colour is dropped (the item inherits the bar's), the rest of the edit stays.
+        var bad = ToolbarEditor.SetStyle(bar, "pin", new ButtonStyle(Filled: true, OutlineColor: "red"));
+        Assert.Equal(new ButtonStyle(Filled: true), bad.Overrides["pin"]);
+        Assert.Equal("#E81123", bad.EffectiveStyle("pin").OutlineColor);
+        // Clearing the bar's colour goes back to the accent (null); the same colour again changes nothing.
+        Assert.Null(ToolbarEditor.SetStyle(bar, null, bar.Style with { OutlineColor = null }).Style.OutlineColor);
+        Assert.Same(bar, ToolbarEditor.SetStyle(bar, null, bar.Style with { OutlineColor = "#e81123" }));
+    }
+
+    [Fact]
     public void SetStyle_for_a_picker_a_hidden_or_unknown_item_returns_the_input()
     {
         var m = ToolbarModel.Defaults;
@@ -524,6 +541,8 @@ public sealed class ToolbarEditorTests
         string[] junk = ["", "nope", "PIN", "Model", "x y", "../a", "\uD800", "spacer", new string('z', 40)];
         // Quick action names: valid, then what QuickActions can't parse ("/x y" would run "x") or isn't a file name.
         string[] actionNames = ["act", "act", "x y", "a.b", "", new string('q', 65)];
+        // Outline colours: valid (either case), then what the file can't hold (dropped on reading back).
+        string?[] colors = [null, null, "#E81123", "#00b7c3", "#FFF", "#80E81123", "red", "", "#E8112", " #E81123"];
         var invalidActions = 0;
         for (var run = 0; run < 2000; run++)
         {
@@ -551,7 +570,8 @@ public sealed class ToolbarEditorTests
                         : new CustomButton(id, "L", "E8BD", null, "t", true, random.Next(4) == 0 ? junk[random.Next(junk.Length)] + ".png" : null)),
                     7 => ToolbarEditor.RemoveCustom(m, id),
                     8 => ToolbarEditor.SetStyle(m, random.Next(3) == 0 ? null : id,
-                        new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(4), null, random.Next(2) == 0, random.Next(-50, 200), null)),
+                        new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(7), null, random.Next(2) == 0, random.Next(-50, 200), null,
+                            colors[random.Next(colors.Length)])),
                     _ => ToolbarEditor.Move(m, id, 0),
                 };
 

@@ -8,11 +8,14 @@ namespace Hotline.Core.Windowing;
 /// <summary>Where an item sits. The declaration order decides which place keeps an item listed in two.</summary>
 public enum Quadrant { BottomLeft, BottomCenter, BottomRight, TopLeft, TopCenter, TopRight }
 
-public enum ButtonSize { Compact, Normal, Wide }
+/// <summary>The size presets (see <see cref="ToolbarPlan.Metrics(ButtonStyle, bool)"/>); custom buttons stop at 80 DIP.</summary>
+public enum ButtonSize { Compact, Normal, Wide, Double, Triple }
 
 /// <summary>The look of the whole bar or of one item; a null field inherits (item, then bar, then the defaults).
-/// Width and height (DIP) apply to icon buttons only; pickers ignore all of it.</summary>
-public sealed record ButtonStyle(ButtonSize? Size = null, bool? Outline = null, bool? Filled = null, int? Width = null, int? Height = null);
+/// Width and height (DIP) apply to icon buttons only; pickers ignore all of it. <see cref="OutlineColor"/> is a validated
+/// "#RRGGBB" (upper case) for the outline, null for the accent colour.</summary>
+public sealed record ButtonStyle(ButtonSize? Size = null, bool? Outline = null, bool? Filled = null, int? Width = null, int? Height = null,
+    string? OutlineColor = null);
 
 /// <summary>A user-defined button: runs the quick action of that name (a file in actions\) or inserts <see cref="Text"/>
 /// in the message box (and sends it when <see cref="Send"/>). Exactly one of the two is set. <see cref="IconFile"/> is
@@ -77,7 +80,8 @@ public sealed record ToolbarModel(
             o?.Outline ?? Style.Outline ?? Defaults.Style.Outline,
             o?.Filled ?? Style.Filled ?? Defaults.Style.Filled,
             o?.Width ?? Style.Width,
-            o?.Height ?? Style.Height);
+            o?.Height ?? Style.Height,
+            o?.OutlineColor ?? Style.OutlineColor);
     }
 
     public bool Equals(ToolbarModel? other) =>
@@ -173,7 +177,7 @@ public sealed record ToolbarModel(
         var style = ReadStyle(root["style"], "style", warnings);
         return new ToolbarModel(
             Layout(q => placed[q]),
-            new ButtonStyle(style.Size ?? ButtonSize.Normal, style.Outline ?? false, style.Filled ?? false, style.Width, style.Height),
+            style with { Size = style.Size ?? ButtonSize.Normal, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
             ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings),
             buttons,
             warnings);
@@ -309,12 +313,24 @@ public sealed record ToolbarModel(
             size = sizeNode is JsonValue v && v.TryGetValue<string>(out var s)
                 ? Enum.GetValues<ButtonSize>().Cast<ButtonSize?>().FirstOrDefault(z => z.ToString()!.Equals(s, StringComparison.OrdinalIgnoreCase))
                 : null;
-            if (size is null) warnings.Add($"\"{where}.size\" {Show(sizeNode)} isn't compact, normal or wide; normal is used");
+            if (size is null) warnings.Add($"\"{where}.size\" {Show(sizeNode)} isn't compact, normal, wide, double or triple; normal is used");
             size ??= ButtonSize.Normal;
         }
         return new ButtonStyle(size, Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
-            Dip(o["width"], $"{where}.width", warnings), Dip(o["height"], $"{where}.height", warnings));
+            Dip(o["width"], $"{where}.width", warnings), Dip(o["height"], $"{where}.height", warnings), Color(o["outlineColor"], $"{where}.outlineColor", warnings));
     }
+
+    /// <summary>"#RRGGBB" in upper case, or null (the accent colour) for anything else: never a name, markup or a brush.</summary>
+    private static string? Color(JsonNode? node, string where, List<string> warnings)
+    {
+        if (node is null) return null;
+        if (node is JsonValue v && v.TryGetValue<string>(out var s) && IsColor(s)) return s.ToUpperInvariant();
+        warnings.Add($"\"{where}\" {Show(node)} isn't a #RRGGBB colour; the accent colour is used");
+        return null;
+    }
+
+    /// <summary>Exactly "#" and six hex digits.</summary>
+    internal static bool IsColor(string? s) => s is { Length: 7 } && s[0] == '#' && s.Skip(1).All(char.IsAsciiHexDigit);
 
     private static bool? Bool(JsonNode? node, string where, List<string> warnings)
     {
@@ -369,6 +385,7 @@ public sealed record ToolbarModel(
         s.Filled is { } filled ? $"\"filled\": {(filled ? "true" : "false")}" : null,
         s.Width is { } w ? $"\"width\": {w}" : null,
         s.Height is { } h ? $"\"height\": {h}" : null,
+        s.OutlineColor is { } c ? $"\"outlineColor\": {Str(c)}" : null,
     }.OfType<string>()) + " }";
 
     private static string ButtonText(CustomButton b) =>
@@ -391,8 +408,10 @@ public sealed record ToolbarModel(
               // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
               // The effort, model and provider pickers stay together (where the first one is) and ignore the styles below.
-              // "style": the whole bar; size is compact | normal | wide, outline and filled are true | false.
+              // "style": the whole bar; size is compact | normal | wide | double | triple, outline and filled are true | false,
+              // outlineColor is "#RRGGBB" (left out: the accent colour).
               // "overrides": the same keys for one item, plus "width" and "height" ({{MinDip}}-{{MaxDip}}) for icon buttons.
+              // Custom buttons stay within {{MaxDip}} x {{MaxDip}} whatever the size.
               // "buttons": up to {{MaxButtons}} custom buttons; id a-z, 0-9 and -, label up to {{MaxLabel}} characters, icon a Segoe
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from

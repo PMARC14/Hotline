@@ -141,6 +141,75 @@ public sealed class ToolbarModelTests
         Assert.Equal(new ButtonStyle(ButtonSize.Compact, true, false), m.EffectiveStyle("settings"));
     }
 
+    [Theory]
+    [InlineData("double", ButtonSize.Double)]
+    [InlineData("TRIPLE", ButtonSize.Triple)]
+    [InlineData("wide", ButtonSize.Wide)]
+    public void Double_and_triple_sizes_resolve_and_round_trip(string text, ButtonSize size)
+    {
+        var m = Bottom("\"pin\", \"settings\"", $$""", "style": { "size": "{{text}}" }, "overrides": { "pin": { "size": "triple" } }""");
+        Assert.Empty(m.Warnings);
+        Assert.Equal(size, m.Style.Size);
+        Assert.Equal(ButtonSize.Triple, m.Overrides["pin"].Size);
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+        Assert.Contains("\"size\": \"triple\"", m.ToJson());
+    }
+
+    [Fact]
+    public void Unknown_size_is_normal_and_the_warning_names_every_preset()
+    {
+        var m = Bottom("\"pin\"", """, "style": { "size": "quadruple" }""");
+        Assert.Equal(ButtonSize.Normal, m.Style.Size);
+        Assert.Contains(m.Warnings, w => w.Contains("quadruple") && w.Contains("double") && w.Contains("triple"));
+    }
+
+    [Fact]
+    public void Outline_color_is_read_upper_cased_inherited_per_field_and_round_trips()
+    {
+        var m = Bottom("\"pin\", \"settings\", \"recent\"",
+            """, "style": { "outline": true, "outlineColor": "#e81123" }, "overrides": { "pin": { "outlineColor": "#00b7c3" }, "recent": { "filled": true } }""");
+        Assert.Empty(m.Warnings);
+        Assert.Equal("#E81123", m.Style.OutlineColor);
+        Assert.Equal(new ButtonStyle(OutlineColor: "#00B7C3"), m.Overrides["pin"]);
+        Assert.Equal("#00B7C3", m.EffectiveStyle("pin").OutlineColor);
+        Assert.Equal("#E81123", m.EffectiveStyle("settings").OutlineColor);
+        Assert.Equal("#E81123", m.EffectiveStyle("recent").OutlineColor);
+        Assert.True(m.EffectiveStyle("pin").Outline);
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+        Assert.Contains("\"outlineColor\": \"#E81123\"", m.ToJson());
+        Assert.NotEqual(m, m with { Style = m.Style with { OutlineColor = "#0063B1" } });
+    }
+
+    [Fact]
+    public void No_outline_color_means_the_accent_and_is_not_written()
+    {
+        var m = Bottom("\"pin\"", """, "style": { "outline": true }""");
+        Assert.Null(m.Style.OutlineColor);
+        Assert.Null(m.EffectiveStyle("pin").OutlineColor);
+        Assert.DoesNotContain("outlineColor\":", m.ToJson());
+    }
+
+    [Theory]
+    [InlineData("\"red\"")]
+    [InlineData("\"#FFF\"")]
+    [InlineData("\"#80E81123\"")]
+    [InlineData("\"#GG1123\"")]
+    [InlineData("\" #E81123\"")]
+    [InlineData("\"E81123\"")]
+    [InlineData("\"url(#E81123)\"")]
+    [InlineData("\"<Brush/>\"")]
+    [InlineData("14881059")]
+    [InlineData("true")]
+    [InlineData("{}")]
+    public void Bad_outline_colors_are_dropped_with_a_warning(string value)
+    {
+        var m = Bottom("\"pin\"", $$""", "style": { "outline": true, "outlineColor": {{value}} }, "overrides": { "pin": { "outlineColor": {{value}} } }""");
+        Assert.Null(m.Style.OutlineColor);
+        Assert.False(m.Overrides.ContainsKey("pin"));
+        Assert.Equal(2, m.Warnings.Count(w => w.Contains("outlineColor")));
+        Assert.True(m.Style.Outline);
+    }
+
     private static CustomButton? Button(string body, string id = "b")
     {
         var m = Bottom($"\"{id}\"", $$""", "buttons": { "{{id}}": {{body}} }""");

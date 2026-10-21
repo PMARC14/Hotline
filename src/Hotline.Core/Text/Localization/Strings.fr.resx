@@ -604,6 +604,19 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Quad_BottomLeft" xml:space="preserve"><value>En bas à gauche</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>En bas au centre</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>En bas à droite</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Non affiché</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Glissez les éléments entre les quatre groupes ou utilisez les boutons sous chaque élément. Avec un élément sélectionné, Alt+touches de direction le déplace vers un autre groupe et Ctrl+Gauche ou Ctrl+Droite le déplace au sein de son groupe. Les modifications sont enregistrées dans toolbar.json et appliquées immédiatement.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Déplacer vers le groupe de gauche</value></data>

@@ -604,6 +604,19 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>中下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左側群組</value></data>

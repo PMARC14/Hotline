@@ -604,6 +604,19 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>中央下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
+  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
+  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
+  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>非表示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>4 つのグループ間で項目をドラッグするか、各項目の下にあるボタンを使用します。項目にフォーカスがある状態で、Alt+矢印キーで別のグループへ、Ctrl+Left または Ctrl+Right でグループ内を移動できます。変更は toolbar.json に保存され、すぐに適用されます。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>左のグループに移動</value></data>
