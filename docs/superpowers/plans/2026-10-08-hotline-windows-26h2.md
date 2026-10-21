@@ -1,21 +1,17 @@
-# Hotline — Windows 11 26H2 follow-ups
+# Hotline — Windows 11 26H2: what it changed (2026-10-17)
 
-**Status: waiting for this PC to get 26H2** (build 26300). Draft PR, separate from multi-language (Plan 8) and
-ARM64. Read `docs/HANDOFF.md` and the local `CLAUDE.md` first.
+This was the plan for the 26H2 follow-ups; the work is done in 0.4 (PR #9). The design and plan that replaced it:
+`docs/superpowers/specs/2026-10-17-toolbar-v2-and-26h2-design.md` and
+`docs/superpowers/plans/2026-10-17-toolbar-v2-and-26h2.md`.
 
-## Research first (on a 26H2 PC)
+Research on a 26H2 PC (build 26300.9711), recorded in the spec (section 5b and 6):
 
-Research first, on the 26H2 PC, before changing code:
-1. **Settings › About › This PC:** do agent connectors (`odr.exe`, needs 26220.7262+) turn ✓? If so, test Hotline's
-   MCP tools registered as Windows agent connectors, as planned in Plan 7.
-2. **App Actions / Click to Do:** re-run the TESTING.md App Actions section and note any catalog or schema changes.
-3. **Copilot key:** check the key still sends Win+Shift+F23, that the Settings "Customize Copilot key" choice of
-   Hotline survives the upgrade, and that Right Ctrl mode still works.
-4. **The rest of TESTING.md** after the upgrade: OCR, voice, selection, theme following.
-5. Read Microsoft's 26H2 release notes for new developer APIs relevant to a popup assistant (on-device AI APIs,
-   agent features, screen and selection access) and write down which are worth adopting, with the minimum build for
-   each. Gate every new feature with `PlatformSupport` and show it in This PC, so older Windows keeps working.
-
-## Done when
-- The TESTING.md pass on 26H2 is recorded in HANDOFF, agent connectors work or their blocker is written down, and any
-  adopted 26H2 APIs fall back cleanly on 25H2.
+- **Agent connectors (`odr.exe`):** Windows registers the `Mcp` key naming `odr.exe`, but the binary isn't delivered on this PC
+  and Microsoft still calls the connectors a preview. This PC now says "preview, not delivered"; no connector feature was built.
+- **Copilot key:** Windows lets you remap the key in Settings › Bluetooth & devices › Keyboard (also on 25H2 and 24H2), so
+  Hotline's own Right Ctrl mode was removed. `CopilotKeyPressFocusFrame` handling from 0.3 stays.
+- **App Actions / Click to Do:** no catalog or schema change found.
+- **New APIs:** nothing worth adopting. Phi Silica (replaced by "Aion Instruct" per Microsoft's Learn page of 2026-10-12) and the
+  Windows AI APIs were deferred, maybe never: Hotline's on-device route is a local API connection.
+- **Still to hand-test (owner):** the key arriving as before after the upgrade and the "Customize Copilot key" choice of Hotline
+  surviving it; the TESTING.md pass on 26H2.
