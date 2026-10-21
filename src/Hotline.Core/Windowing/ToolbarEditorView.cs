@@ -77,7 +77,7 @@ public static class ToolbarEditorView
         }
         var id = Cut(slug.ToString(), ToolbarModel.MaxId);
         if (id.Length == 0) id = "button";
-        var taken = ToolbarModel.BuiltIn.Concat(m.Buttons.Select(b => b.Id)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var taken = ToolbarModel.BuiltIn.Concat(m.Buttons.Select(b => b.Id)).Append("spacer").ToHashSet(StringComparer.OrdinalIgnoreCase);
         if (!taken.Contains(id)) return id;
         for (var n = 2; ; n++)
         {

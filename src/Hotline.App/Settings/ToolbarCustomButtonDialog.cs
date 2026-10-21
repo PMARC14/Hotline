@@ -49,7 +49,9 @@ internal static class ToolbarCustomButtonDialog
         var insertText = new RadioButton { Content = Strings.Bar_CustomText, GroupName = "action" };
         var actions = new ComboBox { MinWidth = 240, PlaceholderText = choices.Count == 0 ? Strings.Bar_CustomNoActions : "" };
         foreach (var name in choices) actions.Items.Add(name);
-        actions.SelectedItem = choices.FirstOrDefault(c => string.Equals(c, existing?.QuickAction, StringComparison.OrdinalIgnoreCase));
+        actions.SelectedItem = existing?.QuickAction is null
+            ? choices.FirstOrDefault() // adding: "run a quick action" is the default, so it starts with one chosen
+            : choices.FirstOrDefault(c => string.Equals(c, existing.QuickAction, StringComparison.OrdinalIgnoreCase));
         var text = new TextBox { Text = existing?.Text ?? "", AcceptsReturn = true, TextWrapping = TextWrapping.Wrap, MaxLength = 2000, Height = 80 };
         var send = new CheckBox { Content = Strings.Bar_CustomSend, IsChecked = existing?.Send == true };
         foreach (var (element, automationId, name) in new (UIElement, string, string)[]

@@ -148,8 +148,13 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             _focus = null;
             DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () => // after layout: the new items exist then
             {
-                if (Find(this, focus.Preferred) is not Control { IsEnabled: true } c || !c.Focus(FocusState.Keyboard))
-                    (Find(this, focus.Fallback) as Control)?.Focus(FocusState.Keyboard);
+                // An exception escaping a DispatcherQueue callback ends the process.
+                try
+                {
+                    if (Find(this, focus.Preferred) is not Control { IsEnabled: true } c || !c.Focus(FocusState.Keyboard))
+                        (Find(this, focus.Fallback) as Control)?.Focus(FocusState.Keyboard);
+                }
+                catch (Exception ex) { _log.Error("button rows: restoring focus failed", ex); }
             });
         }
     }

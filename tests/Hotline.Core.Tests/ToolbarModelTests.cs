@@ -148,6 +148,14 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
+    public void A_custom_button_called_spacer_is_ignored_with_a_warning()
+    {
+        var m = Bottom("\"pin\"", """, "buttons": { "spacer": { "label": "x", "text": "t" } }""");
+        Assert.Empty(m.Buttons);
+        Assert.Contains(m.Warnings, w => w.Contains("spacer"));
+    }
+
+    [Fact]
     public void Icons_must_be_private_use_hex()
     {
         Assert.Equal(ToolbarModel.DefaultIcon, Button("""{ "label": "x", "icon": "ZZ", "text": "t" }""")!.Icon);

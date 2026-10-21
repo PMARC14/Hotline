@@ -213,6 +213,7 @@ public sealed class ToolbarEditorViewTests
     [InlineData("", "button")]
     [InlineData("Settings", "settings-2")] // a built-in, whatever the case
     [InlineData("NewChat", "newchat-2")]
+    [InlineData("Spacer", "spacer-2")] // the old layout item of that name is reserved
     [InlineData("taken", "taken-2")]
     [InlineData("Taken too", "taken-too")]
     public void NewCustomId_is_a_valid_unused_id_from_the_label(string label, string id)

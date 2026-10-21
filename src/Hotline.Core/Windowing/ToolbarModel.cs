@@ -244,9 +244,11 @@ public sealed record ToolbarModel(
         return buttons;
     }
 
-    /// <summary>The form of a custom button id: 1-32 characters a-z, 0-9 or - (whether it collides with a built-in is checked apart).</summary>
+    /// <summary>The form of a custom button id: 1-32 characters a-z, 0-9 or - (whether it collides with a built-in is checked apart).
+    /// "spacer" is reserved: the old v1 layout item of that name is ignored in the layout lists, so a button with it could never be shown.</summary>
     internal static bool IsCustomId(string? id) =>
-        id is { Length: > 0 and <= MaxId } && id.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '-');
+        id is { Length: > 0 and <= MaxId } && id.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '-')
+        && !id.Equals("spacer", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>The name of a file in actions\ as QuickActions reads and parses it (never a path), at most 64 characters.</summary>
     internal static bool IsActionName(string name) => name.Length <= MaxActionName && Chat.QuickActions.IsName(name);
