@@ -70,7 +70,7 @@ public sealed class SettingsStore(string directory)
             if (files.Count == 0 && s.SchemaVersion < 12 && broken.Count == 0)
                 files = ChatSettings.LegacyDefaultBackends(); // a pre-v12 file ran on the built-in agy (as in Load)
             s.Chat.Backends = Ordered(files,
-                s.Chat.Order is { Count: > 0 } order ? order : legacy?.Select(p => p.Id).ToList());
+                s.Chat.Order is { Count: > 0 } order ? order : LegacyOrder(legacy));
             return Normalize(s);
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { return null; }
@@ -219,12 +219,15 @@ public sealed class SettingsStore(string directory)
             foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                 files.Add(p); // moved into files on the next save
         var list = files.Count > 0 || broken.Count > 0 || !keepLegacyDefault ? files : ChatSettings.LegacyDefaultBackends();
-        return Ordered(list, order is { Count: > 0 } ? order : legacy?.Select(p => p.Id).ToList() ?? []);
+        return Ordered(list, order is { Count: > 0 } ? order : LegacyOrder(legacy));
     }
+
+    private static List<string>? LegacyOrder(List<BackendProfile>? legacy) => legacy?.Where(p => p is not null).Select(p => p.Id).ToList();
 
     private static List<BackendProfile> Ordered(List<BackendProfile> profiles, List<string>? order)
     {
-        var rank = (order ?? []).Select((id, i) => (id, i)).GroupBy(x => x.id, StringComparer.OrdinalIgnoreCase)
+        // A hand edit can leave null or blank entries in the list: skip them rather than throw on a null key.
+        var rank = (order ?? []).Select((id, i) => (id, i)).Where(x => !string.IsNullOrWhiteSpace(x.id)).GroupBy(x => x.id, StringComparer.OrdinalIgnoreCase)
             .ToDictionary(g => g.Key, g => g.First().i, StringComparer.OrdinalIgnoreCase);
         return profiles.OrderBy(p => rank.TryGetValue(p.Id, out var r) ? r : int.MaxValue)
             .ThenBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList();
