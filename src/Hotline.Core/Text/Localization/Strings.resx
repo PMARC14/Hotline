@@ -436,6 +436,7 @@ Deny:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} The last good version stays in force.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>the server exited (exit code {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>couldn't start {0}</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json couldn't be read: {0}</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>

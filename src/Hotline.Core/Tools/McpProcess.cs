@@ -9,27 +9,23 @@ using Hotline.Core.Text.Localization;
 namespace Hotline.Core.Tools;
 
 /// <summary>
-/// How an MCP server process is started. Mirrors the SDK's StdioClientTransport (2.2.0) so configs behave the same:
-/// on Windows the command runs through <c>cmd.exe /c</c> (so <c>npx</c>/<c>.cmd</c> shims work), arguments without
-/// whitespace get <c>&amp;^&lt;&gt;|</c> caret-escaped, the environment is inherited with the server's entries on top.
+/// How an MCP server process is started. Like the SDK's StdioClientTransport (2.2.0) so configs behave the same, except
+/// that on Windows only what isn't an .exe (<c>npx</c>/<c>.cmd</c> shims, a command not found) runs through
+/// <c>cmd.exe /c</c>, and then only with arguments cmd passes as they are: cmd expands <c>%VAR%</c> even inside quotes
+/// and doesn't treat <c>\"</c> as an escape, so a quote, <c>%</c>, <c>&amp;</c> and the like in mcp.json (or a
+/// discovered server) could run extra commands. The environment is inherited with the server's entries on top.
 /// We start the process ourselves so the app can put it in its kill-on-close job.
 /// </summary>
 public static partial class McpProcess
 {
     private static readonly UTF8Encoding NoBomUtf8 = new(encoderShouldEmitUTF8Identifier: false);
 
-    public static ProcessStartInfo CreateStartInfo(McpServerConfig server, bool windows)
+    /// <param name="fileExists">Looks up the command the way cmd would (tests pass a fake file system).</param>
+    /// <exception cref="IOException">The server would need cmd.exe and has a character it can't pass safely.</exception>
+    public static ProcessStartInfo CreateStartInfo(McpServerConfig server, bool windows, Func<string, bool>? fileExists = null)
     {
-        var command = server.Command;
-        IEnumerable<string> args = server.Args;
-        if (windows && !string.Equals(Path.GetFileName(command), "cmd.exe", StringComparison.OrdinalIgnoreCase))
-        {
-            args = ["/c", command, .. server.Args];
-            command = "cmd.exe";
-        }
         var psi = new ProcessStartInfo
         {
-            FileName = command,
             RedirectStandardInput = true,
             RedirectStandardOutput = true,
             RedirectStandardError = true,
@@ -40,16 +36,31 @@ public static partial class McpProcess
             StandardOutputEncoding = NoBomUtf8,
             StandardErrorEncoding = NoBomUtf8,
         };
-        foreach (var a in args) psi.ArgumentList.Add(windows && !Whitespace().IsMatch(a) ? CmdSpecial().Replace(a, m => "^" + m.Value) : a);
         foreach (var (k, v) in server.Env) psi.Environment[k] = v;
+        var command = server.Command;
+        IEnumerable<string> args = server.Args;
+        // An explicit cmd.exe is the user's own command line, passed as written.
+        if (windows && !string.Equals(Path.GetFileName(command), "cmd.exe", StringComparison.OrdinalIgnoreCase))
+        {
+            var resolved = Platform.CommandResolver.Find(command, server.WorkingDirectory, psi.Environment.TryGetValue("PATH", out var path) ? path : null,
+                psi.Environment.TryGetValue("PATHEXT", out var ext) ? ext : null, fileExists ?? File.Exists);
+            if (resolved is not null && Path.GetExtension(resolved).ToLowerInvariant() is ".exe" or ".com")
+                command = resolved; // started directly: arguments reach it exactly as written
+            else
+            {
+                if (server.Args.Prepend(command).Any(CmdUnsafe().IsMatch))
+                    throw new IOException(L.F(Strings.Mcp_UnsafeArgument, server.Name, command));
+                args = ["/c", command, .. server.Args];
+                command = "cmd.exe";
+            }
+        }
+        psi.FileName = command;
+        foreach (var a in args) psi.ArgumentList.Add(a);
         return psi;
     }
 
-    [GeneratedRegex(@"\s", RegexOptions.CultureInvariant)]
-    private static partial Regex Whitespace();
-
-    [GeneratedRegex("[&^><|]", RegexOptions.CultureInvariant)]
-    private static partial Regex CmdSpecial();
+    [GeneratedRegex("[\"%^&|<>!\r\n]", RegexOptions.CultureInvariant)]
+    private static partial Regex CmdUnsafe();
 }
 
 /// <summary>Forwards a server's stderr to the log, at most <c>perMinute</c> lines a minute, and keeps a short tail for errors.</summary>

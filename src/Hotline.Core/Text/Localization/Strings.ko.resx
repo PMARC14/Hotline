@@ -436,6 +436,7 @@
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 마지막으로 정상이던 버전이 계속 적용됩니다.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>서버가 종료되었습니다(종료 코드 {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0}을(를) 시작할 수 없습니다</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다: {0}</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
