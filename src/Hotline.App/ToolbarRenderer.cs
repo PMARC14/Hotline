@@ -11,6 +11,7 @@ using Microsoft.UI.Xaml.Controls.Primitives;
 using Microsoft.UI.Xaml.Media;
 using Microsoft.UI.Xaml.Media.Imaging;
 using Windows.Storage.Streams;
+using Hotline.Core.Theming;
 
 namespace Hotline.App;
 
@@ -112,10 +113,12 @@ internal sealed class ToolbarRenderer
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
         // The look, after placing; only values that differ are set. The pickers take none of it (their widths are ProviderBar's).
-        foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id));
-        foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id));
-        ApplyStyle(_top.More, model.Style);
-        ApplyStyle(_bottom.More, model.Style);
+        // Sizes come from the same Metrics as Fit's widths (custom buttons capped at 80 DIP), so what is drawn is what was fitted.
+        var accent = AccentOutline();
+        foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
+        foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
+        ApplyStyle(_top.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
+        ApplyStyle(_bottom.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
         Model = model;
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
         if (_lastFit is { } last) Fit(last.Room, last.PickersMin);
@@ -135,7 +138,7 @@ internal sealed class ToolbarRenderer
         : _builtIn.TryGetValue(id, out var b) ? b
         : _customButtons[id].Button;
 
-    private double Width(string id) => ToolbarPlan.Metrics(Model.EffectiveStyle(id)).Width;
+    private double Width(string id) => ToolbarPlan.Metrics(Model, id).Width;
 
     private double MoreWidth => ToolbarPlan.Metrics(Model.Style).Width;
 
@@ -203,14 +206,40 @@ internal sealed class ToolbarRenderer
 
     // ---- style ----
 
-    private void ApplyStyle(ButtonBase button, ButtonStyle style)
+    /// <summary>The outline's thickness: drawn inside the button's fixed width and height, so it never changes the layout.</summary>
+    private static readonly Thickness OutlineThickness = new(1.5);
+
+    private void ApplyStyle(ButtonBase button, ButtonStyle style, ButtonMetrics size, Windows.UI.Color accent)
     {
-        var size = ToolbarPlan.Metrics(style);
         var key = (button is ToggleButton ? "ToolbarToggle" : "ToolbarButton") + (style.Outline == true ? "Outline" : "") + (style.Filled == true ? "Filled" : "");
         if (_popup.Root.Resources[key] is Style look && button.Style != look) button.Style = look;
         if (button.Width != size.Width) button.Width = size.Width;
         if (button.Height != size.Height) button.Height = size.Height;
         if (button.FontSize != size.FontSize) button.FontSize = size.FontSize;
+        // The outline in a colour (the file's #RRGGBB, validated by Resolve, or the accent) over the style's grey border: a
+        // brush made from parsed bytes, never markup. Hover and pressed keep the template's own states.
+        if (style.Outline == true)
+        {
+            var color = style.OutlineColor is { } hex && ThemeColor.TryParse(hex, out var c) ? Windows.UI.Color.FromArgb(0xFF, c.R, c.G, c.B) : accent;
+            if (button.ReadLocalValue(Control.BorderBrushProperty) is not SolidColorBrush brush || brush.Color != color) button.BorderBrush = new SolidColorBrush(color);
+            if (button.BorderThickness != OutlineThickness) button.BorderThickness = OutlineThickness;
+        }
+        else
+        {
+            // Back to the style's own (no) border.
+            if (button.ReadLocalValue(Control.BorderBrushProperty) != DependencyProperty.UnsetValue) button.ClearValue(Control.BorderBrushProperty);
+            if (button.ReadLocalValue(Control.BorderThicknessProperty) != DependencyProperty.UnsetValue) button.ClearValue(Control.BorderThicknessProperty);
+        }
+    }
+
+    /// <summary>The default outline colour: a contrast theme's highlight colour, else the Windows accent (read at each apply).</summary>
+    private static Windows.UI.Color AccentOutline()
+    {
+        if (SystemTheme.Colors.Contrast is { } contrast && ThemeColor.TryParse(contrast.Highlight, out var h))
+            return Windows.UI.Color.FromArgb(0xFF, h.R, h.G, h.B);
+        return Application.Current.Resources.TryGetValue("SystemAccentColor", out var value) && value is Windows.UI.Color accent
+            ? accent
+            : Windows.UI.Color.FromArgb(0xFF, 0x00, 0x78, 0xD4); // Windows' default blue
     }
 
     // ---- the "⋯" menu ----
