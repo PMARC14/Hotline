@@ -88,7 +88,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     public void OnActivation(ActivationRequest request)
     {
         log.Info($"activation kind={request.Kind} first={request.IsFirstLaunch}");
-        log.Debug($"activation uri={request.Uri}");
+        log.Debug($"activation uri={LogText.SafeUri(request.Uri)}"); // never the query: App Actions links carry your text or images
         if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
         {
             DemoRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["scene"]);
