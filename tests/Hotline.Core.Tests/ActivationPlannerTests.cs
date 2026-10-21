@@ -15,13 +15,13 @@ public class ActivationPlannerTests
             ActivationPlanner.Plan(new ActivationRequest(ActivationKind.ProtocolForResults, new Uri("hotline://key?state=Down"), IsFirstLaunch: true)));
 
     [Fact]
-    public void Protocol_without_key_state_just_shows_popup()
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: true),
+    public void Protocol_without_key_state_shows_popup_without_reading_the_selection() // any web page can launch hotline://open
+        => Assert.Equal(new ActivationPlan(null, ShowPopup: true, ReadSelection: false),
             ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://open"), IsFirstLaunch: false)));
 
     [Fact]
     public void Protocol_with_missing_uri_shows_popup()
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: true),
+        => Assert.Equal(new ActivationPlan(null, ShowPopup: true, ReadSelection: false),
             ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, null, IsFirstLaunch: false)));
 
     [Fact]

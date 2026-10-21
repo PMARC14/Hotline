@@ -122,7 +122,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
         await StopAsync();
         var inherit = profile.Tools == ToolMode.Inherit;
         var cwd = inherit ? WorkingDirectory() : homeDirectory; // chat only has no tools; home: `claude --resume` there finds it
-        if (resume is { WorkingDirectory: { Length: > 0 } was } && Path.IsPathFullyQualified(was)) cwd = was; // Claude Code finds sessions by folder (recreated below if gone)
+        if (resume is { WorkingDirectory: { Length: > 0 } was } && Hotline.Core.Platform.SafeDirectory.IsLocal(was)) cwd = was; // Claude Code finds sessions by folder (recreated below if gone)
         Directory.CreateDirectory(cwd);
         var args = ClaudeCodeProtocol.BuildArgs(profile, prompt).ToList();
         if (resume is not null) args.AddRange(["--resume", resume.Id]);

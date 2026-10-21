@@ -143,7 +143,7 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         // Chat only runs in the home folder too (so `agy --conversation` from a home terminal finds it); the workspace
         // (the hotline agent, attachments) is added to it.
         var cwd = inherit ? WorkingDirectory() : homeDirectory;
-        if (resume is { WorkingDirectory: { Length: > 0 } was } && Directory.Exists(was)) cwd = was; // where it began
+        if (resume is { WorkingDirectory: { Length: > 0 } was } && Hotline.Core.Platform.SafeDirectory.IsLocal(was) && Directory.Exists(was)) cwd = was; // where it began
         var args = AgyProtocol.BuildArgs(profile, workspace.Root).ToList();
         if (resume is not null) args.AddRange(["--conversation", resume.Id]);
         // Group new chat-only conversations in the "Hotline" project when it exists; leave the user's own folders alone.

@@ -50,4 +50,39 @@ public sealed class HistoryStoreTests : IDisposable
         Assert.False(File.Exists(store.PathFor("old")));
         Assert.True(File.Exists(store.PathFor("new")));
     }
+
+    [Theory]
+    [InlineData(@"..\escape")]
+    [InlineData(@"C:\escape")]
+    [InlineData("a/b")]
+    [InlineData("")]
+    public void An_unsafe_id_never_touches_the_disk_and_never_throws(string id)
+    {
+        var store = new HistoryStore(_dir, _clock);
+        store.Append(id, new ChatMessage("m", ChatRole.User, "x", [], _clock.GetUtcNow()));
+        store.SaveMeta(id, new HistoryStore.Meta("t", _clock.GetUtcNow(), null, null, null, 1));
+
+        Assert.Empty(store.Load(id));
+        Assert.Null(store.LoadMeta(id));
+        Assert.Throws<ArgumentException>(() => store.PathFor(id));
+        Assert.False(Directory.Exists(_dir)); // nothing was created
+        Assert.False(File.Exists(Path.Combine(Path.GetDirectoryName(_dir)!, "escape.jsonl")));
+    }
+
+    [Fact]
+    public void A_very_long_id_is_refused()
+    {
+        var store = new HistoryStore(_dir, _clock);
+        store.Append(new string('a', 65), new ChatMessage("m", ChatRole.User, "x", [], _clock.GetUtcNow()));
+        Assert.False(Directory.Exists(_dir));
+    }
+
+    [Fact]
+    public void Files_with_odd_names_are_not_listed_as_chats()
+    {
+        var store = new HistoryStore(_dir, _clock);
+        store.Append("ok", new ChatMessage("m", ChatRole.User, "x", [], _clock.GetUtcNow()));
+        File.WriteAllText(Path.Combine(_dir, "has space.jsonl"), "{\"id\":\"m\",\"role\":\"user\",\"text\":\"y\",\"at\":\"2026-01-01T00:00:00Z\"}\n");
+        Assert.Equal(["ok"], store.Recent(10).Select(s => s.Id));
+    }
 }

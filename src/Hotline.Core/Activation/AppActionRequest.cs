@@ -1,4 +1,5 @@
 using System.Text.RegularExpressions;
+using Hotline.Core.Platform;
 
 namespace Hotline.Core.Activation;
 
@@ -32,17 +33,30 @@ public sealed partial record AppActionRequest(string? QuickAction, string? Text,
         var values = new Dictionary<string, string>(inputs ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
         foreach (var (key, value) in Query(uri.Query)) values.TryAdd(key, value);
         var text = values.TryGetValue("text", out var t) && !string.IsNullOrWhiteSpace(t) ? (t.Length > MaxTextChars ? t[..MaxTextChars] : t) : null;
-        var image = values.TryGetValue("image", out var i) && IsLocalImage(i) ? i : null;
-        if (values.ContainsKey("image") && image is null) return null; // an image we won't open: ignore the launch
+        var fromWindows = IsWindowsCaller(callerPackageFamily);
+        // A path in the link would let any web page attach (or point Windows at) a file: images come only from the
+        // inputs Windows itself hands over.
+        var image = inputs is not null && inputs.TryGetValue("image", out var i) ? i : null;
+        var wantedImage = image is not null || values.ContainsKey("image");
+        if (!fromWindows || image is null || !IsSafeLocalImagePath(image)) image = null;
+        if (wantedImage && image is null) return null; // an image we won't open: ignore the launch
         if (text is null && image is null) return null;
-        var fromWindows = callerPackageFamily?.EndsWith(WindowsPublisherId, StringComparison.OrdinalIgnoreCase) == true;
         return new AppActionRequest(quickAction, text, image, fromWindows);
     }
 
-    /// <summary>Only a local, absolute .png/.jpg/.jpeg path (no network shares, nothing executable).</summary>
-    private static bool IsLocalImage(string path) =>
-        Path.IsPathFullyQualified(path) && !path.StartsWith(@"\\", StringComparison.Ordinal)
-        && Path.GetExtension(path).ToLowerInvariant() is ".png" or ".jpg" or ".jpeg";
+    public static bool IsWindowsCaller(string? callerPackageFamily) =>
+        callerPackageFamily?.EndsWith(WindowsPublisherId, StringComparison.OrdinalIgnoreCase) == true;
+
+    /// <summary>
+    /// Only a .png/.jpg/.jpeg on a local drive letter: no network or device paths (in any mix of slashes), no
+    /// relative paths, nothing executable. Checked before the file is touched.
+    /// </summary>
+    public static bool IsSafeLocalImagePath(string? path)
+    {
+        if (path is null || !SafeDirectory.IsLocal(path) || Path.GetExtension(path).ToLowerInvariant() is not (".png" or ".jpg" or ".jpeg")) return false;
+        try { return new DriveInfo(path[..1]).DriveType != DriveType.Network; } // a mapped share is a network path too
+        catch (ArgumentException) { return false; }
+    }
 
     private static IEnumerable<(string, string)> Query(string query)
     {

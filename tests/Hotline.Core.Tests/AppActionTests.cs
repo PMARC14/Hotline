@@ -49,6 +49,26 @@ public sealed class AppActionTests
     }
 
     [Theory]
+    [InlineData("//attacker.com/share/a.png")]
+    [InlineData(@"\/attacker.com/share/a.png")]
+    [InlineData(@"\\?\UNC\attacker.com\share\a.png")]
+    [InlineData(@"\\.\pipe\x")]
+    public void Network_and_device_image_paths_are_refused(string path) =>
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(("image", path)), Windows));
+
+    [Fact]
+    public void An_image_in_the_link_itself_is_never_opened() // any web page can write a link; only Windows' own inputs carry images
+    {
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask?image=C%3A%5CUsers%5Cme%5Csecret.png"), null, Windows));
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask?image=C%3A%5Cx.png"), null, null));
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask?image=C%3A%5Cx.png"), Inputs(), Windows));
+    }
+
+    [Fact]
+    public void An_image_input_from_another_app_is_ignored() =>
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(("image", @"C:\Users\me\shot.png")), "Contoso.App_abc123"));
+
+    [Theory]
     [InlineData("hotline-action://run/..%2Fevil")]
     [InlineData("hotline-action://run/")]
     [InlineData("hotline-action://unknown")]
