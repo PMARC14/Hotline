@@ -264,8 +264,8 @@ Weigeren:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Instellingen › Privacy en beveiliging › Spraak › Online spraakherkenning, en een microfoon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows-agentconnectors</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe gevonden; de connectors verschijnen als hulpmiddelservers windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe niet gevonden (nog niet ingeschakeld op deze pc)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>vereist Windows-build 26220.7262 of later (bijv. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe niet gevonden: Windows vermeldt agent-connectors nog als preview en deze is niet geleverd aan deze pc</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>vereist een recente Windows 11-build (26220.7262 of later); Windows vermeldt agent-connectors nog als preview</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>App-acties (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>geregistreerd; Click to Do zelf vereist een Copilot+ pc</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>vereist Windows 11 24H2 (build 26100) of later</value></data>

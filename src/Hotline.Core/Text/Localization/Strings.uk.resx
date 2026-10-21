@@ -264,8 +264,8 @@
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Параметри › Конфіденційність і безпека › Мовлення › Онлайнове розпізнавання мовлення, а також мікрофон</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Конектори агентів Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>знайдено odr.exe; його конектори з'являються як сервери інструментів windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe не знайдено (на цьому ПК ще не ввімкнено)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>потрібна збірка Windows 26220.7262 або новіша (наприклад 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe не знайдено: Windows досі вказує конектори агентів як попередню версію, і її не доставлено на цей ПК</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>потрібна нещодавня збірка Windows 11 (26220.7262 або новіша); Windows досі вказує конектори агентів як попередню версію</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Дії програм (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>зареєстровано; саме Click to Do потребує ПК Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>потрібна Windows 11 24H2 (збірка 26100) або новіша</value></data>

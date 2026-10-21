@@ -56,6 +56,29 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     height (the bottom padding and move grip were cut off); no empty band beside an empty panel; the newest text
     stays in view; the panel never left off-screen by the self-test; 26H2's Copilot-key focus frame (below).
   - **Not yet hand-tested by the owner:** real Alt-drags across monitors with mixed DPI (on the desktop).
+- **In 0.4** (PR #9 `windows-26h2`, not merged yet; `version.txt` says `0.4`):
+  - **Button rows v2.** `toolbar.json` has four groups (`top` / `items`, each with `left` / `right`), a `style` (size compact |
+    normal | wide, outline, filled), per-item `overrides`, and custom `buttons` that run a quick action (by name) or insert or
+    send a text. Everything read goes through `ToolbarModel.Resolve` (Core: never throws, per-field fallback, clamps);
+    everything edited through `ToolbarEditor` (Core); `ToolbarFile` loads and saves (a v1 file is migrated and the old one kept
+    as `toolbar.json.old`; a v2 file with warnings, or a version above 2, is never rewritten; an unreadable file is left alone
+    and the defaults run). `ToolbarPlan` with `ToolbarLayout.Fit` / `FitRow` decide what shows and what goes into the ⋯ menu;
+    `ToolbarRenderer` (App) builds the rows. Settings › Window › Button rows is a four-corner editor: drag and drop, arrow
+    buttons, Alt / Ctrl + arrow, a "Not shown" strip, a look flyout per item and a custom button dialog
+    (`ToolbarQuadrantEditor*.cs`; AutomationIds are `bar-*` and `quadrant-*`).
+  - Schema v14: Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, see `docs/copilot-key.md`). The
+    upgrade archives `settings.json` as `settings.json.old` (next free `.old2` …), leaves connection files untouched, and moves
+    `minWidth` 600 → 680 when it was exactly 600. Default panel width 680. The generated `hotline.wav` ships as the default
+    sound; sounds stay off by default.
+  - Reset settings also restores `toolbar.json`; a hidden `.defaults/toolbar.json` is kept like the settings copy.
+  - 26H2: agent connectors are still a Windows preview. This PC (26300.9711) has the Windows `Mcp` registry key but no
+    `odr.exe`, so This PC says "preview, not delivered" and no longer "needs a build". Phi Silica / the Windows AI APIs and
+    `odr.exe` discovery were researched and **deferred, maybe never** (owner, 2026-10-17: Hotline's on-device route is a
+    local API connection). No new 26H2 API was worth adopting.
+  - **Not hand-tested yet (owner):** mouse drags (inside and between corners, to "Not shown", across monitors and DPI), the ⋯
+    menu opening Prompt / Continue in and surviving a `toolbar.json` change, outline / filled / sizes in light, dark and
+    contrast themes, 24 custom buttons at 320 DIP, and that the Copilot key still arrives as before after the 26H2 upgrade
+    with the "Customize Copilot key" choice of Hotline surviving it (TESTING.md has the list).
 - **Open PR #29** (`continue-in-targets`, ships as **0.5**): Continue in to web pages, Open WebUI (a real chat) and apps,
   from a shared list or per connection; built from `docs/superpowers/plans/2026-10-15-continue-in-targets.md`, reviewed,
   998 tests. Waits for 0.4 (26H2); bump `version.txt` when it merges. Hand-test list:
@@ -73,9 +96,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **Next (new chat): Windows 11 26H2** — the dev laptop runs 26H2 since 2026-10-17. PR #9 (draft, branch
-   `windows-26h2`, kept up to date with `main`): agent connectors (`odr.exe`), App Actions, the Copilot key (26H2's
-   `CopilotKeyPressFocusFrame`, see the hard-won facts), re-run TESTING.md, new APIs behind `PlatformSupport` checks.
+1. **Next: merge PR #9 (0.4)** once the owner has hand-tested the list above.
 2. Then PR #29 (Continue in: web pages, Open WebUI, apps; merge `main` into it first: on 2026-10-17 that conflicted in
    20 files — the 17 `Strings*.resx` (both sides added strings: keep both), `App.xaml.cs`, `SettingsWindow.xaml.cs`
    and `docs/HANDOFF.md`, so it was left for that chat) and region capture on multi-monitor / mixed DPI plus the panel's hand test
@@ -102,7 +123,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Versions (toward 1.0)
 
-- `version.txt` holds major.minor (now `0.3`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch
+- `version.txt` holds major.minor (now `0.4`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch
   being the next number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml): bumping
   to `0.3` starts at **v0.3.0**, then v0.3.1, … (until 2026-10-16 the patch
   was the GitHub run number, which is why 0.2 reached .25). The Store package is the same version plus `.0`.
@@ -110,7 +131,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   and the fourth part to be `0`: `0.3.0.0` follows `0.2.25.0` fine.
 - **The plan:**
   - **0.3** (released 2026-10-17) — the Codex-test feedback and the movable, resizable panel.
-  - **0.4** — the Windows 11 26H2 work (#9), next (owner, 2026-10-17).
+  - **0.4** — button rows v2, 26H2 wording, Right Ctrl mode dropped, width 680 (#9; built, awaiting the owner's hand test).
   - **0.5** — everything else left: Continue in (PR #29, now with a ready-made Gemini entry), the multi-monitor /
     mixed-DPI region capture fix, the panel's desktop hand test, the shipped sound. Feature complete for 1.0; after
     that only fixes, polish and one Store update (the first since 0.3.0.0) certified with all 17 languages.

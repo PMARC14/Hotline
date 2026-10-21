@@ -264,8 +264,8 @@
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — 설정 › 개인 정보 및 보안 › 음성 › 온라인 음성 인식, 그리고 마이크</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows 에이전트 커넥터</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe를 찾았습니다. 커넥터는 windows-… 도구 서버로 표시됩니다</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe를 찾을 수 없습니다(이 PC에서 아직 켜지지 않음)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows 빌드 26220.7262 이상 필요(예: 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe를 찾을 수 없습니다: Windows에서 아직 에이전트 커넥터를 미리 보기로 표시하며, 이 PC에 배포되지 않았습니다</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>최근 Windows 11 빌드(26220.7262 이상) 필요; Windows에서 아직 에이전트 커넥터를 미리 보기로 표시함</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>앱 동작(Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>등록됨. Click to Do 자체는 Copilot+ PC가 필요합니다</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2(빌드 26100) 이상 필요</value></data>

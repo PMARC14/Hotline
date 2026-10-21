@@ -264,8 +264,8 @@ Tolak:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Pengaturan › Privasi &amp; keamanan › Ucapan › Pengenalan ucapan daring, dan mikrofon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Konektor agen Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe ditemukan; konektornya muncul sebagai server alat windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe tidak ditemukan (belum diaktifkan di PC ini)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>perlu build Windows 26220.7262 atau yang lebih baru (mis. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe tidak ditemukan: Windows masih mencantumkan konektor agen sebagai pratinjau, dan belum dikirimkan ke PC ini</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>perlu build Windows 11 terbaru (26220.7262 atau yang lebih baru); Windows masih mencantumkan konektor agen sebagai pratinjau</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Aksi Aplikasi (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>terdaftar; Click to Do sendiri memerlukan PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>perlu Windows 11 24H2 (build 26100) atau yang lebih baru</value></data>

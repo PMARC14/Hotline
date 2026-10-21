@@ -264,8 +264,8 @@
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — सेटिंग्स › गोपनीयता और सुरक्षा › वाक् › ऑनलाइन वाक् पहचान, और एक माइक्रोफ़ोन</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows एजेंट कनेक्टर</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe मिला; इसके कनेक्टर windows-… टूल सर्वर के रूप में दिखते हैं</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe नहीं मिला (इस PC पर अभी चालू नहीं)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows बिल्ड 26220.7262 या बाद का चाहिए (जैसे 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe नहीं मिला: Windows अभी भी एजेंट कनेक्टर्स को प्रीव्यू के रूप में सूचीबद्ध करता है, और यह इस PC पर डिलीवर नहीं किया गया है</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>हाल ही का Windows 11 बिल्ड (26220.7262 या बाद का) चाहिए; Windows अभी भी एजेंट कनेक्टर्स को प्रीव्यू के रूप में सूचीबद्ध करता है</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>ऐप क्रियाएँ (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>पंजीकृत; Click to Do के लिए स्वयं Copilot+ PC चाहिए</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (बिल्ड 26100) या बाद का चाहिए</value></data>

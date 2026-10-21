@@ -264,8 +264,8 @@
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — [設定] › [プライバシーとセキュリティ] › [音声認識] › [オンライン音声認識]、およびマイク</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows エージェント コネクタ</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe が見つかりました。コネクタは windows-… ツール サーバーとして表示されます</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe が見つかりません (この PC ではまだ有効になっていません)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows ビルド 26220.7262 以降が必要です (例: 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe が見つかりません: Windows ではエージェント コネクタがまだプレビューとして表示されており、この PC には配信されていません</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>最近の Windows 11 ビルド (26220.7262 以降) が必要です。Windows ではエージェント コネクタがまだプレビューとして表示されています</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>アプリ アクション (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>登録済み。Click to Do 自体には Copilot+ PC が必要です</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (ビルド 26100) 以降が必要です</value></data>

@@ -264,8 +264,8 @@ Nega:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Impostazioni › Privacy e sicurezza › Comandi vocali › Riconoscimento vocale online, e un microfono</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Connettori degli agenti di Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe trovato; i suoi connettori compaiono come server di strumenti windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe non trovato (non ancora attivato su questo PC)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>richiede la build di Windows 26220.7262 o successiva (ad es. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe non trovato: Windows elenca ancora i connettori di agenti come anteprima e non è stato distribuito a questo PC</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>richiede una build recente di Windows 11 (26220.7262 o successiva); Windows elenca ancora i connettori di agenti come anteprima</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Azioni app (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registrate; Click to Do stesso richiede un PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>richiede Windows 11 24H2 (build 26100) o successivo</value></data>

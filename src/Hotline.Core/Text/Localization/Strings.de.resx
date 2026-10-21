@@ -264,8 +264,8 @@ Verweigern:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Einstellungen › Datenschutz und Sicherheit › Spracherkennung › Online-Spracherkennung, und ein Mikrofon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows-Agent-Connectors</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe gefunden; ihre Connectors erscheinen als Toolserver windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe nicht gefunden (auf diesem PC noch nicht aktiviert)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>benötigt Windows-Build 26220.7262 oder neuer (z. B. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe nicht gefunden: Windows führt Agent-Connectors noch als Vorschau auf und sie werden auf diesem PC nicht bereitgestellt</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>benötigt einen aktuellen Windows 11-Build (26220.7262 oder neuer); Windows führt Agent-Connectors noch als Vorschau auf</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>App-Aktionen (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registriert; Click to Do selbst benötigt einen Copilot+ PC</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>benötigt Windows 11 24H2 (Build 26100) oder neuer</value></data>

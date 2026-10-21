@@ -264,8 +264,8 @@ Deny:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Settings › Privacy &amp; security › Speech › Online speech recognition, and a microphone</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows agent connectors</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>found odr.exe; its connectors appear as windows-… tool servers</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe not found (not turned on for this PC yet)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>needs Windows build 26220.7262 or later (e.g. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe not found: Windows still lists agent connectors as a preview, and it isn't delivered to this PC</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>needs a recent Windows 11 build (26220.7262 or later); Windows still lists agent connectors as a preview</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>App Actions (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registered; Click to Do itself needs a Copilot+ PC</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>needs Windows 11 24H2 (build 26100) or later</value></data>

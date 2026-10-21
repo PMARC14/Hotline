@@ -264,8 +264,8 @@ Denegar:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Configuración › Privacidad y seguridad › Voz › Reconocimiento de voz en línea, y un micrófono</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Conectores de agentes de Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>se encontró odr.exe; sus conectores aparecen como servidores de herramientas windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>no se encontró odr.exe (aún no está activado en este equipo)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>requiere la compilación 26220.7262 de Windows o posterior (p. ej. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>no se encontró odr.exe: Windows aún muestra los conectores de agente como versión preliminar y no se ha entregado a este equipo</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>requiere una compilación reciente de Windows 11 (26220.7262 o posterior); Windows aún muestra los conectores de agente como versión preliminar</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Acciones de aplicación (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registradas; Click to Do en sí requiere un equipo Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>requiere Windows 11 24H2 (compilación 26100) o posterior</value></data>

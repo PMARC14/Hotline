@@ -264,8 +264,8 @@ Reddet:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Ayarlar › Gizlilik ve güvenlik › Konuşma › Çevrimiçi konuşma tanıma ve bir mikrofon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows aracı bağlayıcıları</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe bulundu; bağlayıcıları windows-… araç sunucuları olarak görünür</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe bulunamadı (bu bilgisayarda henüz açılmamış)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>Windows 26220.7262 veya sonraki derleme gerekir (ör. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe bulunamadı: Windows, aracı bağlayıcılarını hâlâ önizleme olarak listeliyor ve bu bilgisayara teslim edilmedi</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>yeni bir Windows 11 derlemesi gerekir (26220.7262 veya sonraki); Windows, aracı bağlayıcılarını hâlâ önizleme olarak listeliyor</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Uygulama Eylemleri (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>kaydedildi; Click to Do'nun kendisi bir Copilot+ PC gerektirir</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>Windows 11 24H2 (derleme 26100) veya sonrası gerekir</value></data>

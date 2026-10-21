@@ -23,6 +23,16 @@ public static class PlatformSupport
     /// <summary>App Actions on Windows (Click to Do, the action catalog): Windows 11 24H2 (26100) and later.</summary>
     public static bool AppActions(WindowsBuild v) => v.Build >= 26100;
 
-    /// <summary>The on-device agent registry (odr.exe) with Windows' MCP connectors: 26220.7262 and later.</summary>
+    /// <summary>The on-device agent registry (odr.exe) with Windows' MCP connectors: 26220.7262 and later. A build number is not
+    /// proof: Microsoft still calls the connectors a preview, and 26H2 (26300) can be above it without odr.exe being delivered.</summary>
     public static bool AgentConnectors(WindowsBuild v) => v.Build > 26220 || (v.Build == 26220 && v.Revision >= 7262);
+
+    /// <summary>What This PC says about agent connectors: the build is too old, the build qualifies but odr.exe isn't there
+    /// (a preview that isn't delivered to this PC), or odr.exe was found.</summary>
+    public static AgentConnectorsState AgentConnectorsStateOf(WindowsBuild v, bool odrPresent) =>
+        odrPresent ? AgentConnectorsState.Ready
+        : AgentConnectors(v) ? AgentConnectorsState.PreviewNotDelivered
+        : AgentConnectorsState.BuildTooOld;
 }
+
+public enum AgentConnectorsState { BuildTooOld, PreviewNotDelivered, Ready }

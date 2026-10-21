@@ -264,8 +264,8 @@ Refuser :
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Paramètres › Confidentialité et sécurité › Voix › Reconnaissance vocale en ligne, et un micro</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Connecteurs d'agents Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe trouvé ; ses connecteurs apparaissent comme serveurs d'outils windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe introuvable (pas encore activé sur ce PC)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>nécessite le build Windows 26220.7262 ou ultérieur (p. ex. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe introuvable : Windows répertorie toujours les connecteurs d'agent comme préversion et il n'est pas distribué sur ce PC</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>nécessite un build récent de Windows 11 (26220.7262 ou ultérieur) ; Windows répertorie toujours les connecteurs d'agent comme préversion</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Actions d'application (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>enregistrées ; Click to Do lui-même nécessite un PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>nécessite Windows 11 24H2 (build 26100) ou ultérieur</value></data>

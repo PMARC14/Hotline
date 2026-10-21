@@ -62,6 +62,16 @@ public sealed class PlatformTests
     public void Windows_agent_connectors_need_26220_7262(int build, int revision, bool expected) =>
         Assert.Equal(expected, PlatformSupport.AgentConnectors(new WindowsBuild(build, revision)));
 
+    [Theory]
+    [InlineData(26300, 9711, false, AgentConnectorsState.PreviewNotDelivered)] // 26H2 without odr.exe: the owner's PC
+    [InlineData(26300, 9711, true, AgentConnectorsState.Ready)]
+    [InlineData(26220, 7262, false, AgentConnectorsState.PreviewNotDelivered)]
+    [InlineData(26100, 1, false, AgentConnectorsState.BuildTooOld)]
+    [InlineData(26200, 9457, false, AgentConnectorsState.BuildTooOld)]
+    [InlineData(26100, 1, true, AgentConnectorsState.Ready)] // found is found, whatever the build number says
+    public void Agent_connectors_state_says_why_they_are_not_there(int build, int revision, bool odrPresent, AgentConnectorsState expected) =>
+        Assert.Equal(expected, PlatformSupport.AgentConnectorsStateOf(new WindowsBuild(build, revision), odrPresent));
+
     [Fact]
     public void Builds_read_from_a_version_string() => Assert.Equal(new WindowsBuild(26200, 9457), WindowsBuild.Parse("10.0.26200.9457"));
 }

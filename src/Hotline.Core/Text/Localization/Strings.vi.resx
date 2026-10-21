@@ -264,8 +264,8 @@ Từ chối:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Cài đặt › Quyền riêng tư &amp; bảo mật › Giọng nói › Nhận dạng giọng nói trực tuyến, và một micrô</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Trình kết nối tác tử Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>đã tìm thấy odr.exe; các trình kết nối xuất hiện dưới dạng máy chủ công cụ windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>không tìm thấy odr.exe (chưa được bật trên PC này)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>cần bản dựng Windows 26220.7262 trở lên (ví dụ 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>không tìm thấy odr.exe: Windows vẫn liệt kê các trình kết nối tác nhân dưới dạng bản xem trước và chưa được phân phối đến PC này</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>cần có bản dựng Windows 11 gần đây (26220.7262 trở lên); Windows vẫn liệt kê các trình kết nối tác nhân dưới dạng bản xem trước</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Thao tác ứng dụng (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>đã đăng ký; bản thân Click to Do cần PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>cần Windows 11 24H2 (bản dựng 26100) trở lên</value></data>

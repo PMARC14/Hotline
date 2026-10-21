@@ -264,8 +264,8 @@
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} —— [設定] › [隱私權與安全性] › [語音] › [線上語音辨識],以及麥克風</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows 代理程式連接器</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>已找到 odr.exe;其連接器會顯示為 windows-… 工具伺服器</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>找不到 odr.exe (本機尚未開啟)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>需要 Windows 組建 26220.7262 或更新版本 (例如 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>找不到 odr.exe: Windows 仍將代理程式連接器列為預覽，且尚未推送到本機</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>需要較新的 Windows 11 組建 (26220.7262 或更新版本)；Windows 仍將代理程式連接器列為預覽</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>應用程式動作 (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>已註冊;Click to Do 本身需要 Copilot+ PC</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>需要 Windows 11 24H2 (組建 26100) 或更新版本</value></data>

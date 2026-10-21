@@ -50,9 +50,12 @@ internal static class ThisPc
             ? new PcFeature(Strings.Set_Voice, true, Strings.Pc_VoiceOk)
             : new PcFeature(Strings.Set_Voice, false, L.F(Strings.Pc_VoiceMissing, speech)));
 
-        features.Add(odrPath is not null
-            ? new PcFeature(Strings.Pc_Agents, true, Strings.Pc_AgentsOk)
-            : new PcFeature(Strings.Pc_Agents, false, PlatformSupport.AgentConnectors(build) ? Strings.Pc_AgentsNotOn : Strings.Pc_AgentsBuild));
+        features.Add(PlatformSupport.AgentConnectorsStateOf(build, odrPath is not null) switch
+        {
+            AgentConnectorsState.Ready => new PcFeature(Strings.Pc_Agents, true, Strings.Pc_AgentsOk),
+            AgentConnectorsState.PreviewNotDelivered => new PcFeature(Strings.Pc_Agents, false, Strings.Pc_AgentsNotOn),
+            _ => new PcFeature(Strings.Pc_Agents, false, Strings.Pc_AgentsBuild),
+        });
 
         features.Add(PlatformSupport.AppActions(build)
             ? new PcFeature(Strings.Pc_Actions, true, Strings.Pc_ActionsOk)

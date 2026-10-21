@@ -264,8 +264,8 @@ Zabroń:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Ustawienia › Prywatność i zabezpieczenia › Mowa › Rozpoznawanie mowy online, oraz mikrofon</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Łączniki agentów systemu Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>znaleziono odr.exe; jego łączniki pojawiają się jako serwery narzędzi windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>nie znaleziono odr.exe (jeszcze niewłączony na tym komputerze)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>wymaga kompilacji Windows 26220.7262 lub nowszej (np. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>nie znaleziono odr.exe: Windows nadal oznacza łączniki agentów jako wersję zapoznawczą i nie zostały one dostarczone na ten komputer</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>wymaga nowej kompilacji Windows 11 (26220.7262 lub nowszej); Windows nadal oznacza łączniki agentów jako wersję zapoznawczą</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Akcje aplikacji (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>zarejestrowane; samo Click to Do wymaga komputera Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>wymaga systemu Windows 11 24H2 (kompilacja 26100) lub nowszego</value></data>
