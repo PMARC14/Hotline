@@ -196,8 +196,8 @@ to right. Settings › **Window** › **Button rows** edits this file (planned U
 
 **The pickers.** `effort`, `model` and `provider` always stay together as one block. The block goes in the first group
 (checked in the order bottom left, bottom right, top left, top right) that lists one of them, at that picker's
-position, with the pickers in the order they are listed in the file: `effort` in top left plus `model` in bottom
-right puts the block in bottom right. They ignore `style` and `overrides`.
+position, with the pickers in the order of the groups above and then as listed within each group: `effort` in top
+left plus `model` in bottom right puts the block in bottom right, `model` first and `effort` after it. They ignore `style` and `overrides`.
 
 **Custom buttons.** Each entry in `buttons` is a button you can list in any group by its id:
 

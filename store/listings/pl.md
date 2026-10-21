@@ -41,7 +41,6 @@ NATYWNY, LEKKI I TWÓJ
 • Bogate odpowiedzi: nagłówki, listy, tabele, kod z przyciskiem Kopiuj, wzory i proste rysunki.
 • Wszystko jest plikiem do edycji: ustawienia, połączenia, prompty, przyciski na pasku.
 • Narzędzia z rozwagą: połączenia API mogą używać narzędzi Twoich serwerów MCP; wszystko, co coś zmienia, najpierw pyta o zgodę.
-• Klawisz Copilot może też działać jako prawy Ctrl, jeśli wolisz.
 
 PRYWATNOŚĆ OD PODSTAW
 Hotline AI nie ma serwera i niczego nie zbiera: bez konta, bez analityki, bez reklam. Twoje wiadomości trafiają tylko
@@ -77,8 +76,7 @@ Wybierz kolor akcentu (fiolet Hotline, akcent systemu Windows lub dowolny kolor)
 16. Opcjonalne narzędzia z Twoich serwerów MCP, z zatwierdzeniem przed każdą zmianą
 17. Bez konta, analityki i reklam; klucze zostają w Menedżerze poświadczeń systemu Windows
 18. Bezpłatny i open source
-19. Klawisz Copilot może zamiast tego działać jako prawy Ctrl
-20. Natywnie na komputerach x64 i ARM64
+19. Natywnie na komputerach x64 i ARM64
 
 ## Podpisy zrzutów ekranu
 

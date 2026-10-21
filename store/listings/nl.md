@@ -41,7 +41,6 @@ NATIVE, LICHT EN VAN JOU
 • Rijke antwoorden: koppen, lijsten, tabellen, code met een knop Kopiëren, formules en eenvoudige tekeningen.
 • Alles is een bestand dat je kunt bewerken: instellingen, verbindingen, prompts en de knoppen in de balk.
 • Hulpmiddelen, met beleid: API-verbindingen kunnen hulpmiddelen van je MCP-servers gebruiken; alles wat iets wijzigt, vraagt het je eerst.
-• De Copilot-toets kan ook als rechter Ctrl-toets werken, als je dat liever hebt.
 
 PRIVACY VOOROP
 Hotline AI heeft geen server en verzamelt niets: geen account, geen analyses, geen advertenties. Je berichten gaan
@@ -77,8 +76,7 @@ Kies je accentkleur (Hotline-paars, je Windows-accentkleur of elke kleur) en het
 16. Optionele hulpmiddelen van je MCP-servers, met goedkeuring vóór elke wijziging
 17. Geen account, geen analyses, geen advertenties; sleutels blijven in Windows Referentiebeheer
 18. Gratis en open source
-19. De Copilot-toets kan in plaats daarvan als rechter Ctrl werken
-20. Native op x64- en ARM64-pc's
+19. Native op x64- en ARM64-pc's
 
 ## Bijschriften bij schermafbeeldingen
 

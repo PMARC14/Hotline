@@ -35,9 +35,28 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Short press opens the panel on the monitor you're working on, ready to type; press again → it closes.
 - [ ] Long press starts a new chat (default).
 - [ ] Settings › General › Extra hotkey `Ctrl+Alt+H` → it opens/closes the panel.
-- [ ] Settings › General › Copilot key → **Acts as Right Ctrl**: in Notepad, Copilot+C / Copilot+V copy and paste; the
-      Start menu doesn't open; the key no longer opens Hotline (the extra hotkey does). Switch back → the key opens Hotline.
-- [ ] Quit Hotline from the tray while holding the key in Right Ctrl mode: Ctrl isn't left stuck down.
+- [ ] Windows Settings › Bluetooth & devices › Keyboard (older builds: Personalization › Text input › Customize Copilot key
+      on keyboard) → Custom → Hotline: the key opens Hotline; tap and long press do what Settings › General says.
+- [ ] Settings › General › Open Copilot key settings opens that Windows page.
+- [ ] Windows' own "Right Ctrl" choice for the key (Hotline's own Right Ctrl mode was removed in 0.4): the key then acts as
+      Right Ctrl and doesn't open Hotline.
+
+### Button rows (Settings › Window)
+- [ ] The four corners (top left / top right above the message box, bottom left / bottom right below it) show the buttons
+      in the bar; pickers (effort, model, provider) are one block.
+- [ ] Drag a button inside a corner, to another corner, and to "Not shown" and back: the panel's bar follows within a second.
+      Drop on an empty corner and between two buttons. Drag a picker: the whole block moves; a drop inside the block lands beside it.
+- [ ] The arrow buttons on a button (left/right order, up/down row, other side) and Alt+arrow / Ctrl+arrow give the same moves.
+- [ ] Bar look: compact, normal and wide; outline and filled (light, dark and a Windows contrast theme); one button with its own
+      look; "Use bar look" resets it. Hiding a styled button and showing it again keeps its look.
+- [ ] Add a custom button that runs a quick action and one that inserts text (with and without Send): both work from the panel;
+      delete the quick action's file → a notice, not a crash. A button called "Spacer" gets another id.
+- [ ] Narrow the panel to 320 DIP with many buttons: the ones that don't fit move into a ⋯ menu; widen it: they come back;
+      Pin, Prompt and Continue in work from the menu; no flicker or blank panel.
+- [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About ›
+      This PC lists what was ignored; a file Hotline can't read is left as it is.
+- [ ] An old (v1) `toolbar.json` becomes v2 on the first start and the old one stays as `toolbar.json.old`; Settings › Advanced ›
+      Reset settings puts the default bar back (a backup is made first).
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.

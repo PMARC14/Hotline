@@ -504,11 +504,11 @@
   <data name="Actions_NewName" xml:space="preserve"><value>新名稱</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他應用程式已在使用該快速鍵</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>重設</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>將設定還原為安裝時的狀態。所有內容會先複製到 {0}\backups。若要在多組設定之間切換，請使用其他複本取代 settings.json (或 connections 中的檔案)：Hotline 會立即套用。預設值位於 {1}。</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>將設定與按鈕列還原為安裝時的狀態。所有內容會先複製到 {0}\backups。若要在多組設定之間切換，請使用其他複本取代 settings.json (或 connections 中的檔案)：Hotline 會立即套用。預設值位於 {1}。</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>重設所有項目</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、每個連線 (及其 API 金鑰)、工具列與 mcp.json 將還原為安裝時的狀態。系統會保留提示、快速指令、記憶與歷程記錄。系統會先建立備份 (不包含 API 金鑰)。</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>要重設所有項目嗎?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 將還原為預設值。系統會保留您的連線、提示、快速指令、記憶與歷程記錄。系統會先建立備份。</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 與 toolbar.json 將還原為預設值。系統會保留您的連線、提示、快速指令、記憶與歷程記錄。系統會先建立備份。</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>重設</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>完成。先前的檔案位於 {0}。</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>重設設定</value></data>
@@ -581,7 +581,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列可顯示、隱藏及排列訊息方塊上方或下方的按鈕順序。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列將該列顯示為四個角落：左上與右上 (訊息方塊上方)、左下與右下 (訊息方塊下方)。拖曳按鈕或選取器可將其在角落內移動或移至另一個角落，也可以使用其箭頭按鈕 (Alt+箭頭可切換角落，Ctrl+箭頭可變更順序)。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的大小、外框或填滿，您也可以新增自己的按鈕來執行快速指令或插入文字。放不下的按鈕會移至 ⋯ 功能表。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>

@@ -504,11 +504,11 @@ Nega:
   <data name="Actions_NewName" xml:space="preserve"><value>Nuovo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Un'altra app usa già questa scorciatoia</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Reimposta</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ripristina le impostazioni allo stato iniziale di installazione. Tutto viene prima copiato in {0}\backups. Per passare da un set di impostazioni all'altro, sostituisci settings.json (o un file in connections) con un'altra copia: Hotline la applicherà subito. Le impostazioni predefinite sono in {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ripristina le impostazioni e le righe di pulsanti allo stato iniziale di installazione. Tutto viene prima copiato in {0}\backups. Per passare da un set di impostazioni all'altro, sostituisci settings.json (o un file in connections) con un'altra copia: Hotline la applicherà subito. Le impostazioni predefinite sono in {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Reimposta tutto</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, tutte le connessioni (e le relative chiavi API), la barra degli strumenti e mcp.json tornano allo stato iniziale di installazione. Prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup (le chiavi API non sono incluse).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reimpostare tutto?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json viene reimpostato sui valori predefiniti. Connessioni, prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json e toolbar.json vengono reimpostati sui valori predefiniti. Connessioni, prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reimposta</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Operazione completata. I file precedenti si trovano in {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reimposta impostazioni</value></data>
@@ -581,7 +581,7 @@ Un pannello spostato si aprirà alla posizione predefinita la volta successiva, 
   <data name="Guide_Direction_Title" xml:space="preserve"><value>In alto o in basso</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La chat cresce a partire dalla barra dei messaggi: verso l'alto, a meno che non manchi spazio, quindi verso il basso. Impostazioni › Finestra può mantenerla verso l'alto o verso il basso e imposta la posizione, la larghezza e l'altezza della chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Righe di pulsanti</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Finestra › Righe di pulsanti mostra, nasconde e riordina i pulsanti, sopra o sotto la casella dei messaggi.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Finestra › Righe di pulsanti mostra la barra come quattro angoli: in alto a sinistra e in alto a destra (sopra la casella dei messaggi), in basso a sinistra e in basso a destra (sotto). Trascina un pulsante o un selettore per spostarlo all'interno di un angolo o in un altro, oppure usa i relativi pulsanti freccia (Alt+freccia cambia angolo, Ctrl+freccia cambia l'ordine). Ciò che nascondi rimane in “Non mostrati”. Ogni pulsante può avere la propria dimensione, un contorno o un riempimento, e puoi aggiungere pulsanti personalizzati che eseguono un'azione rapida o inseriscono un testo. I pulsanti che non entrano passano in un menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suoni</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Suoni riproduce un suono quando il pannello si apre o si chiude: un suono di Windows o un .wav nella cartella dei suoni. Disattivato per impostazione predefinita.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Le impostazioni sono file</value></data>

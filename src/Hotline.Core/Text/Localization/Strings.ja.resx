@@ -504,11 +504,11 @@
   <data name="Actions_NewName" xml:space="preserve"><value>新しい名前</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>このショートカットは別のアプリが使用しています</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>リセット</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>設定をインストール時の状態に戻します。最初にすべてが {0}\backups にコピーされます。設定セットを切り替えるには、settings.json (または connections 内のファイル) を別のコピーに置き換えます。Hotline はすぐにそれを適用します。既定値は {1} にあります。</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>設定とボタン行をインストール時の状態に戻します。最初にすべてが {0}\backups にコピーされます。設定セットを切り替えるには、settings.json (または connections 内のファイル) を別のコピーに置き換えます。Hotline はすぐにそれを適用します。既定値は {1} にあります。</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>すべてリセット</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、すべての接続 (およびその API キー)、ツール バー、mcp.json がインストール時の状態に戻ります。プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます (API キーは含まれません)。</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>すべてリセットしますか?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json は既定値に戻ります。接続、プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます。</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json と toolbar.json は既定値に戻ります。接続、プロンプト、クイック アクション、メモリ、履歴は保持されます。最初にバックアップが作成されます。</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>リセット</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>完了しました。以前のファイルは {0} にあります。</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>設定をリセット</value></data>
@@ -581,7 +581,7 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 で、メッセージ ボックスの上または下にあるボタンの表示、非表示、並べ替えを設定できます。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが 4 つのコーナーとして表示されます: 左上と右上 (メッセージ ボックスの上)、左下と右下 (その下)。ボタンまたはピッカーをドラッグしてコーナー内や別のコーナーに移動するか、矢印ボタンを使用します (Alt+矢印でコーナーを変更、Ctrl+矢印で順序を変更)。非表示にした項目は「非表示」に入ります。各ボタンには独自のサイズ、枠線または塗りつぶしを設定でき、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まりきらないボタンは ⋯ メニューに移動します。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>

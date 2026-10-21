@@ -504,11 +504,11 @@ Denegar:
   <data name="Actions_NewName" xml:space="preserve"><value>Nuevo nombre</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Otra aplicación ya usa ese atajo</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Restablecer</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Restaura la configuración a su estado original tras la instalación. Primero se copia todo en {0}\backups. Para alternar entre conjuntos de configuraciones, reemplaza settings.json (o un archivo en connections) por otra copia: Hotline lo aplicará de inmediato. Los valores predeterminados están en {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Restaura la configuración y las filas de botones a su estado original tras la instalación. Primero se copia todo en {0}\backups. Para alternar entre conjuntos de configuraciones, reemplaza settings.json (o un archivo en connections) por otra copia: Hotline lo aplicará de inmediato. Los valores predeterminados están en {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Restablecer todo</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, todas las conexiones (y sus claves de API), la barra de herramientas y mcp.json volverán al estado de la instalación. Se conservan las solicitudes, acciones rápidas, memoria e historial. Primero se crea una copia de seguridad (sin las claves de API).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>¿Restablecer todo?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json vuelve a los valores predeterminados. Se conservan tus conexiones, solicitudes, acciones rápidas, memoria e historial. Primero se crea una copia de seguridad.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json y toolbar.json vuelven a los valores predeterminados. Se conservan tus conexiones, solicitudes, acciones rápidas, memoria e historial. Primero se crea una copia de seguridad.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Restablecer</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Listo. Los archivos anteriores están en {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Restablecer configuración</value></data>
@@ -581,7 +581,7 @@ Un panel desplazado se abrirá en su posición predeterminada la próxima vez, a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Hacia arriba o hacia abajo</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>El chat se expande desde la barra de mensajes: hacia arriba, salvo que no haya espacio, y entonces hacia abajo. Configuración › Ventana permite fijarlo hacia arriba o hacia abajo y define la posición, el ancho y la altura del chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Filas de botones</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Ventana › Filas de botones muestra, oculta y ordena los botones, encima o debajo del cuadro de mensaje.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Ventana › Filas de botones muestra la barra como cuatro esquinas: arriba a la izquierda y arriba a la derecha (encima del cuadro de mensaje), abajo a la izquierda y abajo a la derecha (debajo). Arrastra un botón o un selector para moverlo dentro de una esquina o a otra, o usa sus botones de flecha (Alt+flecha cambia de esquina, Ctrl+flecha cambia el orden). Lo que ocultas espera en “No mostrados”. Cada botón puede tener su propio tamaño, un contorno o un relleno, y puedes añadir tus propios botones que ejecuten una acción rápida o inserten un texto. Los botones que no caben se mueven a un menú ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sonidos</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configuración › Apariencia › Sonidos reproduce un sonido cuando el panel se abre o se cierra: un sonido de Windows o un .wav en tu carpeta de sonidos. Desactivado de forma predeterminada.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>La configuración son archivos</value></data>

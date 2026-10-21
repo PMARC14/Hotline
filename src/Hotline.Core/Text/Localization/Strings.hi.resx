@@ -504,11 +504,11 @@
   <data name="Actions_NewName" xml:space="preserve"><value>नया नाम</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>यह शॉर्टकट पहले से कोई दूसरा ऐप इस्तेमाल कर रहा है</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>रीसेट करें</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>सेटिंग्स को इंस्टॉल के समय जैसी स्थिति में वापस लाता है। सब कुछ पहले {0}\backups में कॉपी किया जाता है। सेटिंग्स के सेट बदलने के लिए, settings.json (या connections में किसी फ़ाइल) को दूसरी कॉपी से बदलें: Hotline इसे तुरंत लागू करता है। डिफ़ॉल्ट {1} में हैं।</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>सेटिंग्स और बटन पंक्तियों को इंस्टॉल के समय जैसी स्थिति में वापस लाता है। सब कुछ पहले {0}\backups में कॉपी किया जाता है। सेटिंग्स के सेट बदलने के लिए, settings.json (या connections में किसी फ़ाइल) को दूसरी कॉपी से बदलें: Hotline इसे तुरंत लागू करता है। डिफ़ॉल्ट {1} में हैं।</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>सब कुछ रीसेट करें</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, हर कनेक्शन (और इसकी API कुंजी), टूलबार और mcp.json इंस्टॉल की स्थिति में वापस चले जाते हैं। प्रॉम्प्ट, त्वरित क्रियाएं, मेमोरी और इतिहास बने रहते हैं। पहले एक बैकअप बनाया जाता है (इसमें API कुंजियाँ शामिल नहीं हैं)।</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>सब कुछ रीसेट करें?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json डिफ़ॉल्ट पर वापस चला जाता है। आपके कनेक्शन, प्रॉम्प्ट, त्वरित क्रियाएं, मेमोरी और इतिहास बने रहते हैं। पहले एक बैकअप बनाया जाता है।</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json और toolbar.json डिफ़ॉल्ट पर वापस चले जाते हैं। आपके कनेक्शन, प्रॉम्प्ट, त्वरित क्रियाएं, मेमोरी और इतिहास बने रहते हैं। पहले एक बैकअप बनाया जाता है।</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>रीसेट करें</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>हो गया। पिछली फ़ाइलें {0} में हैं।</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>सेटिंग्स रीसेट करें</value></data>
@@ -581,7 +581,7 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
   <data name="Guide_Direction_Title" xml:space="preserve"><value>ऊपर या नीचे</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>चैट संदेश बार से बढ़ती है: ऊपर की ओर, जब तक कि ऊपर जगह न हो, फिर नीचे की ओर। सेटिंग्स › विंडो इसे ऊपर या नीचे रख सकती है और स्थिति, चौड़ाई और चैट की ऊंचाई सेट करती है।</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ संदेश बॉक्स के ऊपर या नीचे बटन दिखाती, छिपाती और व्यवस्थित करती हैं।</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ बार को चार कोनों के रूप में दिखाती हैं: ऊपर बाईं ओर और ऊपर दाईं ओर (संदेश बॉक्स के ऊपर), नीचे बाईं ओर और नीचे दाईं ओर (इसके नीचे)। किसी बटन या पिकर को एक कोने के अंदर या दूसरे में ले जाने के लिए उसे खींचें, या उसके तीर वाले बटनों का उपयोग करें (Alt+तीर कोना बदलता है, Ctrl+तीर क्रम बदलता है)। जो आप छिपाते हैं वह “दिखाया नहीं गया” में रहता है। प्रत्येक बटन का अपना आकार, एक आउटलाइन या भराव हो सकता है, और आप अपने स्वयं के बटन जोड़ सकते हैं जो कोई त्वरित क्रिया चलाते हैं या कोई टेक्स्ट डालते हैं। जो बटन फ़िट नहीं होते वे ⋯ मेनू में चले जाते हैं।</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>सेटिंग्स फ़ाइलें हैं</value></data>

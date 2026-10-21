@@ -509,11 +509,11 @@ Deny:
   <data name="Set_Thinking" xml:space="preserve"><value>Show when the AI is thinking</value></data>
   <data name="Set_Thinking_Desc" xml:space="preserve"><value>While an answer is on its way but no text has come for a moment, the cursor spins, so you can tell it hasn't stalled</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Reset</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Puts settings back to how they were on install. Everything is copied to {0}\backups first. To switch between sets of settings, replace settings.json (or a file in connections) with another copy: Hotline applies it right away. The defaults are in {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Puts settings and the button rows back to how they were on install. Everything is copied to {0}\backups first. To switch between sets of settings, replace settings.json (or a file in connections) with another copy: Hotline applies it right away. The defaults are in {1}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reset settings</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Reset everything</value></data>
   <data name="Advanced_ResetTitle" xml:space="preserve"><value>Reset settings?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json goes back to the defaults. Your connections, prompts, quick actions, memory and history stay. A backup is made first.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json and toolbar.json go back to the defaults. Your connections, prompts, quick actions, memory and history stay. A backup is made first.</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reset everything?</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, every connection (and its API key), the toolbar and mcp.json go back to how they were on install. Prompts, quick actions, memory and history stay. A backup is made first (API keys aren't in it).</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reset</value></data>
@@ -582,7 +582,7 @@ A moved panel opens at its default the next time, unless it's pinned (the pin bu
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Up or down</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>The chat grows from the message bar: up, unless there's no room above, then down. Settings › Window can keep it up or down and sets the position, width and chat height.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows, hides and orders the buttons, above or below the message box.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as four corners: top left and top right (above the message box), bottom left and bottom right (below it). Drag a button or a picker to move it inside a corner or to another one, or use its arrow buttons (Alt+arrow changes corner, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own size, an outline or a fill, and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Settings › Appearance › Sounds plays a sound when the panel opens or closes: a Windows sound or a .wav in your sounds folder. Off by default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Settings are files</value></data>

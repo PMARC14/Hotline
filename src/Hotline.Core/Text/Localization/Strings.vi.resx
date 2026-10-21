@@ -504,11 +504,11 @@ Từ chối:
   <data name="Actions_NewName" xml:space="preserve"><value>Tên mới</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Một ứng dụng khác đã dùng phím tắt đó</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Đặt lại</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Đặt lại cài đặt về trạng thái ban đầu khi cài đặt. Mọi thứ sẽ được sao chép vào {0}\backups trước. Để chuyển đổi giữa các bộ cài đặt, hãy thay thế settings.json (hoặc tệp trong connections) bằng một bản sao khác: Hotline sẽ áp dụng ngay lập tức. Cài đặt mặc định nằm trong {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Đặt lại cài đặt và các hàng nút về trạng thái ban đầu khi cài đặt. Mọi thứ sẽ được sao chép vào {0}\backups trước. Để chuyển đổi giữa các bộ cài đặt, hãy thay thế settings.json (hoặc tệp trong connections) bằng một bản sao khác: Hotline sẽ áp dụng ngay lập tức. Cài đặt mặc định nằm trong {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Đặt lại tất cả</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, mọi kết nối (và khóa API tương ứng), thanh công cụ và mcp.json sẽ trở về trạng thái khi cài đặt. Lời nhắc, tác vụ nhanh, bộ nhớ và lịch sử được giữ lại. Bản sao lưu sẽ được tạo trước (không bao gồm khóa API).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Đặt lại tất cả?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json sẽ trở về giá trị mặc định. Các kết nối, lời nhắc, tác vụ nhanh, bộ nhớ và lịch sử của bạn được giữ lại. Bản sao lưu sẽ được tạo trước.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json và toolbar.json sẽ trở về giá trị mặc định. Các kết nối, lời nhắc, tác vụ nhanh, bộ nhớ và lịch sử của bạn được giữ lại. Bản sao lưu sẽ được tạo trước.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Đặt lại</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Đã xong. Các tệp trước đó nằm trong {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Đặt lại cài đặt</value></data>
@@ -581,7 +581,7 @@ Bảng điều khiển đã di chuyển sẽ mở ở vị trí mặc định v�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Lên trên hoặc xuống dưới</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Khung trò chuyện mở rộng từ thanh tin nhắn: hướng lên trên, trừ khi phía trên không còn chỗ thì sẽ mở xuống dưới. Cài đặt › Cửa sổ có thể cố định hướng lên hoặc xuống và thiết lập vị trí, chiều rộng cùng chiều cao cuộc trò chuyện.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Hàng nút</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Cửa sổ › Các hàng nút dùng để hiển thị, ẩn và sắp xếp thứ tự các nút ở phía trên hoặc phía dưới hộp thông báo.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Cửa sổ › Các hàng nút hiển thị thanh dưới dạng bốn góc: trên cùng bên trái và trên cùng bên phải (phía trên hộp thông báo), dưới cùng bên trái và dưới cùng bên phải (phía dưới hộp thông báo). Kéo một nút hoặc bộ chọn để di chuyển nút đó vào bên trong một góc hoặc sang góc khác, hoặc sử dụng các nút mũi tên của nút đó (Alt+mũi tên đổi góc, Ctrl+mũi tên đổi thứ tự). Những gì bạn ẩn sẽ đợi trong “Không hiển thị”. Mỗi nút có thể có kích thước riêng, viền ngoài hoặc phần tô màu, và bạn có thể thêm các nút của riêng mình để chạy tác vụ nhanh hoặc chèn văn bản. Các nút không vừa sẽ chuyển vào menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Âm thanh</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Âm thanh sẽ phát âm thanh khi mở hoặc đóng bảng điều khiển: âm thanh của Windows hoặc tệp .wav trong thư mục âm thanh của bạn. Mặc định là tắt.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Cài đặt là các tệp</value></data>

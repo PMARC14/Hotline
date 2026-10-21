@@ -504,11 +504,11 @@ Negar:
   <data name="Actions_NewName" xml:space="preserve"><value>Novo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Outro app já usa esse atalho</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Redefinir</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Restaura as configurações para o estado original de instalação. Tudo é copiado para {0}\backups primeiro. Para alternar entre conjuntos de configurações, substitua settings.json (ou um arquivo em connections) por outra cópia: o Hotline aplica imediatamente. Os padrões estão em {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Restaura as configurações e as linhas de botões para o estado original de instalação. Tudo é copiado para {0}\backups primeiro. Para alternar entre conjuntos de configurações, substitua settings.json (ou um arquivo em connections) por outra cópia: o Hotline aplica imediatamente. Os padrões estão em {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Redefinir tudo</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, todas as conexões (e suas chaves de API), a barra de ferramentas e mcp.json voltam ao estado de instalação. Prompts, ações rápidas, memória e histórico são mantidos. Um backup é criado primeiro (as chaves de API não são incluídas).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Redefinir tudo?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json volta aos padrões. Suas conexões, prompts, ações rápidas, memória e histórico são mantidos. Um backup é criado primeiro.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json e toolbar.json voltam aos padrões. Suas conexões, prompts, ações rápidas, memória e histórico são mantidos. Um backup é criado primeiro.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Redefinir</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Concluído. Os arquivos anteriores estão em {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Redefinir configurações</value></data>
@@ -581,7 +581,7 @@ Um painel movido abre no padrão na próxima vez, a menos que esteja fixado (o b
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Para cima ou para baixo</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>O chat se expande a partir da barra de mensagens: para cima, a menos que não haja espaço acima, e então para baixo. Configurações › Janela pode mantê-lo para cima ou para baixo e define a posição, largura e altura do chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Linhas de botões</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configurações › Janela › Linhas de botões mostra, oculta e organiza os botões, acima ou abaixo da caixa de mensagens.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configurações › Janela › Linhas de botões mostra a barra como quatro cantos: superior esquerdo e superior direito (acima da caixa de mensagens), inferior esquerdo e inferior direito (abaixo dela). Arraste um botão ou um seletor para movê-lo dentro de um canto ou para outro, ou use seus botões de seta (Alt+seta muda de canto, Ctrl+seta muda a ordem). O que você oculta fica em “Não exibido”. Cada botão pode ter seu próprio tamanho, um contorno ou preenchimento, e você pode adicionar botões próprios que executam uma ação rápida ou inserem um texto. Os botões que não couberem vão para um menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configurações › Aparência › Sons reproduz um som quando o painel abre ou fecha: um som do Windows ou um arquivo .wav na sua pasta de sons. Desativado por padrão.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Configurações são arquivos</value></data>

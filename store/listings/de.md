@@ -41,7 +41,6 @@ NATIV, LEICHT UND DEINS
 • Reichhaltige Antworten: Überschriften, Listen, Tabellen, Code mit Kopieren-Schaltfläche, Formeln und einfache Zeichnungen.
 • Alles ist eine bearbeitbare Datei: Einstellungen, Verbindungen, Prompts, die Schaltflächen in der Leiste.
 • Tools, mit Bedacht: API-Verbindungen können Tools deiner MCP-Server nutzen; alles, was etwas ändert, fragt dich zuerst.
-• Die Copilot-Taste kann auch als rechte STRG-Taste dienen, wenn dir das lieber ist.
 
 PRIVAT VON GRUND AUF
 Hotline AI hat keinen Server und sammelt nichts: kein Konto, keine Analysen, keine Werbung. Deine Nachrichten gehen nur
@@ -78,8 +77,7 @@ Wähle deine Akzentfarbe (Hotline-Lila, deine Windows-Akzentfarbe oder eine beli
 16. Optionale Tools deiner MCP-Server, mit Bestätigung vor jeder Änderung
 17. Kein Konto, keine Analysen, keine Werbung; Schlüssel bleiben in der Windows-Anmeldeinformationsverwaltung
 18. Kostenlos und Open Source
-19. Die Copilot-Taste kann stattdessen als rechte STRG-Taste dienen
-20. Nativ auf x64- und ARM64-PCs
+19. Nativ auf x64- und ARM64-PCs
 
 ## Screenshot-Beschriftungen
 

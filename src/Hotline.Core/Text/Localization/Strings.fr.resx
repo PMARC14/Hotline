@@ -504,11 +504,11 @@ Refuser :
   <data name="Actions_NewName" xml:space="preserve"><value>Nouveau nom</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Une autre application utilise déjà ce raccourci</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Réinitialiser</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Rétablit les paramètres par défaut de l'installation. Tout est d'abord copié dans {0}\backups. Pour basculer entre plusieurs configurations, remplacez settings.json (ou un fichier dans connections) par une autre copie : Hotline l'applique immédiatement. Les paramètres par défaut se trouvent dans {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Rétablit les paramètres et les lignes de boutons par défaut de l'installation. Tout est d'abord copié dans {0}\backups. Pour basculer entre plusieurs configurations, remplacez settings.json (ou un fichier dans connections) par une autre copie : Hotline l'applique immédiatement. Les paramètres par défaut se trouvent dans {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Tout réinitialiser</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, chaque connexion (et sa clé API), la barre d'outils et mcp.json sont rétablis à leur état d'origine. Les invites, actions rapides, la mémoire et l'historique sont conservés. Une sauvegarde est d'abord créée (les clés API n'y figurent pas).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Tout réinitialiser ?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json revient aux valeurs par défaut. Vos connexions, invites, actions rapides, mémoire et historique sont conservés. Une sauvegarde est d'abord créée.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json et toolbar.json reviennent aux valeurs par défaut. Vos connexions, invites, actions rapides, mémoire et historique sont conservés. Une sauvegarde est d'abord créée.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Réinitialiser</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Terminé. Les fichiers précédents se trouvent dans {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Réinitialiser les paramètres</value></data>
@@ -581,7 +581,7 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Vers le haut ou vers le bas</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La discussion se développe à partir de la barre de message : vers le haut, sauf s'il n'y a pas assez de place, puis vers le bas. Paramètres › Fenêtre permet de la maintenir vers le haut ou vers le bas et définit la position, la largeur et la hauteur de la discussion.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rangées de boutons</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Lignes de boutons affiche, masque et réorganise les boutons, au-dessus ou au-dessous de la zone de message.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Lignes de boutons affiche la barre sous forme de quatre coins : en haut à gauche et en haut à droite (au-dessus de la zone de message), en bas à gauche et en bas à droite (en dessous). Faites glisser un bouton ou un sélecteur pour le déplacer à l'intérieur d'un coin ou vers un autre, ou utilisez ses boutons fléchés (Alt+flèche change de coin, Ctrl+flèche modifie l'ordre). Ce que vous masquez attend dans « Non affiché ». Chaque bouton peut avoir sa propre taille, un contour ou un remplissage, et vous pouvez ajouter vos propres boutons qui exécutent une action rapide ou insèrent un texte. Les boutons qui ne rentrent pas se déplacent dans un menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Paramètres › Apparence › Sons émet un son à l'ouverture ou à la fermeture du panneau : un son Windows ou un .wav dans votre dossier de sons. Désactivé par défaut.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Les paramètres sont des fichiers</value></data>

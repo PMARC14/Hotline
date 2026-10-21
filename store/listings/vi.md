@@ -41,7 +41,6 @@ GỐC, NHẸ VÀ CỦA BẠN
 • Câu trả lời phong phú: tiêu đề, danh sách, bảng, mã có nút Sao chép, công thức toán và hình vẽ đơn giản.
 • Mọi thứ đều là tệp bạn có thể sửa: cài đặt, kết nối, lời nhắc, các nút trên thanh.
 • Công cụ, một cách thận trọng: kết nối API có thể dùng công cụ từ máy chủ MCP của bạn; bất cứ thao tác nào thay đổi điều gì đó đều hỏi bạn trước.
-• Phím Copilot cũng có thể hoạt động như phím Ctrl phải, nếu bạn thích.
 
 RIÊNG TƯ NGAY TỪ THIẾT KẾ
 Hotline AI không có máy chủ và không thu thập gì: không tài khoản, không phân tích, không quảng cáo. Tin nhắn của bạn chỉ
@@ -77,8 +76,7 @@ Chọn màu nhấn (tím Hotline, màu nhấn của Windows hoặc bất kỳ m�
 16. Công cụ tùy chọn từ máy chủ MCP của bạn, cần phê duyệt trước mọi thay đổi
 17. Không tài khoản, không phân tích, không quảng cáo; khóa nằm trong Trình quản lý thông tin xác thực của Windows
 18. Miễn phí và mã nguồn mở
-19. Phím Copilot có thể hoạt động như Ctrl phải
-20. Chạy gốc trên PC x64 và ARM64
+19. Chạy gốc trên PC x64 và ARM64
 
 ## Chú thích ảnh chụp màn hình
 

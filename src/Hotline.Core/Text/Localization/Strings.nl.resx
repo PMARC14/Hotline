@@ -504,11 +504,11 @@ Weigeren:
   <data name="Actions_NewName" xml:space="preserve"><value>Nieuwe naam</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Een andere app gebruikt die sneltoets al</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Opnieuw instellen</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Hiermee herstelt u de instellingen zoals ze waren bij de installatie. Alles wordt eerst gekopieerd naar {0}\backups. Als u wilt schakelen tussen instellingen, vervangt u settings.json (of een bestand in connections) door een ander exemplaar: Hotline past dit direct toe. De standaardwaarden staan in {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Hiermee herstelt u de instellingen en de knoppenrijen zoals ze waren bij de installatie. Alles wordt eerst gekopieerd naar {0}\backups. Als u wilt schakelen tussen instellingen, vervangt u settings.json (of een bestand in connections) door een ander exemplaar: Hotline past dit direct toe. De standaardwaarden staan in {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Alles opnieuw instellen</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, elke verbinding (en de bijbehorende API-sleutel), de werkbalk en mcp.json worden teruggezet naar de installatiestatus. Prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt (zonder API-sleutels).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Alles opnieuw instellen?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json wordt hersteld naar de standaardwaarden. Uw verbindingen, prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json en toolbar.json worden hersteld naar de standaardwaarden. Uw verbindingen, prompts, snelle acties, geheugen en geschiedenis blijven behouden. Er wordt eerst een back-up gemaakt.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Opnieuw instellen</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Gereed. De vorige bestanden staan in {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Instellingen opnieuw instellen</value></data>
@@ -581,7 +581,7 @@ Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij he
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Omhoog of omlaag</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>De chat groeit vanaf de berichtenbalk: omhoog, tenzij er daarboven geen ruimte is, en dan omlaag. Instellingen › Venster kan dit vastzetten op omhoog of omlaag en stelt de positie, breedte en chathoogte in.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoppenrijen toont, verbergt en ordent de knoppen, boven of onder het berichtvak.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoppenrijen toont de balk als vier hoeken: linksboven en rechtsboven (boven het berichtvak), linksonder en rechtsonder (eronder). Sleep een knop of een kiezer om deze binnen een hoek of naar een andere te verplaatsen, of gebruik de pijltoetsen (Alt+pijl verandert van hoek, Ctrl+pijl verandert de volgorde). Wat u verbergt, wacht in “Niet weergegeven”. Elke knop kan een eigen grootte, een contour of een vulling hebben, en u kunt eigen knoppen toevoegen die een snelle actie uitvoeren of tekst invoegen. Knoppen die niet passen, worden verplaatst naar een ⋯-menu.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Instellingen › Weergave › Geluiden speelt een geluid af wanneer het paneel opent of sluit: een Windows-geluid of een .wav in je geluidenmap. Standaard uitgeschakeld.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Instellingen zijn bestanden</value></data>

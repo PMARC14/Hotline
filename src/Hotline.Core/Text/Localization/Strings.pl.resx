@@ -504,11 +504,11 @@ Zabroń:
   <data name="Actions_NewName" xml:space="preserve"><value>Nowa nazwa</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Inna aplikacja już używa tego skrótu</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Resetuj</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Przywraca ustawienia do stanu z momentu instalacji. Wszystko zostanie najpierw skopiowane do {0}\backups. Aby przełączać się między zestawami ustawień, zastąp settings.json (lub plik w connections) inną kopią: Hotline zastosuje ją natychmiast. Ustawienia domyślne znajdują się w {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Przywraca ustawienia i wiersze przycisków do stanu z momentu instalacji. Wszystko zostanie najpierw skopiowane do {0}\backups. Aby przełączać się między zestawami ustawień, zastąp settings.json (lub plik w connections) inną kopią: Hotline zastosuje ją natychmiast. Ustawienia domyślne znajdują się w {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Zresetuj wszystko</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, wszystkie połączenia (oraz ich klucze API), pasek narzędzi i mcp.json wrócą do stanu z momentu instalacji. Monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa (bez kluczy API).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Zresetować wszystko?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json powróci do wartości domyślnych. Twoje połączenia, monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json i toolbar.json powrócą do wartości domyślnych. Twoje połączenia, monity, szybkie akcje, pamięć i historia pozostaną bez zmian. Najpierw zostanie utworzona kopia zapasowa.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Resetuj</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Gotowe. Poprzednie pliki znajdują się w {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Resetuj ustawienia</value></data>
@@ -581,7 +581,7 @@ Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba
   <data name="Guide_Direction_Title" xml:space="preserve"><value>W górę lub w dół</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Czat rozwija się od paska wiadomości: w górę, chyba że zabraknie miejsca powyżej, a wtedy w dół. Ustawienia › Okno pozwala utrzymać go w górze lub w dole oraz ustawia położenie, szerokość i wysokość czatu.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rzędy przycisków</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Okno › Wiersze przycisków pokazuje, ukrywa i porządkuje przyciski nad lub pod polem wiadomości.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Okno › Wiersze przycisków pokazuje pasek w postaci czterech narożników: lewy górny i prawy górny (nad polem wiadomości), lewy dolny i prawy dolny (pod nim). Przeciągnij przycisk lub selektor, aby przenieść go w obrębie narożnika lub do innego, albo użyj jego przycisków strzałek (Alt+strzałka zmienia narożnik, Ctrl+strzałka zmienia kolejność). To, co ukryjesz, czeka w „Niepokazywane”. Każdy przycisk może mieć własny rozmiar, obramowanie lub wypełnienie, a także możesz dodawać własne przyciski uruchamiające szybką akcję lub wstawiające tekst. Przyciski, które się nie mieszczą, przenoszą się do menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Dźwięki odtwarza dźwięk przy otwieraniu lub zamykaniu panelu: dźwięk Windows lub plik .wav w Twoim folderze dźwięków. Domyślnie wyłączone.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ustawienia to pliki</value></data>

@@ -504,11 +504,11 @@
   <data name="Actions_NewName" xml:space="preserve"><value>新名称</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他应用已在使用该快捷键</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>重置</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>将设置恢复为安装时的状态。所有内容将先复制到 {0}\backups。若要在不同设置方案之间切换，只需使用其他副本替换 settings.json (或 connections 中的文件)：Hotline 会立即应用更改。默认设置位于 {1}。</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>将设置和按钮行恢复为安装时的状态。所有内容将先复制到 {0}\backups。若要在不同设置方案之间切换，只需使用其他副本替换 settings.json (或 connections 中的文件)：Hotline 会立即应用更改。默认设置位于 {1}。</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>全部重置</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、每个连接 (及其 API 密钥)、工具栏和 mcp.json 都将恢复为安装时的状态。提示词、快捷操作、记忆和历史记录将保留。系统会先创建备份 (不包含 API 密钥)。</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>要重置所有内容吗?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 将恢复为默认值。您的连接、提示词、快捷操作、记忆和历史记录将保留。系统会先创建备份。</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 和 toolbar.json 将恢复为默认值。您的连接、提示词、快捷操作、记忆和历史记录将保留。系统会先创建备份。</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>重置</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>完成。之前的文件位于 {0}。</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>重置设置</value></data>
@@ -581,7 +581,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天界面从消息栏展开：优先向上，若上方没有空间则向下展开。设置 › 窗口可将其固定为向上或向下，并设定位置、宽度和聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按钮行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>设置 › 窗口 › 按钮行可显示、隐藏和排列消息框上方或下方的按钮。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>设置 › 窗口 › 按钮行将该栏显示为四个角：左上和右上 (消息框上方)、左下和右下 (消息框下方)。拖动按钮或选择器可在某个角内移动或移至另一个角，也可以使用其箭头按钮 (Alt+箭头可切换角，Ctrl+箭头可调整顺序)。隐藏的内容会保留在“未显示”中。每个按钮都可以拥有自己的尺寸、轮廓或填充，您还可以添加自己的按钮来运行快捷操作或插入文本。容纳不下的按钮会移至 ⋯ 菜单。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>声音</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>设置 › 外观 › 声音可在面板打开或关闭时播放提示音：Windows 系统声音或声音文件夹中的 .wav 文件。默认关闭。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>设置即文件</value></data>

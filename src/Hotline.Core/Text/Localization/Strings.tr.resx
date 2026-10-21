@@ -504,11 +504,11 @@ Reddet:
   <data name="Actions_NewName" xml:space="preserve"><value>Yeni ad</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Bu kısayolu başka bir uygulama zaten kullanıyor</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Sıfırla</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ayarları yükleme anındaki durumuna döndürür. Önce her şey {0}\backups konumuna kopyalanır. Ayar kümeleri arasında geçiş yapmak için settings.json (veya connections içindeki bir dosyayı) başka bir kopyayla değiştirin: Hotline bunu hemen uygular. Varsayılanlar {1} konumundadır.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ayarları ve düğme satırlarını yükleme anındaki durumuna döndürür. Önce her şey {0}\backups konumuna kopyalanır. Ayar kümeleri arasında geçiş yapmak için settings.json (veya connections içindeki bir dosyayı) başka bir kopyayla değiştirin: Hotline bunu hemen uygular. Varsayılanlar {1} konumundadır.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Her şeyi sıfırla</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, tüm bağlantılar (ve API anahtarları), araç çubuğu ve mcp.json yükleme anındaki durumuna döner. İstemler, hızlı eylemler, bellek ve geçmiş korunur. Önce bir yedek oluşturulur (API anahtarları dahil edilmez).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Her şey sıfırlansın mı?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json varsayılanlara döner. Bağlantılarınız, istemleriniz, hızlı eylemleriniz, bellek ve geçmişiniz korunur. Önce bir yedek oluşturulur.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json ve toolbar.json varsayılanlara döner. Bağlantılarınız, istemleriniz, hızlı eylemleriniz, bellek ve geçmişiniz korunur. Önce bir yedek oluşturulur.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Sıfırla</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Bitti. Önceki dosyalar {0} konumunda.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Ayarları sıfırla</value></data>
@@ -581,7 +581,7 @@ Taşınan bir panel, sabitlenmediği sürece (sabitleme düğmesi) bir sonraki a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Yukarı veya aşağı</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Sohbet ileti çubuğundan genişler: yukarıda yer yoksa aşağı, aksi takdirde yukarı doğru. Ayarlar › Pencere bunu yukarı veya aşağı olarak sabitleyebilir; konumu, genişliği ve sohbet yüksekliğini belirler.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Pencere › Düğme satırları ileti kutusunun üstündeki veya altındaki düğmeleri gösterir, gizler ve sıralar.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Pencere › Düğme satırları çubuğu dört köşe olarak gösterir: sol üst ve sağ üst (ileti kutusunun üstünde), sol alt ve sağ alt (altında). Bir düğmeyi veya seçiciyi bir köşenin içine veya başka bir köşeye taşımak için sürükleyin ya da ok düğmelerini kullanın (Alt+ok köşeyi değiştirir, Ctrl+ok sırayı değiştirir). Gizlediğiniz öğeler “Gösterilmiyor” bölümünde bekler. Her düğmenin kendi boyutu, bir anahattı veya dolgusu olabilir ve hızlı bir eylem çalıştıran veya metin ekleyen kendi düğmelerinizi ekleyebilirsiniz. Sığmayan düğmeler bir ⋯ menüsüne taşınır.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sesler</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Sesler panel açıldığında veya kapandığında bir ses çalar: bir Windows sesi veya sesler klasörünüzdeki bir .wav dosyası. Varsayılan olarak kapalıdır.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ayarlar birer dosyadır</value></data>

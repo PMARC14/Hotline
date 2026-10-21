@@ -504,11 +504,11 @@ Tolak:
   <data name="Actions_NewName" xml:space="preserve"><value>Nama baru</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Aplikasi lain sudah memakai pintasan itu</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Reset</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Mengembalikan pengaturan ke kondisi saat penginstalan. Semua file disalin ke {0}\backups terlebih dahulu. Untuk beralih antar kumpulan pengaturan, ganti settings.json (atau file di connections) dengan salinan lain: Hotline akan langsung menerapkannya. Pengaturan default ada di {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Mengembalikan pengaturan dan baris tombol ke kondisi saat penginstalan. Semua file disalin ke {0}\backups terlebih dahulu. Untuk beralih antar kumpulan pengaturan, ganti settings.json (atau file di connections) dengan salinan lain: Hotline akan langsung menerapkannya. Pengaturan default ada di {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Reset semua</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, semua koneksi (dan kunci API-nya), toolbar, serta mcp.json kembali ke kondisi awal penginstalan. Perintah, tindakan cepat, memori, dan riwayat tetap tersimpan. Cadangan akan dibuat terlebih dahulu (kunci API tidak disertakan).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reset semua?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json kembali ke default. Koneksi, perintah, tindakan cepat, memori, dan riwayat Anda tetap tersimpan. Cadangan akan dibuat terlebih dahulu.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json dan toolbar.json kembali ke default. Koneksi, perintah, tindakan cepat, memori, dan riwayat Anda tetap tersimpan. Cadangan akan dibuat terlebih dahulu.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reset</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Selesai. File sebelumnya berada di {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reset pengaturan</value></data>
@@ -581,7 +581,7 @@ Panel yang dipindahkan akan terbuka di posisi default berikutnya, kecuali jika d
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Ke atas atau ke bawah</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Obrolan memanjang dari bilah pesan: ke atas, kecuali tidak ada ruang di atas, lalu ke bawah. Pengaturan › Jendela dapat menguncinya ke atas atau ke bawah serta mengatur posisi, lebar, dan tinggi obrolan.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan, menyembunyikan, dan menyusun tombol di atas atau di bawah kotak pesan.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan bilah sebagai empat sudut: kiri atas dan kanan atas (di atas kotak pesan), kiri bawah dan kanan bawah (di bawahnya). Seret tombol atau pemilih untuk memindahkannya di dalam sudut atau ke sudut lain, atau gunakan tombol panahnya (Alt+panah mengubah sudut, Ctrl+panah mengubah urutan). Apa yang Anda sembunyikan menunggu di “Tidak ditampilkan”. Setiap tombol dapat memiliki ukurannya sendiri, kerangka atau isian, dan Anda dapat menambahkan tombol sendiri yang menjalankan tindakan cepat atau menyisipkan teks. Tombol yang tidak muat akan dipindahkan ke menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suara</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Pengaturan › Tampilan › Suara memutar suara saat panel terbuka atau tertutup: suara Windows atau file .wav di folder suara Anda. Dinonaktifkan secara default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Pengaturan berupa file</value></data>

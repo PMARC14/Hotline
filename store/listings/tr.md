@@ -41,7 +41,6 @@ YEREL, HAFİF VE SİZİN
 • Zengin yanıtlar: başlıklar, listeler, tablolar, Kopyala düğmeli kod, formüller ve basit çizimler.
 • Her şey düzenleyebileceğiniz bir dosyadır: ayarlar, bağlantılar, istemler, çubuktaki düğmeler.
 • Araçlar, özenle: API bağlantıları MCP sunucularınızın araçlarını kullanabilir; bir şeyi değiştiren her işlem önce size sorar.
-• İsterseniz Copilot tuşu sağ Ctrl tuşu olarak da çalışabilir.
 
 TASARIMDAN GELEN GİZLİLİK
 Hotline AI'nın sunucusu yoktur ve hiçbir şey toplamaz: hesap yok, analiz yok, reklam yok. İletileriniz yalnızca
@@ -78,8 +77,7 @@ Vurgu renginizi seçin (Hotline moru, Windows vurgu rengi veya herhangi bir renk
 16. MCP sunucularınızdan isteğe bağlı araçlar, her değişiklikten önce onayla
 17. Hesap, analiz ve reklam yok; anahtarlar Windows Kimlik Bilgisi Yöneticisi'nde kalır
 18. Ücretsiz ve açık kaynak
-19. Copilot tuşu bunun yerine sağ Ctrl olarak çalışabilir
-20. x64 ve ARM64 bilgisayarlarda yerel
+19. x64 ve ARM64 bilgisayarlarda yerel
 
 ## Ekran görüntüsü açıklamaları
 

@@ -504,11 +504,11 @@
   <data name="Actions_NewName" xml:space="preserve"><value>Нова назва</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Це сполучення клавіш уже використовує інша програма</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Скинути</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Повертає параметри до стану після інсталяції. Спочатку все копіюється до {0}\backups. Щоб перемикатися між наборами параметрів, замініть settings.json (або файл у connections) іншою копією: Hotline застосує її негайно. Стандартні значення знаходяться в {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Повертає параметри та рядки кнопок до стану після інсталяції. Спочатку все копіюється до {0}\backups. Щоб перемикатися між наборами параметрів, замініть settings.json (або файл у connections) іншою копією: Hotline застосує її негайно. Стандартні значення знаходяться в {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Скинути все</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, кожне підключення (і його ключ API), панель інструментів і mcp.json повертаються до початкового стану інсталяції. Підказки, швидкі дії, пам'ять та історія зберігаються. Спочатку створюється резервна копія (без ключів API).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Скинути все?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json повертається до стандартних значень. Ваші підключення, підказки, швидкі дії, пам'ять та історія зберігаються. Спочатку створюється резервна копія.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json та toolbar.json повертаються до стандартних значень. Ваші підключення, підказки, швидкі дії, пам'ять та історія зберігаються. Спочатку створюється резервна копія.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Скинути</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Готово. Попередні файли знаходяться в {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Скинути параметри</value></data>
@@ -581,7 +581,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Угору чи вниз</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Чат розгортається від рядка повідомлення: угору, якщо є місце, або вниз, якщо місця вгорі немає. Параметри › Вікно дозволяє зафіксувати напрямок угору чи вниз і налаштовує розташування, ширину та висоту чату.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вікно › Рядки кнопок показує, приховує та впорядковує кнопки над або під полем повідомлення.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вікно › Рядки кнопок показує панель у вигляді чотирьох кутів: угорі ліворуч і угорі праворуч (над полем повідомлення), унизу ліворуч і унизу праворуч (під ним). Перетягніть кнопку або засіб вибору, щоб перемістити його всередині кута чи в інший кут, або скористайтеся кнопками зі стрілками (Alt+стрілка змінює кут, Ctrl+стрілка змінює порядок). Те, що ви приховуєте, чекає в «Не відображається». Кожна кнопка може мати власний розмір, контур або заливку, і ви можете додавати власні кнопки, які виконують швидку дію або вставляють текст. Кнопки, які не вміщуються, переміщуються в меню ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Звуки</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Вигляд › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Параметри — це файли</value></data>
