@@ -212,6 +212,37 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             PanelLayout.Apply(popup, userUp);
             popup.ApplyToolbar(userBar);
             await Step("buttons restored");
+            // Bar looks, the ⋯ menu and a damaged file, from models resolved in memory (the user's toolbar.json is never touched).
+            const string builtIn = "\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\"";
+            static string Bar(string style, string moreLeft = "", string buttons = "") => $$"""
+                { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] },
+                  "items": { "left": [{{builtIn}}{{moreLeft}}], "right": ["newChat", "settings"] },
+                  "style": {{style}}, "buttons": { {{buttons}} } }
+                """;
+            async Task Look(string name, string json, int width)
+            {
+                popup.ResizeOffscreen(width);
+                popup.ApplyToolbar(ToolbarModel.Resolve(json));
+                await Step(name);
+                await Task.Delay(200);
+                await SnapshotAsync(name);
+            }
+            var customButtons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$"""
+                "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
+                """));
+            var customIds = string.Concat(Enumerable.Range(1, 24).Select(i => $", \"c{i}\""));
+            await Look("9-wide-outline", Bar("""{ "size": "wide", "outline": true }"""), 720);
+            await Look("10-compact-filled", Bar("""{ "size": "compact", "filled": true }"""), 720);
+            // 24 custom buttons: at the narrowest width the left ones go into the ⋯ menu; wider they come back (no layout cycle either way).
+            await Look("11-custom-720", Bar("{}", customIds, customButtons), 720);
+            await Look("12-custom-320", Bar("{}", customIds, customButtons), 320);
+            await Look("13-custom-1000", Bar("{}", customIds, customButtons), 1000);
+            await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
+            // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
+            await Look("15-damaged-file", Bar("""{ "size": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
+            popup.ApplyToolbar(userBar);
+            popup.ResizeOffscreen(720);
+            await Step("looks restored");
             _renderCheck?.Invoke();
             _renderCheck = null;
         }
