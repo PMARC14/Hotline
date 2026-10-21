@@ -366,4 +366,48 @@ public sealed class ToolbarModelTests
         Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
         Assert.Equal(m.ToJson(), ToolbarModel.Resolve(m.ToJson()).ToJson());
     }
+
+    // ---- iconFile ----
+
+    private static ToolbarModel WithIconFile(string iconFile) => ToolbarModel.Resolve($$"""
+        { "version": 2, "items": { "left": ["pin", "b1"] },
+          "buttons": { "b1": { "label": "B", "icon": "E8A5", "iconFile": {{iconFile}}, "text": "hi" } } }
+        """);
+
+    [Fact]
+    public void IconFile_is_read_and_round_trips()
+    {
+        var m = WithIconFile("\"b1.png\"");
+        Assert.Empty(m.Warnings);
+        Assert.Equal(new CustomButton("b1", "B", "E8A5", null, "hi", false, "b1.png"), m.Buttons.Single());
+        Assert.Contains("\"iconFile\": \"b1.png\"", m.ToJson());
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+        Assert.Equal(m.ToJson(), ToolbarModel.Resolve(m.ToJson()).ToJson());
+
+        var none = Bottom("\"b1\"", """, "buttons": { "b1": { "label": "B", "icon": "E8A5", "text": "hi" } }""");
+        Assert.Null(none.Buttons.Single().IconFile);
+        Assert.DoesNotContain("iconFile", none.ToJson().Split('\n').Where(l => !l.TrimStart().StartsWith("//")));
+        Assert.NotEqual(none, m); // part of equality
+    }
+
+    [Theory]
+    [InlineData("\"../x.png\"")]
+    [InlineData("\"..\\\\b1.png\"")]
+    [InlineData("\"b1.PNG\"")]
+    [InlineData("\"b2.png\"")]
+    [InlineData("\"C:\\\\b1.png\"")]
+    [InlineData("\"\\\\\\\\server\\\\b1.png\"")]
+    [InlineData("\"b1.svg\"")]
+    [InlineData("\"\"")]
+    [InlineData("42")]
+    [InlineData("null")]
+    public void A_bad_iconFile_is_dropped_and_the_glyph_stays(string iconFile)
+    {
+        var m = WithIconFile(iconFile);
+        var b = m.Buttons.Single();
+        Assert.Null(b.IconFile);
+        Assert.Equal("E8A5", b.Icon);
+        if (iconFile != "null") Assert.Contains(m.Warnings, w => w.Contains("iconFile"));
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+    }
 }

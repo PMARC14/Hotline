@@ -9,11 +9,11 @@ public sealed class ToolbarFuzzTests
 {
     private static readonly string[] Keys =
         ["version", "top", "items", "left", "right", "style", "overrides", "buttons", "size", "outline", "filled", "width", "height",
-         "label", "icon", "quickAction", "text", "send", "pin", "b1", "b-2", "x", "", "Bad Id!"];
+         "label", "icon", "iconFile", "quickAction", "text", "send", "pin", "b1", "b-2", "x", "", "Bad Id!"];
 
     private static readonly string[] Strings =
         [.. ToolbarModel.BuiltIn, "PIN", "newchat", "spacer", "b1", "b-2", "c3", "bogus", "compact", "normal", "wide", "huge",
-         "E8A5", "e8bd", "ZZ", "F8FF", "0041", "10FFFD", "", " ", "\u0000\u0007\n", "\uD800", "\uDC00x", "😀"];
+         "E8A5", "e8bd", "b1.png", "b-2.png", "../x.png", "B1.png", "ZZ", "F8FF", "0041", "10FFFD", "", " ", "\u0000\u0007\n", "\uD800", "\uDC00x", "😀"];
 
     /// <summary>Random JSON text: mostly the toolbar's keys and ids, with wrong types, deep nesting and huge strings.</summary>
     private static void Value(Random r, StringBuilder sb, int depth)
@@ -84,7 +84,7 @@ public sealed class ToolbarFuzzTests
             case "overrides": Object(r.Next(6), i => Field(r.Next(3) == 0 ? $"b{r.Next(30)}" : Strings[r.Next(Strings.Length)], Style)); break;
             default:
                 Object(r.Next(r.Next(5) == 0 ? 30 : 6), i => Field(r.Next(8) == 0 ? Strings[r.Next(Strings.Length)] : $"b{i}", () =>
-                    Button(r.Next(4) switch { 0 => ["label", "icon", "quickAction"], 1 => ["label", "text", "send"], 2 => ["icon", "text"], _ => ["quickAction", "text", "label", "send"] })));
+                    Button(r.Next(4) switch { 0 => ["label", "icon", "quickAction"], 1 => ["label", "text", "send"], 2 => ["icon", "iconFile", "text"], _ => ["quickAction", "text", "label", "send"] })));
                 break;
         }
     }

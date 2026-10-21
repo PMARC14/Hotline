@@ -15,8 +15,10 @@ public enum ButtonSize { Compact, Normal, Wide }
 public sealed record ButtonStyle(ButtonSize? Size = null, bool? Outline = null, bool? Filled = null, int? Width = null, int? Height = null);
 
 /// <summary>A user-defined button: runs the quick action of that name (a file in actions\) or inserts <see cref="Text"/>
-/// in the message box (and sends it when <see cref="Send"/>). Exactly one of the two is set.</summary>
-public sealed record CustomButton(string Id, string Label, string Icon, string? QuickAction, string? Text, bool Send);
+/// in the message box (and sends it when <see cref="Send"/>). Exactly one of the two is set. <see cref="IconFile"/> is
+/// its picture in icons\ (always "&lt;id&gt;.png", see <see cref="CustomIcons"/>), shown instead of the <see cref="Icon"/>
+/// glyph when it can be read; the glyph stays as the fallback.</summary>
+public sealed record CustomButton(string Id, string Label, string Icon, string? QuickAction, string? Text, bool Send, string? IconFile = null);
 
 /// <summary>
 /// ~/.hotline/toolbar.json v2, resolved: what each quadrant shows, the bar's look, per-item overrides and the custom buttons.
@@ -239,8 +241,15 @@ public sealed record ToolbarModel(
                 { warnings.Add($"Custom button \"{id}\": \"quickAction\" must be the name of a file in actions\\ (letters, digits, _ and -, at most {MaxActionName} characters); ignored"); continue; }
             var text = String(b, "text", id, warnings) is { } t && Clean(t, MaxText, true) is { Length: > 0 } x ? x : null;
             if ((quickAction is null) == (text is null)) { warnings.Add($"Custom button \"{id}\" needs exactly one of \"quickAction\" and \"text\"; ignored"); continue; }
+            // Only the name is checked here (Resolve reads no files): the renderer falls back to the glyph if the picture is gone.
+            var iconFile = String(b, "iconFile", id, warnings);
+            if (iconFile is not null && !CustomIcons.IsFileName(iconFile, id))
+            {
+                warnings.Add($"\"buttons.{id}.iconFile\" {Show(b["iconFile"])} isn't \"{id}.png\" (a picture in icons\\); the icon is used");
+                iconFile = null;
+            }
             buttons.Add(new CustomButton(id, label.Length > 0 ? label : id, Icon(b["icon"], id, warnings), quickAction, text,
-                text is not null && (Bool(b["send"], $"buttons.{id}.send", warnings) ?? false)));
+                text is not null && (Bool(b["send"], $"buttons.{id}.send", warnings) ?? false), iconFile));
         }
         return buttons;
     }
@@ -363,7 +372,7 @@ public sealed record ToolbarModel(
     }.OfType<string>()) + " }";
 
     private static string ButtonText(CustomButton b) =>
-        $"{{ \"label\": {Str(b.Label)}, \"icon\": {Str(b.Icon)}, "
+        $"{{ \"label\": {Str(b.Label)}, \"icon\": {Str(b.Icon)}, " + (b.IconFile is { } file ? $"\"iconFile\": {Str(file)}, " : "")
         + (b.QuickAction is { } qa ? $"\"quickAction\": {Str(qa)} }}" : $"\"text\": {Str(b.Text!)}, \"send\": {(b.Send ? "true" : "false")} }}");
 
     private static string Entries<T>(IEnumerable<(string Key, T Value)> entries, Func<T, string> text) =>
@@ -386,7 +395,8 @@ public sealed record ToolbarModel(
               // "overrides": the same keys for one item, plus "width" and "height" ({{MinDip}}-{{MaxDip}}) for icon buttons.
               // "buttons": up to {{MaxButtons}} custom buttons; id a-z, 0-9 and -, label up to {{MaxLabel}} characters, icon a Segoe
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
-              // "text" (put in the message box; "send": true also sends it).
+              // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from
+              // icons\ instead of the icon (PNG, at most 256 KB, 16-256 px a side; Settings copies it there).
               "version": {{CurrentVersion}},
               "top": {{Row(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight)}},
               "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},

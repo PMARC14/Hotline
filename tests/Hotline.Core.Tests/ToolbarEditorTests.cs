@@ -427,6 +427,37 @@ public sealed class ToolbarEditorTests
     }
 
     [Fact]
+    public void Custom_edits_keep_or_clear_the_icon_file()
+    {
+        var added = ToolbarEditor.AddCustom(Grid, Text("four") with { IconFile = "four.png" });
+        Assert.Equal("four.png", added.Buttons[^1].IconFile);
+        AssertValid(added);
+
+        var relabelled = ToolbarEditor.UpdateCustom(added, added.Buttons[^1] with { Label = "Four!" });
+        Assert.Equal("four.png", relabelled.Buttons[^1].IconFile);
+        var cleared = ToolbarEditor.UpdateCustom(relabelled, relabelled.Buttons[^1] with { IconFile = null });
+        Assert.Null(cleared.Buttons[^1].IconFile);
+        Assert.Equal("Four!", cleared.Buttons[^1].Label);
+        var set = ToolbarEditor.UpdateCustom(Grid, Grid.Buttons[0] with { IconFile = "one.png" });
+        Assert.Equal("one.png", set.Buttons[0].IconFile);
+        AssertValid(set);
+
+        Assert.DoesNotContain(ToolbarEditor.RemoveCustom(added, "four").Buttons, b => b.IconFile is not null);
+    }
+
+    [Fact]
+    public void A_custom_button_never_keeps_another_buttons_or_a_path_icon_file()
+    {
+        foreach (var bad in new[] { "one.png", "../four.png", "four.PNG", "C:\\four.png" })
+        {
+            var m = ToolbarEditor.AddCustom(Grid, Text("four") with { IconFile = bad });
+            Assert.Null(m.Buttons[^1].IconFile); // dropped like Resolve does; the glyph stays
+            AssertValid(m);
+            Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, Grid.Buttons[1] with { IconFile = bad })); // nothing changes
+        }
+    }
+
+    [Fact]
     public void RemoveCustom_of_a_built_in_or_unknown_id_returns_the_input()
     {
         Assert.Same(Grid, ToolbarEditor.RemoveCustom(Grid, "pin"));
@@ -516,8 +547,8 @@ public sealed class ToolbarEditorTests
                     5 => ToolbarEditor.AddCustom(m, new CustomButton(id, junk[random.Next(junk.Length)], random.Next(2) == 0 ? "E8A5" : "zz",
                         useAction ? action : null, random.Next(3) == 0 ? null : "txt", random.Next(2) == 0)),
                     6 => ToolbarEditor.UpdateCustom(m, useAction
-                        ? new CustomButton(id, "L", "E8BD", action, null, false)
-                        : new CustomButton(id, "L", "E8BD", null, "t", true)),
+                        ? new CustomButton(id, "L", "E8BD", action, null, false, random.Next(3) == 0 ? id + ".png" : null)
+                        : new CustomButton(id, "L", "E8BD", null, "t", true, random.Next(4) == 0 ? junk[random.Next(junk.Length)] + ".png" : null)),
                     7 => ToolbarEditor.RemoveCustom(m, id),
                     8 => ToolbarEditor.SetStyle(m, random.Next(3) == 0 ? null : id,
                         new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(4), null, random.Next(2) == 0, random.Next(-50, 200), null)),
