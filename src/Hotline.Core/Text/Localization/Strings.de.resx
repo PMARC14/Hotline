@@ -434,6 +434,11 @@ Verweigern:
   <data name="Mcp_Exited" xml:space="preserve"><value>der Server wurde beendet (Exitcode {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} konnte nicht gestartet werden</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json konnte nicht gelesen werden: {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Schnellaktion '{0}' nicht gefunden</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Beenden Sie zuerst das Diktat und verwenden Sie dann diese Schaltfläche.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Die settings.json von agy ist kein JSON-Objekt; sie wird nicht geändert.</value></data>

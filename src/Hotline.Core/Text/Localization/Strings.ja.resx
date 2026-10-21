@@ -434,6 +434,11 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>サーバーが終了しました (終了コード {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>クイック アクション '{0}' が見つかりません</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>先に音声入力を終えてから、このボタンを使ってください。</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy の settings.json が JSON オブジェクトではないため、変更しません。</value></data>

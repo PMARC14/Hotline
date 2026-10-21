@@ -434,6 +434,11 @@ Weigeren:
   <data name="Mcp_Exited" xml:space="preserve"><value>de server is gestopt (afsluitcode {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Snelle actie '{0}' niet gevonden</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Rond eerst het dicteren af en gebruik dan deze knop.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>De settings.json van agy is geen JSON-object; er wordt niets gewijzigd.</value></data>

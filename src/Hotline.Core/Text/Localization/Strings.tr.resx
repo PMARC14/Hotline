@@ -434,6 +434,11 @@ Reddet:
   <data name="Mcp_Exited" xml:space="preserve"><value>sunucu kapandı (çıkış kodu {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>'{0}' hızlı eylemi bulunamadı</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Önce dikteyi bitirin, sonra bu düğmeyi kullanın.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyası bir JSON nesnesi değil; değiştirilmiyor.</value></data>

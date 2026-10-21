@@ -434,6 +434,11 @@ Refuser :
   <data name="Mcp_Exited" xml:space="preserve"><value>le serveur s'est arrêté (code de sortie {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossible de démarrer {0}</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossible de lire toolbar.json : {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Action rapide « {0} » introuvable</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Terminez d'abord la dictée, puis utilisez ce bouton.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Le settings.json d'agy n'est pas un objet JSON ; il n'est pas modifié.</value></data>

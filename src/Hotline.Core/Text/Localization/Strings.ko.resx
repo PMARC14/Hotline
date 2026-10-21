@@ -434,6 +434,11 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>서버가 종료되었습니다(종료 코드 {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0}을(를) 시작할 수 없습니다</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다: {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>빠른 동작 '{0}'을(를) 찾을 수 없습니다</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>먼저 받아쓰기를 마친 다음 이 단추를 사용하세요.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy의 settings.json이 JSON 개체가 아니므로 변경하지 않습니다.</value></data>

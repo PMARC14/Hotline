@@ -420,6 +420,7 @@ public partial class App : Application
     {
         if (_popup is null) return;
         var load = Hotline.Core.Windowing.ToolbarFile.Load(Path.Combine(dataDir, "toolbar.json"));
+        ReportToolbarProblems(load);
         if (load.Migrated) _log?.Info("toolbar.json converted to version 2 (the old file is kept as toolbar.json.old)");
         if (load.Error is { } error)
         {
@@ -444,6 +445,28 @@ public partial class App : Application
 
     private bool _toolbarApplied;
     private IReadOnlyList<string> _toolbarWarnings = [];
+    private string _toolbarNoticeKey = "";
+
+    /// <summary>
+    /// A file that can't be read, or parts of it that were ignored, show as a notice in the panel (with a way to Settings,
+    /// where they are listed); it's raised again only when the problems change, and taken away when the file is fine.
+    /// </summary>
+    private void ReportToolbarProblems(Hotline.Core.Windowing.ToolbarLoad load)
+    {
+        const string tag = "toolbar-problems";
+        var key = Hotline.Core.Diagnostics.ConfigProblems.Key(load.Error, load.Model.Warnings);
+        if (key == _toolbarNoticeKey || _presenter?.Notices is not { } notices) return;
+        _toolbarNoticeKey = key;
+        var openSettings = (Strings.Bar_OpenSettings, new Action(() => _settingsHost?.Show()));
+        if (key.Length == 0) notices.Remove(tag);
+        else if (load.Error is { } error)
+            notices.ShowTagged(tag, Strings.Bar_NoticeUnreadableTitle, $"{error} {Strings.Bar_NoticeKept}",
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Error, closable: true, action: openSettings);
+        else
+            notices.ShowTagged(tag, Strings.Bar_NoticeProblemsTitle,
+                L.F(Strings.Bar_NoticeProblems, Hotline.Core.Diagnostics.ConfigProblems.Summary(load.Model.Warnings)),
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Warning, closable: true, action: openSettings);
+    }
 
     /// <summary>MCP servers are started by the MCP SDK (not in the kill-on-close job): stop them before a restart.</summary>
     private void StopToolServers()

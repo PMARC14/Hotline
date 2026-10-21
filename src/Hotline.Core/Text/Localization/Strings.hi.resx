@@ -434,6 +434,11 @@
   <data name="Mcp_Exited" xml:space="preserve"><value>सर्वर बंद हो गया (निकास कोड {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>त्वरित क्रिया '{0}' नहीं मिली</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>पहले बोलकर लिखना पूरा करें, फिर इस बटन का उपयोग करें।</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy की settings.json एक JSON ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
