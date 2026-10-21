@@ -11,7 +11,7 @@ same files). Comments and trailing commas are allowed.
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
-| `toolbar.json` | The button rows around the message box (four groups): which items, in what order, how they look, and your own buttons. Version 2 since 0.4, see *toolbar.json* below |
+| `toolbar.json` | The button rows around the message box (six groups): which items, in what order, how they look, and your own buttons. Version 2 since 0.4, see *toolbar.json* below |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
@@ -167,15 +167,16 @@ you unpin it, click into another app, or Hotline restarts.
 
 ## toolbar.json
 
-The button rows around the message box. There are four groups, called quadrants: **top left** and **top right** sit in
-the row above the message box, **bottom left** and **bottom right** in the row below it. Within a group, items run left
-to right. Settings › **Window** › **Button rows** edits this file (planned UI, see below); you can also edit it by hand.
+The button rows around the message box. Each of the two rows has three groups: **left**, **center** and **right**.
+**top left / center / right** sit in the row above the message box, **bottom left / center / right** in the row below it.
+Within a group, items run left to right; the center group sits in the free space between the left and right groups. Settings › **Window** › **Button rows** edits this file (planned UI, see below); you can also edit it by hand.
 
 ```jsonc
 {
   "version": 2,
   "top":   { "left": ["effort", "model", "provider"], "right": [] },
-  "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn"],
+  "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+             "center": ["prompt", "recent", "continueIn"],
              "right": ["newChat", "settings"] },
   "style": { "size": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
@@ -188,14 +189,14 @@ to right. Settings › **Window** › **Button rows** edits this file (planned U
 
 | Key | Meaning |
 |---|---|
-| `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left` and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
+| `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left`, `center` and `right` arrays of item ids (`center` is optional). Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…) |
 | `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide`; `outline` and `filled` are `true` or `false`; `width` and `height` (20-80 DIPs) can also be set bar-wide |
 | `overrides` | Per item id, the same `size`, `outline` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
 | `buttons` | Your own buttons, by id (see below) |
 
 **The pickers.** `effort`, `model` and `provider` always stay together as one block. The block goes in the first group
-(checked in the order bottom left, bottom right, top left, top right) that lists one of them, at that picker's
+(checked in the order bottom left, bottom center, bottom right, top left, top center, top right) that lists one of them, at that picker's
 position, with the pickers in the order of the groups above and then as listed within each group: `effort` in top
 left plus `model` in bottom right puts the block in bottom right, `model` first and `effort` after it. They ignore `style` and `overrides`.
 
@@ -219,12 +220,13 @@ the last of the left group into a "..." menu rather than push anything off the p
 and the rest of the file still applies; the file is never thrown away for one mistake. In detail:
 
 - An unknown id, an id that isn't text, or an item listed twice or in two groups is ignored; the first place wins
-  (checked in the order bottom left, bottom right, top left, top right). A v1 `"spacer"` left in the file is ignored.
+  (checked in the order bottom left, bottom center, bottom right, top left, top center, top right). A v1 `"spacer"`
+  left in the file is ignored.
 - A key written twice: the last one wins.
 - A wrong type for `outline`, `filled` or `size` gives the default for that key. A custom button that is invalid is
   skipped. An override for an item that isn't shown is ignored.
 - If the file shows nothing at all by mistake (or only unknown ids), the default layout is used. An empty bar is kept
-  only when all four groups are present and empty.
+  only when the `left` and `right` groups of both rows are present and empty (`center` may be left out).
 - A file that isn't valid JSON, or whose top level isn't an object, is left untouched and the defaults run until you fix
   it; a half-written file keeps the bar it had.
 - Hotline does not rewrite a version 2 file by itself. A missing file is created with the defaults (delete
@@ -233,9 +235,10 @@ and the rest of the file still applies; the file is never thrown away for one mi
   it are not carried over).
 - A `version` higher than 2 is read as far as it makes sense and never rewritten.
 
-**Settings › Window › Button rows (planned).** The editor shows the four groups as cards, each a strip of its items.
+**Settings › Window › Button rows (planned).** The editor shows the six groups as cards (three per row), each a strip of its items.
 Drag an item to another place in its group or into another group (a marker shows where it lands), or use the buttons
-on an item: left and right to reorder, up and down to change rows, and to the other side. Items you removed wait in a
+on an item: left and right to reorder, up and down to change rows, and left and right to move one group over
+(left → center → right). Items you removed wait in a
 "Not shown" strip. Size, outline and fill can be set for the whole bar or per item, and custom buttons are added,
 edited and deleted there. Moving a picker moves all three together.
 
