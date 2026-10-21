@@ -646,6 +646,15 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Il y a déjà 24 boutons personnalisés ; supprimez-en un d'abord.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Le groupe en bas à gauche est plein (40 éléments) ; faites de la place d'abord.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Impossible d'enregistrer ce bouton ; vérifiez son libellé, son icône et son action.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>Impossible d'enregistrer toolbar.json : {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Corrigé lors de la lecture de toolbar.json (enregistrer ici écrit le fichier corrigé) :</value></data>
 </root>

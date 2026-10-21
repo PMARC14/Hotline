@@ -646,6 +646,15 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>カスタム ボタンがすでに 24 個あります。先に 1 つ削除してください。</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下のグループがいっぱいです (40 項目)。先に空きを作ってください。</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>このボタンを保存できませんでした。ラベル、アイコン、アクションを確認してください。</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json を保存できませんでした: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json の読み込み時に修正されました (ここで保存すると修正されたファイルが書き込まれます):</value></data>
 </root>

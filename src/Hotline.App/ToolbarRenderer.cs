@@ -1,3 +1,5 @@
+using System.Buffers.Binary;
+using System.Runtime.InteropServices.WindowsRuntime;
 using Hotline.App.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Windowing;
@@ -6,13 +8,16 @@ using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Automation.Peers;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Controls.Primitives;
+using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Media.Imaging;
+using Windows.Storage.Streams;
 
 namespace Hotline.App;
 
 /// <summary>
 /// Draws toolbar.json (a resolved <see cref="ToolbarModel"/>) into the panel's two button rows. Each row is
 /// <c>[left group…] [*] [right group…]</c>; the pickers are one block (PickersPanel). Built-in buttons are the XAML ones,
-/// custom buttons are made anew on every apply. When a row is too narrow its last left buttons move into a "⋯" menu
+/// custom buttons are made anew on every apply (with their picture when they have one, see <see cref="CustomButtonPicture"/>). When a row is too narrow its last left buttons move into a "⋯" menu
 /// (<see cref="Fit"/>, run after layout by ProviderBar). What goes where is decided in <see cref="ToolbarPlan"/>.
 /// </summary>
 internal sealed class ToolbarRenderer
@@ -78,6 +83,16 @@ internal sealed class ToolbarRenderer
         foreach (var b in model.Buttons)
         {
             var button = new Button { Content = Glyph(b.Icon), AllowFocusOnInteraction = false, Tag = b.Id };
+            if (CustomButtonPicture.Read(b, _log.Info) is { } picture)
+            {
+                // Its picture instead of the glyph, sized from the style (never measured): the glyph comes back if it can't be drawn.
+                var size = ToolbarPlan.Metrics(model.EffectiveStyle(b.Id));
+                button.Content = CustomButtonPicture.View(picture, Math.Round(Math.Min(size.Width, size.Height) * 0.6), () =>
+                {
+                    _log.Info($"button rows: picture {b.IconFile} can't be drawn; its icon is used");
+                    button.Content = Glyph(b.Icon);
+                });
+            }
             ToolTipService.SetToolTip(button, b.Label); // plain text: never markup
             AutomationProperties.SetName(button, b.Label);
             button.Click += OnCustomClick;
@@ -220,6 +235,13 @@ internal sealed class ToolbarRenderer
         if (_customButtons.TryGetValue(id, out var custom))
         {
             var item = new MenuFlyoutItem { Text = custom.Definition.Label, Icon = new FontIcon { Glyph = Glyph(custom.Definition.Icon) } };
+            if (CustomButtonPicture.Read(custom.Definition, _log.Info) is { } picture)
+            {
+                var image = new ImageIcon();
+                item.Icon = image;
+                CustomButtonPicture.Load(picture, 16, bitmap => image.Source = bitmap,
+                    () => item.Icon = new FontIcon { Glyph = Glyph(custom.Definition.Icon) });
+            }
             item.Click += (_, _) => _custom(custom.Definition);
             return item;
         }
@@ -260,5 +282,61 @@ internal sealed class ToolbarRenderer
             return;
         }
         new ButtonAutomationPeer(button).Invoke(); // raises its Click: the same handlers as the button
+    }
+}
+
+/// <summary>
+/// A custom button's picture (toolbar.json "iconFile", in icons\): read and checked by <see cref="CustomIcons"/> each time,
+/// then drawn from those same bytes (no file URI: nothing changes between the check and the drawing, and no image cache
+/// keeps an old picture), decoded at the size it is shown. Used by the bar and by Settings.
+/// </summary>
+internal static class CustomButtonPicture
+{
+    public static string Folder => CustomIcons.Folder(App.DataDirectory);
+
+    /// <summary>The checked bytes of <paramref name="b"/>'s picture, or null when it has none or it can't be used (logged
+    /// with the file name and the reason only).</summary>
+    public static byte[]? Read(CustomButton b, Action<string> log)
+    {
+        if (b.IconFile is null || CustomIcons.IconPath(Folder, b.IconFile) is not { } path) return null;
+        var (bytes, problem) = CustomIcons.Read(path);
+        if (bytes is null) log($"button rows: picture {b.IconFile} not shown ({problem}); its icon is used");
+        return bytes;
+    }
+
+    /// <summary>An Image of <paramref name="size"/> DIP square showing a checked PNG (aspect kept); <paramref name="failed"/>
+    /// runs on the UI thread if it can't be decoded after all (a damaged pixel stream passes the header check).</summary>
+    public static Image View(byte[] png, double size, Action failed)
+    {
+        var image = new Image { Width = size, Height = size, Stretch = Stretch.Uniform };
+        Load(png, size, bitmap => image.Source = bitmap, failed);
+        return image;
+    }
+
+    /// <summary>Decodes a checked PNG at most <paramref name="size"/> DIP on its longer side, then hands it to
+    /// <paramref name="loaded"/>, or calls <paramref name="failed"/>. Never throws (it runs as a queued continuation).</summary>
+    public static void Load(byte[] png, double size, Action<BitmapImage> loaded, Action failed) => _ = LoadAsync(png, size, loaded, failed);
+
+    private static async Task LoadAsync(byte[] png, double size, Action<BitmapImage> loaded, Action failed)
+    {
+        try
+        {
+            using var stream = new InMemoryRandomAccessStream();
+            await stream.WriteAsync(png.AsBuffer());
+            stream.Seek(0);
+            // Only the longer side is bounded, so the decoder keeps the aspect (IHDR width and height: bytes 16-23, checked).
+            var wide = BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(16)) >= BinaryPrimitives.ReadUInt32BigEndian(png.AsSpan(20));
+            var decode = Math.Max(1, (int)Math.Ceiling(size));
+            var bitmap = new BitmapImage { DecodePixelType = DecodePixelType.Logical };
+            if (wide) bitmap.DecodePixelWidth = decode;
+            else bitmap.DecodePixelHeight = decode;
+            await bitmap.SetSourceAsync(stream);
+            loaded(bitmap);
+        }
+        catch (Exception)
+        {
+            try { failed(); }
+            catch (Exception) { } // the glyph fallback itself failed: the button stays as it is
+        }
     }
 }

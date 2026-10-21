@@ -646,6 +646,15 @@ Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value>
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Są już 24 własne przyciski; najpierw usuń jeden.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Dolna lewa grupa jest pełna (40 elementów); najpierw zrób tam miejsce.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Nie udało się zapisać tego przycisku; sprawdź jego etykietę, ikonę i akcję.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>Nie udało się zapisać toolbar.json: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Naprawiono podczas odczytu toolbar.json (zapisanie tutaj zapisze naprawiony plik):</value></data>
 </root>

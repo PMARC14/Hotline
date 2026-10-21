@@ -646,6 +646,15 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>已有 24 个自定义按钮，请先删除一个。</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下分组已满 (40 个项目)，请先腾出空间。</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>无法保存此按钮，请检查其标签、图标和操作。</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>无法保存 toolbar.json: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>读取 toolbar.json 时已修复 (在此保存将写入修复后的文件):</value></data>
 </root>

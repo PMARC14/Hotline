@@ -646,6 +646,15 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Zaten 24 özel düğme var; önce birini silin.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Sol alt grup dolu (40 öğe); önce orada yer açın.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Bu düğme kaydedilemedi; etiketini, simgesini ve eylemini kontrol edin.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json kaydedilemedi: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json okunurken düzeltildi (burada kaydetmek düzeltilmiş dosyayı yazar):</value></data>
 </root>

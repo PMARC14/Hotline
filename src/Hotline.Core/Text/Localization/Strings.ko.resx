@@ -646,6 +646,15 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>사용자 지정 단추가 이미 24개 있습니다. 먼저 하나를 삭제하세요.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>왼쪽 아래 그룹이 가득 찼습니다 (40개 항목). 먼저 공간을 확보하세요.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>이 단추를 저장할 수 없습니다. 레이블, 아이콘 및 동작을 확인하세요.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json을 저장할 수 없습니다: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json을 읽는 동안 수정됨(여기서 저장하면 수정된 파일이 저장됩니다):</value></data>
 </root>
