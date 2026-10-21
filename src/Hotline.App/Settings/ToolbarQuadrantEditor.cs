@@ -250,7 +250,9 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         return new Border { Style = _cardStyle, Padding = new Thickness(8), Child = content };
     }
 
-    /// <summary>A horizontal strip of items: draggable, a drop target, scrolling sideways when it is full.</summary>
+    private const double MaxStripHeight = 600;
+
+    /// <summary>A vertical strip of items: draggable, a drop target, growing with its items before it scrolls.</summary>
     private ListView Strip(string automationId, string name)
     {
         var list = new ListView
@@ -259,12 +261,15 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             MinHeight = 84, Background = new SolidColorBrush(Microsoft.UI.Colors.Transparent), // a background takes drops on the empty part
             TabNavigation = KeyboardNavigationMode.Local, // Tab reaches every item's buttons
             ItemsPanel = (ItemsPanelTemplate)XamlReader.Load(
-                """<ItemsPanelTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><StackPanel Orientation="Horizontal" Spacing="4" /></ItemsPanelTemplate>"""),
+                """<ItemsPanelTemplate xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"><StackPanel Orientation="Vertical" Spacing="2" /></ItemsPanelTemplate>"""),
         };
-        ScrollViewer.SetHorizontalScrollMode(list, ScrollMode.Auto);
-        ScrollViewer.SetHorizontalScrollBarVisibility(list, ScrollBarVisibility.Auto);
-        ScrollViewer.SetVerticalScrollMode(list, ScrollMode.Disabled);
-        ScrollViewer.SetVerticalScrollBarVisibility(list, ScrollBarVisibility.Disabled);
+        // The box grows with its items up to MaxStripHeight (about ten items), so a whole group is in view; only a longer
+        // group scrolls, and only up and down.
+        list.MaxHeight = MaxStripHeight;
+        ScrollViewer.SetHorizontalScrollMode(list, ScrollMode.Disabled);
+        ScrollViewer.SetHorizontalScrollBarVisibility(list, ScrollBarVisibility.Disabled);
+        ScrollViewer.SetVerticalScrollMode(list, ScrollMode.Auto);
+        ScrollViewer.SetVerticalScrollBarVisibility(list, ScrollBarVisibility.Auto);
         AutomationProperties.SetAutomationId(list, automationId);
         AutomationProperties.SetName(list, name);
         list.DragItemsStarting += (_, e) =>
@@ -291,13 +296,13 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         return _dragId is not null;
     }
 
-    /// <summary>The gap between items under the pointer: before the first item whose middle is right of it, else the end.</summary>
+    /// <summary>The gap between items under the pointer: before the first item whose middle is below it, else the end.</summary>
     private static int Gap(ListView list, DragEventArgs e)
     {
-        var x = e.GetPosition(list).X;
+        var y = e.GetPosition(list).Y;
         for (var i = 0; i < list.Items.Count; i++)
-            if (list.Items[i] is ListViewItem item && item.ActualWidth > 0
-                && x < item.TransformToVisual(list).TransformPoint(default).X + item.ActualWidth / 2)
+            if (list.Items[i] is ListViewItem item && item.ActualHeight > 0
+                && y < item.TransformToVisual(list).TransformPoint(default).Y + item.ActualHeight / 2)
                 return i;
         return list.Items.Count;
     }
@@ -400,14 +405,14 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         return Item(id, "bar-item-" + id, name, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { Title(id), show } });
     }
 
-    /// <summary>A strip item with its id in Tag (on the item and its content) and a drop-marker bar on each side.</summary>
+    /// <summary>A strip item with its id in Tag (on the item and its content) and a drop-marker bar above and below it.</summary>
     private ListViewItem Item(string id, string automationId, string name, FrameworkElement tile)
     {
-        var (before, after) = (new Rectangle { Width = 3 }, new Rectangle { Width = 3 });
-        var content = new Grid { Tag = id, ColumnSpacing = 4 };
-        foreach (var _ in Enumerable.Range(0, 3)) content.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-        Grid.SetColumn(tile, 1);
-        Grid.SetColumn(after, 2);
+        var (before, after) = (new Rectangle { Height = 3 }, new Rectangle { Height = 3 });
+        var content = new Grid { Tag = id, RowSpacing = 2 };
+        foreach (var _ in Enumerable.Range(0, 3)) content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        Grid.SetRow(tile, 1);
+        Grid.SetRow(after, 2);
         content.Children.Add(before);
         content.Children.Add(tile);
         content.Children.Add(after);
