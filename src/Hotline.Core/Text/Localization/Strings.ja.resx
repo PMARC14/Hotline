@@ -582,7 +582,7 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが 4 つのコーナーとして表示されます: 左上と右上 (メッセージ ボックスの上)、左下と右下 (その下)。ボタンまたはピッカーをドラッグしてコーナー内や別のコーナーに移動するか、矢印ボタンを使用します (Alt+矢印でコーナーを変更、Ctrl+矢印で順序を変更)。非表示にした項目は「非表示」に入ります。各ボタンには独自のサイズ、枠線または塗りつぶしを設定でき、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まりきらないボタンは ⋯ メニューに移動します。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが 6 つのエリアとして表示されます: メッセージ ボックスの上の行の左、中央、右、そしてその下の同じ 3 つ。ボタンまたはピッカーをドラッグしてエリア内や別のエリアに移動するか、矢印ボタンを使用します (Alt+矢印でエリアを変更、Ctrl+矢印で順序を変更)。非表示にした項目は「非表示」に入ります。各ボタンには独自のサイズ、枠線または塗りつぶしを設定でき、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まりきらないボタンは ⋯ メニューに移動します。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>
@@ -590,8 +590,10 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
 API キーは Windows Credential Locker に保管され、ファイルに保存されることはありません。</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Hotline の機能を簡潔に紹介。各項目で「設定」のどこで変更できるかを案内します。</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>左上</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>中央上</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>右上</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>中央下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>非表示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>4 つのグループ間で項目をドラッグするか、各項目の下にあるボタンを使用します。項目にフォーカスがある状態で、Alt+矢印キーで別のグループへ、Ctrl+Left または Ctrl+Right でグループ内を移動できます。変更は toolbar.json に保存され、すぐに適用されます。</value></data>

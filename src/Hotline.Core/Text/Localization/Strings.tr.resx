@@ -582,7 +582,7 @@ Taşınan bir panel, sabitlenmediği sürece (sabitleme düğmesi) bir sonraki a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Yukarı veya aşağı</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Sohbet ileti çubuğundan genişler: yukarıda yer yoksa aşağı, aksi takdirde yukarı doğru. Ayarlar › Pencere bunu yukarı veya aşağı olarak sabitleyebilir; konumu, genişliği ve sohbet yüksekliğini belirler.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Pencere › Düğme satırları çubuğu dört köşe olarak gösterir: sol üst ve sağ üst (ileti kutusunun üstünde), sol alt ve sağ alt (altında). Bir düğmeyi veya seçiciyi bir köşenin içine veya başka bir köşeye taşımak için sürükleyin ya da ok düğmelerini kullanın (Alt+ok köşeyi değiştirir, Ctrl+ok sırayı değiştirir). Gizlediğiniz öğeler “Gösterilmiyor” bölümünde bekler. Her düğmenin kendi boyutu, bir anahattı veya dolgusu olabilir ve hızlı bir eylem çalıştıran veya metin ekleyen kendi düğmelerinizi ekleyebilirsiniz. Sığmayan düğmeler bir ⋯ menüsüne taşınır.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Pencere › Düğme satırları çubuğu altı alan olarak gösterir: ileti kutusunun üstündeki satırın sol, orta ve sağı ile altındaki aynı üçü. Bir düğmeyi veya seçiciyi bir alanın içine veya başka bir alana taşımak için sürükleyin ya da ok düğmelerini kullanın (Alt+ok alanı değiştirir, Ctrl+ok sırayı değiştirir). Gizlediğiniz öğeler “Gösterilmiyor” bölümünde bekler. Her düğmenin kendi boyutu, bir anahattı veya dolgusu olabilir ve hızlı bir eylem çalıştıran veya metin ekleyen kendi düğmelerinizi ekleyebilirsiniz. Sığmayan düğmeler bir ⋯ menüsüne taşınır.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sesler</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Sesler panel açıldığında veya kapandığında bir ses çalar: bir Windows sesi veya sesler klasörünüzdeki bir .wav dosyası. Varsayılan olarak kapalıdır.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ayarlar birer dosyadır</value></data>
@@ -590,8 +590,10 @@ Taşınan bir panel, sabitlenmediği sürece (sabitleme düğmesi) bir sonraki a
 API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada tutulmaz.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Hotline'ın yaptığı her şey, kısaca. Her bölüm, bunu Ayarlar'da nereden değiştireceğinizi belirtir.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Sol üst</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Orta üst</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Sağ üst</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Sol alt</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Orta alt</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Sağ alt</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Gösterilmiyor</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Öğeleri dört grup arasında sürükleyin veya her öğenin altındaki düğmeleri kullanın. Bir öğe odaktayken Alt+ok tuşları onu başka bir gruba taşır, Ctrl+Sol veya Ctrl+Sağ ise grubu içinde taşır. Değişiklikler toolbar.json dosyasına kaydedilir ve hemen uygulanır.</value></data>

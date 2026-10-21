@@ -582,7 +582,7 @@ Um painel movido abre no padrão na próxima vez, a menos que esteja fixado (o b
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Para cima ou para baixo</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>O chat se expande a partir da barra de mensagens: para cima, a menos que não haja espaço acima, e então para baixo. Configurações › Janela pode mantê-lo para cima ou para baixo e define a posição, largura e altura do chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Linhas de botões</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configurações › Janela › Linhas de botões mostra a barra como quatro cantos: superior esquerdo e superior direito (acima da caixa de mensagens), inferior esquerdo e inferior direito (abaixo dela). Arraste um botão ou um seletor para movê-lo dentro de um canto ou para outro, ou use seus botões de seta (Alt+seta muda de canto, Ctrl+seta muda a ordem). O que você oculta fica em “Não exibido”. Cada botão pode ter seu próprio tamanho, um contorno ou preenchimento, e você pode adicionar botões próprios que executam uma ação rápida ou inserem um texto. Os botões que não couberem vão para um menu ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configurações › Janela › Linhas de botões mostra a barra como seis áreas: esquerda, centro e direita da linha acima da caixa de mensagens, e as mesmas três abaixo dela. Arraste um botão ou um seletor para movê-lo dentro de uma área ou para outra, ou use seus botões de seta (Alt+seta muda de área, Ctrl+seta muda a ordem). O que você oculta fica em “Não exibido”. Cada botão pode ter seu próprio tamanho, um contorno ou preenchimento, e você pode adicionar botões próprios que executam uma ação rápida ou inserem um texto. Os botões que não couberem vão para um menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configurações › Aparência › Sons reproduz um som quando o painel abre ou fecha: um som do Windows ou um arquivo .wav na sua pasta de sons. Desativado por padrão.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Configurações são arquivos</value></data>
@@ -590,8 +590,10 @@ Um painel movido abre no padrão na próxima vez, a menos que esteja fixado (o b
 As chaves de API são mantidas no Windows Credential Locker, nunca em um arquivo.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Tudo o que o Hotline faz, em resumo. Cada parte indica onde alterar em Configurações.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Superior esquerdo</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Superior central</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Superior direito</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Inferior esquerdo</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Inferior central</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Inferior direito</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Não exibido</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Arraste itens entre os quatro grupos ou use os botões abaixo de cada item. Com um item em foco, Alt+teclas de seta o movem para outro grupo e Ctrl+Esquerda ou Ctrl+Direita o movem dentro do grupo. As alterações são salvas em toolbar.json e aplicadas imediatamente.</value></data>

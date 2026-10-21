@@ -582,7 +582,7 @@ Panel yang dipindahkan akan terbuka di posisi default berikutnya, kecuali jika d
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Ke atas atau ke bawah</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Obrolan memanjang dari bilah pesan: ke atas, kecuali tidak ada ruang di atas, lalu ke bawah. Pengaturan › Jendela dapat menguncinya ke atas atau ke bawah serta mengatur posisi, lebar, dan tinggi obrolan.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan bilah sebagai empat sudut: kiri atas dan kanan atas (di atas kotak pesan), kiri bawah dan kanan bawah (di bawahnya). Seret tombol atau pemilih untuk memindahkannya di dalam sudut atau ke sudut lain, atau gunakan tombol panahnya (Alt+panah mengubah sudut, Ctrl+panah mengubah urutan). Apa yang Anda sembunyikan menunggu di “Tidak ditampilkan”. Setiap tombol dapat memiliki ukurannya sendiri, kerangka atau isian, dan Anda dapat menambahkan tombol sendiri yang menjalankan tindakan cepat atau menyisipkan teks. Tombol yang tidak muat akan dipindahkan ke menu ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan bilah sebagai enam area: kiri, tengah, dan kanan dari baris di atas kotak pesan, dan tiga yang sama di bawahnya. Seret tombol atau pemilih untuk memindahkannya di dalam area atau ke area lain, atau gunakan tombol panahnya (Alt+panah mengubah area, Ctrl+panah mengubah urutan). Apa yang Anda sembunyikan menunggu di “Tidak ditampilkan”. Setiap tombol dapat memiliki ukurannya sendiri, kerangka atau isian, dan Anda dapat menambahkan tombol sendiri yang menjalankan tindakan cepat atau menyisipkan teks. Tombol yang tidak muat akan dipindahkan ke menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suara</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Pengaturan › Tampilan › Suara memutar suara saat panel terbuka atau tertutup: suara Windows atau file .wav di folder suara Anda. Dinonaktifkan secara default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Pengaturan berupa file</value></data>
@@ -590,8 +590,10 @@ Panel yang dipindahkan akan terbuka di posisi default berikutnya, kecuali jika d
 Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Semua yang dilakukan Hotline, secara singkat. Setiap bagian menjelaskan tempat mengubahnya di Pengaturan.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Kiri atas</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Tengah atas</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Kanan atas</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Kiri bawah</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Tengah bawah</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Kanan bawah</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Tidak ditampilkan</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Tarik item di antara keempat grup, atau gunakan tombol di bawah setiap item. Saat item difokuskan, Alt+tombol panah memindahkannya ke grup lain dan Ctrl+Kiri atau Ctrl+Kanan memindahkannya di dalam grupnya. Perubahan disimpan ke toolbar.json dan langsung diterapkan.</value></data>

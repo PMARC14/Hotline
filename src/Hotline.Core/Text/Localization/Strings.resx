@@ -583,15 +583,17 @@ A moved panel opens at its default the next time, unless it's pinned (the pin bu
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Up or down</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>The chat grows from the message bar: up, unless there's no room above, then down. Settings › Window can keep it up or down and sets the position, width and chat height.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as four corners: top left and top right (above the message box), bottom left and bottom right (below it). Drag a button or a picker to move it inside a corner or to another one, or use its arrow buttons (Alt+arrow changes corner, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own size, an outline or a fill, and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own size, an outline or a fill, and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Settings › Appearance › Sounds plays a sound when the panel opens or closes: a Windows sound or a .wav in your sounds folder. Off by default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Settings are files</value></data>
   <data name="Guide_Files_Body" xml:space="preserve"><value>Everything is in your .hotline folder and applies as you save: settings.json, one file per connection, prompts, quick actions and toolbar.json. Replace a file to switch setups; Settings › Advanced › Reset starts over, with a backup.
 API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Top left</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Top center</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Top right</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Bottom left</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Bottom center</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Bottom right</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Not shown</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Drag items between the four groups, or use the buttons under each item. With an item focused, Alt+arrow keys move it to another group and Ctrl+Left or Ctrl+Right move it within its group. Changes are saved to toolbar.json and applied at once.</value></data>

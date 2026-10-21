@@ -582,7 +582,7 @@ Un pannello spostato si aprirà alla posizione predefinita la volta successiva, 
   <data name="Guide_Direction_Title" xml:space="preserve"><value>In alto o in basso</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La chat cresce a partire dalla barra dei messaggi: verso l'alto, a meno che non manchi spazio, quindi verso il basso. Impostazioni › Finestra può mantenerla verso l'alto o verso il basso e imposta la posizione, la larghezza e l'altezza della chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Righe di pulsanti</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Finestra › Righe di pulsanti mostra la barra come quattro angoli: in alto a sinistra e in alto a destra (sopra la casella dei messaggi), in basso a sinistra e in basso a destra (sotto). Trascina un pulsante o un selettore per spostarlo all'interno di un angolo o in un altro, oppure usa i relativi pulsanti freccia (Alt+freccia cambia angolo, Ctrl+freccia cambia l'ordine). Ciò che nascondi rimane in “Non mostrati”. Ogni pulsante può avere la propria dimensione, un contorno o un riempimento, e puoi aggiungere pulsanti personalizzati che eseguono un'azione rapida o inseriscono un testo. I pulsanti che non entrano passano in un menu ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Finestra › Righe di pulsanti mostra la barra come sei aree: a sinistra, al centro e a destra della riga sopra la casella dei messaggi, e le stesse tre sotto. Trascina un pulsante o un selettore per spostarlo all'interno di un'area o in un'altra, oppure usa i relativi pulsanti freccia (Alt+freccia cambia area, Ctrl+freccia cambia l'ordine). Ciò che nascondi rimane in “Non mostrati”. Ogni pulsante può avere la propria dimensione, un contorno o un riempimento, e puoi aggiungere pulsanti personalizzati che eseguono un'azione rapida o inseriscono un testo. I pulsanti che non entrano passano in un menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suoni</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Suoni riproduce un suono quando il pannello si apre o si chiude: un suono di Windows o un .wav nella cartella dei suoni. Disattivato per impostazione predefinita.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Le impostazioni sono file</value></data>
@@ -590,8 +590,10 @@ Un pannello spostato si aprirà alla posizione predefinita la volta successiva, 
 Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Tutto quello che fa Hotline, in breve. Ogni parte indica dove modificarlo in Impostazioni.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>In alto a sinistra</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>In alto al centro</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>In alto a destra</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>In basso a sinistra</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>In basso al centro</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>In basso a destra</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Non mostrato</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Trascina gli elementi tra i quattro gruppi o usa i pulsanti sotto ciascun elemento. Con un elemento selezionato, Alt+tasti freccia lo spostano in un altro gruppo e Ctrl+Sinistra o Ctrl+Destra lo spostano all'interno del suo gruppo. Le modifiche vengono salvate in toolbar.json e applicate immediatamente.</value></data>

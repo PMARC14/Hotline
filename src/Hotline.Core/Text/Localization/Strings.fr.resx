@@ -582,7 +582,7 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Vers le haut ou vers le bas</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La discussion se développe à partir de la barre de message : vers le haut, sauf s'il n'y a pas assez de place, puis vers le bas. Paramètres › Fenêtre permet de la maintenir vers le haut ou vers le bas et définit la position, la largeur et la hauteur de la discussion.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rangées de boutons</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Lignes de boutons affiche la barre sous forme de quatre coins : en haut à gauche et en haut à droite (au-dessus de la zone de message), en bas à gauche et en bas à droite (en dessous). Faites glisser un bouton ou un sélecteur pour le déplacer à l'intérieur d'un coin ou vers un autre, ou utilisez ses boutons fléchés (Alt+flèche change de coin, Ctrl+flèche modifie l'ordre). Ce que vous masquez attend dans « Non affiché ». Chaque bouton peut avoir sa propre taille, un contour ou un remplissage, et vous pouvez ajouter vos propres boutons qui exécutent une action rapide ou insèrent un texte. Les boutons qui ne rentrent pas se déplacent dans un menu ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Lignes de boutons affiche la barre sous forme de six zones : à gauche, au centre et à droite de la ligne au-dessus de la zone de message, et les trois mêmes en dessous. Faites glisser un bouton ou un sélecteur pour le déplacer à l'intérieur d'une zone ou vers une autre, ou utilisez ses boutons fléchés (Alt+flèche change de zone, Ctrl+flèche modifie l'ordre). Ce que vous masquez attend dans « Non affiché ». Chaque bouton peut avoir sa propre taille, un contour ou un remplissage, et vous pouvez ajouter vos propres boutons qui exécutent une action rapide ou insèrent un texte. Les boutons qui ne rentrent pas se déplacent dans un menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Paramètres › Apparence › Sons émet un son à l'ouverture ou à la fermeture du panneau : un son Windows ou un .wav dans votre dossier de sons. Désactivé par défaut.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Les paramètres sont des fichiers</value></data>
@@ -590,8 +590,10 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
 Les clés API sont stockées dans Windows Credential Locker, jamais dans un fichier.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Tout ce que fait Hotline, en bref. Chaque section indique où le modifier dans Paramètres.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>En haut à gauche</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>En haut au centre</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>En haut à droite</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>En bas à gauche</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>En bas au centre</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>En bas à droite</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Non affiché</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Glissez les éléments entre les quatre groupes ou utilisez les boutons sous chaque élément. Avec un élément sélectionné, Alt+touches de direction le déplace vers un autre groupe et Ctrl+Gauche ou Ctrl+Droite le déplace au sein de son groupe. Les modifications sont enregistrées dans toolbar.json et appliquées immédiatement.</value></data>

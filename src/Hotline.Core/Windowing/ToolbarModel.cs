@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 namespace Hotline.Core.Windowing;
 
 /// <summary>Where an item sits. The declaration order decides which place keeps an item listed in two.</summary>
-public enum Quadrant { BottomLeft, BottomRight, TopLeft, TopRight }
+public enum Quadrant { BottomLeft, BottomCenter, BottomRight, TopLeft, TopCenter, TopRight }
 
 public enum ButtonSize { Compact, Normal, Wide }
 
@@ -164,7 +164,7 @@ public sealed record ToolbarModel(
         var (placed, explicitlyEmpty) = ReadQuadrants(root, known, warnings);
         if (placed.Values.All(l => l.Count == 0) && !explicitlyEmpty)
         {
-            warnings.Add("toolbar.json shows no items (an empty bar needs all four groups present and empty); the default layout is used");
+            warnings.Add("toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used");
             placed = Order.ToDictionary(q => q, q => Defaults.Items(q).ToList());
         }
 
@@ -188,10 +188,11 @@ public sealed record ToolbarModel(
                 warnings.Add($"\"{rowName}\" should be an object with \"left\" and \"right\"; ignored");
         foreach (var q in Order)
         {
-            var (rowName, side) = (q is Quadrant.BottomLeft or Quadrant.BottomRight ? "items" : "top", q is Quadrant.BottomLeft or Quadrant.TopLeft ? "left" : "right");
+            var rowName = q is Quadrant.BottomLeft or Quadrant.BottomCenter or Quadrant.BottomRight ? "items" : "top";
+            var side = q is Quadrant.BottomLeft or Quadrant.TopLeft ? "left" : q is Quadrant.BottomCenter or Quadrant.TopCenter ? "center" : "right";
             if ((root[rowName] as JsonObject)?[side] is not JsonArray list)
             {
-                explicitlyEmpty = false;
+                if (side != "center") explicitlyEmpty = false; // the centre group is optional: a file without one is still an explicit empty bar
                 if ((root[rowName] as JsonObject)?[side] is not null) warnings.Add($"\"{rowName}.{side}\" should be a list; ignored");
                 continue;
             }
@@ -371,12 +372,14 @@ public sealed record ToolbarModel(
     /// <summary>The model as a v2 file with the comment header (what Settings saves; the renderer never writes).</summary>
     public string ToJson()
     {
-        string Row(Quadrant left, Quadrant right) =>
-            $"{{ \"left\": [{string.Join(", ", Items(left).Select(Str))}], \"right\": [{string.Join(", ", Items(right).Select(Str))}] }}";
+        string Row(Quadrant left, Quadrant center, Quadrant right) =>
+            $"{{ \"left\": [{string.Join(", ", Items(left).Select(Str))}], \"center\": [{string.Join(", ", Items(center).Select(Str))}], "
+            + $"\"right\": [{string.Join(", ", Items(right).Select(Str))}] }}";
         return $$"""
             {
-              // The button rows around the message box: "top" above it, "items" below it. Each row has a "left" and a
-              // "right" group, listed left to right. Leave an item out to hide it; an item sits in one place only.
+              // The button rows around the message box: "top" above it, "items" below it. Each row has a "left", a "center"
+              // and a "right" group, listed left to right (the centre sits in the free space between the other two).
+              // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
               // The effort, model and provider pickers stay together (where the first one is) and ignore the styles below.
               // "style": the whole bar; size is compact | normal | wide, outline and filled are true | false.
@@ -385,8 +388,8 @@ public sealed record ToolbarModel(
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it).
               "version": {{CurrentVersion}},
-              "top": {{Row(Quadrant.TopLeft, Quadrant.TopRight)}},
-              "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomRight)}},
+              "top": {{Row(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight)}},
+              "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},
               "style": {{StyleText(Style)}},
               "overrides": {{Entries(Overrides.Select(o => (o.Key, o.Value)), StyleText)}},
               "buttons": {{Entries(Buttons.Select(b => (b.Id, b)), ButtonText)}}

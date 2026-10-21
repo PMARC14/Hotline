@@ -199,7 +199,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             popup.ResizeOffscreen(720);
             await Step("normal width");
             // The button rows: all above the message box, then split across both, then back to the user's own.
-            var all = new[] { Quadrant.TopLeft, Quadrant.TopRight, Quadrant.BottomLeft, Quadrant.BottomRight }.SelectMany(userBar.Items).ToList();
+            var all = Enum.GetValues<Quadrant>().SelectMany(userBar.Items).ToList();
             popup.ApplyToolbar(Rows(userBar, top: all, bottom: []));
             await Step("buttons above");
             await SnapshotAsync("6-buttons-above");

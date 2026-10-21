@@ -35,8 +35,8 @@ public sealed class ToolbarPlanTests
     public void Defaults_put_the_pickers_on_top_and_the_buttons_bottom_left()
     {
         var m = ToolbarModel.Defaults;
-        Assert.Equal(new RowPlan(["effort"], []), ToolbarPlan.Row(m, top: true));
-        Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"], []),
+        Assert.Equal(new RowPlan(["effort"], [], []), ToolbarPlan.Row(m, top: true));
+        Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"], [], []),
             ToolbarPlan.Row(m, top: false));
         Assert.Equal(["effort", "model", "provider"], ToolbarPlan.PickerOrder(m));
     }
@@ -45,15 +45,15 @@ public sealed class ToolbarPlanTests
     public void Left_and_right_groups_keep_their_order()
     {
         var m = With((Quadrant.BottomLeft, ["pin", "prompt"]), (Quadrant.BottomRight, ["newChat", "settings"]), (Quadrant.TopRight, ["recent"]));
-        Assert.Equal(new RowPlan(["pin", "prompt"], ["newChat", "settings"]), ToolbarPlan.Row(m, top: false));
-        Assert.Equal(new RowPlan([], ["recent"]), ToolbarPlan.Row(m, top: true));
+        Assert.Equal(new RowPlan(["pin", "prompt"], [], ["newChat", "settings"]), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan([], [], ["recent"]), ToolbarPlan.Row(m, top: true));
     }
 
     [Fact]
     public void The_pickers_are_one_entry_at_the_first_picker_listed()
     {
         var m = With((Quadrant.BottomRight, ["newChat", "provider", "model", "settings"]));
-        Assert.Equal(new RowPlan([], ["newChat", "provider", "settings"]), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan([], [], ["newChat", "provider", "settings"]), ToolbarPlan.Row(m, top: false));
         Assert.Equal(["provider", "model"], ToolbarPlan.PickerOrder(m));
     }
 
@@ -62,8 +62,8 @@ public sealed class ToolbarPlanTests
     {
         // A model built in code (the self-test) can split them; the renderer must never place the block twice.
         var m = With((Quadrant.BottomLeft, ["pin", "model"]), (Quadrant.TopLeft, ["effort", "recent"]));
-        Assert.Equal(new RowPlan(["pin", "model"], []), ToolbarPlan.Row(m, top: false));
-        Assert.Equal(new RowPlan(["recent"], []), ToolbarPlan.Row(m, top: true));
+        Assert.Equal(new RowPlan(["pin", "model"], [], []), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan(["recent"], [], []), ToolbarPlan.Row(m, top: true));
         Assert.Equal(["model", "effort"], ToolbarPlan.PickerOrder(m));
     }
 
@@ -196,7 +196,7 @@ public sealed class ToolbarPlanTests
     public void Row_skips_ids_that_are_neither_built_in_nor_defined_and_reports_them()
     {
         var m = With((Quadrant.BottomLeft, ["pin", "ghost", "mine"])) with { Buttons = [new CustomButton("mine", "Mine", "E734", null, "hi", false)] };
-        Assert.Equal(new RowPlan(["pin", "mine"], []), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan(["pin", "mine"], [], []), ToolbarPlan.Row(m, top: false));
         Assert.Equal(["ghost"], ToolbarPlan.Unknown(m));
         Assert.Empty(ToolbarPlan.Unknown(ToolbarModel.Defaults));
     }
@@ -205,8 +205,8 @@ public sealed class ToolbarPlanTests
     public void Row_places_an_id_listed_twice_only_where_it_is_first()
     {
         var m = With((Quadrant.BottomLeft, ["pin"]), (Quadrant.TopLeft, ["pin", "recent"]));
-        Assert.Equal(new RowPlan(["pin"], []), ToolbarPlan.Row(m, top: false));
-        Assert.Equal(new RowPlan(["recent"], []), ToolbarPlan.Row(m, top: true));
+        Assert.Equal(new RowPlan(["pin"], [], []), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan(["recent"], [], []), ToolbarPlan.Row(m, top: true));
     }
 
     // ---- This PC ----

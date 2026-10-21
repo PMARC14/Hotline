@@ -5,11 +5,15 @@ namespace Hotline.Core.Windowing;
 /// <summary>The size of an icon button in DIPs, and its glyph size.</summary>
 public sealed record ButtonMetrics(double Width, double Height, double FontSize);
 
-/// <summary>One button row: its left and right groups, left to right. The pickers are one entry (the first picker id).</summary>
-public sealed record RowPlan(IReadOnlyList<string> Left, IReadOnlyList<string> Right)
+/// <summary>One button row: its left, centre and right groups, left to right. The pickers are one entry (the first picker id).</summary>
+public sealed record RowPlan(IReadOnlyList<string> Left, IReadOnlyList<string> Center, IReadOnlyList<string> Right)
 {
-    public bool Equals(RowPlan? other) => other is not null && Left.SequenceEqual(other.Left) && Right.SequenceEqual(other.Right);
-    public override int GetHashCode() => HashCode.Combine(Left.Count, Right.Count);
+    public bool Equals(RowPlan? other) =>
+        other is not null && Left.SequenceEqual(other.Left) && Center.SequenceEqual(other.Center) && Right.SequenceEqual(other.Right);
+    public override int GetHashCode() => HashCode.Combine(Left.Count, Center.Count, Right.Count);
+
+    /// <summary>What can move into the "⋯" menu when the row is too narrow: the left group, then the centre (dropped from its end first).</summary>
+    public IReadOnlyList<string> Droppable => [.. Left, .. Center];
 }
 
 /// <summary>How a row fits: left buttons shown, whether the overflow button is needed, whether the pickers kept their
@@ -47,8 +51,8 @@ public static class ToolbarPlan
     {
         var placed = Placement(model);
         return top
-            ? new RowPlan(placed[Quadrant.TopLeft], placed[Quadrant.TopRight])
-            : new RowPlan(placed[Quadrant.BottomLeft], placed[Quadrant.BottomRight]);
+            ? new RowPlan(placed[Quadrant.TopLeft], placed[Quadrant.TopCenter], placed[Quadrant.TopRight])
+            : new RowPlan(placed[Quadrant.BottomLeft], placed[Quadrant.BottomCenter], placed[Quadrant.BottomRight]);
     }
 
     /// <summary>Placed ids that are neither built-in nor defined under "buttons" (never drawn).</summary>
@@ -88,7 +92,7 @@ public static class ToolbarPlan
     }
 
     /// <summary>
-    /// <see cref="ToolbarLayout.Fit"/> for one Grid row <c>[left…] [⋯?] [*] [right…]</c> of <paramref name="room"/> DIPs, with
+    /// <see cref="ToolbarLayout.Fit"/> for one Grid row <c>[left…] [⋯?] [*] [centre… [*]]? [right…]</c> of <paramref name="room"/> DIPs, with
     /// the pickers' column in it when <paramref name="hasPickers"/> (widths are the buttons', pickers excluded). Fit counts
     /// neither the flexible column's gap nor, without a reserve, the pickers' column's gap: both are taken off the room
     /// here. Fit's overshoot contract: when the overflow button would stick out while the pickers keep
@@ -96,8 +100,9 @@ public static class ToolbarPlan
     /// is left. Only an overshoot that remains then (the right group alone doesn't fit) is accepted.
     /// </summary>
     public static RowFit FitRow(double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
-        bool hasPickers, double pickersMin, double overflowWidth)
+        bool hasPickers, double pickersMin, double overflowWidth, bool hasCenter = false)
     {
+        room -= hasCenter ? spacing : 0; // a centre group has a second flexible column (counted whether or not it keeps a button)
         if (hasPickers && pickersMin > 0)
         {
             var keptRoom = room - spacing; // the flexible column (Fit already counts the gap before the reserve)
@@ -111,7 +116,7 @@ public static class ToolbarPlan
         RowFit Result(FitResult f, bool kept)
         {
             var buttons = leftWidths.Take(f.LeftShown).Concat(rightWidths).ToList();
-            var columns = buttons.Count + (f.Overflow ? 1 : 0) + (hasPickers ? 1 : 0) + 1; // + the flexible column
+            var columns = buttons.Count + (f.Overflow ? 1 : 0) + (hasPickers ? 1 : 0) + (hasCenter ? 2 : 1); // + the flexible column(s)
             return new RowFit(f.LeftShown, f.Overflow, kept, buttons.Sum() + (f.Overflow ? overflowWidth : 0) + spacing * (columns - 1));
         }
     }

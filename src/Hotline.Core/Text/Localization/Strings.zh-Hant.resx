@@ -582,7 +582,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列將該列顯示為四個角落：左上與右上 (訊息方塊上方)、左下與右下 (訊息方塊下方)。拖曳按鈕或選取器可將其在角落內移動或移至另一個角落，也可以使用其箭頭按鈕 (Alt+箭頭可切換角落，Ctrl+箭頭可變更順序)。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的大小、外框或填滿，您也可以新增自己的按鈕來執行快速指令或插入文字。放不下的按鈕會移至 ⋯ 功能表。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列將該列顯示為六個區域：訊息方塊上方一列的左、中、右，以及其下方的同樣三個區域。拖曳按鈕或選取器可將其在區域內移動或移至另一個區域，也可以使用其箭頭按鈕 (Alt+箭頭可切換區域，Ctrl+箭頭可變更順序)。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的大小、外框或填滿，您也可以新增自己的按鈕來執行快速指令或插入文字。放不下的按鈕會移至 ⋯ 功能表。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>
@@ -590,8 +590,10 @@
 API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>簡要介紹 Hotline 的所有功能。各部分均說明了可在「設定」中的何處進行更改。</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>左上</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>中上</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>右上</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>中下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>

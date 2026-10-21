@@ -582,7 +582,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Угору чи вниз</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Чат розгортається від рядка повідомлення: угору, якщо є місце, або вниз, якщо місця вгорі немає. Параметри › Вікно дозволяє зафіксувати напрямок угору чи вниз і налаштовує розташування, ширину та висоту чату.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вікно › Рядки кнопок показує панель у вигляді чотирьох кутів: угорі ліворуч і угорі праворуч (над полем повідомлення), унизу ліворуч і унизу праворуч (під ним). Перетягніть кнопку або засіб вибору, щоб перемістити його всередині кута чи в інший кут, або скористайтеся кнопками зі стрілками (Alt+стрілка змінює кут, Ctrl+стрілка змінює порядок). Те, що ви приховуєте, чекає в «Не відображається». Кожна кнопка може мати власний розмір, контур або заливку, і ви можете додавати власні кнопки, які виконують швидку дію або вставляють текст. Кнопки, які не вміщуються, переміщуються в меню ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Параметри › Вікно › Рядки кнопок показує панель у вигляді шести областей: ліворуч, по центру та праворуч у рядку над полем повідомлення, а також ті самі три під ним. Перетягніть кнопку або засіб вибору, щоб перемістити його всередині області чи в іншу область, або скористайтеся кнопками зі стрілками (Alt+стрілка змінює область, Ctrl+стрілка змінює порядок). Те, що ви приховуєте, чекає в «Не відображається». Кожна кнопка може мати власний розмір, контур або заливку, і ви можете додавати власні кнопки, які виконують швидку дію або вставляють текст. Кнопки, які не вміщуються, переміщуються в меню ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Звуки</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Вигляд › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Параметри — це файли</value></data>
@@ -590,8 +590,10 @@
 Ключі API зберігаються в Windows Credential Locker і ніколи не потрапляють у файли.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Коротко про все, що робить Hotline. У кожному розділі зазначено, де це можна змінити в Параметрах.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Вгорі ліворуч</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Вгорі по центру</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Вгорі праворуч</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Внизу ліворуч</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Внизу по центру</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Внизу праворуч</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Не відображається</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Перетягуйте елементи між чотирма групами або використовуйте кнопки під кожним елементом. Якщо елемент у фокусі, Alt+стрілки переміщують його до іншої групи, а Ctrl+Left або Ctrl+Right — у межах групи. Зміни зберігаються в toolbar.json і застосовуються одразу.</value></data>

@@ -582,7 +582,7 @@ Bảng điều khiển đã di chuyển sẽ mở ở vị trí mặc định v�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Lên trên hoặc xuống dưới</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Khung trò chuyện mở rộng từ thanh tin nhắn: hướng lên trên, trừ khi phía trên không còn chỗ thì sẽ mở xuống dưới. Cài đặt › Cửa sổ có thể cố định hướng lên hoặc xuống và thiết lập vị trí, chiều rộng cùng chiều cao cuộc trò chuyện.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Hàng nút</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Cửa sổ › Các hàng nút hiển thị thanh dưới dạng bốn góc: trên cùng bên trái và trên cùng bên phải (phía trên hộp thông báo), dưới cùng bên trái và dưới cùng bên phải (phía dưới hộp thông báo). Kéo một nút hoặc bộ chọn để di chuyển nút đó vào bên trong một góc hoặc sang góc khác, hoặc sử dụng các nút mũi tên của nút đó (Alt+mũi tên đổi góc, Ctrl+mũi tên đổi thứ tự). Những gì bạn ẩn sẽ đợi trong “Không hiển thị”. Mỗi nút có thể có kích thước riêng, viền ngoài hoặc phần tô màu, và bạn có thể thêm các nút của riêng mình để chạy tác vụ nhanh hoặc chèn văn bản. Các nút không vừa sẽ chuyển vào menu ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Cài đặt › Cửa sổ › Các hàng nút hiển thị thanh dưới dạng sáu khu vực: bên trái, ở giữa và bên phải của hàng phía trên hộp thông báo, và ba khu vực tương tự ở phía dưới. Kéo một nút hoặc bộ chọn để di chuyển nút đó vào bên trong một khu vực hoặc sang khu vực khác, hoặc sử dụng các nút mũi tên của nút đó (Alt+mũi tên đổi khu vực, Ctrl+mũi tên đổi thứ tự). Những gì bạn ẩn sẽ đợi trong “Không hiển thị”. Mỗi nút có thể có kích thước riêng, viền ngoài hoặc phần tô màu, và bạn có thể thêm các nút của riêng mình để chạy tác vụ nhanh hoặc chèn văn bản. Các nút không vừa sẽ chuyển vào menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Âm thanh</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Cài đặt › Giao diện › Âm thanh sẽ phát âm thanh khi mở hoặc đóng bảng điều khiển: âm thanh của Windows hoặc tệp .wav trong thư mục âm thanh của bạn. Mặc định là tắt.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Cài đặt là các tệp</value></data>
@@ -590,8 +590,10 @@ Bảng điều khiển đã di chuyển sẽ mở ở vị trí mặc định v�
 Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ nằm trong tệp.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Tóm tắt mọi chức năng của Hotline. Mỗi phần đều nêu rõ nơi thay đổi trong Cài đặt.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Trên bên trái</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Trên ở giữa</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Trên bên phải</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Dưới bên trái</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Dưới ở giữa</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Dưới bên phải</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Không hiển thị</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Kéo các mục giữa bốn nhóm, hoặc dùng các nút bên dưới mỗi mục. Khi một mục có tiêu điểm, Alt+phím mũi tên sẽ di chuyển mục sang nhóm khác và Ctrl+Trái hoặc Ctrl+Phải sẽ di chuyển mục trong nhóm. Các thay đổi được lưu vào toolbar.json và áp dụng ngay.</value></data>

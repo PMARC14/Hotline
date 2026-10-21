@@ -582,7 +582,7 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>위 또는 아래</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>채팅은 메시지 표시줄을 기준으로 확장됩니다. 위쪽에 공간이 없는 경우가 아니면 위로, 공간이 없으면 아래로 확장됩니다. 설정 › 창에서 위 또는 아래로 고정할 수 있으며 위치, 너비 및 채팅 높이도 설정할 수 있습니다.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 단추 행에서는 표시줄이 네 개의 모서리로 표시됩니다: 왼쪽 위와 오른쪽 위(메시지 상자 위), 왼쪽 아래와 오른쪽 아래(메시지 상자 아래). 단추나 선택기를 끌어 모서리 안이나 다른 모서리로 이동하거나 화살표 단추를 사용할 수 있습니다(Alt+화살표는 모서리 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “숨김”에 보관됩니다. 각 단추는 고유한 크기, 윤곽선 또는 채우기를 가질 수 있으며, 빠른 작업을 실행하거나 텍스트를 삽입하는 자체 단추를 추가할 수 있습니다. 맞지 않는 단추는 ⋯ 메뉴로 이동합니다.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 단추 행에서는 표시줄이 여섯 개의 영역으로 표시됩니다: 메시지 상자 위 행의 왼쪽, 가운데, 오른쪽과 그 아래의 동일한 세 영역. 단추나 선택기를 끌어 영역 안이나 다른 영역으로 이동하거나 화살표 단추를 사용할 수 있습니다(Alt+화살표는 영역 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “숨김”에 보관됩니다. 각 단추는 고유한 크기, 윤곽선 또는 채우기를 가질 수 있으며, 빠른 작업을 실행하거나 텍스트를 삽입하는 자체 단추를 추가할 수 있습니다. 맞지 않는 단추는 ⋯ 메뉴로 이동합니다.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>소리</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>설정 › 모양 › 사운드에서 패널이 열리거나 닫힐 때 소리를 재생합니다: Windows 소리 또는 소리 폴더의 .wav 파일. 기본적으로 꺼져 있습니다.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>설정 파일</value></data>
@@ -590,8 +590,10 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
 API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장되지 않습니다.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Hotline의 모든 기능을 간략히 요약했습니다. 각 부분마다 설정의 어디에서 변경할 수 있는지 안내합니다.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>왼쪽 위</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>가운데 위</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>오른쪽 위</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>왼쪽 아래</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>가운데 아래</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>오른쪽 아래</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>표시 안 함</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>네 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>

@@ -582,7 +582,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天界面从消息栏展开：优先向上，若上方没有空间则向下展开。设置 › 窗口可将其固定为向上或向下，并设定位置、宽度和聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按钮行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>设置 › 窗口 › 按钮行将该栏显示为四个角：左上和右上 (消息框上方)、左下和右下 (消息框下方)。拖动按钮或选择器可在某个角内移动或移至另一个角，也可以使用其箭头按钮 (Alt+箭头可切换角，Ctrl+箭头可调整顺序)。隐藏的内容会保留在“未显示”中。每个按钮都可以拥有自己的尺寸、轮廓或填充，您还可以添加自己的按钮来运行快捷操作或插入文本。容纳不下的按钮会移至 ⋯ 菜单。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>设置 › 窗口 › 按钮行将该栏显示为六个区域：消息框上方一行的左、中、右，以及其下方的同样三个区域。拖动按钮或选择器可在某个区域内移动或移至另一个区域，也可以使用其箭头按钮 (Alt+箭头可切换区域，Ctrl+箭头可调整顺序)。隐藏的内容会保留在“未显示”中。每个按钮都可以拥有自己的尺寸、轮廓或填充，您还可以添加自己的按钮来运行快捷操作或插入文本。容纳不下的按钮会移至 ⋯ 菜单。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>声音</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>设置 › 外观 › 声音可在面板打开或关闭时播放提示音：Windows 系统声音或声音文件夹中的 .wav 文件。默认关闭。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>设置即文件</value></data>
@@ -590,8 +590,10 @@
 API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>简要介绍 Hotline 的所有功能。各部分均说明了可在“设置”中的何处进行更改。</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>左上</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>中上</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>右上</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>中下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>不显示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>在四个分组之间拖动项目，或使用每个项目下方的按钮。聚焦项目时，按 Alt+方向键可将其移至其他分组，按 Ctrl+Left 或 Ctrl+Right 可在其分组内移动。更改会保存到 toolbar.json 并立即生效。</value></data>

@@ -582,7 +582,7 @@ Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij he
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Omhoog of omlaag</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>De chat groeit vanaf de berichtenbalk: omhoog, tenzij er daarboven geen ruimte is, en dan omlaag. Instellingen › Venster kan dit vastzetten op omhoog of omlaag en stelt de positie, breedte en chathoogte in.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoppenrijen toont de balk als vier hoeken: linksboven en rechtsboven (boven het berichtvak), linksonder en rechtsonder (eronder). Sleep een knop of een kiezer om deze binnen een hoek of naar een andere te verplaatsen, of gebruik de pijltoetsen (Alt+pijl verandert van hoek, Ctrl+pijl verandert de volgorde). Wat u verbergt, wacht in “Niet weergegeven”. Elke knop kan een eigen grootte, een contour of een vulling hebben, en u kunt eigen knoppen toevoegen die een snelle actie uitvoeren of tekst invoegen. Knoppen die niet passen, worden verplaatst naar een ⋯-menu.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoppenrijen toont de balk als zes gebieden: links, in het midden en rechts van de rij boven het berichtvak, en dezelfde drie eronder. Sleep een knop of een kiezer om deze binnen een gebied of naar een ander te verplaatsen, of gebruik de pijltoetsen (Alt+pijl verandert van gebied, Ctrl+pijl verandert de volgorde). Wat u verbergt, wacht in “Niet weergegeven”. Elke knop kan een eigen grootte, een contour of een vulling hebben, en u kunt eigen knoppen toevoegen die een snelle actie uitvoeren of tekst invoegen. Knoppen die niet passen, worden verplaatst naar een ⋯-menu.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Instellingen › Weergave › Geluiden speelt een geluid af wanneer het paneel opent of sluit: een Windows-geluid of een .wav in je geluidenmap. Standaard uitgeschakeld.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Instellingen zijn bestanden</value></data>
@@ -590,8 +590,10 @@ Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij he
 API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Alles wat Hotline doet, in het kort. Elk onderdeel geeft aan waar in Instellingen u dit kunt wijzigen.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Linksboven</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Middenboven</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Rechtsboven</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Linksonder</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Middenonder</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Rechtsonder</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niet weergegeven</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Sleep items tussen de vier groepen of gebruik de knoppen onder elk item. Als een item de focus heeft, verplaatst Alt+pijltjestoetsen het naar een andere groep en Ctrl+Links of Ctrl+Rechts het binnen de groep. Wijzigingen worden opgeslagen in toolbar.json en direct toegepast.</value></data>

@@ -21,7 +21,7 @@ internal sealed class ToolbarRenderer
     {
         public Grid Grid { get; } = grid;
         public Button More { get; } = more;
-        public RowPlan Plan { get; set; } = new([], []);
+        public RowPlan Plan { get; set; } = new([], [], []);
         /// <summary>The left buttons in the "⋯" menu, in order.</summary>
         public IReadOnlyList<string> Dropped { get; set; } = [];
         public (int LeftShown, bool Overflow)? Arranged { get; set; }
@@ -92,8 +92,8 @@ internal sealed class ToolbarRenderer
         {
             row.Plan = ToolbarPlan.Row(model, top);
             row.Arranged = null;
-            Arrange(row, row.Plan.Left.Count(id => !ToolbarPlan.IsPicker(id)), overflow: false); // as Fit counts them
-            var visibility = row.Plan.Left.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.IsPicker(id)), overflow: false); // as Fit counts them
+            var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
         // The look, after placing; only values that differ are set. The pickers take none of it (their widths are ProviderBar's).
@@ -124,12 +124,13 @@ internal sealed class ToolbarRenderer
 
     private double MoreWidth => ToolbarPlan.Metrics(Model.Style).Width;
 
-    /// <summary>Lays a row out: the left buttons kept (the pickers always), "⋯" when some moved into it, the flexible gap, the right group.</summary>
+    /// <summary>Lays a row out: the left buttons kept (the pickers always), "⋯" when some moved into it, a flexible gap, the centre
+    /// group (between two flexible gaps, so it sits in the free space), the right group.</summary>
     private void Arrange(Row row, int leftShown, bool overflow)
     {
         if (row.Arranged == (leftShown, overflow)) return;
         row.Arranged = (leftShown, overflow);
-        var (shown, dropped) = ToolbarPlan.Split(row.Plan.Left, leftShown);
+        var (shown, dropped) = ToolbarPlan.Split(row.Plan.Droppable, leftShown); // the left group, then the centre: the centre goes first
         row.Dropped = dropped;
         var grid = row.Grid;
         grid.Children.Clear();
@@ -140,9 +141,16 @@ internal sealed class ToolbarRenderer
             Grid.SetColumn(element, grid.ColumnDefinitions.Count - 1);
             grid.Children.Add(element);
         }
-        foreach (var id in shown) Add(Element(id));
+        void Gap() => grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        foreach (var id in shown.Where(row.Plan.Left.Contains)) Add(Element(id));
         if (overflow) Add(row.More);
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        Gap();
+        var centre = shown.Where(row.Plan.Center.Contains).ToList();
+        if (centre.Count > 0)
+        {
+            foreach (var id in centre) Add(Element(id));
+            Gap();
+        }
         foreach (var id in row.Plan.Right) Add(Element(id));
     }
 
@@ -158,12 +166,12 @@ internal sealed class ToolbarRenderer
         var fixedWidth = 0.0;
         foreach (var row in new[] { _top, _bottom })
         {
-            var (left, right) = (row.Plan.Left, row.Plan.Right);
+            var (left, centre, right) = (row.Plan.Droppable, row.Plan.Center, row.Plan.Right);
             if (left.Count + right.Count == 0) continue;
             var hasPickers = left.Concat(right).Any(ToolbarPlan.IsPicker);
             var leftWidths = left.Where(id => !ToolbarPlan.IsPicker(id)).Select(Width).ToList();
             var rightWidths = right.Where(id => !ToolbarPlan.IsPicker(id)).Select(Width).ToList();
-            var fit = ToolbarPlan.FitRow(room, row.Grid.ColumnSpacing, leftWidths, rightWidths, hasPickers, pickersMin, MoreWidth);
+            var fit = ToolbarPlan.FitRow(room, row.Grid.ColumnSpacing, leftWidths, rightWidths, hasPickers, pickersMin, MoreWidth, hasCenter: centre.Count > 0);
             Arrange(row, fit.LeftShown, fit.Overflow);
             if (hasPickers) fixedWidth = fit.FixedWidth;
         }

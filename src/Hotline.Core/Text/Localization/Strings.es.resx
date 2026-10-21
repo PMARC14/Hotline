@@ -582,7 +582,7 @@ Un panel desplazado se abrirá en su posición predeterminada la próxima vez, a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Hacia arriba o hacia abajo</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>El chat se expande desde la barra de mensajes: hacia arriba, salvo que no haya espacio, y entonces hacia abajo. Configuración › Ventana permite fijarlo hacia arriba o hacia abajo y define la posición, el ancho y la altura del chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Filas de botones</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Ventana › Filas de botones muestra la barra como cuatro esquinas: arriba a la izquierda y arriba a la derecha (encima del cuadro de mensaje), abajo a la izquierda y abajo a la derecha (debajo). Arrastra un botón o un selector para moverlo dentro de una esquina o a otra, o usa sus botones de flecha (Alt+flecha cambia de esquina, Ctrl+flecha cambia el orden). Lo que ocultas espera en “No mostrados”. Cada botón puede tener su propio tamaño, un contorno o un relleno, y puedes añadir tus propios botones que ejecuten una acción rápida o inserten un texto. Los botones que no caben se mueven a un menú ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Configuración › Ventana › Filas de botones muestra la barra como seis áreas: izquierda, centro y derecha de la fila encima del cuadro de mensaje, y las mismas tres debajo. Arrastra un botón o un selector para moverlo dentro de un área o a otra, o usa sus botones de flecha (Alt+flecha cambia de área, Ctrl+flecha cambia el orden). Lo que ocultas espera en “No mostrados”. Cada botón puede tener su propio tamaño, un contorno o un relleno, y puedes añadir tus propios botones que ejecuten una acción rápida o inserten un texto. Los botones que no caben se mueven a un menú ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sonidos</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Configuración › Apariencia › Sonidos reproduce un sonido cuando el panel se abre o se cierra: un sonido de Windows o un .wav en tu carpeta de sonidos. Desactivado de forma predeterminada.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>La configuración son archivos</value></data>
@@ -590,8 +590,10 @@ Un panel desplazado se abrirá en su posición predeterminada la próxima vez, a
 Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Todo lo que hace Hotline, en resumen. Cada parte indica dónde cambiarlo en Configuración.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Superior izquierda</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Superior central</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Superior derecha</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Inferior izquierda</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Inferior central</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Inferior derecha</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>No mostrado</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Arrastra elementos entre los cuatro grupos o usa los botones debajo de cada elemento. Con un elemento enfocado, Alt+flechas lo mueven a otro grupo y Ctrl+Izquierda o Ctrl+Derecha lo mueven dentro de su grupo. Los cambios se guardan en toolbar.json y se aplican de inmediato.</value></data>

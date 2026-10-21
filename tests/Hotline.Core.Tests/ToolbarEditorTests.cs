@@ -6,16 +6,22 @@ public sealed class ToolbarEditorTests
 {
     private const Quadrant BL = Quadrant.BottomLeft, BR = Quadrant.BottomRight, TL = Quadrant.TopLeft, TR = Quadrant.TopRight;
 
-    /// <summary>Three items in every quadrant, no pickers shown (they are hidden).</summary>
+    /// <summary>Three items in each of the six areas, no pickers shown (they are hidden).</summary>
     private static readonly ToolbarModel Grid = ToolbarModel.Resolve("""
         {
           "version": 2,
-          "items": { "left": ["pin", "captureWindow", "captureScreen"], "right": ["captureRegion", "prompt", "recent"] },
-          "top":   { "left": ["continueIn", "newChat", "settings"], "right": ["one", "two", "three"] },
+          "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["ca", "cb", "cc"], "right": ["captureRegion", "prompt", "recent"] },
+          "top":   { "left": ["continueIn", "newChat", "settings"], "center": ["cd", "ce", "cf"], "right": ["one", "two", "three"] },
           "buttons": {
             "one":   { "label": "One", "icon": "E8A5", "text": "1" },
             "two":   { "label": "Two", "icon": "E8A5", "text": "2" },
-            "three": { "label": "Three", "icon": "E8A5", "quickAction": "three" }
+            "three": { "label": "Three", "icon": "E8A5", "quickAction": "three" },
+            "ca":  { "label": "Four", "icon": "E8A5", "text": "4" },
+            "cb":  { "label": "Five", "icon": "E8A5", "text": "5" },
+            "cc":   { "label": "Six", "icon": "E8A5", "text": "6" },
+            "cd": { "label": "Seven", "icon": "E8A5", "text": "7" },
+            "ce": { "label": "Eight", "icon": "E8A5", "text": "8" },
+            "cf":  { "label": "Nine", "icon": "E8A5", "text": "9" }
           }
         }
         """);
@@ -38,8 +44,10 @@ public sealed class ToolbarEditorTests
 
     [Theory]
     [InlineData(Quadrant.BottomLeft)]
+    [InlineData(Quadrant.BottomCenter)]
     [InlineData(Quadrant.BottomRight)]
     [InlineData(Quadrant.TopLeft)]
+    [InlineData(Quadrant.TopCenter)]
     [InlineData(Quadrant.TopRight)]
     public void Move_reorders_within_the_quadrant_and_stops_at_the_edges(Quadrant q)
     {
@@ -99,8 +107,10 @@ public sealed class ToolbarEditorTests
 
     [Theory]
     [InlineData(Quadrant.BottomLeft)]
+    [InlineData(Quadrant.BottomCenter)]
     [InlineData(Quadrant.BottomRight)]
     [InlineData(Quadrant.TopLeft)]
+    [InlineData(Quadrant.TopCenter)]
     [InlineData(Quadrant.TopRight)]
     public void MoveTo_within_a_quadrant_uses_the_drop_marker_position(Quadrant q)
     {
@@ -136,18 +146,26 @@ public sealed class ToolbarEditorTests
 
     [Theory]
     [InlineData(Quadrant.BottomLeft, Shift.Left, null)]
-    [InlineData(Quadrant.BottomLeft, Shift.Right, Quadrant.BottomRight)]
+    [InlineData(Quadrant.BottomLeft, Shift.Right, Quadrant.BottomCenter)]
     [InlineData(Quadrant.BottomLeft, Shift.Up, Quadrant.TopLeft)]
     [InlineData(Quadrant.BottomLeft, Shift.Down, null)]
-    [InlineData(Quadrant.BottomRight, Shift.Left, Quadrant.BottomLeft)]
+    [InlineData(Quadrant.BottomCenter, Shift.Left, Quadrant.BottomLeft)]
+    [InlineData(Quadrant.BottomCenter, Shift.Right, Quadrant.BottomRight)]
+    [InlineData(Quadrant.BottomCenter, Shift.Up, Quadrant.TopCenter)]
+    [InlineData(Quadrant.BottomCenter, Shift.Down, null)]
+    [InlineData(Quadrant.BottomRight, Shift.Left, Quadrant.BottomCenter)]
     [InlineData(Quadrant.BottomRight, Shift.Right, null)]
     [InlineData(Quadrant.BottomRight, Shift.Up, Quadrant.TopRight)]
     [InlineData(Quadrant.BottomRight, Shift.Down, null)]
     [InlineData(Quadrant.TopLeft, Shift.Left, null)]
-    [InlineData(Quadrant.TopLeft, Shift.Right, Quadrant.TopRight)]
+    [InlineData(Quadrant.TopLeft, Shift.Right, Quadrant.TopCenter)]
     [InlineData(Quadrant.TopLeft, Shift.Up, null)]
     [InlineData(Quadrant.TopLeft, Shift.Down, Quadrant.BottomLeft)]
-    [InlineData(Quadrant.TopRight, Shift.Left, Quadrant.TopLeft)]
+    [InlineData(Quadrant.TopCenter, Shift.Left, Quadrant.TopLeft)]
+    [InlineData(Quadrant.TopCenter, Shift.Right, Quadrant.TopRight)]
+    [InlineData(Quadrant.TopCenter, Shift.Up, null)]
+    [InlineData(Quadrant.TopCenter, Shift.Down, Quadrant.BottomCenter)]
+    [InlineData(Quadrant.TopRight, Shift.Left, Quadrant.TopCenter)]
     [InlineData(Quadrant.TopRight, Shift.Right, null)]
     [InlineData(Quadrant.TopRight, Shift.Up, null)]
     [InlineData(Quadrant.TopRight, Shift.Down, Quadrant.BottomRight)]
@@ -202,9 +220,13 @@ public sealed class ToolbarEditorTests
         Assert.Equal(["effort", "model", "provider", "continueIn", "newChat"], ToolbarEditor.Move(m, "effort", -1).Items(TL));
         Assert.Equal(["effort", "model", "provider", "continueIn", "newChat"], ToolbarEditor.Move(m, "provider", -9).Items(TL)); // clamped
         Assert.Same(m, ToolbarEditor.Move(m, "continueIn", -1));
-        var shifted = ToolbarEditor.ShiftTo(m, "provider", Shift.Right);
-        Assert.Equal(["recent", "effort", "model", "provider"], shifted.Items(TR));
+        var shifted = ToolbarEditor.ShiftTo(m, "provider", Shift.Right); // one column: the centre
+        Assert.Equal(["effort", "model", "provider"], shifted.Items(Quadrant.TopCenter));
         Assert.Equal(["continueIn", "newChat"], shifted.Items(TL));
+        Assert.Equal(["recent"], shifted.Items(TR));
+        shifted = ToolbarEditor.ShiftTo(shifted, "model", Shift.Right); // and the next one: the right
+        Assert.Equal(["recent", "effort", "model", "provider"], shifted.Items(TR));
+        Assert.Empty(shifted.Items(Quadrant.TopCenter));
         shifted = ToolbarEditor.ShiftTo(m, "model", Shift.Down);
         Assert.Equal(["pin", "effort", "model", "provider"], shifted.Items(BL));
         AssertValid(shifted);
@@ -372,7 +394,7 @@ public sealed class ToolbarEditorTests
     {
         var updated = new CustomButton("two", "Second", "E8BD", "second", null, false);
         var m = ToolbarEditor.UpdateCustom(Grid, updated);
-        Assert.Equal([Grid.Buttons[0], updated, Grid.Buttons[2]], m.Buttons);
+        Assert.Equal(Grid.Buttons.Select(b => b.Id == "two" ? updated : b), m.Buttons);
         Assert.Equal(Grid.Items(TR), m.Items(TR));
         AssertValid(m);
     }
@@ -401,7 +423,7 @@ public sealed class ToolbarEditorTests
         AssertValid(m);
 
         var hidden = ToolbarEditor.RemoveCustom(ToolbarEditor.Hide(Grid, "one"), "one");
-        Assert.Equal(["two", "three"], hidden.Buttons.Select(b => b.Id));
+        Assert.Equal(Grid.Buttons.Select(b => b.Id).Where(id => id != "one"), hidden.Buttons.Select(b => b.Id));
     }
 
     [Fact]

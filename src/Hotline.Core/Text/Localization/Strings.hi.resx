@@ -582,7 +582,7 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
   <data name="Guide_Direction_Title" xml:space="preserve"><value>ऊपर या नीचे</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>चैट संदेश बार से बढ़ती है: ऊपर की ओर, जब तक कि ऊपर जगह न हो, फिर नीचे की ओर। सेटिंग्स › विंडो इसे ऊपर या नीचे रख सकती है और स्थिति, चौड़ाई और चैट की ऊंचाई सेट करती है।</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ बार को चार कोनों के रूप में दिखाती हैं: ऊपर बाईं ओर और ऊपर दाईं ओर (संदेश बॉक्स के ऊपर), नीचे बाईं ओर और नीचे दाईं ओर (इसके नीचे)। किसी बटन या पिकर को एक कोने के अंदर या दूसरे में ले जाने के लिए उसे खींचें, या उसके तीर वाले बटनों का उपयोग करें (Alt+तीर कोना बदलता है, Ctrl+तीर क्रम बदलता है)। जो आप छिपाते हैं वह “दिखाया नहीं गया” में रहता है। प्रत्येक बटन का अपना आकार, एक आउटलाइन या भराव हो सकता है, और आप अपने स्वयं के बटन जोड़ सकते हैं जो कोई त्वरित क्रिया चलाते हैं या कोई टेक्स्ट डालते हैं। जो बटन फ़िट नहीं होते वे ⋯ मेनू में चले जाते हैं।</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ बार को छह क्षेत्रों के रूप में दिखाती हैं: संदेश बॉक्स के ऊपर की पंक्ति के बाएँ, केंद्र और दाएँ, और इसके नीचे भी वही तीन। किसी बटन या पिकर को एक क्षेत्र के अंदर या दूसरे में ले जाने के लिए उसे खींचें, या उसके तीर वाले बटनों का उपयोग करें (Alt+तीर क्षेत्र बदलता है, Ctrl+तीर क्रम बदलता है)। जो आप छिपाते हैं वह “दिखाया नहीं गया” में रहता है। प्रत्येक बटन का अपना आकार, एक आउटलाइन या भराव हो सकता है, और आप अपने स्वयं के बटन जोड़ सकते हैं जो कोई त्वरित क्रिया चलाते हैं या कोई टेक्स्ट डालते हैं। जो बटन फ़िट नहीं होते वे ⋯ मेनू में चले जाते हैं।</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>सेटिंग्स फ़ाइलें हैं</value></data>
@@ -590,8 +590,10 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
 API कुंजियाँ Windows Credential Locker में रखी जाती हैं, फ़ाइल में कभी नहीं।</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Hotline क्या-क्या करता है, संक्षेप में। प्रत्येक भाग बताता है कि इसे सेटिंग्स में कहाँ बदलना है।</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>ऊपर बाएँ</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>ऊपर केंद्र</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>ऊपर दाएँ</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>नीचे बाएँ</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>नीचे केंद्र</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>नीचे दाएँ</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>दिखाया नहीं गया</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>चारों समूहों के बीच आइटम खींचें, या प्रत्येक आइटम के नीचे दिए गए बटनों का उपयोग करें। किसी आइटम पर फ़ोकस होने पर, Alt+तीर कुंजियाँ उसे दूसरे समूह में ले जाती हैं और Ctrl+Left या Ctrl+Right उसे उसके समूह में ले जाते हैं। बदलाव toolbar.json में सहेजे जाते हैं और तुरंत लागू होते हैं।</value></data>

@@ -136,9 +136,9 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         _litMarkers.Clear();
         _litCard = null;
         _layout.Children.Add(Heading(Strings.Bar_TopRow));
-        _layout.Children.Add(Pair(Quadrant.TopLeft, Quadrant.TopRight));
+        _layout.Children.Add(Trio(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight));
         _layout.Children.Add(Heading(Strings.Bar_BottomRow));
-        _layout.Children.Add(Pair(Quadrant.BottomLeft, Quadrant.BottomRight));
+        _layout.Children.Add(Trio(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight));
         _layout.Children.Add(Heading(Strings.Bar_NotShown));
         _layout.Children.Add(NotShownCard());
         SyncBarStyle();
@@ -161,15 +161,18 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
 
     private static TextBlock Heading(string text) => new() { Text = text, Opacity = 0.8, Margin = new Thickness(0, 4, 0, 0) };
 
-    private Grid Pair(Quadrant left, Quadrant right)
+    /// <summary>One row's three groups side by side: left, centre, right.</summary>
+    private Grid Trio(Quadrant left, Quadrant center, Quadrant right)
     {
         var grid = new Grid { ColumnSpacing = 8 };
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        var second = QuadrantCard(right);
-        Grid.SetColumn(second, 1);
-        grid.Children.Add(QuadrantCard(left));
-        grid.Children.Add(second);
+        var column = 0;
+        foreach (var q in new[] { left, center, right })
+        {
+            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+            var card = QuadrantCard(q);
+            Grid.SetColumn(card, column++);
+            grid.Children.Add(card);
+        }
         return grid;
     }
 
@@ -178,8 +181,10 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private static string QuadrantName(Quadrant q) => q switch
     {
         Quadrant.TopLeft => Strings.Quad_TopLeft,
+        Quadrant.TopCenter => Strings.Quad_TopCenter,
         Quadrant.TopRight => Strings.Quad_TopRight,
         Quadrant.BottomLeft => Strings.Quad_BottomLeft,
+        Quadrant.BottomCenter => Strings.Quad_BottomCenter,
         _ => Strings.Quad_BottomRight,
     };
 
@@ -349,8 +354,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     {
         var key = unit.IsPickers ? "pickerBlock" : unit.Id; // upper case: never a custom id
         var name = unit.IsPickers ? Strings.Bar_Pickers : ItemName(_model, unit.Id);
-        var top = q is Quadrant.TopLeft or Quadrant.TopRight;
-        var left = q is Quadrant.TopLeft or Quadrant.BottomLeft;
+        var top = q is Quadrant.TopLeft or Quadrant.TopCenter or Quadrant.TopRight;
         UIElement title = Title(unit.Id);
         if (unit.IsPickers)
         {
@@ -377,9 +381,8 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         buttons.Children.Add(top
             ? SmallButton("\uE74B", Strings.Bar_ToBottom, name, "bar-shift-down-" + key, unit.CanShiftDown, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Down), unit.Id, item)
             : SmallButton("\uE74A", Strings.Bar_ToTop, name, "bar-shift-up-" + key, unit.CanShiftUp, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Up), unit.Id, item));
-        buttons.Children.Add(left
-            ? SmallButton("\uE72A", Strings.Bar_ToRight, name, "bar-shift-right-" + key, unit.CanShiftRight, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Right), unit.Id, item)
-            : SmallButton("\uE72B", Strings.Bar_ToLeft, name, "bar-shift-left-" + key, unit.CanShiftLeft, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Left), unit.Id, item));
+        buttons.Children.Add(SmallButton("\uE72B", Strings.Bar_ToLeft, name, "bar-shift-left-" + key, unit.CanShiftLeft, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Left), unit.Id, item));
+        buttons.Children.Add(SmallButton("\uE72A", Strings.Bar_ToRight, name, "bar-shift-right-" + key, unit.CanShiftRight, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Right), unit.Id, item));
         if (!unit.IsPickers)
         {
             buttons.Children.Add(StyleButton(unit.Id, name));

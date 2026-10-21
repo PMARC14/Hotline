@@ -582,7 +582,7 @@ Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba
   <data name="Guide_Direction_Title" xml:space="preserve"><value>W górę lub w dół</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Czat rozwija się od paska wiadomości: w górę, chyba że zabraknie miejsca powyżej, a wtedy w dół. Ustawienia › Okno pozwala utrzymać go w górze lub w dole oraz ustawia położenie, szerokość i wysokość czatu.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rzędy przycisków</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Okno › Wiersze przycisków pokazuje pasek w postaci czterech narożników: lewy górny i prawy górny (nad polem wiadomości), lewy dolny i prawy dolny (pod nim). Przeciągnij przycisk lub selektor, aby przenieść go w obrębie narożnika lub do innego, albo użyj jego przycisków strzałek (Alt+strzałka zmienia narożnik, Ctrl+strzałka zmienia kolejność). To, co ukryjesz, czeka w „Niepokazywane”. Każdy przycisk może mieć własny rozmiar, obramowanie lub wypełnienie, a także możesz dodawać własne przyciski uruchamiające szybką akcję lub wstawiające tekst. Przyciski, które się nie mieszczą, przenoszą się do menu ⋯.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ustawienia › Okno › Wiersze przycisków pokazuje pasek w postaci sześciu obszarów: po lewej, na środku i po prawej w wierszu nad polem wiadomości oraz te same trzy pod nim. Przeciągnij przycisk lub selektor, aby przenieść go w obrębie obszaru lub do innego, albo użyj jego przycisków strzałek (Alt+strzałka zmienia obszar, Ctrl+strzałka zmienia kolejność). To, co ukryjesz, czeka w „Niepokazywane”. Każdy przycisk może mieć własny rozmiar, obramowanie lub wypełnienie, a także możesz dodawać własne przyciski uruchamiające szybką akcję lub wstawiające tekst. Przyciski, które się nie mieszczą, przenoszą się do menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ustawienia › Wygląd › Dźwięki odtwarza dźwięk przy otwieraniu lub zamykaniu panelu: dźwięk Windows lub plik .wav w Twoim folderze dźwięków. Domyślnie wyłączone.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ustawienia to pliki</value></data>
@@ -590,8 +590,10 @@ Przesunięty panel otworzy się następnym razem w domyślnym położeniu, chyba
 Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Wszystko, co robi Hotline, w skrócie. Każda część wskazuje, gdzie w Ustawieniach można to zmienić.</value></data>
   <data name="Quad_TopLeft" xml:space="preserve"><value>Górny lewy</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>Górny środkowy</value></data>
   <data name="Quad_TopRight" xml:space="preserve"><value>Górny prawy</value></data>
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Dolny lewy</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>Dolny środkowy</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Dolny prawy</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niepokazywane</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Przeciągaj elementy między czterema grupami lub używaj przycisków pod każdym elementem. Gdy element jest aktywny, Alt+strzałki przenoszą go do innej grupy, a Ctrl+strzałka w lewo lub Ctrl+strzałka w prawo przesuwają go w obrębie grupy. Zmiany są zapisywane w toolbar.json i wprowadzane od razu.</value></data>

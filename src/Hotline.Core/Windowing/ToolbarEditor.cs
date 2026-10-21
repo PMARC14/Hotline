@@ -78,18 +78,27 @@ public static class ToolbarEditor
     public static ToolbarModel ShiftTo(ToolbarModel m, string id, Shift direction)
     {
         if (m is null || Placed(m, id) is not { } at) return m!;
-        var left = at.Quadrant is Quadrant.BottomLeft or Quadrant.TopLeft;
-        var top = at.Quadrant is Quadrant.TopLeft or Quadrant.TopRight;
+        var (column, top) = (Column(at.Quadrant), at.Quadrant is Quadrant.TopLeft or Quadrant.TopCenter or Quadrant.TopRight);
         Quadrant? target = direction switch
         {
-            Shift.Left when !left => top ? Quadrant.TopLeft : Quadrant.BottomLeft,
-            Shift.Right when left => top ? Quadrant.TopRight : Quadrant.BottomRight,
-            Shift.Up when !top => left ? Quadrant.TopLeft : Quadrant.TopRight,
-            Shift.Down when top => left ? Quadrant.BottomLeft : Quadrant.BottomRight,
+            Shift.Left when column > 0 => At(column - 1, top),
+            Shift.Right when column < 2 => At(column + 1, top),
+            Shift.Up when !top => At(column, top: true),
+            Shift.Down when top => At(column, top: false),
             _ => null,
         };
         return target is { } q ? MoveTo(m, at.Id, q, int.MaxValue) : m;
     }
+
+    /// <summary>The left (0), centre (1) or right (2) column of a quadrant.</summary>
+    internal static int Column(Quadrant q) =>
+        q is Quadrant.BottomLeft or Quadrant.TopLeft ? 0 : q is Quadrant.BottomCenter or Quadrant.TopCenter ? 1 : 2;
+
+    internal static Quadrant At(int column, bool top) => (top, column) switch
+    {
+        (false, 0) => Quadrant.BottomLeft, (false, 1) => Quadrant.BottomCenter, (false, _) => Quadrant.BottomRight,
+        (true, 0) => Quadrant.TopLeft, (true, 1) => Quadrant.TopCenter, _ => Quadrant.TopRight,
+    };
 
     /// <summary>Takes an item off the bar (to "Not shown"); its style override goes with it, as <see cref="ToolbarModel.Resolve"/>
     /// keeps overrides only for shown items.</summary>

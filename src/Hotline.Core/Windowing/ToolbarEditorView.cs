@@ -31,8 +31,8 @@ public static class ToolbarEditorView
     public static IReadOnlyList<EditorUnit> Units(ToolbarModel m, Quadrant q)
     {
         var groups = Groups(m.Items(q));
-        var (left, top) = (q is Quadrant.BottomLeft or Quadrant.TopLeft, q is Quadrant.TopLeft or Quadrant.TopRight);
-        return [.. groups.Select((ids, i) => new EditorUnit(ids, i > 0, i < groups.Count - 1, !top, top, !left, left))];
+        var (column, top) = (ToolbarEditor.Column(q), q is Quadrant.TopLeft or Quadrant.TopCenter or Quadrant.TopRight);
+        return [.. groups.Select((ids, i) => new EditorUnit(ids, i > 0, i < groups.Count - 1, !top, top, column > 0, column < 2))];
     }
 
     /// <summary>The gap in <paramref name="q"/>'s item list (as <see cref="ToolbarEditor.MoveTo"/> counts) for the gap
