@@ -229,7 +229,8 @@ and the rest of the file still applies; the file is never thrown away for one mi
   it; a half-written file keeps the bar it had.
 - Hotline does not rewrite a version 2 file by itself. A missing file is created with the defaults (delete
   `toolbar.json` to get the default bar back at the next start), and a version 1 file is migrated (below). What it had to fix is listed under Settings › This PC and in the log;
-  saving from Settings writes the corrected version.
+  saving from Settings writes the corrected version, and the file it replaces is kept as `toolbar.json.bak` (the comments in
+  it are not carried over).
 - A `version` higher than 2 is read as far as it makes sense and never rewritten.
 
 **Settings › Window › Button rows (planned).** The editor shows the four groups as cards, each a strip of its items.

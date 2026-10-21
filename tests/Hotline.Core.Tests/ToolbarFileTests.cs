@@ -133,14 +133,36 @@ public sealed class ToolbarFileTests : IDisposable
     }
 
     [Fact]
-    public void Save_then_Load_equals_the_model_and_leaves_no_temp_or_bak()
+    public void Save_then_Load_equals_the_model_and_leaves_no_temp_file()
     {
         var model = ToolbarMigration.FromV1(V1Text) with { Style = new ButtonStyle(ButtonSize.Wide, true, false, 30, null) };
         ToolbarFile.Save(File_, model);
+        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName)); // nothing to keep the first time
         ToolbarFile.Save(File_, model);
 
         Assert.Equal(model, ToolbarFile.Load(File_).Model);
-        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
+        Assert.Equal(["toolbar.json", "toolbar.json.bak"], Directory.GetFiles(_root).Select(Path.GetFileName).OrderBy(n => n));
+    }
+
+    [Fact]
+    public void Save_keeps_the_file_it_replaces_as_bak_and_works_with_a_bare_file_name()
+    {
+        var handEdited = """
+            // my own bar
+            { "version": 2, "top": { "left": ["effort"], "right": [] } }
+            """;
+        File.WriteAllText(File_, handEdited);
+
+        ToolbarFile.Save(File_, ToolbarModel.Defaults);
+
+        Assert.Equal(handEdited, File.ReadAllText(File_ + ".bak"));
+        Assert.Equal(ToolbarModel.Defaults, ToolbarFile.Load(File_).Model);
+
+        var old = Directory.GetCurrentDirectory();
+        Directory.SetCurrentDirectory(_root);
+        try { ToolbarFile.Save("bare.json", ToolbarModel.Defaults); }
+        finally { Directory.SetCurrentDirectory(old); }
+        Assert.True(File.Exists(Path.Combine(_root, "bare.json")));
     }
 
     [Fact]

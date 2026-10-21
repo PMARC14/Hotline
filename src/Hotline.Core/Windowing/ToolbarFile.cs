@@ -47,13 +47,16 @@ public static class ToolbarFile
     private static ToolbarLoad Unreadable(string reason) =>
         new(ToolbarModel.Defaults, L.F(Strings.Bar_Unreadable, reason), false);
 
-    /// <summary>Writes the model as a v2 file: a temp file in the same folder, then moved over the old one.</summary>
-    public static void Save(string path, ToolbarModel model)
+    /// <summary>Writes the model as a v2 file: a temp file in the same folder, then moved over the old one. The file it
+    /// replaces is kept as <c>toolbar.json.bak</c> first (<paramref name="keepPrevious"/>): Settings rewrites a hand-edited
+    /// file from the model, which drops its comments and anything that was ignored. If the copy fails, nothing is replaced.</summary>
+    public static void Save(string path, ToolbarModel model, bool keepPrevious = true)
     {
-        Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+        if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder);
         var tmp = path + ".tmp";
         try
         {
+            if (keepPrevious && File.Exists(path)) File.Copy(path, path + ".bak", overwrite: true);
             File.WriteAllText(tmp, model.ToJson());
             File.Move(tmp, path, overwrite: true);
         }
@@ -66,7 +69,7 @@ public static class ToolbarFile
 
     private static bool TrySave(string path, ToolbarModel model)
     {
-        try { Save(path, model); return true; }
+        try { Save(path, model, keepPrevious: false); return true; } // a migration has its own .old archive
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
     }
 }

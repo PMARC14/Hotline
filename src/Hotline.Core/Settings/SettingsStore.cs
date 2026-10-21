@@ -107,7 +107,7 @@ public sealed class SettingsStore(string directory)
                     if (FileArchive.KeepOld(FilePath) is null) { ArchiveFailed = true; return s; } // no archive, no rewrite: run on it in memory
                 }
                 else
-                    try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (IOException) { }
+                    try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
                 // Connection files are written only when the upgrade moves or changes connections (the old "backends"
                 // list, or files from before v12); otherwise they stay exactly as they are, byte for byte.
                 if (legacy is not null || loadedVersion < 12) TrySave(s);
