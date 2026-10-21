@@ -407,6 +407,7 @@ Weigeren:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} stopte ({1}) tijdens het vragen om een hulpmiddel; er is niets uitgevoerd.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: de verbinding eindigde voordat het hulpmiddelverzoek compleet was; er is niets uitgevoerd.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} is onverwacht gestopt.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>De werkmap voor {0} bestaat niet: {1}. Kies een andere via Instellingen › AI-verbindingen.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code is niet geïnstalleerd. Installeer het via claude.com/claude-code, voer `claude` eenmaal uit om je aan te melden en probeer het opnieuw.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy is niet aangemeld. Voer `agy` eenmaal uit in een terminal om je aan te melden en probeer het opnieuw.</value></data>

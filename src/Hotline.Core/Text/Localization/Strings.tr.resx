@@ -407,6 +407,7 @@ Reddet:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} bir araç isterken durdu ({1}); hiçbir şey çalıştırılmadı.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: araç isteği tamamlanmadan bağlantı sona erdi; hiçbir şey çalıştırılmadı.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} beklenmedik şekilde durdu.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} için çalışma klasörü yok: {1}. Ayarlar › Yapay zekâ bağlantıları'ndan başka bir tane seçin.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code yüklü değil. claude.com/claude-code adresinden yükleyin, oturum açmak için `claude` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy oturum açmamış. Oturum açmak için bir terminalde `agy` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>

@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Text;
+using Hotline.Core.Processes;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.App.Chat;
 
@@ -20,26 +22,78 @@ internal static class CliRunner
         adopt?.Invoke(process);
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(ct);
         cts.CancelAfter(timeout);
-        var stdout = process.StandardOutput.ReadToEndAsync(cts.Token);
-        var stderr = process.StandardError.ReadToEndAsync(cts.Token);
-        try { await process.WaitForExitAsync(cts.Token); }
-        catch (OperationCanceledException) { try { process.Kill(entireProcessTree: true); } catch (Exception) { /* already gone */ } throw; }
+        // Output is untrusted: past the cap, stop reading both streams and the program.
+        async Task<string> Read(StreamReader reader)
+        {
+            try { return await BoundedLineReader.ReadToEndAsync(reader, MaxOutputChars, cts.Token); }
+            catch (OutputTooLongException) { cts.Cancel(); throw; }
+        }
+        var stdout = Read(process.StandardOutput);
+        var stderr = Read(process.StandardError);
+        try
+        {
+            await Task.WhenAll(stdout, stderr);
+            await process.WaitForExitAsync(cts.Token);
+        }
+        catch (Exception ex) when (ex is OperationCanceledException or OutputTooLongException)
+        {
+            try { process.Kill(entireProcessTree: true); } catch (Exception) { /* already gone */ }
+            if (ex is OutputTooLongException)
+                throw new Hotline.Core.Backends.ModelListException(L.F(Strings.Cli_OutputTooLong, Path.GetFileNameWithoutExtension(exe)));
+            throw;
+        }
         if (process.ExitCode != 0)
             throw new Hotline.Core.Backends.ModelListException($"{Path.GetFileName(exe)} failed (exit {process.ExitCode}): {(await stderr).Trim()}");
         return await stdout;
     }
 
-    /// <summary>Opens a file in its associated editor (Notepad if .md has no association).</summary>
+    /// <summary>Most output read from a tool (model lists, connector lists are a few KB).</summary>
+    private const int MaxOutputChars = 1024 * 1024;
+
+    /// <summary>
+    /// Opens one of Hotline's own text files (.md/.json/.txt under its data folder or agy's settings folder) in its
+    /// associated editor, Notepad if it has none. Anything else is ignored.
+    /// </summary>
     public static void OpenInEditor(string path)
     {
-        try { Process.Start(new ProcessStartInfo(path) { UseShellExecute = true }); }
-        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
-        { Process.Start(new ProcessStartInfo("notepad.exe", $"\"{path}\"") { UseShellExecute = true }); }
+        if (ShellOpen.EditableFile(path, Roots, File.Exists) is not { } file) return;
+        try
+        {
+            try { Process.Start(new ProcessStartInfo(file) { UseShellExecute = true }); }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
+            { Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.System), "notepad.exe"), file); }
+        }
+        catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException) { /* nothing to open it with */ }
     }
 
+    /// <summary>Opens (creating it) one of Hotline's own folders in Explorer. Anything else is ignored.</summary>
     public static void OpenFolder(string path)
     {
-        Directory.CreateDirectory(path);
-        Process.Start(new ProcessStartInfo("explorer.exe", $"\"{path}\"") { UseShellExecute = true });
+        if (ShellOpen.OpenableFolder(path, Roots) is not { } folder) return;
+        try
+        {
+            Directory.CreateDirectory(folder);
+            Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"), folder);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception or InvalidOperationException) { }
+    }
+
+    /// <summary>A Windows program by full path with one argument, passed as is (no shell, no switches from a name).</summary>
+    private static void Start(string exe, string argument)
+    {
+        var psi = new ProcessStartInfo(exe) { UseShellExecute = false };
+        psi.ArgumentList.Add(argument);
+        Hotline.Core.Processes.ProcessLaunches.Noted();
+        Process.Start(psi)?.Dispose();
+    }
+
+    /// <summary>Folders whose files Hotline opens: its data folder (and the pre-1.0 one), agy's settings folder.</summary>
+    private static IReadOnlyList<string> Roots
+    {
+        get
+        {
+            var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
+            return [App.DataDirectory, App.PrivateDirectory, Path.GetDirectoryName(Hotline.Core.Backends.Agy.AgyPermissions.SettingsPath(home))!];
+        }
     }
 }

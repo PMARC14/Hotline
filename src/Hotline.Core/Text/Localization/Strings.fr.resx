@@ -407,6 +407,7 @@ Refuser :
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} s'est arrêté ({1}) en demandant un outil ; rien n'a été exécuté.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0} : la connexion s'est terminée avant que la demande d'outil soit complète ; rien n'a été exécuté.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} s'est arrêté de manière inattendue.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Le dossier de travail de {0} n'existe pas : {1}. Choisissez-en un autre dans Paramètres › Connexions IA.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code n'est pas installé. Installez-le depuis claude.com/claude-code, lancez `claude` une fois pour vous connecter, puis réessayez.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy n'est pas connecté. Lancez `agy` une fois dans un terminal pour vous connecter, puis réessayez.</value></data>

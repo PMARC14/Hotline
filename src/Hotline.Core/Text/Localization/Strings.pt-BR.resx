@@ -407,6 +407,7 @@ Negar:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} parou ({1}) enquanto pedia uma ferramenta; nada foi executado.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: a conexão terminou antes de a solicitação de ferramenta ficar completa; nada foi executado.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} parou inesperadamente.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>A pasta de trabalho de {0} não existe: {1}. Escolha outra em Configurações › Conexões de IA.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>O Claude Code não está instalado. Instale-o em claude.com/claude-code, execute `claude` uma vez para entrar e tente de novo.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>O agy não está conectado. Execute `agy` uma vez em um terminal para entrar e tente de novo.</value></data>

@@ -407,6 +407,7 @@ Verweigern:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} hat beim Anfordern eines Tools gestoppt ({1}); nichts wurde ausgeführt.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: Die Verbindung endete, bevor die Tool-Anfrage vollständig war; nichts wurde ausgeführt.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} wurde unerwartet beendet.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Der Arbeitsordner für {0} existiert nicht: {1}. Wähle unter Einstellungen › KI-Verbindungen einen anderen.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code ist nicht installiert. Installiere es von claude.com/claude-code, starte `claude` einmal zum Anmelden und versuch es dann erneut.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy ist nicht angemeldet. Starte `agy` einmal in einem Terminal zum Anmelden und versuch es dann erneut.</value></data>

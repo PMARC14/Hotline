@@ -407,6 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} がツールの要求中に停止しました ({1})。何も実行されていません。</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: ツールの要求が完了する前に接続が終了しました。何も実行されていません。</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} が予期せず停止しました。</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} の作業フォルダーが存在しません: {1}。[設定] › [AI 接続] で別のフォルダーを選んでください。</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code がインストールされていません。claude.com/claude-code からインストールし、`claude` を一度実行してサインインしてから、もう一度お試しください。</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy がサインインしていません。ターミナルで `agy` を一度実行してサインインしてから、もう一度お試しください。</value></data>

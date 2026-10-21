@@ -407,6 +407,7 @@ Tolak:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} berhenti ({1}) saat meminta alat; tidak ada yang dijalankan.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: koneksi berakhir sebelum permintaan alat lengkap; tidak ada yang dijalankan.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} berhenti secara tak terduga.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Folder kerja untuk {0} tidak ada: {1}. Pilih yang lain di Pengaturan › Koneksi AI.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code tidak terpasang. Pasang dari claude.com/claude-code, jalankan `claude` sekali untuk masuk, lalu coba lagi.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy belum masuk. Jalankan `agy` sekali di terminal untuk masuk, lalu coba lagi.</value></data>

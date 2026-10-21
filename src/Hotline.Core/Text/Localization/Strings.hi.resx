@@ -407,6 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} टूल का अनुरोध करते समय रुक गया ({1}); कुछ नहीं चलाया गया।</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: टूल अनुरोध पूरा होने से पहले कनेक्शन समाप्त हो गया; कुछ नहीं चलाया गया।</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} अप्रत्याशित रूप से रुक गया।</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} का कार्य फ़ोल्डर मौजूद नहीं है: {1}। सेटिंग्स › AI कनेक्शन में कोई दूसरा चुनें।</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code इंस्टॉल नहीं है। इसे claude.com/claude-code से इंस्टॉल करें, साइन इन करने के लिए एक बार `claude` चलाएँ, फिर से प्रयास करें।</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy साइन इन नहीं है। साइन इन करने के लिए टर्मिनल में एक बार `agy` चलाएँ, फिर से प्रयास करें।</value></data>

@@ -407,6 +407,7 @@ Zabroń:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} zatrzymał się ({1}) podczas żądania narzędzia; nic nie zostało uruchomione.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: połączenie zakończyło się przed skompletowaniem żądania narzędzia; nic nie zostało uruchomione.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} nieoczekiwanie się zatrzymał.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Folder roboczy dla {0} nie istnieje: {1}. Wybierz inny w Ustawienia › Połączenia AI.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code nie jest zainstalowany. Zainstaluj go z claude.com/claude-code, uruchom raz `claude`, aby się zalogować, i spróbuj ponownie.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy nie jest zalogowany. Uruchom raz `agy` w terminalu, aby się zalogować, i spróbuj ponownie.</value></data>

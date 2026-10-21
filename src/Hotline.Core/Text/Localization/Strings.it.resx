@@ -407,6 +407,7 @@ Nega:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} si è fermato ({1}) mentre chiedeva uno strumento; non è stato eseguito nulla.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: la connessione si è chiusa prima che la richiesta dello strumento fosse completa; non è stato eseguito nulla.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} si è arrestato in modo imprevisto.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>La cartella di lavoro di {0} non esiste: {1}. Scegline un'altra in Impostazioni › Connessioni IA.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code non è installato. Installalo da claude.com/claude-code, esegui `claude` una volta per accedere, poi riprova.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy non ha effettuato l'accesso. Esegui `agy` una volta in un terminale per accedere, poi riprova.</value></data>

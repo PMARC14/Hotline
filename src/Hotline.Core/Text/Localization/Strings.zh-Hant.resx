@@ -407,6 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} 在要求工具時停止 ({1});未執行任何動作。</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}:工具要求完成前連線已中斷;未執行任何動作。</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} 意外停止。</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} 的工作資料夾不存在:{1}。請在 [設定] › [AI 連線] 中另選一個。</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>未安裝 Claude Code。請從 claude.com/claude-code 安裝,執行一次 `claude` 登入,然後再試一次。</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy 未登入。請在終端機中執行一次 `agy` 登入,然後再試一次。</value></data>

@@ -407,6 +407,7 @@ Deny:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} stopped ({1}) while asking for a tool; nothing was run.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: the connection ended before the tool request was complete; nothing was run.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} stopped unexpectedly.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>The working folder for {0} doesn't exist: {1}. Pick another one in Settings › AI connections.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code isn't installed. Install it from claude.com/claude-code, run `claude` once to sign in, then try again.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy isn't signed in. Run `agy` once in a terminal to sign in, then try again.</value></data>

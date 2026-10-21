@@ -407,6 +407,7 @@ Từ chối:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} đã dừng ({1}) khi yêu cầu công cụ; không có gì được chạy.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: kết nối kết thúc trước khi yêu cầu công cụ hoàn tất; không có gì được chạy.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} đã dừng đột ngột.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Thư mục làm việc của {0} không tồn tại: {1}. Hãy chọn thư mục khác trong Cài đặt › Kết nối AI.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Chưa cài đặt Claude Code. Hãy cài từ claude.com/claude-code, chạy `claude` một lần để đăng nhập, rồi thử lại.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy chưa đăng nhập. Hãy chạy `agy` một lần trong terminal để đăng nhập, rồi thử lại.</value></data>

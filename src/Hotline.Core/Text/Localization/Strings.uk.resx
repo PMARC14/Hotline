@@ -407,6 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} зупинився ({1}) під час запиту інструмента; нічого не виконано.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: з'єднання обірвалося до завершення запиту інструмента; нічого не виконано.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} несподівано зупинився.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Робочої папки для {0} не існує: {1}. Виберіть іншу в Настройки › Підключення ШІ.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code не встановлено. Установіть його з claude.com/claude-code, один раз запустіть `claude`, щоб увійти, і спробуйте ще раз.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy не виконав вхід. Один раз запустіть `agy` у терміналі, щоб увійти, і спробуйте ще раз.</value></data>
