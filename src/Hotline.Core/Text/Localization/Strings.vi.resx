@@ -454,7 +454,8 @@ Từ chối:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex đang kết nối lại…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Chọn cách Hotline kết nối</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Chọn AI mà Hotline sẽ dùng. Không có gì được gửi hay chạy cho đến khi bạn chọn.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>PC này chưa cài Claude Code hoặc Antigravity. Hãy cài một trong hai và đăng nhập, hoặc dùng khóa API.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>PC này chưa cài Claude Code, Codex hoặc Antigravity. Hãy cài một trong ba và đăng nhập, hoặc dùng khóa API.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Chưa cài trên PC này: {0}. Hãy cài và đăng nhập để dùng tại đây.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>Dùng {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>Dùng khóa API…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Đặt Hotline làm ứng dụng cho phím Copilot</value></data>

@@ -454,7 +454,8 @@ Reddet:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex yeniden bağlanıyor…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Hotline'ın nasıl bağlanacağını seçin</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Hotline'ın kullanacağı yapay zekâyı seçin. Siz seçene kadar hiçbir şey gönderilmez ve çalıştırılmaz.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>Bu bilgisayarda Claude Code veya Antigravity yüklü değil. Birini yükleyip oturum açın veya bir API anahtarı kullanın.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Bu bilgisayarda Claude Code, Codex veya Antigravity yüklü değil. Birini yükleyip oturum açın veya bir API anahtarı kullanın.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Bu bilgisayarda yüklü değil: {0}. Burada kullanmak için yükleyip oturum açın.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>{0} kullan</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>API anahtarı kullan…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline'ı Copilot tuşu uygulaması yap</value></data>

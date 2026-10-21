@@ -454,7 +454,8 @@ Deny:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex is reconnecting…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Choose how Hotline connects</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Pick the AI Hotline should use. Nothing is sent and nothing runs until you do.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code or Antigravity isn't installed on this PC. Install one and sign in to it, or use an API key.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code, Codex or Antigravity isn't installed on this PC. Install one and sign in to it, or use an API key.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Not installed on this PC: {0}. Install it and sign in to use it here.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>Use {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>Use an API key…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Set Hotline as the Copilot key app</value></data>

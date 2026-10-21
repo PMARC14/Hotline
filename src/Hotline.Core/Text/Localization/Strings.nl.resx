@@ -454,7 +454,8 @@ Weigeren:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex maakt opnieuw verbinding…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Kies hoe Hotline verbinding maakt</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Kies de AI die Hotline moet gebruiken. Tot die tijd wordt er niets verstuurd of uitgevoerd.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code of Antigravity is niet geïnstalleerd op deze pc. Installeer er een en meld je aan, of gebruik een API-sleutel.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code, Codex of Antigravity is niet geïnstalleerd op deze pc. Installeer er een en meld je aan, of gebruik een API-sleutel.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Niet geïnstalleerd op deze pc: {0}. Installeer het en meld je aan om het hier te gebruiken.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>{0} gebruiken</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>Een API-sleutel gebruiken…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline instellen als app voor de Copilot-toets</value></data>

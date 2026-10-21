@@ -454,7 +454,8 @@ Zabroń:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex ponownie się łączy…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Wybierz, jak Hotline ma się łączyć</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Wybierz AI, której ma używać Hotline. Do tego czasu nic nie jest wysyłane ani uruchamiane.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>Na tym komputerze nie ma Claude Code ani Antigravity. Zainstaluj jedno z nich i zaloguj się albo użyj klucza API.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Na tym komputerze nie ma Claude Code, Codex ani Antigravity. Zainstaluj jedno z nich i zaloguj się albo użyj klucza API.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Nie zainstalowano na tym komputerze: {0}. Zainstaluj i zaloguj się, aby używać go tutaj.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>Użyj {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>Użyj klucza API…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Ustaw Hotline jako aplikację klawisza Copilot</value></data>

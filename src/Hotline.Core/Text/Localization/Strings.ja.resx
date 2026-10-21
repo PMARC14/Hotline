@@ -454,7 +454,8 @@
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex が再接続しています…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Hotline の接続方法を選択</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Hotline で使う AI を選んでください。選ぶまでは何も送信・実行されません。</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>この PC には Claude Code も Antigravity もインストールされていません。どちらかをインストールしてサインインするか、API キーを使ってください。</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>この PC には Claude Code も Codex も Antigravity もインストールされていません。いずれかをインストールしてサインインするか、API キーを使ってください。</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>この PC にインストールされていません: {0}。インストールしてサインインし、ここで使ってください。</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>{0} を使う</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>API キーを使う…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline を Copilot キーのアプリに設定</value></data>

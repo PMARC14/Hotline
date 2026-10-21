@@ -454,7 +454,8 @@
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex повторно підключається…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Виберіть, як підключається Hotline</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Виберіть ШІ, яким користуватиметься Hotline. Доти нічого не надсилається й не запускається.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>На цьому ПК не встановлено Claude Code чи Antigravity. Установіть один із них і ввійдіть або скористайтеся ключем API.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>На цьому ПК не встановлено Claude Code, Codex чи Antigravity. Установіть один із них і ввійдіть або скористайтеся ключем API.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Не встановлено на цьому ПК: {0}. Установіть його та ввійдіть, щоб використовувати тут.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>Використовувати {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>Використати ключ API…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Зробити Hotline програмою для клавіші Copilot</value></data>

@@ -454,7 +454,8 @@ Verweigern:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex verbindet sich erneut…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Wähle, wie Hotline sich verbindet</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Wähle die KI, die Hotline verwenden soll. Bis dahin wird nichts gesendet und nichts ausgeführt.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code oder Antigravity ist auf diesem PC nicht installiert. Installiere eines davon und melde dich an, oder verwende einen API-Schlüssel.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code, Codex oder Antigravity ist auf diesem PC nicht installiert. Installiere eines davon und melde dich an, oder verwende einen API-Schlüssel.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Auf diesem PC nicht installiert: {0}. Installiere es und melde dich an, um es hier zu verwenden.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>{0} verwenden</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>API-Schlüssel verwenden…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Hotline als App für die Copilot-Taste festlegen</value></data>

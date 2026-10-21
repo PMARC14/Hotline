@@ -454,7 +454,8 @@
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex 正在重新連線…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>選擇 Hotline 的連線方式</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>選擇 Hotline 要使用的 AI。在你選擇之前,不會傳送或執行任何內容。</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>此電腦未安裝 Claude Code 或 Antigravity。請安裝其中一個並登入,或使用 API 金鑰。</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>此電腦未安裝 Claude Code、Codex 或 Antigravity。請安裝其中一個並登入,或使用 API 金鑰。</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>此電腦未安裝: {0}。請安裝並登入以在此處使用。</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>使用 {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>使用 API 金鑰…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>將 Hotline 設為 Copilot 鍵應用程式</value></data>
