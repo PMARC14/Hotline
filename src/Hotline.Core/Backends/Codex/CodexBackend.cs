@@ -122,7 +122,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         {
             await StopAsync(); // also when the caller stops reading early: no codex left running, images released
             foreach (var path in images)
-                try { File.Delete(path); } catch (IOException) { /* still open; the temp folder is cleaned by Windows */ }
+                try { File.Delete(path); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* still open: never replace the turn's own error */ }
         }
     }
 
