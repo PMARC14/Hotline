@@ -254,6 +254,22 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                   "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
                   "style": { "outline": true } }
                 """, 720);
+            // The reference layouts (ToolbarProfiles; the unit tests run all of them at many widths): the ones that mix the pickers
+            // into the bottom row, the extremes and the damaged file at 680 DIP, the picker-mixing ones again at 320.
+            var profileNumber = 0;
+            async Task Profile(string name, int width) => await Look($"P{++profileNumber:00}-{name}-{width}", ToolbarProfiles.Named(name).Json, width);
+            string[] mixing =
+            [
+                "pickers-bottom-left-before", "pickers-bottom-left-after", "pickers-bottom-left-between", "pickers-bottom-centre",
+                "pickers-bottom-centre-crowded", "pickers-bottom-right", "custom-24-pickers-bottom",
+            ];
+            string[] others =
+            [
+                "default", "pickers-top-right", "pickers-top-centre-both-rows", "spans-all-1", "spans-all-8", "spans-mixed", "all-compact", "all-wide",
+                "custom-24-wide-pickers-bottom-centre", "only-pickers", "all-items-in-one-group", "empty-bar", "damaged-file",
+            ];
+            foreach (var name in mixing.Concat(others)) await Profile(name, 680);
+            foreach (var name in mixing) await Profile(name, 320);
             popup.ApplyToolbar(userBar);
             popup.ResizeOffscreen(720);
             await Step("looks restored");

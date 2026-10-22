@@ -192,7 +192,7 @@ Within a group, items run left to right; the center group sits in the free space
 | `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left`, `center` and `right` arrays of item ids (`center` is optional). Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…) |
 | `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide` (see Sizes below); `outline` and `filled` are `true` or `false`; `outlineColor` is the outline's colour as `"#RRGGBB"` (left out: the accent colour); `width` and `height` (20-80 DIPs) can also be set bar-wide |
-| `overrides` | Per item id, the same `size`, `outline`, `outlineColor` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
+| `overrides` | Per item id, the same `size`, `outline`, `outlineColor` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults. For a picker only `span` (1-8 button widths, see below) |
 | `buttons` | Your own buttons, by id (see below) |
 
 **Sizes.** The three sizes are multiples of one base size (today 40 × 36 DIPs, icon 16): `compact` is half of it,
@@ -217,7 +217,48 @@ both its background and its outline.
 **The pickers.** `effort`, `model` and `provider` always stay together as one block. The block goes in the first group
 (checked in the order bottom left, bottom center, bottom right, top left, top center, top right) that lists one of them, at that picker's
 position, with the pickers in the order of the groups above and then as listed within each group: `effort` in top
-left plus `model` in bottom right puts the block in bottom right, `model` first and `effort` after it. They ignore `style` and `overrides`.
+left plus `model` in bottom right puts the block in bottom right, `model` first and `effort` after it. They ignore `style` and the
+style keys of `overrides`.
+
+**Picker widths.** A picker is a whole number of **button widths** wide, so the pickers grow and shrink with the bar's size
+like the buttons do. The unit is the bar's normal button width (compact 20, normal 40, wide 80 DIPs). Set it per picker with
+`span`, 1 to 8 (the only `overrides` key a picker takes; anything else is dropped with a warning):
+
+```jsonc
+"overrides": { "model": { "span": 6 }, "effort": { "span": 1 } }
+```
+
+| Picker | Default `span` | Width at the normal size |
+|---|---|---|
+| `effort` | 2 | 80 DIPs |
+| `model` | 4 | 160 DIPs |
+| `provider` | 3 | 120 DIPs |
+
+The span is a maximum as well as the preferred width: a picker never grows past it. In a short row each picker shrinks
+evenly, down to one button width (never under 28 DIPs); when that is not enough they hide one at a time, `effort` first,
+then `provider`, then `model`. A span for a picker that is hidden is kept. Settings › Button rows has a **1x** to **8x**
+choice on each picker's chip.
+
+**Pickers in the bottom row.** The block can sit in any of the six groups, also in the bottom row among the buttons: before
+them, after them, between two of them, or in the centre or right group. The row first moves buttons into the "..." menu
+(the left group, then the centre, from their ends) so that the pickers keep one button width each, and only when even the
+buttons that always stay (the right group) leave no room do the pickers shrink and hide.
+
+**Reference layouts.** These layouts are tried automatically at every panel width and bar size, and the panel's self-test
+draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as a starting point:
+
+| Name | What it shows |
+|---|---|
+| `default` | pickers in the top row, nine buttons bottom left |
+| `pickers-bottom-left-before` / `-after` / `-between` | the pickers in the bottom-left group before, after, or in the middle of the buttons |
+| `pickers-bottom-centre` / `-crowded` | the pickers in the bottom-centre group, with few or many buttons on their left |
+| `pickers-bottom-right` / `-after-buttons` | the pickers in the bottom-right group, alone or after some buttons |
+| `pickers-top-right`, `pickers-top-centre-both-rows` | the pickers in the top row's right or centre group (centre: with buttons in both rows) |
+| `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 button widths wide; spans 1, 4 and 8 |
+| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact or wide; a different size on several buttons |
+| `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |
+| `only-pickers`, `only-right-group`, `all-items-in-one-group` | a row of pickers only; a right group only; every possible item (36) in one group |
+| `empty-bar`, `damaged-file` | an explicitly empty bar; a damaged file (wrong types, repeated keys, unknown ids) that still renders |
 
 **Custom buttons.** Each entry in `buttons` is a button you can list in any group by its id:
 
