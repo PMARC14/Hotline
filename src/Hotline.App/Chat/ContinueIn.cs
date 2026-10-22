@@ -83,7 +83,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
     private string WriteHandoff()
     {
         Directory.CreateDirectory(handoffDirectory);
-        foreach (var old in Directory.EnumerateFiles(handoffDirectory, "*.md"))
+        foreach (var old in Directory.EnumerateFiles(handoffDirectory, "hotline-chat-*.md"))
             if (File.GetLastWriteTimeUtc(old) < DateTime.UtcNow.AddDays(-1))
                 try { File.Delete(old); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         var title = HistoryStore.TitleOf(chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User)?.Text ?? "");

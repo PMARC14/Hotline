@@ -62,7 +62,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
                 _flyout?.Hide();
                 popup.HidePopup(); // the user is moving to the terminal
                 try { await t.Run(); }
-                catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or IOException or UnauthorizedAccessException or InvalidOperationException)
+                catch (Exception ex) // async void: nothing may escape and end the process
                 {
                     popup.ShowPopup(readSelection: false);
                     notices.Show(L.F(Strings.Recent_ContinueFailed, t.Label, ex.Message), InfoBarSeverity.Warning);
