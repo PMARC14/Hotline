@@ -131,6 +131,9 @@ public sealed class McpConfig
                 using var stream = new FileStream(backup, FileMode.CreateNew);
                 using var writer = new StreamWriter(stream);
                 writer.Write(content);
+                writer.Flush();
+                stream.Flush();
+                Settings.BackupFiles.Prune(path); // every approval saved is one more copy: keep the newest ten
                 return;
             }
             catch (IOException) when (File.Exists(backup) && i < 100) { /* taken: try the next name */ }

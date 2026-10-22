@@ -110,9 +110,10 @@ public sealed class BackendProfile
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
     /// <summary>
-    /// Replaces Hotline's built-in launch flags for this connection's mode (e.g. agy's --agent, Claude Code's chat-only
-    /// isolation). The flags Hotline needs to talk to the CLI (print mode, stream-json, no permission prompts) are
-    /// always added; dangerous flags only come from ApproveAllTools. Null = Hotline's defaults.
+    /// Replaces Hotline's usual extra launch flags for this connection's mode. The flags Hotline needs to talk to the CLI
+    /// (print mode, stream-json) and, in chat-only mode, the isolation flags that keep it from using its own tools are always
+    /// added; flags that approve tools or skip permission checks are dropped from this list: only ApproveAllTools turns them
+    /// on. Null = Hotline's defaults.
     /// </summary>
     public List<string>? Args { get; set; }
     /// <summary>

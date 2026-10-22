@@ -481,7 +481,7 @@ Deny:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Continue this chat in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Couldn't open {0}: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Launch flags (advanced)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Replaces the flags Hotline adds for this mode (space separated). The flags Hotline needs to talk to the program are always added, and dangerous ones only come from “Approve everything”. Empty = Hotline's defaults.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Replaces the extra flags Hotline usually adds for this mode (space separated). The flags Hotline needs to talk to the program and, in chat-only mode, the ones that keep it from using its own tools are always added. Flags that approve tools or skip permission checks are ignored here: only “Approve everything” can turn them on. Empty = Hotline's defaults.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline's defaults</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Maximum answer length</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Most tokens one answer may use. A long answer stops early if this is too low. Empty = the model's default.</value></data>
