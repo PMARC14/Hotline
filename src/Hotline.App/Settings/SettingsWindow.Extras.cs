@@ -215,6 +215,19 @@ public sealed partial class SettingsWindow
     /// Quick actions: each one's command, description and full instruction, with Edit (the .md file in your editor),
     /// Rename and Delete; New action, Restore default actions and the folder below. The files hold everything.
     /// </summary>
+    /// <summary>An action's instruction under its card: two lines, the whole text in the tooltip and in Edit (a page of full
+    /// instructions is a wall of text).</summary>
+    private static TextBlock InstructionPreview(string instruction)
+    {
+        var text = new TextBlock
+        {
+            Text = instruction, TextWrapping = TextWrapping.Wrap, FontSize = 12, Opacity = 0.65, IsTextSelectionEnabled = true,
+            Margin = new Thickness(16, -6, 16, 8), MaxLines = 2, TextTrimming = TextTrimming.CharacterEllipsis,
+        };
+        ToolTipService.SetToolTip(text, instruction);
+        return text;
+    }
+
     private void BuildActionsPage()
     {
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
@@ -255,11 +268,7 @@ public sealed partial class SettingsWindow
                     Children =
                     {
                         card,
-                        new TextBlock
-                        {
-                            Text = action.Instruction, TextWrapping = TextWrapping.Wrap, FontSize = 12, Opacity = 0.65, IsTextSelectionEnabled = true,
-                            Margin = new Thickness(16, -6, 16, 8), MaxLines = 6, TextTrimming = TextTrimming.CharacterEllipsis,
-                        },
+                        InstructionPreview(action.Instruction),
                     },
                 });
             else PageHost.Children.Add(card);

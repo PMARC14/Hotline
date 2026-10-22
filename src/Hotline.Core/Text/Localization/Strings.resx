@@ -254,9 +254,9 @@ Deny:
   <data name="Memory_Edit" xml:space="preserve"><value>Edit memory</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Empty. "/remember something" in the message box adds a line.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} line(s). Every chat sees them while Memory is on.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Type / at the start of a message to use one: "/translate some text", or "/summarize" with an attachment. Each action is a Markdown file; its first line is the description shown in the list. Names may use letters, digits, - and _.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>New action</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Open actions folder</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Quick actions are shortcuts: type / in the message box and pick one, for example “/translate some text”, or “/summarize” with an attachment. Each one is a small Markdown file in your quick actions folder: its first line is the description shown in the list, and the rest is what is sent along with your text. Names may use letters, digits, - and _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>New quick action</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Open the quick actions folder</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR language(s)</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>No OCR language: Settings › Time &amp; language › Language &amp; region › add a language with Optical character recognition</value></data>
@@ -504,8 +504,8 @@ Deny:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Not set</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Add Ctrl, Alt, Shift or Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>That key can't be used</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Restore default actions</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} default actions added or updated.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Restore the built-in quick actions</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} built-in quick actions added or updated.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Rename</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Use letters, digits, - and _, and a name that isn't taken.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Delete /{0}?</value></data>
