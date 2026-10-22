@@ -216,6 +216,10 @@ public sealed class CustomIconsTests : IDisposable
     [InlineData(@"\/server\share\a.png")]
     [InlineData(@"\\?\C:\a.png")]
     [InlineData(@"\\.\pipe\x")]
+    [InlineData(@"\??\UNC\server\share\a.png")]
+    [InlineData(@"\??\C:\a.png")]
+    [InlineData("/??/C:/a.png")]
+    [InlineData(@"\a.png")]         // rooted, no drive
     [InlineData("a.png")]          // relative
     [InlineData(@"C:a.png")]        // drive-relative
     [InlineData("")]

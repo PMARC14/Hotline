@@ -62,9 +62,8 @@ public static class CustomIcons
     }
 
     /// <summary>
-    /// Reads and checks a picture: the bytes when it is a valid icon, else the problem. A network or device path
-    /// (\\ or // in any mix, which would send the user's credentials to a server) or a relative one is refused before
-    /// anything touches it; the size is checked before reading, and at most <see cref="MaxBytes"/> + 1 bytes are read.
+    /// Reads and checks a picture: the bytes when it is a valid icon, else the problem. Anything but a drive path is
+    /// refused before anything touches it (a network path would send the user's credentials to a server); the size is checked before reading, and at most <see cref="MaxBytes"/> + 1 bytes are read.
     /// Never throws.
     /// </summary>
     public static (byte[]? Bytes, CustomIconProblem Problem) Read(string path)
@@ -138,9 +137,10 @@ public static class CustomIcons
         }
     }
 
-    /// <summary>A full local path (C:\…): not \\server, //server, \\?\ or \\.\ (in any mix of slashes), not relative.</summary>
+    /// <summary>A drive path (C:\… or C:/…) only: every network, device or rooted form (\\server, //server, \\?\, \\.\,
+    /// \??\UNC\…, \x) and every relative one is refused.</summary>
     private static bool IsLocalPath(string? path) =>
-        path is { Length: > 2 } && !(path[0] is '\\' or '/' && path[1] is '\\' or '/') && Path.IsPathFullyQualified(path);
+        path is { Length: >= 3 } && char.IsAsciiLetter(path[0]) && path[1] == ':' && path[2] is '\\' or '/';
 
     private static readonly uint[] CrcTable = MakeCrcTable();
 

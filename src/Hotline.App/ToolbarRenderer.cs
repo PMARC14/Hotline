@@ -319,6 +319,14 @@ internal static class CustomButtonPicture
 
     private static async Task LoadAsync(byte[] png, double size, Action<BitmapImage> loaded, Action failed)
     {
+        var done = false;
+        void Fail()
+        {
+            if (done) return;
+            done = true;
+            try { failed(); }
+            catch (Exception) { } // the glyph fallback itself failed: the button stays as it is
+        }
         try
         {
             using var stream = new InMemoryRandomAccessStream();
@@ -330,13 +338,10 @@ internal static class CustomButtonPicture
             var bitmap = new BitmapImage { DecodePixelType = DecodePixelType.Logical };
             if (wide) bitmap.DecodePixelWidth = decode;
             else bitmap.DecodePixelHeight = decode;
+            bitmap.ImageFailed += (_, _) => Fail(); // a decode error can arrive as this event instead of an exception
             await bitmap.SetSourceAsync(stream);
             loaded(bitmap);
         }
-        catch (Exception)
-        {
-            try { failed(); }
-            catch (Exception) { } // the glyph fallback itself failed: the button stays as it is
-        }
+        catch (Exception) { Fail(); }
     }
 }
