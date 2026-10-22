@@ -52,7 +52,7 @@ public static class ToolbarProfiles
         new("pickers-bottom-centre-crowded", Doc("The pickers in the bottom-centre group with eight buttons left of them and the rest right.",
             Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\", \"newChat\"", Pickers, "\"settings\""))),
 
-        new("pickers-bottom-right", Doc("The pickers in the bottom-right group, which never moves into the menu.",
+        new("pickers-bottom-right", Doc("The pickers in the bottom-right group, which is the last to move into the menu.",
             Group(Buttons, right: Pickers))),
 
         new("pickers-bottom-right-after-buttons", Doc("The bottom-right group holds some buttons, then the pickers.",
@@ -99,7 +99,7 @@ public static class ToolbarProfiles
         new("only-pickers", Doc("Nothing but the three pickers, bottom left.",
             Group(Pickers))),
 
-        new("only-right-group", Doc("Only a right group in the bottom row: it never moves into the menu.",
+        new("only-right-group", Doc("Only a right group in the bottom row: it is the last to move into the menu.",
             Group(right: $"\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"settings\", {Pickers}"))),
 
         new("all-items-in-one-group", Doc("Every built-in item and all 24 custom buttons in one group (the most distinct items there can be), then unknown ids.",
