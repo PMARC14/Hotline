@@ -22,9 +22,9 @@ public static class ToolbarProfiles
     private static string Group(string left = "", string center = "", string right = "") =>
         $"{{ \"left\": [{left}], \"center\": [{center}], \"right\": [{right}] }}";
 
-    private static string Doc(string description, string bottom, string top = "", string style = "{}", string overrides = "{}", string buttons = "{}") =>
+    private static string Doc(string description, string bottom, string top = "", string style = "{}", string overrides = "{}", string buttons = "{}", string menu = "") =>
         $"// {description}\n{{ \"version\": 2,\n  \"top\": {(top.Length > 0 ? top : Group())},\n  \"items\": {bottom},\n  \"style\": {style},\n"
-        + $"  \"overrides\": {overrides},\n  \"buttons\": {buttons} }}";
+        + $"  \"menu\": [{menu}],\n  \"overrides\": {overrides},\n  \"buttons\": {buttons} }}";
 
     /// <summary>The ids c1..cN, as list text and as button definitions.</summary>
     private static string CustomIds(int count) => string.Join(", ", Enumerable.Range(1, count).Select(i => $"\"c{i}\""));
@@ -120,6 +120,22 @@ public static class ToolbarProfiles
 
         new("empty-bar", Doc("An explicit empty bar: both rows present and empty, nothing to draw.",
             Group())),
+
+        // The "more" button (toolbar.json "menu"): its box takes the listed buttons, then what the row's overflow drops.
+        new("more-menu-bottom-right-with-5-items", Doc("A more button last in the bottom-right group with five buttons in its menu, the pickers in the top row.",
+            Group("\"pin\", \"captureWindow\", \"captureScreen\"", right: "\"settings\", \"more\""), top: Group(Pickers),
+            menu: "\"captureRegion\", \"prompt\", \"recent\", \"continueIn\", \"newChat\"")),
+
+        new("more-menu-top-centre-with-overflow", Doc("A more button in the top-centre group with two menu buttons; the six buttons beside it overflow into the same menu when the row is short.",
+            Group(Pickers),
+            top: Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\"", "\"more\"", "\"settings\""),
+            menu: "\"continueIn\", \"newChat\"")),
+
+        // There is one more item, so "both rows" is one row with it (a custom button in its menu) and the other with its own automatic button.
+        new("more-in-both-rows", Doc("Both rows crowded: the bottom row has the more button, the top row keeps its own automatic overflow button.",
+            Group(CustomIds(11), right: "\"more\""),
+            top: Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\", \"newChat\"", right: "\"settings\""),
+            buttons: CustomButtons(12), menu: "\"c12\"")),
 
         new("damaged-file",
             """

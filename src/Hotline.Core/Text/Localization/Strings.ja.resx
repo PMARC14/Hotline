@@ -438,6 +438,11 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} サーバーを開始できません: "{1}" は cmd.exe 経由で実行されますが、"command" または "args" 内の " % ^ &amp; | &lt; &gt; ! の文字や改行を安全に渡すことができません。"command" でプログラムの .exe を指定するか、これらの文字を削除してください。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json はバージョン 1 のファイルです。バージョン 1 のファイルは読み込まれなくなったため、デフォルトのバーが使用されます。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json の一部が無視されました</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} ファイルの残りの部分は引き続き適用されます。設定 › ウィンドウ › ボタン行 に無視された内容が表示されます。</value></data>

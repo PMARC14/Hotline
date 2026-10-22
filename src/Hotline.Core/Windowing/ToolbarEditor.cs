@@ -19,7 +19,8 @@ public static class ToolbarEditor
     /// <summary>Moves an item <paramref name="delta"/> places within its quadrant, stopping at the ends.</summary>
     public static ToolbarModel Move(ToolbarModel m, string id, int delta)
     {
-        if (m is null || Placed(m, id) is not { } at) return m!;
+        if (m is null) return m!;
+        if (Placed(m, id) is not { } at) return InMenu(m, id) is { } entry ? MoveInMenu(m, entry, delta) : m;
         var items = m.Items(at.Quadrant).ToList();
         var from = items.IndexOf(at.Id);
         var to = (int)Math.Clamp((long)from + delta, 0, items.Count - 1);
@@ -42,7 +43,85 @@ public static class ToolbarEditor
         if (target.IndexOf(c) is var own and >= 0 && own < at) at--; // it leaves the list before it is put back
         foreach (var list in lists.Values) list.Remove(c);
         target.Insert(at, c);
-        return Strict(m, With(m, lists));
+        // Back on the bar from the menu (moving the more button itself keeps its menu).
+        return Strict(m, With(m, lists) with { Menu = [.. m.Menu.Where(x => !x.Equals(c, StringComparison.OrdinalIgnoreCase))] });
+    }
+
+    /// <summary>Moves a menu entry <paramref name="delta"/> places within the "more" menu, stopping at the ends.</summary>
+    private static ToolbarModel MoveInMenu(ToolbarModel m, string id, int delta)
+    {
+        var menu = m.Menu.ToList();
+        var from = menu.IndexOf(id);
+        var to = (int)Math.Clamp((long)from + delta, 0, menu.Count - 1);
+        if (to == from) return m;
+        menu.RemoveAt(from);
+        menu.Insert(to, id);
+        return Strict(m, m with { Menu = menu });
+    }
+
+    /// <summary>Puts a button (on the bar, in "Not shown" or already in the menu) at gap <paramref name="index"/> of the "more" button's
+    /// menu (0 = first, Count = last; clamped). With no more button on the bar one is added at the end of the bottom-right group, as the
+    /// menu is ignored without it. Pickers and the more button itself can't go in; the input comes back for those, for an unknown id and
+    /// when nothing changes. Its style override goes, as in <see cref="Hide"/>.</summary>
+    public static ToolbarModel MoveToMenu(ToolbarModel m, string id, int index)
+    {
+        if (m is null || Known(m, id) is not { } c || ToolbarPlan.Stays(c)) return m!;
+        var lists = Lists(m);
+        if (!PlaceMore(m, lists)) return m;
+        foreach (var list in lists.Values) list.Remove(c);
+        var menu = m.Menu.ToList();
+        var at = Math.Clamp(index, 0, menu.Count);
+        if (menu.FindIndex(x => x.Equals(c, StringComparison.OrdinalIgnoreCase)) is var own and >= 0)
+        {
+            if (own < at) at--;
+            menu.RemoveAt(own);
+        }
+        menu.Insert(at, c);
+        var overrides = Overrides(m);
+        overrides.Remove(c);
+        return Strict(m, With(m, lists) with { Menu = menu, Overrides = overrides });
+    }
+
+    /// <summary>A drag-and-drop onto the "more" menu card: <see cref="MoveToMenu"/>.</summary>
+    public static ToolbarModel DropToMenu(ToolbarModel m, string id, int index) => MoveToMenu(m, id, index);
+
+    /// <summary>The stored spelling of a button in the "more" menu, or null.</summary>
+    public static string? InMenu(ToolbarModel m, string? id) =>
+        m is null || id is null ? null : m.Menu.FirstOrDefault(x => x.Equals(id, StringComparison.OrdinalIgnoreCase));
+
+    /// <summary>Makes sure the lists hold the more button, adding it at the end of bottom right; false when that group is full.</summary>
+    private static bool PlaceMore(ToolbarModel m, Dictionary<Quadrant, List<string>> lists)
+    {
+        if (Placed(m, ToolbarModel.MoreId) is not null) return true;
+        if (lists[Quadrant.BottomRight].Count >= ToolbarModel.MaxItems) return false;
+        lists[Quadrant.BottomRight].Add(ToolbarModel.MoreId);
+        return true;
+    }
+
+    /// <summary>The button rows' column spacing (PopupWindow.xaml), which the planner needs.</summary>
+    private const double RowSpacing = 2;
+
+    /// <summary>
+    /// "Move what doesn't fit into the menu": runs the renderer's planner for both rows at the given panel widths (DIP) and moves the
+    /// buttons it puts into the automatic overflow into the "more" menu, after the entries already there (the bottom row's first, each in
+    /// bar order). With no more button placed one is added first (end of bottom right), as it takes room itself. When nothing would
+    /// overflow the input comes back (and no more button is added).
+    /// </summary>
+    public static ToolbarModel FillMenuFromOverflow(ToolbarModel m, double topRoom, double bottomRoom)
+    {
+        if (m is null) return m!;
+        var lists = Lists(m);
+        if (!PlaceMore(m, lists)) return m;
+        var planned = With(m, lists);
+        var overflow = new[] { (Top: false, Room: bottomRoom), (Top: true, Room: topRoom) }
+            .SelectMany(r => { var f = ToolbarPlan.PlanRow(planned, r.Top, r.Room, RowSpacing); return f.Dropped.Concat(f.RightDropped); })
+            .Distinct().ToList();
+        if (overflow.Count == 0) return m;
+        foreach (var list in lists.Values) list.RemoveAll(x => overflow.Contains(x));
+        var overrides = Overrides(m);
+        foreach (var id in overflow) overrides.Remove(id);
+        var menu = m.Menu.Concat(overflow.Where(id => !m.Menu.Contains(id))).ToList();
+        return Strict(m, With(m, lists) with { Menu = menu, Overrides = overrides });
     }
 
     /// <summary>A drag-and-drop in Settings: the item (shown or not) goes to gap <paramref name="index"/> of
@@ -79,24 +158,28 @@ public static class ToolbarEditor
     /// keeps overrides only for shown items (a picker's span stays: see <see cref="SetPickerSpan"/>).</summary>
     public static ToolbarModel Hide(ToolbarModel m, string id)
     {
-        if (m is null || Placed(m, id) is not { } at) return m!;
+        if (m is null) return m!;
+        if (Placed(m, id) is not { } at)
+            return InMenu(m, id) is { } entry ? Strict(m, m with { Menu = [.. m.Menu.Where(x => x != entry)] }) : m;
         var lists = Lists(m);
         lists[at.Quadrant].Remove(at.Id);
         var overrides = Overrides(m);
         overrides.Remove(at.Id);
-        return Strict(m, With(m, lists) with { Overrides = overrides });
+        // The menu is ignored without a more button, so its entries go back to "Not shown" with it.
+        var menu = at.Id == ToolbarModel.MoreId ? [] : m.Menu;
+        return Strict(m, With(m, lists) with { Overrides = overrides, Menu = menu });
     }
 
     /// <summary>Puts a hidden item at the end of <paramref name="q"/>. An item already shown stays where it is (moving is
     /// <see cref="MoveTo"/>).</summary>
     public static ToolbarModel Show(ToolbarModel m, string id, Quadrant q) =>
-        m is null || Known(m, id) is not { } c || Placed(m, c) is not null ? m! : MoveTo(m, c, q, int.MaxValue);
+        m is null || Known(m, id) is not { } c || Placed(m, c) is not null ? m! : MoveTo(m, c, q, int.MaxValue); // a menu entry comes onto the bar here
 
     /// <summary>The items not on the bar: built-ins in <see cref="ToolbarModel.BuiltIn"/> order, then custom buttons in theirs.</summary>
     public static IReadOnlyList<string> Hidden(ToolbarModel m)
     {
         if (m is null) return [];
-        var placed = Order.SelectMany(m.Items).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var placed = Order.SelectMany(m.Items).Concat(m.Menu).ToHashSet(StringComparer.OrdinalIgnoreCase);
         return [.. All(m).Where(id => !placed.Contains(id))];
     }
 
@@ -130,7 +213,10 @@ public static class ToolbarEditor
         foreach (var list in lists.Values) list.Remove(button.Id);
         var overrides = Overrides(m);
         overrides.Remove(button.Id);
-        return Strict(m, With(m, lists) with { Overrides = overrides, Buttons = [.. m.Buttons.Where(b => b != button)] });
+        return Strict(m, With(m, lists) with
+        {
+            Overrides = overrides, Buttons = [.. m.Buttons.Where(b => b != button)], Menu = [.. m.Menu.Where(x => x != button.Id)],
+        });
     }
 
     /// <summary>Sets the whole bar's style (<paramref name="id"/> null; unset fields get the defaults) or one shown item's
@@ -216,6 +302,7 @@ public static class ToolbarEditor
     private static ToolbarModel Lenient(ToolbarModel m, ToolbarModel candidate, string? button) =>
         RoundTrip(candidate) is { } r
         && Order.All(q => r.Items(q).SequenceEqual(candidate.Items(q)))
+        && r.Menu.SequenceEqual(candidate.Menu)
         && r.Buttons.Select(b => b.Id).SequenceEqual(candidate.Buttons.Select(b => b.Id))
         && (button is null || r.Buttons.Any(b => b.Id == button))
         && !r.Equals(m)

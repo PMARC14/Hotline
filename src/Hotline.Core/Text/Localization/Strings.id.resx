@@ -438,6 +438,11 @@ Tolak:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Server {0} tidak dapat dimulai: "{1}" berjalan melalui cmd.exe, yang tidak dapat meneruskan karakter " % ^ &amp; | &lt; &gt; ! atau jeda baris dengan aman dalam "command" atau "args". Arahkan "command" ke .exe program, atau hapus karakter tersebut.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json adalah file versi 1; file versi 1 tidak lagi dibaca, sehingga bilah default yang digunakan.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Sebagian dari toolbar.json diabaikan</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Bagian berkas lainnya tetap berlaku. Pengaturan › Jendela › Baris tombol menunjukkan apa yang diabaikan.</value></data>

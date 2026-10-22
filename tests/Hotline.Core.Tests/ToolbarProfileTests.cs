@@ -103,20 +103,20 @@ public sealed class ToolbarProfileTests
                 Assert.Equal(row.Droppable.Where(f.Dropped.Contains), f.Dropped);
                 Assert.DoesNotContain(f.Dropped, ToolbarPlan.IsPicker);
                 // The dropped ones are the end of the non-picker buttons, as many as the fit says.
-                var buttons = row.Droppable.Where(id => !ToolbarPlan.IsPicker(id)).ToList();
+                var buttons = row.Droppable.Where(id => !ToolbarPlan.Stays(id)).ToList(); // pickers and the more button never move into the menu
                 Assert.Equal(buttons.Skip(f.Fit.LeftShown), f.Dropped);
-                Assert.Equal(f.Dropped.Count > 0 || f.RightDropped.Count > 0, f.Fit.Overflow);
+                Assert.Equal(f.Dropped.Count > 0 || f.RightDropped.Count > 0 || row.HasMore, f.Fit.Overflow); // a placed more button is always drawn
                 // The right group gives up its first buttons only once no left button is left, never its last, and its ids split cleanly.
-                var rightButtons = row.Right.Where(id => !ToolbarPlan.IsPicker(id)).ToList();
+                var rightButtons = row.Right.Where(id => !ToolbarPlan.Stays(id)).ToList();
                 Assert.Equal(rightButtons.Take(f.Fit.RightDropped), f.RightDropped);
                 Assert.True(f.RightDropped.Count == 0 || f.Fit.LeftShown == 0, where);
                 Assert.True(rightButtons.Count == 0 || f.RightDropped.Count < rightButtons.Count, where);
                 Assert.Equal(row.Right.OrderBy(id => id), f.RightShown.Concat(f.RightDropped).OrderBy(id => id));
                 Assert.Equal(row.Right.Where(f.RightShown.Contains), f.RightShown);
                 // The menu is in bar order: left, centre, then the right group.
-                Assert.Equal(f.Dropped.Concat(f.RightDropped), f.Menu);
+                Assert.Equal(f.UserMenu.Concat(f.Dropped).Concat(f.RightDropped), f.Menu);
                 // The row's kept buttons have a width each.
-                Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(rightButtons.Skip(f.Fit.RightDropped)).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
+                Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(rightButtons.Skip(f.Fit.RightDropped)).Concat(row.HasMore ? [ToolbarModel.MoreId] : []).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
                 foreach (var (id, width) in f.ButtonWidths)
                 {
                     Assert.Equal(ToolbarPlan.Metrics(m, id).Width, width);
@@ -172,8 +172,8 @@ public sealed class ToolbarProfileTests
         {
             var row = ToolbarPlan.Row(m, top);
             var hasPickers = row.Droppable.Concat(row.Right).Any(ToolbarPlan.IsPicker);
-            var rightIds = row.Right.Where(id => !ToolbarPlan.IsPicker(id)).ToList();
-            var overflow = ToolbarPlan.Metrics(m.Style).Width;
+            var rightIds = row.Right.Where(id => !ToolbarPlan.Stays(id)).ToList();
+            var overflow = row.HasMore ? ToolbarPlan.Metrics(m, ToolbarModel.MoreId).Width : ToolbarPlan.Metrics(m.Style).Width;
             foreach (var room in Widths.Concat(Sweep(to: 2000, step: 7)))
             {
                 var where = $"{name} {size} top {top} room {room}";
@@ -182,8 +182,8 @@ public sealed class ToolbarProfileTests
                 // The only overshoot: not even the last right button and the "⋯" button fit (a panel under about two buttons), so
                 // nothing else shows. (Changed: a right group wider than the room used to overshoot too; now it gives up buttons.)
                 var lastRight = rightIds.Count == 0 ? 0 : ToolbarPlan.Metrics(m, rightIds[^1]).Width;
-                var smallest = lastRight + (rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.IsPicker(id)) ? overflow : 0)
-                    + Spacing * (1 + (rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.IsPicker(id)) ? 1 : 0)
+                var smallest = lastRight + (row.HasMore || rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.Stays(id)) ? overflow : 0)
+                    + Spacing * (1 + (row.HasMore || rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.Stays(id)) ? 1 : 0)
                         + (hasPickers ? 1 : 0) + (row.Center.Count > 0 ? 1 : 0));
                 Assert.True(smallest > room - Eps, $"{where}: overshoot {f.Used - room} with {f.Fit}, smallest {smallest}");
                 Assert.True(f.Fit.LeftShown == 0 && f.Fit.RightDropped == Math.Max(0, rightIds.Count - 1) && !f.Fit.PickersKept, $"{where}: {f.Fit}");

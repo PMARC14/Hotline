@@ -438,6 +438,11 @@ Denegar:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>no se pudo iniciar {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>El servidor {0} no se puede iniciar: "{1}" se ejecuta mediante cmd.exe, que no puede pasar de forma segura los caracteres " % ^ &amp; | &lt; &gt; ! o saltos de línea en "command" o "args". Apunta "command" al .exe del programa o elimina esos caracteres.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>No se pudo leer toolbar.json: {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json es un archivo de versión 1; los archivos de versión 1 ya no se leen, por lo que se usa la barra predeterminada.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Se ignoró parte de toolbar.json</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} El resto del archivo aún se aplica. Configuración › Ventana › Filas de botones muestra lo que se ignoró.</value></data>

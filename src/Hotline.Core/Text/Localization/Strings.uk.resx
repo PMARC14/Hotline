@@ -438,6 +438,11 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>не вдалося запустити {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Не вдалося запустити сервер {0}: "{1}" запускається через cmd.exe, який не може безпечно передавати символи " % ^ &amp; | &lt; &gt; ! або розриви рядків у "command" або "args". Спрямуйте "command" на .exe-файл програми або вилучіть ці символи.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json — це файл версії 1; файли версії 1 більше не зчитуються, тому використовується панель за замовчуванням.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Частину toolbar.json проігноровано</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Решта файлу залишається чинною. Налаштування › Вікно › Рядки кнопок показує, що саме було проігноровано.</value></data>

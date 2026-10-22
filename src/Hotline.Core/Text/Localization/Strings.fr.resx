@@ -438,6 +438,11 @@ Refuser :
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossible de démarrer {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Impossible de démarrer le serveur {0} : "{1}" s'exécute via cmd.exe, qui ne peut pas transmettre en toute sécurité les caractères " % ^ &amp; | &lt; &gt; ! ou les sauts de ligne dans "command" ou "args". Pointez "command" vers le fichier .exe du programme ou supprimez ces caractères.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossible de lire toolbar.json : {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json est un fichier de version 1 ; les fichiers de version 1 ne sont plus lus, la barre par défaut est donc utilisée.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Une partie de toolbar.json a été ignorée</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Le reste du fichier s'applique toujours. Paramètres › Fenêtre › Lignes de boutons indique ce qui a été ignoré.</value></data>

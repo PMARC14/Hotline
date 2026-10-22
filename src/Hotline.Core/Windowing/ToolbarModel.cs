@@ -49,7 +49,10 @@ public sealed record ToolbarModel(
     private const int MaxLabel = 40, MaxText = 2000, MaxActionName = 64, MinDip = 20, MaxDip = 80;
 
     public static readonly IReadOnlyList<string> BuiltIn =
-        ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];
+        ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings", "more"];
+
+    /// <summary>The optional menu button the user places and fills (toolbar.json "menu"); the row's automatic overflow merges into it.</summary>
+    public const string MoreId = "more";
 
     /// <summary>The three pickers. Each is an item like a button: it sits where it is listed, in any area and between any buttons.</summary>
     internal static readonly string[] Pickers = ["effort", "model", "provider"];
@@ -62,6 +65,10 @@ public sealed record ToolbarModel(
     /// <summary>The pickers' own widths, in button widths, for the ones that differ from the default (lower-case id to
     /// <see cref="MinSpan"/>-<see cref="MaxSpan"/>). Kept for a picker that is hidden, too.</summary>
     public IReadOnlyDictionary<string, int> PickerSpans { get; init; } = new Dictionary<string, int>();
+
+    /// <summary>The buttons in the <see cref="MoreId"/> button's menu, in order (toolbar.json "menu"): not on the bar, buttons only (never a
+    /// picker or the more button), each once. Empty unless a more button is placed (<see cref="Resolve"/> drops the entries otherwise).</summary>
+    public IReadOnlyList<string> Menu { get; init; } = [];
 
     /// <summary>Today's layout (the owner's, 2026-10-16): pickers in the top row, the rest bottom left.</summary>
     public static ToolbarModel Defaults { get; } = new(
@@ -111,7 +118,8 @@ public sealed record ToolbarModel(
         && Overrides.All(o => other.Overrides.TryGetValue(o.Key, out var s) && s == o.Value)
         && Buttons.SequenceEqual(other.Buttons)
         && PickerSpans.Count == other.PickerSpans.Count
-        && PickerSpans.All(p => other.PickerSpans.TryGetValue(p.Key, out var n) && n == p.Value);
+        && PickerSpans.All(p => other.PickerSpans.TryGetValue(p.Key, out var n) && n == p.Value)
+        && Menu.SequenceEqual(other.Menu);
 
     public override int GetHashCode() =>
         HashCode.Combine(Style, Overrides.Count, Buttons.Count, string.Join(",", Order.SelectMany(Items)));
@@ -191,6 +199,7 @@ public sealed record ToolbarModel(
             placed = Order.ToDictionary(q => q, q => Defaults.Items(q).ToList());
         }
 
+        var menu = ReadMenu(root["menu"], known, placed, warnings);
         var style = ReadStyle(root["style"], "style", warnings);
         var overrides = ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings, out var spans);
         return new ToolbarModel(
@@ -198,7 +207,7 @@ public sealed record ToolbarModel(
             style with { Size = style.Size ?? ButtonSize.Normal, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
             overrides,
             buttons,
-            warnings) { PickerSpans = spans };
+            warnings) { PickerSpans = spans, Menu = menu };
     }
 
     private static (Dictionary<Quadrant, List<string>> Placed, bool ExplicitlyEmpty) ReadQuadrants(
@@ -232,6 +241,32 @@ public sealed record ToolbarModel(
         }
 
         return (placed, explicitlyEmpty);
+    }
+
+    /// <summary>The "menu" list: buttons only, each once, none that is on the bar; all ignored (one warning) when no more button is placed.</summary>
+    private static List<string> ReadMenu(JsonNode? node, Dictionary<string, string> known, Dictionary<Quadrant, List<string>> placed, List<string> warnings)
+    {
+        var menu = new List<string>();
+        if (node is null) return menu;
+        if (node is not JsonArray list) { warnings.Add("\"menu\" should be a list; ignored"); return menu; }
+        if (list.Count > MaxItems) warnings.Add($"\"menu\" lists more than {MaxItems} items; the rest are ignored");
+        var onBar = placed.Values.SelectMany(l => l).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        foreach (var entry in list.Take(MaxItems))
+        {
+            if (entry is not JsonValue value || !value.TryGetValue<string>(out var s)) { warnings.Add($"\"menu\": {Show(entry)} isn't an item id; ignored"); continue; }
+            if (!known.TryGetValue(s, out var id)) warnings.Add($"Unknown item \"{Clean(s, MaxLabel, false)}\" in \"menu\" ignored");
+            else if (Pickers.Contains(id, StringComparer.OrdinalIgnoreCase) || id.Equals(MoreId, StringComparison.OrdinalIgnoreCase))
+                warnings.Add($"\"menu\" takes buttons only; \"{id}\" ignored");
+            else if (onBar.Contains(id)) warnings.Add($"\"{id}\" is on the bar, so it stays there; its \"menu\" entry is ignored");
+            else if (menu.Contains(id, StringComparer.OrdinalIgnoreCase)) warnings.Add($"\"{id}\" is listed twice in \"menu\"; the second is ignored");
+            else menu.Add(id);
+        }
+        if (menu.Count > 0 && !onBar.Contains(MoreId))
+        {
+            warnings.Add("menu items need a more button; they are ignored");
+            menu.Clear();
+        }
+        return menu;
     }
 
     private static List<CustomButton> ReadButtons(JsonNode? node, List<string> warnings)
@@ -452,9 +487,13 @@ public sealed record ToolbarModel(
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from
               // icons\ instead of the icon (PNG, at most 256 KB, 16-256 px a side; Settings copies it there).
+              // "menu": ids of buttons (built-in or custom, no pickers) listed in the "more" item's menu instead of on the bar. A row with a
+              // "more" item sends the buttons that don't fit into that menu too (after these), and then has no separate "…" button.
+              // Needs "more" placed in one of the groups; it is ignored otherwise.
               "version": {{CurrentVersion}},
               "top": {{Row(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight)}},
               "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},
+              "menu": [{{string.Join(", ", Menu.Select(Str))}}],
               "style": {{StyleText(Style)}},
               "overrides": {{Entries(OverrideTexts(), text => text)}},
               "buttons": {{Entries(Buttons.Select(b => (b.Id, b)), ButtonText)}}

@@ -293,7 +293,7 @@ public sealed class ToolbarEditorTests
     {
         var m = ToolbarEditor.Hide(Grid, "pin");
         Assert.Equal(["captureWindow", "captureScreen"], m.Items(BL));
-        Assert.Equal(["pin", "effort", "model", "provider"], ToolbarEditor.Hidden(m));
+        Assert.Equal(["pin", "effort", "model", "provider", "more"], ToolbarEditor.Hidden(m)); // the more button is not placed by default
         foreach (var q in Enum.GetValues<Quadrant>())
         {
             var shown = ToolbarEditor.Show(m, "pin", q);
@@ -643,7 +643,7 @@ public sealed class ToolbarEditorTests
                 var placed = Enum.GetValues<Quadrant>().SelectMany(next.Items).ToList();
                 Assert.Equal(placed.Count, placed.Distinct(StringComparer.OrdinalIgnoreCase).Count());
                 var all = ToolbarModel.BuiltIn.Concat(next.Buttons.Select(b => b.Id)).ToList();
-                Assert.Equal(all.Order(), placed.Concat(ToolbarEditor.Hidden(next)).Order());
+                Assert.Equal(all.Order(), placed.Concat(next.Menu).Concat(ToolbarEditor.Hidden(next)).Order());
                 var before = Enum.GetValues<Quadrant>().SelectMany(m.Items);
                 var lost = before.Except(placed).ToList();
                 if (op is 3 or 7) Assert.True(lost.Count <= 1, $"run {run} step {step}: {op} lost {string.Join(",", lost)}");

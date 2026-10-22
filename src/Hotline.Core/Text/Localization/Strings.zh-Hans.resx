@@ -438,6 +438,11 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>无法启动 {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 服务器无法启动："{1}" 通过 cmd.exe 运行，无法安全传递 "command" 或 "args" 中的 " % ^ &amp; | &lt; &gt; ! 字符或换行符。请将 "command" 指向程序的 .exe，或移除这些字符。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>无法读取 toolbar.json:{0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json 是版本 1 文件；不再读取版本 1 文件，因此使用默认栏。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的一部分已被忽略</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} 文件的其余部分仍然适用。设置 › 窗口 › 按钮行 显示了被忽略的内容。</value></data>

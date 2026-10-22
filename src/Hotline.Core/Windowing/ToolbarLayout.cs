@@ -73,13 +73,14 @@ public static class ToolbarLayout
     /// </summary>
     public static FitResult Fit(
         double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
-        double reservedWidth, double overflowWidth = 32) =>
-        FitChecked(room, spacing, leftWidths, rightWidths, reservedWidth, overflowWidth).Result;
+        double reservedWidth, double overflowWidth = 32, bool alwaysOverflow = false) =>
+        FitChecked(room, spacing, leftWidths, rightWidths, reservedWidth, overflowWidth, alwaysOverflow).Result;
 
-    /// <summary><see cref="Fit"/>, and whether the result is within the room (false = the documented overshoot).</summary>
+    /// <summary><see cref="Fit"/>, and whether the result is within the room (false = the documented overshoot).
+    /// <paramref name="alwaysOverflow"/>: the menu button is a placed "more" button, drawn (and counted) whether or not anything is dropped.</summary>
     public static (FitResult Result, bool Fits) FitChecked(
         double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
-        double reservedWidth, double overflowWidth = 32)
+        double reservedWidth, double overflowWidth = 32, bool alwaysOverflow = false)
     {
         static double Clean(double v) => double.IsNaN(v) || v < 0 ? 0 : v;
         room = Clean(room); spacing = double.IsFinite(spacing) ? Clean(spacing) : 0; reservedWidth = Clean(reservedWidth); overflowWidth = Clean(overflowWidth);
@@ -88,20 +89,20 @@ public static class ToolbarLayout
 
         double Needed(int shown, int rightDropped)
         {
-            var overflow = shown < left.Length || rightDropped > 0;
+            var overflow = alwaysOverflow || shown < left.Length || rightDropped > 0;
             var items = shown + right.Length - rightDropped + (overflow ? 1 : 0);
             var gaps = Math.Max(0, items - 1) + (reservedWidth > 0 && items > 0 ? 1 : 0);
             var sum = right.Skip(rightDropped).Sum() + left.Take(shown).Sum() + (overflow ? overflowWidth : 0);
             return sum + spacing * gaps + reservedWidth;
         }
 
-        if (Needed(left.Length, 0) <= room) return (new FitResult(left.Length, false), true);
+        if (Needed(left.Length, 0) <= room) return (new FitResult(left.Length, alwaysOverflow), true);
         for (var shown = left.Length - 1; shown > 0; shown--)
             if (Needed(shown, 0) <= room) return (new FitResult(shown, true), true);
         // No left button fits: the right group gives up buttons from its left end, keeping at least one.
         var lastRight = Math.Max(0, right.Length - 1);
         for (var dropped = 0; dropped <= lastRight; dropped++)
-            if (Needed(0, dropped) <= room) return (new FitResult(0, left.Length > 0 || dropped > 0, dropped), true);
-        return (new FitResult(0, left.Length > 0 || lastRight > 0, lastRight), false);
+            if (Needed(0, dropped) <= room) return (new FitResult(0, alwaysOverflow || left.Length > 0 || dropped > 0, dropped), true);
+        return (new FitResult(0, alwaysOverflow || left.Length > 0 || lastRight > 0, lastRight), false);
     }
 }

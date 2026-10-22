@@ -17,7 +17,7 @@ public sealed class ToolbarRobustnessTests
     private static readonly double MaxBuiltInWidth = Math.Max(80, 2 * ToolbarPlan.BaseWidth), MaxBuiltInHeight = Math.Max(80, 2 * ToolbarPlan.BaseHeight);
     private static readonly double MinFont = Math.Round(0.8 * ToolbarPlan.BaseFont), MaxFont = Math.Round(1.2 * ToolbarPlan.BaseFont);
 
-    private static readonly string[] Buttons = [.. ToolbarModel.BuiltIn.Where(id => !ToolbarPlan.IsPicker(id))];
+    private static readonly string[] Buttons = [.. ToolbarModel.BuiltIn.Where(id => !ToolbarPlan.Stays(id))]; // the more button has its own tests (ToolbarMoreMenuTests)
     private static readonly string[] Pickers = ["effort", "model", "provider"];
 
     /// <summary>One row fitted as the renderer does it: widths from <see cref="ToolbarPlan.Metrics(ToolbarModel, string)"/>

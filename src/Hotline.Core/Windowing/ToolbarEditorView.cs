@@ -76,6 +76,16 @@ public static class ToolbarEditorView
         return [.. items.Select((id, i) => new EditorUnit(id, i > 0, i < items.Count - 1, !top, top, column > 0, column < 2))];
     }
 
+    /// <summary>The "More menu" card's strip: one unit per entry of <see cref="ToolbarModel.Menu"/>, in order. Only the move arrows apply
+    /// (within the menu); getting an entry back onto the bar is <see cref="Show"/>.</summary>
+    public static IReadOnlyList<EditorUnit> MenuUnits(ToolbarModel m) =>
+        [.. m.Menu.Select((id, i) => new EditorUnit(id, i > 0, i < m.Menu.Count - 1, false, false, false, false))];
+
+    /// <summary>Whether the "Move to menu" button of an item does something: any button that isn't in the menu already (pickers and the
+    /// more button itself never go in).</summary>
+    public static bool CanMoveToMenu(ToolbarModel m, string id) =>
+        !ToolbarPlan.Stays(id) && ToolbarEditor.InMenu(m, id) is null && m.Buttons.Select(b => b.Id).Concat(ToolbarModel.BuiltIn).Contains(id);
+
     /// <summary>The "Not shown" strip's add button: a hidden item (a picker too) goes to the end of bottom left. A shown or
     /// unknown id returns the input.</summary>
     public static ToolbarModel Show(ToolbarModel m, string id) => ToolbarEditor.Show(m, id!, Quadrant.BottomLeft);

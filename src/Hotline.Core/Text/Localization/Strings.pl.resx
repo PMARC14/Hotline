@@ -438,6 +438,11 @@ Zabroń:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>nie można uruchomić {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Nie można uruchomić serwera {0}: "{1}" jest uruchamiany za pośrednictwem cmd.exe, który nie może bezpiecznie przekazać znaków " % ^ &amp; | &lt; &gt; ! ani podziałów wiersza w parametrach "command" lub "args". Skieruj "command" na plik .exe programu lub usuń te znaki.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Nie można odczytać toolbar.json: {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json to plik w wersji 1; pliki w wersji 1 nie są już odczytywane, dlatego używany jest pasek domyślny.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Część pliku toolbar.json została zignorowana</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Reszta pliku nadal ma zastosowanie. Ustawienia › Okno › Wiersze przycisków pokazuje, co zostało zignorowane.</value></data>
