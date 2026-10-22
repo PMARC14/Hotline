@@ -273,6 +273,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             foreach (var name in mixing) await Profile(name, 320);
             // The pickers placed one by one (P28-P30): in two areas, between buttons, one per row.
             foreach (var name in new[] { "pickers-apart-corners", "picker-between-buttons", "pickers-one-per-row-right" }) await Profile(name, 680);
+            // The more button and its box (P31-P33): five user entries, the row's overflow merged into the box, a crowded top row beside a more row.
+            foreach (var name in new[] { "more-menu-bottom-right-with-5-items", "more-menu-top-centre-with-overflow", "more-in-both-rows" }) await Profile(name, 680);
             popup.ApplyToolbar(userBar);
             popup.ResizeOffscreen(720);
             await Step("looks restored");

@@ -18,7 +18,9 @@ namespace Hotline.App.Settings;
 /// or moved with the buttons under each item (Ctrl+Left/Right and Alt+arrows on a focused item). Every edit goes through
 /// <see cref="ToolbarEditor"/> (so only valid files are written), is saved at once and applied by App's file watcher;
 /// only this control is rebuilt, never the page, and not while one of its flyouts is open (a rebuild would close it).
-/// UI Automation ids: quadrant-&lt;topleft|…&gt;, bar-notshown, bar-item-&lt;id&gt; (the pickers too: effort, model, provider),
+/// The "..." button's box (toolbar.json "menu", the more item's menu) is a fourth kind of place: a card of its own above "Not shown", with a
+/// button that fills it from the buttons the bar currently drops into the overflow.
+/// UI Automation ids: quadrant-&lt;topleft|…&gt;, quadrant-menu (the box), bar-fill-menu, bar-menu-&lt;id&gt; (move to the box), bar-notshown, bar-item-&lt;id&gt; (the pickers too: effort, model, provider),
 /// bar-move-&lt;left|right&gt;-&lt;id&gt;, bar-shift-&lt;up|down|left|right&gt;-&lt;id&gt;, bar-hide-&lt;id&gt;, bar-style-&lt;id&gt; (its flyout: bar-look-&lt;size|width|height|outline|filled|reset&gt;),
 /// bar-span-&lt;picker&gt; (a picker's width, 1x-8x), bar-show-&lt;id&gt;, bar-size, bar-outline, bar-filled, bar-custom-add, bar-custom-edit-&lt;id&gt;, bar-custom-delete-&lt;id&gt;.
 /// </summary>
@@ -28,7 +30,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private static readonly Dictionary<string, string> BuiltInGlyphs = new()
     {
         ["pin"] = "\uE718", ["captureWindow"] = "\uE7C4", ["captureScreen"] = "\uE7F4", ["captureRegion"] = "\uF407", ["prompt"] = "\uE8A5",
-        ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713",
+        ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713", ["more"] = "\uE712",
     };
 
     private readonly Action<ToolbarModel> _save;
@@ -36,6 +38,8 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private readonly Func<ContentDialog, Task<ContentDialogResult>> _showDialog;
     private readonly Style _cardStyle;
     private readonly FileLog _log;
+    /// <summary>The width (DIP) of the panel's button rows, for "Move what doesn't fit into the menu"; null = a typical 656.</summary>
+    private readonly Func<double>? _barRoom;
     /// <summary>Style overrides of items hidden in this session (Hide drops them), put back when the item is shown again.</summary>
     private readonly Dictionary<string, ButtonStyle> _stash = new(StringComparer.OrdinalIgnoreCase);
     private readonly InfoBar _notice = new() { IsOpen = false, IsClosable = true };
@@ -51,9 +55,9 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private (string Preferred, string Fallback)? _focus;
 
     public ToolbarQuadrantEditor(ToolbarModel model, Action<ToolbarModel> save, Func<IReadOnlyList<string>> quickActions,
-        Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log)
+        Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Func<double>? barRoom = null)
     {
-        (_model, _save, _quickActions, _showDialog, _cardStyle, _log) = (model, save, quickActions, showDialog, cardStyle, log);
+        (_model, _save, _quickActions, _showDialog, _cardStyle, _log, _barRoom) = (model, save, quickActions, showDialog, cardStyle, log, barRoom);
         Spacing = 8;
         Children.Add(_notice);
         Children.Add(new TextBlock { Text = Strings.Bar_EditorIntro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8 });
@@ -100,7 +104,9 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         QueueRebuild();
     }
 
-    private static bool IsHidden(ToolbarModel m, string id) => ToolbarEditor.Hidden(m).Contains(id, StringComparer.OrdinalIgnoreCase);
+    /// <summary>Not on the bar itself: in "Not shown" or in the box of the more button (its style override is kept aside either way).</summary>
+    private static bool IsHidden(ToolbarModel m, string id) =>
+        ToolbarEditor.Hidden(m).Contains(id, StringComparer.OrdinalIgnoreCase) || ToolbarEditor.InMenu(m, id) is not null;
 
     private void Notice(string message, InfoBarSeverity severity) =>
         (_notice.Message, _notice.Severity, _notice.IsOpen) = (message, severity, true);
@@ -139,6 +145,8 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         _layout.Children.Add(Trio(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight));
         _layout.Children.Add(Heading(Strings.Bar_BottomRow));
         _layout.Children.Add(Trio(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight));
+        _layout.Children.Add(Heading(Strings.Bar_MoreMenu));
+        _layout.Children.Add(MenuCard());
         _layout.Children.Add(Heading(Strings.Bar_NotShown));
         _layout.Children.Add(NotShownCard());
         SyncBarStyle();
@@ -210,6 +218,54 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             Edit(m => ToolbarEditor.Drop(m, id, q, gap), id);
         }), handledEventsToo: true);
         return card;
+    }
+
+    /// <summary>The box of the more button: its entries as chips (reorder, back to the bar, remove), a drop target, and the fill button.</summary>
+    private StackPanel MenuCard()
+    {
+        var units = ToolbarEditorView.MenuUnits(_model);
+        var list = Strip("quadrant-menu", Strings.Bar_MoreMenu);
+        foreach (var unit in units) list.Items.Add(MenuEntry(unit));
+        var card = Card(null, list, units.Count == 0);
+        list.AddHandler(DragOverEvent, new DragEventHandler((_, e) =>
+        {
+            if (!Accept(e)) return;
+            Highlight(card, list, Gap(list, e));
+        }), handledEventsToo: true);
+        list.AddHandler(DropEvent, new DragEventHandler((_, e) =>
+        {
+            var id = _dragId;
+            var gap = Gap(list, e);
+            ClearHighlight();
+            if (id is null) return;
+            e.Handled = true;
+            Edit(m => ToolbarEditor.DropToMenu(m, id, gap), id);
+        }), handledEventsToo: true);
+        var fill = new Button { Content = Strings.Bar_FillMenu, HorizontalAlignment = HorizontalAlignment.Left };
+        AutomationProperties.SetAutomationId(fill, "bar-fill-menu");
+        AutomationProperties.SetName(fill, Strings.Bar_FillMenu);
+        fill.Click += (_, _) =>
+        {
+            // The panel's width, planned by the same code that draws the bar (both rows have that room).
+            var room = _barRoom?.Invoke() ?? 656;
+            Edit(m => ToolbarEditor.FillMenuFromOverflow(m, room, room), null, ("bar-fill-menu", "bar-fill-menu"));
+        };
+        return new StackPanel { Spacing = 6, Children = { card, fill } };
+    }
+
+    /// <summary>One entry of the box: its chip, the arrows within the box, "back to the bar" and remove.</summary>
+    private ListViewItem MenuEntry(EditorUnit unit)
+    {
+        var name = ItemName(_model, unit.Id);
+        var item = "bar-item-" + unit.Id;
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
+        buttons.Children.Add(SmallButton("", Strings.Bar_MoveLeft, name, "bar-move-left-" + unit.Id, unit.CanMoveLeft, m => ToolbarEditor.Move(m, unit.Id, -1), unit.Id, item));
+        buttons.Children.Add(SmallButton("", Strings.Bar_MoveRight, name, "bar-move-right-" + unit.Id, unit.CanMoveRight, m => ToolbarEditor.Move(m, unit.Id, 1), unit.Id, item));
+        buttons.Children.Add(SmallButton("", Strings.Bar_Add, name, "bar-show-" + unit.Id, true, m => ToolbarEditorView.Show(m, unit.Id), unit.Id, "quadrant-menu"));
+        buttons.Children.Add(SmallButton("", Strings.Bar_Remove, name, "bar-hide-" + unit.Id, true, m => ToolbarEditor.Hide(m, unit.Id), unit.Id, "quadrant-menu"));
+        var listItem = Item(unit.Id, item, name, new StackPanel { Spacing = 4, Children = { Title(unit.Id), buttons } });
+        listItem.PreviewKeyDown += (_, e) => OnItemKey(unit.Id, item, e);
+        return listItem;
     }
 
     private Border NotShownCard()
@@ -370,6 +426,8 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             : SmallButton("\uE74A", Strings.Bar_ToTop, name, "bar-shift-up-" + unit.Id, unit.CanShiftUp, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Up), unit.Id, item));
         buttons.Children.Add(SmallButton("\uE72B", Strings.Bar_ToLeft, name, "bar-shift-left-" + unit.Id, unit.CanShiftLeft, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Left), unit.Id, item));
         buttons.Children.Add(SmallButton("\uE72A", Strings.Bar_ToRight, name, "bar-shift-right-" + unit.Id, unit.CanShiftRight, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Right), unit.Id, item));
+        if (ToolbarEditorView.CanMoveToMenu(_model, unit.Id))
+            buttons.Children.Add(SmallButton("", Strings.Bar_ToMenu, name, "bar-menu-" + unit.Id, true, m => ToolbarEditor.MoveToMenu(m, unit.Id, int.MaxValue), unit.Id, "quadrant-" + Key(q)));
         if (!unit.IsPicker) buttons.Children.Add(StyleButton(unit.Id, name));
         buttons.Children.Add(SmallButton("\uE711", Strings.Bar_Remove, name, "bar-hide-" + unit.Id, true, m => ToolbarEditor.Hide(m, unit.Id), unit.Id, "quadrant-" + Key(q)));
         var listItem = Item(unit.Id, item, name, new StackPanel { Spacing = 4, Children = { title, buttons } });
@@ -401,7 +459,10 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     {
         var name = ItemName(_model, id);
         var show = SmallButton("\uE710", Strings.Bar_Add, name, "bar-show-" + id, true, m => ToolbarEditorView.Show(m, id), id, "bar-notshown");
-        return Item(id, "bar-item-" + id, name, new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { Title(id), show } });
+        var row = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { Title(id), show } };
+        if (ToolbarEditorView.CanMoveToMenu(_model, id))
+            row.Children.Add(SmallButton("", Strings.Bar_ToMenu, name, "bar-menu-" + id, true, m => ToolbarEditor.MoveToMenu(m, id, int.MaxValue), id, "bar-notshown"));
+        return Item(id, "bar-item-" + id, name, row);
     }
 
     /// <summary>A strip item with its id in Tag (on the item and its content) and a drop-marker bar above and below it.</summary>

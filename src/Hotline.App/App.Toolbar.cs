@@ -37,6 +37,27 @@ public partial class App
         catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
     }
 
+    /// <summary>
+    /// The width (DIP) the panel's button rows have: the live panel's when it has been laid out, else the one it opens with (the width setting,
+    /// or its percentage of the primary work area between the minimum and maximum). Settings' "Move what doesn't fit into the menu" plans with it.
+    /// </summary>
+    private double BarRoom(Hotline.Core.Settings.WindowSettings window)
+    {
+        try
+        {
+            if (_popup is { } popup)
+            {
+                var live = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
+                if (live > 0) return live;
+            }
+            var scale = _popup?.Root.XamlRoot?.RasterizationScale ?? 1.0;
+            var work = Microsoft.UI.Windowing.DisplayArea.Primary.WorkArea.Width;
+            var width = window.Width ?? Hotline.Core.Windowing.PopupGeometry.RelativeWidthDip(work, scale, window.WidthPercent, window.MinWidth, window.MaxWidth);
+            return Math.Max(0, width - 24); // the panel's side padding (12 + 12 in PopupWindow.xaml)
+        }
+        catch (Exception ex) { _log?.Error("working out the panel width for the button rows failed", ex); return Math.Max(0, window.MinWidth - 24); }
+    }
+
     private bool _toolbarApplied;
     private IReadOnlyList<string> _toolbarWarnings = [];
     private string _toolbarNoticeKey = "";

@@ -30,6 +30,8 @@ internal sealed class ToolbarRenderer
         public RowPlan Plan { get; set; } = new([], [], []);
         /// <summary>The buttons in the "⋯" menu, in bar order: left, centre, then the right group's.</summary>
         public IReadOnlyList<string> Dropped { get; set; } = [];
+        /// <summary>The buttons the user put in the more button's menu, when this row holds that button (they come first in its menu).</summary>
+        public IReadOnlyList<string> UserMenu { get; set; } = [];
         public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers)? Arranged { get; set; }
     }
 
@@ -39,6 +41,8 @@ internal sealed class ToolbarRenderer
     private readonly Dictionary<string, ButtonBase> _builtIn;
     private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = [];
     private readonly Row _top, _bottom;
+    /// <summary>The placed "more" item (toolbar.json): the menu button of the row that holds it, in place of that row's automatic "⋯".</summary>
+    private readonly Button _moreItem = MoreButton();
 
     /// <summary>The model the rows show; set only once a whole apply has succeeded.</summary>
     public ToolbarModel Model { get; private set; } = ToolbarModel.Defaults;
@@ -57,6 +61,7 @@ internal sealed class ToolbarRenderer
             ["pin"] = popup.PinButton, ["captureWindow"] = popup.CaptureWindowButton, ["captureScreen"] = popup.CaptureScreenButton,
             ["captureRegion"] = popup.CaptureRegionButton, ["prompt"] = popup.PromptButton, ["recent"] = popup.RecentButton,
             ["continueIn"] = popup.ContinueInButton, ["newChat"] = popup.NewChatButton, ["settings"] = popup.SettingsButton,
+            [ToolbarModel.MoreId] = _moreItem,
         };
         // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
         // focused pin button and turned pinning off.
@@ -64,8 +69,9 @@ internal sealed class ToolbarRenderer
         _pickers = new Dictionary<string, ComboBox> { ["effort"] = popup.EffortBox, ["model"] = popup.ModelBox, ["provider"] = popup.ProviderBox };
         _top = new Row(popup.TopToolbar, MoreButton());
         _bottom = new Row(popup.Toolbar, MoreButton());
-        _top.More.Flyout = OverflowMenu(_top);
-        _bottom.More.Flyout = OverflowMenu(_bottom);
+        _top.More.Flyout = OverflowMenu(() => _top);
+        _bottom.More.Flyout = OverflowMenu(() => _bottom);
+        _moreItem.Flyout = OverflowMenu(() => new[] { _top, _bottom }.FirstOrDefault(r => r.Plan.HasMore));
     }
 
     private static Button MoreButton()
@@ -105,8 +111,9 @@ internal sealed class ToolbarRenderer
         foreach (var (row, top) in new[] { (_top, true), (_bottom, false) })
         {
             row.Plan = ToolbarPlan.Row(model, top);
+            row.UserMenu = row.Plan.HasMore ? ToolbarPlan.MenuItems(model) : [];
             row.Arranged = null;
-            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.IsPicker(id)), rightDropped: 0, overflow: false, hiddenPickers: []); // as Fit counts them
+            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.Stays(id)), rightDropped: 0, overflow: false, hiddenPickers: []); // as Fit counts them
             var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
@@ -155,7 +162,7 @@ internal sealed class ToolbarRenderer
         }
         void Gap() => grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
         foreach (var id in shown.Where(row.Plan.Left.Contains).Where(Visible)) Add(Element(id));
-        if (overflow) Add(row.More);
+        if (overflow && !row.Plan.HasMore) Add(row.More); // a row with the more item has that as its menu button
         Gap();
         var centre = shown.Where(row.Plan.Center.Contains).Where(Visible).ToList();
         if (centre.Count > 0)
@@ -191,11 +198,15 @@ internal sealed class ToolbarRenderer
         return widths;
     }
 
-    /// <summary>Where a menu that belongs to a bar button opens: the button, or the "⋯" button while it is in that menu.</summary>
+    /// <summary>The row's menu button: its placed more item, else its automatic "⋯".</summary>
+    private Button MenuButton(Row row) => row.Plan.HasMore ? _moreItem : row.More;
+
+    /// <summary>Where a menu that belongs to a bar button opens: the button, or the row's menu button while it is in that menu (dropped
+    /// from the row, or listed in the more menu).</summary>
     public FrameworkElement Anchor(FrameworkElement button)
     {
         foreach (var row in new[] { _top, _bottom })
-            if (row.Dropped.Any(id => ReferenceEquals(_builtIn.GetValueOrDefault(id), button))) return row.More;
+            if (row.Dropped.Concat(row.UserMenu).Any(id => ReferenceEquals(_builtIn.GetValueOrDefault(id), button))) return MenuButton(row);
         return button;
     }
 
@@ -268,13 +279,19 @@ internal sealed class ToolbarRenderer
 
     // ---- the "⋯" menu ----
 
-    private MenuFlyout OverflowMenu(Row row)
+    /// <summary>The menu of a row's menu button: the user's more-menu entries, a separator, then what the row dropped. Empty (the placed more
+    /// item with nothing in it): one disabled "Nothing here" entry.</summary>
+    private MenuFlyout OverflowMenu(Func<Row?> rowOf)
     {
         var menu = new MenuFlyout { Placement = Microsoft.UI.Xaml.Controls.Primitives.FlyoutPlacementMode.TopEdgeAlignedLeft };
         menu.Opening += (_, _) =>
         {
             menu.Items.Clear();
+            if (rowOf() is not { } row) return;
+            foreach (var id in row.UserMenu) menu.Items.Add(Item(id, row));
+            if (row.UserMenu.Count > 0 && row.Dropped.Count > 0) menu.Items.Add(new MenuFlyoutSeparator());
             foreach (var id in row.Dropped) menu.Items.Add(Item(id, row));
+            if (menu.Items.Count == 0) menu.Items.Add(new MenuFlyoutItem { Text = Strings.Bar_NothingHere, IsEnabled = false });
         };
         IDisposable? hold = null;
         menu.Opened += (_, _) => hold = _popup.HoldResize(); // a resize would close the menu
@@ -322,11 +339,11 @@ internal sealed class ToolbarRenderer
     {
         if (button.Flyout is { } flyout)
         {
-            // Its own menu (the prompt list), opened at "⋯": the button itself isn't on screen.
+            // Its own menu (the prompt list), opened at the row's menu button: the button itself isn't on screen.
             var hold = _popup.HoldResize();
             void Closed(object? s, object e) { flyout.Closed -= Closed; hold.Dispose(); }
             flyout.Closed += Closed;
-            try { flyout.ShowAt(row.More); }
+            try { flyout.ShowAt(MenuButton(row)); }
             catch
             {
                 Closed(null, EventArgs.Empty); // it never opened: release the hold now

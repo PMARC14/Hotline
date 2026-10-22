@@ -181,6 +181,7 @@ Within a group, items run left to right; the center group sits in the free space
   "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
              "center": ["prompt", "recent", "continueIn"],
              "right": ["newChat", "settings"] },
+  "menu": [],
   "style": { "size": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
   "buttons": {
@@ -193,7 +194,8 @@ Within a group, items run left to right; the center group sits in the free space
 | Key | Meaning |
 |---|---|
 | `top`, `items` | `top` is the row above the message box, `items` the row below it. Each is an object with `left`, `center` and `right` arrays of item ids (`center` is optional). Leave an id out to hide it. An item sits in one place only |
-| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…) |
+| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`. `continueIn` opens the "Continue this chat in" menu (the chat's own CLI, others under More…). `more` is the "..." menu button you place yourself (see below) |
+| `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order. Optional |
 | `style` | The look of the whole bar: `size` is `compact`, `normal` or `wide` (see Sizes below); `outline` and `filled` are `true` or `false`; `outlineColor` is the outline's colour as `"#RRGGBB"` (left out: the accent colour); `width` and `height` (20-80 DIPs) can also be set bar-wide |
 | `overrides` | Per item id, the same `size`, `outline`, `outlineColor` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults. For a picker only `span` (1-8 button widths, see below) |
 | `buttons` | Your own buttons, by id (see below) |
@@ -248,6 +250,18 @@ pickers keep their narrowest widths above (pickers never go into the menu), and 
 and the narrowest widths fit do the pickers shrink and hide. The pickers of one row share what is left evenly; the pickers of the
 other row are fitted to their own row.
 
+**The `more` button and `menu`.** Without it, a row that is too narrow moves its last buttons into an automatic "..." menu. List
+`more` in any of the six groups and you get the same "..." button where you put it, with a menu you fill: the ids in `menu`,
+in that order, are not drawn on the bar and appear in that menu (a toggle such as Pin stays a toggle). `more` takes the bar's size
+and outline like any button (overrides allowed). When a row holds `more`, that row's automatic overflow goes into the same menu,
+after your entries and behind a separator, and the row has no second "..." button; a row without `more` keeps its own automatic
+one. `more` is the last button to leave a short row; with nothing in the menu and nothing overflowing it is still drawn and opens a
+disabled "Nothing here". A `menu` id that is also listed in a group stays in the group (a warning; the menu entry is dropped);
+unknown ids, pickers, `more` itself and repeats are dropped with a warning; `menu` entries without a `more` button on the bar are
+ignored with one warning ("menu items need a more button"). Settings › Button rows has a card for the "..." button's box
+(drag items in and out, **Move to the ... button's box** on each item) and a button **Move what doesn't fit into the menu**, which
+plans the bar at the panel's current width and moves the buttons it would put in the automatic overflow into the box (adding the `more` button at the end of the bottom-right group if there is none).
+
 **Reference layouts.** These layouts are tried automatically at every panel width and bar size, and the panel's self-test
 draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as a starting point:
 
@@ -259,6 +273,7 @@ draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as
 | `pickers-bottom-right` / `-after-buttons` | the pickers in the bottom-right group, alone or after some buttons |
 | `pickers-top-right`, `pickers-top-centre-both-rows` | the pickers in the top row's right or centre group (centre: with buttons in both rows) |
 | `pickers-apart-corners`, `picker-between-buttons`, `pickers-one-per-row-right` | the pickers placed one by one: effort top left, model top right, provider bottom centre; one picker between buttons; one picker in each row's right group |
+| `more-menu-bottom-right-with-5-items`, `more-menu-top-centre-with-overflow`, `more-in-both-rows` | the `more` button last in the bottom-right group with five buttons in its menu; in the top-centre group with its row's overflow merging into the menu; one row with `more` (overflow merged) beside a crowded row that keeps its automatic "..." (there is one `more` item, so "both rows" is one of each) |
 | `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 button widths wide; spans 1, 4 and 8 |
 | `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact or wide; a different size on several buttons |
 | `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |

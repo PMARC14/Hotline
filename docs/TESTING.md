@@ -53,6 +53,15 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
       delete the quick action's file → a notice, not a crash. A button called "Spacer" gets another id.
 - [ ] Narrow the panel to 320 DIP with many buttons: the ones that don't fit move into a ⋯ menu; widen it: they come back;
       Pin, Prompt and Continue in work from the menu; no flicker or blank panel.
+- [ ] The "..." button's box (the card above "Not shown"): drag a button onto it and press "Move to the ... button's box" on another
+      (with no `more` button placed, one appears at the end of the bottom-right group); the bar loses those buttons and the `more` button
+      opens them in order, Pin staying a toggle and Continue in opening its menu at the `more` button. Drag one back to a corner, reorder
+      with the arrows, remove one (it goes to "Not shown"); hiding `more` sends all of them to "Not shown". A `more` button with an empty
+      box opens a disabled "Nothing here".
+- [ ] "Move what doesn't fit into the menu": with the panel narrow, the buttons the bar puts in the automatic "..." end up in the box in bar
+      order and the bar no longer overflows at that width; at a wide panel nothing changes.
+- [ ] With `more` in one row and the panel narrow: that row's overflow is in the `more` menu after your entries (separator between), no
+      second "..." in the row; the other row keeps its own "...". Self-test steps P31-P33 draw these (logs\selftest\).
 - [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About ›
       This PC lists what was ignored; a file Hotline can't read is left as it is.
 - [ ] An old (v1) `toolbar.json` is left untouched: the default bar runs and Settings › About › This PC shows the

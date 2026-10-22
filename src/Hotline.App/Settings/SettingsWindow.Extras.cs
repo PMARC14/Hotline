@@ -38,7 +38,7 @@ public sealed partial class SettingsWindow
             });
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
         PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, model => ToolbarFile.Save(ToolbarPath, model),
-            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log));
+            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom));
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 
