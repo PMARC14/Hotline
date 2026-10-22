@@ -42,6 +42,7 @@ public sealed partial record ThemeTokens(
         var tokens = baseTokens with { Font = font, FontSizePx = window.FontSize ?? DefaultFontSize };
         if (tokens.HighContrast) return tokens; // the contrast theme's colours win over the user's accent
         var accent = AccentChoice.Resolve(window.Accent, dark, windows);
+        if (accent is not null && !ThemeColor.TryParse(accent, out _)) accent = null; // a colour Windows reported that we can't read
         return accent is null ? tokens : tokens with { Accent = accent, UserBubble = ThemeColor.WithAlpha(accent, dark ? (byte)0x38 : (byte)0x24) };
     }
 
@@ -115,8 +116,10 @@ public static class ThemeColor
         return (l + 0.05) / 0.05 >= 1.05 / (l + 0.05) ? "#FF000000" : "#FFFFFFFF";
     }
 
-    public static bool TryParse(string hex, out (byte A, byte R, byte G, byte B) color)
+    public static bool TryParse(string? hex, out (byte A, byte R, byte G, byte B) color)
     {
+        color = default;
+        if (hex is null) return false;
         try { color = Parse(hex); return true; }
         catch (FormatException) { color = default; return false; }
     }

@@ -58,18 +58,29 @@ public sealed class SystemLineProcess : ILineProcess
         foreach (var a in args) psi.ArgumentList.Add(a);
         ProcessLaunches.Noted();
         _process = Process.Start(psi) ?? throw new InvalidOperationException($"Could not start {exe}");
-        onStarted?.Invoke(_process);
-        _stdout = new BoundedLineReader(_process.StandardOutput, maxLineChars);
-        _process.ErrorDataReceived += (_, e) =>
+        try
         {
-            if (e.Data is null) return;
-            lock (_stderr)
+            onStarted?.Invoke(_process);
+            _stdout = new BoundedLineReader(_process.StandardOutput, maxLineChars);
+            _process.ErrorDataReceived += (_, e) =>
             {
-                _stderr.AppendLine(e.Data);
-                if (_stderr.Length > StderrKeep) _stderr.Remove(0, _stderr.Length - StderrKeep);
-            }
-        };
-        _process.BeginErrorReadLine();
+                if (e.Data is null) return;
+                lock (_stderr)
+                {
+                    _stderr.AppendLine(e.Data);
+                    if (_stderr.Length > StderrKeep) _stderr.Remove(0, _stderr.Length - StderrKeep);
+                }
+            };
+            _process.BeginErrorReadLine();
+        }
+        catch
+        {
+            // Nothing owns the child yet (the caller never gets this object): don't leave it running.
+            try { _process.Kill(entireProcessTree: true); }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or AggregateException) { }
+            _process.Dispose();
+            throw;
+        }
     }
 
     public bool HasExited => _process.HasExited;
@@ -140,18 +151,18 @@ public sealed class BoundedLineReader(TextReader reader, int maxChars)
     private readonly char[] _buffer = new char[4096];
     private int _pos, _length;
     private bool _skipNewline; // the last line ended in \r: a \n right after it belongs to that line
+    private StringBuilder? _partial; // the start of a line that spans reads: kept here so a cancelled read doesn't lose it
 
     /// <summary>Next line, or null at the end.</summary>
     public async Task<string?> ReadLineAsync(CancellationToken ct)
     {
-        StringBuilder? partial = null;
         while (true)
         {
             if (_pos == _length)
             {
                 _length = await reader.ReadAsync(_buffer.AsMemory(), ct);
                 _pos = 0;
-                if (_length == 0) return partial?.ToString(); // an unterminated last line, or the end
+                if (_length == 0) return TakePartial(); // an unterminated last line, or the end
             }
             if (_skipNewline)
             {
@@ -161,15 +172,24 @@ public sealed class BoundedLineReader(TextReader reader, int maxChars)
             var start = _pos;
             while (_pos < _length && _buffer[_pos] is not ('\n' or '\r')) _pos++;
             var count = _pos - start;
-            if ((partial?.Length ?? 0) + count > maxChars) throw new OutputTooLongException(maxChars);
+            if ((_partial?.Length ?? 0) + count > maxChars) { _partial = null; throw new OutputTooLongException(maxChars); }
             if (_pos == _length)
             {
-                (partial ??= new StringBuilder()).Append(_buffer, start, count);
+                (_partial ??= new StringBuilder()).Append(_buffer, start, count);
                 continue;
             }
             _skipNewline = _buffer[_pos++] == '\r';
-            return partial is null ? new string(_buffer, start, count) : partial.Append(_buffer, start, count).ToString();
+            if (_partial is null) return new string(_buffer, start, count);
+            _partial.Append(_buffer, start, count);
+            return TakePartial();
         }
+    }
+
+    private string? TakePartial()
+    {
+        var text = _partial?.ToString();
+        _partial = null;
+        return text;
     }
 
     /// <summary>The whole output, or <see cref="OutputTooLongException"/> past <paramref name="maxChars"/>.</summary>

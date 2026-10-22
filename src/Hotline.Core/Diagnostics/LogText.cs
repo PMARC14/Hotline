@@ -19,7 +19,8 @@ public static class LogText
     private static readonly (Regex Pattern, string Replacement)[] Secrets =
     [
         (Rule(@"\bbearer\s+[A-Za-z0-9._~+/=\-]{12,}"), "Bearer [redacted]"),
-        (Rule(@"\b(authorization|x-api-key|x-goog-api-key|api[_-]?key|access[_-]?token|auth[_-]?token|token|secret|password|passwd)([""']?\s*[:=]\s*[""']?)[^\s""',;&]{6,}"), "$1$2[redacted]"),
+        // The name may follow '_' (MY_TOKEN=…, OPENAI_API_KEY=…), which \b would not allow; and a Basic/Digest scheme word is not the secret.
+        (Rule(@"(^|[^A-Za-z0-9])(authorization|x-api-key|x-goog-api-key|api[_-]?key|access[_-]?token|auth[_-]?token|token|secret|password|passwd)([""']?\s*[:=]\s*[""']?)(?:(?:basic|digest|negotiate|ntlm)\s+)?[^\s""',;&]{6,}"), "$1$2$3[redacted]"),
         (Rule(@"\b(?:sk-[A-Za-z0-9_\-]{16,}|AIza[0-9A-Za-z_\-]{20,}|gh[pousr]_[A-Za-z0-9]{20,}|xox[abprs]-[A-Za-z0-9\-]{10,})"), "[redacted]"),
         (Rule(@"(://)[^/\s:@]+:[^/\s@]+@"), "$1[redacted]@"),
         (Rule(@"([?&](?:key|api_key|apikey|token|access_token)=)[^&\s]+"), "$1[redacted]"),

@@ -26,6 +26,7 @@ public static class CommandResolver
             .Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
         string? Try(string candidate)
         {
+            if (!SafeDirectory.IsLocal(candidate)) return null; // touching a share would send the user's NTLM hash
             if (Path.HasExtension(candidate) && fileExists(candidate)) return candidate;
             foreach (var ext in extensions)
                 if (fileExists(candidate + ext.ToLowerInvariant())) return candidate + ext.ToLowerInvariant(); // Windows paths ignore case
@@ -36,7 +37,10 @@ public static class CommandResolver
         if (hasDirectory || workingDirectory is not null)
         {
             var baseDir = workingDirectory ?? Environment.CurrentDirectory;
-            if (Try(Path.GetFullPath(Path.Combine(baseDir, command))) is { } local) return local;
+            string full;
+            try { full = Path.GetFullPath(Path.Combine(baseDir, command)); }
+            catch (Exception ex) when (ex is ArgumentException or NotSupportedException or IOException) { return null; } // NUL, a too long or malformed path
+            if (Try(full) is { } local) return local;
             if (hasDirectory) return null;
         }
         foreach (var dir in (pathEnv ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))

@@ -30,8 +30,10 @@ public sealed partial record AppActionRequest(string? QuickAction, string? Text,
         }
         else if (!string.Equals(uri.Host, "ask", StringComparison.OrdinalIgnoreCase)) return null;
 
-        var values = new Dictionary<string, string>(inputs ?? new Dictionary<string, string>(), StringComparer.OrdinalIgnoreCase);
-        foreach (var (key, value) in Query(uri.Query)) values.TryAdd(key, value);
+        // Added one by one: "text" and "Text" among the inputs must not throw (a case-insensitive copy would).
+        var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (key, value) in inputs ?? new Dictionary<string, string>()) values.TryAdd(key, value);
+        foreach (var (key, value) in UriQuery.Pairs(uri.Query)) values.TryAdd(key, value);
         var text = values.TryGetValue("text", out var t) && !string.IsNullOrWhiteSpace(t) ? (t.Length > MaxTextChars ? t[..MaxTextChars] : t) : null;
         var fromWindows = IsWindowsCaller(callerPackageFamily);
         // A path in the link would let any web page attach (or point Windows at) a file: images come only from the
@@ -55,17 +57,7 @@ public sealed partial record AppActionRequest(string? QuickAction, string? Text,
     {
         if (path is null || !SafeDirectory.IsLocal(path) || Path.GetExtension(path).ToLowerInvariant() is not (".png" or ".jpg" or ".jpeg")) return false;
         try { return new DriveInfo(path[..1]).DriveType != DriveType.Network; } // a mapped share is a network path too
-        catch (ArgumentException) { return false; }
-    }
-
-    private static IEnumerable<(string, string)> Query(string query)
-    {
-        foreach (var pair in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
-        {
-            var eq = pair.IndexOf('=');
-            if (eq <= 0) continue;
-            yield return (Uri.UnescapeDataString(pair[..eq]), Uri.UnescapeDataString(pair[(eq + 1)..].Replace('+', ' ')));
-        }
+        catch (Exception ex) when (ex is ArgumentException or IOException or UnauthorizedAccessException) { return false; }
     }
 
     [GeneratedRegex(@"^[\w\-]+\z")]
