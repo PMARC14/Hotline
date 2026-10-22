@@ -60,6 +60,42 @@ public sealed class ToolsTests : IDisposable
         Assert.Equal(ToolApproval.Allow, McpConfig.Load(McpPath).Approvals["files/write_file"]);
     }
 
+    [Fact]
+    public void Env_keys_differing_only_in_case_take_the_last_value()
+    {
+        var config = McpConfig.Parse("""{ "mcpServers": { "a": { "command": "x.exe", "env": { "PATH": "C:\\one", "Path": "C:\\two" } } } }""");
+        Assert.Equal(@"C:\two", Assert.Single(config.Servers).Env["PATH"]);
+    }
+
+    [Theory]
+    [InlineData("""{ "mcpServers": { "a": { "command": "x.exe" }, "a": { "command": "y.exe" } } }""")]
+    [InlineData("""{ "approvals": { "a/x": "allow", "a/x": "deny" } }""")]
+    [InlineData("""{ "mcpServers": { "a": { "command": "x.exe", "env": { "K": "1", "K": "2" } } } }""")]
+    public void Duplicate_keys_make_the_file_unreadable_not_a_crash(string json)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(McpPath, json);
+        var config = McpConfig.Load(McpPath);
+        Assert.NotNull(config.Error);
+        Assert.Empty(config.Servers);
+        Assert.Equal(json, File.ReadAllText(McpPath)); // left as it is
+        Assert.Throws<JsonException>(() => McpConfig.SaveApproval(McpPath, "a/y", ToolApproval.Allow)); // the caller logs a JsonException
+        Assert.Equal(json, File.ReadAllText(McpPath));
+    }
+
+    [Fact]
+    public void Saving_an_approval_backs_up_any_file_it_overwrites()
+    {
+        Directory.CreateDirectory(_dir);
+        const string original = """{ "mcpServers": {} }""";
+        File.WriteAllText(McpPath, original);
+        McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow);
+        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "mcp.json.bak-*"))));
+        // Nothing to change: nothing written, no new backup.
+        McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow);
+        Assert.Single(Directory.GetFiles(_dir, "mcp.json.bak-*"));
+    }
+
     // ---- policy --------------------------------------------------------------------------------
 
     [Theory]

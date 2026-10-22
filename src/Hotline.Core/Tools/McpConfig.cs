@@ -23,7 +23,8 @@ public sealed class McpConfig
     /// <summary>Problems in an otherwise readable file (e.g. an unknown approval value, which counts as "deny").</summary>
     public IReadOnlyList<string> Warnings { get; init; } = [];
 
-    private static readonly JsonDocumentOptions ReadOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
+    // A key twice in one object is an error anywhere in the file (not only where it's read, and never a crash).
+    private static readonly JsonDocumentOptions ReadOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true, AllowDuplicateProperties = false };
 
     private const string Example = """
         {
@@ -49,7 +50,8 @@ public sealed class McpConfig
             }
             return Parse(File.ReadAllText(path));
         }
-        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException)
+        // ArgumentException: a key twice in one object (JsonObject refuses it when it's read).
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException or ArgumentException)
         {
             return new McpConfig { Error = L.F(Strings.Mcp_Unreadable, ex.Message) };
         }
@@ -64,9 +66,10 @@ public sealed class McpConfig
             {
                 if (node is not JsonObject s || s["command"]?.GetValue<string>() is not { Length: > 0 } command) continue;
                 var args = s["args"] is JsonArray a ? a.Select(x => x?.ToString() ?? "").ToList() : [];
-                var env = s["env"] is JsonObject e
-                    ? e.ToDictionary(kv => kv.Key, kv => kv.Value?.ToString() ?? "", StringComparer.OrdinalIgnoreCase)
-                    : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                // Windows variable names ignore case: "PATH" and "Path" are one variable, the last one wins.
+                var env = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                if (s["env"] is JsonObject e)
+                    foreach (var (k, v) in e) env[k] = v?.ToString() ?? "";
                 var disabled = s["disabled"] is JsonValue d && d.TryGetValue<bool>(out var off) && off;
                 servers.Add(new McpServerConfig(name, command, args, env, disabled, s["cwd"]?.GetValue<string>(), s["displayName"]?.GetValue<string>()));
             }
@@ -84,24 +87,33 @@ public sealed class McpConfig
     }
 
     /// <summary>
-    /// Writes one approval rule, keeping everything else in the file. Comments can't be kept, so the previous file is
-    /// first copied to mcp.json.bak-&lt;timestamp&gt; (never overwrite a user's file without a backup).
+    /// Writes one approval rule, keeping everything else in the file. A rewrite loses comments and formatting, so the
+    /// previous file is first copied to mcp.json.bak-&lt;timestamp&gt; (never overwrite a user's file without a backup).
     /// </summary>
     public static void SaveApproval(string path, string key, ToolApproval approval)
     {
         lock (SaveLock) // two "Always" clicks at once must not lose a rule
         {
             var original = File.Exists(path) ? File.ReadAllText(path) : null;
-            var parsed = original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions);
-            if (original is not null && parsed is not JsonObject)
-                throw new JsonException("mcp.json isn't a JSON object, so the approval wasn't saved (the file was left as it is).");
-            var root = parsed as JsonObject ?? new JsonObject();
-            if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
-            rules[key] = approval.ToString().ToLowerInvariant();
-            // Comments are what a rewrite loses: keep a copy of a commented file (never replacing an earlier backup).
-            if (original is not null && (original.Contains("//") || original.Contains("/*"))) WriteBackup(path, original);
+            JsonObject root;
+            try
+            {
+                var parsed = original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions);
+                if (original is not null && parsed is not JsonObject)
+                    throw new JsonException("mcp.json isn't a JSON object, so the approval wasn't saved (the file was left as it is).");
+                root = parsed as JsonObject ?? new JsonObject();
+                if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
+                rules[key] = approval.ToString().ToLowerInvariant();
+            }
+            catch (ArgumentException ex) // a key twice in one object
+            {
+                throw new JsonException("mcp.json has a duplicate key, so the approval wasn't saved (the file was left as it is).", ex);
+            }
+            var updated = root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+            if (updated == original) return; // the rule was already there
+            if (original is not null) WriteBackup(path, original); // never replacing an earlier backup
             var tmp = $"{path}.{Guid.NewGuid():N}.tmp";
-            File.WriteAllText(tmp, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(tmp, updated);
             File.Move(tmp, path, overwrite: true);
         }
     }
