@@ -73,7 +73,12 @@ internal static class CliRunner
         try
         {
             Directory.CreateDirectory(folder);
-            Start(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"), folder);
+            // Always quoted (ArgumentList quotes only paths with spaces): Explorer splits an unquoted path at commas.
+            // OpenableFolder has no '"' and no trailing '\', so the quotes can't be broken out of.
+            var psi = new ProcessStartInfo(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Windows), "explorer.exe"))
+            { UseShellExecute = false, Arguments = "\"" + folder + "\"" };
+            Hotline.Core.Processes.ProcessLaunches.Noted();
+            Process.Start(psi)?.Dispose();
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.ComponentModel.Win32Exception or InvalidOperationException) { }
     }

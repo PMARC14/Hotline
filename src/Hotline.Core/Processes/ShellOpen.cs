@@ -17,8 +17,8 @@ public static class ShellOpen
     }
 
     /// <summary>The full path of a folder inside (or one of) <paramref name="roots"/>, else null.</summary>
-    public static string? OpenableFolder(string path, IReadOnlyList<string> roots) =>
-        path.Contains(',') ? null : Inside(path, roots)?.TrimEnd('\\'); // Explorer splits its arguments at commas
+    /// Never ends in '\' and never contains '"', so it can be quoted whole for Explorer (which splits unquoted commas).
+    public static string? OpenableFolder(string path, IReadOnlyList<string> roots) => Inside(path, roots)?.TrimEnd('\\');
 
     private static string? Inside(string path, IReadOnlyList<string> roots)
     {

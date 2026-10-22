@@ -25,7 +25,7 @@ public static class ClaudeCodeProtocol
         if (!p.KeepCliSessions) args.Add("--no-session-persistence"); // Hotline keeps its own history
         if (p.Tools == ToolMode.Inherit && p.ApproveAllTools) args.Add("--dangerously-skip-permissions");
         var chatOnly = p.Tools == ToolMode.ChatOnly;
-        if (p.Args is not null) AddSafe(args, p.Args, chatOnly); // the user's own launch flags replace the mode defaults
+        if (p.Args is not null) AddSafe(args, p.Args, chatOnly); // the user's own launch flags (chat only's isolation still applies)
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort)) args.AddRange(["--effort", effort]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["--append-system-prompt", systemPrompt.Trim()]);

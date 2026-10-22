@@ -7,8 +7,8 @@ namespace Hotline.Core.Backends.Codex;
 
 /// <summary>
 /// The OpenAI Codex CLI, non-interactive: one `codex exec --json` process per turn, prompt on stdin. Chat only is
-/// a read-only sandbox in an empty folder without the user's config.toml or rules (unless the connection's own "args"
-/// replace those defaults); Inherit is the user's own setup
+/// a read-only sandbox in an empty folder without the user's config.toml or rules (whatever the connection's "args"
+/// say); Inherit is the user's own setup
 /// with a workspace-write sandbox. Exec never asks for approval, so anything outside the sandbox is refused.
 /// </summary>
 public static class CodexProtocol
@@ -25,7 +25,7 @@ public static class CodexProtocol
         if (inherit && p.ApproveAllTools) args.Add("--dangerously-bypass-approvals-and-sandbox");
         else args.AddRange(["--sandbox", inherit ? "workspace-write" : "read-only"]);
         args.AddRange(["-c", "approval_policy=\"never\""]); // nobody can answer a prompt in the background
-        if (p.Args is not null) AddSafe(args, p.Args, chatOnly: !inherit); // the user's own launch flags replace the mode defaults
+        if (p.Args is not null) AddSafe(args, p.Args, chatOnly: !inherit); // the user's own launch flags (chat only's isolation still applies)
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort))
             args.AddRange(["-c", $"model_reasoning_effort={Toml(effort)}"]);
