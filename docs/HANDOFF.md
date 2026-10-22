@@ -155,7 +155,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - **0.3** (released 2026-10-17) — the Codex-test feedback and the movable, resizable panel.
   - **0.4** — button rows v2, 26H2 wording, Right Ctrl mode dropped, width 680 (#9; built, awaiting the owner's hand test).
   - **0.5** — everything else left: Continue in (PR #29, now with a ready-made Gemini entry), the multi-monitor /
-    mixed-DPI region capture fix, the panel's desktop hand test, the shipped sound. Feature complete for 1.0; after
+    mixed-DPI region capture fix, the panel's desktop hand test, the shipped sound.
+    Owner added (2026-10-22): multi-monitor behaviour of the bar and of capture, and how the bar moves and acts when pinned
+    (to be developed and hand-tested on the owner's desktop after 0.4 is deployed). Feature complete for 1.0; after
     that only fixes, polish and one Store update (the first since 0.3.0.0) certified with all 17 languages.
   - **1.0** — when that Store update is through and nothing that breaks existing settings files is pending. From 1.0
     on, settings files must keep working across updates (migrations, never breaking changes).
