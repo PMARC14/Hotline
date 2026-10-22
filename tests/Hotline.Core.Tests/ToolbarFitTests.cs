@@ -9,9 +9,9 @@ public class ToolbarFitTests
     // Mirror of the documented rule: items-1 gaps across [left..., overflow?, right...], plus one before reserved.
     private static double Total(FitResult r, double[] left, double[] right, double reserved, double ov = 32)
     {
-        var items = r.LeftShown + right.Length + (r.Overflow ? 1 : 0);
+        var items = r.LeftShown + right.Length - r.RightDropped + (r.Overflow ? 1 : 0);
         var gaps = Math.Max(0, items - 1) + (reserved > 0 && items > 0 ? 1 : 0);
-        return right.Sum() + left.Take(r.LeftShown).Sum() + (r.Overflow ? ov : 0) + Gap * gaps + reserved;
+        return right.Skip(r.RightDropped).Sum() + left.Take(r.LeftShown).Sum() + (r.Overflow ? ov : 0) + Gap * gaps + reserved;
     }
 
     [Fact]
@@ -43,8 +43,32 @@ public class ToolbarFitTests
     [Fact]
     public void Right_alone_too_wide()
     {
-        Assert.Equal(new FitResult(0, true), ToolbarLayout.Fit(50, Gap, [30, 30], [30, 30], 0));
-        Assert.Equal(new FitResult(0, false), ToolbarLayout.Fit(50, Gap, [], [30, 30], 0));
+        // Changed: the right group used to stay whole (overshooting); now it gives up its first buttons into the menu, keeping one.
+        Assert.Equal(new FitResult(0, true, 1), ToolbarLayout.Fit(50, Gap, [30, 30], [30, 30], 0));
+        Assert.Equal(new FitResult(0, true, 1), ToolbarLayout.Fit(50, Gap, [], [30, 30], 0));
+        Assert.Equal(new FitResult(0, false), ToolbarLayout.Fit(64, Gap, [], [30, 30], 0)); // exactly fitting: unchanged
+        // Not even one right button and the "..." button: the documented overshoot.
+        Assert.False(ToolbarLayout.FitChecked(50, Gap, [], [30, 30], 0).Fits);
+        Assert.True(ToolbarLayout.FitChecked(66, Gap, [], [30, 30], 0).Fits);
+    }
+
+    [Fact]
+    public void The_right_group_gives_up_buttons_from_its_left_end_one_at_a_time()
+    {
+        double[] right = [30, 30, 30, 30];
+        // Whole: 4 * 30 + 3 gaps = 132. Every dropped button needs the "..." button: 3 right = 90 + 32 + 3 gaps = 134.
+        Assert.Equal(new FitResult(0, false), ToolbarLayout.Fit(132, Gap, [], right, 0));
+        Assert.Equal(new FitResult(0, true, 2), ToolbarLayout.Fit(131, Gap, [], right, 0)); // 2 right = 60 + 32 + 2 gaps = 100
+        Assert.Equal(new FitResult(0, true, 2), ToolbarLayout.Fit(100, Gap, [], right, 0));
+        Assert.Equal(new FitResult(0, true, 3), ToolbarLayout.Fit(99, Gap, [], right, 0)); // 1 right = 30 + 32 + 1 gap = 66
+        Assert.Equal(new FitResult(0, true, 3), ToolbarLayout.Fit(66, Gap, [], right, 0));
+        Assert.Equal(new FitResult(0, true, 3), ToolbarLayout.Fit(10, Gap, [], right, 0)); // overshoot, one button kept
+        // The left group always goes first: with it the right group stays whole as long as the "..." button fits beside it.
+        Assert.Equal(new FitResult(0, true), ToolbarLayout.Fit(168, Gap, [30, 30], right, 0));
+        Assert.Equal(new FitResult(0, true, 1), ToolbarLayout.Fit(167, Gap, [30, 30], right, 0));
+        // The pickers' reserve counts before the right group keeps a button: 2 right + "..." + 60 + 3 gaps = 164.
+        Assert.Equal(new FitResult(0, true, 2), ToolbarLayout.Fit(164, Gap, [], right, 60));
+        Assert.Equal(new FitResult(0, true, 3), ToolbarLayout.Fit(163, Gap, [], right, 60));
     }
 
     [Fact]
@@ -81,22 +105,23 @@ public class ToolbarFitTests
     }
 
     [Fact]
-    public void Overshoot_when_right_fits_but_button_does_not()
+    public void The_right_group_gives_up_a_button_when_it_fits_but_the_overflow_button_does_not()
     {
-        // right alone = 60 + 4 = 64 <= 70; with the button 60 + 32 + 8 = 100 > 70 -> (0, true), over by 30 <= 32 + 4
+        // right alone = 60 + 4 = 64 <= 70; with the button 60 + 32 + 8 = 100 > 70 -> one right button moves into the menu: 30 + 32 + 4 = 66
+        // (this was the old overshoot case, (0, true) at 100).
         double[] left = [30], right = [30, 30];
         var r = ToolbarLayout.Fit(70, Gap, left, right, 0);
-        Assert.Equal(new FitResult(0, true), r);
-        Assert.Equal(100, Total(r, left, right, 0));
+        Assert.Equal(new FitResult(0, true, 1), r);
+        Assert.Equal(66, Total(r, left, right, 0));
     }
 
     [Fact]
-    public void Dropping_the_pickers_can_remove_the_overshoot()
+    public void Dropping_the_pickers_can_keep_more_buttons()
     {
         double[] left = [30], right = [30, 30];
-        var with = ToolbarLayout.Fit(100, Gap, left, right, 10); // right+reserved = 78 fits, button version 114 does not
-        Assert.Equal(new FitResult(0, true), with);
-        Assert.True(Total(with, left, right, 10) > 100);
+        var with = ToolbarLayout.Fit(100, Gap, left, right, 10); // right+reserved = 78 fits, the button version 114 does not: one right button goes
+        Assert.Equal(new FitResult(0, true, 1), with);
+        Assert.True(Total(with, left, right, 10) <= 100);
         var without = ToolbarLayout.Fit(100, Gap, left, right, 0);
         Assert.Equal(new FitResult(1, false), without);
         Assert.True(Total(without, left, right, 0) <= 100);
@@ -117,29 +142,27 @@ public class ToolbarFitTests
             for (var count = 0; count <= 24; count++)
             {
                 var left = Enumerable.Range(0, count).Select(_ => size).ToArray();
-                double[] right = [size, size];
+                double[] right = [size, size, size];
                 var reserved = rng.Next(2) == 0 ? 0 : 90.0;
-                var prev = -1;
-                for (double room = 200; room <= 1600; room += 8)
+                var (prev, prevDropped) = (-1, right.Length);
+                for (double room = 100; room <= 1600; room += 8)
                 {
                     var r = ToolbarLayout.Fit(room, Gap, left, right, reserved);
                     Assert.Equal(r, ToolbarLayout.Fit(room, Gap, left, right, reserved));
                     Assert.InRange(r.LeftShown, 0, count);
-                    Assert.Equal(r.LeftShown < count, r.Overflow);
+                    Assert.Equal(r.LeftShown < count || r.RightDropped > 0, r.Overflow);
                     Assert.True(r.LeftShown >= prev, $"not monotonic at {room}");
-                    prev = r.LeftShown;
+                    // The right group gives up buttons only when no left button is left, and never its last one.
+                    Assert.True(r.RightDropped == 0 || r.LeftShown == 0, $"right dropped with left shown at {room}");
+                    Assert.InRange(r.RightDropped, 0, right.Length - 1);
+                    Assert.True(r.RightDropped <= prevDropped, $"more room dropped more at {room}");
+                    (prev, prevDropped) = (r.LeftShown, r.RightDropped);
+                    // Within the room, except when even one right button and the "..." button (and the reserve) do not fit.
                     var total = Total(r, left, right, reserved);
-                    var floor = Total(new FitResult(0, count > 0), left, right, reserved);
-                    if (floor <= room) Assert.True(total <= room, $"overflows room {room} size {size} n {count}");
-                    // Only overshoot allowed: (0, true) when right + reserved fits but the button does not.
-                    var rightOnly = Total(new FitResult(0, false), left, right, reserved);
-                    if (total > room && rightOnly <= room)
-                    {
-                        Assert.Equal(new FitResult(0, true), r);
-                        Assert.True(total <= room + 32 + Gap, $"overshoot too large at {room}");
-                    }
-                    if (reserved == 0 && rightOnly <= room && !(r.LeftShown == 0 && r.Overflow))
-                        Assert.True(total <= room, $"overflows room {room} size {size} n {count}");
+                    var smallest = Total(new FitResult(0, true, right.Length - 1), left, right, reserved);
+                    if (smallest <= room) Assert.True(total <= room, $"overflows room {room} size {size} n {count}");
+                    else Assert.Equal(new FitResult(0, true, right.Length - 1), r);
+                    Assert.Equal(smallest <= room || total <= room, ToolbarLayout.FitChecked(room, Gap, left, right, reserved).Fits);
                 }
             }
         }

@@ -197,33 +197,43 @@ public sealed class ToolbarPickerSpanTests
     // ---- the layout ----
 
     [Theory]
-    [InlineData(ButtonSize.Compact, 20.0)]
-    [InlineData(ButtonSize.Normal, 40.0)]
-    [InlineData(ButtonSize.Wide, 80.0)]
-    public void The_unit_is_the_bars_button_width(ButtonSize size, double unit)
-        => Assert.Equal(unit, ToolbarPlan.PickerUnit(ToolbarModel.Defaults with { Style = new ButtonStyle(size) }));
+    [InlineData(ButtonSize.Compact)]
+    [InlineData(ButtonSize.Normal)]
+    [InlineData(ButtonSize.Wide)]
+    public void The_unit_is_one_standard_button_width_whatever_the_bar_size(ButtonSize size)
+    {
+        Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
+        var specs = ToolbarPlan.PickerSpecs(ToolbarModel.Defaults with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
+        Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
+    }
 
     [Fact]
     public void The_unit_ignores_one_buttons_own_size()
     {
         var m = ToolbarModel.Defaults with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 80) } };
-        Assert.Equal(40, ToolbarPlan.PickerUnit(m));
+        Assert.Equal(80.0, ToolbarPlan.PickerSpecs(m, ["effort"]).First(s => s.Name == "effort").Preferred);
     }
 
     [Fact]
-    public void Specs_are_span_times_unit_with_a_floor_and_a_one_unit_minimum()
+    public void Specs_are_span_times_unit_with_a_readable_floor_capped_at_the_pickers_own_width()
     {
         var m = ToolbarModel.Defaults;
         var specs = ToolbarPlan.PickerSpecs(m, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
         Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
-        Assert.All(specs.Values, s => Assert.Equal((s.Preferred, 40.0), (s.Max ?? -1, s.Min)));
-        // Compact: 20 DIP is no room for a drop-down, so nothing goes under 28.
-        var compact = ToolbarPlan.PickerSpecs(m with { Style = new ButtonStyle(ButtonSize.Compact) }, ["effort", "model"]).ToDictionary(s => s.Name);
-        Assert.Equal((40.0, 80.0), (compact["effort"].Preferred, compact["model"].Preferred));
-        Assert.Equal(28.0, compact["effort"].Min);
-        var one = ToolbarPlan.PickerSpecs(
-            ToolbarEditor.SetPickerSpan(m with { Style = new ButtonStyle(ButtonSize.Compact) }, "effort", 1), ["effort"]).First(s => s.Name == "effort");
-        Assert.Equal((28.0, 28.0), (one.Preferred, one.Min));
+        Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
+        Assert.All(specs.Values, s => Assert.Equal(s.Preferred, s.Max));
+        // A compact bar gets the same: the unit does not follow the bar's size.
+        var compact = ToolbarPlan.PickerSpecs(m with { Style = new ButtonStyle(ButtonSize.Compact) }, ["effort", "model", "provider"]);
+        Assert.Equal(specs.Values.Select(s => (s.Name, s.Preferred, s.Min)), compact.Select(s => (s.Name, s.Preferred, s.Min)));
+        // Span 1 is 40 DIP exactly, as the preferred width, the minimum and the maximum.
+        foreach (var id in new[] { "effort", "model", "provider" })
+        {
+            var one = ToolbarPlan.PickerSpecs(ToolbarEditor.SetPickerSpan(m, id, 1), [id]).First(s => s.Name == id);
+            Assert.Equal((40.0, 40.0, 40.0), (one.Preferred, one.Min, one.Max ?? -1));
+        }
+        // Span 2 of the provider is 80, over its floor of 72: the floor stays 72.
+        var two = ToolbarPlan.PickerSpecs(ToolbarEditor.SetPickerSpan(m, "provider", 2), ["provider"]).First(s => s.Name == "provider");
+        Assert.Equal((80.0, 72.0), (two.Preferred, two.Min));
     }
 
     [Fact]

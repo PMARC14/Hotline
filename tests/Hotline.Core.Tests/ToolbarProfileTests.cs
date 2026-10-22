@@ -105,9 +105,18 @@ public sealed class ToolbarProfileTests
                 // The dropped ones are the end of the non-picker buttons, as many as the fit says.
                 var buttons = row.Droppable.Where(id => !ToolbarPlan.IsPicker(id)).ToList();
                 Assert.Equal(buttons.Skip(f.Fit.LeftShown), f.Dropped);
-                Assert.Equal(f.Dropped.Count > 0, f.Fit.Overflow);
+                Assert.Equal(f.Dropped.Count > 0 || f.RightDropped.Count > 0, f.Fit.Overflow);
+                // The right group gives up its first buttons only once no left button is left, never its last, and its ids split cleanly.
+                var rightButtons = row.Right.Where(id => !ToolbarPlan.IsPicker(id)).ToList();
+                Assert.Equal(rightButtons.Take(f.Fit.RightDropped), f.RightDropped);
+                Assert.True(f.RightDropped.Count == 0 || f.Fit.LeftShown == 0, where);
+                Assert.True(rightButtons.Count == 0 || f.RightDropped.Count < rightButtons.Count, where);
+                Assert.Equal(row.Right.OrderBy(id => id), f.RightShown.Concat(f.RightDropped).OrderBy(id => id));
+                Assert.Equal(row.Right.Where(f.RightShown.Contains), f.RightShown);
+                // The menu is in bar order: left, centre, then the right group.
+                Assert.Equal(f.Dropped.Concat(f.RightDropped), f.Menu);
                 // The row's kept buttons have a width each.
-                Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(row.Right.Where(id => !ToolbarPlan.IsPicker(id))).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
+                Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(rightButtons.Skip(f.Fit.RightDropped)).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
                 foreach (var (id, width) in f.ButtonWidths)
                 {
                     Assert.Equal(ToolbarPlan.Metrics(m, id).Width, width);
@@ -140,9 +149,13 @@ public sealed class ToolbarProfileTests
                     if (!onBar.Contains(id)) { Assert.Equal(0, width); continue; }
                     // The span times the unit is the preferred width and the maximum too; the floor and one unit the minimum.
                     Assert.True(width == 0 || (width >= specs[id].Min - Eps && width <= specs[id].Preferred + Eps), $"{where}: {id} {width}");
-                    Assert.True(width == 0 || width >= ToolbarPlan.MinPickerWidth, $"{where}: {id} {width}");
+                    Assert.True(width == 0 || width >= Math.Min(ToolbarPlan.PickerFloor(id), specs[id].Preferred), $"{where}: {id} {width}");
                 }
-                // Hidden only in order: effort, then provider, then model (among the pickers on the bar).
+                // While buttons move into the menu to keep the pickers' room, every picker on the bar has at least its readable minimum.
+                if (f.Fit.PickersKept)
+                    Assert.All(onBar, id => Assert.True(f.PickerWidths[id] >= specs[id].Min, $"{where}: {id} {f.PickerWidths[id]} under {specs[id].Min}"));
+                // Hidden only in order: effort, then provider, then model (among the pickers on the bar). Unchanged by the new
+                // minimums (56, 84, 72): the order is the hide order, whatever the minimums are.
                 var order = ToolbarPlan.PickerHideOrder.Where(onBar.Contains).ToList();
                 var hidden = order.Where(id => f.PickerWidths[id] == 0).ToList();
                 Assert.Equal(order.Take(hidden.Count), hidden);
@@ -166,18 +179,15 @@ public sealed class ToolbarProfileTests
                 var where = $"{name} {size} top {top} room {room}";
                 var f = Plan(m, top, room);
                 if (f.Used <= room + Eps) continue;
-                // The right group alone is wider than the room: nothing else shows.
-                var rightOnly = rightIds.Sum(id => ToolbarPlan.Metrics(m, id).Width)
-                    + Spacing * (rightIds.Count + (hasPickers ? 1 : 0) + (row.Center.Count > 0 ? 1 : 0));
-                if (rightOnly > room + Eps)
-                {
-                    Assert.Equal(0, f.Fit.LeftShown);
-                    Assert.All(f.PickerWidths.Values, w => Assert.Equal(0, w));
-                    continue;
-                }
-                // Fit's documented overshoot: the "⋯" button (and its gap) sticks out, with the pickers given up.
-                Assert.True(f.Fit is { LeftShown: 0, Overflow: true, PickersKept: false }, $"{where}: overshoot {f.Used - room} with {f.Fit}");
-                Assert.True(f.Used <= room + overflow + Spacing + Eps, $"{where}: overshoot {f.Used - room}");
+                // The only overshoot: not even the last right button and the "⋯" button fit (a panel under about two buttons), so
+                // nothing else shows. (Changed: a right group wider than the room used to overshoot too; now it gives up buttons.)
+                var lastRight = rightIds.Count == 0 ? 0 : ToolbarPlan.Metrics(m, rightIds[^1]).Width;
+                var smallest = lastRight + (rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.IsPicker(id)) ? overflow : 0)
+                    + Spacing * (1 + (rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.IsPicker(id)) ? 1 : 0)
+                        + (hasPickers ? 1 : 0) + (row.Center.Count > 0 ? 1 : 0));
+                Assert.True(smallest > room - Eps, $"{where}: overshoot {f.Used - room} with {f.Fit}, smallest {smallest}");
+                Assert.True(f.Fit.LeftShown == 0 && f.Fit.RightDropped == Math.Max(0, rightIds.Count - 1) && !f.Fit.PickersKept, $"{where}: {f.Fit}");
+                Assert.All(f.PickerWidths.Values, w => Assert.Equal(0, w));
             }
         }
     }
@@ -204,11 +214,13 @@ public sealed class ToolbarProfileTests
                     if (previous is { } p)
                     {
                         // As the robustness tests define it: the pickers keep their room once they have it, and while that stays the
-                        // same no button goes away; with the buttons the same, no picker goes away either.
+                        // same no button goes away; with the buttons the same, no picker goes away either. "No button goes away"
+                        // counts the buttons on the bar, left and right (the right group's first ones now move into the menu too, so
+                        // the left count alone is not monotone: it is 0 while the right group grows back).
                         Assert.True(f.Fit.PickersKept || !p.Fit.PickersKept, $"{where}: the pickers lost their room");
                         if (f.Fit.PickersKept == p.Fit.PickersKept)
-                            Assert.True(f.Fit.LeftShown >= p.Fit.LeftShown, $"{where}: {p.Fit.LeftShown} -> {f.Fit.LeftShown}");
-                        if (f.Fit.LeftShown == p.Fit.LeftShown && f.Fit.PickersKept == p.Fit.PickersKept)
+                            Assert.True(f.ButtonWidths.Count >= p.ButtonWidths.Count, $"{where}: {p.ButtonWidths.Count} -> {f.ButtonWidths.Count}");
+                        if (f.ButtonWidths.Count == p.ButtonWidths.Count && f.Fit.PickersKept == p.Fit.PickersKept)
                             Assert.True(f.PickerWidths.Values.Count(w => w > 0) >= p.PickerWidths.Values.Count(w => w > 0), $"{where}: a picker went away");
                     }
                     previous = f;
@@ -228,14 +240,14 @@ public sealed class ToolbarProfileTests
     // ---- what the interesting layouts promise ----
 
     [Fact]
-    public void The_default_pickers_are_80_160_and_120_wide_at_the_normal_size_and_the_bar_size_scales_them()
+    public void The_default_pickers_are_80_160_and_120_wide_at_every_bar_size()
     {
-        var normal = Plan(ToolbarModel.Defaults, top: true, 1000);
-        Assert.Equal((80.0, 160.0, 120.0), (normal.PickerWidths["effort"], normal.PickerWidths["model"], normal.PickerWidths["provider"]));
-        var wide = Plan(Sized("default", ButtonSize.Wide), top: true, 1000);
-        Assert.Equal((160.0, 320.0, 240.0), (wide.PickerWidths["effort"], wide.PickerWidths["model"], wide.PickerWidths["provider"]));
-        var compact = Plan(Sized("default", ButtonSize.Compact), top: true, 1000);
-        Assert.Equal((40.0, 80.0, 60.0), (compact.PickerWidths["effort"], compact.PickerWidths["model"], compact.PickerWidths["provider"]));
+        // Changed: they used to scale with the bar size (compact 40/80/60, wide 160/320/240); the unit is now one standard button width.
+        foreach (var size in Enum.GetValues<ButtonSize>())
+        {
+            var f = Plan(Sized("default", size), top: true, 1000);
+            Assert.Equal((80.0, 160.0, 120.0), (f.PickerWidths["effort"], f.PickerWidths["model"], f.PickerWidths["provider"]));
+        }
     }
 
     [Fact]
@@ -301,7 +313,7 @@ public sealed class ToolbarProfileTests
     }
 
     [Fact]
-    public void Pickers_on_the_right_never_move_into_the_menu_and_the_right_group_stays_whole()
+    public void Pickers_on_the_right_never_move_into_the_menu()
     {
         var m = Sized("pickers-bottom-right", ButtonSize.Normal);
         foreach (var room in Sweep())
@@ -309,6 +321,8 @@ public sealed class ToolbarProfileTests
             var f = Plan(m, top: false, room);
             Assert.Contains(ToolbarPlan.Row(m, top: false).Right.First(ToolbarPlan.IsPicker), ToolbarPlan.Row(m, top: false).Right);
             Assert.DoesNotContain(f.Dropped, ToolbarPlan.IsPicker);
+            Assert.DoesNotContain(f.RightDropped, ToolbarPlan.IsPicker);
+            Assert.Contains(f.RightShown, ToolbarPlan.IsPicker);
         }
     }
 
@@ -325,7 +339,7 @@ public sealed class ToolbarProfileTests
             Assert.False(f.Fit.Overflow);
             Assert.Empty(f.Dropped);
             Assert.Empty(f.ButtonWidths);
-            Assert.True(f.Used <= room + Eps || room < ToolbarPlan.MinPickerWidth + 2 * Spacing + PickerSpacing, $"room {room}: {f.Used}");
+            Assert.True(f.Used <= room + Eps || room < ToolbarPlan.PickerFloor("effort") + 2 * Spacing + PickerSpacing, $"room {room}: {f.Used}");
         }
         var top = Plan(m, top: true, 680);
         Assert.Empty(top.PickerWidths);
@@ -351,15 +365,24 @@ public sealed class ToolbarProfileTests
     }
 
     [Fact]
-    public void Only_a_right_group_never_drops_anything()
+    public void Only_a_right_group_drops_nothing_while_it_fits_and_then_its_first_buttons_from_the_left()
     {
         var m = Sized("only-right-group", ButtonSize.Normal);
+        var right = ToolbarPlan.Row(m, top: false).Right; // seven buttons and the pickers
+        var buttons = right.Where(id => !ToolbarPlan.IsPicker(id)).ToList();
+        var dropped = 0;
         foreach (var room in Sweep(from: 50))
         {
             var f = Plan(m, top: false, room);
-            Assert.Empty(f.Dropped);
-            Assert.False(f.Fit.Overflow);
+            Assert.Empty(f.Dropped); // there is no left or centre button
+            Assert.Equal(f.RightDropped.Count > 0, f.Fit.Overflow);
+            // Changed: it used to stay whole at any width; now its first buttons go and its last ones (Settings) stay.
+            Assert.Equal(buttons.Take(f.RightDropped.Count), f.RightDropped);
+            Assert.Equal("settings", f.RightShown.Last(id => !ToolbarPlan.IsPicker(id)));
+            if (f.RightDropped.Count > 0) dropped++;
         }
+        Assert.True(dropped > 0);
+        Assert.Empty(Plan(m, top: false, 1800).RightDropped); // plenty of room: whole
     }
 
     [Fact]
@@ -387,10 +410,70 @@ public sealed class ToolbarProfileTests
                 foreach (var room in Sweep())
                 {
                     var f = Plan(m, top: false, room);
-                    Assert.Equal(f.Fit.LeftShown < ToolbarPlan.Row(m, top: false).Droppable.Count(id => !ToolbarPlan.IsPicker(id)), f.Fit.Overflow);
-                    Assert.True(f.Used <= room + Eps || f.Fit is { LeftShown: 0, Overflow: true }, $"{name} {size} {room}: {f.Used}");
+                    Assert.Equal(f.Fit.LeftShown < ToolbarPlan.Row(m, top: false).Droppable.Count(id => !ToolbarPlan.IsPicker(id)) || f.Fit.RightDropped > 0, f.Fit.Overflow);
+                    Assert.True(f.Used <= room + Eps, $"{name} {size} {room}: {f.Used}"); // changed: no overshoot from 320 up
                 }
             }
+    }
+
+    [Fact]
+    public void Seventeen_wide_right_buttons_at_680_keep_the_last_ones_and_put_the_first_ones_in_the_menu_in_order()
+    {
+        var custom = Enumerable.Range(1, 17).Select(i => new CustomButton($"c{i}", $"C{i}", "E734", null, "t", false)).ToList();
+        var ids = custom.Select(c => c.Id).ToList();
+        var placed = new Dictionary<Quadrant, IReadOnlyList<string>>
+        {
+            [Quadrant.BottomLeft] = ["pin", "prompt"], // dropped first, before any right button
+            [Quadrant.BottomRight] = [.. ids, "settings", "effort", "model", "provider"],
+        };
+        var m = ToolbarModel.Defaults with { Placed = placed, Buttons = custom, Style = new ButtonStyle(ButtonSize.Wide) };
+        var f = Plan(m, top: false, 680);
+        var buttons = ids.Append("settings").ToList();
+        Assert.Equal(0, f.Fit.LeftShown);
+        Assert.Equal(["pin", "prompt"], f.Dropped);
+        Assert.True(f.Fit.RightDropped is > 0 and < 18, $"{f.Fit}");
+        Assert.Equal(buttons.Take(f.Fit.RightDropped), f.RightDropped); // the first ones, in order
+        Assert.Equal(buttons.Skip(f.Fit.RightDropped), f.RightShown.Where(id => !ToolbarPlan.IsPicker(id))); // the last ones stay, Settings among them
+        Assert.Equal(["pin", "prompt", .. buttons.Take(f.Fit.RightDropped)], f.Menu);
+        // The pickers are visible at no less than their readable minimums (and the row fits).
+        Assert.True(f.Fit.PickersKept);
+        Assert.True(f.PickerWidths["effort"] >= 56 && f.PickerWidths["model"] >= 84 && f.PickerWidths["provider"] >= 72, string.Join(", ", f.PickerWidths));
+        Assert.True(f.Used <= 680, $"{f.Used}");
+        // Not one more button than needed went: giving one back (80 + a gap) would not fit with the pickers' minimums.
+        Assert.True(f.Used - f.PickerWidths.Values.Sum() + (56 + 84 + 72) + 80 + Spacing > 680 - 1e-9, $"{f.Used}");
+    }
+
+    [Theory]
+    [InlineData(ButtonSize.Compact)]
+    [InlineData(ButtonSize.Normal)]
+    [InlineData(ButtonSize.Wide)]
+    public void The_24_custom_profiles_show_readable_pickers_at_680_and_320(ButtonSize size)
+    {
+        foreach (var name in new[] { "custom-24-pickers-bottom", "custom-24-wide-pickers-bottom-centre" })
+            foreach (var room in new double[] { 680, 400, 320 })
+            {
+                // A wide bar at 320: one 80-DIP right button, the 80-DIP "⋯" button and the pickers' 212 do not fit together.
+                if (size == ButtonSize.Wide && room == 320) continue;
+                var f = Plan(Sized(name, size), top: false, room);
+                var specs = ToolbarPlan.PickerSpecs(Sized(name, size), AllPickers).ToDictionary(s => s.Name);
+                Assert.True(f.Used <= room + Eps, $"{name} {size} {room}: {f.Used}");
+                // At least the model picker is shown (it hides last) and no picker is a chevron only.
+                Assert.True(f.PickerWidths["model"] >= Math.Min(84, specs["model"].Preferred), $"{name} {size} {room}: {string.Join(", ", f.PickerWidths)}");
+                Assert.All(f.PickerWidths, p => Assert.True(p.Value == 0 || p.Value >= Math.Min(ToolbarPlan.PickerFloor(p.Key), specs[p.Key].Preferred)));
+            }
+    }
+
+    [Fact]
+    public void A_right_group_that_fits_exactly_is_unchanged()
+    {
+        var m = Sized("only-right-group", ButtonSize.Normal);
+        var roomy = Plan(m, top: false, 1000);
+        Assert.Empty(roomy.RightDropped);
+        // Shrunk to the room the whole row needs (the pickers at their minimums): no button moves.
+        var least = roomy.Fit.FixedWidth + roomy.PickerWidths.Keys.Sum(id => ToolbarPlan.PickerSpecs(m, AllPickers).First(s => s.Name == id).Min) + 3 * PickerSpacing; // as Compute counts the gaps
+        var exact = Plan(m, top: false, least);
+        Assert.Empty(exact.RightDropped);
+        Assert.False(exact.Fit.Overflow);
     }
 
     [Fact]

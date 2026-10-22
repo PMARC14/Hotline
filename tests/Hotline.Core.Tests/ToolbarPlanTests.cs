@@ -196,17 +196,20 @@ public sealed class ToolbarPlanTests
     [Fact]
     public void FitRow_accepts_an_overshoot_that_remains_without_the_pickers()
     {
-        // Even the right group alone doesn't fit: the overflow button stays so the left buttons remain reachable.
+        // Not even the one right button and the overflow button fit: the overflow button stays so the left buttons remain reachable.
         var fit = ToolbarPlan.FitRow(40, 2, [36], [36], hasPickers: true, 100, 36);
         Assert.Equal(new RowFit(0, true, false, 78), fit);
     }
 
-    // Right group 72 + its gaps fit from 78 DIP; with the overflow button the smallest row is 116 (right 72 + "..." 36 +
-    // 4 gaps around the pickers' and the flexible column). Below 116 the row really overshoots (Fit's documented case).
+    // The smallest row is one right button (36) + "..." (36) + 3 gaps around the pickers' and the flexible column = 78; the
+    // whole right group (72) with "..." is 116. In between the right group gives up its first button (changed: it used to
+    // stay whole, overshooting below 116). Below 78 the row really overshoots (Fit's documented case).
     [Theory]
-    [InlineData(80, true)]
-    [InlineData(90, true)]
-    [InlineData(115, true)]
+    [InlineData(70, true)]
+    [InlineData(77, true)]
+    [InlineData(78, false)]
+    [InlineData(90, false)]
+    [InlineData(115, false)]
     [InlineData(116, false)]
     [InlineData(150, false)]
     [InlineData(199, false)]
@@ -217,13 +220,13 @@ public sealed class ToolbarPlanTests
     {
         const double spacing = 2, pickersMin = 120, overflow = 36;
         double[] left = [36, 30, 46, 36], right = [36, 36];
-        // Even with no left button and the pickers hidden: right group + "..." + the gaps of right, "...", pickers and * columns.
-        var smallest = right.Sum() + overflow + spacing * (right.Length + 2);
+        // Even with no left button and the pickers hidden: the last right button + "..." + the gaps of that, "...", pickers and * columns.
+        var smallest = right[^1] + overflow + spacing * 3;
         Assert.Equal(overshoots, smallest > room); // the InlineData says which case it is: both groups stay covered
         var fit = ToolbarPlan.FitRow(room, spacing, left, right, hasPickers: true, pickersMin, overflow);
         if (overshoots)
         {
-            Assert.Equal(new RowFit(0, true, false, smallest), fit);
+            Assert.Equal(new RowFit(0, true, false, smallest, RightDropped: 1), fit);
             Assert.True(Used(fit, pickersMin) <= room + overflow + spacing, $"{fit} at {room}");
         }
         else
@@ -239,7 +242,24 @@ public sealed class ToolbarPlanTests
     {
         double[] left = [36, 30, 46, 36], right = [36, 36];
         Assert.True(ToolbarPlan.FitRow(330, 2, left, right, hasPickers: true, 120, 36).PickersKept);
-        Assert.False(ToolbarPlan.FitRow(199, 2, left, right, hasPickers: true, 120, 36).PickersKept);
+        // Changed: at 199 the pickers used to lose their room; now one right button goes into the menu to keep it (198 is the least).
+        var tight = ToolbarPlan.FitRow(199, 2, left, right, hasPickers: true, 120, 36);
+        Assert.Equal(new RowFit(0, true, true, 78, RightDropped: 1), tight);
+        Assert.True(ToolbarPlan.FitRow(198, 2, left, right, hasPickers: true, 120, 36).PickersKept);
+        // One room less and not even one right button, "..." and the pickers' minimum fit: the pickers give up their room.
+        Assert.False(ToolbarPlan.FitRow(197, 2, left, right, hasPickers: true, 120, 36).PickersKept);
+    }
+
+    [Fact]
+    public void FitRow_gives_up_right_buttons_before_the_pickers_lose_their_minimum()
+    {
+        double[] right = [80, 80, 80, 80, 80, 80];
+        // Pickers kept at 150: the last 3 right buttons (240) + "..." (36) + 5 gaps between the 6 columns (10) + 150 = 436, the
+        // least room that keeps them with 3 right buttons; one DIP less and a fourth button goes into the menu.
+        var fit = ToolbarPlan.FitRow(436, 2, [], right, hasPickers: true, 150, 36);
+        Assert.Equal(new RowFit(0, true, true, 286, RightDropped: 3), fit);
+        Assert.Equal(4, ToolbarPlan.FitRow(435, 2, [], right, hasPickers: true, 150, 36).RightDropped);
+        Assert.Equal(0, ToolbarPlan.FitRow(1000, 2, [], right, hasPickers: true, 150, 36).RightDropped); // room enough: unchanged
     }
 
     [Fact]

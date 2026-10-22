@@ -29,6 +29,18 @@ public sealed class ToolbarRobustnessTests
         /// <summary>The row with no left button: the right group and the gaps of every column but the left ones.</summary>
         public double RightOnly =>
             Right.Sum() + Spacing * (Right.Length + (HasPickers ? 1 : 0) + (Plan.Center.Count > 0 ? 1 : 0));
+
+        /// <summary>The width of the row (pickers excluded) with <paramref name="leftShown"/> left buttons and the right group's
+        /// first <paramref name="rightDropped"/> in the menu: every shown button, "⋯", and the gaps between all columns.</summary>
+        public double Width(int leftShown, int rightDropped)
+        {
+            var overflow = leftShown < Left.Length || rightDropped > 0;
+            var columns = leftShown + Right.Length - rightDropped + (overflow ? 1 : 0) + (HasPickers ? 1 : 0) + (Plan.Center.Count > 0 ? 2 : 1);
+            return Left.Take(leftShown).Sum() + Right.Skip(rightDropped).Sum() + (overflow ? Overflow : 0) + Spacing * (columns - 1);
+        }
+
+        /// <summary>Buttons on the bar (not in the menu): never fewer with more room while the pickers keep the same state.</summary>
+        public int ButtonsShown => Fit.LeftShown + Right.Length - Fit.RightDropped;
     }
 
     private static Fitted FitRow(ToolbarModel m, bool top, double room, double pickersMin = PickersMin)
@@ -101,22 +113,31 @@ public sealed class ToolbarRobustnessTests
     {
         var fit = f.Fit;
         Assert.InRange(fit.LeftShown, 0, f.Left.Length);
-        Assert.Equal(fit.LeftShown < f.Left.Length, fit.Overflow);
+        Assert.InRange(fit.RightDropped, 0, Math.Max(0, f.Right.Length - 1)); // never the last right button
+        Assert.Equal(fit.LeftShown < f.Left.Length || fit.RightDropped > 0, fit.Overflow);
+        Assert.True(fit.RightDropped == 0 || fit.LeftShown == 0, $"{where}: the right group gave up buttons before the left was gone ({fit})");
         Assert.True(double.IsFinite(fit.FixedWidth) && fit.FixedWidth >= 0, $"{where}: {fit}");
-        // The narrowest the row can be: every left button without "⋯", or none of them with it.
-        var smallest = f.Left.Length == 0 ? f.RightOnly
-            : Math.Min(f.RightOnly + f.Left.Sum() + Spacing * f.Left.Length, f.RightOnly + f.Overflow + Spacing);
+        Assert.Equal(f.Width(fit.LeftShown, fit.RightDropped), fit.FixedWidth, 6);
+        // The narrowest the row can be: no left button, all but the last right button in the menu (the "⋯" button if anything is).
+        var smallest = f.Width(0, Math.Max(0, f.Right.Length - 1));
         if (smallest <= room)
-            Assert.True(f.Used <= room + 1e-9, $"{where}: uses {f.Used} of {room} ({fit})");
-        else if (f.RightOnly <= room)
         {
-            // Fit's documented overshoot: only the "⋯" button (and its gap) sticks out, with the pickers given up.
-            Assert.Equal(new RowFit(0, true, false, fit.FixedWidth), fit);
-            Assert.True(f.Used <= room + f.Overflow + Spacing + 1e-9, $"{where}: overshoot {f.Used - room} at {room} ({fit})");
+            Assert.True(f.Used <= room + 1e-9, $"{where}: uses {f.Used} of {room} ({fit})");
+            // The right group gave up no more than it had to: one more button back would not fit (with the pickers' room if kept).
+            if (fit.RightDropped > 0)
+                Assert.True(f.Width(0, fit.RightDropped - 1) + (fit.PickersKept ? PickersMin : 0) > room, $"{where}: {fit} gave up too many");
         }
-        else Assert.Equal(0, fit.LeftShown); // the right group alone is wider than the room: it stays whole, nothing else shows
+        else
+        {
+            // Fit's documented overshoot, and the only one: not even one right button and the "⋯" button fit, with the pickers given up.
+            Assert.Equal(new RowFit(0, f.Left.Length > 0 || f.Right.Length > 1, false, smallest, Math.Max(0, f.Right.Length - 1)), fit);
+        }
 
-        // What the renderer puts into the "⋯" menu: the end of left-then-centre, in order, the centre before any left button.
+        // What the renderer puts into the "⋯" menu: the end of left-then-centre, in order, the centre before any left button;
+        // then the right group's first buttons, in order.
+        var (rightShown, rightDropped) = ToolbarPlan.SplitRight(f.Plan.Right, fit.RightDropped);
+        Assert.Equal(f.Plan.Right.Where(id => !ToolbarPlan.IsPicker(id)).Take(fit.RightDropped), rightDropped);
+        Assert.Equal(f.Plan.Right, rightShown.Concat(rightDropped).OrderBy(id => f.Plan.Right.ToList().IndexOf(id)));
         var (shown, dropped) = ToolbarPlan.Split(f.Plan.Droppable, fit.LeftShown);
         Assert.Equal(f.Plan.Droppable.Where(id => !ToolbarPlan.IsPicker(id)).Skip(fit.LeftShown), dropped);
         Assert.Equal(f.Plan.Droppable, shown.Concat(dropped).OrderBy(id => f.Plan.Droppable.ToList().IndexOf(id)));
@@ -127,7 +148,7 @@ public sealed class ToolbarRobustnessTests
     public void Random_bars_fit_every_width_from_320_to_2000()
     {
         var r = new Random(20261021);
-        var (overshoots, rightTooWide, keptAndDropped, centres) = (0, 0, 0, 0);
+        var (overshoots, rightTooWide, keptAndDropped, centres, rightDropped) = (0, 0, 0, 0, 0);
         for (var run = 0; run < 400; run++)
         {
             var m = RandomModel(r);
@@ -143,23 +164,47 @@ public sealed class ToolbarRobustnessTests
                     Assert.Equal(f.Fit, FitRow(m, top, room).Fit); // repeatable
                     if (previous is { } p)
                     {
-                        // More room never takes the pickers' room away, and never hides a button while that stays the same.
+                        // More room never takes the pickers' room away, and never hides a button while that stays the same. "A button"
+                        // is now any button on the bar, left or right: the left ones go first, then the right group's first ones, so
+                        // LeftShown plus the right buttons still shown never falls (it was LeftShown alone while the right group stayed whole).
                         Assert.True(f.Fit.PickersKept || !p.Fit.PickersKept, $"{where}: pickers lost their room");
                         if (f.Fit.PickersKept == p.Fit.PickersKept)
-                            Assert.True(f.Fit.LeftShown >= p.Fit.LeftShown, $"{where}: {p.Fit.LeftShown} -> {f.Fit.LeftShown}");
-                        if (!f.HasPickers) Assert.True(f.Fit.LeftShown >= p.Fit.LeftShown, $"{where}: not monotone");
+                            Assert.True(f.ButtonsShown >= p.ButtonsShown, $"{where}: {p.ButtonsShown} -> {f.ButtonsShown}");
+                        if (!f.HasPickers) Assert.True(f.ButtonsShown >= p.ButtonsShown, $"{where}: not monotone");
                     }
                     previous = f;
                     if (f.Used > room) overshoots++;
                     if (f.RightOnly > room) rightTooWide++;
+                    if (f.Fit.RightDropped > 0) rightDropped++;
                     if (f.Fit.PickersKept && f.Fit.Overflow) keptAndDropped++;
                     if (f.Plan.Center.Count > 0 && f.Fit.Overflow) centres++;
                 }
             }
         }
         // The sweep reaches the interesting cases, not only bars that always fit.
-        Assert.True(overshoots > 0 && rightTooWide > 0 && keptAndDropped > 0 && centres > 0,
-            $"overshoots {overshoots}, right too wide {rightTooWide}, kept and dropped {keptAndDropped}, centre dropped {centres}");
+        // (Changed: no row overshoots from 320 up any more; the overshoot is only for rooms under about two buttons, see below.)
+        Assert.Equal(0, overshoots);
+        Assert.True(rightTooWide > 0 && keptAndDropped > 0 && centres > 0 && rightDropped > 0,
+            $"right too wide {rightTooWide}, kept and dropped {keptAndDropped}, centre dropped {centres}, right dropped {rightDropped}");
+    }
+
+    [Fact]
+    public void Panels_narrower_than_320_overshoot_only_when_one_right_button_and_the_menu_button_do_not_fit()
+    {
+        var r = new Random(99);
+        var overshoots = 0;
+        for (var run = 0; run < 200; run++)
+        {
+            var m = RandomModel(r);
+            foreach (var top in new[] { true, false })
+                for (double room = 0; room < 320; room += 5)
+                {
+                    var f = FitRow(m, top, room);
+                    AssertFit(f, room, $"run {run} top {top} room {room}"); // checks the exact overshoot shape
+                    if (f.Used > room) overshoots++;
+                }
+        }
+        Assert.True(overshoots > 0, "the sweep reaches the overshoot");
     }
 
     [Fact]
@@ -176,8 +221,8 @@ public sealed class ToolbarRobustnessTests
                 {
                     var f = FitRow(m, top, room, pickersMin: 0);
                     AssertFit(f, room, $"run {run} room {room}");
-                    Assert.True(f.Fit.LeftShown >= previous, $"run {run} top {top} room {room}: {previous} -> {f.Fit.LeftShown}");
-                    previous = f.Fit.LeftShown;
+                    Assert.True(f.ButtonsShown >= previous, $"run {run} top {top} room {room}: {previous} -> {f.ButtonsShown}");
+                    previous = f.ButtonsShown;
                 }
             }
         }
@@ -265,8 +310,9 @@ public sealed class ToolbarRobustnessTests
             foreach (var hasCenter in new[] { true, false })
                 for (double room = -10; room <= 500; room += 3)
                 {
+                    // The right group gives up its first buttons (it used to stay whole), never its last: at least one stays.
                     var fit = ToolbarPlan.FitRow(room, Spacing, [36, 108], big, hasPickers, PickersMin, 108, hasCenter);
-                    Assert.Equal(new RowFit(0, true, false, fit.FixedWidth), fit);
+                    Assert.True(fit.LeftShown == 0 && fit.Overflow && fit.RightDropped is >= 0 and <= 3, $"{room}: {fit}");
                     var single = ToolbarPlan.FitRow(room, Spacing, [108], [], hasPickers, PickersMin, 108, hasCenter);
                     Assert.True(double.IsFinite(single.FixedWidth));
                     if (room < 108) Assert.Equal(0, single.LeftShown);

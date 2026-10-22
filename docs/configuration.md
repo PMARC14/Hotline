@@ -220,29 +220,30 @@ position, with the pickers in the order of the groups above and then as listed w
 left plus `model` in bottom right puts the block in bottom right, `model` first and `effort` after it. They ignore `style` and the
 style keys of `overrides`.
 
-**Picker widths.** A picker is a whole number of **button widths** wide, so the pickers grow and shrink with the bar's size
-like the buttons do. The unit is the bar's normal button width (compact 20, normal 40, wide 80 DIPs). Set it per picker with
+**Picker widths.** A picker is a whole number of **button widths** wide. The unit is always one standard button width,
+40 DIPs, whatever the bar's size: a compact bar keeps readable drop-downs and a wide bar does not make them huge. Set it per picker with
 `span`, 1 to 8 (the only `overrides` key a picker takes; anything else is dropped with a warning):
 
 ```jsonc
 "overrides": { "model": { "span": 6 }, "effort": { "span": 1 } }
 ```
 
-| Picker | Default `span` | Width at the normal size |
-|---|---|---|
-| `effort` | 2 | 80 DIPs |
-| `model` | 4 | 160 DIPs |
-| `provider` | 3 | 120 DIPs |
+| Picker | Default `span` | Width | Narrowest before it hides |
+|---|---|---|---|
+| `effort` | 2 | 80 DIPs | 56 DIPs |
+| `model` | 4 | 160 DIPs | 84 DIPs |
+| `provider` | 3 | 120 DIPs | 72 DIPs |
 
 The span is a maximum as well as the preferred width: a picker never grows past it. In a short row each picker shrinks
-evenly, down to one button width (never under 28 DIPs); when that is not enough they hide one at a time, `effort` first,
-then `provider`, then `model`. A span for a picker that is hidden is kept. Settings › Button rows has a **1x** to **8x**
+evenly, down to the narrowest in the table (still readable; never past its own width, so a span of 1 is exactly 40 DIPs);
+when that is not enough they hide one at a time, `effort` first, then `provider`, then `model`. A span for a picker that is hidden is kept. Settings › Button rows has a **1x** to **8x**
 choice on each picker's chip.
 
 **Pickers in the bottom row.** The block can sit in any of the six groups, also in the bottom row among the buttons: before
 them, after them, between two of them, or in the centre or right group. The row first moves buttons into the "..." menu
-(the left group, then the centre, from their ends) so that the pickers keep one button width each, and only when even the
-buttons that always stay (the right group) leave no room do the pickers shrink and hide.
+(the left group, then the centre, from their ends, then the right group's first buttons) so that the pickers keep their
+narrowest widths above, and only when not even one right button, the "..." button and the pickers' narrowest widths fit
+do the pickers shrink and hide.
 
 **Reference layouts.** These layouts are tried automatically at every panel width and bar size, and the panel's self-test
 draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as a starting point:
@@ -282,8 +283,10 @@ draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as
 **Limits.** At most 24 custom buttons and 40 items per group. `width` and `height` are kept between 20 and 80 (custom
 buttons in every size), an unknown `size` becomes `normal`, and labels lose control characters. A bar too narrow for its
 buttons moves the last of the centre group, then of the left group, into a "..." menu rather than push anything off the
-panel. The right group always stays whole: only when it alone nearly fills the
-panel (say, many `wide` buttons) can the row stick out, by the "..." button or by the right group itself.
+panel. When the right group alone is too wide for the panel (say, many `wide` buttons) it gives up buttons too, its
+first ones (from its left end) so the rightmost, typically Settings, stay; the menu lists them in bar order (left, centre,
+right) and at least one right button always stays. Only a panel narrower than about two buttons (one right button plus the
+"..." button) can make the row stick out.
 
 **A hand-edited file.** Comments and trailing commas are allowed. A bad value is replaced by its default on its own,
 and the rest of the file still applies; the file is never thrown away for one mistake. In detail:

@@ -28,9 +28,9 @@ internal sealed class ToolbarRenderer
         public Grid Grid { get; } = grid;
         public Button More { get; } = more;
         public RowPlan Plan { get; set; } = new([], [], []);
-        /// <summary>The left buttons in the "⋯" menu, in order.</summary>
+        /// <summary>The buttons in the "⋯" menu, in bar order: left, centre, then the right group's.</summary>
         public IReadOnlyList<string> Dropped { get; set; } = [];
-        public (int LeftShown, bool Overflow)? Arranged { get; set; }
+        public (int LeftShown, int RightDropped, bool Overflow)? Arranged { get; set; }
     }
 
     private readonly PopupWindow _popup;
@@ -108,7 +108,7 @@ internal sealed class ToolbarRenderer
         {
             row.Plan = ToolbarPlan.Row(model, top);
             row.Arranged = null;
-            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.IsPicker(id)), overflow: false); // as Fit counts them
+            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.IsPicker(id)), rightDropped: 0, overflow: false); // as Fit counts them
             var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
@@ -139,13 +139,14 @@ internal sealed class ToolbarRenderer
         : _customButtons[id].Button;
 
     /// <summary>Lays a row out: the left buttons kept (the pickers always), "⋯" when some moved into it, a flexible gap, the centre
-    /// group (between two flexible gaps, so it sits in the free space), the right group.</summary>
-    private void Arrange(Row row, int leftShown, bool overflow)
+    /// group (between two flexible gaps, so it sits in the free space), the right group (without the buttons it gave up).</summary>
+    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow)
     {
-        if (row.Arranged == (leftShown, overflow)) return;
-        row.Arranged = (leftShown, overflow);
+        if (row.Arranged == (leftShown, rightDropped, overflow)) return;
+        row.Arranged = (leftShown, rightDropped, overflow);
         var (shown, dropped) = ToolbarPlan.Split(row.Plan.Droppable, leftShown); // the left group, then the centre: the centre goes first
-        row.Dropped = dropped;
+        var (rightShown, rightGone) = ToolbarPlan.SplitRight(row.Plan.Right, rightDropped);
+        row.Dropped = [.. dropped, .. rightGone];
         var grid = row.Grid;
         grid.Children.Clear();
         grid.ColumnDefinitions.Clear();
@@ -165,11 +166,11 @@ internal sealed class ToolbarRenderer
             foreach (var id in centre) Add(Element(id));
             Gap();
         }
-        foreach (var id in row.Plan.Right) Add(Element(id));
+        foreach (var id in rightShown) Add(Element(id));
     }
 
     /// <summary>
-    /// Moves the left buttons that don't fit in <paramref name="room"/> into each row's "⋯" menu (and back), keeping
+    /// Moves the buttons that don't fit (the left ones, and only when the right group alone is too wide, its first ones) in <paramref name="room"/> into each row's "⋯" menu (and back), keeping
     /// the pickers' minimum when it can (see <see cref="ToolbarPlan.PlanRow"/>). Widths come from the resolved sizes, never
     /// from measuring (a moved button measures 0), so the result doesn't depend on the last pass. Returns each picker's width
     /// (0 = hidden); <paramref name="availablePickers"/> are the ones with something to show.
@@ -183,7 +184,7 @@ internal sealed class ToolbarRenderer
             if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
             // The same call the tests make: which buttons stay, and the pickers' widths from what they leave.
             var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, pickerSpacing, availablePickers);
-            Arrange(row, layout.Fit.LeftShown, layout.Fit.Overflow);
+            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow);
             foreach (var (id, width) in layout.PickerWidths) widths[id] = width;
         }
         return widths;
