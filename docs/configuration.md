@@ -18,7 +18,8 @@ same files). Comments and trailing commas are allowed.
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
-| `settings.json.old` | The previous file, kept when 0.4 replaced it (see *Upgrading to 0.4*). A later replacement is kept as `.old2`, `.old3`, and so on; an archive is never overwritten |
+| `settings.json.bak` | The previous settings.json, kept when Hotline rewrites a file you edited by hand (to add newly available options or to move an old inline `chat.backends` list into `connections\`) |
+| `toolbar.json.old` | The previous toolbar.json, kept by Settings when its own buttons replace it. A later replacement is kept as `.old2`, `.old3`, and so on; an archive is never overwritten |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current
@@ -35,7 +36,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 |---|---|---|
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `680` / `1000` | Panel width: % of the screen, clamped (DIPs). On upgrading to 0.4, a `minWidth` of exactly 600 (the old default) becomes 680; any other value you set stays |
+| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `680` / `1000` | Panel width: % of the screen, clamped (DIPs) |
 | `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
 | `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule. A width you saved yourself is kept |
@@ -69,7 +70,9 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: in apps that don't share text through UI Automation, also send Ctrl+C and put your clipboard back afterwards (never in terminals or password fields; Visual Studio/VS Code whole-line copies are ignored; the app's copy can show up in clipboard history, the restore doesn't; opening can take up to about half a second). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
 
-settings.json is schema version 14 (0.4). See *Upgrading to 0.4* below for what the first start does with an older file.
+settings.json is schema version 14 (0.4). Hotline is pre-1.0 and does not convert older files: a file with a lower or
+missing `schemaVersion` is read as it is (every value is checked and clamped) and gets the current version the next
+time Settings saves it. No archive is made for that.
 
 A half-saved or broken `settings.json` is ignored while Hotline runs (your file is never overwritten without a
 timestamped backup); at startup a broken file is copied to `settings.json.bad` and defaults are used in memory.
@@ -326,13 +329,12 @@ write the version 2 format above (or delete the file to get the defaults back).
 
 ## Upgrading to 0.4
 
-Hotline is pre-1.0, so old files may be replaced rather than converted: the first start of 0.4 keeps `settings.json` as
-`settings.json.old` (schema 13 to 14) and writes the new one (an old `toolbar.json` is not converted, see above). If a
-`.old` already exists the copy is called `.old2`, then `.old3`; an archive is never overwritten. Kept values carry
-over where that is cheap. The `activation.copilotKey` setting no longer exists (an old entry is dropped; see
+Hotline is pre-1.0, so `settings.json` from before 0.4 is not converted or archived: it is read as it is. The
+`activation.copilotKey` setting no longer exists (an old entry is dropped when the file is next rewritten; see
 [copilot-key.md](copilot-key.md)). **Connections are untouched**: `connections\*.json`, the default connection and the
-API keys in Windows Credential Locker stay exactly as they were. `settings.json` is
-replaced only if its `.old` copy could be made; otherwise it stays and the next start tries again.
+API keys in Windows Credential Locker stay exactly as they were. The one conversion that remains is a settings.json
+that still has an inline `chat.backends` list: it is split into `connections\` files, and the file is kept as
+`settings.json.bak` first.
 
 ## Codex
 
