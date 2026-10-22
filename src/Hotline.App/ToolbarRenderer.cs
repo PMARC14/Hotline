@@ -235,12 +235,17 @@ internal sealed class ToolbarRenderer
     /// <summary>The default outline colour: a contrast theme's highlight colour, else the Windows accent (read at each apply).</summary>
     private static Windows.UI.Color AccentOutline()
     {
-        if (SystemTheme.Colors.Contrast is { } contrast && ThemeColor.TryParse(contrast.Highlight, out var h))
-            return Windows.UI.Color.FromArgb(0xFF, h.R, h.G, h.B);
-        return Application.Current.Resources.TryGetValue("SystemAccentColor", out var value) && value is Windows.UI.Color accent
-            ? accent
-            : Windows.UI.Color.FromArgb(0xFF, 0x00, 0x78, 0xD4); // Windows' default blue
+        try
+        {
+            if (SystemTheme.Colors.Contrast is { } contrast && ThemeColor.TryParse(contrast.Highlight, out var h))
+                return Windows.UI.Color.FromArgb(0xFF, h.R, h.G, h.B);
+            var accent = Ui.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent); // SystemAccentColor's source
+            return Windows.UI.Color.FromArgb(0xFF, accent.R, accent.G, accent.B);
+        }
+        catch (Exception) { return Windows.UI.Color.FromArgb(0xFF, 0x00, 0x78, 0xD4); } // WinRT can fail in any form: Windows' default blue
     }
+
+    private static readonly Windows.UI.ViewManagement.UISettings Ui = new();
 
     // ---- the "⋯" menu ----
 
