@@ -142,25 +142,28 @@ public sealed class ToolbarModelTests
     }
 
     [Theory]
-    [InlineData("double", ButtonSize.Double)]
-    [InlineData("TRIPLE", ButtonSize.Triple)]
-    [InlineData("wide", ButtonSize.Wide)]
-    public void Double_and_triple_sizes_resolve_and_round_trip(string text, ButtonSize size)
+    [InlineData("COMPACT", ButtonSize.Compact)]
+    [InlineData("normal", ButtonSize.Normal)]
+    [InlineData("Wide", ButtonSize.Wide)]
+    public void The_three_sizes_resolve_per_bar_and_per_item_and_round_trip(string text, ButtonSize size)
     {
-        var m = Bottom("\"pin\", \"settings\"", $$""", "style": { "size": "{{text}}" }, "overrides": { "pin": { "size": "triple" } }""");
+        var m = Bottom("\"pin\", \"settings\"", $$""", "style": { "size": "{{text}}" }, "overrides": { "pin": { "size": "compact" } }""");
         Assert.Empty(m.Warnings);
         Assert.Equal(size, m.Style.Size);
-        Assert.Equal(ButtonSize.Triple, m.Overrides["pin"].Size);
+        Assert.Equal(ButtonSize.Compact, m.EffectiveStyle("pin").Size);
+        Assert.Equal(size, m.EffectiveStyle("settings").Size);
         Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
-        Assert.Contains("\"size\": \"triple\"", m.ToJson());
     }
 
-    [Fact]
-    public void Unknown_size_is_normal_and_the_warning_names_every_preset()
+    [Theory]
+    [InlineData("double")]
+    [InlineData("triple")]
+    [InlineData("quadruple")]
+    public void Any_other_size_is_normal_with_a_warning_naming_the_three(string text)
     {
-        var m = Bottom("\"pin\"", """, "style": { "size": "quadruple" }""");
+        var m = Bottom("\"pin\"", $$""", "style": { "size": "{{text}}" }""");
         Assert.Equal(ButtonSize.Normal, m.Style.Size);
-        Assert.Contains(m.Warnings, w => w.Contains("quadruple") && w.Contains("double") && w.Contains("triple"));
+        Assert.Contains(m.Warnings, w => w.Contains(text) && w.Contains("compact, normal or wide"));
     }
 
     [Fact]

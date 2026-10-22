@@ -240,18 +240,16 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
             // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
             await Look("15-damaged-file", Bar("""{ "size": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
-            // The big presets: at 320 the left buttons go into the ⋯ menu (itself as big) and the right group may stick out.
-            await Look("16-double-720", Bar("""{ "size": "double" }"""), 720);
-            await Look("17-double-320", Bar("""{ "size": "double" }"""), 320);
-            await Look("18-triple-720", Bar("""{ "size": "triple", "outline": true }"""), 720);
-            await Look("19-triple-320", Bar("""{ "size": "triple", "outline": true }"""), 320);
-            // Custom buttons at their largest on a triple bar: drawn at most 80×80 (ToolbarPlan.Metrics), the built-ins at 108×96.
+            // Wide (twice the base) at the narrowest width: the left buttons go into the ⋯ menu (itself wide); then mixed sizes.
+            await Look("16-wide-320", Bar("""{ "size": "wide", "outline": true }"""), 320);
+            await Look("17-mixed-sizes-720", Bar("""{ "size": "normal" }""", overrides: """ "pin": { "size": "compact" }, "prompt": { "size": "wide" } """), 720);
+            // Custom buttons at their largest on a wide bar: drawn at most 80×80 (ToolbarPlan.Metrics).
             var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 80, "height": 80 } """));
-            await Look("20-custom-max-320", Bar("""{ "size": "triple" }""", customIds, customButtons, biggest), 320);
+            await Look("18-custom-max-320", Bar("""{ "size": "wide" }""", customIds, customButtons, biggest), 320);
             // A coloured outline bar-wide, and one item in another colour.
-            await Look("21-outline-colour", Bar("""{ "size": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            await Look("19-outline-colour", Bar("""{ "size": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
             // Items in the left, centre and right groups of both rows.
-            await Look("22-centre-group", """
+            await Look("20-centre-group", """
                 { "version": 2, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
                   "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
                   "style": { "outline": true } }

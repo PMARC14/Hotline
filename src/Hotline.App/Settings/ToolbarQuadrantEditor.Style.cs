@@ -29,10 +29,11 @@ internal sealed partial class ToolbarQuadrantEditor
         Automation(_barOutline, "bar-outline", Strings.Bar_Outline);
         Automation(_barFilled, "bar-filled", Strings.Bar_Filled);
         Automation(_barColor, "bar-outline-color", Strings.Bar_OutlineColor);
-        // "with": a width or height set by hand for the whole bar stays.
+        // A size for the whole bar sizes every button (the items' own sizes go; a width or height set by hand stays).
+        // "Custom" only shows that the items differ: choosing it changes nothing.
         _barSize.SelectionChanged += (_, _) =>
         {
-            if (!_syncing && _barSize.SelectedItem is ComboBoxItem { Tag: ButtonSize size }) Edit(m => ToolbarEditor.SetStyle(m, null, m.Style with { Size = size }), null);
+            if (!_syncing && _barSize.SelectedItem is ComboBoxItem { Tag: ButtonSize size }) Edit(m => ToolbarEditor.SetBarSize(m, size), null);
         };
         _barOutline.Toggled += (_, _) => { if (!_syncing) Edit(m => ToolbarEditor.SetStyle(m, null, m.Style with { Outline = _barOutline.IsOn }), null); };
         _barFilled.Toggled += (_, _) => { if (!_syncing) Edit(m => ToolbarEditor.SetStyle(m, null, m.Style with { Filled = _barFilled.IsOn }), null); };
@@ -64,7 +65,17 @@ internal sealed partial class ToolbarQuadrantEditor
         try
         {
             var style = _model.Style;
-            _barSize.SelectedIndex = ToolbarEditorView.Sizes.ToList().IndexOf(style.Size ?? ButtonSize.Normal);
+            // "Custom" is listed (after the sizes) only while it is the state: some item has a size of its own.
+            var choice = ToolbarEditorView.BarSize(_model);
+            var custom = _barSize.Items.OfType<ComboBoxItem>().FirstOrDefault(i => i.Tag is BarSizeChoice.Custom);
+            if (choice == BarSizeChoice.Custom && custom is null)
+                _barSize.Items.Add(custom = new ComboBoxItem { Content = Strings.Bar_SizeCustom, Tag = BarSizeChoice.Custom });
+            if (choice == BarSizeChoice.Custom) _barSize.SelectedItem = custom;
+            else
+            {
+                if (custom is not null) _barSize.Items.Remove(custom);
+                _barSize.SelectedIndex = ToolbarEditorView.Sizes.ToList().IndexOf((ButtonSize)choice);
+            }
             _barOutline.IsOn = style.Outline == true;
             _barFilled.IsOn = style.Filled == true;
             SelectColor(_barColor, style.OutlineColor);
@@ -164,13 +175,6 @@ internal sealed partial class ToolbarQuadrantEditor
         var color = ColorBox(Strings.Bar_AsBar, _model.Style.OutlineColor);
         var filled = new CheckBox { Content = Strings.Bar_Filled };
         var reset = new Button { Content = Strings.Bar_UseBarLook };
-        // A custom button offers every size but stops at 80 DIP (ToolbarPlan.Metrics): said once, under the size.
-        var limit = new TextBlock
-        {
-            Text = Strings.Bar_SizeLimitNote, TextWrapping = TextWrapping.Wrap, MaxWidth = 220,
-            Style = (Style)Application.Current.Resources["CaptionTextBlockStyle"],
-            Visibility = ToolbarEditorView.SizeLimited(_model, id) ? Visibility.Visible : Visibility.Collapsed,
-        };
         Automation(size, "bar-look-size", $"{Strings.Bar_Size}: {itemName}");
         Automation(width, "bar-look-width", $"{Strings.Bar_Width}: {itemName}");
         Automation(height, "bar-look-height", $"{Strings.Bar_Height}: {itemName}");
@@ -221,7 +225,7 @@ internal sealed partial class ToolbarQuadrantEditor
             Children =
             {
                 new TextBlock { Text = itemName, Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"] },
-                size, limit,
+                size,
                 new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { width, height } },
                 outline, color, filled, reset,
             },

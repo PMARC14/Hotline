@@ -172,6 +172,21 @@ public static class ToolbarEditor
         return Lenient(m, m with { Overrides = overrides }, null);
     }
 
+    /// <summary>The whole bar's size choice: every button gets <paramref name="size"/>, so the items' own sizes are cleared
+    /// (their other override keys stay; an override left empty goes). Unchanged: the input.</summary>
+    public static ToolbarModel SetBarSize(ToolbarModel m, ButtonSize size)
+    {
+        if (m is null || !Enum.IsDefined(size)) return m!;
+        var overrides = Overrides(m);
+        foreach (var (id, style) in overrides.ToList())
+            if (style.Size is not null)
+            {
+                if (style with { Size = null } is var rest && rest == new ButtonStyle()) overrides.Remove(id);
+                else overrides[id] = rest;
+            }
+        return Lenient(m, m with { Style = m.Style with { Size = size }, Overrides = overrides }, null);
+    }
+
     // ---- Helpers ----
 
     /// <summary>Exactly one of quick action and text, as in the file (the writer would otherwise drop the text silently).</summary>

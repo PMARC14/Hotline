@@ -17,6 +17,10 @@ public sealed record EditorUnit(
 /// <summary>Why a custom button can't be added or saved as it is (Settings shows a notice for each).</summary>
 public enum CustomProblem { None, NoLabel, NoAction, BadQuickAction, TooManyButtons, GroupFull }
 
+/// <summary>The whole bar's size as Settings shows it: one of the sizes (same values as <see cref="ButtonSize"/>), or Custom
+/// when the items don't all share it.</summary>
+public enum BarSizeChoice { Compact = ButtonSize.Compact, Normal = ButtonSize.Normal, Wide = ButtonSize.Wide, Custom }
+
 /// <summary>
 /// The pure half of Settings' quadrant editor (<see cref="ToolbarEditor"/> does the edits): what each strip shows, the
 /// arrows' states, drop gaps, ids for new custom buttons, the icon choices and the checks behind its notices.
@@ -35,15 +39,16 @@ public static class ToolbarEditorView
     {
         ButtonSize.Compact => Strings.Bar_SizeCompact,
         ButtonSize.Wide => Strings.Bar_SizeWide,
-        ButtonSize.Double => Strings.Bar_SizeDouble,
-        ButtonSize.Triple => Strings.Bar_SizeTriple,
         _ => Strings.Bar_SizeNormal,
     };
 
-    /// <summary>A custom button: it offers every size but stops at 80 DIP (see <see cref="ToolbarPlan.Metrics(ButtonStyle, bool)"/>),
-    /// so its look shows a note.</summary>
-    public static bool SizeLimited(ToolbarModel m, string id) =>
-        m.Buttons.Any(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase));
+    /// <summary>What the whole bar's size choice shows: the bar's size, or <see cref="BarSizeChoice.Custom"/> while an item has
+    /// a size of its own that differs from it. Derived, never stored: the file keeps the bar's size and the overrides.</summary>
+    public static BarSizeChoice BarSize(ToolbarModel m)
+    {
+        var bar = m.Style.Size is { } s && Enum.IsDefined(s) ? s : ButtonSize.Normal;
+        return m.Overrides.Values.Any(o => o.Size is { } own && own != bar) ? BarSizeChoice.Custom : (BarSizeChoice)bar;
+    }
 
     /// <summary>The outline colour swatches besides the accent colour: red, orange, yellow, green, teal, blue, purple, pink
     /// (the Windows accent palette's, readable on light and dark).</summary>

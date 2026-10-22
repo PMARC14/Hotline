@@ -8,8 +8,9 @@ namespace Hotline.Core.Windowing;
 /// <summary>Where an item sits. The declaration order decides which place keeps an item listed in two.</summary>
 public enum Quadrant { BottomLeft, BottomCenter, BottomRight, TopLeft, TopCenter, TopRight }
 
-/// <summary>The size presets (see <see cref="ToolbarPlan.Metrics(ButtonStyle, bool)"/>); custom buttons stop at 80 DIP.</summary>
-public enum ButtonSize { Compact, Normal, Wide, Double, Triple }
+/// <summary>The size presets: half, once and twice one base size (see <see cref="ToolbarPlan.Metrics(ButtonStyle, bool)"/>);
+/// custom buttons stop at 80 DIP.</summary>
+public enum ButtonSize { Compact, Normal, Wide }
 
 /// <summary>The look of the whole bar or of one item; a null field inherits (item, then bar, then the defaults).
 /// Width and height (DIP) apply to icon buttons only; pickers ignore all of it. <see cref="OutlineColor"/> is a validated
@@ -313,7 +314,7 @@ public sealed record ToolbarModel(
             size = sizeNode is JsonValue v && v.TryGetValue<string>(out var s)
                 ? Enum.GetValues<ButtonSize>().Cast<ButtonSize?>().FirstOrDefault(z => z.ToString()!.Equals(s, StringComparison.OrdinalIgnoreCase))
                 : null;
-            if (size is null) warnings.Add($"\"{where}.size\" {Show(sizeNode)} isn't compact, normal, wide, double or triple; normal is used");
+            if (size is null) warnings.Add($"\"{where}.size\" {Show(sizeNode)} isn't compact, normal or wide; normal is used");
             size ??= ButtonSize.Normal;
         }
         return new ButtonStyle(size, Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
@@ -408,7 +409,7 @@ public sealed record ToolbarModel(
               // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
               // The effort, model and provider pickers stay together (where the first one is) and ignore the styles below.
-              // "style": the whole bar; size is compact | normal | wide | double | triple, outline and filled are true | false,
+              // "style": the whole bar; size is compact | normal | wide (half, once, twice the base), outline and filled are true | false,
               // outlineColor is "#RRGGBB" (left out: the accent colour).
               // "overrides": the same keys for one item, plus "width" and "height" ({{MinDip}}-{{MaxDip}}) for icon buttons.
               // Custom buttons stay within {{MaxDip}} x {{MaxDip}} whatever the size.

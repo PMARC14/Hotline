@@ -12,7 +12,10 @@ public sealed class ToolbarRobustnessTests
 {
     private const double Spacing = 2; // the rows' Grid.ColumnSpacing
     private const double PickersMin = 150;
-    private const int MaxBuiltIn = 108, MaxCustom = 80, MinDip = 20;
+    private const int MaxCustom = 80, MinDip = 20;
+    // A built-in button is at most wide (twice the base) or an explicit 80; its glyph 0.8 to 1.2 times the base's.
+    private static readonly double MaxBuiltInWidth = Math.Max(80, 2 * ToolbarPlan.BaseWidth), MaxBuiltInHeight = Math.Max(80, 2 * ToolbarPlan.BaseHeight);
+    private static readonly double MinFont = Math.Round(0.8 * ToolbarPlan.BaseFont), MaxFont = Math.Round(1.2 * ToolbarPlan.BaseFont);
 
     private static readonly string[] Buttons = [.. ToolbarModel.BuiltIn.Where(id => !ToolbarPlan.IsPicker(id))];
     private static readonly string[] Pickers = ["effort", "model", "provider"];
@@ -40,7 +43,7 @@ public sealed class ToolbarRobustnessTests
     }
 
     private static ButtonStyle RandomStyle(Random r, bool bar) => new(
-        r.Next(4) == 0 && !bar ? null : Enum.GetValues<ButtonSize>()[r.Next(5)],
+        r.Next(4) == 0 && !bar ? null : Enum.GetValues<ButtonSize>()[r.Next(Enum.GetValues<ButtonSize>().Length)],
         r.Next(3) == 0 ? null : r.Next(2) == 0,
         r.Next(3) == 0 ? null : r.Next(2) == 0,
         r.Next(3) == 0 ? r.Next(-40, 300) : null, // in memory: Metrics must clamp what Resolve would have
@@ -86,11 +89,10 @@ public sealed class ToolbarRobustnessTests
         {
             var size = ToolbarPlan.Metrics(m, id);
             var custom = m.Buttons.Any(b => b.Id == id);
-            var max = custom ? MaxCustom : MaxBuiltIn;
             Assert.True(double.IsFinite(size.Width) && double.IsFinite(size.Height) && double.IsFinite(size.FontSize), $"{id}: {size}");
-            Assert.InRange(size.Width, MinDip, max);
-            Assert.InRange(size.Height, MinDip, custom ? MaxCustom : 96);
-            Assert.InRange(size.FontSize, 13, custom ? 22 : 34);
+            Assert.InRange(size.Width, MinDip, custom ? MaxCustom : MaxBuiltInWidth);
+            Assert.InRange(size.Height, MinDip, custom ? MaxCustom : MaxBuiltInHeight);
+            Assert.InRange(size.FontSize, Math.Min(MinFont, ToolbarPlan.MaxCustomFont), custom ? Math.Min(MaxFont, ToolbarPlan.MaxCustomFont) : MaxFont);
         }
     }
 
@@ -185,8 +187,6 @@ public sealed class ToolbarRobustnessTests
     [InlineData(ButtonSize.Compact)]
     [InlineData(ButtonSize.Normal)]
     [InlineData(ButtonSize.Wide)]
-    [InlineData(ButtonSize.Double)]
-    [InlineData(ButtonSize.Triple)]
     public void Every_preset_with_24_custom_buttons_in_every_group_fits_from_320(ButtonSize size)
     {
         var custom = Enumerable.Range(1, 24).Select(i => new CustomButton($"c{i}", $"C{i}", "E734", null, "t", false)).ToList();
@@ -226,35 +226,46 @@ public sealed class ToolbarRobustnessTests
                 if (style.Height is { } h) Assert.Equal(h, custom.Height);
                 var builtIn = ToolbarPlan.Metrics(style);
                 Assert.True(builtIn.Width >= custom.Width && builtIn.Height >= custom.Height, $"{size} {style}");
+                // A base so big that wide is 140 × 120: the custom button still stops at 80 × 80 and a glyph of 22.
+                var big = ToolbarPlan.Metrics(style, true, 70, 60, 30);
+                Assert.InRange(big.Width, 20, 80);
+                Assert.InRange(big.Height, 20, 80);
+                Assert.True(big.FontSize <= 22);
+                if (size == ButtonSize.Wide && style.Width is null) Assert.Equal(140, ToolbarPlan.Metrics(style, false, 70, 60, 30).Width);
             }
     }
 
     [Fact]
-    public void Resolve_of_24_custom_buttons_at_their_biggest_on_a_triple_bar_stays_within_limits()
+    public void Resolve_of_24_custom_buttons_at_their_biggest_on_a_wide_bar_stays_within_limits()
     {
         var buttons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "label": "C{{i}}", "text": "t" } """));
-        var overrides = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "size": "triple", "width": 999, "height": 80 } """));
+        var overrides = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "size": "wide", "width": 999, "height": 80 } """));
         var ids = string.Join(", ", Enumerable.Range(1, 24).Select(i => $"\"c{i}\""));
         var m = ToolbarModel.Resolve($$"""
             { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] }, "items": { "left": [{{ids}}], "right": ["settings"] },
-              "style": { "size": "triple", "width": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
+              "style": { "size": "wide", "width": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
             """);
         Assert.Equal(24, m.Buttons.Count);
         AssertMetricsInRange(m);
-        Assert.All(m.Buttons, b => Assert.Equal(new ButtonMetrics(80, 80, 22), ToolbarPlan.Metrics(m, b.Id)));
-        Assert.Equal(new ButtonMetrics(80, 96, 34), ToolbarPlan.Metrics(m, "settings")); // the bar's width (clamped to 80) wins over the preset
+        var biggest = ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide, Width: 80, Height: 80), isCustom: true);
+        Assert.Equal(80, biggest.Width);
+        Assert.Equal(80, biggest.Height);
+        Assert.All(m.Buttons, b => Assert.Equal(biggest, ToolbarPlan.Metrics(m, b.Id)));
+        // The bar's width (clamped to 80) wins over the preset; the height stays wide's.
+        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide, Width: 80)), ToolbarPlan.Metrics(m, "settings"));
+        Assert.Equal(80, ToolbarPlan.Metrics(m, "settings").Width);
         for (double room = 320; room <= 2000; room += 5) AssertFit(FitRow(m, top: false, room), room, $"room {room}");
     }
 
     [Fact]
     public void A_right_group_or_a_single_button_wider_than_the_room_never_throws_and_shows_no_left_button()
     {
-        double[] triple = [108, 108, 108, 108];
+        double[] big = [108, 108, 108, 108]; // e.g. a base grown past today's
         foreach (var hasPickers in new[] { true, false })
             foreach (var hasCenter in new[] { true, false })
                 for (double room = -10; room <= 500; room += 3)
                 {
-                    var fit = ToolbarPlan.FitRow(room, Spacing, [36, 108], triple, hasPickers, PickersMin, 108, hasCenter);
+                    var fit = ToolbarPlan.FitRow(room, Spacing, [36, 108], big, hasPickers, PickersMin, 108, hasCenter);
                     Assert.Equal(new RowFit(0, true, false, fit.FixedWidth), fit);
                     var single = ToolbarPlan.FitRow(room, Spacing, [108], [], hasPickers, PickersMin, 108, hasCenter);
                     Assert.True(double.IsFinite(single.FixedWidth));

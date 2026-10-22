@@ -343,12 +343,27 @@ public sealed class ToolbarEditorViewTests
     }
 
     [Fact]
-    public void Only_custom_buttons_get_the_size_limit_note()
+    public void Three_sizes_are_offered_smallest_first()
     {
-        var m = Model("\"pin\", \"mine\"", "", buttons: """ "mine": { "label": "Mine", "text": "hi" } """);
-        Assert.True(ToolbarEditorView.SizeLimited(m, "mine"));
-        Assert.True(ToolbarEditorView.SizeLimited(m, "MINE"));
-        Assert.False(ToolbarEditorView.SizeLimited(m, "pin"));
-        Assert.False(ToolbarEditorView.SizeLimited(m, "nope"));
+        Assert.Equal([ButtonSize.Compact, ButtonSize.Normal, ButtonSize.Wide], ToolbarEditorView.Sizes);
+        Assert.Equal(BarSizeChoice.Wide, (BarSizeChoice)ButtonSize.Wide); // the choice shares the sizes' values
+    }
+
+    [Theory]
+    [InlineData("", "", BarSizeChoice.Normal)] // no size anywhere: normal
+    [InlineData("\"size\": \"wide\"", "", BarSizeChoice.Wide)]
+    [InlineData("\"size\": \"compact\"", "\"pin\": { \"outline\": true }", BarSizeChoice.Compact)] // other keys don't matter
+    [InlineData("\"size\": \"wide\"", "\"pin\": { \"size\": \"wide\" }", BarSizeChoice.Wide)] // the same size again
+    [InlineData("\"size\": \"wide\"", "\"pin\": { \"size\": \"compact\" }", BarSizeChoice.Custom)]
+    [InlineData("", "\"settings\": { \"size\": \"wide\", \"filled\": true }", BarSizeChoice.Custom)]
+    public void The_bar_size_shows_custom_only_while_an_item_has_another_size(string style, string overrides, BarSizeChoice expected)
+    {
+        var m = ToolbarModel.Resolve($$"""
+            { "version": 2, "items": { "left": ["pin", "settings"], "right": [] }, "style": { {{style}} }, "overrides": { {{overrides}} } }
+            """);
+        Assert.Empty(m.Warnings);
+        Assert.Equal(expected, ToolbarEditorView.BarSize(m));
+        // Choosing a size for the whole bar always leaves it showing that size.
+        foreach (var size in ToolbarEditorView.Sizes) Assert.Equal((BarSizeChoice)size, ToolbarEditorView.BarSize(ToolbarEditor.SetBarSize(m, size)));
     }
 }

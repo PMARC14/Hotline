@@ -34,22 +34,31 @@ public static class ToolbarPlan
     /// <summary>A custom button's largest glyph: its icon is one of a few plain ones, drawn no bigger than an 80-DIP button holds.</summary>
     public const int MaxCustomFont = 22;
 
+    /// <summary>The one base size every preset is a multiple of (DIP; the glyph in points): change these to rescale them all.</summary>
+    public const double BaseWidth = 36, BaseHeight = 32, BaseFont = 15;
+
     /// <summary>
-    /// The size presets (compact 30×28, normal 36×32, wide 46×32, double 72×64, triple 108×96). An item's width/height wins
-    /// over its preset but stays within 20-80 (only the presets go past 80). A custom button (<paramref name="isCustom"/>)
-    /// never goes past 80×80 and a glyph of 22, whatever the bar's or its own size: double and triple are for the built-in
-    /// buttons. The renderer and every fit measure through here, so what is drawn is what was fitted.
+    /// The size presets, from the base (<see cref="BaseWidth"/> × <see cref="BaseHeight"/>, glyph <see cref="BaseFont"/>):
+    /// compact is half of it (never under 20×20), normal the base, wide twice it; the glyph is 0.8, 1 and 1.2 times the
+    /// base's. An item's width/height wins over its preset but stays within 20-80. A custom button (<paramref name="isCustom"/>)
+    /// never goes past 80×80 and a glyph of 22, whatever the bar's or its own size (a safety net should the base grow).
+    /// The renderer and every fit measure through here, so what is drawn is what was fitted.
     /// </summary>
-    public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom = false)
+    public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom = false) =>
+        Metrics(style, isCustom, BaseWidth, BaseHeight, BaseFont);
+
+    /// <summary><see cref="Metrics(ButtonStyle, bool)"/> from another base (tests).</summary>
+    public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom, double baseWidth, double baseHeight, double baseFont)
     {
-        var (width, height, font) = style.Size switch
+        var (scale, glyph) = style.Size switch
         {
-            ButtonSize.Compact => (30, 28, 13),
-            ButtonSize.Wide => (46, 32, 15),
-            ButtonSize.Double => (72, 64, 24),
-            ButtonSize.Triple => (108, 96, 34),
-            _ => (36, 32, 15),
+            ButtonSize.Compact => (0.5, 0.8),
+            ButtonSize.Wide => (2.0, 1.2),
+            _ => (1.0, 1.0),
         };
+        var width = Math.Max(MinDip, Math.Round(baseWidth * scale));
+        var height = Math.Max(MinDip, Math.Round(baseHeight * scale));
+        var font = Math.Round(baseFont * glyph);
         // Resolve already clamps a file's width and height; a model built in memory (Settings, the self-test) may not be.
         if (style.Width is { } w) width = Math.Clamp(w, MinDip, MaxDip);
         if (style.Height is { } h) height = Math.Clamp(h, MinDip, MaxDip);

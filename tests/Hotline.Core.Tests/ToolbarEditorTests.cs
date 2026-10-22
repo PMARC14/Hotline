@@ -489,12 +489,12 @@ public sealed class ToolbarEditorTests
     }
 
     [Fact]
-    public void SetStyle_takes_the_new_sizes_and_an_outline_color_for_the_bar_and_an_item()
+    public void SetStyle_takes_a_size_and_an_outline_color_for_the_bar_and_an_item()
     {
-        var bar = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(ButtonSize.Triple, true, null, OutlineColor: "#e81123"));
-        Assert.Equal(new ButtonStyle(ButtonSize.Triple, true, false, OutlineColor: "#E81123"), bar.Style);
-        var item = ToolbarEditor.SetStyle(bar, "pin", new ButtonStyle(ButtonSize.Double, OutlineColor: "#00B7C3"));
-        Assert.Equal(new ButtonStyle(ButtonSize.Double, true, false, OutlineColor: "#00B7C3"), item.EffectiveStyle("pin"));
+        var bar = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(ButtonSize.Wide, true, null, OutlineColor: "#e81123"));
+        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false, OutlineColor: "#E81123"), bar.Style);
+        var item = ToolbarEditor.SetStyle(bar, "pin", new ButtonStyle(ButtonSize.Compact, OutlineColor: "#00B7C3"));
+        Assert.Equal(new ButtonStyle(ButtonSize.Compact, true, false, OutlineColor: "#00B7C3"), item.EffectiveStyle("pin"));
         AssertValid(item);
         // An invalid colour is dropped (the item inherits the bar's), the rest of the edit stays.
         var bad = ToolbarEditor.SetStyle(bar, "pin", new ButtonStyle(Filled: true, OutlineColor: "red"));
@@ -503,6 +503,41 @@ public sealed class ToolbarEditorTests
         // Clearing the bar's colour goes back to the accent (null); the same colour again changes nothing.
         Assert.Null(ToolbarEditor.SetStyle(bar, null, bar.Style with { OutlineColor = null }).Style.OutlineColor);
         Assert.Same(bar, ToolbarEditor.SetStyle(bar, null, bar.Style with { OutlineColor = "#e81123" }));
+    }
+
+    [Fact]
+    public void SetBarSize_sizes_the_whole_bar_and_clears_only_the_items_sizes()
+    {
+        var m = ToolbarEditor.SetStyle(Grid, null, Grid.Style with { Outline = true, Width = 40 });
+        m = ToolbarEditor.SetStyle(m, "pin", new ButtonStyle(ButtonSize.Compact, Filled: true));
+        m = ToolbarEditor.SetStyle(m, "one", new ButtonStyle(ButtonSize.Wide, OutlineColor: "#E81123"));
+        m = ToolbarEditor.SetStyle(m, "prompt", new ButtonStyle(ButtonSize.Wide));
+        Assert.Equal(BarSizeChoice.Custom, ToolbarEditorView.BarSize(m));
+
+        var wide = ToolbarEditor.SetBarSize(m, ButtonSize.Wide);
+        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false, 40), wide.Style); // the bar's other keys stay
+        Assert.Equal(new ButtonStyle(Filled: true), wide.Overrides["pin"]);
+        Assert.Equal(new ButtonStyle(OutlineColor: "#E81123"), wide.Overrides["one"]);
+        Assert.False(wide.Overrides.ContainsKey("prompt")); // nothing left of it
+        Assert.All(new[] { "pin", "one", "prompt", "recent" }, id => Assert.Equal(ButtonSize.Wide, wide.EffectiveStyle(id).Size));
+        Assert.Equal(BarSizeChoice.Wide, ToolbarEditorView.BarSize(wide));
+        AssertValid(wide);
+        Assert.Empty(ToolbarModel.Resolve(wide.ToJson()).Warnings);
+    }
+
+    [Fact]
+    public void SetBarSize_that_changes_nothing_or_is_invalid_returns_the_input()
+    {
+        var wide = ToolbarEditor.SetBarSize(Grid, ButtonSize.Wide);
+        Assert.Same(wide, ToolbarEditor.SetBarSize(wide, ButtonSize.Wide));
+        Assert.Same(Grid, ToolbarEditor.SetBarSize(Grid, ButtonSize.Normal)); // already normal, no item sizes
+        Assert.Same(Grid, ToolbarEditor.SetBarSize(Grid, (ButtonSize)42));
+        Assert.Null(ToolbarEditor.SetBarSize(null!, ButtonSize.Wide));
+        // Same bar size but an item had its own: clearing it is a change.
+        var mixed = ToolbarEditor.SetStyle(Grid, "pin", new ButtonStyle(ButtonSize.Compact));
+        var cleared = ToolbarEditor.SetBarSize(mixed, ButtonSize.Normal);
+        Assert.NotSame(mixed, cleared);
+        Assert.Empty(cleared.Overrides);
     }
 
     [Fact]
@@ -569,6 +604,7 @@ public sealed class ToolbarEditorTests
                         ? new CustomButton(id, "L", "E8BD", action, null, false, random.Next(3) == 0 ? id + ".png" : null)
                         : new CustomButton(id, "L", "E8BD", null, "t", true, random.Next(4) == 0 ? junk[random.Next(junk.Length)] + ".png" : null)),
                     7 => ToolbarEditor.RemoveCustom(m, id),
+                    8 when random.Next(4) == 0 => ToolbarEditor.SetBarSize(m, (ButtonSize)random.Next(-1, 4)),
                     8 => ToolbarEditor.SetStyle(m, random.Next(3) == 0 ? null : id,
                         new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(7), null, random.Next(2) == 0, random.Next(-50, 200), null,
                             colors[random.Next(colors.Length)])),

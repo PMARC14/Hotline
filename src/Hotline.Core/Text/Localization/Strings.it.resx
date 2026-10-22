@@ -604,9 +604,7 @@ Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</val
   <data name="Quad_BottomLeft" xml:space="preserve"><value>In basso a sinistra</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>In basso al centro</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>In basso a destra</value></data>
-  <data name="Bar_SizeDouble" xml:space="preserve"><value>Double</value></data>
-  <data name="Bar_SizeTriple" xml:space="preserve"><value>Triple</value></data>
-  <data name="Bar_SizeLimitNote" xml:space="preserve"><value>Custom buttons are limited to 80 × 80 DIP; larger sizes stop there.</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
   <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
   <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
   <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
