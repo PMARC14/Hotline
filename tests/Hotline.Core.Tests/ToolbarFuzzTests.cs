@@ -8,7 +8,7 @@ namespace Hotline.Core.Tests;
 public sealed class ToolbarFuzzTests
 {
     private static readonly string[] Keys =
-        ["version", "top", "items", "left", "right", "style", "overrides", "buttons", "size", "outline", "filled", "width", "height",
+        ["version", "top", "items", "left", "right", "style", "overrides", "buttons", "size", "outline", "filled", "width", "height", "span",
          "label", "icon", "iconFile", "quickAction", "text", "send", "pin", "b1", "b-2", "x", "", "Bad Id!"];
 
     private static readonly string[] Strings =
@@ -50,7 +50,7 @@ public sealed class ToolbarFuzzTests
 
     /// <summary>Valid-looking values for style and button fields.</summary>
     private static readonly string[] Tokens =
-        ["true", "false", "\"compact\"", "\"normal\"", "\"wide\"", "30", "5", "999", "44.5", "\"E8A5\"", "\"e8bd\"", "\"Hi\"", "\"q\""];
+        ["true", "false", "\"compact\"", "\"normal\"", "\"wide\"", "30", "5", "3", "8", "999", "44.5", "\"E8A5\"", "\"e8bd\"", "\"Hi\"", "\"q\""];
 
     /// <summary>The right shape for <paramref name="key"/>, with random (often wrong) contents.</summary>
     private static void Shaped(Random r, StringBuilder sb, string key)
@@ -69,7 +69,7 @@ public sealed class ToolbarFuzzTests
         }
         void Field(string name, Action value) { sb.Append(JsonSerializer.Serialize(name)).Append(':'); value(); }
         void Button(string[] fields) => Object(r.Next(fields.Length + 1), j => Field(r.Next(10) == 0 ? "label" : fields[j], () => Pick(r, sb)));
-        void Style() => Object(r.Next(6), i => Field(new[] { "size", "outline", "filled", "width", "height", "x" }[r.Next(6)], () => Pick(r, sb)));
+        void Style() => Object(r.Next(6), i => Field(new[] { "size", "outline", "filled", "width", "height", "x", "span", "span" }[r.Next(8)], () => Pick(r, sb)));
         switch (key)
         {
             case "top" or "items":
@@ -121,7 +121,8 @@ public sealed class ToolbarFuzzTests
             var ok = m.Buttons.Count <= 24
                 && Enum.GetValues<Quadrant>().All(q => m.Items(q).Count <= 40
                     && m.Items(q).All(id => (ToolbarModel.BuiltIn.Contains(id) || custom.Contains(id)) && seen.Add(id)))
-                && m.Overrides.Keys.All(seen.Contains);
+                && m.Overrides.Keys.All(seen.Contains)
+                && m.PickerSpans.All(p => ToolbarPlan.IsPicker(p.Key) && p.Value is >= 1 and <= 8 && p.Value == m.EffectiveSpan(p.Key));
             if (!ok) Assert.Fail($"invalid model from {doc}\n{m.ToJson()}");
             var again = ToolbarModel.Resolve(m.ToJson());
             if (!m.Equals(again)) Assert.Fail($"not idempotent: {doc}\n{m.ToJson()}\n{again.ToJson()}");

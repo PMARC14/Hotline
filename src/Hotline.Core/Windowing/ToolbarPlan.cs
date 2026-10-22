@@ -154,6 +154,79 @@ public static class ToolbarPlan
     private static double Needed(double spacing, IReadOnlyList<double> right, double reserved, double overflowWidth) =>
         right.Sum() + overflowWidth + reserved + spacing * (right.Count + 1);
 
+    // ---- the pickers' widths ----
+
+    /// <summary>No picker is narrower than this (DIP): a drop-down needs room for its arrow and a letter or two, whatever the bar's size.</summary>
+    public const double MinPickerWidth = 28;
+
+    /// <summary>The pickers in the order they give way when the row is short: effort first, model last.</summary>
+    public static readonly IReadOnlyList<string> PickerHideOrder = ["effort", "provider", "model"];
+
+    /// <summary>The pickers' unit: the bar's normal button width, so they grow and shrink with the bar's size like the buttons.</summary>
+    public static double PickerUnit(ToolbarModel model) => Metrics(model.Style).Width;
+
+    /// <summary>
+    /// The three pickers as <see cref="ToolbarLayout.Compute"/> takes them. A picker is its span (button widths) times the
+    /// <see cref="PickerUnit"/> wide, never under <see cref="MinPickerWidth"/>; short of room it shrinks to one unit (also
+    /// never under that floor) and then hides, and spare room never grows it past its span. Only the ids in
+    /// <paramref name="available"/> take part (the others have nothing to show or are not on the bar).
+    /// </summary>
+    public static IReadOnlyList<PickerSpec> PickerSpecs(ToolbarModel model, IReadOnlyCollection<string> available)
+    {
+        var unit = PickerUnit(model);
+        var min = Math.Max(unit, MinPickerWidth);
+        return [.. ToolbarModel.Pickers.Select(id =>
+        {
+            var width = Math.Max(model.EffectiveSpan(id) * unit, MinPickerWidth);
+            return new PickerSpec(id, width, min, available.Contains(id), Max: width);
+        })];
+    }
+
+    /// <summary>How one row is laid out at a width: see <see cref="PlanRow"/>.</summary>
+    /// <param name="Plan">The row's groups.</param>
+    /// <param name="Shown">The left and centre ids that stay in the row, pickers included, in order.</param>
+    /// <param name="Dropped">The left and centre buttons in the "⋯" menu, in order (never a picker).</param>
+    /// <param name="PickerWidths">Each picker's width, 0 = hidden; empty when the row has no pickers.</param>
+    /// <param name="ButtonWidths">The width of each button kept in the row (the right group and the shown left ones).</param>
+    /// <param name="Fit">How the buttons fit (shown count, "⋯", whether the pickers kept their minimum, the fixed width).</param>
+    /// <param name="Used">The width of the whole row: the fixed part, the pickers and the gaps between them.</param>
+    public sealed record RowLayout(
+        RowPlan Plan, IReadOnlyList<string> Shown, IReadOnlyList<string> Dropped, IReadOnlyDictionary<string, double> PickerWidths,
+        IReadOnlyDictionary<string, double> ButtonWidths, RowFit Fit, double Used);
+
+    /// <summary>
+    /// Everything the renderer decides for one row in <paramref name="room"/> DIPs, in one pure call (the renderer, ProviderBar and
+    /// the tests all go through here): which left/centre buttons stay or move into "⋯" (<see cref="FitRow"/>, with the pickers'
+    /// minimum kept back while they can have it) and the pickers' widths from what is left (<see cref="ToolbarLayout.Compute"/>).
+    /// <paramref name="spacing"/> is the row's column spacing, <paramref name="pickerSpacing"/> the one inside the pickers' block;
+    /// <paramref name="availablePickers"/> are the pickers with something to show (null = all of them).
+    /// </summary>
+    public static RowLayout PlanRow(ToolbarModel model, bool top, double room, double spacing, double pickerSpacing,
+        IReadOnlyCollection<string>? availablePickers = null)
+    {
+        var plan = Row(model, top);
+        var hasPickers = plan.Droppable.Concat(plan.Right).Any(IsPicker);
+        var leftIds = plan.Droppable.Where(id => !IsPicker(id)).ToList();
+        var rightIds = plan.Right.Where(id => !IsPicker(id)).ToList();
+        var overflowWidth = Metrics(model.Style).Width;
+
+        var onBar = PickerOrder(model);
+        var specs = hasPickers ? PickerSpecs(model, [.. (availablePickers ?? ToolbarModel.Pickers).Where(onBar.Contains)]) : [];
+        var shownSpecs = specs.Where(p => p.Available).ToList();
+        // The pickers at their minimum (as Compute counts their gaps): the buttons move into "⋯" before that room is taken.
+        var pickersMin = shownSpecs.Count == 0 ? 0 : shownSpecs.Sum(p => p.Min) + pickerSpacing * shownSpecs.Count;
+        var fit = FitRow(room, spacing, [.. leftIds.Select(id => Metrics(model, id).Width)], [.. rightIds.Select(id => Metrics(model, id).Width)],
+            hasPickers, pickersMin, overflowWidth, hasCenter: plan.Center.Count > 0);
+        var (shown, dropped) = Split(plan.Droppable, fit.LeftShown);
+
+        var widths = hasPickers ? ToolbarLayout.Compute(room, fit.FixedWidth, pickerSpacing, specs, PickerHideOrder) : new Dictionary<string, double>();
+        var visible = widths.Values.Count(w => w > 0);
+        var buttons = new Dictionary<string, double>();
+        foreach (var id in leftIds.Take(fit.LeftShown).Concat(rightIds)) buttons[id] = Metrics(model, id).Width;
+        var used = fit.FixedWidth + widths.Values.Sum() + pickerSpacing * Math.Max(0, visible - 1);
+        return new RowLayout(plan, shown, dropped, widths, buttons, fit, used);
+    }
+
     private const int ReportedWarnings = 3;
 
     /// <summary>This PC's "Button rows" line: fine, or the read error, or the first warnings; plus a note when no Settings

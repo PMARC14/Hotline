@@ -101,7 +101,7 @@ public static class ToolbarEditor
     };
 
     /// <summary>Takes an item off the bar (to "Not shown"); its style override goes with it, as <see cref="ToolbarModel.Resolve"/>
-    /// keeps overrides only for shown items.</summary>
+    /// keeps overrides only for shown items (a picker's span stays: see <see cref="SetPickerSpan"/>).</summary>
     public static ToolbarModel Hide(ToolbarModel m, string id)
     {
         if (m is null || Placed(m, id) is not { } at) return m!;
@@ -185,6 +185,18 @@ public static class ToolbarEditor
                 else overrides[id] = rest;
             }
         return Lenient(m, m with { Style = m.Style with { Size = size }, Overrides = overrides }, null);
+    }
+
+    /// <summary>Sets a picker's width in button widths (clamped to 1-8; shown or not: a hidden picker keeps it). A span equal to
+    /// the picker's default is stored as no entry. Anything that is not a picker, or no change: the input.</summary>
+    public static ToolbarModel SetPickerSpan(ToolbarModel m, string? id, int span)
+    {
+        if (m is null || id is null || ToolbarModel.Pickers.FirstOrDefault(p => p.Equals(id, StringComparison.OrdinalIgnoreCase)) is not { } picker) return m!;
+        span = Math.Clamp(span, ToolbarModel.MinSpan, ToolbarModel.MaxSpan);
+        if (span == m.EffectiveSpan(picker)) return m;
+        var spans = new Dictionary<string, int>(m.PickerSpans) { [picker] = span };
+        // Back at the default: Resolve drops the entry, so the candidate is read back as it would be written.
+        return Lenient(m, m with { PickerSpans = spans }, null);
     }
 
     // ---- Helpers ----

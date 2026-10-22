@@ -38,6 +38,8 @@ public sealed record ToolbarModel(
     IReadOnlyList<string> Warnings)
 {
     public const int CurrentVersion = 2;
+    /// <summary>A picker is this many button widths wide, at least 1 and at most 8 (see <see cref="EffectiveSpan"/>).</summary>
+    public const int MinSpan = 1, MaxSpan = 8;
     /// <summary>The glyph of a custom button whose icon is missing or invalid (Segoe Fluent Icons "FavoriteStar").</summary>
     public const string DefaultIcon = "E734";
     /// <summary>At most this many custom buttons, and items per quadrant (the rest of a longer list is ignored).</summary>
@@ -53,6 +55,13 @@ public sealed record ToolbarModel(
     internal static readonly string[] Pickers = ["effort", "model", "provider"];
 
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
+
+    /// <summary>Each picker's width in button widths when the file doesn't say.</summary>
+    private static int DefaultSpan(string id) => id.ToLowerInvariant() switch { "effort" => 2, "model" => 4, "provider" => 3, _ => 1 };
+
+    /// <summary>The pickers' own widths, in button widths, for the ones that differ from the default (lower-case id to
+    /// <see cref="MinSpan"/>-<see cref="MaxSpan"/>). Kept for a picker that is hidden, too.</summary>
+    public IReadOnlyDictionary<string, int> PickerSpans { get; init; } = new Dictionary<string, int>();
 
     /// <summary>Today's layout (the owner's, 2026-10-16): pickers in the top row, the rest bottom left.</summary>
     public static ToolbarModel Defaults { get; } = new(
@@ -85,13 +94,24 @@ public sealed record ToolbarModel(
             o?.OutlineColor ?? Style.OutlineColor);
     }
 
+    /// <summary>How many button widths a picker is wide: its span, else its default (effort 2, model 4, provider 3), clamped to
+    /// 1-8. 1 for anything that is not a picker.</summary>
+    public int EffectiveSpan(string? id)
+    {
+        if (id is null || !Pickers.Contains(id, StringComparer.OrdinalIgnoreCase)) return MinSpan;
+        var key = id.ToLowerInvariant();
+        return Math.Clamp(PickerSpans.TryGetValue(key, out var span) ? span : DefaultSpan(key), MinSpan, MaxSpan);
+    }
+
     public bool Equals(ToolbarModel? other) =>
         other is not null
         && Order.All(q => Items(q).SequenceEqual(other.Items(q)))
         && Style == other.Style
         && Overrides.Count == other.Overrides.Count
         && Overrides.All(o => other.Overrides.TryGetValue(o.Key, out var s) && s == o.Value)
-        && Buttons.SequenceEqual(other.Buttons);
+        && Buttons.SequenceEqual(other.Buttons)
+        && PickerSpans.Count == other.PickerSpans.Count
+        && PickerSpans.All(p => other.PickerSpans.TryGetValue(p.Key, out var n) && n == p.Value);
 
     public override int GetHashCode() =>
         HashCode.Combine(Style, Overrides.Count, Buttons.Count, string.Join(",", Order.SelectMany(Items)));
@@ -176,12 +196,13 @@ public sealed record ToolbarModel(
         }
 
         var style = ReadStyle(root["style"], "style", warnings);
+        var overrides = ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings, out var spans);
         return new ToolbarModel(
             Layout(q => placed[q]),
             style with { Size = style.Size ?? ButtonSize.Normal, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
-            ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings),
+            overrides,
             buttons,
-            warnings);
+            warnings) { PickerSpans = spans };
     }
 
     private static (Dictionary<Quadrant, List<string>> Placed, bool ExplicitlyEmpty) ReadQuadrants(
@@ -287,20 +308,41 @@ public sealed record ToolbarModel(
         return DefaultIcon;
     }
 
-    private static IReadOnlyDictionary<string, ButtonStyle> ReadOverrides(JsonNode? node, IEnumerable<string> shown, List<string> warnings)
+    private static IReadOnlyDictionary<string, ButtonStyle> ReadOverrides(
+        JsonNode? node, IEnumerable<string> shown, List<string> warnings, out IReadOnlyDictionary<string, int> spans)
     {
         var overrides = new Dictionary<string, ButtonStyle>(StringComparer.OrdinalIgnoreCase);
+        var picked = new Dictionary<string, int>();
+        spans = picked;
         if (node is null) return overrides;
         if (node is not JsonObject all) { warnings.Add("\"overrides\" should be an object; ignored"); return overrides; }
         var ids = shown.ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
+        var seenPickers = new HashSet<string>();
         foreach (var (key, value) in all)
         {
+            // A picker takes one key, "span" (its width in button widths), whether or not it is shown.
+            if (Pickers.FirstOrDefault(p => p.Equals(key, StringComparison.OrdinalIgnoreCase)) is { } picker)
+            {
+                if (!seenPickers.Add(picker)) { warnings.Add($"Second override for \"{picker}\" ignored"); continue; }
+                if (value is not JsonObject own) { warnings.Add($"Override for \"{picker}\" ignored: the pickers take only \"span\""); continue; }
+                if (own.Any(p => p.Key != "span")) warnings.Add($"Override for \"{picker}\" ignored except \"span\": the pickers take no styles");
+                if (own.ContainsKey("span") && Span(own["span"], picker, warnings) is { } span && span != DefaultSpan(picker)) picked[picker] = span;
+                continue;
+            }
             if (!ids.TryGetValue(key, out var id)) { warnings.Add($"Override for \"{Clean(key, MaxLabel, false)}\" ignored: that item isn't shown"); continue; }
-            if (Pickers.Contains(id)) { warnings.Add($"Override for \"{id}\" ignored: the pickers take no styles"); continue; }
             if (overrides.ContainsKey(id)) { warnings.Add($"Second override for \"{id}\" ignored"); continue; }
             if (ReadStyle(value, $"overrides.{id}", warnings) is var style && style != new ButtonStyle()) overrides[id] = style;
         }
         return overrides;
+    }
+
+    /// <summary>A picker's span: a whole number 1-8, else a warning and null (the default).</summary>
+    private static int? Span(JsonNode? node, string picker, List<string> warnings)
+    {
+        if (node is JsonValue v && v.TryGetValue<double>(out var d) && double.IsFinite(d) && d == Math.Floor(d) && d is >= MinSpan and <= MaxSpan)
+            return (int)d;
+        warnings.Add($"\"overrides.{picker}.span\" {Show(node)} isn't a whole number {MinSpan}-{MaxSpan}; the default is used");
+        return null;
     }
 
     /// <summary>A style object; a bad field is left null (inherit) with a warning, except an unknown size, which is normal.</summary>
@@ -396,6 +438,11 @@ public sealed record ToolbarModel(
     private static string Entries<T>(IEnumerable<(string Key, T Value)> entries, Func<T, string> text) =>
         entries.Any() ? "{\n" + string.Join(",\n", entries.Select(e => $"    {Str(e.Key)}: {text(e.Value)}")) + "\n  }" : "{}";
 
+    /// <summary>The "overrides" entries as written: the items' styles, then the pickers' spans.</summary>
+    private IEnumerable<(string Key, string Value)> OverrideTexts() =>
+        Overrides.Select(o => (o.Key, StyleText(o.Value)))
+            .Concat(Pickers.Where(PickerSpans.ContainsKey).Select(p => (p, "{ \"span\": " + PickerSpans[p] + " }")));
+
     /// <summary>The model as a v2 file with the comment header (what Settings saves; the renderer never writes).</summary>
     public string ToJson()
     {
@@ -408,7 +455,8 @@ public sealed record ToolbarModel(
               // and a "right" group, listed left to right (the centre sits in the free space between the other two).
               // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
-              // The effort, model and provider pickers stay together (where the first one is) and ignore the styles below.
+              // The effort, model and provider pickers stay together (where the first one is) and ignore the styles below;
+              // their only override is "span", their width in button widths ({{MinSpan}}-{{MaxSpan}}; effort 2, model 4, provider 3).
               // "style": the whole bar; size is compact | normal | wide (half, once, twice the base), outline and filled are true | false,
               // outlineColor is "#RRGGBB" (left out: the accent colour).
               // "overrides": the same keys for one item, plus "width" and "height" ({{MinDip}}-{{MaxDip}}) for icon buttons.
@@ -421,7 +469,7 @@ public sealed record ToolbarModel(
               "top": {{Row(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight)}},
               "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},
               "style": {{StyleText(Style)}},
-              "overrides": {{Entries(Overrides.Select(o => (o.Key, o.Value)), StyleText)}},
+              "overrides": {{Entries(OverrideTexts(), text => text)}},
               "buttons": {{Entries(Buttons.Select(b => (b.Id, b)), ButtonText)}}
             }
             """;
