@@ -114,11 +114,7 @@ internal sealed class ToolbarRenderer
         }
         // The look, after placing; only values that differ are set. The pickers take none of it (their widths are ProviderBar's).
         // Sizes come from the same Metrics as Fit's widths (custom buttons capped at 80 DIP), so what is drawn is what was fitted.
-        var accent = AccentOutline();
-        foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
-        foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
-        ApplyStyle(_top.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
-        ApplyStyle(_bottom.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
+        Restyle(model);
         Model = model;
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
         if (_lastFit is { } last) Fit(last.Room, last.PickerSpacing, last.Available);
@@ -200,6 +196,27 @@ internal sealed class ToolbarRenderer
 
     // ---- style ----
 
+    /// <summary>The panel theme's accent (#RRGGBB: Hotline's purple, the Windows accent when matching is on, or the user's
+    /// own); the default outline colour. Set by the theme (<see cref="SetAccent"/>), never read from Windows here.</summary>
+    private string? _accent;
+
+    /// <summary>Takes the theme's accent and redraws the outlines when it changed.</summary>
+    public void SetAccent(string? hex)
+    {
+        if (_accent == hex) return;
+        _accent = hex;
+        if (Model is { } model) Restyle(model);
+    }
+
+    private void Restyle(ToolbarModel model)
+    {
+        var accent = AccentOutline();
+        foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
+        foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
+        ApplyStyle(_top.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
+        ApplyStyle(_bottom.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
+    }
+
     /// <summary>The outline's thickness: drawn inside the button's fixed width and height, so it never changes the layout.</summary>
     private static readonly Thickness OutlineThickness = new(1.5);
 
@@ -226,13 +243,16 @@ internal sealed class ToolbarRenderer
         }
     }
 
-    /// <summary>The default outline colour: a contrast theme's highlight colour, else the Windows accent (read at each apply).</summary>
-    private static Windows.UI.Color AccentOutline()
+    /// <summary>The default outline colour: a contrast theme's highlight colour, else the panel theme's accent (Hotline's purple
+    /// unless the user matches Windows or picks a colour), else Windows' accent if the theme gave none.</summary>
+    private Windows.UI.Color AccentOutline()
     {
         try
         {
             if (SystemTheme.Colors.Contrast is { } contrast && ThemeColor.TryParse(contrast.Highlight, out var h))
                 return Windows.UI.Color.FromArgb(0xFF, h.R, h.G, h.B);
+            if (_accent is not null && ThemeColor.TryParse(_accent, out var t))
+                return Windows.UI.Color.FromArgb(0xFF, t.R, t.G, t.B);
             var accent = Ui.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent); // SystemAccentColor's source
             return Windows.UI.Color.FromArgb(0xFF, accent.R, accent.G, accent.B);
         }

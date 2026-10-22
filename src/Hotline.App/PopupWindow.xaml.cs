@@ -119,6 +119,9 @@ public sealed partial class PopupWindow : Window
     /// <summary>The button rows in force (toolbar.json, resolved); the provider bar reads which pickers are shown.</summary>
     public ToolbarModel ToolbarModel => _rows.Model;
 
+    /// <summary>The theme's accent colour for the bar's outlines (see <see cref="ToolbarRenderer.SetAccent"/>).</summary>
+    public void SetToolbarAccent(string? hex) => _rows.SetAccent(hex);
+
     /// <summary>Rebuilds both button rows from the model (see <see cref="ToolbarRenderer"/>); the fit to the panel's width
     /// follows after layout (ProviderBar, through <see cref="ToolbarChanged"/>).</summary>
     public void ApplyToolbar(ToolbarModel model)
