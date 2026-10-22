@@ -214,11 +214,10 @@ highlight colour), or `outlineColor` for the whole bar or one item. `outlineColo
 (`"#E81123"`); anything else is ignored with a warning and the accent colour is used. With `filled` the button keeps
 both its background and its outline.
 
-**The pickers.** `effort`, `model` and `provider` always stay together as one block. The block goes in the first group
-(checked in the order bottom left, bottom center, bottom right, top left, top center, top right) that lists one of them, at that picker's
-position, with the pickers in the order of the groups above and then as listed within each group: `effort` in top
-left plus `model` in bottom right puts the block in bottom right, `model` first and `effort` after it. They ignore `style` and the
-style keys of `overrides`.
+**The pickers.** `effort`, `model` and `provider` are items like any button: each sits exactly where you list it, in any of the six
+groups, in any order, between any buttons, and each can be left out, moved or given its own `span` on its own. The three can be in
+different groups and even different rows. An id listed twice is shown where it is first (bottom left, bottom center, bottom right, top
+left, top center, top right). They ignore `style` and the style keys of `overrides`.
 
 **Picker widths.** A picker is a whole number of **button widths** wide. The unit is always one standard button width,
 40 DIPs, whatever the bar's size: a compact bar keeps readable drop-downs and a wide bar does not make them huge. Set it per picker with
@@ -237,13 +236,14 @@ style keys of `overrides`.
 The span is a maximum as well as the preferred width: a picker never grows past it. In a short row each picker shrinks
 evenly, down to the narrowest in the table (still readable; never past its own width, so a span of 1 is exactly 40 DIPs);
 when that is not enough they hide one at a time, `effort` first, then `provider`, then `model`. A span for a picker that is hidden is kept. Settings › Button rows has a **1x** to **8x**
-choice on each picker's chip.
+choice on each picker's chip (a picker is shown, moved and hidden there like a button, one by one).
 
-**Pickers in the bottom row.** The block can sit in any of the six groups, also in the bottom row among the buttons: before
-them, after them, between two of them, or in the centre or right group. The row first moves buttons into the "..." menu
-(the left group, then the centre, from their ends, then the right group's first buttons) so that the pickers keep their
-narrowest widths above, and only when not even one right button, the "..." button and the pickers' narrowest widths fit
-do the pickers shrink and hide.
+**Pickers among the buttons.** A picker can sit in any group of either row: before the buttons, after them, between two of them,
+in the centre or the right group. Each picker is its own flexible item of its group, `span` times 40 DIPs wide. The row first moves
+buttons into the "..." menu (the left group, then the centre, from their ends, then the right group's first buttons) so that its
+pickers keep their narrowest widths above (pickers never go into the menu), and only when not even one right button, the "..." button
+and the narrowest widths fit do the pickers shrink and hide. The pickers of one row share what is left evenly; the pickers of the
+other row are fitted to their own row.
 
 **Reference layouts.** These layouts are tried automatically at every panel width and bar size, and the panel's self-test
 draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as a starting point:
@@ -255,6 +255,7 @@ draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as
 | `pickers-bottom-centre` / `-crowded` | the pickers in the bottom-centre group, with few or many buttons on their left |
 | `pickers-bottom-right` / `-after-buttons` | the pickers in the bottom-right group, alone or after some buttons |
 | `pickers-top-right`, `pickers-top-centre-both-rows` | the pickers in the top row's right or centre group (centre: with buttons in both rows) |
+| `pickers-apart-corners`, `picker-between-buttons`, `pickers-one-per-row-right` | the pickers placed one by one: effort top left, model top right, provider bottom centre; one picker between buttons; one picker in each row's right group |
 | `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 button widths wide; spans 1, 4 and 8 |
 | `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact or wide; a different size on several buttons |
 | `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |
@@ -312,7 +313,7 @@ Drag an item to another place in its group or into another group (a marker shows
 on an item: left and right to reorder, up and down to change rows, and left and right to move one group over
 (left → center → right). Items you removed wait in a
 "Not shown" strip. Size, outline and fill can be set for the whole bar or per item, and custom buttons are added,
-edited and deleted there. Moving a picker moves all three together.
+edited and deleted there. The pickers (effort, model, provider) are moved, shifted, hidden and shown one by one, like buttons.
 
 **Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json`, with the previous file
 in `backups\reset-<time>\`. A hidden copy of the default file is rewritten at every start in

@@ -43,9 +43,9 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 
 ### Button rows (Settings › Window)
 - [ ] The four corners (top left / top right above the message box, bottom left / bottom right below it) show the buttons
-      in the bar; pickers (effort, model, provider) are one block.
+      in the bar; the pickers (effort, model, provider) are three separate items.
 - [ ] Drag a button inside a corner, to another corner, and to "Not shown" and back: the panel's bar follows within a second.
-      Drop on an empty corner and between two buttons. Drag a picker: the whole block moves; a drop inside the block lands beside it.
+      Drop on an empty corner and between two buttons. Drag one picker: only it moves (between two buttons, into another corner, to "Not shown"); the other two stay.
 - [ ] The arrow buttons on a button (left/right order, up/down row, other side) and Alt+arrow / Ctrl+arrow give the same moves.
 - [ ] Bar look: compact, normal and wide; outline and filled (light, dark and a Windows contrast theme); one button with its own
       look; "Use bar look" resets it. Hiding a styled button and showing it again keeps its look.
