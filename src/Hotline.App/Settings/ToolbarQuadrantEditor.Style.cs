@@ -168,7 +168,7 @@ internal sealed partial class ToolbarQuadrantEditor
         NumberBox Dip(string header) => new()
         {
             Header = header, Minimum = ToolbarPlan.MinDip, Maximum = ToolbarPlan.MaxDip, SmallChange = 1, LargeChange = 10, Width = 96, PlaceholderText = Strings.Bar_Auto,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
         };
         var (width, height) = (Dip(Strings.Bar_Width), Dip(Strings.Bar_Height));
         var outline = new CheckBox { Content = Strings.Bar_Outline };

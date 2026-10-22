@@ -202,7 +202,7 @@ public sealed partial class SettingsWindow
         var box = new NumberBox
         {
             Value = value ?? double.NaN, Minimum = min, Maximum = max, SmallChange = step, LargeChange = step * 10,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, PlaceholderText = placeholder, MinWidth = 160,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, PlaceholderText = placeholder, MinWidth = 160,
             ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
         };
         box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
