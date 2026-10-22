@@ -196,15 +196,6 @@ public sealed class ChatSettings
     public bool Memory { get; set; } = true;
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
     public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
-
-    /// <summary>
-    /// The agy connection settings files before v12 got when they had none of their own (no connection files). New
-    /// installs start with no connection and ask; only those older files keep it.
-    /// </summary>
-    public static List<BackendProfile> LegacyDefaultBackends() =>
-    [
-        new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" },
-    ];
 }
 
 /// <summary>Auto = thin and transparent until hovered; Visible = always shown; Hidden = never shown (still scrolls).</summary>

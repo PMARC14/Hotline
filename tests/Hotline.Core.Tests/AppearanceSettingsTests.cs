@@ -30,10 +30,6 @@ public sealed class AppearanceSettingsTests : IDisposable
     }
 
     [Fact]
-    public void Schema2_old_default_hold_migrates_to_new_chat()
-        => Assert.Equal(KeyAction.NewChat, LoadJson("""{ "schemaVersion": 2, "activation": { "hold": "showPopup" } }""").Activation.Hold);
-
-    [Fact]
     public void Schema2_customized_hold_is_kept()
         => Assert.Equal(KeyAction.CaptureWindow, LoadJson("""{ "schemaVersion": 2, "activation": { "hold": "captureWindow" } }""").Activation.Hold);
 
@@ -66,13 +62,6 @@ public sealed class AppearanceSettingsTests : IDisposable
         Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, work, GrowMode.Full).Height);
         Assert.Equal(120, PopupGeometry.GrowUp(bar, 120, 560, work, GrowMode.Full).Height); // bar only: stays a bar
         Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, work, GrowMode.Grow).Height);
-    }
-
-    [Fact]
-    public void Old_fixed_font_size_migrates_to_windows_default()
-    {
-        Assert.Null(LoadJson("""{ "schemaVersion": 5, "window": { "fontSize": 14 } }""").Window.FontSize);
-        Assert.Equal(16, LoadJson("""{ "schemaVersion": 5, "window": { "fontSize": 16 } }""").Window.FontSize);
     }
 
     [Fact]

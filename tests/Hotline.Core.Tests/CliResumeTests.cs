@@ -344,13 +344,4 @@ public sealed class CliResumeTests : IDisposable
         Assert.False(p.KeepInHotline);
     }
 
-    [Fact]
-    public void Schema_10_cli_connections_switch_to_cli_history()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
-            """{ "schemaVersion": 10, "chat": { "defaultBackend": "cc", "backends": [ { "id": "cc", "type": "claudeCode", "name": "Claude", "keepCliSessions": false } ] } }""");
-        var s = new SettingsStore(_dir).Load();
-        Assert.True(Assert.Single(s.Chat.Backends, b => b.Id == "cc").KeepCliSessions);
-    }
 }

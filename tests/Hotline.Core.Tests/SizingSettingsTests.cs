@@ -21,13 +21,6 @@ public sealed class SizingSettingsTests : IDisposable
         Assert.Equal((40.0, 680, 1000, 0, 70.0), (w.WidthPercent, w.MinWidth, w.MaxWidth, w.Height, w.MaxHeightPercent));
     }
 
-    [Theory]
-    [InlineData(1, 520)]
-    [InlineData(3, 120)]
-    [InlineData(4, 320)]
-    public void Old_default_heights_migrate_to_fit_content(int schema, int height)
-        => Assert.Equal(0, LoadJson($$"""{ "schemaVersion": {{schema}}, "window": { "height": {{height}} } }""").Window.Height);
-
     [Fact]
     public void Custom_height_is_kept()
         => Assert.Equal(400, LoadJson("""{ "schemaVersion": 3, "window": { "height": 400 } }""").Window.Height);

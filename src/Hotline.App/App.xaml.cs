@@ -114,7 +114,6 @@ public partial class App : Application
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
         foreach (var broken in store.BrokenConnectionFiles) // left exactly as it is; never dropped or rewritten
             _log.Error($"connection file {broken} could not be read; it is left as it is (fix it and Hotline picks it up)");
-        if (store.ArchiveFailed) _log.Error("settings.json could not be archived; left as it is");
         _ = LogStartupStateAsync();
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));

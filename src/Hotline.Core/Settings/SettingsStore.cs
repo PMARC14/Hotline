@@ -18,9 +18,6 @@ public sealed class SettingsStore(string directory)
     /// <summary>Connection files that couldn't be read (left untouched; never overwritten or deleted).</summary>
     public IReadOnlyList<string> BrokenConnectionFiles { get; private set; } = [];
 
-    /// <summary>An upgrade needed to rewrite settings.json but couldn't archive it first: the file was left as it is.</summary>
-    public bool ArchiveFailed { get; private set; }
-
     /// <summary>Ids whose files this store loaded or wrote: only these are ever deleted (when a connection is removed).</summary>
     private readonly HashSet<string> _ownedIds = new(StringComparer.OrdinalIgnoreCase);
 
@@ -68,8 +65,6 @@ public sealed class SettingsStore(string directory)
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
-            if (files.Count == 0 && s.SchemaVersion < 12 && broken.Count == 0)
-                files = ChatSettings.LegacyDefaultBackends(); // a pre-v12 file ran on the built-in agy (as in Load)
             s.Chat.Backends = Ordered(files,
                 s.Chat.Order is { Count: > 0 } order ? order : LegacyOrder(legacy));
             return Normalize(s);
@@ -82,7 +77,7 @@ public sealed class SettingsStore(string directory)
         if (!File.Exists(FilePath))
         {
             var fresh = new HotlineSettings();
-            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order, keepLegacyDefault: false);
+            fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order);
             Normalize(fresh);
             TrySave(fresh);
             return fresh;
@@ -94,24 +89,18 @@ public sealed class SettingsStore(string directory)
             var s = JsonSerializer.Deserialize<HotlineSettings>(text, Options)
                     ?? throw new JsonException("settings.json contained null");
             s.Chat ??= new ChatSettings();
-            var loadedVersion = s.SchemaVersion;
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
-            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order, keepLegacyDefault: loadedVersion < 12);
+            s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
             Normalize(s);
-            // An upgrade (connection files, dropping "backends") or newly added options rewrite the file: every setting
-            // stays visible and editable there. Keep the previous file (it may hold comments): an upgrade to v14 (0.4)
-            // archives it as settings.json.old (.old2, … never overwritten), other rewrites as settings.json.bak.
-            if (loadedVersion < HotlineSettings.CurrentSchemaVersion || legacy is not null || HasMissingOptions(text, s))
+            // The old inline "backends" list (moved into connection files) or newly added options rewrite the file:
+            // every setting stays visible and editable there. The previous file (it may hold comments) is kept as
+            // settings.json.bak. An older schemaVersion alone changes nothing: it is stamped on the next save.
+            if (legacy is not null || HasMissingOptions(text, s))
             {
-                if (loadedVersion < 14)
-                {
-                    if (FileArchive.KeepOld(FilePath) is null) { ArchiveFailed = true; return s; } // no archive, no rewrite: run on it in memory
-                }
-                else
-                    try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-                // Connection files are written only when the upgrade moves or changes connections (the old "backends"
-                // list, or files from before v12); otherwise they stay exactly as they are, byte for byte.
-                if (legacy is not null || loadedVersion < 12) TrySave(s);
+                try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+                // Connection files are written only when the old "backends" list moves into them; otherwise they
+                // stay exactly as they are, byte for byte.
+                if (legacy is not null) TrySave(s);
                 else TrySaveMain(s);
             }
             return s;
@@ -128,7 +117,7 @@ public sealed class SettingsStore(string directory)
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
             var fallback = new HotlineSettings();
-            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order, keepLegacyDefault: false);
+            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
             return Normalize(fallback);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -208,10 +197,9 @@ public sealed class SettingsStore(string directory)
     }
 
     /// <summary>
-    /// Connections for Load: the files, or (once) the old settings.json list. A file from before v12 with neither
-    /// (<paramref name="keepLegacyDefault"/>) ran on the built-in agy connection, which it keeps; otherwise none.
+    /// Connections for Load: the files, or (once) the old settings.json list.
     /// </summary>
-    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order, bool keepLegacyDefault)
+    private List<BackendProfile> AssembleConnections(List<BackendProfile>? legacy, List<string>? order)
     {
         var (files, broken) = ReadConnectionFiles();
         BrokenConnectionFiles = broken;
@@ -219,8 +207,7 @@ public sealed class SettingsStore(string directory)
         if (legacy is not null)
             foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                 files.Add(p); // moved into files on the next save
-        var list = files.Count > 0 || broken.Count > 0 || !keepLegacyDefault ? files : ChatSettings.LegacyDefaultBackends();
-        return Ordered(list, order is { Count: > 0 } ? order : LegacyOrder(legacy));
+        return Ordered(files, order is { Count: > 0 } ? order : LegacyOrder(legacy));
     }
 
     private static List<string>? LegacyOrder(List<BackendProfile>? legacy) => legacy?.Where(p => p is not null).Select(p => p.Id).ToList();
@@ -307,37 +294,6 @@ public sealed class SettingsStore(string directory)
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
     }
 
-    private static void Migrate(HotlineSettings s)
-    {
-        // → v14: the Copilot key's Right Ctrl mode is gone (Windows remaps the key itself); "copilotKey" is no longer
-        // read, so the rewrite drops it. The default width is 680: move users still on the old default of 600.
-        if (s.SchemaVersion < 14 && s.Window.MinWidth == 600)
-            s.Window.MinWidth = 680;
-        // → v12: no built-in connection any more (AssembleConnections keeps it for older files that relied on it).
-        // → v11: CLI chats live in the CLI's own history by default (resumable); Hotline keeps only a record unless
-        // keepInHotline. Existing CLI connections switch over, keeping what Hotline already saved.
-        if (s.SchemaVersion < 11)
-            foreach (var b in s.Chat.Backends.Where(b => Backends.ConnectionTypes.IsCli(b.Type))) b.KeepCliSessions = true;
-        // → v10: an empty defaultBackend means "not chosen yet" (new installs ask). Older files always had one chosen.
-        if (s.SchemaVersion < 10 && string.IsNullOrWhiteSpace(s.Chat.DefaultBackend) && s.Chat.Backends.Count > 0)
-            s.Chat.DefaultBackend = s.Chat.Backends[0].Id;
-        // → v9: general.language (interface language) starts at "system"; nothing to move.
-        // → v8: new chat options (attachSelection, …) start at their defaults; nothing to move.
-        // → v7: Claude Code can chat: offer a connection for it once (removable; not re-added later).
-        if (s.SchemaVersion < 7 && s.Chat.Backends.All(b => b.Type != BackendType.ClaudeCode))
-            Backends.ConnectionEditor.Add(s.Chat, BackendType.ClaudeCode);
-        // → v6: text size follows Windows unless chosen. 14 was the old fixed default.
-        if (s.SchemaVersion < 6 && s.Window.FontSize == 14)
-            s.Window.FontSize = null;
-        // → v6: the empty panel hugs the message bar (no reserved space). Move untouched old default heights.
-        if (s.SchemaVersion < 6 && s.Window.Height is 120 or 320 or 520)
-            s.Window.Height = 0;
-        // → v5: the panel starts as a minimal input bar again (user feedback). Move untouched old default heights.
-        // v2 → v3: long press now starts a new chat. Only move users still on the old default.
-        if (s.SchemaVersion < 3 && s.Activation.Hold == KeyAction.ShowPopup)
-            s.Activation.Hold = KeyAction.NewChat;
-    }
-
     public static HotlineSettings Normalize(HotlineSettings s)
     {
         s.General ??= new GeneralSettings();
@@ -377,7 +333,6 @@ public sealed class SettingsStore(string directory)
         s.Window.CloseSound = string.IsNullOrWhiteSpace(s.Window.CloseSound) ? Windowing.Sounds.Off : s.Window.CloseSound.Trim();
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
         s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
-        Migrate(s);
         s.Window.WidthPercent = Math.Clamp(s.Window.WidthPercent, 20, 90);
         s.Window.MinWidth = Math.Clamp(s.Window.MinWidth, 320, 4000);
         s.Window.MaxWidth = Math.Clamp(s.Window.MaxWidth, s.Window.MinWidth, 4000);

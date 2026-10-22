@@ -153,37 +153,6 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
-    public void Schema1_untouched_old_default_size_migrates_to_compact_size()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
-            """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
-        var s = New().Load();
-        Assert.Equal(0, s.Window.Height);
-        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
-    }
-
-    [Fact]
-    public void Schema1_customized_size_is_kept()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
-            """{ "schemaVersion": 1, "window": { "width": 700, "height": 400 } }""");
-        var s = New().Load();
-        Assert.Equal(400, s.Window.Height);
-    }
-
-    [Fact]
-    public void Migrated_settings_are_written_back()
-    {
-        Directory.CreateDirectory(_dir);
-        var path = Path.Combine(_dir, SettingsStore.FileName);
-        File.WriteAllText(path, """{ "schemaVersion": 1, "window": { "width": 640, "height": 520 } }""");
-        New().Load();
-        Assert.Contains("\"height\": 0", File.ReadAllText(path));
-    }
-
-    [Fact]
     public void New_options_are_written_into_an_existing_file_with_backup()
     {
         var store = new SettingsStore(_dir);
@@ -220,63 +189,57 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
-    public void Schema6_gets_a_claude_code_connection_once()
+    public void An_old_schema_file_is_read_as_it_is_without_an_archive_and_connections_stay_untouched()
     {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 6 }""");
+        Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
+        var conn = Path.Combine(_dir, SettingsStore.ConnectionsFolder, "a.json");
+        const string connText = "{ \"id\": \"a\", \"type\": \"gemini\", \"name\": \"A\" } // mine";
+        File.WriteAllText(conn, connText);
+        var path = Path.Combine(_dir, SettingsStore.FileName);
+        // Values the removed upgrade steps used to move: hold, font size 14, heights 120/320/520, min width 600, no default backend.
+        File.WriteAllText(path, """
+            { "schemaVersion": 3,
+              "activation": { "hold": "showPopup" },
+              "window": { "fontSize": 14, "height": 520, "minWidth": 600 },
+              "chat": { "defaultBackend": "" } }
+            """);
+
         var s = New().Load();
-        Assert.Contains(s.Chat.Backends, b => b.Type == BackendType.ClaudeCode && b.Name == "Claude (Claude Code)");
-        Assert.Equal("agy", s.Chat.DefaultBackend);
+
+        Assert.Equal(KeyAction.ShowPopup, s.Activation.Hold);
+        Assert.Equal(14, s.Window.FontSize);
+        Assert.Equal(520, s.Window.Height);
+        Assert.Equal(600, s.Window.MinWidth);
+        Assert.Equal("", s.Chat.DefaultBackend);
+        Assert.Equal("a", Assert.Single(s.Chat.Backends).Id); // no built-in connection added for an old file
+        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion); // stamped in memory, written with the next save
+        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
+        Assert.Equal(connText, File.ReadAllText(conn));
     }
 
     [Fact]
-    public void Removed_claude_code_connection_is_not_re_added()
+    public void A_file_without_a_schema_version_is_not_archived()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 7 }""");
-        Assert.DoesNotContain(New().Load().Chat.Backends, b => b.Type == BackendType.ClaudeCode);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "window": { "width": 700 } }""");
+        New().Load();
+        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
     }
 
     [Fact]
-    public void A_schema_upgrade_keeps_the_old_file_with_its_comments_as_an_old_archive()
-    {
-        var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-        try
-        {
-            Directory.CreateDirectory(dir);
-            var file = Path.Combine(dir, SettingsStore.FileName);
-            File.WriteAllText(file, "{ \"schemaVersion\": 12, // my note\n \"window\": { \"width\": 700 } }");
-            new SettingsStore(dir).Load();
-            Assert.Contains("// my note", File.ReadAllText(file + ".old"));
-        }
-        finally { if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true); }
-    }
-
-    [Fact]
-    public void Settings_upgrade_that_cannot_be_archived_is_reported_and_left_as_it_is()
+    public void An_inline_backends_list_is_still_split_into_connection_files_without_an_old_archive()
     {
         Directory.CreateDirectory(_dir);
         var path = Path.Combine(_dir, SettingsStore.FileName);
-        const string original = """{ "schemaVersion": 13 }""";
-        File.WriteAllText(path, original);
-        Directory.CreateDirectory(path + ".old"); // the archive can't be written there
+        File.WriteAllText(path, """{ "schemaVersion": 3, "chat": { "defaultBackend": "g", "backends": [ { "id": "g", "type": "gemini", "name": "G" } ] } }""");
+
         var store = New();
+        var s = store.Load();
 
-        store.Load();
-
-        Assert.True(store.ArchiveFailed);
-        Assert.Equal(original, File.ReadAllText(path));
-    }
-
-    [Fact]
-    public void Settings_upgrade_that_is_archived_is_not_reported()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 13 }""");
-        var store = New();
-
-        store.Load();
-
-        Assert.False(store.ArchiveFailed);
+        Assert.Equal("g", Assert.Single(s.Chat.Backends).Id);
+        Assert.True(File.Exists(store.ConnectionPath("g")));
+        Assert.DoesNotContain("backends", File.ReadAllText(path));
+        Assert.True(File.Exists(path + ".bak")); // the hand-edited file is still backed up before the rewrite
+        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
     }
 }

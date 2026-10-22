@@ -3,7 +3,7 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-/// <summary>Schema v13 → v14: the Right Ctrl mode is gone, the default width is 680, connections are never touched.</summary>
+/// <summary>Schema v14: the Right Ctrl mode is gone, the default width is 680, connections are never touched.</summary>
 public sealed class SettingsV14Tests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
@@ -21,7 +21,7 @@ public sealed class SettingsV14Tests : IDisposable
         => JsonNode.Parse(settingsText, documentOptions: new() { CommentHandling = System.Text.Json.JsonCommentHandling.Skip })!["activation"]!.AsObject();
 
     [Fact]
-    public void V13_file_with_copilotKey_is_archived_as_old_and_rewritten_without_it()
+    public void V13_file_with_copilotKey_is_rewritten_without_it_and_kept_as_bak()
     {
         const string original = """
             {
@@ -36,37 +36,12 @@ public sealed class SettingsV14Tests : IDisposable
 
         Assert.Equal(14, s.SchemaVersion);
         Assert.Equal("Ctrl+Alt+H", s.Activation.FallbackHotkey);
-        Assert.Equal(original, File.ReadAllText(SettingsPath + ".old"));
-        Assert.False(File.Exists(SettingsPath + ".bak")); // the archive replaces the .bak copy for this upgrade
+        Assert.Equal(original, File.ReadAllText(SettingsPath + ".bak"));
+        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
         var rewritten = File.ReadAllText(SettingsPath);
         Assert.DoesNotContain("copilotKey", rewritten, StringComparison.OrdinalIgnoreCase);
         Assert.False(Activation(rewritten).ContainsKey("copilotKey"));
         Assert.Equal(14, (int)JsonNode.Parse(rewritten)!["schemaVersion"]!);
-    }
-
-    [Fact]
-    public void Second_upgrade_keeps_the_first_archive_and_writes_old2()
-    {
-        const string first = """{ "schemaVersion": 13, "activation": { "copilotKey": "hotline" } }""";
-        const string second = """{ "schemaVersion": 12, "window": { "minWidth": 700 } }""";
-        WriteSettings(first);
-        New().Load();
-        File.WriteAllText(SettingsPath, second); // e.g. an older copy restored by the user
-
-        New().Load();
-
-        Assert.Equal(first, File.ReadAllText(SettingsPath + ".old"));
-        Assert.Equal(second, File.ReadAllText(SettingsPath + ".old2"));
-    }
-
-    [Fact]
-    public void A_v14_file_is_not_archived_again()
-    {
-        WriteSettings("""{ "schemaVersion": 13 }""");
-        New().Load();
-        New().Load();
-        Assert.True(File.Exists(SettingsPath + ".old"));
-        Assert.False(File.Exists(SettingsPath + ".old2"));
     }
 
     [Theory]
@@ -89,27 +64,10 @@ public sealed class SettingsV14Tests : IDisposable
     }
 
     [Fact]
-    public void Untouched_old_default_min_width_moves_to_680()
-    {
-        WriteSettings("""{ "schemaVersion": 13, "window": { "minWidth": 600 } }""");
-        Assert.Equal(680, New().Load().Window.MinWidth);
-    }
-
-    [Fact]
     public void Own_min_width_is_kept()
     {
         WriteSettings("""{ "schemaVersion": 13, "window": { "minWidth": 800 } }""");
         Assert.Equal(800, New().Load().Window.MinWidth);
-    }
-
-    [Fact]
-    public void Own_panel_width_is_unaffected_by_the_new_min_width()
-    {
-        WriteSettings("""{ "schemaVersion": 13, "window": { "width": 640, "minWidth": 600 } }""");
-        var s = New().Load();
-        Assert.Equal(640, s.Window.Width);
-        Assert.Equal(680, s.Window.MinWidth);
-        Assert.Equal(640, New().Load().Window.Width);
     }
 
     [Fact]

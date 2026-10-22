@@ -63,12 +63,12 @@ public sealed class ChatSettingsTests : IDisposable
     }
 
     [Fact]
-    public void Older_settings_without_connection_files_keep_the_agy_they_had()
-        => Assert.Equal("agy", Assert.Single(LoadJson("""{ "schemaVersion": 11, "chat": { "defaultBackend": "agy" } }""").Chat.Backends).Id);
+    public void Older_settings_without_connection_files_get_no_connection_added()
+        => Assert.Empty(LoadJson("""{ "schemaVersion": 11, "chat": { "defaultBackend": "agy" } }""").Chat.Backends);
 
     [Fact]
     public void Unknown_default_backend_falls_back_to_first()
-        => Assert.Equal("agy", LoadJson("""{ "schemaVersion": 11, "chat": { "defaultBackend": "nope" } }""").Chat.DefaultBackend);
+        => Assert.Equal("g", LoadJson("""{ "chat": { "defaultBackend": "nope", "backends": [ { "id": "g", "type": "gemini" } ] } }""").Chat.DefaultBackend);
 
     [Fact]
     public void Unknown_default_backend_with_no_connections_is_unchosen()
@@ -86,10 +86,6 @@ public sealed class ChatSettingsTests : IDisposable
     [Fact]
     public void Null_chat_section_gets_defaults()
         => Assert.Equal(300, LoadJson("""{ "chat": null }""").Chat.HistoryListSize);
-
-    [Fact]
-    public void Older_settings_keep_a_connection_chosen()
-        => Assert.Equal("agy", LoadJson("""{ "schemaVersion": 9, "chat": { "defaultBackend": "" } }""").Chat.DefaultBackend);
 
     [Fact]
     public void Blank_default_stays_unchosen_on_current_settings()
