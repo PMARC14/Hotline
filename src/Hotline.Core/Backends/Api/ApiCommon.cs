@@ -224,8 +224,9 @@ public static partial class ApiCommon
                 if (EndLine(line, data, maxChars, name) is { } ev) yield return ev;
             }
         }
-        EndLine(line, data, maxChars, name);
-        if (data.Length > 0) yield return data.ToString();
+        // The stream ended mid-line or right after one newline: that last line (a blank one completes the event) still counts.
+        if (EndLine(line, data, maxChars, name) is { } last) yield return last;
+        else if (data.Length > 0) yield return data.ToString();
     }
 
     /// <summary>One finished line: a blank line ends the event (returned), a data: line joins the event.</summary>

@@ -48,32 +48,38 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
                 await foreach (var data in ApiCommon.SseData(stream, ct, name: ApiCommon.Name(profile)))
                 {
-                    JsonElement root;
-                    try { root = JsonDocument.Parse(data).RootElement; }
+                    JsonDocument doc;
+                    try { doc = JsonDocument.Parse(data); }
                     catch (JsonException) { continue; }
+                    using var chunk = doc;
+                    var root = doc.RootElement;
+                    if (root.ValueKind != JsonValueKind.Object) continue; // a proxy's odd chunk
                     if (root.TryGetProperty("error", out _))
                         throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: {ApiCommon.ErrorMessage(data)}");
-                    if (root.TryGetProperty("promptFeedback", out var feedback) && feedback.TryGetProperty("blockReason", out var reason))
-                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_Blocked, ApiCommon.Name(profile), reason.GetString()));
-                    if (!root.TryGetProperty("candidates", out var candidates) || candidates.GetArrayLength() == 0) continue;
+                    if (root.TryGetProperty("promptFeedback", out var feedback) && feedback.ValueKind == JsonValueKind.Object
+                        && Str(feedback, "blockReason") is { } reason)
+                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_Blocked, ApiCommon.Name(profile), reason));
+                    if (!root.TryGetProperty("candidates", out var candidates) || candidates.ValueKind != JsonValueKind.Array
+                        || candidates.GetArrayLength() == 0 || candidates[0].ValueKind != JsonValueKind.Object) continue;
                     var candidate = candidates[0];
-                    if (candidate.TryGetProperty("content", out var content) && content.TryGetProperty("parts", out var parts))
-                        foreach (var part in parts.EnumerateArray())
+                    if (candidate.TryGetProperty("content", out var content) && content.ValueKind == JsonValueKind.Object
+                        && content.TryGetProperty("parts", out var parts) && parts.ValueKind == JsonValueKind.Array)
+                        foreach (var part in parts.EnumerateArray().Where(p => p.ValueKind == JsonValueKind.Object))
                         {
                             modelParts.Add(JsonNode.Parse(part.GetRawText()));
-                            if (part.TryGetProperty("functionCall", out var fc))
+                            if (part.TryGetProperty("functionCall", out var fc) && fc.ValueKind == JsonValueKind.Object)
                             {
-                                var name = fc.TryGetProperty("name", out var n) ? n.GetString() ?? "" : "";
-                                var id = fc.TryGetProperty("id", out var i) ? i.GetString() : null;
+                                var name = Str(fc, "name") ?? "";
+                                var id = Str(fc, "id");
                                 var args = fc.TryGetProperty("args", out var a) ? a.Clone() : JsonDocument.Parse("{}").RootElement;
                                 calls.Add((name, id, args));
                                 continue;
                             }
                             if (part.TryGetProperty("thought", out var thought) && thought.ValueKind == JsonValueKind.True) continue;
-                            if (part.TryGetProperty("text", out var text) && text.GetString() is { Length: > 0 } piece) yield return new ChatDelta(piece);
+                            if (Str(part, "text") is { Length: > 0 } piece) yield return new ChatDelta(piece);
                         }
-                    if (candidate.TryGetProperty("finishReason", out var finish) && finish.GetString() is "SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST")
-                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish.GetString()));
+                    if (Str(candidate, "finishReason") is ("SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST") and var finish)
+                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish));
                 }
             }
 
@@ -169,4 +175,8 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
     }
 
     public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+
+    /// <summary>A string property, or null when it is missing or not a string.</summary>
+    private static string? Str(JsonElement e, string name) =>
+        e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 }
