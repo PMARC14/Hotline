@@ -438,7 +438,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0}을(를) 시작할 수 없습니다</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 서버를 시작할 수 없습니다. "{1}"은(는) cmd.exe를 통해 실행되므로 "command" 또는 "args"의 " % ^ &amp; | &lt; &gt; ! 문자나 줄 바꿈을 안전하게 전달할 수 없습니다. "command"가 프로그램의 .exe를 가리키도록 설정하거나 해당 문자를 제거하세요.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다: {0}</value></data>
-  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json은 버전 1 파일입니다. 버전 1 파일은 더 이상 읽히지 않으므로 기본 바가 사용됩니다.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json의 일부가 무시되었습니다</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} 파일의 나머지 부분은 계속 적용됩니다. 설정 › 창 › 단추 행에 무시된 내용이 표시됩니다.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json을 사용할 수 없습니다</value></data>

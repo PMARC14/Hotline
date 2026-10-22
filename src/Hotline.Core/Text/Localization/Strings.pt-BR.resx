@@ -438,7 +438,7 @@ Negar:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>não foi possível iniciar {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>O servidor {0} não pode ser iniciado: "{1}" é executado por meio do cmd.exe, que não pode transmitir com segurança os caracteres " % ^ &amp; | &lt; &gt; ! ou quebras de linha em "command" ou "args". Aponte "command" para o .exe do programa ou remova esses caracteres.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Não foi possível ler o toolbar.json: {0}</value></data>
-  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json é um arquivo de versão 1; arquivos de versão 1 não são mais lidos, portanto, a barra padrão é usada.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Parte de toolbar.json foi ignorada</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} O restante do arquivo ainda se aplica. Configurações › Janela › Linhas de botões mostra o que foi ignorado.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json não pôde ser usado</value></data>

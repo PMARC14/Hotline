@@ -438,7 +438,7 @@ Verweigern:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} konnte nicht gestartet werden</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Der Server {0} kann nicht gestartet werden: "{1}" wird über cmd.exe ausgeführt, wodurch die Zeichen " % ^ &amp; | &lt; &gt; ! oder Zeilenumbrüche in "command" oder "args" nicht sicher übergeben werden können. Verweisen Sie mit "command" auf die .exe des Programms oder entfernen Sie diese Zeichen.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json konnte nicht gelesen werden: {0}</value></data>
-  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json ist eine Datei der Version 1; Dateien der Version 1 werden nicht mehr gelesen, daher wird die Standardleiste verwendet.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Ein Teil von toolbar.json wurde ignoriert</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Der Rest der Datei gilt weiterhin. Einstellungen › Fenster › Schaltflächenzeilen zeigt, was ignoriert wurde.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json konnte nicht verwendet werden</value></data>

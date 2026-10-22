@@ -438,7 +438,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>無法啟動 {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 伺服器無法啟動："{1}" 透過 cmd.exe 執行，無法安全傳遞 "command" 或 "args" 中的 " % ^ &amp; | &lt; &gt; ! 字元或換行符號。請將 "command" 指向程式的 .exe，或移除這些字元。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>無法讀取 toolbar.json:{0}</value></data>
-  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json 是版本 1 檔案；不再讀取版本 1 檔案，因此使用預設列。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} 檔案的其餘部分仍然適用。設定 › 視窗 › 按鈕列 顯示了已忽略的內容。</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>無法使用 toolbar.json</value></data>

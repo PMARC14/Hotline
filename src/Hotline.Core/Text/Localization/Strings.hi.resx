@@ -438,7 +438,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} सर्वर प्रारंभ नहीं हो सकता: "{1}" cmd.exe के माध्यम से चलता है, जो "command" या "args" में " % ^ &amp; | &lt; &gt; ! वर्णों या लाइन ब्रेक को सुरक्षित रूप से पास नहीं कर सकता। "command" को प्रोग्राम के .exe पर इंगित करें, या उन वर्णों को हटा दें।</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
-  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json एक version 1 फ़ाइल है; version 1 फ़ाइलें अब नहीं पढ़ी जाती हैं, इसलिए डिफ़ॉल्ट बार का उपयोग किया जाता है।</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json के एक भाग को अनदेखा किया गया</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} शेष फ़ाइल अभी भी लागू होती है। सेटिंग्स › विंडो › बटन पंक्तियाँ दिखाता है कि क्या अनदेखा किया गया था।</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json का उपयोग नहीं किया जा सका</value></data>

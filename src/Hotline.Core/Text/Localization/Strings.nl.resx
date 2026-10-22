@@ -438,7 +438,7 @@ Weigeren:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>De {0}-server kan niet worden gestart: "{1}" wordt uitgevoerd via cmd.exe, waardoor de tekens " % ^ &amp; | &lt; &gt; ! of reeleinden in "command" of "args" niet veilig kunnen worden doorgegeven. Verwijs met "command" naar de .exe van het programma of verwijder deze tekens.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
-  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is een versie 1-bestand; versie 1-bestanden worden niet meer gelezen, dus wordt de standaardbalk gebruikt.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Een deel van toolbar.json is genegeerd</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} De rest van het bestand is nog steeds van toepassing. Instellingen › Venster › Knoppenrijen toont wat er is genegeerd.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json kon niet worden gebruikt</value></data>
