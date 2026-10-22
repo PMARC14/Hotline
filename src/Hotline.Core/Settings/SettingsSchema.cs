@@ -53,6 +53,11 @@ public static class SettingsSchema
         => new(page, header, description, options.Select(o => new ChoiceOption(o.Value.ToString(), o.Label)).ToList(),
             s => get(s).ToString(), (s, v) => set(s, Enum.Parse<T>(v)), restart);
 
+    /// <summary>The picker entry for a stored language: "EN-us" shows as "en-US"; an unknown tag as "system".</summary>
+    private static string CanonicalLanguage(string? stored) =>
+        Languages.Resolve(stored) is null ? Languages.System
+            : Languages.Supported.FirstOrDefault(t => t.Equals(stored!.Trim(), StringComparison.OrdinalIgnoreCase)) ?? stored!.Trim();
+
     private static string? Blank(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
 
     /// <summary>The accent picker's "Custom" entry (settings.json stores the colour itself).</summary>
@@ -78,7 +83,7 @@ public static class SettingsSchema
     public static IReadOnlyList<SettingItem> Items { get; } =
     [
         new ChoiceItem(SettingsPage.General, nameof(Strings.Set_Language), nameof(Strings.Set_Language_Desc), LanguageOptions(),
-            s => Languages.Resolve(s.General.Language) is null ? Languages.System : s.General.Language.Trim(),
+            s => CanonicalLanguage(s.General.Language),
             (s, v) => s.General.Language = v, RequiresRestart: true),
         Choice(SettingsPage.General, nameof(Strings.Set_Tap), null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
         Choice(SettingsPage.General, nameof(Strings.Set_Hold), null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),

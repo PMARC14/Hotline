@@ -64,6 +64,7 @@ public sealed class SettingsStore(string directory)
             var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
             var (files, broken) = ReadConnectionFiles();
             BrokenConnectionFiles = broken; // a file broken (or fixed) since start: the next save must leave it alone
+            foreach (var f in files) _ownedIds.Add(f.Id); // a file added while running is ours to delete when its connection is removed
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
@@ -150,10 +151,10 @@ public sealed class SettingsStore(string directory)
     /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
     private static string SerializeMain(HotlineSettings s)
     {
-        var backends = s.Chat.Backends;
-        s.Chat.Backends = null!;
-        try { return JsonSerializer.Serialize(s, Options); }
-        finally { s.Chat.Backends = backends; }
+        // Serialize to a tree and drop the list there: other threads read the live Chat.Backends meanwhile.
+        var tree = JsonSerializer.SerializeToNode(s, Options)!.AsObject();
+        if (tree["chat"] is System.Text.Json.Nodes.JsonObject chat) chat.Remove("backends");
+        return tree.ToJsonString(Options);
     }
 
     private static void WriteAtomic(string path, string content)
@@ -255,7 +256,7 @@ public sealed class SettingsStore(string directory)
             if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
                 continue; // unreadable right now (an editor mid-save): its connection only looks removed; keep owning it
             if (!inUse.Contains(path)) // two ids can map to one file name: never delete a file a remaining connection uses
-                try { File.Delete(path); } catch (IOException) { }
+                try { File.Delete(path); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
             _ownedIds.Remove(id);
         }
     }
@@ -345,7 +346,9 @@ public sealed class SettingsStore(string directory)
         s.Window ??= new WindowSettings();
         s.Diagnostics ??= new DiagnosticsSettings();
         s.Chat ??= new ChatSettings();
-        s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).ToList();
+        // Ids match case-insensitively (as their files do): a repeated id would collide in the live merge, so the first stays.
+        s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id))
+            .DistinctBy(b => b.Id, StringComparer.OrdinalIgnoreCase).ToList();
         foreach (var b in s.Chat.Backends.Where(b => string.IsNullOrWhiteSpace(b.Name))) b.Name = b.Id;
         foreach (var b in s.Chat.Backends)
         {

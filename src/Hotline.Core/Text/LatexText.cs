@@ -62,7 +62,18 @@ public static class LatexText
         catch (Exception) { return latex ?? ""; }
     }
 
+    // Streamed model text can nest without end; past this the input is shown as written (a stack overflow can't be caught).
+    private const int MaxDepth = 64;
+    [ThreadStatic] private static int _depth;
+
     private static string Convert(string s, ref int pos, bool stopAtBrace)
+    {
+        if (++_depth > MaxDepth) throw new InvalidOperationException("LaTeX nested too deeply");
+        try { return ConvertGroup(s, ref pos, stopAtBrace); }
+        finally { _depth--; }
+    }
+
+    private static string ConvertGroup(string s, ref int pos, bool stopAtBrace)
     {
         var sb = new StringBuilder();
         while (pos < s.Length)
@@ -98,6 +109,13 @@ public static class LatexText
     }
 
     private static string Command(string s, ref int pos)
+    {
+        if (++_depth > MaxDepth) throw new InvalidOperationException("LaTeX nested too deeply");
+        try { return CommandCore(s, ref pos); }
+        finally { _depth--; }
+    }
+
+    private static string CommandCore(string s, ref int pos)
     {
         pos++; // backslash
         if (pos >= s.Length) return "";
