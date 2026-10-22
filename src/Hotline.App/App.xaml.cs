@@ -320,15 +320,16 @@ public partial class App : Application
     /// </summary>
     private ValueTask InvalidateBackend(string id)
     {
-        if (_presenter?.IsBusy == true) { _pendingInvalidations.Add(id); return ValueTask.CompletedTask; }
+        if (_presenter?.IsBusy == true) { lock (_pendingInvalidations) _pendingInvalidations.Add(id); return ValueTask.CompletedTask; }
         return _backends?.InvalidateAsync(id) ?? ValueTask.CompletedTask;
     }
 
     private async Task FlushInvalidationsAsync()
     {
-        foreach (var id in _pendingInvalidations.ToList())
+        string[] ids;
+        lock (_pendingInvalidations) { ids = [.. _pendingInvalidations]; _pendingInvalidations.Clear(); }
+        foreach (var id in ids)
         {
-            _pendingInvalidations.Remove(id);
             try { if (_backends is not null) await _backends.InvalidateAsync(id); }
             catch (Exception ex) { _log?.Error($"restarting backend {id} failed", ex); }
         }

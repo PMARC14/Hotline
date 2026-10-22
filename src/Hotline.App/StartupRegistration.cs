@@ -28,10 +28,10 @@ internal static class StartupRegistration
         catch (Exception) { return null; }
     }
 
-    public static void Disable()
+    public static async Task DisableAsync()
     {
-        try { StartupTask.GetAsync(TaskId).AsTask().GetAwaiter().GetResult().Disable(); }
-        catch (Exception) { }
+        try { (await StartupTask.GetAsync(TaskId)).Disable(); }
+        catch (Exception) { } // unpackaged dev run
     }
 
     public static string Describe(StartupTaskState? state) => state switch

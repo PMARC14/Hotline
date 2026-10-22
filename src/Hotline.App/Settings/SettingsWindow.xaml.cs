@@ -299,7 +299,7 @@ public sealed partial class SettingsWindow : Window
                 if (state == Windows.ApplicationModel.StartupTaskState.DisabledByUser)
                     await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
             }
-            else StartupRegistration.Disable();
+            else await StartupRegistration.DisableAsync();
             Refresh();
         };
         PageHost.Children.Add(CardWithStatus(Strings.Settings_Startup, status, toggle));
@@ -400,7 +400,7 @@ public sealed partial class SettingsWindow : Window
                 ShowPage("Advanced");
                 PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Success, Message = L.F(Strings.Advanced_ResetDone, backup) });
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            catch (Exception ex) // also a credential-store failure; this runs fire-and-forget
             {
                 _log.Error("settings reset failed", ex);
                 PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Error, Message = ex.Message });
