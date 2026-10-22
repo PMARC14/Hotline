@@ -615,7 +615,7 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Blau</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Lila</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Rosa</value></data>
-  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Breite in Schaltflächen</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Nicht angezeigt</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Ziehen Sie Elemente zwischen den vier Gruppen oder verwenden Sie die Schaltflächen unter jedem Element. Wenn ein Element fokussiert ist, verschieben Alt+Pfeiltasten es in eine andere Gruppe und Ctrl+Links oder Ctrl+Rechts innerhalb seiner Gruppe. Änderungen werden in toolbar.json gespeichert und sofort angewendet.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>In die linke Gruppe verschieben</value></data>

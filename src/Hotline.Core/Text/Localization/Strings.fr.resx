@@ -615,7 +615,7 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Bleu</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Violet</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Rose</value></data>
-  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Largeur en boutons</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Non affiché</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Glissez les éléments entre les quatre groupes ou utilisez les boutons sous chaque élément. Avec un élément sélectionné, Alt+touches de direction le déplace vers un autre groupe et Ctrl+Gauche ou Ctrl+Droite le déplace au sein de son groupe. Les modifications sont enregistrées dans toolbar.json et appliquées immédiatement.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Déplacer vers le groupe de gauche</value></data>
