@@ -254,9 +254,9 @@
   <data name="Memory_Edit" xml:space="preserve"><value>編輯記憶</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>空白。在訊息方塊中輸入「/remember 某件事」可新增一行。</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} 行。記憶開啟時,每個聊天都會讀取這些內容。</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>在訊息開頭輸入 / 來使用:「/translate 某段文字」,或附加檔案後輸入「/summarize」。每個動作都是 Markdown 檔案;第一行是清單中顯示的說明。名稱可使用字母、數字、- 和 _。</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>新增動作</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>開啟動作資料夾</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>快速動作是捷徑：在訊息方塊中輸入 / 並選擇一個，例如 “/translate some text”，或帶有附件的 “/summarize”。每個都是快速動作資料夾中的小型 Markdown 檔案：第一行是清單中顯示的描述，其餘部分則是隨文字一起傳送的內容。名稱可以使用英文字母、數字、- 和 _。</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>新增快速動作</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>開啟快速動作資料夾</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>組建 {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} 種 OCR 語言</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>沒有 OCR 語言:[設定] › [時間與語言] › [語言與地區] › 新增具有光學字元辨識的語言</value></data>
@@ -393,8 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} 未及時回應。</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>請在 [設定] › [AI 連線] 中為 {0} 新增 API 金鑰。</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} 的端點不是有效的 http(s) 位址:{1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} 已重新導向至 {1}。請在連線中設定最終位址。</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} 傳送的回應過大，因此已停止。</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} 已達速率限制,{1} 秒後重試…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} 忙碌中,{1} 秒後重試…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} 拒絕了 API 金鑰。{1}</value></data>
@@ -407,7 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} 在要求工具時停止 ({1});未執行任何動作。</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}:工具要求完成前連線已中斷;未執行任何動作。</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} 意外停止。</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} 單次傳送的輸出超過了 Hotline 的讀取上限，因此已停止。</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} 的工作資料夾不存在:{1}。請在 [設定] › [AI 連線] 中另選一個。</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>未安裝 Claude Code。請從 claude.com/claude-code 安裝,執行一次 `claude` 登入,然後再試一次。</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy 未登入。請在終端機中執行一次 `agy` 登入,然後再試一次。</value></data>
@@ -436,13 +436,13 @@
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 繼續使用最後一個正常的版本。</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>伺服器已結束 (結束代碼 {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>無法啟動 {0}</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 伺服器無法啟動："{1}" 透過 cmd.exe 執行，無法安全傳遞 "command" 或 "args" 中的 " % ^ &amp; | &lt; &gt; ! 字元或換行符號。請將 "command" 指向程式的 .exe，或移除這些字元。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>無法讀取 toolbar.json:{0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} 檔案的其餘部分仍然適用。設定 › 視窗 › 按鈕列 顯示了已忽略的內容。</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>無法使用 toolbar.json</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>在檔案修復前，工具列將保留其最後的版面配置。</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>開啟設定</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>找不到快速動作「{0}」</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>請先完成聽寫，再使用此按鈕。</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy 的 settings.json 不是 JSON 物件;不會變更。</value></data>
@@ -481,7 +481,7 @@
   <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置繼續此聊天</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>無法開啟 {0}:{1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>啟動參數 (進階)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>取代 Hotline 為此模式新增的參數 (以空格分隔)。Hotline 與程式溝通所需的參數一律會加入,危險參數只能透過「全部核准」加入。留空 = Hotline 的預設值。</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>取代 Hotline 通常為此模式新增的額外旗標 (以空格分隔)。Hotline 與程式通訊所需的旗標，以及在僅聊天模式下防止其使用自身工具的旗標一律會新增。此處會忽略核准工具或略過權限檢查的旗標：只有 “Approve everything” 才能開啟它們。留空 = Hotline 的預設值。</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 的預設值</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>最大回答長度</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>一次回答最多可用的權杖數。設得太低,長回答會提前結束。留空 = 模型預設值。</value></data>
@@ -506,8 +506,8 @@
   <data name="Hotkey_NotSet" xml:space="preserve"><value>未設定</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>請加上 Ctrl、Alt、Shift 或 Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>無法使用該按鍵</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>還原預設動作</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>已新增或更新 {0} 個預設動作。</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>還原內建快速動作</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>已新增或更新 {0} 個內建快速動作。</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>重新命名</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>請使用字母、數字、- 和 _,且名稱不可重複。</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>刪除 /{0}?</value></data>
@@ -604,17 +604,17 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>中下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>自訂</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>外框色彩</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>強調色彩</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>紅色</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>橙色</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>黃色</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>綠色</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>藍綠色</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>藍色</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>紫色</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>粉紅色</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左側群組</value></data>
@@ -659,15 +659,15 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>已有 24 個自訂按鈕；請先刪除一個。</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下群組已滿 (40 個項目)；請先騰出空間。</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>無法儲存此按鈕；請檢查其標籤、圖示與動作。</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>選擇圖片…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>改用內建圖示</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>或者使用您自己的圖片：不超過 256 KB 的 PNG，每邊介於 16 到 256 像素之間。</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>所選圖片</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>僅限 PNG：請選擇 .png 圖片。</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>此圖片過大：最多 256 KB。</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>圖片每邊必須介於 16 到 256 像素之間。</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>此檔案不是有效的 PNG。</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>無法讀取或複製此圖片；請選擇儲存在此電腦上的 PNG。</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>無法儲存 toolbar.json: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>讀取 toolbar.json 時已修正 (在此儲存將寫入修正後的檔案)：</value></data>
 </root>

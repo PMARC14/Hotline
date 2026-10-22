@@ -254,9 +254,9 @@ Weigeren:
   <data name="Memory_Edit" xml:space="preserve"><value>Geheugen bewerken</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Leeg. "/remember iets" in het berichtvak voegt een regel toe.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} regel(s). Elke chat ziet ze zolang Geheugen aan staat.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Typ / aan het begin van een bericht om er een te gebruiken: "/translate een tekst", of "/summarize" met een bijlage. Elke actie is een Markdown-bestand; de eerste regel is de beschrijving in de lijst. Namen mogen letters, cijfers, - en _ bevatten.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Nieuwe actie</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Map met acties openen</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Snelle acties zijn snelkoppelingen: typ / in het berichtvak en kies er een, bijvoorbeeld “/translate some text”, of “/summarize” met een bijlage. Elk daarvan is een klein Markdown-bestand in uw map met snelle acties: de eerste regel is de beschrijving die in de lijst wordt weergegeven en de rest is wat samen met uw tekst wordt verzonden. Namen mogen letters, cijfers, - en _ bevatten.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Nieuwe snelle actie</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>De map met snelle acties openen</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR-taal/talen</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Geen OCR-taal: Instellingen › Tijd en taal › Taal en regio › voeg een taal toe met optische tekenherkenning</value></data>
@@ -393,8 +393,8 @@ Weigeren:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} heeft niet op tijd geantwoord.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Voeg een API-sleutel toe voor {0} via Instellingen › AI-verbindingen.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Het eindpunt voor {0} is geen geldig http(s)-adres: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} is omgeleid naar {1}. Stel het definitieve adres in de verbinding in.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} heeft een te groot antwoord verzonden en is daarom gestopt.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} heeft de aanvraaglimiet bereikt, nieuwe poging over {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} is bezet, nieuwe poging over {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} heeft de API-sleutel geweigerd. {1}</value></data>
@@ -407,7 +407,7 @@ Weigeren:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} stopte ({1}) tijdens het vragen om een hulpmiddel; er is niets uitgevoerd.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: de verbinding eindigde voordat het hulpmiddelverzoek compleet was; er is niets uitgevoerd.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} is onverwacht gestopt.</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} heeft in één keer meer uitvoer verzonden dan Hotline leest en is daarom gestopt.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>De werkmap voor {0} bestaat niet: {1}. Kies een andere via Instellingen › AI-verbindingen.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code is niet geïnstalleerd. Installeer het via claude.com/claude-code, voer `claude` eenmaal uit om je aan te melden en probeer het opnieuw.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy is niet aangemeld. Voer `agy` eenmaal uit in een terminal om je aan te melden en probeer het opnieuw.</value></data>
@@ -436,13 +436,13 @@ Weigeren:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} De laatste goede versie blijft van kracht.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>de server is gestopt (afsluitcode {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>De {0}-server kan niet worden gestart: "{1}" wordt uitgevoerd via cmd.exe, waardoor de tekens " % ^ &amp; | &lt; &gt; ! of reeleinden in "command" of "args" niet veilig kunnen worden doorgegeven. Verwijs met "command" naar de .exe van het programma of verwijder deze tekens.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Een deel van toolbar.json is genegeerd</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} De rest van het bestand is nog steeds van toepassing. Instellingen › Venster › Knoppenrijen toont wat er is genegeerd.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json kon niet worden gebruikt</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>De balk behoudt de laatste indeling totdat het bestand is hersteld.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Instellingen openen</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Snelle actie '{0}' niet gevonden</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Rond eerst het dicteren af en gebruik dan deze knop.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>De settings.json van agy is geen JSON-object; er wordt niets gewijzigd.</value></data>
@@ -481,7 +481,7 @@ Weigeren:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Deze chat voortzetten in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} kon niet worden geopend: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Startopties (geavanceerd)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Vervangt de opties die Hotline voor deze modus toevoegt (gescheiden door spaties). De opties die Hotline nodig heeft om met het programma te praten worden altijd toegevoegd, gevaarlijke alleen via ‘Alles goedkeuren’. Leeg = standaard van Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Vervangt de extra vlaggen die Hotline gewoonlijk toevoegt voor deze modus (gescheiden door spaties). De vlaggen die Hotline nodig heeft om met het programma te communiceren en, in de modus alleen-chatten, de vlaggen die voorkomen dat het zijn eigen hulpprogramma's gebruikt, worden altijd toegevoegd. Vlaggen die hulpprogramma's goedkeuren of machtigingscontroles overslaan, worden hier genegeerd: alleen “Approve everything” kan ze inschakelen. Leeg = standaardwaarden van Hotline.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Standaard van Hotline</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Maximale antwoordlengte</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Maximaal aantal tokens per antwoord. Is dit te laag, dan stopt een lang antwoord eerder. Leeg = standaard van het model.</value></data>
@@ -506,8 +506,8 @@ Weigeren:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Niet ingesteld</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Voeg Ctrl, Alt, Shift of Win toe</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Die toets kan niet worden gebruikt</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Standaardacties herstellen</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} standaardacties toegevoegd of bijgewerkt.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>De ingebouwde snelle acties herstellen</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} ingebouwde snelle acties toegevoegd of bijgewerkt.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Naam wijzigen</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Gebruik letters, cijfers, - en _, en een naam die nog niet bestaat.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} verwijderen?</value></data>
@@ -604,17 +604,17 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Linksonder</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Middenonder</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Rechtsonder</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Aangepast</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Omtrekkleur</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accentkleur</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Rood</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Oranje</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Geel</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Groen</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Blauwgroen</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blauw</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Paars</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Roze</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niet weergegeven</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Sleep items tussen de vier groepen of gebruik de knoppen onder elk item. Als een item de focus heeft, verplaatst Alt+pijltjestoetsen het naar een andere groep en Ctrl+Links of Ctrl+Rechts het binnen de groep. Wijzigingen worden opgeslagen in toolbar.json en direct toegepast.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Naar de linkergroep verplaatsen</value></data>
@@ -659,15 +659,15 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Er zijn al 24 aangepaste knoppen; verwijder er eerst een.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>De groep linksonder is vol (40 items); maak daar eerst ruimte.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Deze knop kon niet worden opgeslagen; controleer het label, het pictogram en de actie.</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Kies een afbeelding…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Gebruik in plaats daarvan een ingebouwd pictogram</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Of gebruik een eigen afbeelding: een PNG van maximaal 256 KB, tussen 16 en 256 pixels aan elke zijde.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>De gekozen afbeelding</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Alleen PNG: kies een .png-afbeelding.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Deze afbeelding is te groot: maximaal 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>De afbeelding moet tussen 16 en 256 pixels aan elke zijde zijn.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>Dit bestand is geen geldige PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Deze afbeelding kan niet worden gelezen of gekopieerd; kies een PNG die op deze pc is opgeslagen.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json kon niet worden opgeslagen: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Gecorrigeerd tijdens het lezen van toolbar.json (opslaan schrijft het gecorrigeerde bestand):</value></data>
 </root>

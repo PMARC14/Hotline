@@ -254,9 +254,9 @@ Tolak:
   <data name="Memory_Edit" xml:space="preserve"><value>Edit memori</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Kosong. "/remember sesuatu" di kotak pesan menambahkan satu baris.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} baris. Setiap obrolan melihatnya selama Memori aktif.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Ketik / di awal pesan untuk memakainya: "/translate suatu teks", atau "/summarize" dengan lampiran. Setiap aksi adalah file Markdown; baris pertamanya adalah deskripsi yang ditampilkan di daftar. Nama boleh berisi huruf, angka, - dan _.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Aksi baru</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Buka folder aksi</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Aksi cepat adalah pintasan: ketik / di kotak pesan dan pilih salah satu, misalnya “/translate some text”, atau “/summarize” dengan lampiran. Masing-masing adalah file Markdown kecil di folder aksi cepat Anda: baris pertamanya adalah deskripsi yang ditampilkan dalam daftar, dan sisanya dikirim bersama teks Anda. Nama boleh menggunakan huruf, angka, -, dan _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Aksi cepat baru</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Buka folder aksi cepat</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} bahasa OCR</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Tidak ada bahasa OCR: Pengaturan › Waktu &amp; bahasa › Bahasa &amp; wilayah › tambahkan bahasa dengan Pengenalan karakter optik</value></data>
@@ -393,8 +393,8 @@ Tolak:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} tidak menjawab tepat waktu.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Tambahkan kunci API untuk {0} di Pengaturan › Koneksi AI.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Titik akhir untuk {0} bukan alamat http(s) yang valid: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} dialihkan ke {1}. Atur alamat akhir dalam koneksi.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} mengirim respons yang terlalu besar, sehingga dihentikan.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} mencapai batas permintaan, mencoba lagi dalam {1} dtk…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} sedang sibuk, mencoba lagi dalam {1} dtk…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} menolak kunci API. {1}</value></data>
@@ -407,7 +407,7 @@ Tolak:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} berhenti ({1}) saat meminta alat; tidak ada yang dijalankan.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: koneksi berakhir sebelum permintaan alat lengkap; tidak ada yang dijalankan.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} berhenti secara tak terduga.</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} mengirim lebih banyak output sekaligus daripada yang dibaca Hotline, sehingga dihentikan.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Folder kerja untuk {0} tidak ada: {1}. Pilih yang lain di Pengaturan › Koneksi AI.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code tidak terpasang. Pasang dari claude.com/claude-code, jalankan `claude` sekali untuk masuk, lalu coba lagi.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy belum masuk. Jalankan `agy` sekali di terminal untuk masuk, lalu coba lagi.</value></data>
@@ -436,13 +436,13 @@ Tolak:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Versi baik terakhir tetap berlaku.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>server berhenti (kode keluar {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Server {0} tidak dapat dimulai: "{1}" berjalan melalui cmd.exe, yang tidak dapat meneruskan karakter " % ^ &amp; | &lt; &gt; ! atau jeda baris dengan aman dalam "command" atau "args". Arahkan "command" ke .exe program, atau hapus karakter tersebut.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Sebagian dari toolbar.json diabaikan</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Bagian berkas lainnya tetap berlaku. Pengaturan › Jendela › Baris tombol menunjukkan apa yang diabaikan.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json tidak dapat digunakan</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>Bilah mempertahankan tata letak terakhirnya hingga berkas diperbaiki.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Buka Pengaturan</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Aksi cepat '{0}' tidak ditemukan</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Selesaikan dikte terlebih dahulu, lalu gunakan tombol ini.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json milik agy bukan objek JSON; tidak diubah.</value></data>
@@ -481,7 +481,7 @@ Tolak:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Lanjutkan obrolan ini di</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Tidak dapat membuka {0}: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Opsi peluncuran (lanjutan)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Menggantikan opsi yang ditambahkan Hotline untuk mode ini (dipisahkan spasi). Opsi yang dibutuhkan Hotline untuk berkomunikasi dengan program selalu ditambahkan, dan opsi berbahaya hanya berasal dari “Setujui semuanya”. Kosong = bawaan Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Mengganti flag tambahan yang biasanya ditambahkan Hotline untuk mode ini (dipisahkan spasi). Flag yang diperlukan Hotline untuk berkomunikasi dengan program dan, dalam mode hanya-obrolan, flag yang mencegahnya menggunakan alatnya sendiri selalu ditambahkan. Flag yang menyetujui alat atau melewati pemeriksaan izin diabaikan di sini: hanya “Approve everything” yang dapat mengaktifkannya. Kosong = default Hotline.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Bawaan Hotline</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Panjang jawaban maksimum</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Jumlah token terbanyak untuk satu jawaban. Jika terlalu rendah, jawaban panjang berhenti lebih awal. Kosong = bawaan model.</value></data>
@@ -506,8 +506,8 @@ Tolak:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Belum diatur</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Tambahkan Ctrl, Alt, Shift, atau Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Tombol itu tidak dapat digunakan</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Pulihkan tindakan bawaan</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} tindakan bawaan ditambahkan atau diperbarui.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Pulihkan aksi cepat bawaan</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} aksi cepat bawaan telah ditambahkan atau diperbarui.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Ganti nama</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Gunakan huruf, angka, - dan _, dan nama yang belum dipakai.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Hapus /{0}?</value></data>
@@ -604,17 +604,17 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Kiri bawah</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Tengah bawah</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Kanan bawah</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Kustom</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Warna garis luar</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Warna aksen</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Merah</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Oranye</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Kuning</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Hijau</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Hijau kebiruan</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Biru</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Ungu</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Merah muda</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Tidak ditampilkan</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Tarik item di antara keempat grup, atau gunakan tombol di bawah setiap item. Saat item difokuskan, Alt+tombol panah memindahkannya ke grup lain dan Ctrl+Kiri atau Ctrl+Kanan memindahkannya di dalam grupnya. Perubahan disimpan ke toolbar.json dan langsung diterapkan.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Pindahkan ke grup kiri</value></data>
@@ -659,15 +659,15 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Sudah ada 24 tombol kustom; hapus satu terlebih dahulu.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Grup kiri bawah penuh (40 item); beri ruang di sana terlebih dahulu.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Tombol ini tidak dapat disimpan; periksa label, ikon, dan aksinya.</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Pilih gambar…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Gunakan ikon bawaan sebagai gantinya</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Atau gunakan gambar Anda sendiri: PNG maksimal 256 KB, antara 16 dan 256 piksel di setiap sisi.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>Gambar yang dipilih</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Hanya PNG: pilih gambar .png.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Gambar ini terlalu besar: maksimal 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>Gambar harus berukuran antara 16 dan 256 piksel di setiap sisi.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>File ini bukan PNG yang valid.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Gambar ini tidak dapat dibaca atau disalin; pilih PNG yang disimpan di PC ini.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json tidak dapat disimpan: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Diperbaiki saat membaca toolbar.json (menyimpan di sini akan menulis file yang diperbaiki):</value></data>
 </root>

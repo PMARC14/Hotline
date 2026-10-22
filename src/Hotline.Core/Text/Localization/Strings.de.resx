@@ -254,9 +254,9 @@ Verweigern:
   <data name="Memory_Edit" xml:space="preserve"><value>Gedächtnis bearbeiten</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Leer. „/remember etwas“ im Eingabefeld fügt eine Zeile hinzu.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} Zeile(n). Jeder Chat sieht sie, solange das Gedächtnis aktiv ist.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Tippe / am Anfang einer Nachricht, um eine zu verwenden: „/translate Text“ oder „/summarize“ mit einem Anhang. Jede Aktion ist eine Markdown-Datei; ihre erste Zeile ist die Beschreibung in der Liste. Namen dürfen Buchstaben, Ziffern, - und _ enthalten.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Neue Aktion</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Aktionsordner öffnen</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Schnellaktionen sind Tastenkombinationen: Geben Sie / in das Nachrichtenfeld ein und wählen Sie eine aus, z. B. “/translate some text” oder “/summarize” mit einem Anhang. Jede davon ist eine kleine Markdown-Datei in Ihrem Ordner für Schnellaktionen: Die erste Zeile ist die in der Liste angezeigte Beschreibung, und der Rest wird zusammen mit Ihrem Text gesendet. Namen dürfen Buchstaben, Ziffern, - und _ enthalten.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Neue Schnellaktion</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Ordner für Schnellaktionen öffnen</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>Build {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR-Sprache(n)</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Keine OCR-Sprache: Einstellungen › Zeit und Sprache › Sprache und Region › eine Sprache mit optischer Zeichenerkennung hinzufügen</value></data>
@@ -393,8 +393,8 @@ Verweigern:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} hat nicht rechtzeitig geantwortet.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Füge unter Einstellungen › KI-Verbindungen einen API-Schlüssel für {0} hinzu.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Der Endpunkt für {0} ist keine gültige http(s)-Adresse: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} hat zu {1} weitergeleitet. Legen Sie die endgültige Adresse in der Verbindung fest.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} hat eine zu große Antwort gesendet und wurde daher angehalten.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} ist ausgelastet (Ratenlimit), neuer Versuch in {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} ist beschäftigt, neuer Versuch in {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} hat den API-Schlüssel abgelehnt. {1}</value></data>
@@ -407,7 +407,7 @@ Verweigern:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} hat beim Anfordern eines Tools gestoppt ({1}); nichts wurde ausgeführt.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: Die Verbindung endete, bevor die Tool-Anfrage vollständig war; nichts wurde ausgeführt.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} wurde unerwartet beendet.</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} hat auf einmal mehr Ausgabe gesendet, als Hotline liest, und wurde daher angehalten.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Der Arbeitsordner für {0} existiert nicht: {1}. Wähle unter Einstellungen › KI-Verbindungen einen anderen.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code ist nicht installiert. Installiere es von claude.com/claude-code, starte `claude` einmal zum Anmelden und versuch es dann erneut.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy ist nicht angemeldet. Starte `agy` einmal in einem Terminal zum Anmelden und versuch es dann erneut.</value></data>
@@ -436,13 +436,13 @@ Verweigern:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Die letzte funktionierende Version bleibt in Kraft.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>der Server wurde beendet (Exitcode {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} konnte nicht gestartet werden</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Der Server {0} kann nicht gestartet werden: "{1}" wird über cmd.exe ausgeführt, wodurch die Zeichen " % ^ &amp; | &lt; &gt; ! oder Zeilenumbrüche in "command" oder "args" nicht sicher übergeben werden können. Verweisen Sie mit "command" auf die .exe des Programms oder entfernen Sie diese Zeichen.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json konnte nicht gelesen werden: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Ein Teil von toolbar.json wurde ignoriert</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Der Rest der Datei gilt weiterhin. Einstellungen › Fenster › Schaltflächenzeilen zeigt, was ignoriert wurde.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json konnte nicht verwendet werden</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>Die Leiste behält ihr letztes Layout, bis die Datei korrigiert wird.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Einstellungen öffnen</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Schnellaktion '{0}' nicht gefunden</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Beenden Sie zuerst das Diktat und verwenden Sie dann diese Schaltfläche.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Die settings.json von agy ist kein JSON-Objekt; sie wird nicht geändert.</value></data>
@@ -481,7 +481,7 @@ Verweigern:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Diesen Chat fortsetzen in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} konnte nicht geöffnet werden: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Startoptionen (erweitert)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Ersetzt die Optionen, die Hotline für diesen Modus hinzufügt (durch Leerzeichen getrennt). Die Optionen, die Hotline zur Verständigung mit dem Programm braucht, werden immer hinzugefügt, gefährliche nur über „Alles genehmigen“. Leer = Standard von Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Ersetzt die zusätzlichen Flags, die Hotline normalerweise für diesen Modus hinzufügt (durch Leerzeichen getrennt). Die Flags, die Hotline für die Kommunikation mit dem Programm benötigt, und im reinen Chatmodus diejenigen, die verhindern, dass es seine eigenen Tools verwendet, werden immer hinzugefügt. Flags, die Tools genehmigen oder Berechtigungsprüfungen überspringen, werden hier ignoriert: Nur “Approve everything” kann sie aktivieren. Leer = Standardwerte von Hotline.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Standard von Hotline</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Maximale Antwortlänge</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Höchstzahl an Tokens pro Antwort. Ist der Wert zu niedrig, bricht eine lange Antwort früher ab. Leer = Standard des Modells.</value></data>
@@ -506,8 +506,8 @@ Verweigern:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Nicht festgelegt</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Strg, Alt, Umschalt oder Win dazunehmen</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Diese Taste kann nicht verwendet werden</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Standardaktionen wiederherstellen</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} Standardaktionen hinzugefügt oder aktualisiert.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Integrierte Schnellaktionen wiederherstellen</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} integrierte Schnellaktionen hinzugefügt oder aktualisiert.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Umbenennen</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Verwende Buchstaben, Ziffern, - und _ und einen Namen, der noch nicht vergeben ist.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} löschen?</value></data>
@@ -604,17 +604,17 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Unten links</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Unten Mitte</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Unten rechts</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Benutzerdefiniert</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Rahmenfarbe</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Akzentfarbe</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Rot</value></data>
   <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Gelb</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Grün</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Blaugrün</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blau</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Lila</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Rosa</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Nicht angezeigt</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Ziehen Sie Elemente zwischen den vier Gruppen oder verwenden Sie die Schaltflächen unter jedem Element. Wenn ein Element fokussiert ist, verschieben Alt+Pfeiltasten es in eine andere Gruppe und Ctrl+Links oder Ctrl+Rechts innerhalb seiner Gruppe. Änderungen werden in toolbar.json gespeichert und sofort angewendet.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>In die linke Gruppe verschieben</value></data>
@@ -659,15 +659,15 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Es gibt bereits 24 benutzerdefinierte Schaltflächen; löschen Sie zuerst eine.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Die Gruppe unten links ist voll (40 Elemente); schaffen Sie dort zuerst Platz.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Diese Schaltfläche konnte nicht gespeichert werden; überprüfen Sie Beschriftung, Symbol und Aktion.</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Bild auswählen…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Stattdessen integriertes Symbol verwenden</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Oder ein eigenes Bild verwenden: ein PNG mit maximal 256 KB, zwischen 16 und 256 Pixel pro Seite.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>Ausgewähltes Bild</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Nur PNG: Wählen Sie ein .png-Bild aus.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Dieses Bild ist zu groß: maximal 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>Das Bild muss auf jeder Seite zwischen 16 und 256 Pixel groß sein.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>Diese Datei ist kein gültiges PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Dieses Bild kann nicht gelesen oder kopiert werden; wählen Sie ein auf diesem PC gespeichertes PNG.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json konnte nicht gespeichert werden: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Beim Lesen von toolbar.json korrigiert (durch Speichern hier wird die korrigierte Datei geschrieben):</value></data>
 </root>

@@ -254,9 +254,9 @@
   <data name="Memory_Edit" xml:space="preserve"><value>मेमोरी संपादित करें</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>खाली। संदेश बॉक्स में "/remember कुछ" एक पंक्ति जोड़ता है।</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} पंक्ति(याँ)। मेमोरी चालू रहने तक हर चैट इन्हें देखती है।</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>किसी का उपयोग करने के लिए संदेश की शुरुआत में / टाइप करें: "/translate कोई टेक्स्ट", या अनुलग्नक के साथ "/summarize"। हर क्रिया एक Markdown फ़ाइल है; उसकी पहली पंक्ति सूची में दिखने वाला विवरण है। नामों में अक्षर, अंक, - और _ हो सकते हैं।</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>नई क्रिया</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>क्रिया फ़ोल्डर खोलें</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>त्वरित क्रियाएँ शॉर्टकट हैं: संदेश बॉक्स में / टाइप करें और कोई एक चुनें, उदाहरण के लिए “/translate some text”, या अटैचमेंट के साथ “/summarize”। प्रत्येक आपके त्वरित क्रियाएँ फ़ोल्डर में एक छोटी Markdown फ़ाइल है: इसकी पहली पंक्ति सूची में दिखाया गया विवरण है, और शेष वह है जो आपके टेक्स्ट के साथ भेजा जाता है। नाम में अक्षर, अंक, - और _ का उपयोग किया जा सकता है।</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>नई त्वरित क्रिया</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>त्वरित क्रियाएँ फ़ोल्डर खोलें</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>बिल्ड {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR भाषा(एँ)</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>कोई OCR भाषा नहीं: सेटिंग्स › समय और भाषा › भाषा और क्षेत्र › ऑप्टिकल वर्ण पहचान वाली भाषा जोड़ें</value></data>
@@ -393,8 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} ने समय पर उत्तर नहीं दिया।</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>सेटिंग्स › AI कनेक्शन में {0} के लिए API कुंजी जोड़ें।</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} का एंडपॉइंट मान्य http(s) पता नहीं है: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} ने {1} पर रीडायरेक्ट किया। कनेक्शन में अंतिम पता सेट करें।</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} ने बहुत बड़ा प्रतिसाद भेजा, इसलिए इसे रोक दिया गया।</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} की दर सीमा पूरी हो गई है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} व्यस्त है, {1} सेकंड में फिर से प्रयास किया जाएगा…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ने API कुंजी अस्वीकार कर दी। {1}</value></data>
@@ -407,7 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} टूल का अनुरोध करते समय रुक गया ({1}); कुछ नहीं चलाया गया।</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: टूल अनुरोध पूरा होने से पहले कनेक्शन समाप्त हो गया; कुछ नहीं चलाया गया।</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} अप्रत्याशित रूप से रुक गया।</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} ने एक बार में Hotline द्वारा पढ़े जाने से अधिक आउटपुट भेजा, इसलिए इसे रोक दिया गया।</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} का कार्य फ़ोल्डर मौजूद नहीं है: {1}। सेटिंग्स › AI कनेक्शन में कोई दूसरा चुनें।</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code इंस्टॉल नहीं है। इसे claude.com/claude-code से इंस्टॉल करें, साइन इन करने के लिए एक बार `claude` चलाएँ, फिर से प्रयास करें।</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy साइन इन नहीं है। साइन इन करने के लिए टर्मिनल में एक बार `agy` चलाएँ, फिर से प्रयास करें।</value></data>
@@ -436,13 +436,13 @@
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} अंतिम सही संस्करण लागू रहता है।</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>सर्वर बंद हो गया (निकास कोड {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} सर्वर प्रारंभ नहीं हो सकता: "{1}" cmd.exe के माध्यम से चलता है, जो "command" या "args" में " % ^ &amp; | &lt; &gt; ! वर्णों या लाइन ब्रेक को सुरक्षित रूप से पास नहीं कर सकता। "command" को प्रोग्राम के .exe पर इंगित करें, या उन वर्णों को हटा दें।</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json के एक भाग को अनदेखा किया गया</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} शेष फ़ाइल अभी भी लागू होती है। सेटिंग्स › विंडो › बटन पंक्तियाँ दिखाता है कि क्या अनदेखा किया गया था।</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json का उपयोग नहीं किया जा सका</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>फ़ाइल ठीक होने तक बार अपना अंतिम लेआउट बनाए रखता है।</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>सेटिंग्स खोलें</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>त्वरित क्रिया '{0}' नहीं मिली</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>पहले बोलकर लिखना पूरा करें, फिर इस बटन का उपयोग करें।</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy की settings.json एक JSON ऑब्जेक्ट नहीं है; इसे नहीं बदला जा रहा।</value></data>
@@ -481,7 +481,7 @@
   <data name="Recent_ContinueIn" xml:space="preserve"><value>यह चैट यहाँ जारी रखें</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} नहीं खुल सका: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>लॉन्च विकल्प (उन्नत)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>इस मोड के लिए Hotline जो विकल्प जोड़ता है, उनकी जगह लेता है (स्पेस से अलग)। प्रोग्राम से बात करने के लिए Hotline को जिन विकल्पों की ज़रूरत है, वे हमेशा जोड़े जाते हैं, और ख़तरनाक विकल्प केवल “सब कुछ स्वीकृत करें” से आते हैं। खाली = Hotline के डिफ़ॉल्ट।</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>अतिरिक्त फ़्लैग को बदलता है जो Hotline आमतौर पर इस मोड के लिए जोड़ता है (स्पेस द्वारा अलग किए गए)। वे फ़्लैग जो Hotline को प्रोग्राम से बात करने के लिए आवश्यक हैं और केवल-चैट मोड में, वे जो इसे अपने स्वयं के टूल का उपयोग करने से रोकते हैं, हमेशा जोड़े जाते हैं। वे फ़्लैग जो टूल को स्वीकृत करते हैं या अनुमति जाँच को छोड़ते हैं, उन्हें यहाँ अनदेखा किया जाता है: केवल “Approve everything” उन्हें चालू कर सकता है। खाली = Hotline के डिफ़ॉल्ट।</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline के डिफ़ॉल्ट</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>उत्तर की अधिकतम लंबाई</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>एक उत्तर अधिकतम कितने टोकन उपयोग कर सकता है। बहुत कम होने पर लंबा उत्तर जल्दी रुक जाता है। खाली = मॉडल का डिफ़ॉल्ट।</value></data>
@@ -506,8 +506,8 @@
   <data name="Hotkey_NotSet" xml:space="preserve"><value>सेट नहीं</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift या Win जोड़ें</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>यह कुंजी इस्तेमाल नहीं हो सकती</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>डिफ़ॉल्ट क्रियाएँ वापस लाएँ</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} डिफ़ॉल्ट क्रियाएँ जोड़ी या अपडेट की गईं।</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>अंतर्निहित त्वरित क्रियाएँ पुनर्स्थापित करें</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} अंतर्निहित त्वरित क्रियाएँ जोड़ी या अपडेट की गईं।</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>नाम बदलें</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>अक्षर, अंक, - और _ इस्तेमाल करें, और ऐसा नाम जो पहले से न हो।</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} हटाएँ?</value></data>
@@ -604,17 +604,17 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Quad_BottomLeft" xml:space="preserve"><value>नीचे बाएँ</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>नीचे केंद्र</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>नीचे दाएँ</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>कस्टम</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>आउटलाइन का रंग</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>एक्सेंट रंग</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>लाल</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>नारंगी</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>पीला</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>हरा</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>टील</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>नीला</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>बैंगनी</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>गुलाबी</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>दिखाया नहीं गया</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>चारों समूहों के बीच आइटम खींचें, या प्रत्येक आइटम के नीचे दिए गए बटनों का उपयोग करें। किसी आइटम पर फ़ोकस होने पर, Alt+तीर कुंजियाँ उसे दूसरे समूह में ले जाती हैं और Ctrl+Left या Ctrl+Right उसे उसके समूह में ले जाते हैं। बदलाव toolbar.json में सहेजे जाते हैं और तुरंत लागू होते हैं।</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>बाएँ समूह में ले जाएँ</value></data>
@@ -659,15 +659,15 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>पहले से ही 24 कस्टम बटन हैं; पहले एक हटाएँ।</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>नीचे बायाँ समूह भरा हुआ है (40 आइटम); पहले वहाँ जगह बनाएँ।</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>यह बटन सहेजा नहीं जा सका; इसका लेबल, आइकन और क्रिया जाँचें।</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>चित्र चुनें…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>इसके बजाय अंतर्निहित आइकन का उपयोग करें</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>या अपने स्वयं के चित्र का उपयोग करें: अधिकतम 256 KB का PNG, प्रत्येक तरफ 16 और 256 पिक्सेल के बीच।</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>चुना गया चित्र</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>केवल PNG: .png चित्र चुनें।</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>यह चित्र बहुत बड़ा है: अधिकतम 256 KB।</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>चित्र प्रत्येक तरफ 16 से 256 पिक्सेल के बीच होना चाहिए।</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>यह फ़ाइल एक मान्य PNG नहीं है।</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>इस चित्र को पढ़ा या कॉपी नहीं किया जा सकता; इस PC पर सहेजा गया PNG चुनें।</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json सहेजा नहीं जा सका: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json पढ़ते समय ठीक किया गया (यहाँ सहेजने पर ठीक की गई फ़ाइल लिखी जाएगी):</value></data>
 </root>

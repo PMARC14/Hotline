@@ -254,9 +254,9 @@
   <data name="Memory_Edit" xml:space="preserve"><value>Редагувати пам'ять</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Порожньо. «/remember щось» у полі повідомлення додає рядок.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>Рядків: {0}. Кожен чат бачить їх, поки пам'ять увімкнено.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Введіть / на початку повідомлення, щоб скористатися дією: «/translate якийсь текст» або «/summarize» із вкладенням. Кожна дія — це файл Markdown; його перший рядок — опис у списку. Назви можуть містити літери, цифри, - і _.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Нова дія</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Відкрити папку дій</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Швидкі дії — це ярлики: введіть / у полі повідомлення та виберіть дію, наприклад “/translate some text” або “/summarize” із вкладенням. Кожна з них — це невеликий файл Markdown у вашій папці швидких дій: перший рядок — це опис, який відображається у списку, а решта — те, що надсилається разом із вашим текстом. Імена можуть містити букви, цифри, - та _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Нова швидка дія</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Відкрити папку швидких дій</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>збірка {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>Мов OCR: {0}</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Немає мови OCR: Параметри › Час і мова › Мова та регіон › додайте мову з оптичним розпізнаванням символів</value></data>
@@ -393,8 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} не відповів вчасно.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Додайте ключ API для {0} у Настройки › Підключення ШІ.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Кінцева точка для {0} не є дійсною адресою http(s): {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} переспрямовує на {1}. Укажіть остаточну адресу в підключенні.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} надіслав завелику відповідь, тому його було зупинено.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} досяг ліміту запитів, повторна спроба через {1} с…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} зайнятий, повторна спроба через {1} с…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} відхилив ключ API. {1}</value></data>
@@ -407,7 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} зупинився ({1}) під час запиту інструмента; нічого не виконано.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: з'єднання обірвалося до завершення запиту інструмента; нічого не виконано.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} несподівано зупинився.</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} надіслав за один раз більше вихідних даних, ніж зчитує Hotline, тому його було зупинено.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Робочої папки для {0} не існує: {1}. Виберіть іншу в Настройки › Підключення ШІ.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code не встановлено. Установіть його з claude.com/claude-code, один раз запустіть `claude`, щоб увійти, і спробуйте ще раз.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy не виконав вхід. Один раз запустіть `agy` у терміналі, щоб увійти, і спробуйте ще раз.</value></data>
@@ -436,13 +436,13 @@
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Діє остання справна версія.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>сервер завершив роботу (код виходу {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>не вдалося запустити {0}</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Не вдалося запустити сервер {0}: "{1}" запускається через cmd.exe, який не може безпечно передавати символи " % ^ &amp; | &lt; &gt; ! або розриви рядків у "command" або "args". Спрямуйте "command" на .exe-файл програми або вилучіть ці символи.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Частину toolbar.json проігноровано</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Решта файлу залишається чинною. Налаштування › Вікно › Рядки кнопок показує, що саме було проігноровано.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>Не вдалося використати toolbar.json</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>Панель зберігає свій останній макет, доки файл не буде виправлено.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Відкрити налаштування</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Швидку дію '{0}' не знайдено</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Спершу завершіть диктування, а потім скористайтеся цією кнопкою.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json agy не є об'єктом JSON; файл не змінено.</value></data>
@@ -481,7 +481,7 @@
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Продовжити цей чат у</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Не вдалося відкрити {0}: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Параметри запуску (додатково)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Замінює параметри, які Hotline додає для цього режиму (через пробіл). Параметри, потрібні Hotline для зв’язку з програмою, додаються завжди, а небезпечні — лише через «Схвалювати все». Порожньо = типові параметри Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Замінює додаткові прапорці, які Hotline зазвичай додає для цього режиму (розділені пробілами). Прапорці, які потрібні Hotline для зв'язку з програмою, а також у режимі лише чату ті, які не дозволяють використовувати власні інструменти, додаються завжди. Прапорці, які схвалюють інструменти або пропускають перевірку дозволів, тут ігноруються: лише “Approve everything” може ввімкнути їх. Порожньо = параметри за замовчуванням Hotline.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Типові параметри Hotline</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Максимальна довжина відповіді</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Найбільша кількість токенів на одну відповідь. Якщо значення замале, довга відповідь обірветься раніше. Порожньо = типове значення моделі.</value></data>
@@ -506,8 +506,8 @@
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Не задано</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Додайте Ctrl, Alt, Shift або Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Цю клавішу не можна використати</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Відновити стандартні дії</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>Додано або оновлено стандартних дій: {0}.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Відновити вбудовані швидкі дії</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} вбудованих швидких дій додано або оновлено.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Перейменувати</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Використовуйте літери, цифри, - і _ та назву, якої ще немає.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Видалити /{0}?</value></data>
@@ -604,17 +604,17 @@
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Внизу ліворуч</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Внизу по центру</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Внизу праворуч</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Власний</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Колір контуру</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Колір акценту</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Червоний</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Помаранчевий</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Жовтий</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Зелений</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Бірюзовий</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Синій</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Фіолетовий</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Рожевий</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Не відображається</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Перетягуйте елементи між чотирма групами або використовуйте кнопки під кожним елементом. Якщо елемент у фокусі, Alt+стрілки переміщують його до іншої групи, а Ctrl+Left або Ctrl+Right — у межах групи. Зміни зберігаються в toolbar.json і застосовуються одразу.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Перемістити до лівої групи</value></data>
@@ -659,15 +659,15 @@
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Уже є 24 власні кнопки; спочатку видаліть одну.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Група внизу ліворуч заповнена (40 елементів); спочатку звільніть там місце.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Не вдалося зберегти цю кнопку; перевірте її підпис, піктограму та дію.</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Вибрати зображення…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Натомість використовувати вбудовану піктограму</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Або використайте власне зображення: PNG розміром не більше 256 KB, від 16 до 256 пікселів з кожного боку.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>Вибране зображення</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Лише PNG: виберіть зображення .png.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Це зображення завелике: не більше 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>Зображення має бути від 16 до 256 пікселів з кожного боку.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>Цей файл не є дійсним PNG.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Не вдалося прочитати або скопіювати це зображення; виберіть PNG, збережений на цьому ПК.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>Не вдалося зберегти toolbar.json: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Виправлено під час читання toolbar.json (збереження тут запише виправлений файл):</value></data>
 </root>

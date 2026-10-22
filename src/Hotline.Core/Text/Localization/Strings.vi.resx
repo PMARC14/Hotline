@@ -254,9 +254,9 @@ Từ chối:
   <data name="Memory_Edit" xml:space="preserve"><value>Sửa bộ nhớ</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Trống. "/remember điều gì đó" trong ô tin nhắn sẽ thêm một dòng.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} dòng. Mọi cuộc trò chuyện đều thấy chúng khi Bộ nhớ đang bật.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Gõ / ở đầu tin nhắn để dùng: "/translate một đoạn văn", hoặc "/summarize" kèm tệp đính kèm. Mỗi thao tác là một tệp Markdown; dòng đầu tiên là mô tả hiển thị trong danh sách. Tên có thể dùng chữ cái, chữ số, - và _.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Thao tác mới</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Mở thư mục thao tác</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Thao tác nhanh là các phím tắt: nhập / vào hộp tin nhắn và chọn một thao tác, ví dụ “/translate some text”, hoặc “/summarize” cùng tệp đính kèm. Mỗi thao tác là một tệp Markdown nhỏ trong thư mục thao tác nhanh của bạn: dòng đầu tiên là mô tả hiển thị trong danh sách, và phần còn lại là nội dung được gửi cùng với văn bản của bạn. Tên có thể sử dụng các chữ cái, chữ số, - và _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Thao tác nhanh mới</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Mở thư mục thao tác nhanh</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>bản dựng {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} ngôn ngữ OCR</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Không có ngôn ngữ OCR: Cài đặt › Thời gian &amp; ngôn ngữ › Ngôn ngữ &amp; khu vực › thêm một ngôn ngữ có Nhận dạng ký tự quang học</value></data>
@@ -393,8 +393,8 @@ Từ chối:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} không trả lời kịp thời.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Hãy thêm khóa API cho {0} trong Cài đặt › Kết nối AI.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>Điểm cuối của {0} không phải địa chỉ http(s) hợp lệ: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} đã chuyển hướng đến {1}. Hãy đặt địa chỉ cuối cùng trong kết nối.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} đã gửi một phản hồi quá lớn nên đã bị dừng.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} đã chạm giới hạn yêu cầu, thử lại sau {1} giây…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} đang bận, thử lại sau {1} giây…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} đã từ chối khóa API. {1}</value></data>
@@ -407,7 +407,7 @@ Từ chối:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} đã dừng ({1}) khi yêu cầu công cụ; không có gì được chạy.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: kết nối kết thúc trước khi yêu cầu công cụ hoàn tất; không có gì được chạy.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} đã dừng đột ngột.</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} đã gửi một lượng đầu ra trong một lần nhiều hơn mức Hotline đọc nên đã bị dừng.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>Thư mục làm việc của {0} không tồn tại: {1}. Hãy chọn thư mục khác trong Cài đặt › Kết nối AI.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Chưa cài đặt Claude Code. Hãy cài từ claude.com/claude-code, chạy `claude` một lần để đăng nhập, rồi thử lại.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy chưa đăng nhập. Hãy chạy `agy` một lần trong terminal để đăng nhập, rồi thử lại.</value></data>
@@ -436,13 +436,13 @@ Từ chối:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Phiên bản hoạt động tốt gần nhất vẫn có hiệu lực.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>máy chủ đã thoát (mã thoát {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>không thể khởi động {0}</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Máy chủ {0} không thể khởi động: "{1}" chạy qua cmd.exe, vốn không thể truyền an toàn các ký tự " % ^ &amp; | &lt; &gt; ! hoặc dấu ngắt dòng trong "command" hoặc "args". Hãy trỏ "command" vào tệp .exe của chương trình hoặc xóa các ký tự đó.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Không thể đọc toolbar.json: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Một phần của toolbar.json đã bị bỏ qua</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Phần còn lại của tệp vẫn áp dụng. Cài đặt › Cửa sổ › Các hàng nút hiển thị những gì đã bị bỏ qua.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>Không thể sử dụng toolbar.json</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>Thanh giữ lại bố cục gần nhất cho đến khi tệp được sửa.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Mở Cài đặt</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>Không tìm thấy thao tác nhanh '{0}'</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Hãy đọc chính tả xong trước, rồi dùng nút này.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>settings.json của agy không phải đối tượng JSON; sẽ không được thay đổi.</value></data>
@@ -481,7 +481,7 @@ Từ chối:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Tiếp tục cuộc trò chuyện này trong</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Không thể mở {0}: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Tùy chọn khởi chạy (nâng cao)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Thay thế các tùy chọn Hotline thêm cho chế độ này (cách nhau bằng dấu cách). Các tùy chọn Hotline cần để giao tiếp với chương trình luôn được thêm, còn tùy chọn nguy hiểm chỉ đến từ “Phê duyệt mọi thứ”. Để trống = mặc định của Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Thay thế các cờ bổ sung mà Hotline thường thêm cho chế độ này (phân tách bằng dấu cách). Các cờ mà Hotline cần để giao tiếp với chương trình và ở chế độ chỉ trò chuyện, các cờ ngăn không cho chương trình sử dụng công cụ riêng của nó luôn được thêm vào. Các cờ phê duyệt công cụ hoặc bỏ qua kiểm tra quyền sẽ bị bỏ qua tại đây: chỉ “Approve everything” mới có thể bật chúng. Trống = mặc định của Hotline.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Mặc định của Hotline</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Độ dài câu trả lời tối đa</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Số token tối đa cho một câu trả lời. Nếu quá thấp, câu trả lời dài sẽ dừng sớm. Để trống = mặc định của mô hình.</value></data>
@@ -506,8 +506,8 @@ Từ chối:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Chưa đặt</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Thêm Ctrl, Alt, Shift hoặc Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Không thể dùng phím đó</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Khôi phục hành động mặc định</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>Đã thêm hoặc cập nhật {0} hành động mặc định.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Khôi phục các thao tác nhanh tích hợp sẵn</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} thao tác nhanh tích hợp sẵn đã được thêm hoặc cập nhật.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Đổi tên</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Dùng chữ cái, chữ số, - và _, và một tên chưa có.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Xóa /{0}?</value></data>
@@ -604,17 +604,17 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Dưới bên trái</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Dưới ở giữa</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Dưới bên phải</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Tùy chỉnh</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Màu viền</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Màu nhấn</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Đỏ</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Cam</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Vàng</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Xanh lá</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Xanh mòng két</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Xanh lam</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Tím</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Hồng</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Không hiển thị</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Kéo các mục giữa bốn nhóm, hoặc dùng các nút bên dưới mỗi mục. Khi một mục có tiêu điểm, Alt+phím mũi tên sẽ di chuyển mục sang nhóm khác và Ctrl+Trái hoặc Ctrl+Phải sẽ di chuyển mục trong nhóm. Các thay đổi được lưu vào toolbar.json và áp dụng ngay.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Di chuyển sang nhóm bên trái</value></data>
@@ -659,15 +659,15 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Đã có 24 nút tùy chỉnh; hãy xóa một nút trước.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Nhóm dưới bên trái đã đầy (40 mục); hãy tạo chỗ trống ở đó trước.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Không thể lưu nút này; hãy kiểm tra nhãn, biểu tượng và thao tác.</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Chọn hình ảnh…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Thay vào đó hãy dùng biểu tượng tích hợp</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Hoặc sử dụng hình ảnh của riêng bạn: tệp PNG tối đa 256 KB, mỗi cạnh từ 16 đến 256 pixel.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>Hình ảnh đã chọn</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Chỉ PNG: hãy chọn một hình ảnh .png.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Hình ảnh này quá lớn: tối đa 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>Hình ảnh phải có kích thước từ 16 đến 256 pixel mỗi cạnh.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>Tệp này không phải là tệp PNG hợp lệ.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Không thể đọc hoặc sao chép hình ảnh này; hãy chọn một tệp PNG đã lưu trên PC này.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>Không thể lưu toolbar.json: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>Đã sửa khi đọc toolbar.json (lưu tại đây sẽ ghi tệp đã sửa):</value></data>
 </root>

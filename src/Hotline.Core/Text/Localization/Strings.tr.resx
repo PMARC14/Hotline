@@ -254,9 +254,9 @@ Reddet:
   <data name="Memory_Edit" xml:space="preserve"><value>Belleği düzenle</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Boş. İleti kutusunda "/remember bir şey" bir satır ekler.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} satır. Bellek açık olduğu sürece her sohbet bunları görür.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Birini kullanmak için iletinin başına / yazın: "/translate bir metin" veya bir ekle "/summarize". Her eylem bir Markdown dosyasıdır; ilk satırı listede gösterilen açıklamadır. Adlar harf, rakam, - ve _ içerebilir.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Yeni eylem</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Eylemler klasörünü aç</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Hızlı eylemler kısayollardır: ileti kutusuna / yazın ve birini seçin, örneğin “/translate some text” veya bir ek ile “/summarize”. Her biri hızlı eylemler klasörünüzdeki küçük bir Markdown dosyasıdır: ilk satırı listede gösterilen açıklamadır ve geri kalanı metninizle birlikte gönderilen içeriktir. Adlar harf, rakam, - ve _ içerebilir.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Yeni hızlı eylem</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Hızlı eylemler klasörünü aç</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>derleme {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} OCR dili</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR dili yok: Ayarlar › Zaman ve dil › Dil ve bölge › optik karakter tanıma içeren bir dil ekleyin</value></data>
@@ -393,8 +393,8 @@ Reddet:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} zamanında yanıt vermedi.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Ayarlar › Yapay zekâ bağlantıları'nda {0} için bir API anahtarı ekleyin.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} için uç nokta geçerli bir http(s) adresi değil: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0}, {1} adresine yönlendirildi. Bağlantıda son adresi ayarlayın.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} çok büyük bir yanıt gönderdiğinden durduruldu.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} istek sınırına ulaştı, {1} sn içinde yeniden deneniyor…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} meşgul, {1} sn içinde yeniden deneniyor…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} API anahtarını reddetti. {1}</value></data>
@@ -407,7 +407,7 @@ Reddet:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} bir araç isterken durdu ({1}); hiçbir şey çalıştırılmadı.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: araç isteği tamamlanmadan bağlantı sona erdi; hiçbir şey çalıştırılmadı.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} beklenmedik şekilde durdu.</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0}, Hotline tarafından tek seferde okunabilecek olandan daha fazla çıktı gönderdiği için durduruldu.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} için çalışma klasörü yok: {1}. Ayarlar › Yapay zekâ bağlantıları'ndan başka bir tane seçin.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code yüklü değil. claude.com/claude-code adresinden yükleyin, oturum açmak için `claude` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy oturum açmamış. Oturum açmak için bir terminalde `agy` komutunu bir kez çalıştırın ve yeniden deneyin.</value></data>
@@ -436,13 +436,13 @@ Reddet:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Son çalışan sürüm geçerli kalır.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>sunucu kapandı (çıkış kodu {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} sunucusu başlatılamıyor: "{1}", cmd.exe üzerinden çalışıyor; bu da "command" veya "args" içindeki " % ^ &amp; | &lt; &gt; ! karakterlerini veya satır sonlarını güvenli bir şekilde aktaramaz. "command" öğesini programın .exe dosyasına yönlendirin veya bu karakterleri kaldırın.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json dosyasının bir kısmı yoksayıldı</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Dosyanın geri kalanı geçerliliğini korur. Ayarlar › Pencere › Düğme satırları neyin yoksayıldığını gösterir.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json kullanılamadı</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>Çubuk, dosya düzeltilene kadar son düzenini korur.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Ayarları Aç</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>'{0}' hızlı eylemi bulunamadı</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>Önce dikteyi bitirin, sonra bu düğmeyi kullanın.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy'nin settings.json dosyası bir JSON nesnesi değil; değiştirilmiyor.</value></data>
@@ -481,7 +481,7 @@ Reddet:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Bu sohbeti şurada sürdür</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} açılamadı: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Başlatma seçenekleri (gelişmiş)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Hotline'ın bu mod için eklediği seçeneklerin yerine geçer (boşlukla ayrılmış). Hotline'ın programla konuşmak için gereken seçenekleri her zaman eklenir; tehlikeli olanlar yalnızca “Her şeyi onayla”dan gelir. Boş = Hotline varsayılanları.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Hotline uygulamasının bu mod için genellikle eklediği fazladan bayrakların yerini alır (boşlukla ayrılmış). Hotline uygulamasının programla iletişim kurması için gereken bayraklar ve yalnızca sohbet modunda kendi araçlarını kullanmasını engelleyen bayraklar her zaman eklenir. Araçları onaylayan veya izin kontrollerini atlayan bayraklar burada yoksayılır: bunları yalnızca “Approve everything” açabilir. Boş = Hotline varsayılanları.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline varsayılanları</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>En uzun yanıt</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Bir yanıtın kullanabileceği en fazla token. Çok düşükse uzun bir yanıt erken biter. Boş = modelin varsayılanı.</value></data>
@@ -506,8 +506,8 @@ Reddet:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Ayarlanmadı</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt, Shift veya Win ekleyin</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Bu tuş kullanılamaz</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Varsayılan eylemleri geri yükle</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} varsayılan eylem eklendi veya güncellendi.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Yerleşik hızlı eylemleri geri yükle</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} yerleşik hızlı eylem eklendi veya güncellendi.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Yeniden adlandır</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Harf, rakam, - ve _ kullanın ve henüz kullanılmayan bir ad seçin.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} silinsin mi?</value></data>
@@ -604,17 +604,17 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Quad_BottomLeft" xml:space="preserve"><value>Sol alt</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>Orta alt</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>Sağ alt</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Özel</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Kenarlık rengi</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Vurgu rengi</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Kırmızı</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Turuncu</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Sarı</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Yeşil</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Camgöbeği</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Mavi</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Mor</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Pembe</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Gösterilmiyor</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Öğeleri dört grup arasında sürükleyin veya her öğenin altındaki düğmeleri kullanın. Bir öğe odaktayken Alt+ok tuşları onu başka bir gruba taşır, Ctrl+Sol veya Ctrl+Sağ ise grubu içinde taşır. Değişiklikler toolbar.json dosyasına kaydedilir ve hemen uygulanır.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Sol gruba taşı</value></data>
@@ -659,15 +659,15 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>Zaten 24 özel düğme var; önce birini silin.</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Sol alt grup dolu (40 öğe); önce orada yer açın.</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>Bu düğme kaydedilemedi; etiketini, simgesini ve eylemini kontrol edin.</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Bir resim seçin…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Bunun yerine yerleşik bir simge kullanın</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Ya da kendi resminizi kullanın: en fazla 256 KB boyutunda, her kenarı 16 ile 256 piksel arasında bir PNG.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>Seçilen resim</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Yalnızca PNG: bir .png resmi seçin.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Bu resim çok büyük: en fazla 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>Resmin her kenarı 16 ile 256 piksel arasında olmalıdır.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>Bu dosya geçerli bir PNG değil.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Bu resim okunamıyor veya kopyalanamıyor; bu bilgisayara kaydedilmiş bir PNG seçin.</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json kaydedilemedi: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json okunurken düzeltildi (burada kaydetmek düzeltilmiş dosyayı yazar):</value></data>
 </root>

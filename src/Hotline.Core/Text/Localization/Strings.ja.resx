@@ -254,9 +254,9 @@
   <data name="Memory_Edit" xml:space="preserve"><value>メモリを編集</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>空です。メッセージ ボックスで「/remember 内容」と入力すると 1 行追加されます。</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} 行。メモリがオンの間、すべてのチャットがこれを参照します。</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>メッセージの先頭に / を入力して使います: 「/translate テキスト」、または添付ファイルと一緒に「/summarize」。各アクションは Markdown ファイルで、1 行目が一覧に表示される説明です。名前には英字、数字、- と _ を使えます。</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>新しいアクション</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>アクション フォルダーを開く</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>クイック アクションはショートカットです: メッセージ ボックスに / と入力して 1 つ選択します (例: “/translate some text” や添付ファイル付きの “/summarize”)。それぞれはクイック アクション フォルダー内の小さな Markdown ファイルです: 最初の行はリストに表示される説明で、残りはテキストと一緒に送信される内容です。名前には英数字、-、_ を使用できます。</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>新しいクイック アクション</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>クイック アクション フォルダーを開く</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>ビルド {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>OCR 言語 {0} 個</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>OCR 言語がありません: [設定] › [時刻と言語] › [言語と地域] › 光学式文字認識を含む言語を追加してください</value></data>
@@ -393,8 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} が時間内に応答しませんでした。</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>[設定] › [AI 接続] で {0} の API キーを追加してください。</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} のエンドポイントは有効な http(s) アドレスではありません: {1}</value></data>
-  <data name="Api_Redirected" xml:space="preserve"><value>{0} redirected to {1}. Set the final address in the connection.</value></data>
-  <data name="Api_TooLarge" xml:space="preserve"><value>{0} sent a response that is too large, so it was stopped.</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} は {1} にリダイレクトされました。接続で最終アドレスを設定してください。</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} からの応答が大きすぎるため、停止されました。</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} はレート制限中です。{1} 秒後に再試行します…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} は混雑しています。{1} 秒後に再試行します…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} が API キーを拒否しました。{1}</value></data>
@@ -407,7 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} がツールの要求中に停止しました ({1})。何も実行されていません。</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: ツールの要求が完了する前に接続が終了しました。何も実行されていません。</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} が予期せず停止しました。</value></data>
-  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} sent more output in one piece than Hotline reads, so it was stopped.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} が一度に Hotline の読み取り量を超える出力を送信したため、停止されました。</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} の作業フォルダーが存在しません: {1}。[設定] › [AI 接続] で別のフォルダーを選んでください。</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code がインストールされていません。claude.com/claude-code からインストールし、`claude` を一度実行してサインインしてから、もう一度お試しください。</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy がサインインしていません。ターミナルで `agy` を一度実行してサインインしてから、もう一度お試しください。</value></data>
@@ -436,13 +436,13 @@
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 最後に正常だったバージョンが引き続き有効です。</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>サーバーが終了しました (終了コード {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
-  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} サーバーを開始できません: "{1}" は cmd.exe 経由で実行されますが、"command" または "args" 内の " % ^ &amp; | &lt; &gt; ! の文字や改行を安全に渡すことができません。"command" でプログラムの .exe を指定するか、これらの文字を削除してください。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
-  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Part of toolbar.json was ignored</value></data>
-  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} The rest of the file still applies. Settings › Window › Button rows shows what was ignored.</value></data>
-  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json couldn't be used</value></data>
-  <data name="Bar_NoticeKept" xml:space="preserve"><value>The bar keeps its last layout until the file is fixed.</value></data>
-  <data name="Bar_OpenSettings" xml:space="preserve"><value>Open Settings</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json の一部が無視されました</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} ファイルの残りの部分は引き続き適用されます。設定 › ウィンドウ › ボタン行 に無視された内容が表示されます。</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json を使用できませんでした</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>ファイルが修正されるまで、バーは前回のレイアウトを維持します。</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>設定を開く</value></data>
   <data name="Bar_ActionMissing" xml:space="preserve"><value>クイック アクション '{0}' が見つかりません</value></data>
   <data name="Bar_ActionBusy" xml:space="preserve"><value>先に音声入力を終えてから、このボタンを使ってください。</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy の settings.json が JSON オブジェクトではないため、変更しません。</value></data>
@@ -481,7 +481,7 @@
   <data name="Recent_ContinueIn" xml:space="preserve"><value>このチャットを続ける場所</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>{0} を開けませんでした: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>起動オプション (詳細)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>このモードで Hotline が追加するオプションを置き換えます (スペース区切り)。Hotline がプログラムとやり取りするのに必要なオプションは常に追加され、危険なものは「すべて承認」からのみ追加されます。空欄 = Hotline の既定値。</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Hotline が通常このモードに追加する追加のフラグを置き換えます (スペース区切り)。Hotline がプログラムと通信するために必要なフラグ、およびチャット専用モードで独自のツールの使用を防ぐフラグは常に追加されます。ツールを承認したり権限チェックをスキップしたりするフラグはここでは無視されます: “Approve everything” のみがそれらを有効にできます。空 = Hotline の既定値。</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline の既定値</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>回答の最大長</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>1 回の回答で使えるトークンの上限。低すぎると長い回答が途中で止まります。空欄 = モデルの既定値。</value></data>
@@ -506,8 +506,8 @@
   <data name="Hotkey_NotSet" xml:space="preserve"><value>未設定</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Ctrl、Alt、Shift、Win のいずれかを加えてください</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>このキーは使えません</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>既定のアクションを復元</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} 個の既定のアクションを追加または更新しました。</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>組み込みのクイック アクションを復元</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} 個の組み込みクイック アクションが追加または更新されました。</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>名前の変更</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>英数字、-、_ を使い、まだ使われていない名前にしてください。</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>/{0} を削除しますか?</value></data>
@@ -604,17 +604,17 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
   <data name="Quad_BottomCenter" xml:space="preserve"><value>中央下</value></data>
   <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
-  <data name="Bar_SizeCustom" xml:space="preserve"><value>Custom</value></data>
-  <data name="Bar_OutlineColor" xml:space="preserve"><value>Outline color</value></data>
-  <data name="Bar_ColorAccent" xml:space="preserve"><value>Accent color</value></data>
-  <data name="Bar_ColorRed" xml:space="preserve"><value>Red</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>Orange</value></data>
-  <data name="Bar_ColorYellow" xml:space="preserve"><value>Yellow</value></data>
-  <data name="Bar_ColorGreen" xml:space="preserve"><value>Green</value></data>
-  <data name="Bar_ColorTeal" xml:space="preserve"><value>Teal</value></data>
-  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blue</value></data>
-  <data name="Bar_ColorPurple" xml:space="preserve"><value>Purple</value></data>
-  <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>カスタム</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>枠線の色</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>アクセント カラー</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>赤</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>オレンジ</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>黄</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>緑</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>ティール</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>青</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>紫</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>ピンク</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>非表示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>4 つのグループ間で項目をドラッグするか、各項目の下にあるボタンを使用します。項目にフォーカスがある状態で、Alt+矢印キーで別のグループへ、Ctrl+Left または Ctrl+Right でグループ内を移動できます。変更は toolbar.json に保存され、すぐに適用されます。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>左のグループに移動</value></data>
@@ -659,15 +659,15 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Bar_CustomTooMany" xml:space="preserve"><value>カスタム ボタンがすでに 24 個あります。先に 1 つ削除してください。</value></data>
   <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下のグループがいっぱいです (40 項目)。先に空きを作ってください。</value></data>
   <data name="Bar_CustomRefused" xml:space="preserve"><value>このボタンを保存できませんでした。ラベル、アイコン、アクションを確認してください。</value></data>
-  <data name="Bar_CustomPicture" xml:space="preserve"><value>Choose a picture…</value></data>
-  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Use a built-in icon instead</value></data>
-  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Or use a picture of your own: a PNG of at most 256 KB, between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>The chosen picture</value></data>
-  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG only: choose a .png picture.</value></data>
-  <data name="Bar_IconTooLarge" xml:space="preserve"><value>This picture is too large: at most 256 KB.</value></data>
-  <data name="Bar_IconSize" xml:space="preserve"><value>The picture must be between 16 and 256 pixels on each side.</value></data>
-  <data name="Bar_IconCorrupt" xml:space="preserve"><value>This file isn't a valid PNG.</value></data>
-  <data name="Bar_IconUnreadable" xml:space="preserve"><value>This picture can't be read or copied; choose a PNG saved on this PC.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>画像を選択…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>代わりに組み込みアイコンを使用</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>または独自の画像を使用: 256 KB 以下の PNG、各辺 16 ～ 256 ピクセル。</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>選択した画像</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>PNG のみ: .png 画像を選択してください。</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>この画像は大きすぎます: 最大 256 KB です。</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>画像の各辺は 16 〜 256 ピクセルの間である必要があります。</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>このファイルは有効な PNG ではありません。</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>この画像を読み取りまたはコピーできません。この PC に保存されている PNG を選択してください。</value></data>
   <data name="Bar_SaveFailed" xml:space="preserve"><value>toolbar.json を保存できませんでした: {0}</value></data>
   <data name="Bar_Warnings" xml:space="preserve"><value>toolbar.json の読み込み時に修正されました (ここで保存すると修正されたファイルが書き込まれます):</value></data>
 </root>
