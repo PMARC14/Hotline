@@ -438,6 +438,7 @@ Reddet:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} sunucusu başlatılamıyor: "{1}", cmd.exe üzerinden çalışıyor; bu da "command" veya "args" içindeki " % ^ &amp; | &lt; &gt; ! karakterlerini veya satır sonlarını güvenli bir şekilde aktaramaz. "command" öğesini programın .exe dosyasına yönlendirin veya bu karakterleri kaldırın.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json dosyasının bir kısmı yoksayıldı</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Dosyanın geri kalanı geçerliliğini korur. Ayarlar › Pencere › Düğme satırları neyin yoksayıldığını gösterir.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json kullanılamadı</value></data>

@@ -438,6 +438,7 @@ Tolak:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Server {0} tidak dapat dimulai: "{1}" berjalan melalui cmd.exe, yang tidak dapat meneruskan karakter " % ^ &amp; | &lt; &gt; ! atau jeda baris dengan aman dalam "command" atau "args". Arahkan "command" ke .exe program, atau hapus karakter tersebut.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Sebagian dari toolbar.json diabaikan</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Bagian berkas lainnya tetap berlaku. Pengaturan › Jendela › Baris tombol menunjukkan apa yang diabaikan.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json tidak dapat digunakan</value></data>

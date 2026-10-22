@@ -55,8 +55,9 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
       Pin, Prompt and Continue in work from the menu; no flicker or blank panel.
 - [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About ›
       This PC lists what was ignored; a file Hotline can't read is left as it is.
-- [ ] An old (v1) `toolbar.json` becomes v2 on the first start and the old one stays as `toolbar.json.old`; Settings › Advanced ›
-      Reset settings puts the default bar back (a backup is made first).
+- [ ] An old (v1) `toolbar.json` is left untouched: the default bar runs and Settings › About › This PC shows the
+      "version 1 files are no longer read" warning; Settings › Advanced › Reset settings puts the default bar back
+      (a backup is made first).
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.

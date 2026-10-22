@@ -438,6 +438,7 @@ Nega:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossibile avviare {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Impossibile avviare il server {0}: "{1}" viene eseguito tramite cmd.exe, che non può passare in sicurezza i caratteri " % ^ &amp; | &lt; &gt; ! o interruzioni di riga in "command" o "args". Punta "command" al file .exe del programma oppure rimuovi tali caratteri.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossibile leggere toolbar.json: {0}</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is a version 1 file; version 1 files are no longer read, so the default bar is used.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Una parte di toolbar.json è stata ignorata</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Il resto del file viene comunque applicato. Impostazioni › Finestra › Righe di pulsanti mostra cosa è stato ignorato.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json non è stato possibile usare</value></data>

@@ -21,7 +21,6 @@ public sealed class ToolbarFileTests : IDisposable
         var load = ToolbarFile.Load(File_);
         Assert.Equal(ToolbarModel.Defaults, load.Model);
         Assert.Null(load.Error);
-        Assert.False(load.Migrated);
         Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(File_));
     }
 
@@ -34,39 +33,37 @@ public sealed class ToolbarFileTests : IDisposable
     }
 
     [Fact]
-    public void V1_file_is_archived_then_rewritten_as_v2()
+    public void V1_file_gives_the_defaults_with_a_warning_and_is_never_touched()
     {
         File.WriteAllText(File_, V1Text);
-        var original = File.ReadAllBytes(File_);
+        var before = File.ReadAllBytes(File_);
 
-        var load = ToolbarFile.Load(File_);
+        foreach (var _ in new[] { 1, 2 }) // a second start behaves the same
+        {
+            var load = ToolbarFile.Load(File_);
 
-        Assert.True(load.Migrated);
-        Assert.Null(load.Error);
-        Assert.Equal(original, File.ReadAllBytes(File_ + ".old"));
-        Assert.False(File.Exists(File_ + ".bak"));
-        Assert.Equal(["pin"], load.Model.Items(Quadrant.BottomLeft));
-        Assert.Equal(["settings"], load.Model.Items(Quadrant.BottomRight));
-        Assert.Equal(["effort", "model", "provider"], load.Model.Items(Quadrant.TopLeft));
-        Assert.Equal(load.Model.ToJson(), File.ReadAllText(File_));
-        var again = ToolbarFile.Load(File_);
-        Assert.Equal(load.Model, again.Model);
-        Assert.False(again.Migrated);
+            Assert.Null(load.Error);
+            Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.BottomLeft), load.Model.Items(Quadrant.BottomLeft));
+            Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.TopLeft), load.Model.Items(Quadrant.TopLeft));
+            Assert.Equal([Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported], load.Model.Warnings);
+            Assert.Equal(before, File.ReadAllBytes(File_));
+            Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName)); // no .old, .bak or .tmp
+        }
     }
 
     [Fact]
-    public void A_second_migration_keeps_the_first_archive_as_old2()
+    public void V2_file_loads_without_a_warning_and_is_not_rewritten()
     {
-        File.WriteAllText(File_, V1Text);
-        ToolbarFile.Load(File_);
-        var second = V1Text.Replace("settings", "newChat");
-        File.WriteAllText(File_, second);
+        var text = "{ \"version\": 2, \"top\": { \"left\": [\"pin\"], \"right\": [] }, \"items\": { \"left\": [\"settings\"], \"right\": [] } }";
+        File.WriteAllText(File_, text);
 
         var load = ToolbarFile.Load(File_);
 
-        Assert.True(load.Migrated);
-        Assert.Equal(V1Text, File.ReadAllText(File_ + ".old"));
-        Assert.Equal(second, File.ReadAllText(File_ + ".old2"));
+        Assert.Null(load.Error);
+        Assert.Empty(load.Model.Warnings);
+        Assert.Equal(["pin"], load.Model.Items(Quadrant.TopLeft));
+        Assert.Equal(text, File.ReadAllText(File_));
+        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
     }
 
     [Fact]
@@ -80,7 +77,6 @@ public sealed class ToolbarFileTests : IDisposable
         var load = ToolbarFile.Load(File_);
 
         Assert.Null(load.Error);
-        Assert.False(load.Migrated);
         Assert.NotEmpty(load.Model.Warnings);
         Assert.Equal(before, File.ReadAllBytes(File_));
         Assert.False(File.Exists(File_ + ".old"));
@@ -101,7 +97,6 @@ public sealed class ToolbarFileTests : IDisposable
 
         Assert.False(string.IsNullOrEmpty(load.Error));
         Assert.Equal(ToolbarModel.Defaults, load.Model);
-        Assert.False(load.Migrated);
         Assert.Equal(before, File.ReadAllBytes(File_));
         Assert.False(File.Exists(File_ + ".old"));
     }
@@ -126,7 +121,6 @@ public sealed class ToolbarFileTests : IDisposable
         var load = ToolbarFile.Load(File_);
 
         Assert.Null(load.Error);
-        Assert.False(load.Migrated);
         Assert.Equal(["pin"], load.Model.Items(Quadrant.TopLeft));
         Assert.Equal(before, File.ReadAllBytes(File_));
         Assert.False(File.Exists(File_ + ".old"));
@@ -135,7 +129,7 @@ public sealed class ToolbarFileTests : IDisposable
     [Fact]
     public void Save_then_Load_equals_the_model_and_leaves_no_temp_file()
     {
-        var model = ToolbarMigration.FromV1(V1Text) with { Style = new ButtonStyle(ButtonSize.Wide, true, false, 30, null) };
+        var model = ToolbarModel.Defaults with { Style = new ButtonStyle(ButtonSize.Wide, true, false, 30, null) };
         ToolbarFile.Save(File_, model);
         Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName)); // nothing to keep the first time
         ToolbarFile.Save(File_, model);
@@ -171,7 +165,6 @@ public sealed class ToolbarFileTests : IDisposable
         var dir = Path.Combine(_root, "locked");
         Directory.CreateDirectory(dir);
         var path = Path.Combine(dir, "toolbar.json");
-        File.WriteAllText(path, V1Text);
 
         var me = WindowsIdentity.GetCurrent().User!;
         var deny = new FileSystemAccessRule(me, FileSystemRights.CreateFiles, AccessControlType.Deny);
@@ -182,9 +175,9 @@ public sealed class ToolbarFileTests : IDisposable
         try
         {
             var load = ToolbarFile.Load(path);
-            Assert.Equal(["pin"], load.Model.Items(Quadrant.BottomLeft));
+            Assert.Equal(ToolbarModel.Defaults, load.Model); // a missing file can't be created here
             Assert.Null(load.Error);
-            Assert.Equal(V1Text, File.ReadAllText(path)); // not replaced without an archive
+            Assert.False(File.Exists(path));
         }
         finally
         {

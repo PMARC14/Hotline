@@ -18,7 +18,7 @@ same files). Comments and trailing commas are allowed.
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
-| `settings.json.old`, `toolbar.json.old` | The previous file, kept when 0.4 replaced it (see *Upgrading to 0.4*). A later replacement is kept as `.old2`, `.old3`, and so on; an archive is never overwritten |
+| `settings.json.old` | The previous file, kept when 0.4 replaced it (see *Upgrading to 0.4*). A later replacement is kept as `.old2`, `.old3`, and so on; an archive is never overwritten |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current
@@ -293,8 +293,8 @@ right) and at least one right button always stays. Only a panel narrower than ab
 and the rest of the file still applies; the file is never thrown away for one mistake. In detail:
 
 - An unknown id, an id that isn't text, or an item listed twice or in two groups is ignored; the first place wins
-  (checked in the order bottom left, bottom center, bottom right, top left, top center, top right). A v1 `"spacer"`
-  left in the file is ignored.
+  (checked in the order bottom left, bottom center, bottom right, top left, top center, top right). A `"spacer"`
+  item (it no longer exists) is ignored.
 - A key written twice: the last one wins.
 - A wrong type for `outline`, `filled` or `size` gives the default for that key. A custom button that is invalid is
   skipped. An override for an item that isn't shown is ignored.
@@ -303,7 +303,7 @@ and the rest of the file still applies; the file is never thrown away for one mi
 - A file that isn't valid JSON, or whose top level isn't an object, is left untouched and the defaults run until you fix
   it; a half-written file keeps the bar it had.
 - Hotline does not rewrite a version 2 file by itself. A missing file is created with the defaults (delete
-  `toolbar.json` to get the default bar back at the next start), and a version 1 file is migrated (below). What it had to fix is listed under Settings › This PC and in the log;
+  `toolbar.json` to get the default bar back at the next start). A file in the old version 1 format (`top` and `items` as plain arrays) is no longer read: the default bar runs, with a warning, and the file is left as it is. What it had to fix is listed under Settings › This PC and in the log;
   saving from Settings writes the corrected version, and the file it replaces is kept as `toolbar.json.bak` (the comments in
   it are not carried over).
 - A `version` higher than 2 is read as far as it makes sense and never rewritten.
@@ -320,20 +320,18 @@ in `backups\reset-<time>\`. A hidden copy of the default file is rewritten at ev
 `.defaults\toolbar.json`. New installs get the same layout as before 0.4 (pickers in the top row, the other buttons
 bottom left).
 
-**Upgrading from the old format.** Before 0.4, `toolbar.json` had `top` and `items` as plain arrays and a `spacer`
-item. On the first start of 0.4 the old file is copied to `toolbar.json.old` and a version 2 file is written that
-looks the same: the items before the first `spacer` of a row go left, the ones after it right, further spacers are
-dropped. A file that already has `"version": 2` is not touched. The rewrite happens only if the `.old` copy could be
-made; otherwise the old file stays, the converted result runs in memory and the next start tries again.
+**The old format.** Before 0.4, `toolbar.json` had `top` and `items` as plain arrays and a `spacer` item. That format
+is not converted: such a file is left untouched, the default bar runs and the warning is shown. To change the bar,
+write the version 2 format above (or delete the file to get the defaults back).
 
 ## Upgrading to 0.4
 
 Hotline is pre-1.0, so old files may be replaced rather than converted: the first start of 0.4 keeps `settings.json` as
-`settings.json.old` (schema 13 to 14) and writes the new one, and does the same for `toolbar.json` as above. If a
+`settings.json.old` (schema 13 to 14) and writes the new one (an old `toolbar.json` is not converted, see above). If a
 `.old` already exists the copy is called `.old2`, then `.old3`; an archive is never overwritten. Kept values carry
 over where that is cheap. The `activation.copilotKey` setting no longer exists (an old entry is dropped; see
 [copilot-key.md](copilot-key.md)). **Connections are untouched**: `connections\*.json`, the default connection and the
-API keys in Windows Credential Locker stay exactly as they were. As with `toolbar.json`, `settings.json` is
+API keys in Windows Credential Locker stay exactly as they were. `settings.json` is
 replaced only if its `.old` copy could be made; otherwise it stays and the next start tries again.
 
 ## Codex

@@ -3,7 +3,7 @@ namespace Hotline.App;
 public partial class App
 {
     /// <summary>
-    /// ~/.hotline/toolbar.json → the button rows (written with the defaults on first run, a v1 file converted; applies
+    /// ~/.hotline/toolbar.json → the button rows (written with the defaults on first run; applies
     /// live). A file that can't be read keeps the current bar (the defaults at start); one that reads the same as the bar
     /// in force changes nothing. Resolve already gives the defaults for an empty or all-invalid file, so a half-written
     /// file never blanks the bar.
@@ -13,7 +13,6 @@ public partial class App
         if (_popup is null) return;
         var load = Hotline.Core.Windowing.ToolbarFile.Load(Path.Combine(dataDir, "toolbar.json"));
         ReportToolbarProblems(load);
-        if (load.Migrated) _log?.Info("toolbar.json converted to version 2 (the old file is kept as toolbar.json.old)");
         if (load.Error is { } error)
         {
             _log?.Error(error);

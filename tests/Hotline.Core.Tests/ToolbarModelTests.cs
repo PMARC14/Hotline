@@ -384,11 +384,27 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
-    public void V1_file_needs_migration()
+    public void V1_file_gives_the_defaults_and_one_warning()
     {
         var m = ToolbarModel.Resolve("""{ "items": ["settings", "spacer", "pin"], "top": [] }""");
-        Assert.Equal(ToolbarModel.Defaults, m);
-        Assert.Contains("toolbar.json v1 needs migration", m.Warnings);
+        Assert.Equal(ToolbarModel.Defaults with { Warnings = m.Warnings }, m);
+        Assert.Equal([Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported], m.Warnings);
+    }
+
+    [Fact]
+    public void V1_file_with_only_one_row_as_an_array_is_also_not_read()
+    {
+        var m = ToolbarModel.Resolve("""{ "version": 1, "items": { "left": ["pin"] }, "top": ["effort"] }""");
+        Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.BottomLeft), m.Items(Quadrant.BottomLeft));
+        Assert.Single(m.Warnings);
+    }
+
+    [Fact]
+    public void V2_file_with_a_row_as_an_array_is_read_per_field()
+    {
+        var m = ToolbarModel.Resolve("""{ "version": 2, "top": ["effort"], "items": { "left": ["pin"], "right": [] } }""");
+        Assert.Equal(["pin"], m.Items(Quadrant.BottomLeft));
+        Assert.DoesNotContain(Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported, m.Warnings);
     }
 
     [Fact]

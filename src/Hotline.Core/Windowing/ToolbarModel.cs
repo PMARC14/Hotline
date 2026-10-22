@@ -138,7 +138,7 @@ public sealed record ToolbarModel(
         }
     }
 
-    /// <summary>The tolerant read shared by <see cref="Resolve"/> and the v1 migration: strips a BOM, accepts comments and
+    /// <summary>The tolerant read shared by <see cref="Resolve"/> and <see cref="ToolbarFile.Load"/>: strips a BOM, accepts comments and
     /// trailing commas, and lets the last of a repeated key win (noted in <paramref name="warnings"/>). Throws
     /// <see cref="JsonException"/> for unparsable text (including empty text).</summary>
     internal static JsonNode? Parse(string? json, List<string> warnings)
@@ -172,17 +172,13 @@ public sealed record ToolbarModel(
         }
     }
 
-    /// <summary>A v1 file: no (or an older) version and a row given as a plain array.</summary>
-    internal static bool IsV1(JsonObject root) =>
-        (root["version"] is null || (root["version"] is JsonValue v && v.TryGetValue<int>(out var n) && n < CurrentVersion))
-        && (root["items"] is JsonArray || root["top"] is JsonArray);
-
     private static ToolbarModel Read(JsonObject root, List<string> warnings)
     {
         int? version = root["version"] is JsonValue v && v.TryGetValue<int>(out var n) ? n : null;
-        // A v1 file (no version, rows as plain arrays) is converted by the migration, not read here.
-        if (IsV1(root))
-            return Defaults with { Warnings = ["toolbar.json v1 needs migration"] };
+        // The old format (no version or an older one, rows as plain arrays) is not converted any more: the defaults run and
+        // the file is left as it is. A version 2 file with a bad row is read per field like any other.
+        if ((root["version"] is null || version < CurrentVersion) && (root["items"] is JsonArray || root["top"] is JsonArray))
+            return Defaults with { Warnings = [Text.Localization.Strings.Bar_VersionOneUnsupported] };
         if (root["version"] is not null && version != CurrentVersion)
             warnings.Add($"toolbar.json version {Show(root["version"])} isn't {CurrentVersion}; read as far as it goes");
 
