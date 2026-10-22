@@ -51,7 +51,7 @@ public sealed record ToolbarModel(
     public static readonly IReadOnlyList<string> BuiltIn =
         ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"];
 
-    /// <summary>One block in the renderer (PickersPanel): they always end up adjacent.</summary>
+    /// <summary>The three pickers. Each is an item like a button: it sits where it is listed, in any area and between any buttons.</summary>
     internal static readonly string[] Pickers = ["effort", "model", "provider"];
 
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
@@ -235,15 +235,6 @@ public sealed record ToolbarModel(
             }
         }
 
-        // The pickers are one block: all of them go where the first one is, in the order they were listed.
-        var first = Order.FirstOrDefault(q => placed[q].Any(Pickers.Contains), (Quadrant)(-1));
-        if (Order.Contains(first))
-        {
-            var at = placed[first].FindIndex(Pickers.Contains);
-            var block = Order.SelectMany(q => placed[q]).Where(Pickers.Contains).ToList();
-            foreach (var q in Order) placed[q].RemoveAll(Pickers.Contains);
-            placed[first].InsertRange(at, block);
-        }
         return (placed, explicitlyEmpty);
     }
 
@@ -455,8 +446,8 @@ public sealed record ToolbarModel(
               // and a "right" group, listed left to right (the centre sits in the free space between the other two).
               // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
-              // The effort, model and provider pickers stay together (where the first one is) and ignore the styles below;
-              // their only override is "span", their width in button widths ({{MinSpan}}-{{MaxSpan}}; effort 2, model 4, provider 3).
+              // The effort, model and provider pickers are items like any other (each can sit in any area, between any buttons)
+              // but ignore the styles below; their only override is "span", their width in button widths ({{MinSpan}}-{{MaxSpan}}; effort 2, model 4, provider 3).
               // "style": the whole bar; size is compact | normal | wide (half, once, twice the base), outline and filled are true | false,
               // outlineColor is "#RRGGBB" (left out: the accent colour).
               // "overrides": the same keys for one item, plus "width" and "height" ({{MinDip}}-{{MaxDip}}) for icon buttons.

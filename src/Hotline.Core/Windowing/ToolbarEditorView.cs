@@ -4,14 +4,12 @@ using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Windowing;
 
-/// <summary>One place in a quadrant strip of Settings' editor: an item, or the picker block (<see cref="Ids"/> in file
-/// order), with which arrows would change something.</summary>
+/// <summary>One item of a quadrant strip of Settings' editor (a picker is an item like any other), with which arrows would
+/// change something.</summary>
 public sealed record EditorUnit(
-    IReadOnlyList<string> Ids, bool CanMoveLeft, bool CanMoveRight, bool CanShiftUp, bool CanShiftDown, bool CanShiftLeft, bool CanShiftRight)
+    string Id, bool CanMoveLeft, bool CanMoveRight, bool CanShiftUp, bool CanShiftDown, bool CanShiftLeft, bool CanShiftRight)
 {
-    /// <summary>The id the editing calls take (for the block, its first picker: any picker moves the whole block).</summary>
-    public string Id => Ids[0];
-    public bool IsPickers => ToolbarPlan.IsPicker(Id);
+    public bool IsPicker => ToolbarPlan.IsPicker(Id);
 }
 
 /// <summary>Why a custom button can't be added or saved as it is (Settings shows a notice for each).</summary>
@@ -70,38 +68,17 @@ public static class ToolbarEditorView
         _ => hex!,
     };
 
-    /// <summary>A quadrant's strip: each item alone, the pickers as one block.</summary>
+    /// <summary>A quadrant's strip: one unit per item, in order.</summary>
     public static IReadOnlyList<EditorUnit> Units(ToolbarModel m, Quadrant q)
     {
-        var groups = Groups(m.Items(q));
+        var items = m.Items(q);
         var (column, top) = (ToolbarEditor.Column(q), q is Quadrant.TopLeft or Quadrant.TopCenter or Quadrant.TopRight);
-        return [.. groups.Select((ids, i) => new EditorUnit(ids, i > 0, i < groups.Count - 1, !top, top, column > 0, column < 2))];
+        return [.. items.Select((id, i) => new EditorUnit(id, i > 0, i < items.Count - 1, !top, top, column > 0, column < 2))];
     }
 
-    /// <summary>The gap in <paramref name="q"/>'s item list (as <see cref="ToolbarEditor.MoveTo"/> counts) for the gap
-    /// <paramref name="unitGap"/> between the strip's units (clamped): the picker block counts as one unit.</summary>
-    public static int ItemIndex(ToolbarModel m, Quadrant q, int unitGap) =>
-        Groups(m.Items(q)).Take(Math.Max(0, unitGap)).Sum(g => g.Count);
-
-    /// <summary>The "Not shown" strip's add button: a hidden picker joins the end of the block where it is, anything else
-    /// (or a picker with no block left) goes to the end of bottom left. A shown or unknown id returns the input.</summary>
-    public static ToolbarModel Show(ToolbarModel m, string id)
-    {
-        if (id is not null && ToolbarPlan.IsPicker(id) && ToolbarEditor.Hidden(m).Contains(id))
-            foreach (var q in Enum.GetValues<Quadrant>())
-                if (m.Items(q).ToList().FindLastIndex(ToolbarPlan.IsPicker) is var last and >= 0)
-                    return ToolbarEditor.MoveTo(m, id, q, last + 1);
-        return ToolbarEditor.Show(m, id!, Quadrant.BottomLeft);
-    }
-
-    private static List<List<string>> Groups(IReadOnlyList<string> items)
-    {
-        var groups = new List<List<string>>();
-        foreach (var id in items)
-            if (ToolbarPlan.IsPicker(id) && groups.Count > 0 && ToolbarPlan.IsPicker(groups[^1][0])) groups[^1].Add(id);
-            else groups.Add([id]);
-        return groups;
-    }
+    /// <summary>The "Not shown" strip's add button: a hidden item (a picker too) goes to the end of bottom left. A shown or
+    /// unknown id returns the input.</summary>
+    public static ToolbarModel Show(ToolbarModel m, string id) => ToolbarEditor.Show(m, id!, Quadrant.BottomLeft);
 
     /// <summary>
     /// An id for a new custom button made from its label: lower case a-z, 0-9 and single dashes (accents dropped, other

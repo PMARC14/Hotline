@@ -2,7 +2,7 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-/// <summary>The pure half of Settings' quadrant editor: the picker-block snap, drops, the strips' units and arrows,
+/// <summary>The pure half of Settings' quadrant editor: drops, the strips' units and arrows,
 /// custom button ids, the icon list and the checks behind its notices.</summary>
 public sealed class ToolbarEditorViewTests
 {
@@ -14,60 +14,27 @@ public sealed class ToolbarEditorViewTests
               "buttons": { {{buttons}} } }
             """);
 
-    /// <summary>top left: continueIn, [effort, model, provider], newChat (the block at 1-3).</summary>
+    /// <summary>top left: continueIn, effort, model, provider, newChat (the pickers at 1-3).</summary>
     private static readonly ToolbarModel Block = Model("\"pin\"", "\"continueIn\", \"effort\", \"model\", \"provider\", \"newChat\"", "\"recent\"");
 
     private static CustomButton Text(string id, string label = "Label") => new(id, label, "E8A5", null, "hello", false);
 
-    // ---- SnapIndex ----
-
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(1, 1)] // right before the block
-    [InlineData(2, 1)] // inside, nearer the start
-    [InlineData(3, 4)] // inside, nearer the end
-    [InlineData(4, 4)] // right after the block
-    [InlineData(5, 5)]
-    [InlineData(99, 99)] // past the end: left to MoveTo's clamp
-    [InlineData(-3, -3)]
-    public void SnapIndex_moves_a_gap_inside_the_picker_block_to_its_nearer_edge(int index, int snapped) =>
-        Assert.Equal(snapped, ToolbarEditor.SnapIndex(Block, TL, index));
-
-    [Fact]
-    public void SnapIndex_with_two_pickers_breaks_the_tie_towards_the_start()
-    {
-        var m = Model("\"pin\"", "\"continueIn\", \"effort\", \"model\"");
-        Assert.Equal(1, ToolbarEditor.SnapIndex(m, TL, 2));
-        Assert.Equal(3, ToolbarEditor.SnapIndex(m, TL, 3));
-    }
-
-    [Fact]
-    public void SnapIndex_leaves_other_quadrants_one_picker_and_no_pickers_alone()
-    {
-        foreach (var q in new[] { BL, BR, TR })
-            for (var i = 0; i < 5; i++) Assert.Equal(i, ToolbarEditor.SnapIndex(Block, q, i));
-        var one = Model("\"pin\", \"model\", \"settings\"", "");
-        for (var i = 0; i < 4; i++) Assert.Equal(i, ToolbarEditor.SnapIndex(one, BL, i));
-        var none = Model("\"pin\", \"settings\"", "\"recent\"");
-        for (var i = 0; i < 3; i++) Assert.Equal(i, ToolbarEditor.SnapIndex(none, BL, i));
-        Assert.Equal(2, ToolbarEditor.SnapIndex(null!, BL, 2));
-    }
-
-    [Fact]
-    public void A_snapped_drop_inside_the_block_is_kept_where_MoveTo_alone_refuses_it()
-    {
-        Assert.Same(Block, ToolbarEditor.MoveTo(Block, "pin", TL, 2)); // the editor refuses a split block
-        Assert.Equal(["continueIn", "pin", "effort", "model", "provider", "newChat"],
-            ToolbarEditor.MoveTo(Block, "pin", TL, ToolbarEditor.SnapIndex(Block, TL, 2)).Items(TL));
-    }
-
     // ---- Drop ----
 
     [Fact]
-    public void Drop_snaps_inside_the_block_and_places_the_item()
+    public void Drop_between_pickers_places_the_item_there()
     {
-        Assert.Equal(["continueIn", "effort", "model", "provider", "pin", "newChat"], ToolbarEditor.Drop(Block, "pin", TL, 3).Items(TL));
+        // The pickers are no block any more: a gap between two of them is a gap like any other.
+        Assert.Equal(["continueIn", "effort", "model", "pin", "provider", "newChat"], ToolbarEditor.Drop(Block, "pin", TL, 3).Items(TL));
         Assert.Empty(ToolbarEditor.Drop(Block, "pin", TL, 3).Items(BL));
+    }
+
+    [Fact]
+    public void Drop_of_a_picker_moves_only_that_picker()
+    {
+        var m = ToolbarEditor.Drop(Block, "model", BL, 0);
+        Assert.Equal(["model", "pin"], m.Items(BL));
+        Assert.Equal(["continueIn", "effort", "provider", "newChat"], m.Items(TL));
     }
 
     [Fact]
@@ -83,7 +50,8 @@ public sealed class ToolbarEditorViewTests
     {
         Assert.Same(Block, ToolbarEditor.Drop(Block, "continueIn", TL, 0));
         Assert.Same(Block, ToolbarEditor.Drop(Block, "continueIn", TL, 1));
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "model", TL, 2)); // a picker inside its own block
+        Assert.Same(Block, ToolbarEditor.Drop(Block, "model", TL, 2)); // a picker onto its own place
+        Assert.Same(Block, ToolbarEditor.Drop(Block, "model", TL, 3));
         Assert.Same(Block, ToolbarEditor.Drop(Block, "nope", TL, 0));
         Assert.Same(Block, ToolbarEditor.Drop(Block, null!, TL, 0));
         Assert.Same(Block, ToolbarEditor.Drop(Block, "pin", (Quadrant)9, 0));
@@ -106,16 +74,12 @@ public sealed class ToolbarEditorViewTests
     // ---- Units (the strips) ----
 
     [Fact]
-    public void Units_show_each_item_alone_and_the_pickers_as_one_block_in_file_order()
+    public void Units_show_each_item_alone_pickers_too_in_file_order()
     {
         var m = Model("\"pin\"", "\"continueIn\", \"provider\", \"effort\", \"newChat\"", buttons: "");
         var units = ToolbarEditorView.Units(m, TL);
-        Assert.Equal(3, units.Count);
-        Assert.Equal(["continueIn"], units[0].Ids);
-        Assert.Equal(["provider", "effort"], units[1].Ids);
-        Assert.True(units[1].IsPickers);
-        Assert.Equal("provider", units[1].Id);
-        Assert.False(units[0].IsPickers);
+        Assert.Equal(["continueIn", "provider", "effort", "newChat"], units.Select(u => u.Id));
+        Assert.Equal([false, true, true, false], units.Select(u => u.IsPicker));
         Assert.Empty(ToolbarEditorView.Units(m, TR));
     }
 
@@ -126,7 +90,8 @@ public sealed class ToolbarEditorViewTests
         Assert.False(units[0].CanMoveLeft);
         Assert.True(units[0].CanMoveRight);
         Assert.True(units[1].CanMoveLeft && units[1].CanMoveRight);
-        Assert.False(units[2].CanMoveRight);
+        Assert.True(units[3].CanMoveLeft && units[3].CanMoveRight); // a picker in the middle moves both ways
+        Assert.False(units[4].CanMoveRight);
         Assert.All(units, u => Assert.False(u.CanShiftUp));
         Assert.All(units, u => Assert.True(u.CanShiftDown));
         Assert.All(units, u => Assert.False(u.CanShiftLeft));
@@ -164,23 +129,6 @@ public sealed class ToolbarEditorViewTests
         }
     }
 
-    [Theory]
-    [InlineData(0, 0)]
-    [InlineData(1, 1)] // before the block
-    [InlineData(2, 4)] // after the block: past its three pickers
-    [InlineData(3, 5)]
-    [InlineData(9, 5)] // clamped
-    [InlineData(-1, 0)]
-    public void ItemIndex_turns_a_gap_between_units_into_a_gap_in_the_list(int unitGap, int index) =>
-        Assert.Equal(index, ToolbarEditorView.ItemIndex(Block, TL, unitGap));
-
-    [Fact]
-    public void ItemIndex_after_the_block_lands_after_it()
-    {
-        var m = ToolbarEditor.Drop(Block, "pin", TL, ToolbarEditorView.ItemIndex(Block, TL, 2));
-        Assert.Equal(["continueIn", "effort", "model", "provider", "pin", "newChat"], m.Items(TL));
-    }
-
     // ---- Show (the Not shown strip's add button) ----
 
     [Fact]
@@ -193,13 +141,12 @@ public sealed class ToolbarEditorViewTests
     }
 
     [Fact]
-    public void Show_of_a_hidden_picker_joins_the_block_where_it_is()
+    public void Show_of_a_hidden_picker_goes_to_the_end_of_bottom_left_like_a_button()
     {
         var hidden = ToolbarEditor.Hide(Block, "effort");
         var m = ToolbarEditorView.Show(hidden, "effort");
-        Assert.Equal(["continueIn", "model", "provider", "effort", "newChat"], m.Items(TL));
-        var all = ToolbarEditor.Hide(ToolbarEditor.Hide(hidden, "model"), "provider");
-        Assert.Equal(["pin", "model"], ToolbarEditorView.Show(all, "model").Items(BL)); // no block left: bottom left
+        Assert.Equal(["pin", "effort"], m.Items(BL));
+        Assert.Equal(["continueIn", "model", "provider", "newChat"], m.Items(TL)); // the other pickers stay where they are
     }
 
     // ---- Custom button ids ----

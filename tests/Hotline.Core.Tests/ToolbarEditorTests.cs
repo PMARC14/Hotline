@@ -186,54 +186,57 @@ public sealed class ToolbarEditorTests
         Assert.Same(Grid, ToolbarEditor.ShiftTo(Grid, "pin", (Shift)9));
     }
 
-    // ---- The pickers block ----
+    // ---- The pickers are items like any other ----
 
     [Fact]
-    public void Dragging_one_picker_moves_the_whole_block_in_its_order()
+    public void Dragging_one_picker_moves_only_that_picker()
     {
         var m = WithTopLeft("provider", "effort", "model");
         var moved = ToolbarEditor.MoveTo(m, "model", BL, 0);
-        Assert.Equal(["provider", "effort", "model", "pin"], moved.Items(BL));
-        Assert.Empty(moved.Items(TL));
+        Assert.Equal(["model", "pin"], moved.Items(BL));
+        Assert.Equal(["provider", "effort"], moved.Items(TL));
         AssertValid(moved);
 
         moved = ToolbarEditor.MoveTo(m, "effort", TR, 1);
-        Assert.Equal(["recent", "provider", "effort", "model"], moved.Items(TR));
+        Assert.Equal(["recent", "effort"], moved.Items(TR));
+        Assert.Equal(["provider", "model"], moved.Items(TL));
         AssertValid(moved);
     }
 
     [Fact]
-    public void A_drop_inside_its_own_quadrant_moves_the_block_past_other_items()
+    public void A_drop_inside_its_own_quadrant_moves_one_picker_past_other_items_and_pickers()
     {
         var m = WithTopLeft("continueIn", "effort", "model", "provider", "newChat");
-        Assert.Equal(["continueIn", "newChat", "effort", "model", "provider"], ToolbarEditor.MoveTo(m, "model", TL, 5).Items(TL));
-        Assert.Equal(["effort", "model", "provider", "continueIn", "newChat"], ToolbarEditor.MoveTo(m, "provider", TL, 0).Items(TL));
-        Assert.Same(m, ToolbarEditor.MoveTo(m, "model", TL, 2)); // inside the block: it stays where it is
-        Assert.Same(m, ToolbarEditor.MoveTo(m, "model", TL, 4)); // right after the block
+        Assert.Equal(["continueIn", "effort", "provider", "newChat", "model"], ToolbarEditor.MoveTo(m, "model", TL, 5).Items(TL));
+        Assert.Equal(["provider", "continueIn", "effort", "model", "newChat"], ToolbarEditor.MoveTo(m, "provider", TL, 0).Items(TL));
+        Assert.Equal(["continueIn", "model", "effort", "provider", "newChat"], ToolbarEditor.MoveTo(m, "model", TL, 1).Items(TL)); // between two buttons
+        Assert.Same(m, ToolbarEditor.MoveTo(m, "model", TL, 2)); // right before itself
+        Assert.Same(m, ToolbarEditor.MoveTo(m, "model", TL, 3)); // right after itself
     }
 
     [Fact]
-    public void Move_and_ShiftTo_of_a_picker_carry_the_block()
+    public void Move_and_ShiftTo_of_a_picker_carry_that_picker_only()
     {
         var m = WithTopLeft("continueIn", "effort", "model", "provider", "newChat");
-        Assert.Equal(["continueIn", "newChat", "effort", "model", "provider"], ToolbarEditor.Move(m, "model", 1).Items(TL));
-        Assert.Equal(["effort", "model", "provider", "continueIn", "newChat"], ToolbarEditor.Move(m, "effort", -1).Items(TL));
-        Assert.Equal(["effort", "model", "provider", "continueIn", "newChat"], ToolbarEditor.Move(m, "provider", -9).Items(TL)); // clamped
+        Assert.Equal(["continueIn", "effort", "provider", "model", "newChat"], ToolbarEditor.Move(m, "model", 1).Items(TL));
+        Assert.Equal(["continueIn", "model", "effort", "provider", "newChat"], ToolbarEditor.Move(m, "model", -1).Items(TL));
+        Assert.Equal(["provider", "continueIn", "effort", "model", "newChat"], ToolbarEditor.Move(m, "provider", -9).Items(TL)); // clamped
         Assert.Same(m, ToolbarEditor.Move(m, "continueIn", -1));
         var shifted = ToolbarEditor.ShiftTo(m, "provider", Shift.Right); // one column: the centre
-        Assert.Equal(["effort", "model", "provider"], shifted.Items(Quadrant.TopCenter));
-        Assert.Equal(["continueIn", "newChat"], shifted.Items(TL));
+        Assert.Equal(["provider"], shifted.Items(Quadrant.TopCenter));
+        Assert.Equal(["continueIn", "effort", "model", "newChat"], shifted.Items(TL));
         Assert.Equal(["recent"], shifted.Items(TR));
-        shifted = ToolbarEditor.ShiftTo(shifted, "model", Shift.Right); // and the next one: the right
-        Assert.Equal(["recent", "effort", "model", "provider"], shifted.Items(TR));
+        shifted = ToolbarEditor.ShiftTo(shifted, "provider", Shift.Right); // and the next one: the right
+        Assert.Equal(["recent", "provider"], shifted.Items(TR));
         Assert.Empty(shifted.Items(Quadrant.TopCenter));
         shifted = ToolbarEditor.ShiftTo(m, "model", Shift.Down);
-        Assert.Equal(["pin", "effort", "model", "provider"], shifted.Items(BL));
+        Assert.Equal(["pin", "model"], shifted.Items(BL));
+        Assert.Equal(["continueIn", "effort", "provider", "newChat"], shifted.Items(TL));
         AssertValid(shifted);
     }
 
     [Fact]
-    public void Hiding_one_picker_keeps_the_others_together_and_showing_it_joins_the_block()
+    public void Hiding_one_picker_leaves_the_others_and_showing_it_puts_it_at_the_end_of_the_chosen_area()
     {
         var m = WithTopLeft("continueIn", "effort", "model", "provider", "newChat");
         var hidden = ToolbarEditor.Hide(m, "model");
@@ -241,16 +244,36 @@ public sealed class ToolbarEditorTests
         Assert.Contains("model", ToolbarEditor.Hidden(hidden));
         AssertValid(hidden);
 
-        // Shown into another quadrant: the block moves there with it at its end (the pickers stay one block).
         var shown = ToolbarEditor.Show(hidden, "model", BR);
-        Assert.Equal(["effort", "provider", "model"], shown.Items(BR));
-        Assert.Equal(["continueIn", "newChat"], shown.Items(TL));
+        Assert.Equal(["model"], shown.Items(BR));
+        Assert.Equal(["continueIn", "effort", "provider", "newChat"], shown.Items(TL)); // the others stay
         AssertValid(shown);
 
-        // Shown into the block's own quadrant: the block moves to the end with it.
         shown = ToolbarEditor.Show(hidden, "model", TL);
-        Assert.Equal(["continueIn", "newChat", "effort", "provider", "model"], shown.Items(TL));
+        Assert.Equal(["continueIn", "effort", "provider", "newChat", "model"], shown.Items(TL));
         AssertValid(shown);
+    }
+
+    [Fact]
+    public void Each_picker_can_go_to_a_different_area_and_the_span_stays_with_it()
+    {
+        var m = ToolbarEditor.SetPickerSpan(WithTopLeft("effort", "model", "provider"), "model", 6);
+        m = ToolbarEditor.MoveTo(m, "model", Quadrant.BottomCenter, 0);
+        m = ToolbarEditor.MoveTo(m, "provider", BR, 0);
+        Assert.Equal(["effort"], m.Items(TL));
+        Assert.Equal(["model"], m.Items(Quadrant.BottomCenter));
+        Assert.Equal(["provider"], m.Items(BR));
+        Assert.Equal(6, m.EffectiveSpan("model"));
+        AssertValid(m);
+        Assert.Equal(6, ToolbarEditor.Hide(m, "model").EffectiveSpan("model")); // a hidden picker keeps its span
+    }
+
+    [Fact]
+    public void Drop_places_a_hidden_picker_between_two_buttons()
+    {
+        var m = ToolbarEditor.Drop(Grid, "effort", BL, 1);
+        Assert.Equal(["pin", "effort", "captureWindow", "captureScreen"], m.Items(BL));
+        AssertValid(m);
     }
 
     [Fact]

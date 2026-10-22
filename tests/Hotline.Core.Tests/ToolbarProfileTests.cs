@@ -9,7 +9,7 @@ namespace Hotline.Core.Tests;
 /// </summary>
 public sealed class ToolbarProfileTests
 {
-    private const double Spacing = 2, PickerSpacing = 2; // the rows' ColumnSpacing and the pickers panel's Spacing in PopupWindow.xaml
+    private const double Spacing = 2; // the rows' ColumnSpacing in PopupWindow.xaml (pickers are columns of the row, so the same gap)
     private const double Eps = 1e-9;
     private static readonly double[] Widths = [320, 400, 680, 1000, 1600];
     private static readonly string[] AllPickers = ["effort", "model", "provider"];
@@ -26,7 +26,7 @@ public sealed class ToolbarProfileTests
     }
 
     private static ToolbarPlan.RowLayout Plan(ToolbarModel m, bool top, double room, IReadOnlyCollection<string>? available = null) =>
-        ToolbarPlan.PlanRow(m, top, room, Spacing, PickerSpacing, available);
+        ToolbarPlan.PlanRow(m, top, room, Spacing, available);
 
     private static IEnumerable<double> Sweep(double from = 320, double to = 1800, double step = 11)
     {
@@ -134,19 +134,19 @@ public sealed class ToolbarProfileTests
     {
         var m = Sized(name, size);
         var specs = ToolbarPlan.PickerSpecs(m, AllPickers).ToDictionary(s => s.Name);
-        var onBar = ToolbarPlan.PickerOrder(m);
         foreach (var top in new[] { true, false })
         {
-            var hasPickers = ToolbarPlan.Row(m, top).Droppable.Concat(ToolbarPlan.Row(m, top).Right).Any(ToolbarPlan.IsPicker);
+            // Each row plans its own pickers (they can sit in either row, in any group).
+            var row = ToolbarPlan.Row(m, top);
+            var onBar = row.Left.Concat(row.Center).Concat(row.Right).Where(ToolbarPlan.IsPicker).ToList();
             foreach (var room in Widths.Concat(Sweep()))
             {
                 var where = $"{name} {size} top {top} room {room}";
                 var f = Plan(m, top, room);
-                if (!hasPickers) { Assert.Empty(f.PickerWidths); continue; }
-                Assert.Equal(AllPickers.OrderBy(p => p), f.PickerWidths.Keys.OrderBy(p => p));
+                if (onBar.Count == 0) { Assert.Empty(f.PickerWidths); continue; }
+                Assert.Equal(onBar.OrderBy(p => p), f.PickerWidths.Keys.OrderBy(p => p));
                 foreach (var (id, width) in f.PickerWidths)
                 {
-                    if (!onBar.Contains(id)) { Assert.Equal(0, width); continue; }
                     // The span times the unit is the preferred width and the maximum too; the floor and one unit the minimum.
                     Assert.True(width == 0 || (width >= specs[id].Min - Eps && width <= specs[id].Preferred + Eps), $"{where}: {id} {width}");
                     Assert.True(width == 0 || width >= Math.Min(ToolbarPlan.PickerFloor(id), specs[id].Preferred), $"{where}: {id} {width}");
@@ -339,7 +339,7 @@ public sealed class ToolbarProfileTests
             Assert.False(f.Fit.Overflow);
             Assert.Empty(f.Dropped);
             Assert.Empty(f.ButtonWidths);
-            Assert.True(f.Used <= room + Eps || room < ToolbarPlan.PickerFloor("effort") + 2 * Spacing + PickerSpacing, $"room {room}: {f.Used}");
+            Assert.True(f.Used <= room + Eps || room < ToolbarPlan.PickerFloor("effort") + 3 * Spacing, $"room {room}: {f.Used}");
         }
         var top = Plan(m, top: true, 680);
         Assert.Empty(top.PickerWidths);
@@ -470,7 +470,7 @@ public sealed class ToolbarProfileTests
         var roomy = Plan(m, top: false, 1000);
         Assert.Empty(roomy.RightDropped);
         // Shrunk to the room the whole row needs (the pickers at their minimums): no button moves.
-        var least = roomy.Fit.FixedWidth + roomy.PickerWidths.Keys.Sum(id => ToolbarPlan.PickerSpecs(m, AllPickers).First(s => s.Name == id).Min) + 3 * PickerSpacing; // as Compute counts the gaps
+        var least = roomy.Fit.FixedWidth + roomy.PickerWidths.Keys.Sum(id => ToolbarPlan.PickerSpecs(m, AllPickers).First(s => s.Name == id).Min) + 3 * Spacing; // as Compute counts the gaps
         var exact = Plan(m, top: false, least);
         Assert.Empty(exact.RightDropped);
         Assert.False(exact.Fit.Overflow);

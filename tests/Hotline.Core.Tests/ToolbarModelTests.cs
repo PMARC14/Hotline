@@ -413,15 +413,43 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
-    public void Pickers_stay_together_in_the_first_pickers_quadrant()
+    public void Pickers_stay_where_they_are_listed_each_in_its_own_area()
     {
         var m = ToolbarModel.Resolve("""
             { "version": 2, "top": { "left": ["effort"], "right": ["provider"] },
               "items": { "left": ["pin", "model", "prompt"], "right": ["settings"] } }
             """);
-        Assert.Equal(["pin", "model", "effort", "provider", "prompt"], m.Items(Quadrant.BottomLeft));
+        Assert.Empty(m.Warnings);
+        Assert.Equal(["pin", "model", "prompt"], m.Items(Quadrant.BottomLeft));
+        Assert.Equal(["effort"], m.Items(Quadrant.TopLeft));
+        Assert.Equal(["provider"], m.Items(Quadrant.TopRight));
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+    }
+
+    [Fact]
+    public void Pickers_sit_between_buttons_in_any_order_and_a_second_listing_is_a_duplicate()
+    {
+        var m = ToolbarModel.Resolve("""
+            { "version": 2, "top": { "left": ["provider", "pin"], "center": ["model"], "right": ["effort", "prompt"] },
+              "items": { "left": ["pin", "effort", "recent"], "center": ["provider"], "right": ["settings", "model"] } }
+            """);
+        Assert.Equal(["pin", "effort", "recent"], m.Items(Quadrant.BottomLeft));
+        Assert.Equal(["provider"], m.Items(Quadrant.BottomCenter));
+        Assert.Equal(["settings", "model"], m.Items(Quadrant.BottomRight));
         Assert.Empty(m.Items(Quadrant.TopLeft));
-        Assert.Empty(m.Items(Quadrant.TopRight));
+        Assert.Empty(m.Items(Quadrant.TopCenter));
+        Assert.Equal(["prompt"], m.Items(Quadrant.TopRight));
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+    }
+
+    [Fact]
+    public void Each_picker_keeps_its_own_span_wherever_it_is()
+    {
+        var m = ToolbarModel.Resolve("""
+            { "version": 2, "top": { "left": ["effort"], "right": ["model"] }, "items": { "left": ["provider"] },
+              "overrides": { "effort": { "span": 5 }, "model": { "span": 1 }, "provider": { "span": 7 } } }
+            """);
+        Assert.Equal([5, 1, 7], [m.EffectiveSpan("effort"), m.EffectiveSpan("model"), m.EffectiveSpan("provider")]);
         Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
     }
 

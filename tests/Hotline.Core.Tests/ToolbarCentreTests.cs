@@ -66,12 +66,12 @@ public class ToolbarCentreTests
     }
 
     [Fact]
-    public void The_pickers_block_goes_where_the_first_picker_is_even_in_the_centre()
+    public void Pickers_stay_in_the_centre_or_the_right_group_where_they_are_listed()
     {
         var m = Bar("""{ "left": ["pin"], "center": ["effort", "prompt"], "right": ["model"] }""", """{ "left": [], "right": ["provider"] }""");
-        Assert.Equal(["effort", "model", "provider", "prompt"], m.Items(BC));
-        Assert.Empty(m.Items(BR));
-        Assert.Empty(m.Items(TR));
+        Assert.Equal(["effort", "prompt"], m.Items(BC));
+        Assert.Equal(["model"], m.Items(BR));
+        Assert.Equal(["provider"], m.Items(TR));
     }
 
     [Fact]

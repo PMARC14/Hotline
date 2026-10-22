@@ -85,7 +85,7 @@ public sealed class ToolbarPlanTests
     public void Defaults_put_the_pickers_on_top_and_the_buttons_bottom_left()
     {
         var m = ToolbarModel.Defaults;
-        Assert.Equal(new RowPlan(["effort"], [], []), ToolbarPlan.Row(m, top: true));
+        Assert.Equal(new RowPlan(["effort", "model", "provider"], [], []), ToolbarPlan.Row(m, top: true));
         Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"], [], []),
             ToolbarPlan.Row(m, top: false));
         Assert.Equal(["effort", "model", "provider"], ToolbarPlan.PickerOrder(m));
@@ -100,21 +100,20 @@ public sealed class ToolbarPlanTests
     }
 
     [Fact]
-    public void The_pickers_are_one_entry_at_the_first_picker_listed()
+    public void Each_picker_is_an_entry_where_it_is_listed()
     {
         var m = With((Quadrant.BottomRight, ["newChat", "provider", "model", "settings"]));
-        Assert.Equal(new RowPlan([], [], ["newChat", "provider", "settings"]), ToolbarPlan.Row(m, top: false));
+        Assert.Equal(new RowPlan([], [], ["newChat", "provider", "model", "settings"]), ToolbarPlan.Row(m, top: false));
         Assert.Equal(["provider", "model"], ToolbarPlan.PickerOrder(m));
     }
 
     [Fact]
-    public void Pickers_split_over_places_by_hand_still_render_once_where_the_first_one_is()
+    public void Pickers_split_over_places_by_hand_are_drawn_where_each_is_listed()
     {
-        // A model built in code (the self-test) can split them; the renderer must never place the block twice.
-        var m = With((Quadrant.BottomLeft, ["pin", "model"]), (Quadrant.TopLeft, ["effort", "recent"]));
+        var m = With((Quadrant.BottomLeft, ["pin", "model"]), (Quadrant.TopLeft, ["effort", "recent"]), (Quadrant.TopRight, ["provider", "model"]));
         Assert.Equal(new RowPlan(["pin", "model"], [], []), ToolbarPlan.Row(m, top: false));
-        Assert.Equal(new RowPlan(["recent"], [], []), ToolbarPlan.Row(m, top: true));
-        Assert.Equal(["model", "effort"], ToolbarPlan.PickerOrder(m));
+        Assert.Equal(new RowPlan(["effort", "recent"], [], ["provider"]), ToolbarPlan.Row(m, top: true)); // a second "model" is the duplicate
+        Assert.Equal(["model", "effort", "provider"], ToolbarPlan.PickerOrder(m));
     }
 
     [Fact]

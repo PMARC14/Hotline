@@ -9,70 +9,45 @@ public enum Shift { Left, Right, Up, Down }
 /// <see cref="ToolbarModel.ToJson"/> and reads it back with <see cref="ToolbarModel.Resolve"/>, so a result is valid by
 /// construction (<c>Resolve(result.ToJson()) == result</c>). An edit that is invalid or changes nothing returns the input
 /// instance. Ids match case-insensitively and keep their own spelling.
-/// <para>The pickers (effort, model, provider) are one block: moving, dragging, shifting or showing one of them moves the
-/// whole block, in its order. Hiding one keeps the others together; any item may be hidden, down to an empty bar.</para>
+/// <para>The pickers (effort, model, provider) are items like any other: each moves, drags, shifts, hides and shows on its
+/// own. Any item may be hidden, down to an empty bar.</para>
 /// </summary>
 public static class ToolbarEditor
 {
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
-    /// <summary>Moves an item <paramref name="delta"/> places within its quadrant (the picker block counts as one place),
-    /// stopping at the ends.</summary>
+    /// <summary>Moves an item <paramref name="delta"/> places within its quadrant, stopping at the ends.</summary>
     public static ToolbarModel Move(ToolbarModel m, string id, int delta)
     {
         if (m is null || Placed(m, id) is not { } at) return m!;
-        var units = Units(m.Items(at.Quadrant));
-        var from = units.FindIndex(u => u.Contains(at.Id));
-        var to = (int)Math.Clamp((long)from + delta, 0, units.Count - 1);
+        var items = m.Items(at.Quadrant).ToList();
+        var from = items.IndexOf(at.Id);
+        var to = (int)Math.Clamp((long)from + delta, 0, items.Count - 1);
         if (to == from) return m;
-        var unit = units[from];
-        units.RemoveAt(from);
-        units.Insert(to, unit);
+        items.RemoveAt(from);
+        items.Insert(to, at.Id);
         var lists = Lists(m);
-        lists[at.Quadrant] = [.. units.SelectMany(u => u)];
+        lists[at.Quadrant] = items;
         return Strict(m, With(m, lists));
     }
 
     /// <summary>Drag and drop: puts an item (shown or not) at a gap of <paramref name="q"/>, <paramref name="index"/> counted
-    /// in its current list (0 = before the first, Count = after the last; clamped). A picker brings the whole block.</summary>
+    /// in its current list (0 = before the first, Count = after the last; clamped).</summary>
     public static ToolbarModel MoveTo(ToolbarModel m, string id, Quadrant q, int index)
     {
         if (m is null || !Order.Contains(q) || Known(m, id) is not { } c) return m!;
         var lists = Lists(m);
-        List<string> unit = ToolbarModel.Pickers.Contains(c)
-            ? [.. Order.SelectMany(x => lists[x]).Where(ToolbarModel.Pickers.Contains).Union([c])]
-            : [c];
         var target = lists[q];
         var at = Math.Clamp(index, 0, target.Count);
-        at -= target.Take(at).Count(unit.Contains);
-        foreach (var list in lists.Values) list.RemoveAll(unit.Contains);
-        target.InsertRange(at, unit);
+        if (target.IndexOf(c) is var own and >= 0 && own < at) at--; // it leaves the list before it is put back
+        foreach (var list in lists.Values) list.Remove(c);
+        target.Insert(at, c);
         return Strict(m, With(m, lists));
     }
 
-    /// <summary>A drop marker's gap in <paramref name="q"/> (counted as for <see cref="MoveTo"/>) that falls strictly inside
-    /// the picker block, moved to the block's nearer edge (a tie goes before it); any other gap is returned as it is.
-    /// <see cref="MoveTo"/> refuses a gap inside the block, so a drop there would otherwise do nothing.</summary>
-    public static int SnapIndex(ToolbarModel m, Quadrant q, int index)
-    {
-        if (m is null) return index;
-        var items = m.Items(q);
-        var start = items.ToList().FindIndex(ToolbarPlan.IsPicker);
-        if (start < 0) return index;
-        var end = start + items.Skip(start).TakeWhile(ToolbarPlan.IsPicker).Count();
-        if (index <= start || index >= end) return index;
-        return index - start <= end - index ? start : end;
-    }
-
     /// <summary>A drag-and-drop in Settings: the item (shown or not) goes to gap <paramref name="index"/> of
-    /// <paramref name="q"/>, snapped out of the picker block (<see cref="SnapIndex"/>); if that is refused while the item is
-    /// elsewhere, to the end of <paramref name="q"/>. Never throws; a drop that changes nothing returns the input.</summary>
-    public static ToolbarModel Drop(ToolbarModel m, string id, Quadrant q, int index)
-    {
-        if (m is null || !Order.Contains(q) || Known(m, id) is not { } c) return m!;
-        var moved = MoveTo(m, c, q, SnapIndex(m, q, index));
-        return ReferenceEquals(moved, m) && !m.Items(q).Contains(c) ? MoveTo(m, c, q, int.MaxValue) : moved;
-    }
+    /// <paramref name="q"/>. Never throws; a drop that changes nothing returns the input.</summary>
+    public static ToolbarModel Drop(ToolbarModel m, string id, Quadrant q, int index) => MoveTo(m, id, q, index);
 
     /// <summary>The arrows: to the end of the neighbouring quadrant; nothing at the edge (e.g. Up from the top row).</summary>
     public static ToolbarModel ShiftTo(ToolbarModel m, string id, Shift direction)
@@ -112,8 +87,8 @@ public static class ToolbarEditor
         return Strict(m, With(m, lists) with { Overrides = overrides });
     }
 
-    /// <summary>Puts a hidden item at the end of <paramref name="q"/> (a picker brings the block there, itself last).
-    /// An item already shown stays where it is (moving is <see cref="MoveTo"/>).</summary>
+    /// <summary>Puts a hidden item at the end of <paramref name="q"/>. An item already shown stays where it is (moving is
+    /// <see cref="MoveTo"/>).</summary>
     public static ToolbarModel Show(ToolbarModel m, string id, Quadrant q) =>
         m is null || Known(m, id) is not { } c || Placed(m, c) is not null ? m! : MoveTo(m, c, q, int.MaxValue);
 
@@ -216,16 +191,6 @@ public static class ToolbarEditor
             if (m.Items(q).FirstOrDefault(i => i.Equals(id, StringComparison.OrdinalIgnoreCase)) is { } found)
                 return (q, found);
         return null;
-    }
-
-    /// <summary>A quadrant's items as movable units: each item alone, the (adjacent) pickers together.</summary>
-    private static List<List<string>> Units(IReadOnlyList<string> items)
-    {
-        var units = new List<List<string>>();
-        foreach (var id in items)
-            if (ToolbarModel.Pickers.Contains(id) && units.Count > 0 && ToolbarModel.Pickers.Contains(units[^1][0])) units[^1].Add(id);
-            else units.Add([id]);
-        return units;
     }
 
     private static Dictionary<Quadrant, List<string>> Lists(ToolbarModel m) => Order.ToDictionary(q => q, q => m.Items(q).ToList());
