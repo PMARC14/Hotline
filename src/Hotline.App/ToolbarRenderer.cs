@@ -43,9 +43,9 @@ internal sealed class ToolbarRenderer
     /// <summary>The model the rows show; set only once a whole apply has succeeded.</summary>
     public ToolbarModel Model { get; private set; } = ToolbarModel.Defaults;
 
-    /// <summary>The last fit's room and pickers' minimum: an apply fits to them at once, so a changed bar isn't drawn too
-    /// wide for a frame before the queued layout (which then fits to the current width).</summary>
-    private (double Room, double PickersMin)? _lastFit;
+    /// <summary>The last fit's room, pickers' spacing and available pickers: an apply fits to them at once, so a changed bar
+    /// isn't drawn too wide for a frame before the queued layout (which then fits to the current width).</summary>
+    private (double Room, double PickerSpacing, IReadOnlyCollection<string> Available)? _lastFit;
 
     public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom, FileLog log)
     {
@@ -121,7 +121,7 @@ internal sealed class ToolbarRenderer
         ApplyStyle(_bottom.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
         Model = model;
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
-        if (_lastFit is { } last) Fit(last.Room, last.PickersMin);
+        if (_lastFit is { } last) Fit(last.Room, last.PickerSpacing, last.Available);
     }
 
     private void OnCustomClick(object sender, RoutedEventArgs e)
@@ -137,10 +137,6 @@ internal sealed class ToolbarRenderer
         ToolbarPlan.IsPicker(id) ? _popup.PickersPanel
         : _builtIn.TryGetValue(id, out var b) ? b
         : _customButtons[id].Button;
-
-    private double Width(string id) => ToolbarPlan.Metrics(Model, id).Width;
-
-    private double MoreWidth => ToolbarPlan.Metrics(Model.Style).Width;
 
     /// <summary>Lays a row out: the left buttons kept (the pickers always), "⋯" when some moved into it, a flexible gap, the centre
     /// group (between two flexible gaps, so it sits in the free space), the right group.</summary>
@@ -174,26 +170,23 @@ internal sealed class ToolbarRenderer
 
     /// <summary>
     /// Moves the left buttons that don't fit in <paramref name="room"/> into each row's "⋯" menu (and back), keeping
-    /// <paramref name="pickersMin"/> for the pickers when it can (see <see cref="ToolbarPlan.FitRow"/>). Widths come from the
-    /// resolved sizes, never from measuring (a moved button measures 0), so the result doesn't depend on the last pass.
-    /// Returns the width of everything but the pickers in the pickers' row (for <see cref="ToolbarLayout.Compute"/>).
+    /// the pickers' minimum when it can (see <see cref="ToolbarPlan.PlanRow"/>). Widths come from the resolved sizes, never
+    /// from measuring (a moved button measures 0), so the result doesn't depend on the last pass. Returns each picker's width
+    /// (0 = hidden); <paramref name="availablePickers"/> are the ones with something to show.
     /// </summary>
-    public double Fit(double room, double pickersMin)
+    public IReadOnlyDictionary<string, double> Fit(double room, double pickerSpacing, IReadOnlyCollection<string> availablePickers)
     {
-        _lastFit = (room, pickersMin);
-        var fixedWidth = 0.0;
-        foreach (var row in new[] { _top, _bottom })
+        _lastFit = (room, pickerSpacing, availablePickers);
+        var widths = new Dictionary<string, double>();
+        foreach (var (row, top) in new[] { (_top, true), (_bottom, false) })
         {
-            var (left, centre, right) = (row.Plan.Droppable, row.Plan.Center, row.Plan.Right);
-            if (left.Count + right.Count == 0) continue;
-            var hasPickers = left.Concat(right).Any(ToolbarPlan.IsPicker);
-            var leftWidths = left.Where(id => !ToolbarPlan.IsPicker(id)).Select(Width).ToList();
-            var rightWidths = right.Where(id => !ToolbarPlan.IsPicker(id)).Select(Width).ToList();
-            var fit = ToolbarPlan.FitRow(room, row.Grid.ColumnSpacing, leftWidths, rightWidths, hasPickers, pickersMin, MoreWidth, hasCenter: centre.Count > 0);
-            Arrange(row, fit.LeftShown, fit.Overflow);
-            if (hasPickers) fixedWidth = fit.FixedWidth;
+            if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
+            // The same call the tests make: which buttons stay, and the pickers' widths from what they leave.
+            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, pickerSpacing, availablePickers);
+            Arrange(row, layout.Fit.LeftShown, layout.Fit.Overflow);
+            foreach (var (id, width) in layout.PickerWidths) widths[id] = width;
         }
-        return fixedWidth;
+        return widths;
     }
 
     /// <summary>Where a menu that belongs to a bar button opens: the button, or the "⋯" button while it is in that menu.</summary>
