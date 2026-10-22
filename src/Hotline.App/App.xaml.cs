@@ -435,7 +435,10 @@ public partial class App : Application
             _toolbarWarnings = load.Model.Warnings;
             foreach (var warning in _toolbarWarnings) _log?.Info($"toolbar.json: {warning}");
         }
-        if (_toolbarApplied && load.Model.Equals(_popup.ToolbarModel)) return;
+        // A picture replaced under the same name leaves the model equal: the icons folder's files decide too.
+        var iconStamp = IconStamp(dataDir);
+        if (_toolbarApplied && load.Model.Equals(_popup.ToolbarModel) && iconStamp == _iconStamp) return;
+        _iconStamp = iconStamp;
         if (!Enum.GetValues<Hotline.Core.Windowing.Quadrant>().SelectMany(load.Model.Items).Contains("settings"))
             _log?.Info("toolbar.json places no Settings button: Settings opens from the tray icon only");
         _toolbarApplied = true;
@@ -446,6 +449,21 @@ public partial class App : Application
     private bool _toolbarApplied;
     private IReadOnlyList<string> _toolbarWarnings = [];
     private string _toolbarNoticeKey = "";
+    private string _iconStamp = "";
+
+    /// <summary>The custom button pictures as name, size and time of each file: changes when one is added, replaced or removed.</summary>
+    private static string IconStamp(string dataDir)
+    {
+        try
+        {
+            var folder = Path.Combine(dataDir, "icons");
+            return Directory.Exists(folder)
+                ? string.Join("|", new DirectoryInfo(folder).EnumerateFiles("*.png").OrderBy(f => f.Name, StringComparer.Ordinal)
+                    .Select(f => $"{f.Name}:{f.Length}:{f.LastWriteTimeUtc.Ticks}"))
+                : "";
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return ""; }
+    }
 
     /// <summary>
     /// A file that can't be read, or parts of it that were ignored, show as a notice in the panel (with a way to Settings,
