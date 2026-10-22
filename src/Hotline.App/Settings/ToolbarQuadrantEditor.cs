@@ -18,7 +18,7 @@ namespace Hotline.App.Settings;
 /// or moved with the buttons under each item (Ctrl+Left/Right and Alt+arrows on a focused item). Every edit goes through
 /// <see cref="ToolbarEditor"/> (so only valid files are written), is saved at once and applied by App's file watcher;
 /// only this control is rebuilt, never the page, and not while one of its flyouts is open (a rebuild would close it).
-/// UI Automation ids: quadrant-&lt;topleft|…&gt;, bar-notshown, bar-item-&lt;id&gt; (the picker block, its arrows too: pickerBlock),
+/// UI Automation ids: quadrant-&lt;topleft|…&gt;, bar-notshown, bar-item-&lt;id&gt; (the pickers too: effort, model, provider),
 /// bar-move-&lt;left|right&gt;-&lt;id&gt;, bar-shift-&lt;up|down|left|right&gt;-&lt;id&gt;, bar-hide-&lt;id&gt;, bar-style-&lt;id&gt; (its flyout: bar-look-&lt;size|width|height|outline|filled|reset&gt;),
 /// bar-span-&lt;picker&gt; (a picker's width, 1x-8x), bar-show-&lt;id&gt;, bar-size, bar-outline, bar-filled, bar-custom-add, bar-custom-edit-&lt;id&gt;, bar-custom-delete-&lt;id&gt;.
 /// </summary>
@@ -207,7 +207,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             ClearHighlight();
             if (id is null) return;
             e.Handled = true;
-            Edit(m => ToolbarEditor.Drop(m, id, q, ToolbarEditorView.ItemIndex(m, q, gap)), id);
+            Edit(m => ToolbarEditor.Drop(m, id, q, gap), id);
         }), handledEventsToo: true);
         return card;
     }
@@ -225,17 +225,9 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             ClearHighlight();
             if (id is null) return;
             e.Handled = true;
-            Edit(m => HideUnit(m, id), id);
+            Edit(m => ToolbarEditor.Hide(m, id), id);
         }), handledEventsToo: true);
         return card;
-    }
-
-    /// <summary>Hides an item; a picker dragged out of the bar takes the whole block with it.</summary>
-    private static ToolbarModel HideUnit(ToolbarModel m, string id)
-    {
-        if (!ToolbarPlan.IsPicker(id)) return ToolbarEditor.Hide(m, id);
-        foreach (var picker in ToolbarPlan.PickerOrder(m)) m = ToolbarEditor.Hide(m, picker);
-        return m;
     }
 
     /// <summary>A card around a strip, with "Empty" behind it when there is nothing in it (the strip still takes drops).</summary>
@@ -333,7 +325,9 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     // ---- items ----
 
     private static string ItemName(ToolbarModel m, string id) =>
-        m.Buttons.FirstOrDefault(b => b.Id == id) is { } custom ? custom.Label : L.Get("Bar_" + id);
+        m.Buttons.FirstOrDefault(b => b.Id == id) is { } custom ? custom.Label
+        : ToolbarPlan.IsPicker(id) ? L.Get("Bar_Chip_" + id) // "Effort", "Model", "Provider"
+        : L.Get("Bar_" + id);
 
     private static string? Glyph(ToolbarModel m, string id) =>
         BuiltInGlyphs.TryGetValue(id, out var glyph) ? glyph
@@ -354,46 +348,30 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
 
     private Border Chip(UIElement content) => new() { Style = _cardStyle, Padding = new Thickness(6, 2, 6, 2), Child = content };
 
-    /// <summary>One place of a quadrant: the item (or the picker block, its chips in file order) and its buttons.</summary>
+    /// <summary>One item of a quadrant (a picker too) and its buttons.</summary>
     private ListViewItem UnitItem(Quadrant q, EditorUnit unit)
     {
-        var key = unit.IsPickers ? "pickerBlock" : unit.Id; // upper case: never a custom id
-        var name = unit.IsPickers ? Strings.Bar_Pickers : ItemName(_model, unit.Id);
+        var name = ItemName(_model, unit.Id);
         var top = q is Quadrant.TopLeft or Quadrant.TopCenter or Quadrant.TopRight;
-        UIElement title = Title(unit.Id);
-        if (unit.IsPickers)
-        {
-            var chips = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 4 };
-            foreach (var picker in unit.Ids)
+        // A picker's chip carries its width box; it takes no styles, so it has no style button.
+        UIElement title = unit.IsPicker
+            ? Chip(new StackPanel
             {
-                var chipName = L.Get("Bar_Chip_" + picker);
-                chips.Children.Add(Chip(new StackPanel
-                {
-                    Orientation = Orientation.Horizontal, Spacing = 2,
-                    Children =
-                    {
-                        new TextBlock { Text = chipName, VerticalAlignment = VerticalAlignment.Center, FontSize = 12 },
-                        SpanBox(picker, chipName),
-                        SmallButton("\uE711", Strings.Bar_Remove, chipName, "bar-hide-" + picker, true, m => ToolbarEditor.Hide(m, picker), picker, "bar-item-pickerBlock"),
-                    },
-                }));
-            }
-            title = chips;
-        }
+                Orientation = Orientation.Horizontal, Spacing = 2,
+                Children = { new TextBlock { Text = name, VerticalAlignment = VerticalAlignment.Center, FontSize = 12 }, SpanBox(unit.Id, name) },
+            })
+            : Title(unit.Id);
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 2 };
-        var item = "bar-item-" + key;
-        buttons.Children.Add(SmallButton("\uE76B", Strings.Bar_MoveLeft, name, "bar-move-left-" + key, unit.CanMoveLeft, m => ToolbarEditor.Move(m, unit.Id, -1), unit.Id, item));
-        buttons.Children.Add(SmallButton("\uE76C", Strings.Bar_MoveRight, name, "bar-move-right-" + key, unit.CanMoveRight, m => ToolbarEditor.Move(m, unit.Id, 1), unit.Id, item));
+        var item = "bar-item-" + unit.Id;
+        buttons.Children.Add(SmallButton("\uE76B", Strings.Bar_MoveLeft, name, "bar-move-left-" + unit.Id, unit.CanMoveLeft, m => ToolbarEditor.Move(m, unit.Id, -1), unit.Id, item));
+        buttons.Children.Add(SmallButton("\uE76C", Strings.Bar_MoveRight, name, "bar-move-right-" + unit.Id, unit.CanMoveRight, m => ToolbarEditor.Move(m, unit.Id, 1), unit.Id, item));
         buttons.Children.Add(top
-            ? SmallButton("\uE74B", Strings.Bar_ToBottom, name, "bar-shift-down-" + key, unit.CanShiftDown, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Down), unit.Id, item)
-            : SmallButton("\uE74A", Strings.Bar_ToTop, name, "bar-shift-up-" + key, unit.CanShiftUp, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Up), unit.Id, item));
-        buttons.Children.Add(SmallButton("\uE72B", Strings.Bar_ToLeft, name, "bar-shift-left-" + key, unit.CanShiftLeft, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Left), unit.Id, item));
-        buttons.Children.Add(SmallButton("\uE72A", Strings.Bar_ToRight, name, "bar-shift-right-" + key, unit.CanShiftRight, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Right), unit.Id, item));
-        if (!unit.IsPickers)
-        {
-            buttons.Children.Add(StyleButton(unit.Id, name));
-            buttons.Children.Add(SmallButton("\uE711", Strings.Bar_Remove, name, "bar-hide-" + key, true, m => ToolbarEditor.Hide(m, unit.Id), unit.Id, "quadrant-" + Key(q)));
-        }
+            ? SmallButton("\uE74B", Strings.Bar_ToBottom, name, "bar-shift-down-" + unit.Id, unit.CanShiftDown, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Down), unit.Id, item)
+            : SmallButton("\uE74A", Strings.Bar_ToTop, name, "bar-shift-up-" + unit.Id, unit.CanShiftUp, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Up), unit.Id, item));
+        buttons.Children.Add(SmallButton("\uE72B", Strings.Bar_ToLeft, name, "bar-shift-left-" + unit.Id, unit.CanShiftLeft, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Left), unit.Id, item));
+        buttons.Children.Add(SmallButton("\uE72A", Strings.Bar_ToRight, name, "bar-shift-right-" + unit.Id, unit.CanShiftRight, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Right), unit.Id, item));
+        if (!unit.IsPicker) buttons.Children.Add(StyleButton(unit.Id, name));
+        buttons.Children.Add(SmallButton("\uE711", Strings.Bar_Remove, name, "bar-hide-" + unit.Id, true, m => ToolbarEditor.Hide(m, unit.Id), unit.Id, "quadrant-" + Key(q)));
         var listItem = Item(unit.Id, item, name, new StackPanel { Spacing = 4, Children = { title, buttons } });
         listItem.PreviewKeyDown += (_, e) => OnItemKey(unit.Id, item, e);
         return listItem;
@@ -414,7 +392,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         box.DropDownClosed += (_, _) => FlyoutClosed();
         box.SelectionChanged += (_, _) =>
         {
-            if (box.SelectedIndex >= 0) Edit(m => ToolbarEditor.SetPickerSpan(m, picker, box.SelectedIndex + ToolbarModel.MinSpan), picker, (automationId, "bar-item-pickerBlock"));
+            if (box.SelectedIndex >= 0) Edit(m => ToolbarEditor.SetPickerSpan(m, picker, box.SelectedIndex + ToolbarModel.MinSpan), picker, (automationId, "bar-item-" + picker));
         };
         return box;
     }

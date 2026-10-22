@@ -132,8 +132,8 @@ public sealed partial class PopupWindow : Window
 
     /// <summary>After layout only (ProviderBar.Layout): moves what doesn't fit into the "⋯" menus; returns each picker's width
     /// (0 = hidden), see <see cref="ToolbarPlan.PlanRow"/>.</summary>
-    public IReadOnlyDictionary<string, double> FitToolbar(double room, double pickerSpacing, IReadOnlyCollection<string> availablePickers) =>
-        _rows.Fit(room, pickerSpacing, availablePickers);
+    public IReadOnlyDictionary<string, double> FitToolbar(double room, IReadOnlyCollection<string> availablePickers) =>
+        _rows.Fit(room, availablePickers);
 
     /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
     public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);

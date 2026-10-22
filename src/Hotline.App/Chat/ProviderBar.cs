@@ -162,7 +162,7 @@ internal sealed class ProviderBar(
         // (ToolbarPlan.PlanRow, the same call the tests make): only the effort picker can have nothing to show.
         List<string> available = ["model", "provider"];
         if (popup.EffortBox.Items.Count > 0) available.Add("effort");
-        var widths = popup.FitToolbar(room, popup.PickersPanel.Spacing, available);
+        var widths = popup.FitToolbar(room, available);
         Apply(popup.EffortBox, widths.GetValueOrDefault("effort"));
         Apply(popup.ModelBox, widths.GetValueOrDefault("model"));
         Apply(popup.ProviderBox, widths.GetValueOrDefault("provider"));

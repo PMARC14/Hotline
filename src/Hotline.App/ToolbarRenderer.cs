@@ -17,7 +17,7 @@ namespace Hotline.App;
 
 /// <summary>
 /// Draws toolbar.json (a resolved <see cref="ToolbarModel"/>) into the panel's two button rows. Each row is
-/// <c>[left group…] [*] [right group…]</c>; the pickers are one block (PickersPanel). Built-in buttons are the XAML ones,
+/// <c>[left group…] [*] [right group…]</c>; the three pickers are items like the buttons, each placed where the model lists it. Built-in buttons are the XAML ones,
 /// custom buttons are made anew on every apply (with their picture when they have one, see <see cref="CustomButtonPicture"/>). When a row is too narrow its last left buttons move into a "⋯" menu
 /// (<see cref="Fit"/>, run after layout by ProviderBar). What goes where is decided in <see cref="ToolbarPlan"/>.
 /// </summary>
@@ -30,7 +30,7 @@ internal sealed class ToolbarRenderer
         public RowPlan Plan { get; set; } = new([], [], []);
         /// <summary>The buttons in the "⋯" menu, in bar order: left, centre, then the right group's.</summary>
         public IReadOnlyList<string> Dropped { get; set; } = [];
-        public (int LeftShown, int RightDropped, bool Overflow)? Arranged { get; set; }
+        public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers)? Arranged { get; set; }
     }
 
     private readonly PopupWindow _popup;
@@ -43,9 +43,11 @@ internal sealed class ToolbarRenderer
     /// <summary>The model the rows show; set only once a whole apply has succeeded.</summary>
     public ToolbarModel Model { get; private set; } = ToolbarModel.Defaults;
 
-    /// <summary>The last fit's room, pickers' spacing and available pickers: an apply fits to them at once, so a changed bar
-    /// isn't drawn too wide for a frame before the queued layout (which then fits to the current width).</summary>
-    private (double Room, double PickerSpacing, IReadOnlyCollection<string> Available)? _lastFit;
+    /// <summary>The last fit's room and available pickers: an apply fits to them at once, so a changed bar isn't drawn too wide
+    /// for a frame before the queued layout (which then fits to the current width).</summary>
+    private (double Room, IReadOnlyCollection<string> Available)? _lastFit;
+
+    private readonly Dictionary<string, ComboBox> _pickers;
 
     public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom, FileLog log)
     {
@@ -59,6 +61,7 @@ internal sealed class ToolbarRenderer
         // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
         // focused pin button and turned pinning off.
         foreach (var b in _builtIn.Values) b.AllowFocusOnInteraction = false;
+        _pickers = new Dictionary<string, ComboBox> { ["effort"] = popup.EffortBox, ["model"] = popup.ModelBox, ["provider"] = popup.ProviderBox };
         _top = new Row(popup.TopToolbar, MoreButton());
         _bottom = new Row(popup.Toolbar, MoreButton());
         _top.More.Flyout = OverflowMenu(_top);
@@ -99,16 +102,11 @@ internal sealed class ToolbarRenderer
             button.Click += OnCustomClick;
             _customButtons[b.Id] = (button, b);
         }
-        // The picker boxes in the order listed; the block sits where the first one is.
-        var boxes = new Dictionary<string, ComboBox> { ["effort"] = _popup.EffortBox, ["model"] = _popup.ModelBox, ["provider"] = _popup.ProviderBox };
-        _popup.PickersPanel.Children.Clear();
-        foreach (var name in ToolbarPlan.PickerOrder(model)) _popup.PickersPanel.Children.Add(boxes[name]);
-
         foreach (var (row, top) in new[] { (_top, true), (_bottom, false) })
         {
             row.Plan = ToolbarPlan.Row(model, top);
             row.Arranged = null;
-            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.IsPicker(id)), rightDropped: 0, overflow: false); // as Fit counts them
+            Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.IsPicker(id)), rightDropped: 0, overflow: false, hiddenPickers: []); // as Fit counts them
             var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
@@ -117,7 +115,7 @@ internal sealed class ToolbarRenderer
         Restyle(model);
         Model = model;
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
-        if (_lastFit is { } last) Fit(last.Room, last.PickerSpacing, last.Available);
+        if (_lastFit is { } last) Fit(last.Room, last.Available);
     }
 
     private void OnCustomClick(object sender, RoutedEventArgs e)
@@ -130,16 +128,19 @@ internal sealed class ToolbarRenderer
         char.ConvertFromUtf32(int.TryParse(hex, System.Globalization.NumberStyles.HexNumber, null, out var code) ? code : Convert.ToInt32(ToolbarModel.DefaultIcon, 16));
 
     private FrameworkElement Element(string id) =>
-        ToolbarPlan.IsPicker(id) ? _popup.PickersPanel
+        _pickers.TryGetValue(id, out var picker) ? picker
         : _builtIn.TryGetValue(id, out var b) ? b
         : _customButtons[id].Button;
 
-    /// <summary>Lays a row out: the left buttons kept (the pickers always), "⋯" when some moved into it, a flexible gap, the centre
-    /// group (between two flexible gaps, so it sits in the free space), the right group (without the buttons it gave up).</summary>
-    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow)
+    /// <summary>Lays a row out: the left items kept (every picker stays in its group), "⋯" when some buttons moved into it, a flexible
+    /// gap, the centre group (between two flexible gaps, so it sits in the free space), the right group (without the buttons it
+    /// gave up). A picker in <paramref name="hiddenPickers"/> (no room, or nothing to show) is left out of the grid, so it costs
+    /// no column gap.</summary>
+    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow, IReadOnlyCollection<string> hiddenPickers)
     {
-        if (row.Arranged == (leftShown, rightDropped, overflow)) return;
-        row.Arranged = (leftShown, rightDropped, overflow);
+        var hiddenKey = string.Join(",", hiddenPickers.Order());
+        if (row.Arranged == (leftShown, rightDropped, overflow, hiddenKey)) return;
+        row.Arranged = (leftShown, rightDropped, overflow, hiddenKey);
         var (shown, dropped) = ToolbarPlan.Split(row.Plan.Droppable, leftShown); // the left group, then the centre: the centre goes first
         var (rightShown, rightGone) = ToolbarPlan.SplitRight(row.Plan.Right, rightDropped);
         row.Dropped = [.. dropped, .. rightGone];
@@ -153,34 +154,38 @@ internal sealed class ToolbarRenderer
             grid.Children.Add(element);
         }
         void Gap() => grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-        foreach (var id in shown.Where(row.Plan.Left.Contains)) Add(Element(id));
+        foreach (var id in shown.Where(row.Plan.Left.Contains).Where(Visible)) Add(Element(id));
         if (overflow) Add(row.More);
         Gap();
-        var centre = shown.Where(row.Plan.Center.Contains).ToList();
+        var centre = shown.Where(row.Plan.Center.Contains).Where(Visible).ToList();
         if (centre.Count > 0)
         {
             foreach (var id in centre) Add(Element(id));
             Gap();
         }
-        foreach (var id in rightShown) Add(Element(id));
+        foreach (var id in rightShown.Where(Visible)) Add(Element(id));
+
+        bool Visible(string id) => !hiddenPickers.Contains(id);
     }
 
     /// <summary>
     /// Moves the buttons that don't fit (the left ones, and only when the right group alone is too wide, its first ones) in <paramref name="room"/> into each row's "⋯" menu (and back), keeping
     /// the pickers' minimum when it can (see <see cref="ToolbarPlan.PlanRow"/>). Widths come from the resolved sizes, never
     /// from measuring (a moved button measures 0), so the result doesn't depend on the last pass. Returns each picker's width
-    /// (0 = hidden); <paramref name="availablePickers"/> are the ones with something to show.
+    /// (0 = hidden, and then it is not in its row at all); <paramref name="availablePickers"/> are the ones with something to show.
     /// </summary>
-    public IReadOnlyDictionary<string, double> Fit(double room, double pickerSpacing, IReadOnlyCollection<string> availablePickers)
+    public IReadOnlyDictionary<string, double> Fit(double room, IReadOnlyCollection<string> availablePickers)
     {
-        _lastFit = (room, pickerSpacing, availablePickers);
+        _lastFit = (room, availablePickers);
         var widths = new Dictionary<string, double>();
         foreach (var (row, top) in new[] { (_top, true), (_bottom, false) })
         {
             if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
-            // The same call the tests make: which buttons stay, and the pickers' widths from what they leave.
-            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, pickerSpacing, availablePickers);
-            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow);
+            // The same call the tests make: which buttons stay, and the widths of the row's pickers from what they leave. The
+            // row's column gap lies between any two items, pickers too.
+            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers);
+            var hidden = layout.PickerWidths.Where(p => p.Value <= 0).Select(p => p.Key).ToList();
+            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden);
             foreach (var (id, width) in layout.PickerWidths) widths[id] = width;
         }
         return widths;
