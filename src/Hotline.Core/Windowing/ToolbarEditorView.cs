@@ -21,7 +21,7 @@ public enum BarSizeChoice { Compact = ButtonSize.Compact, Normal = ButtonSize.No
 
 /// <summary>
 /// The pure half of Settings' quadrant editor (<see cref="ToolbarEditor"/> does the edits): what each strip shows, the
-/// arrows' states, drop gaps, ids for new custom buttons, the icon choices and the checks behind its notices.
+/// arrows' states, ids for new custom buttons, the icon choices and the checks behind its notices.
 /// </summary>
 public static class ToolbarEditorView
 {
