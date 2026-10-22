@@ -35,7 +35,7 @@ public static class ToolbarPlan
     public const int MaxCustomFont = 22;
 
     /// <summary>The one base size every preset is a multiple of (DIP; the glyph in points): change these to rescale them all.</summary>
-    public const double BaseWidth = 36, BaseHeight = 32, BaseFont = 15;
+    public const double BaseWidth = 40, BaseHeight = 36, BaseFont = 16;
 
     /// <summary>
     /// The size presets, from the base (<see cref="BaseWidth"/> × <see cref="BaseHeight"/>, glyph <see cref="BaseFont"/>):

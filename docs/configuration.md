@@ -195,14 +195,14 @@ Within a group, items run left to right; the center group sits in the free space
 | `overrides` | Per item id, the same `size`, `outline`, `outlineColor` and `filled`, plus `width` and `height` in DIPs (20-80) for icon buttons. A key you leave out is taken from `style`, then from the defaults |
 | `buttons` | Your own buttons, by id (see below) |
 
-**Sizes.** The three sizes are multiples of one base size (today 36 × 32 DIPs, icon 15): `compact` is half of it,
+**Sizes.** The three sizes are multiples of one base size (today 40 × 36 DIPs, icon 16): `compact` is half of it,
 `normal` the base, `wide` twice it; the icon is 0.8, 1 and 1.2 times the base's.
 
 | `size` | Button (width × height, DIPs) | Icon |
 |---|---|---|
-| `compact` | half the base, at least 20 × 20 (today 20 × 20) | 12 |
-| `normal` (default) | the base (36 × 32) | 15 |
-| `wide` | twice the base (72 × 64) | 18 |
+| `compact` | half the base, at least 20 × 20 (today 20 × 20) | 13 |
+| `normal` (default) | the base (40 × 36) | 16 |
+| `wide` | twice the base (80 × 72) | 19 |
 
 `width` and `height` win over the size but stay between 20 and 80. Custom buttons follow the same sizes but never go
 past 80 × 80 (icon 22), whatever the size of the bar or of the button. The "..." button takes the bar's size. In
