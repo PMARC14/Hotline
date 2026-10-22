@@ -615,6 +615,7 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Mavi</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Mor</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Pembe</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Gösterilmiyor</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Öğeleri dört grup arasında sürükleyin veya her öğenin altındaki düğmeleri kullanın. Bir öğe odaktayken Alt+ok tuşları onu başka bir gruba taşır, Ctrl+Sol veya Ctrl+Sağ ise grubu içinde taşır. Değişiklikler toolbar.json dosyasına kaydedilir ve hemen uygulanır.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Sol gruba taşı</value></data>

@@ -615,6 +615,7 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Biru</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Ungu</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Merah muda</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Tidak ditampilkan</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Tarik item di antara keempat grup, atau gunakan tombol di bawah setiap item. Saat item difokuskan, Alt+tombol panah memindahkannya ke grup lain dan Ctrl+Kiri atau Ctrl+Kanan memindahkannya di dalam grupnya. Perubahan disimpan ke toolbar.json dan langsung diterapkan.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Pindahkan ke grup kiri</value></data>

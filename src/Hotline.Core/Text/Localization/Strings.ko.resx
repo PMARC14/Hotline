@@ -615,6 +615,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_ColorBlue" xml:space="preserve"><value>파랑</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>보라</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>분홍색</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>표시 안 함</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>네 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>왼쪽 그룹으로 이동</value></data>

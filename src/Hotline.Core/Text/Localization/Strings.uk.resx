@@ -615,6 +615,7 @@
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Синій</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Фіолетовий</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Рожевий</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Не відображається</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Перетягуйте елементи між чотирма групами або використовуйте кнопки під кожним елементом. Якщо елемент у фокусі, Alt+стрілки переміщують його до іншої групи, а Ctrl+Left або Ctrl+Right — у межах групи. Зміни зберігаються в toolbar.json і застосовуються одразу.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Перемістити до лівої групи</value></data>

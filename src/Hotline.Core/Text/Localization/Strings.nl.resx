@@ -615,6 +615,7 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Blauw</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Paars</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Roze</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niet weergegeven</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Sleep items tussen de vier groepen of gebruik de knoppen onder elk item. Als een item de focus heeft, verplaatst Alt+pijltjestoetsen het naar een andere groep en Ctrl+Links of Ctrl+Rechts het binnen de groep. Wijzigingen worden opgeslagen in toolbar.json en direct toegepast.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Naar de linkergroep verplaatsen</value></data>

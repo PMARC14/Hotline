@@ -615,6 +615,7 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Bar_ColorBlue" xml:space="preserve"><value>蓝色</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>紫色</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>粉色</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>不显示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>在四个分组之间拖动项目，或使用每个项目下方的按钮。聚焦项目时，按 Alt+方向键可将其移至其他分组，按 Ctrl+Left 或 Ctrl+Right 可在其分组内移动。更改会保存到 toolbar.json 并立即生效。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左侧分组</value></data>

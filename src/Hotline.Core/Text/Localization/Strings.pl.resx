@@ -615,6 +615,7 @@ Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value>
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Niebieski</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Fioletowy</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Różowy</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niepokazywane</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Przeciągaj elementy między czterema grupami lub używaj przycisków pod każdym elementem. Gdy element jest aktywny, Alt+strzałki przenoszą go do innej grupy, a Ctrl+strzałka w lewo lub Ctrl+strzałka w prawo przesuwają go w obrębie grupy. Zmiany są zapisywane w toolbar.json i wprowadzane od razu.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Przenieś do lewej grupy</value></data>

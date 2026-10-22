@@ -20,7 +20,7 @@ namespace Hotline.App.Settings;
 /// only this control is rebuilt, never the page, and not while one of its flyouts is open (a rebuild would close it).
 /// UI Automation ids: quadrant-&lt;topleft|…&gt;, bar-notshown, bar-item-&lt;id&gt; (the picker block, its arrows too: pickerBlock),
 /// bar-move-&lt;left|right&gt;-&lt;id&gt;, bar-shift-&lt;up|down|left|right&gt;-&lt;id&gt;, bar-hide-&lt;id&gt;, bar-style-&lt;id&gt; (its flyout: bar-look-&lt;size|width|height|outline|filled|reset&gt;),
-/// bar-show-&lt;id&gt;, bar-size, bar-outline, bar-filled, bar-custom-add, bar-custom-edit-&lt;id&gt;, bar-custom-delete-&lt;id&gt;.
+/// bar-span-&lt;picker&gt; (a picker's width, 1x-8x), bar-show-&lt;id&gt;, bar-size, bar-outline, bar-filled, bar-custom-add, bar-custom-edit-&lt;id&gt;, bar-custom-delete-&lt;id&gt;.
 /// </summary>
 internal sealed partial class ToolbarQuadrantEditor : StackPanel
 {
@@ -373,6 +373,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
                     Children =
                     {
                         new TextBlock { Text = chipName, VerticalAlignment = VerticalAlignment.Center, FontSize = 12 },
+                        SpanBox(picker, chipName),
                         SmallButton("\uE711", Strings.Bar_Remove, chipName, "bar-hide-" + picker, true, m => ToolbarEditor.Hide(m, picker), picker, "bar-item-pickerBlock"),
                     },
                 }));
@@ -396,6 +397,26 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         var listItem = Item(unit.Id, item, name, new StackPanel { Spacing = 4, Children = { title, buttons } });
         listItem.PreviewKeyDown += (_, e) => OnItemKey(unit.Id, item, e);
         return listItem;
+    }
+
+    /// <summary>A picker's width in button widths ("1x" to "8x"): picking one saves it. The list's own popup counts as a flyout, so
+    /// the rebuild that follows waits until it has closed.</summary>
+    private ComboBox SpanBox(string picker, string chipName)
+    {
+        var box = new ComboBox { FontSize = 12, MinWidth = 0, Width = 64, Padding = new Thickness(6, 0, 0, 0), VerticalAlignment = VerticalAlignment.Center };
+        for (var span = ToolbarModel.MinSpan; span <= ToolbarModel.MaxSpan; span++) box.Items.Add($"{span}x");
+        box.SelectedIndex = _model.EffectiveSpan(picker) - ToolbarModel.MinSpan;
+        var automationId = "bar-span-" + picker;
+        ToolTipService.SetToolTip(box, Strings.Bar_PickerWidth);
+        AutomationProperties.SetName(box, $"{Strings.Bar_PickerWidth}: {chipName}");
+        AutomationProperties.SetAutomationId(box, automationId);
+        box.DropDownOpened += (_, _) => FlyoutOpened();
+        box.DropDownClosed += (_, _) => FlyoutClosed();
+        box.SelectionChanged += (_, _) =>
+        {
+            if (box.SelectedIndex >= 0) Edit(m => ToolbarEditor.SetPickerSpan(m, picker, box.SelectedIndex + ToolbarModel.MinSpan), picker, (automationId, "bar-item-pickerBlock"));
+        };
+        return box;
     }
 
     private ListViewItem HiddenItem(string id)

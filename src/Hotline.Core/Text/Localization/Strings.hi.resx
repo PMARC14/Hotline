@@ -615,6 +615,7 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Bar_ColorBlue" xml:space="preserve"><value>नीला</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>बैंगनी</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>गुलाबी</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>दिखाया नहीं गया</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>चारों समूहों के बीच आइटम खींचें, या प्रत्येक आइटम के नीचे दिए गए बटनों का उपयोग करें। किसी आइटम पर फ़ोकस होने पर, Alt+तीर कुंजियाँ उसे दूसरे समूह में ले जाती हैं और Ctrl+Left या Ctrl+Right उसे उसके समूह में ले जाते हैं। बदलाव toolbar.json में सहेजे जाते हैं और तुरंत लागू होते हैं।</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>बाएँ समूह में ले जाएँ</value></data>

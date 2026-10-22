@@ -615,6 +615,7 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Bar_ColorBlue" xml:space="preserve"><value>藍色</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>紫色</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>粉紅色</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左側群組</value></data>

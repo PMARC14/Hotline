@@ -615,6 +615,7 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Bar_ColorBlue" xml:space="preserve"><value>Xanh lam</value></data>
   <data name="Bar_ColorPurple" xml:space="preserve"><value>Tím</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Hồng</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Không hiển thị</value></data>
   <data name="Bar_EditorIntro" xml:space="preserve"><value>Kéo các mục giữa bốn nhóm, hoặc dùng các nút bên dưới mỗi mục. Khi một mục có tiêu điểm, Alt+phím mũi tên sẽ di chuyển mục sang nhóm khác và Ctrl+Trái hoặc Ctrl+Phải sẽ di chuyển mục trong nhóm. Các thay đổi được lưu vào toolbar.json và áp dụng ngay.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Di chuyển sang nhóm bên trái</value></data>
