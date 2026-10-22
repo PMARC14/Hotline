@@ -75,6 +75,28 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     `odr.exe`, so This PC says "preview, not delivered" and no longer "needs a build". Phi Silica / the Windows AI APIs and
     `odr.exe` discovery were researched and **deferred, maybe never** (owner, 2026-10-17: Hotline's on-device route is a
     local API connection). No new 26H2 API was worth adopting.
+  - **Later in 0.4 (after the first PR text):**
+    - Each button row has a **centre group** between left and right (six areas; `center` in `toolbar.json` is optional; the centre
+      drops into the ⋯ menu before the left group does).
+    - **Sizes:** `compact` = ½, `normal` = 1×, `wide` = 2× of one base (`ToolbarPlan.BaseWidth/BaseHeight/BaseFont`, now 40 × 36,
+      icon 16; compact never under 20 × 20). Custom buttons never exceed 80 × 80 (icon 22). The bar's size choice shows
+      **Custom** by itself while some button has its own size. `outline` is drawn in the accent colour (or `outlineColor`).
+    - **Custom buttons can use a picture** (`iconFile`, a PNG ≤ 256 KB, 16-256 px, stored as `icons/<id>.png`; `CustomIcons` validates
+      the header only; the renderer decodes the checked bytes and falls back to the glyph).
+    - **Panel notice** when `toolbar.json` can't be read or parts were ignored (`ConfigProblems`, once per distinct set).
+    - First-run card always lists Claude Code, Codex and Antigravity (missing ones dimmed, with a hint line).
+    - Quick actions page: two-line previews (full text in a tooltip), clearer intro and button names.
+    - **Security pass** (Argon + Flash multi-model audit, findings verified against the code, fixes with tests): UNC/device paths refused
+      for images and stored working directories (`SafeDirectory`, `AppActionRequest.IsSafeLocalImagePath`; an image comes only from
+      Windows' own App Actions inputs); history ids validated (`HistoryIds`); response-size caps and clear redirect errors for the
+      API clients; chat-only isolation flags always applied and tool pre-approval flags dropped from user launch flags; CLI output
+      capped; `ShellOpen` opens only Hotline's own files; MCP `.exe` servers start directly and `cmd.exe` is refused for unsafe
+      characters; SVG `style` allow-listed, depth/size caps for SVG and markdown (Markdig throws past ~128 levels: caught);
+      `mcp.json` duplicate keys and backups (`BackupFiles.Prune`, newest ten); release workflow passes expressions through `env:`;
+      logs are cleaned (`LogText`: line breaks indented, secrets redacted, capped, link queries never logged).
+      **Deferred on purpose:** a plain `hotline://key` link from a web page can still read the selection (the real key path can't be told
+      apart without risking it); Markdig can take ~15 s on adversarial nested input (a UI freeze, not a crash); MCP `readOnlyHint` is
+      trusted from the server (recommendation: only for servers marked trusted); unsigned inner packages in a signed bundle (Azure flow).
   - **Not hand-tested yet (owner):** mouse drags (inside and between corners, to "Not shown", across monitors and DPI), the ⋯
     menu opening Prompt / Continue in and surviving a `toolbar.json` change, outline / filled / sizes in light, dark and
     contrast themes, 24 custom buttons at 320 DIP, and that the Copilot key still arrives as before after the 26H2 upgrade
@@ -166,6 +188,13 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     `PanelTheme`, `UiTasks`, `OcrReader`, `PanelLayout` (rows for up/down), `PanelGrips` (Alt move/resize), `Interop/SoundPlayer`. `SelfTestLinks` (hotline://selftest).
 
 ## Hard-won facts (don't relearn these)
+
+- **Tool quirks (2026-10-22):** a shell heredoc given to the Bash tool collapses backslashes (`\n` becomes a real newline, `\b` a
+  backspace): write C#, resx or script text that contains backslashes with the Write/Edit tools, or build the character with
+  `chr(92)`. `rm -f "$P"/*` is refused unless written `"${P:?}"/*`. PowerShell 5.1: `@($null)` is a one-item array.
+- **agy as a reviewer:** give it a prompt that lists absolute file paths and says "use only view_file on these"; it reads whole
+  folders that way (no 32k command-line limit, nothing pasted, no Defender false positive on hook code). Headless agy can't write
+  files: `write_file(<path>/**)` allow rules did not match and a blanket rule was refused as self-modification; ask the owner.
 
 - **A window resize closes an open WinUI flyout** (including `ShouldConstrainToRootBounds=false` ones). The panel
   sizes itself to its content, so anything that changes layout while a flyout is open (even a 0.5 px border change on
