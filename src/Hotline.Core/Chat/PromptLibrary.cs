@@ -13,6 +13,9 @@ public sealed partial class PromptLibrary(string directory)
 
     public static bool IsValidName(string name) => SafeName().IsMatch(name);
 
+    // "Default.md" is the same file as "default.md" on Windows.
+    private static bool IsDefault(string name) => name.Equals(DefaultName, StringComparison.OrdinalIgnoreCase);
+
     public string PathFor(string name) => Path.Combine(directory, name + ".md");
 
     public void EnsureDefault()
@@ -25,7 +28,7 @@ public sealed partial class PromptLibrary(string directory)
     {
         if (!System.IO.Directory.Exists(directory)) return [DefaultName];
         var names = System.IO.Directory.EnumerateFiles(directory, "*.md").Select(Path.GetFileNameWithoutExtension)
-            .OfType<string>().Where(IsValidName).Where(n => n != DefaultName).Order(StringComparer.OrdinalIgnoreCase).ToList();
+            .OfType<string>().Where(IsValidName).Where(n => !IsDefault(n)).Order(StringComparer.OrdinalIgnoreCase).ToList();
         names.Insert(0, DefaultName);
         return names;
     }
@@ -59,7 +62,7 @@ public sealed partial class PromptLibrary(string directory)
 
     public bool Delete(string name)
     {
-        if (name == DefaultName || !IsValidName(name) || !File.Exists(PathFor(name))) return false;
+        if (IsDefault(name) || !IsValidName(name) || !File.Exists(PathFor(name))) return false;
         File.Delete(PathFor(name));
         return true;
     }

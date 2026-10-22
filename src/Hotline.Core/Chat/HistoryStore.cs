@@ -137,7 +137,11 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         foreach (var chat in Directory.EnumerateFiles(directory).Where(f => IdOf(Path.GetFileName(f)) is not null).GroupBy(f => IdOf(Path.GetFileName(f))))
         {
             if (chat.Max(File.GetLastWriteTimeUtc) >= cutoff) continue;
-            foreach (var file in chat) { File.Delete(file); deleted++; }
+            foreach (var file in chat)
+            {
+                try { File.Delete(file); deleted++; }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { } // in use: the next start tries again
+            }
         }
         return deleted;
     }

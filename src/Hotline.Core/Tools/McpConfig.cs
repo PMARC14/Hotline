@@ -64,14 +64,14 @@ public sealed class McpConfig
         if (root["mcpServers"] is JsonObject list)
             foreach (var (name, node) in list)
             {
-                if (node is not JsonObject s || s["command"]?.GetValue<string>() is not { Length: > 0 } command) continue;
+                if (node is not JsonObject s || Text(s["command"]) is not { Length: > 0 } command) continue;
                 var args = s["args"] is JsonArray a ? a.Select(x => x?.ToString() ?? "").ToList() : [];
                 // Windows variable names ignore case: "PATH" and "Path" are one variable, the last one wins.
                 var env = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
                 if (s["env"] is JsonObject e)
                     foreach (var (k, v) in e) env[k] = v?.ToString() ?? "";
                 var disabled = s["disabled"] is JsonValue d && d.TryGetValue<bool>(out var off) && off;
-                servers.Add(new McpServerConfig(name, command, args, env, disabled, s["cwd"]?.GetValue<string>(), s["displayName"]?.GetValue<string>()));
+                servers.Add(new McpServerConfig(name, command, args, env, disabled, Text(s["cwd"]), Text(s["displayName"])));
             }
         var approvals = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase);
         var warnings = new List<string>();
@@ -85,6 +85,9 @@ public sealed class McpConfig
             }
         return new McpConfig { Servers = servers, Approvals = approvals, Warnings = warnings };
     }
+
+    /// <summary>A string value, or null when the node is missing or not a string (a hand-edit slip must not break the whole file).</summary>
+    private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
 
     /// <summary>
     /// Writes one approval rule, keeping everything else in the file. A rewrite loses comments and formatting, so the
@@ -112,6 +115,7 @@ public sealed class McpConfig
             var updated = root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
             if (updated == original) return; // the rule was already there
             if (original is not null) WriteBackup(path, original); // never replacing an earlier backup
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
             var tmp = $"{path}.{Guid.NewGuid():N}.tmp";
             File.WriteAllText(tmp, updated);
             File.Move(tmp, path, overwrite: true);
