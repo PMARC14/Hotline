@@ -65,6 +65,18 @@ public static class ToolbarProfiles
             Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", right: "\"settings\""),
             top: Group("\"prompt\", \"recent\"", Pickers, "\"continueIn\", \"newChat\""))),
 
+        // The pickers are separate items: the profiles above list all three side by side, these place them one by one.
+        new("pickers-apart-corners", Doc("Separated pickers: effort top left, model top right, provider bottom centre, buttons bottom left and right.",
+            Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", "\"provider\"", "\"prompt\", \"recent\", \"settings\""),
+            top: Group("\"effort\"", right: "\"model\""))),
+
+        new("picker-between-buttons", Doc("One picker (model) between buttons in the bottom row, the other two pickers not shown.",
+            Group("\"pin\", \"captureWindow\", \"model\", \"captureScreen\", \"captureRegion\", \"prompt\"", right: "\"recent\", \"newChat\", \"settings\""))),
+
+        new("pickers-one-per-row-right", Doc("A picker in each row's right group: effort after a button in the top row, model before the last buttons in the bottom row.",
+            Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", right: "\"model\", \"newChat\", \"settings\""),
+            top: Group("\"prompt\"", right: "\"recent\", \"effort\""))),
+
         new("spans-all-1", Doc("Every picker one button wide, bottom left after the buttons.",
             Group($"{Buttons}, {Pickers}"),
             overrides: "{ \"effort\": { \"span\": 1 }, \"model\": { \"span\": 1 }, \"provider\": { \"span\": 1 } }")),

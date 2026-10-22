@@ -255,7 +255,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                   "style": { "outline": true } }
                 """, 720);
             // The reference layouts (ToolbarProfiles; the unit tests run all of them at many widths): the ones that mix the pickers
-            // into the bottom row, the extremes and the damaged file at 680 DIP, the picker-mixing ones again at 320.
+            // into the bottom row, the extremes and the damaged file at 680 DIP, the picker-mixing ones again at 320, then the
+            // separated pickers.
             var profileNumber = 0;
             async Task Profile(string name, int width) => await Look($"P{++profileNumber:00}-{name}-{width}", ToolbarProfiles.Named(name).Json, width);
             string[] mixing =
@@ -270,6 +271,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             ];
             foreach (var name in mixing.Concat(others)) await Profile(name, 680);
             foreach (var name in mixing) await Profile(name, 320);
+            // The pickers placed one by one (P28-P30): in two areas, between buttons, one per row.
+            foreach (var name in new[] { "pickers-apart-corners", "picker-between-buttons", "pickers-one-per-row-right" }) await Profile(name, 680);
             popup.ApplyToolbar(userBar);
             popup.ResizeOffscreen(720);
             await Step("looks restored");
