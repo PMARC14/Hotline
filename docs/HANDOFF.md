@@ -133,7 +133,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
      - Settings: a `settings.json` without `schemaVersion` is treated as current (skips migrations); connection ids are
        case-sensitive in a few places (`defaultBackend`); the Language box is blank for `"en-us"` (case).
      - Minor: scheme-less endpoints throw a raw error; MCP `cwd`/`displayName` of the wrong JSON type drop the file's
-       other servers; `ModelFamilies.Resolve` maps `xhigh`/`ultra` to the lowest variant; MCP approval keys differ by
+       other servers; `MCP approval keys differ by
        case; SVG `style` with CSS escapes; code-fence parity in `MarkdownModel`; sounds don't reload a replaced .wav;
        the fallback hotkey isn't re-registered on a settings change; transcript spinner not stopped on Clear.
 3. **Brainstorm** anything else wanted before 1.0, then decide on it. (The Codex live check was done by the owner on
