@@ -43,6 +43,15 @@ public sealed class ClaudeCodeTests : IDisposable
 
     private static JsonElement Message(string line) => JsonDocument.Parse(line).RootElement.GetProperty("message");
 
+    /// <summary>The content blocks of the n-th user message written to the fake process.</summary>
+    private static JsonElement Content(FakeLineProcess p, int n) => Message(p.Written[n]).GetProperty("content");
+
+    private static string Streamed(params string[] lines)
+    {
+        var parser = new ClaudeTurnParser();
+        return string.Concat(lines.SelectMany(parser.Feed).Select(d => d.Text));
+    }
+
     // ---- arguments ---------------------------------------------------------------------------
 
     [Fact]
@@ -60,6 +69,9 @@ public sealed class ClaudeCodeTests : IDisposable
         Assert.Equal("none", args[args.IndexOf("--permission-prompts") + 1]);
         Assert.Equal("Be brief.", args[args.IndexOf("--append-system-prompt") + 1]);
         Assert.DoesNotContain("--bare", args); // --bare never reads the user's Claude login
+        // Sessions are kept in claude by default and not when switched off.
+        Assert.DoesNotContain("--no-session-persistence", args);
+        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile { KeepCliSessions = false }, "x"));
     }
 
     [Fact]
@@ -113,17 +125,13 @@ public sealed class ClaudeCodeTests : IDisposable
     [Fact]
     public void Multiple_assistant_messages_in_one_turn_are_separated()
     {
-        var parser = new ClaudeTurnParser();
-        var lines = new[] { MessageStart, Delta("Checking the folder."), MessageStart, Delta("It has 3 files."), Result("It has 3 files.") };
-        Assert.Equal("Checking the folder.\n\nIt has 3 files.", string.Concat(lines.SelectMany(parser.Feed).Select(d => d.Text)));
+        Assert.Equal("Checking the folder.\n\nIt has 3 files.", Streamed(MessageStart, Delta("Checking the folder."), MessageStart, Delta("It has 3 files."), Result("It has 3 files.")));
     }
 
     [Fact]
     public void Without_partial_messages_the_assistant_text_is_used()
     {
-        var parser = new ClaudeTurnParser();
-        var lines = new[] { """{"type":"assistant","message":{"content":[{"type":"thinking","thinking":""},{"type":"text","text":"Red."}]}}""", Result("Red.") };
-        Assert.Equal("Red.", string.Concat(lines.SelectMany(parser.Feed).Select(d => d.Text)));
+        Assert.Equal("Red.", Streamed("""{"type":"assistant","message":{"content":[{"type":"thinking","thinking":""},{"type":"text","text":"Red."}]}}""", Result("Red.")));
     }
 
     [Fact]
@@ -155,7 +163,7 @@ public sealed class ClaudeCodeTests : IDisposable
         Assert.Equal("Hi!", await Collect(b.StreamAsync([U("1", "hello"), A("2", "Hi!"), U("3", "again")], default)));
         var (_, _, cwd, proc) = Assert.Single(_factory.Started);
         Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only: no tools, run where `claude --resume` finds it
-        Assert.Equal("again", Message(proc.Written[1]).GetProperty("content")[0].GetProperty("text").GetString());
+        Assert.Equal("again", Content(proc, 1)[0].GetProperty("text").GetString());
     }
 
     [Fact]
@@ -164,7 +172,7 @@ public sealed class ClaudeCodeTests : IDisposable
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("Red.") };
         var img = new Attachment("a1", "shot.png", AttachmentKind.Image, "image/png", [1, 2, 3]);
         await Collect(New().StreamAsync([U("1", "colour?", img)], default));
-        var content = Message(_factory.Started[0].Process.Written[0]).GetProperty("content");
+        var content = Content(_factory.Started[0].Process, 0);
         var image = content.EnumerateArray().Single(c => c.GetProperty("type").GetString() == "image");
         Assert.Equal("image/png", image.GetProperty("source").GetProperty("media_type").GetString());
         Assert.Equal(Convert.ToBase64String(new byte[] { 1, 2, 3 }), image.GetProperty("source").GetProperty("data").GetString());
@@ -176,7 +184,7 @@ public sealed class ClaudeCodeTests : IDisposable
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
         var b = New();
         await Collect(b.StreamAsync([U("1", "first question"), A("2", "first answer"), U("3", "follow up")], default));
-        var text = Message(_factory.Started[0].Process.Written[0]).GetProperty("content")[0].GetProperty("text").GetString()!;
+        var text = Content(_factory.Started[0].Process, 0)[0].GetProperty("text").GetString()!;
         Assert.Contains("first question", text);
         Assert.Contains("first answer", text);
         Assert.EndsWith("follow up", text);
@@ -225,13 +233,6 @@ public sealed class ClaudeCodeTests : IDisposable
         };
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(New().StreamAsync([U("1", "hi")], default)));
         Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
-    }
-
-    [Fact]
-    public void Sessions_are_kept_in_claude_by_default_and_not_when_switched_off()
-    {
-        Assert.DoesNotContain("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile(), "x"));
-        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile { KeepCliSessions = false }, "x"));
     }
 
     [Fact]
