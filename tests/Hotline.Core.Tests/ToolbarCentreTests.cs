@@ -10,27 +10,23 @@ public class ToolbarCentreTests
 
     private static ToolbarModel Bar(string items, string top) => ToolbarModel.Resolve($$"""{ "version": 2, "items": {{items}}, "top": {{top}} }""");
 
-    [Fact]
-    public void The_centre_group_is_read_in_both_rows_and_written_back()
+    [Theory]
+    [InlineData("""{ "left": ["pin"], "center": ["prompt", "recent"], "right": ["settings"] }""", """{ "left": ["effort", "model", "provider"], "center": ["newChat"], "right": [] }""",
+        "prompt,recent", "newChat", null)]
+    [InlineData("""{ "left": ["pin"], "right": ["settings"] }""", """{ "left": ["effort"], "right": [] }""", "", "", null)] // no centre groups: an empty centre is written
+    [InlineData("""{ "left": ["pin"], "center": 5, "right": [] }""", """{ "left": ["effort"], "right": [] }""", "", "", "items.center")] // not a list: ignored with a warning
+    public void The_centre_group_is_read_in_both_rows_and_written_back(string items, string top, string bottomCentre, string topCentre, string? warning)
     {
-        var m = Bar("""{ "left": ["pin"], "center": ["prompt", "recent"], "right": ["settings"] }""",
-                    """{ "left": ["effort", "model", "provider"], "center": ["newChat"], "right": [] }""");
-        Assert.Equal(["prompt", "recent"], m.Items(BC));
-        Assert.Equal(["newChat"], m.Items(TC));
-        Assert.Empty(m.Warnings);
-        var again = ToolbarModel.Resolve(m.ToJson());
-        Assert.Equal(m, again);
-        Assert.Contains("\"center\": [\"prompt\", \"recent\"]", m.ToJson());
-    }
-
-    [Fact]
-    public void A_file_without_centre_groups_still_reads_and_writes_an_empty_centre()
-    {
-        var m = Bar("""{ "left": ["pin"], "right": ["settings"] }""", """{ "left": ["effort"], "right": [] }""");
-        Assert.Empty(m.Items(BC));
-        Assert.Empty(m.Items(TC));
-        Assert.Contains("\"center\": []", m.ToJson());
-        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+        var m = Bar(items, top);
+        Assert.Equal(bottomCentre.Split(',', StringSplitOptions.RemoveEmptyEntries), m.Items(BC));
+        Assert.Equal(topCentre.Split(',', StringSplitOptions.RemoveEmptyEntries), m.Items(TC));
+        Assert.Equal(["pin"], m.Items(BL));
+        if (warning is null) Assert.Empty(m.Warnings); else Assert.Contains(m.Warnings, w => w.Contains(warning));
+        var json = m.ToJson();
+        Assert.Contains($$"""
+            "center": [{{string.Join(", ", m.Items(BC).Select(id => $"\"{id}\""))}}]
+            """, json);
+        if (warning is null) Assert.Equal(m, ToolbarModel.Resolve(json));
     }
 
     [Fact]
@@ -42,15 +38,6 @@ public class ToolbarCentreTests
         // but a missing left or right group is still "not explicit": the defaults apply
         var broken = Bar("""{ "left": [], "center": [] }""", """{ "left": [], "right": [] }""");
         Assert.Equal(ToolbarModel.Defaults.Items(BL), broken.Items(BL));
-    }
-
-    [Fact]
-    public void A_centre_group_that_is_not_a_list_is_ignored_with_a_warning()
-    {
-        var m = Bar("""{ "left": ["pin"], "center": 5, "right": [] }""", """{ "left": ["effort"], "right": [] }""");
-        Assert.Empty(m.Items(BC));
-        Assert.Equal(["pin"], m.Items(BL));
-        Assert.Contains(m.Warnings, w => w.Contains("items.center"));
     }
 
     [Fact]
@@ -103,7 +90,7 @@ public class ToolbarCentreTests
     }
 
     [Fact]
-    public void A_centre_group_costs_a_second_flexible_column_in_the_fit()
+    public void A_centre_group_costs_a_second_flexible_column_and_can_push_a_button_into_the_menu_on_a_tight_row()
     {
         double[] droppable = [36, 36, 36], right = [36];
         var without = ToolbarPlan.FitRow(500, 4, droppable, right, hasPickers: false, pickersMin: 0, overflowWidth: 32);
@@ -112,16 +99,8 @@ public class ToolbarCentreTests
         Assert.Equal(3, with.LeftShown);
         Assert.Equal(160, without.FixedWidth); // 4 buttons + 1 flexible column, 4 gaps
         Assert.Equal(164, with.FixedWidth);    // + the second flexible column's gap
-    }
-
-    [Fact]
-    public void The_second_flexible_column_can_push_a_button_into_the_menu_on_a_tight_row()
-    {
-        double[] droppable = [36, 36, 36], right = [36];
-        var tight = ToolbarPlan.FitRow(164, 4, droppable, right, hasPickers: false, pickersMin: 0, overflowWidth: 32);
-        var tightWithCentre = ToolbarPlan.FitRow(164, 4, droppable, right, hasPickers: false, pickersMin: 0, overflowWidth: 32, hasCenter: true);
-        Assert.Equal(3, tight.LeftShown);
-        Assert.Equal(3, tightWithCentre.LeftShown); // 164 is exactly what four buttons and two flexible columns need
+        // 164 is exactly what four buttons and two flexible columns need; one less pushes a button into the menu.
+        Assert.Equal(3, ToolbarPlan.FitRow(164, 4, droppable, right, hasPickers: false, pickersMin: 0, overflowWidth: 32, hasCenter: true).LeftShown);
         var tighter = ToolbarPlan.FitRow(163, 4, droppable, right, hasPickers: false, pickersMin: 0, overflowWidth: 32, hasCenter: true);
         Assert.True(tighter.LeftShown < 3 && tighter.Overflow);
     }

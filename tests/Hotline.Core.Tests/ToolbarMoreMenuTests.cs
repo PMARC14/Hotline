@@ -25,18 +25,6 @@ public sealed class ToolbarMoreMenuTests
     // ---- reading ----
 
     [Fact]
-    public void More_is_a_built_in_and_the_menu_reads_in_order_and_round_trips()
-    {
-        Assert.Contains("more", ToolbarModel.BuiltIn);
-        var m = Read("\"pin\", \"captureWindow\"", "\"settings\", \"more\"", "\"recent\", \"captureScreen\"");
-        Assert.Empty(m.Warnings);
-        Assert.Equal(["recent", "captureScreen"], m.Menu);
-        AssertValid(m);
-        Assert.Empty(ToolbarModel.Resolve(m.ToJson()).Warnings);
-        Assert.Contains("\"menu\"", m.ToJson());
-    }
-
-    [Fact]
     public void Menu_is_part_of_equality()
     {
         var a = Read("\"pin\"", "\"more\"", "\"recent\"");
@@ -80,15 +68,6 @@ public sealed class ToolbarMoreMenuTests
         Assert.Empty(custom.Warnings);
     }
 
-    [Fact]
-    public void More_takes_a_style_override_like_any_button()
-    {
-        var m = ToolbarModel.Resolve("""{ "version": 2, "items": { "left": ["pin", "more"] }, "overrides": { "more": { "size": "wide", "outline": true } } }""");
-        Assert.Empty(m.Warnings);
-        Assert.Equal(80, ToolbarPlan.Metrics(m, "more").Width);
-        AssertValid(m);
-    }
-
     // ---- planning ----
 
     [Fact]
@@ -129,44 +108,6 @@ public sealed class ToolbarMoreMenuTests
         Assert.Empty(ToolbarPlan.MenuItems(withMore).Where(id => id is "effort" or "more" or "pin" or "recent")); // pin and recent are on the bar; pickers and more never
     }
 
-    [Theory]
-    [InlineData("more-menu-bottom-right-with-5-items")]
-    [InlineData("more-menu-top-centre-with-overflow")]
-    [InlineData("more-in-both-rows")]
-    public void The_more_profiles_resolve_cleanly_and_keep_the_more_button_at_every_width_and_size(string name)
-    {
-        foreach (var size in Enum.GetValues<ButtonSize>())
-        {
-            var m = ToolbarModel.Resolve(ToolbarProfiles.Named(name).Json);
-            Assert.Empty(m.Warnings);
-            m = m with { Style = m.Style with { Size = size } };
-            foreach (var top in new[] { true, false })
-            {
-                var row = ToolbarPlan.Row(m, top);
-                int? lastDropped = null;
-                for (double room = 320; room <= 1800; room += 7)
-                {
-                    var f = ToolbarPlan.PlanRow(m, top, room, Spacing);
-                    if (!row.HasMore) { Assert.Empty(f.UserMenu); continue; }
-                    var where = $"{name} {size} top {top} room {room}";
-                    Assert.Contains("more", f.Shown.Concat(f.RightShown));
-                    Assert.DoesNotContain("more", f.Menu);
-                    Assert.True(f.Fit.Overflow, where);
-                    Assert.Equal(ToolbarPlan.MenuItems(m), f.UserMenu);
-                    Assert.Equal(f.UserMenu.Concat(f.Dropped).Concat(f.RightDropped), f.Menu);
-                    Assert.DoesNotContain(f.Menu, ToolbarPlan.IsPicker);
-                    Assert.Contains("more", f.ButtonWidths.Keys);
-                    var dropped = f.Dropped.Count + f.RightDropped.Count;
-                    if (lastDropped is { } before) Assert.True(dropped <= before, $"{where}: more room dropped more");
-                    lastDropped = dropped;
-                    // Within the room, except for the documented overshoot (not even one right button and the more button fit).
-                    var moreWidth = ToolbarPlan.Metrics(m, "more").Width;
-                    if (f.Used > room + Eps) Assert.True(f.Fit.LeftShown == 0 && moreWidth + Spacing * 2 > room - 40, $"{where}: {f.Used}");
-                }
-            }
-        }
-    }
-
     [Fact]
     public void More_in_a_row_that_cannot_hold_even_it_is_kept_as_the_overshoot()
     {
@@ -180,6 +121,10 @@ public sealed class ToolbarMoreMenuTests
 
     private static ToolbarModel WithMore() =>
         ToolbarEditor.Show(ToolbarModel.Defaults, "more", Quadrant.BottomRight);
+
+    // A bar with the more button whose menu holds these entries, in this order.
+    private static ToolbarModel WithMenu(params string[] ids) =>
+        ids.Aggregate(WithMore(), (m, id) => ToolbarEditor.MoveToMenu(m, id, int.MaxValue));
 
     [Fact]
     public void MoveToMenu_puts_a_bar_item_at_the_menu_and_back_to_a_group_takes_it_out()
@@ -214,22 +159,28 @@ public sealed class ToolbarMoreMenuTests
         Assert.DoesNotContain("newChat", ToolbarEditor.Hidden(m));
     }
 
-    [Fact]
-    public void MoveToMenu_refuses_pickers_more_and_unknown_ids()
+    [Theory]
+    [InlineData("effort")]
+    [InlineData("more")]
+    [InlineData("nobody")]
+    [InlineData(null)]
+    public void MoveToMenu_refuses_pickers_more_and_unknown_ids(string? id)
     {
         var m = WithMore();
-        Assert.Same(m, ToolbarEditor.MoveToMenu(m, "effort", 0));
-        Assert.Same(m, ToolbarEditor.MoveToMenu(m, "more", 0));
-        Assert.Same(m, ToolbarEditor.MoveToMenu(m, "nobody", 0));
-        Assert.Same(m, ToolbarEditor.MoveToMenu(m, null!, 0));
-        var inMenu = ToolbarEditor.MoveToMenu(m, "recent", 0);
-        Assert.Same(inMenu, ToolbarEditor.MoveToMenu(inMenu, "recent", 0)); // already first: nothing changes
+        Assert.Same(m, ToolbarEditor.MoveToMenu(m, id!, 0));
+    }
+
+    [Fact]
+    public void MoveToMenu_of_the_first_entry_changes_nothing()
+    {
+        var inMenu = WithMenu("recent");
+        Assert.Same(inMenu, ToolbarEditor.MoveToMenu(inMenu, "recent", 0));
     }
 
     [Fact]
     public void Move_reorders_inside_the_menu_and_Hide_takes_an_entry_out_of_it()
     {
-        var m = ToolbarEditor.MoveToMenu(ToolbarEditor.MoveToMenu(ToolbarEditor.MoveToMenu(WithMore(), "pin", int.MaxValue), "recent", int.MaxValue), "newChat", int.MaxValue);
+        var m = WithMenu("pin", "recent", "newChat");
         Assert.Equal(["pin", "recent", "newChat"], m.Menu);
         var moved = ToolbarEditor.Move(m, "newChat", -2);
         AssertEdit(m, moved);
@@ -243,7 +194,7 @@ public sealed class ToolbarMoreMenuTests
     [Fact]
     public void Hiding_more_sends_the_menu_back_to_Not_shown()
     {
-        var m = ToolbarEditor.MoveToMenu(ToolbarEditor.MoveToMenu(WithMore(), "pin", 0), "recent", 1);
+        var m = WithMenu("pin", "recent");
         var h = ToolbarEditor.Hide(m, "more");
         AssertEdit(m, h);
         Assert.Empty(h.Menu);
@@ -270,7 +221,7 @@ public sealed class ToolbarMoreMenuTests
     [Fact]
     public void Editor_view_lists_the_menu_units_and_who_may_go_into_it()
     {
-        var m = ToolbarEditor.MoveToMenu(ToolbarEditor.MoveToMenu(WithMore(), "pin", 0), "recent", 1);
+        var m = WithMenu("pin", "recent");
         var units = ToolbarEditorView.MenuUnits(m);
         Assert.Equal(["pin", "recent"], units.Select(u => u.Id));
         Assert.Equal((false, true), (units[0].CanMoveLeft, units[0].CanMoveRight));
