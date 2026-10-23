@@ -21,6 +21,7 @@ public sealed class SettingsResetTests : IDisposable
         store.Save(s);
         File.WriteAllText(Path.Combine(_dir, "toolbar.json"), "{}");
         File.WriteAllText(Path.Combine(_dir, "memory.md"), "keep me");
+        File.WriteAllText(Path.Combine(_dir, "mcp.json"), "{\"mcp\":1}");
         return (store, s, local.Id);
     }
 
@@ -37,6 +38,7 @@ public sealed class SettingsResetTests : IDisposable
         Assert.Empty(removed);
         Assert.Contains("\"fontSize\": 20", File.ReadAllText(Path.Combine(backup, SettingsStore.FileName)));
         Assert.True(File.Exists(Path.Combine(_dir, "toolbar.json")));
+        Assert.Equal("{\"mcp\":1}", File.ReadAllText(Path.Combine(_dir, "mcp.json"))); // MCP servers are not settings
     }
 
     [Fact]
@@ -49,7 +51,9 @@ public sealed class SettingsResetTests : IDisposable
         Assert.Equal("", back.Chat.DefaultBackend);
         Assert.Equal([local], removed);
         Assert.False(File.Exists(Path.Combine(_dir, "toolbar.json")));
-        Assert.True(File.Exists(Path.Combine(backup, "toolbar.json")));
+        Assert.False(File.Exists(Path.Combine(_dir, "mcp.json")));
+        Assert.Equal("{}", File.ReadAllText(Path.Combine(backup, "toolbar.json")));
+        Assert.Equal("{\"mcp\":1}", File.ReadAllText(Path.Combine(backup, "mcp.json")));
         Assert.True(File.Exists(Path.Combine(backup, SettingsStore.ConnectionsFolder, local + ".json")));
         Assert.Equal("keep me", File.ReadAllText(Path.Combine(_dir, "memory.md")));
     }
@@ -88,17 +92,6 @@ public sealed class SettingsResetTests : IDisposable
         Assert.Equal(stamp, File.GetLastWriteTimeUtc(path)); // current: left alone
     }
 
-    [Fact]
-    public void Reset_settings_restores_the_toolbar_after_backing_it_up_and_leaves_mcp_alone()
-    {
-        var (store, s, _) = Customised();
-        File.WriteAllText(Path.Combine(_dir, "toolbar.json"), "{\"version\":2,\"custom\":true}");
-        File.WriteAllText(Path.Combine(_dir, "mcp.json"), "{\"mcp\":1}");
-        var (backup, _) = SettingsReset.Reset(store, _dir, s, everything: false, Now);
-        Assert.Equal("{\"version\":2,\"custom\":true}", File.ReadAllText(Path.Combine(backup, "toolbar.json")));
-        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json")));
-        Assert.Equal("{\"mcp\":1}", File.ReadAllText(Path.Combine(_dir, "mcp.json")));
-    }
 
     [Fact]
     public void Reset_settings_writes_the_default_toolbar_when_there_was_none()
@@ -110,28 +103,17 @@ public sealed class SettingsResetTests : IDisposable
         Assert.False(File.Exists(Path.Combine(backup, "toolbar.json")));
     }
 
-    [Fact]
-    public void Reset_settings_replaces_a_broken_toolbar_and_backs_it_up_byte_for_byte()
+    [Theory]
+    [InlineData("7B2276657273696F6E223A322C22637573746F6D223A747275657D")] // a customised toolbar
+    [InlineData("7B2262FF007B")]                                           // broken: the backup must be byte for byte
+    public void Reset_settings_restores_the_toolbar_after_backing_it_up(string toolbarHex)
     {
         var (store, s, _) = Customised();
-        byte[] broken = [0x7B, 0x22, 0x62, 0xFF, 0x00, 0x7B];
-        File.WriteAllBytes(Path.Combine(_dir, "toolbar.json"), broken);
+        var before = Convert.FromHexString(toolbarHex);
+        File.WriteAllBytes(Path.Combine(_dir, "toolbar.json"), before);
         var (backup, _) = SettingsReset.Reset(store, _dir, s, everything: false, Now);
-        Assert.Equal(broken, File.ReadAllBytes(Path.Combine(backup, "toolbar.json")));
+        Assert.Equal(before, File.ReadAllBytes(Path.Combine(backup, "toolbar.json")));
         Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json")));
-    }
-
-    [Fact]
-    public void Reset_everything_deletes_the_toolbar_and_mcp_but_backs_both_up()
-    {
-        var (store, s, _) = Customised();
-        File.WriteAllText(Path.Combine(_dir, "toolbar.json"), "custom bar");
-        File.WriteAllText(Path.Combine(_dir, "mcp.json"), "custom mcp");
-        var (backup, _) = SettingsReset.Reset(store, _dir, s, everything: true, Now);
-        Assert.False(File.Exists(Path.Combine(_dir, "toolbar.json")));
-        Assert.False(File.Exists(Path.Combine(_dir, "mcp.json")));
-        Assert.Equal("custom bar", File.ReadAllText(Path.Combine(backup, "toolbar.json")));
-        Assert.Equal("custom mcp", File.ReadAllText(Path.Combine(backup, "mcp.json")));
     }
 }
 
