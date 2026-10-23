@@ -2,6 +2,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 
 namespace Hotline.App.Chat;
 
@@ -93,12 +94,21 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         apply(new AssistantCompleted("demo-a"));
     }
 
+    /// <summary>The user's bar with its items moved: <paramref name="top"/> above the message box, <paramref name="bottom"/> below (left groups).</summary>
+    private static ToolbarModel Rows(ToolbarModel bar, IReadOnlyList<string> top, IReadOnlyList<string> bottom) => bar with
+    {
+        Placed = new Dictionary<Quadrant, IReadOnlyList<string>>
+        {
+            [Quadrant.TopLeft] = top, [Quadrant.TopRight] = [], [Quadrant.BottomLeft] = bottom, [Quadrant.BottomRight] = [],
+        },
+    };
+
     public async Task RunAsync()
     {
         if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
         // What the test changes, restored in finally whatever happens: the user's draft, button rows and direction.
         var userDraft = composer.Text;
-        var (userBottom, userTop) = (popup.ToolbarItems.ToList(), popup.TopToolbarItems.ToList());
+        var userBar = popup.ToolbarModel;
         var userUp = popup.GrowsUp;
         Action? stopCounting = null;
         try
@@ -189,19 +199,85 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             popup.ResizeOffscreen(720);
             await Step("normal width");
             // The button rows: all above the message box, then split across both, then back to the user's own.
-            var all = userTop.Concat(userBottom).ToList();
-            popup.ApplyToolbar([], all);
+            var all = Enum.GetValues<Quadrant>().SelectMany(userBar.Items).ToList();
+            popup.ApplyToolbar(Rows(userBar, top: all, bottom: []));
             await Step("buttons above");
             await SnapshotAsync("6-buttons-above");
-            popup.ApplyToolbar(all.Skip(all.Count / 2).ToList(), all.Take(all.Count / 2).ToList());
+            popup.ApplyToolbar(Rows(userBar, top: all.Take(all.Count / 2).ToList(), bottom: all.Skip(all.Count / 2).ToList()));
             await Step("buttons split");
             await SnapshotAsync("7-buttons-split");
             PanelLayout.Apply(popup, up: false);
             await Step("buttons split, down");
             await SnapshotAsync("8-buttons-split-down");
             PanelLayout.Apply(popup, userUp);
-            popup.ApplyToolbar(userBottom, userTop);
+            popup.ApplyToolbar(userBar);
             await Step("buttons restored");
+            // Bar looks, the ⋯ menu and a damaged file, from models resolved in memory (the user's toolbar.json is never touched).
+            const string builtIn = "\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\"";
+            static string Bar(string style, string moreLeft = "", string buttons = "", string overrides = "") => $$"""
+                { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] },
+                  "items": { "left": [{{builtIn}}{{moreLeft}}], "right": ["newChat", "settings"] },
+                  "style": {{style}}, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
+                """;
+            async Task Look(string name, string json, int width)
+            {
+                popup.ResizeOffscreen(width);
+                popup.ApplyToolbar(ToolbarModel.Resolve(json));
+                await Step(name);
+                await Task.Delay(200);
+                await SnapshotAsync(name);
+            }
+            var customButtons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$"""
+                "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
+                """));
+            var customIds = string.Concat(Enumerable.Range(1, 24).Select(i => $", \"c{i}\""));
+            await Look("9-wide-outline", Bar("""{ "size": "wide", "outline": true }"""), 720);
+            await Look("10-compact-filled", Bar("""{ "size": "compact", "filled": true }"""), 720);
+            // 24 custom buttons: at the narrowest width the left ones go into the ⋯ menu; wider they come back (no layout cycle either way).
+            await Look("11-custom-720", Bar("{}", customIds, customButtons), 720);
+            await Look("12-custom-320", Bar("{}", customIds, customButtons), 320);
+            await Look("13-custom-1000", Bar("{}", customIds, customButtons), 1000);
+            await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
+            // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
+            await Look("15-damaged-file", Bar("""{ "size": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
+            // Wide (twice the base) at the narrowest width: the left buttons go into the ⋯ menu (itself wide); then mixed sizes.
+            await Look("16-wide-320", Bar("""{ "size": "wide", "outline": true }"""), 320);
+            await Look("17-mixed-sizes-720", Bar("""{ "size": "normal" }""", overrides: """ "pin": { "size": "compact" }, "prompt": { "size": "wide" } """), 720);
+            // Custom buttons at their largest on a wide bar: drawn at most 80×80 (ToolbarPlan.Metrics).
+            var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 80, "height": 80 } """));
+            await Look("18-custom-max-320", Bar("""{ "size": "wide" }""", customIds, customButtons, biggest), 320);
+            // A coloured outline bar-wide, and one item in another colour.
+            await Look("19-outline-colour", Bar("""{ "size": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            // Items in the left, centre and right groups of both rows.
+            await Look("20-centre-group", """
+                { "version": 2, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
+                  "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
+                  "style": { "outline": true } }
+                """, 720);
+            // The reference layouts (ToolbarProfiles; the unit tests run all of them at many widths): the ones that mix the pickers
+            // into the bottom row, the extremes and the damaged file at 680 DIP, the picker-mixing ones again at 320, then the
+            // separated pickers.
+            var profileNumber = 0;
+            async Task Profile(string name, int width) => await Look($"P{++profileNumber:00}-{name}-{width}", ToolbarProfiles.Named(name).Json, width);
+            string[] mixing =
+            [
+                "pickers-bottom-left-before", "pickers-bottom-left-after", "pickers-bottom-left-between", "pickers-bottom-centre",
+                "pickers-bottom-centre-crowded", "pickers-bottom-right", "custom-24-pickers-bottom",
+            ];
+            string[] others =
+            [
+                "default", "pickers-top-right", "pickers-top-centre-both-rows", "spans-all-1", "spans-all-8", "spans-mixed", "all-compact", "all-wide",
+                "custom-24-wide-pickers-bottom-centre", "only-pickers", "all-items-in-one-group", "empty-bar", "damaged-file",
+            ];
+            foreach (var name in mixing.Concat(others)) await Profile(name, 680);
+            foreach (var name in mixing) await Profile(name, 320);
+            // The pickers placed one by one (P28-P30): in two areas, between buttons, one per row.
+            foreach (var name in new[] { "pickers-apart-corners", "picker-between-buttons", "pickers-one-per-row-right" }) await Profile(name, 680);
+            // The more button and its box (P31-P33): five user entries, the row's overflow merged into the box, a crowded top row beside a more row.
+            foreach (var name in new[] { "more-menu-bottom-right-with-5-items", "more-menu-top-centre-with-overflow", "more-in-both-rows" }) await Profile(name, 680);
+            popup.ApplyToolbar(userBar);
+            popup.ResizeOffscreen(720);
+            await Step("looks restored");
             _renderCheck?.Invoke();
             _renderCheck = null;
         }
@@ -211,7 +287,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             stopCounting?.Invoke();
             _renderCheck = null;
             ShowGrips?.Invoke(false);
-            if (!popup.ToolbarItems.SequenceEqual(userBottom) || !popup.TopToolbarItems.SequenceEqual(userTop)) popup.ApplyToolbar(userBottom, userTop);
+            if (!popup.ToolbarModel.Equals(userBar)) popup.ApplyToolbar(userBar);
             PanelLayout.Apply(popup, userUp);
             composer.Text = userDraft;
             newChat();

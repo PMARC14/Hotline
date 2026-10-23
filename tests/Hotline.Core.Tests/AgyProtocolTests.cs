@@ -59,7 +59,6 @@ public class AgyProtocolTests
         var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Agent = "hotline", Model = "gemini-3.8-flash-low", ExtraArgs = "--effort low" });
         Assert.Equal(["--input-format", "stream-json", "--output-format", "stream-json", "-p=", "--agent", "hotline",
                       "--model", "gemini-3.8-flash-low", "--effort", "low"], args);
-        Assert.DoesNotContain("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--dangerously-skip-permissions" }));
     }
 
     [Fact]
@@ -115,6 +114,7 @@ public class AgyProtocolTests
     }
 
     [Theory]
+    [InlineData("--dangerously-skip-permissions")]
     [InlineData("--dangerously-skip-permissions=true")]
     [InlineData("--DANGEROUSLY-skip-permissions")]
     [InlineData("--skip-permissions")]
@@ -124,7 +124,7 @@ public class AgyProtocolTests
     [Fact]
     public void Custom_args_replace_the_agent_flags_but_keep_the_protocol()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Agent = "hotline", Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Agent = "hotline", Tools = ToolMode.Inherit, Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
         Assert.Equal("mine", args[args.IndexOf("--agent") + 1]);
         Assert.Single(args, "--agent");
         Assert.Contains("stream-json", args);

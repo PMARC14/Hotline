@@ -1,7 +1,7 @@
 using Hotline.Core.Activation;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 using Hotline.Core.Theming;
-using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
@@ -30,10 +30,6 @@ public sealed class AppearanceSettingsTests : IDisposable
     }
 
     [Fact]
-    public void Schema2_old_default_hold_migrates_to_new_chat()
-        => Assert.Equal(KeyAction.NewChat, LoadJson("""{ "schemaVersion": 2, "activation": { "hold": "showPopup" } }""").Activation.Hold);
-
-    [Fact]
     public void Schema2_customized_hold_is_kept()
         => Assert.Equal(KeyAction.CaptureWindow, LoadJson("""{ "schemaVersion": 2, "activation": { "hold": "captureWindow" } }""").Activation.Hold);
 
@@ -49,6 +45,7 @@ public sealed class AppearanceSettingsTests : IDisposable
         var t = ThemeTokens.For(dark: true, new WindowSettings { FontSize = 17, FontFamily = "Cascadia Code" });
         Assert.Equal(17, t.FontSizePx);
         Assert.Equal("Cascadia Code, Segoe UI Variable Text, Segoe UI", t.Font);
+        Assert.Equal(ThemeTokens.DefaultFontSize, ThemeTokens.For(dark: false, new WindowSettings()).FontSizePx); // no size set: Windows' size
     }
 
     [Theory]
@@ -59,24 +56,15 @@ public sealed class AppearanceSettingsTests : IDisposable
         => Assert.Equal(ThemeTokens.Dark.Font, ThemeTokens.For(dark: true, new WindowSettings { FontFamily = family }).Font);
 
     [Fact]
-    public void Full_grow_mode_jumps_to_max_once_there_is_content()
+    public void Number_boxes_step_up_from_automatic_and_clamp_instead_of_switching_off()
     {
-        var work = new RectI(0, 0, 1920, 1040);
-        var bar = new RectI(680, 736, 560, 120);
-        Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, work, GrowMode.Full).Height);
-        Assert.Equal(120, PopupGeometry.GrowUp(bar, 120, 560, work, GrowMode.Full).Height); // bar only: stays a bar
-        Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, work, GrowMode.Grow).Height);
+        var width = SettingsSchema.Items.OfType<NumberItem>().Single(i => i.Header == nameof(Strings.Set_FixedWidth));
+        var chat = SettingsSchema.Items.OfType<NumberItem>().Single(i => i.Header == nameof(Strings.Set_ChatHeight));
+        var s = new HotlineSettings();
+        width.Set(s, 10);
+        chat.Set(s, 10);
+        Assert.Equal((320, 60), (s.Window.Width, s.Window.ChatHeight));
+        width.Set(s, 0);
+        Assert.Null(s.Window.Width);
     }
-
-    [Fact]
-    public void Old_fixed_font_size_migrates_to_windows_default()
-    {
-        Assert.Null(LoadJson("""{ "schemaVersion": 5, "window": { "fontSize": 14 } }""").Window.FontSize);
-        Assert.Equal(16, LoadJson("""{ "schemaVersion": 5, "window": { "fontSize": 16 } }""").Window.FontSize);
-    }
-
-    [Fact]
-    public void Default_font_size_tokens_use_windows_size()
-        => Assert.Equal(ThemeTokens.DefaultFontSize, ThemeTokens.For(dark: false, new WindowSettings()).FontSizePx);
-
 }

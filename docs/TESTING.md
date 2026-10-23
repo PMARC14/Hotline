@@ -35,9 +35,52 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Short press opens the panel on the monitor you're working on, ready to type; press again → it closes.
 - [ ] Long press starts a new chat (default).
 - [ ] Settings › General › Extra hotkey `Ctrl+Alt+H` → it opens/closes the panel.
-- [ ] Settings › General › Copilot key → **Acts as Right Ctrl**: in Notepad, Copilot+C / Copilot+V copy and paste; the
-      Start menu doesn't open; the key no longer opens Hotline (the extra hotkey does). Switch back → the key opens Hotline.
-- [ ] Quit Hotline from the tray while holding the key in Right Ctrl mode: Ctrl isn't left stuck down.
+- [ ] Windows Settings › Bluetooth & devices › Keyboard (older builds: Personalization › Text input › Customize Copilot key
+      on keyboard) → Custom → Hotline: the key opens Hotline; tap and long press do what Settings › General says.
+- [ ] Settings › General › Open Copilot key settings opens that Windows page.
+- [ ] Windows' own "Right Ctrl" choice for the key (Hotline's own Right Ctrl mode was removed in 0.4): the key then acts as
+      Right Ctrl and doesn't open Hotline.
+
+### Button rows (Settings › Window)
+- [ ] The six groups (top / bottom × left / center / right) show the buttons in the bar; the pickers (effort, model, provider) are three
+      separate items.
+- [ ] Drag a button inside a group, to another group, and to "Not shown" and back: the panel's bar follows within a second. Drop on an
+      empty group and between two buttons. Drag one picker: only it moves.
+- [ ] The arrow buttons on a button and Alt+arrow / Ctrl+arrow give the same moves.
+- [ ] Bar look: compact, normal and wide; outline and filled (light, dark, a Windows contrast theme); one button with its own look;
+      "Use bar look" resets it. Hiding a styled button and showing it again keeps its look.
+- [ ] Add a custom button that runs a quick action and one that inserts text (with and without Send): both work; delete the quick
+      action's file → a notice, not a crash. A button called "Spacer" gets another id. A custom button with a PNG picture shows it.
+- [ ] Narrow the panel to 320 DIP with many buttons: what doesn't fit moves into a "..." menu; widen it: they come back; Pin, Prompt and
+      Continue in work from the menu; no flicker or blank panel.
+- [ ] The "..." button's box (card above "Not shown"): drag a button onto it and press "Move to the ... button's box" on another (with no
+      `more` placed, one appears at the end of the bottom-right group); the bar loses those buttons and `more` opens them in order (Pin
+      stays a toggle, Continue in opens its menu at `more`). Drag one back, reorder with the arrows, remove one (it goes to "Not shown");
+      hiding `more` sends all to "Not shown". An empty box opens a disabled "Nothing here".
+- [ ] "Move what doesn't fit into the menu" with the panel narrow: the buttons the bar would overflow end up in the box in bar order;
+      at a wide panel nothing changes.
+- [ ] With `more` in one row and the panel narrow: that row's overflow is in the `more` menu after your entries (separator between),
+      no second "..." in the row; the other row keeps its own. Self-test steps P31-P33 draw these (`logs\selftest\`).
+- [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About › This PC
+      lists what was ignored; a file Hotline can't read is left as it is.
+- [ ] A version 1 `toolbar.json` is left untouched: the default bar runs with the "version 1 files are no longer read" warning;
+      Settings › Advanced › Reset settings puts the default bar back (a backup is made first).
+- [ ] `"backdrop": "glass"` in the `window` section of `settings.json`, saved: a notice "Part of your settings was ignored" appears in the
+      panel at once (naming `window.backdrop`), the look doesn't change, Settings › Advanced shows the same at the top. Fix the word → the
+      notice goes. Type `{ "window": ` and save → "A settings file can't be read", the current settings stay, the same text is not
+      announced twice. Then change a setting in Settings: a `settings.json.<time>.bak` with your text appears beside a valid file.
+- [ ] `"type": "nope"` in a `connections\*.json` file: the notice names that file, the connection is not listed, the file is unchanged.
+
+### Panel size and cell grid
+- [ ] Padding is 10 DIPs on all four sides; the Alt grips still sit on the outer edge.
+- [ ] The default panel is about a quarter of the screen wide (460 DIP at 1920 px, 100%) and the default bar fits it: nothing in the
+      "..." menu, three pickers filling the top row.
+- [ ] Buttons and drop-downs line up on one grid: one button `wide`, or four `compact`, and the rows above and below still end at the
+      same edges; touching items show a 2 DIP gap; compact buttons still show their icon.
+- [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): the first message widens the panel around its centre in the same resize as the
+      height; New chat (Ctrl+N) shrinks it back; near a screen edge it slides back inside. With `window.width` set, or after resizing by
+      hand, it never widens; the default (0) never widens. Moving the widened panel with Alt keeps its start width.
+- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.
@@ -57,7 +100,7 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 
 ### Screens, files, OCR
 - [ ] + menu: Attach files, Capture window, Capture screen, Capture region (drag a rectangle; Esc cancels).
-- [ ] Bottom bar region button (Appearance › Bottom bar → Add "Capture region" if your bar lacks it).
+- [ ] The Capture region button in the bar works (add it in Settings › Window › Button rows if the bar lacks it).
 - [ ] Paste an image (Ctrl+V) and drop a file onto the panel → chips.
 - [ ] Set a connection's "Model reads images" off (or use a local one), attach a screenshot, send → the model answers
       about the text in it ("Text in …" attachment).
@@ -91,8 +134,18 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Title bar dark in dark mode; Windows Settings → Personalization → Colors → switch light/dark while Hotline runs →
       the panel and the settings window follow (Appearance › Theme = System).
 - [ ] Every page opens; changes apply at once and show up in `settings.json`.
-- [ ] Appearance › Bottom bar: add, remove, move items, Reset → the panel's bar follows.
 - [ ] AI connections: move a connection up/down → the Provider picker order follows.
+
+### Backup (Settings > Backup)
+- [ ] Export with everything ticked: the save dialog proposes `hotline-settings-<date>-<time>.zip`; the InfoBar shows the path
+      and file count; the zip has no logs, history, memory or `.bak` files. The window stays responsive while it writes.
+- [ ] "Select none" disables Export; the MCP tick shows the secrets note, the connections tick the "no API keys" note.
+- [ ] Import on a second user profile / after deleting some actions: Choose file lists only the categories present with
+      counts, date and version; Import writes them, the InfoBar shows the counts and "Open backup folder" opens
+      `backups\import-<time>`; replaced files are in there.
+- [ ] A connection imported without a key is listed as needing one; the Credential Locker is unchanged.
+- [ ] A renamed/corrupted zip, or one with a changed file inside, is refused with a message and nothing is written.
+- [ ] After an import: a changed theme/bar applies at once; a new sound, quick action and button row are usable.
 
 ### First run and support
 - [ ] Delete `%USERPROFILE%\.hotline\.first-run-shown`, open the panel → the "Welcome to Hotline" note with "What's sent".

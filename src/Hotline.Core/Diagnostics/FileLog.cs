@@ -1,6 +1,6 @@
 namespace Hotline.Core.Diagnostics;
 
-/// <summary>Minimal thread-safe append logger with one-file rotation. Never throws.</summary>
+/// <summary>Minimal thread-safe append logger with one-file rotation. Never throws. Every message goes through <see cref="LogText.Clean"/>.</summary>
 public sealed class FileLog(string path, long maxBytes = 1_000_000)
 {
     private readonly Lock _gate = new();
@@ -24,12 +24,12 @@ public sealed class FileLog(string path, long maxBytes = 1_000_000)
         {
             try
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(path)!);
+                if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder); // a bare file name has none
                 if (File.Exists(path) && new FileInfo(path).Length > maxBytes)
                     File.Move(path, path + ".1", overwrite: true);
-                File.AppendAllText(path, $"{DateTimeOffset.Now:O} {level} {message}{Environment.NewLine}");
+                File.AppendAllText(path, $"{DateTimeOffset.Now:O} {level} {LogText.Clean(message)}{Environment.NewLine}");
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
             {
                 // Logging must never take the app down.
             }

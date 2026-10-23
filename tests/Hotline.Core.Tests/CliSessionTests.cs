@@ -42,6 +42,11 @@ public sealed class CliSessionTests : IDisposable
         return c;
     }
 
+    /// <summary>A controller that can reach two connections, starting on the first.</summary>
+    private ChatController Two(IChatBackend first, string firstId, IChatBackend second, string secondId, HistoryStore history, Func<string, bool>? keepTranscript = null)
+        => new(id => id == firstId ? first : id == secondId ? second : null, history, new ManualTimeProvider(), new FileLog(Path.Combine(_dir, "h.log")),
+            keepTranscript) { BackendId = firstId };
+
     [Fact]
     public async Task The_reported_session_is_resumed_on_the_next_turn_and_recorded()
     {
@@ -88,10 +93,8 @@ public sealed class CliSessionTests : IDisposable
         // Turn 1 on a CLI (Hotline keeps only the record), turn 2 on an API connection (kept): the saved transcript
         // must hold both turns, or reopening the chat shows only turn 2.
         var history = History();
-        var cli = new FakeCli();
         var api = new FakeBackend(new ChatDelta("api answer"));
-        var c = new ChatController(id => id == "cli" ? cli : id == "fake" ? api : null, history, new ManualTimeProvider(),
-            new FileLog(Path.Combine(_dir, "h.log")), id => id != "cli") { BackendId = "cli" };
+        var c = Two(new FakeCli(), "cli", api, "fake", history, id => id != "cli");
         await c.SendAsync("first question", []);
         c.BackendId = "fake";
         await c.SendAsync("second question", []);
@@ -123,10 +126,7 @@ public sealed class CliSessionTests : IDisposable
     public async Task Resuming_switches_to_the_connection_that_holds_the_conversation()
     {
         var history = History();
-        var cli = new FakeCli("claude");
-        var other = new FakeCli("api");
-        var c = new ChatController(id => id == "claude" ? cli : id == "api" ? other : null, history, new ManualTimeProvider(),
-            new FileLog(Path.Combine(_dir, "h.log"))) { BackendId = "claude" };
+        var c = Two(new FakeCli("claude"), "claude", new FakeCli("api"), "api", history);
         await c.SendAsync("hi", []);
         var id = c.ConversationId;
         c.NewChat();
@@ -138,18 +138,18 @@ public sealed class CliSessionTests : IDisposable
     [Fact]
     public async Task Another_connection_never_gets_this_chats_session()
     {
-        var cli = new FakeCli("claude");
         var other = new FakeCli("agy");
-        var c = new ChatController(id => id == "claude" ? cli : id == "agy" ? other : null, History(), new ManualTimeProvider(),
-            new FileLog(Path.Combine(_dir, "h.log"))) { BackendId = "claude" };
+        var c = Two(new FakeCli("claude"), "claude", other, "agy", History());
         await c.SendAsync("hi", []);
         c.BackendId = "agy";
         await c.SendAsync("and you?", []);
         Assert.Null(other.ResumeSeen.Single());
     }
 
-    [Fact]
-    public void A_record_only_chat_shows_its_messages_from_the_clis_own_history()
+    [Theory]
+    [InlineData(true)]  // shows its messages from the CLI's own history; Continue in can hand them on
+    [InlineData(false)] // without the CLI's history it opens empty, as before
+    public void A_record_only_chat_opens_with_the_clis_own_history_when_there_is_one(bool cliHasHistory)
     {
         var history = History();
         history.SaveMeta("abc", new HistoryStore.Meta("t", DateTimeOffset.UnixEpoch, "cli", "c58f0231-d4eb-4a1b-809c-d805b1a44fdf", @"C:\w", 2));
@@ -158,24 +158,14 @@ public sealed class CliSessionTests : IDisposable
         c.CliTranscript = (backend, session) =>
         {
             asked = (backend, session);
-            return [new("cli-0", ChatRole.User, "hello", DateTimeOffset.UnixEpoch, "cli", []), new("cli-1", ChatRole.Assistant, "hi", DateTimeOffset.UnixEpoch, "cli", [])];
+            return cliHasHistory
+                ? [new("cli-0", ChatRole.User, "hello", DateTimeOffset.UnixEpoch, "cli", []), new("cli-1", ChatRole.Assistant, "hi", DateTimeOffset.UnixEpoch, "cli", [])]
+                : null;
         };
         Assert.True(c.Resume("abc"));
         Assert.Equal(("cli", "c58f0231-d4eb-4a1b-809c-d805b1a44fdf"), asked);
-        Assert.Equal(["hello", "hi"], c.Messages.Select(m => m.Text));
-        Assert.True(c.HasWholeTranscript); // so Continue in can hand it on
-    }
-
-    [Fact]
-    public void Without_the_clis_history_a_record_only_chat_opens_empty_as_before()
-    {
-        var history = History();
-        history.SaveMeta("abc", new HistoryStore.Meta("t", DateTimeOffset.UnixEpoch, "cli", "c58f0231-d4eb-4a1b-809c-d805b1a44fdf", @"C:\w", 2));
-        var c = New(new FakeCli(), history);
-        c.CliTranscript = (_, _) => null;
-        Assert.True(c.Resume("abc"));
-        Assert.Empty(c.Messages);
-        Assert.False(c.HasWholeTranscript);
+        Assert.Equal(cliHasHistory ? ["hello", "hi"] : [], c.Messages.Select(m => m.Text));
+        Assert.Equal(cliHasHistory, c.HasWholeTranscript);
     }
 
     [Fact]

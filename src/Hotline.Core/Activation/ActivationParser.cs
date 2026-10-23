@@ -7,10 +7,12 @@ public static class ActivationParser
     /// <summary>Parses hotline://key?state=Tap|Down|Up (case-insensitive). Returns null if not a key URI.</summary>
     public static KeyEvent? ParseUri(Uri? uri)
     {
-        if (uri is null || !string.Equals(uri.Scheme, Scheme, StringComparison.OrdinalIgnoreCase))
+        // The host matters: hotline://settings?state=tap is a settings link, not a key press.
+        if (uri is null || !string.Equals(uri.Scheme, Scheme, StringComparison.OrdinalIgnoreCase)
+            || !string.Equals(uri.Host, "key", StringComparison.OrdinalIgnoreCase))
             return null;
 
-        return GetQueryValue(uri.Query, "state")?.ToLowerInvariant() switch
+        return UriQuery.Get(uri.Query, "state")?.ToLowerInvariant() switch
         {
             "tap" => KeyEvent.Tap,
             "down" => KeyEvent.HoldStart,
@@ -27,15 +29,4 @@ public static class ActivationParser
         2UL => KeyEvent.HoldStop,
         _ => null,
     };
-
-    private static string? GetQueryValue(string query, string name)
-    {
-        foreach (var part in query.TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
-        {
-            var kv = part.Split('=', 2);
-            if (kv.Length == 2 && string.Equals(Uri.UnescapeDataString(kv[0]), name, StringComparison.OrdinalIgnoreCase))
-                return Uri.UnescapeDataString(kv[1]);
-        }
-        return null;
-    }
 }

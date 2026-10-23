@@ -20,18 +20,16 @@ public class ThemeColorsTests
         Assert.Equal(AccentChoice.Hotline, new WindowSettings().Accent);
         Assert.Equal(ThemeTokens.Dark.Accent, ThemeTokens.For(true, Window(), Windows()).Accent);
         Assert.Equal(ThemeTokens.Light.Accent, ThemeTokens.For(false, Window(), Windows()).Accent);
+        Assert.False(ThemeTokens.For(true, Window(), Windows()).HighContrast);
     }
 
-    [Fact]
-    public void Windows_accent_uses_the_lighter_shade_on_dark_and_the_darker_on_light()
-    {
-        Assert.Equal("#FF99EBFF", ThemeTokens.For(true, Window(AccentChoice.Windows), Windows()).Accent);
-        Assert.Equal("#FF005A9E", ThemeTokens.For(false, Window(AccentChoice.Windows), Windows()).Accent);
-    }
-
-    [Fact]
-    public void Windows_accent_without_system_colours_falls_back_to_hotline()
-        => Assert.Equal(ThemeTokens.Dark.Accent, ThemeTokens.For(true, Window(AccentChoice.Windows), null).Accent);
+    [Theory]
+    [InlineData(true, true, "#FF99EBFF")]   // lighter shade on dark
+    [InlineData(false, true, "#FF005A9E")]  // darker shade on light
+    [InlineData(true, false, null)]         // no system colours: falls back to Hotline's
+    public void Windows_accent_follows_the_system_shade_or_falls_back_to_hotline(bool dark, bool haveSystemColours, string? expected)
+        => Assert.Equal(expected ?? ThemeTokens.Dark.Accent,
+            ThemeTokens.For(dark, Window(AccentChoice.Windows), haveSystemColours ? Windows() : null).Accent);
 
     [Theory]
     [InlineData("#E81123", "#FFE81123")]
@@ -95,39 +93,17 @@ public class ThemeColorsTests
     public void A_windows_contrast_theme_wins_over_hotlines_own()
         => Assert.Equal("#FF75E9FC", ThemeTokens.For(true, new WindowSettings { Theme = ThemeChoice.HighContrast }, Windows(Aquatic)).Accent);
 
-    [Fact]
-    public void High_contrast_theme_is_drawn_solid()
-        => Assert.Equal(BackdropKind.Solid, ThemeTokens.EffectiveBackdrop(BackdropKind.Acrylic, Windows(), ThemeChoice.HighContrast));
-
-    [Fact]
-    public void Normal_themes_are_not_high_contrast()
-        => Assert.False(ThemeTokens.For(true, Window(), Windows()).HighContrast);
-
     [Theory]
-    [InlineData(BackdropKind.Acrylic, true, false, BackdropKind.Acrylic)]
-    [InlineData(BackdropKind.Mica, true, false, BackdropKind.Mica)]
-    [InlineData(BackdropKind.Acrylic, false, false, BackdropKind.Solid)] // Windows' transparency effects off
-    [InlineData(BackdropKind.AcrylicThin, true, true, BackdropKind.Solid)] // contrast theme
-    [InlineData(BackdropKind.Solid, true, false, BackdropKind.Solid)]
-    public void Windows_settings_can_force_a_solid_backdrop(BackdropKind chosen, bool transparency, bool contrast, BackdropKind expected)
-        => Assert.Equal(expected, ThemeTokens.EffectiveBackdrop(chosen, Windows(contrast ? Aquatic : null, transparency)));
+    [InlineData(BackdropKind.Acrylic, true, false, ThemeChoice.System, BackdropKind.Acrylic)]
+    [InlineData(BackdropKind.Mica, true, false, ThemeChoice.System, BackdropKind.Mica)]
+    [InlineData(BackdropKind.Acrylic, false, false, ThemeChoice.System, BackdropKind.Solid)] // Windows' transparency effects off
+    [InlineData(BackdropKind.AcrylicThin, true, true, ThemeChoice.System, BackdropKind.Solid)] // contrast theme
+    [InlineData(BackdropKind.Solid, true, false, ThemeChoice.System, BackdropKind.Solid)]
+    [InlineData(BackdropKind.Acrylic, true, false, ThemeChoice.HighContrast, BackdropKind.Solid)] // Hotline's own high contrast
+    public void Windows_settings_can_force_a_solid_backdrop(BackdropKind chosen, bool transparency, bool contrast, ThemeChoice theme, BackdropKind expected)
+        => Assert.Equal(expected, ThemeTokens.EffectiveBackdrop(chosen, Windows(contrast ? Aquatic : null, transparency), theme));
 
     [Fact]
     public void Without_system_colours_the_chosen_backdrop_stays()
         => Assert.Equal(BackdropKind.Mica, ThemeTokens.EffectiveBackdrop(BackdropKind.Mica, null));
-
-    [Fact]
-    public void Accent_round_trips_through_settings_json()
-    {
-        var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-        try
-        {
-            var store = new SettingsStore(dir);
-            var s = store.Load();
-            s.Window.Accent = AccentChoice.Windows;
-            store.Save(s);
-            Assert.Equal(AccentChoice.Windows, new SettingsStore(dir).Load().Window.Accent);
-        }
-        finally { if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true); }
-    }
 }

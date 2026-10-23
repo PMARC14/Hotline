@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>擷取區域</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>語音輸入 (按住說話)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>不執行任何動作</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Copilot 鍵</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>作為右 Ctrl 時,Copilot+C 等於 Ctrl+C,且此鍵不再開啟 Hotline (請使用下方的額外快速鍵或通知區域圖示)。適用於 Copilot 鍵會傳送 Win+Shift+F23 的鍵盤 (大多數皆是)。</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>開啟 Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>作為右 Ctrl</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>短按 Copilot 鍵</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>長按 Copilot 鍵</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>語音輸入</value></data>
@@ -258,9 +254,9 @@
   <data name="Memory_Edit" xml:space="preserve"><value>編輯記憶</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>空白。在訊息方塊中輸入「/remember 某件事」可新增一行。</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} 行。記憶開啟時,每個聊天都會讀取這些內容。</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>在訊息開頭輸入 / 來使用:「/translate 某段文字」,或附加檔案後輸入「/summarize」。每個動作都是 Markdown 檔案;第一行是清單中顯示的說明。名稱可使用字母、數字、- 和 _。</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>新增動作</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>開啟動作資料夾</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>快速動作是捷徑：在訊息方塊中輸入 / 並選擇一個，例如 “/translate some text”，或帶有附件的 “/summarize”。每個都是快速動作資料夾中的小型 Markdown 檔案：第一行是清單中顯示的描述，其餘部分則是隨文字一起傳送的內容。名稱可以使用英文字母、數字、- 和 _。</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>新增快速動作</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>開啟快速動作資料夾</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>組建 {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} 種 OCR 語言</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>沒有 OCR 語言:[設定] › [時間與語言] › [語言與地區] › 新增具有光學字元辨識的語言</value></data>
@@ -268,11 +264,14 @@
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} —— [設定] › [隱私權與安全性] › [語音] › [線上語音辨識],以及麥克風</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Windows 代理程式連接器</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>已找到 odr.exe;其連接器會顯示為 windows-… 工具伺服器</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>找不到 odr.exe (本機尚未開啟)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>需要 Windows 組建 26220.7262 或更新版本 (例如 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>找不到 odr.exe: Windows 仍將代理程式連接器列為預覽，且尚未推送到本機</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>需要較新的 Windows 11 組建 (26220.7262 或更新版本)；Windows 仍將代理程式連接器列為預覽</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>應用程式動作 (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>已註冊;Click to Do 本身需要 Copilot+ PC</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>需要 Windows 11 24H2 (組建 26100) 或更新版本</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json 沒有問題</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json 有 {0} 個問題，已在記憶體中修正（檔案未變更）：{1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>列上沒有「設定」按鈕：只能從系統匣圖示開啟設定。</value></data>
   <data name="Startup_On" xml:space="preserve"><value>開啟 —— 登入時 Hotline 會在通知區域中啟動。</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>關閉 (已在 Windows [設定] › [應用程式] › [啟動] 中關閉)。請在那裡開啟 Hotline。</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>關閉 (遭你的組織原則封鎖)。</value></data>
@@ -394,6 +393,8 @@
   <data name="Api_Timeout" xml:space="preserve"><value>{0} 未及時回應。</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>請在 [設定] › [AI 連線] 中為 {0} 新增 API 金鑰。</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>{0} 的端點不是有效的 http(s) 位址:{1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} 已重新導向至 {1}。請在連線中設定最終位址。</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} 傳送的回應過大，因此已停止。</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} 已達速率限制,{1} 秒後重試…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} 忙碌中,{1} 秒後重試…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} 拒絕了 API 金鑰。{1}</value></data>
@@ -406,6 +407,7 @@
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} 在要求工具時停止 ({1});未執行任何動作。</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}:工具要求完成前連線已中斷;未執行任何動作。</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} 意外停止。</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} 單次傳送的輸出超過了 Hotline 的讀取上限，因此已停止。</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>{0} 的工作資料夾不存在:{1}。請在 [設定] › [AI 連線] 中另選一個。</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>未安裝 Claude Code。請從 claude.com/claude-code 安裝,執行一次 `claude` 登入,然後再試一次。</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy 未登入。請在終端機中執行一次 `agy` 登入,然後再試一次。</value></data>
@@ -434,7 +436,36 @@
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} 繼續使用最後一個正常的版本。</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>伺服器已結束 (結束代碼 {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>無法啟動 {0}</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 伺服器無法啟動："{1}" 透過 cmd.exe 執行，無法安全傳遞 "command" 或 "args" 中的 " % ^ &amp; | &lt; &gt; ! 字元或換行符號。請將 "command" 指向程式的 .exe，或移除這些字元。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>無法讀取 toolbar.json:{0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>這裡沒有任何內容</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>「…」按鈕選單</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>移至 … 按鈕的方塊中</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>將放不下的項目移至功能表</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json 是版本 1 檔案；不再讀取版本 1 檔案，因此使用預設列。</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}：{1} 在此為錯誤的值類型；將使用預設值。</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}：{1} 不是 {2} 之一；將使用預設值。</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}：{1} 超出 {2} 至 {3} 的範圍；已使用安全值。</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} 出現多次；將使用最後一個。</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}：未知的連線類型 {1}，因此不使用此檔案。</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}：另一個檔案已包含 id {1}，因此未使用此檔案。</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>無法讀取 {0}（{1}）；維持原樣。</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} 必須包含一個 JSON 物件；維持原樣。</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(以及另外 {0} 項)</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>已略過部分設定</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 其餘項目仍會套用。「設定 › 進階」中列出了所有項目。</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>無法讀取設定檔</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline 將保留現有設定，直到問題修正。</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定檔發生問題</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>忽略的值將使用預設值。修正檔案後，Hotline 會立即載入。</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} 檔案的其餘部分仍然適用。設定 › 視窗 › 按鈕列 顯示了已忽略的內容。</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>無法使用 toolbar.json</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>在檔案修復前，工具列將保留其最後的版面配置。</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>開啟設定</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>找不到快速動作「{0}」</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>請先完成聽寫，再使用此按鈕。</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>agy 的 settings.json 不是 JSON 物件;不會變更。</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>agy 的 settings.json 中的「permissions」不是物件;不會變更。</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>agy 的 settings.json 中的「permissions.{0}」不是清單;不會變更。</value></data>
@@ -453,7 +484,8 @@
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex 正在重新連線…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>選擇 Hotline 的連線方式</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>選擇 Hotline 要使用的 AI。在你選擇之前,不會傳送或執行任何內容。</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>此電腦未安裝 Claude Code 或 Antigravity。請安裝其中一個並登入,或使用 API 金鑰。</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>此電腦未安裝 Claude Code、Codex 或 Antigravity。請安裝其中一個並登入,或使用 API 金鑰。</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>此電腦未安裝: {0}。請安裝並登入以在此處使用。</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>使用 {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>使用 API 金鑰…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>將 Hotline 設為 Copilot 鍵應用程式</value></data>
@@ -470,7 +502,7 @@
   <data name="Recent_ContinueIn" xml:space="preserve"><value>在以下位置繼續此聊天</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>無法開啟 {0}:{1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>啟動參數 (進階)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>取代 Hotline 為此模式新增的參數 (以空格分隔)。Hotline 與程式溝通所需的參數一律會加入,危險參數只能透過「全部核准」加入。留空 = Hotline 的預設值。</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>取代 Hotline 通常為此模式新增的額外旗標 (以空格分隔)。Hotline 與程式通訊所需的旗標，以及在僅聊天模式下防止其使用自身工具的旗標一律會新增。此處會忽略核准工具或略過權限檢查的旗標：只有 “Approve everything” 才能開啟它們。留空 = Hotline 的預設值。</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Hotline 的預設值</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>最大回答長度</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>一次回答最多可用的權杖數。設得太低,長回答會提前結束。留空 = 模型預設值。</value></data>
@@ -495,19 +527,19 @@
   <data name="Hotkey_NotSet" xml:space="preserve"><value>未設定</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>請加上 Ctrl、Alt、Shift 或 Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>無法使用該按鍵</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>還原預設動作</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>已新增或更新 {0} 個預設動作。</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>還原內建快速動作</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>已新增或更新 {0} 個內建快速動作。</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>重新命名</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>請使用字母、數字、- 和 _,且名稱不可重複。</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>刪除 /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>新名稱</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>其他應用程式已在使用該快速鍵</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>重設</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>將設定還原為安裝時的狀態。所有內容會先複製到 {0}\backups。若要在多組設定之間切換，請使用其他複本取代 settings.json (或 connections 中的檔案)：Hotline 會立即套用。預設值位於 {1}。</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>將設定與按鈕列還原為安裝時的狀態。所有內容會先複製到 {0}\backups。若要在多組設定之間切換，請使用其他複本取代 settings.json (或 connections 中的檔案)：Hotline 會立即套用。預設值位於 {1}。</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>重設所有項目</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json、每個連線 (及其 API 金鑰)、工具列與 mcp.json 將還原為安裝時的狀態。系統會保留提示、快速指令、記憶與歷程記錄。系統會先建立備份 (不包含 API 金鑰)。</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>要重設所有項目嗎?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 將還原為預設值。系統會保留您的連線、提示、快速指令、記憶與歷程記錄。系統會先建立備份。</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json 與 toolbar.json 將還原為預設值。系統會保留您的連線、提示、快速指令、記憶與歷程記錄。系統會先建立備份。</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>重設</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>完成。先前的檔案位於 {0}。</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>重設設定</value></data>
@@ -531,6 +563,45 @@
   <data name="Grip_Tip" xml:space="preserve"><value>拖曳以移動；按一下滑鼠右鍵以儲存此位置</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>聊天高度</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>聊天展開的最大高度。0 = 自動 (即上方的最大高度百分比)。</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>備份</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與自訂按鈕圖片</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>工具 (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>音效</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 連線</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>快速動作</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>提示詞</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json 將依原樣匯出。其 env 值可能包含權杖等機密資訊：請妥善保管檔案，或取消勾選此項目。</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>不包含 API 金鑰：它們仍保留在 Windows 認證管理員中。請在新電腦上重新輸入。</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>匯出</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>選擇要納入備份檔案的項目。</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>全選</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>取消全選</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>匯出...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline 備份</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>已儲存 {1} 個檔案至 {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>已儲存 {1} 個檔案至 {0}。已略過 {2} 個檔案（過大或無法使用）。</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>無法寫入備份：{0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>匯入</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>從備份檔案還原。同名檔案將被取代（舊檔案會先複製到備份資料夾）；其他檔案保持不變。</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>選擇檔案...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>備份於 {0} 使用 Hotline {1} 建立</value></data>
+  <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>此備份沒有可匯入的內容。</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>無法匯入此檔案：{0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>匯入</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>已匯入 {0} 個檔案，略過 {1} 個。</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>未匯入任何內容: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>已替換的檔案已複製到 {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>開啟備份資料夾</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>已略過：{0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>這些連線仍需要 API 金鑰：{0}。請開啟「AI 連線」並輸入。</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>設定與按鈕列會立即套用；音效、按鈕列與快速動作將在下次使用時重新整理。</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>聊天寬度 (百分比)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>聊天開始時面板會展開至螢幕寬度的此比例，並在新聊天時縮回。0 = 保持寬度。在下方設定固定寬度會關閉此功能。</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>聊天寬度</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>開始聊天時面板展開的寬度 (以 DIP 為單位)。0 = 使用上方的百分比。</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>聊天展開方向</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>自動：向上展開，除非上方沒有足夠空間。Up 或 Down 會固定為該方向。</value></data>
@@ -580,11 +651,84 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 外觀 › 按鈕列可顯示、隱藏及排列訊息方塊上方或下方的按鈕順序。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列將該列顯示為六個區域：訊息方塊上方一列的左、中、右，以及其下方的同樣三個區域。拖曳按鈕或選取器可將其在區域內移動或移至另一個區域，也可以使用其箭頭按鈕 (Alt+箭頭可切換區域，Ctrl+箭頭可變更順序)。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的大小、外框或填滿，您也可以新增自己的按鈕來執行快速指令或插入文字。放不下的按鈕會移至 ⋯ 功能表。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>
   <data name="Guide_Files_Body" xml:space="preserve"><value>所有內容都在您的 .hotline 資料夾中，並在儲存時立即套用：settings.json、每個連線一個檔案、提示詞、快速動作以及 toolbar.json。取代檔案即可切換配置；設定 › 進階 › 重設可重新開始，並建立備份。
 API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>簡要介紹 Hotline 的所有功能。各部分均說明了可在「設定」中的何處進行更改。</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>左上</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>中上</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>右上</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>左下</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>中下</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>右下</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>自訂</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>外框色彩</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>強調色彩</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>紅色</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>橙色</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>黃色</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>綠色</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>藍綠色</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>藍色</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>紫色</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>粉紅色</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>按按鈕寬度計算的寬度</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>移至左側群組</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>移至右側群組</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>選擇器</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>推理強度</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>模型</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>提供者</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>大小與外觀</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>整列</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>大小</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>精簡</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>標準</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>寬</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>外框</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>填滿</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>與整列相同</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>寬度</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>高度</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>自動</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>使用整列的外觀</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>自訂按鈕</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>尚無自訂按鈕。</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>新增按鈕</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>新增按鈕</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>編輯按鈕</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>儲存</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>標籤</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>識別碼: {0} (由標籤產生，之後無法變更)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>圖示</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>執行快速動作</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>插入文字</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>立即傳送</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>尚無快速動作 (設定 › 快速動作)。</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>執行 /{0}</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>插入文字</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>傳送文字</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>確定要刪除按鈕 "{0}" 嗎？</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>請輸入標籤。</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>請選擇快速動作或輸入文字。</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>該快速動作名稱無效。</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>已有 24 個自訂按鈕；請先刪除一個。</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>左下群組已滿 (40 個項目)；請先騰出空間。</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>無法儲存此按鈕；請檢查其標籤、圖示與動作。</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>選擇圖片…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>改用內建圖示</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>或者使用您自己的圖片：不超過 256 KB 的 PNG，每邊介於 16 到 256 像素之間。</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>所選圖片</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>僅限 PNG：請選擇 .png 圖片。</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>此圖片過大：最多 256 KB。</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>圖片每邊必須介於 16 到 256 像素之間。</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>此檔案不是有效的 PNG。</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>無法讀取或複製此圖片；請選擇儲存在此電腦上的 PNG。</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>無法儲存 toolbar.json: {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>讀取 toolbar.json 時已修正 (在此儲存將寫入修正後的檔案)：</value></data>
 </root>

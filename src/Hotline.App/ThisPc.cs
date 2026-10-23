@@ -1,5 +1,6 @@
 using Hotline.App.Chat;
 using Hotline.Core.Platform;
+using Hotline.Core.Windowing;
 using Microsoft.Win32;
 using Windows.Media.Ocr;
 
@@ -31,6 +32,9 @@ internal static class ThisPc
         }
     }
 
+    /// <summary>The button rows in force and toolbar.json's read error, if any (set by App each time it reads the file).</summary>
+    public static (ToolbarModel Model, string? Error) Toolbar { get; set; } = (ToolbarModel.Defaults, null);
+
     public static async Task<IReadOnlyList<PcFeature>> CheckAsync(string? odrPath)
     {
         var build = Build;
@@ -46,13 +50,19 @@ internal static class ThisPc
             ? new PcFeature(Strings.Set_Voice, true, Strings.Pc_VoiceOk)
             : new PcFeature(Strings.Set_Voice, false, L.F(Strings.Pc_VoiceMissing, speech)));
 
-        features.Add(odrPath is not null
-            ? new PcFeature(Strings.Pc_Agents, true, Strings.Pc_AgentsOk)
-            : new PcFeature(Strings.Pc_Agents, false, PlatformSupport.AgentConnectors(build) ? Strings.Pc_AgentsNotOn : Strings.Pc_AgentsBuild));
+        features.Add(PlatformSupport.AgentConnectorsStateOf(build, odrPath is not null) switch
+        {
+            AgentConnectorsState.Ready => new PcFeature(Strings.Pc_Agents, true, Strings.Pc_AgentsOk),
+            AgentConnectorsState.PreviewNotDelivered => new PcFeature(Strings.Pc_Agents, false, Strings.Pc_AgentsNotOn),
+            _ => new PcFeature(Strings.Pc_Agents, false, Strings.Pc_AgentsBuild),
+        });
 
         features.Add(PlatformSupport.AppActions(build)
             ? new PcFeature(Strings.Pc_Actions, true, Strings.Pc_ActionsOk)
             : new PcFeature(Strings.Pc_Actions, false, Strings.Pc_ActionsBuild));
+
+        var (toolbarOk, toolbar) = ToolbarPlan.Report(Toolbar.Model, Toolbar.Error); // warnings, and Settings only in the tray
+        features.Add(new PcFeature(Strings.Bar_RowsTitle, toolbarOk, toolbar));
         return features;
     }
 

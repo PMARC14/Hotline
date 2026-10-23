@@ -153,8 +153,8 @@ public sealed partial class SettingsWindow
                 var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
                 var updated = Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
                     Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules);
-                // Keep the user's original file once (never overwritten by later presses), then replace atomically.
-                if (json is not null && !File.Exists(agySettings + ".hotline-original.bak")) File.Copy(agySettings, agySettings + ".hotline-original.bak");
+                // Keep the file as it was (.old, .old2, ...: hand edits made since an earlier press are never lost), then replace atomically.
+                if (json is not null && updated != json) FileArchive.KeepOld(agySettings);
                 File.WriteAllText(agySettings + ".tmp", updated);
                 File.Move(agySettings + ".tmp", agySettings, overwrite: true);
                 summary.Text = Summary();
@@ -202,7 +202,7 @@ public sealed partial class SettingsWindow
         var box = new NumberBox
         {
             Value = value ?? double.NaN, Minimum = min, Maximum = max, SmallChange = step, LargeChange = step * 10,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, PlaceholderText = placeholder, MinWidth = 160,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, PlaceholderText = placeholder, MinWidth = 160,
             ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
         };
         box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
@@ -217,8 +217,12 @@ public sealed partial class SettingsWindow
 
         async Task Save(Action<BackendProfile> change)
         {
-            _settings.Update(_ => change(p));
-            await _invalidate(p.Id);
+            try
+            {
+                _settings.Update(_ => change(p));
+                await _invalidate(p.Id);
+            }
+            catch (Exception ex) { _log.Error("saving the connection failed", ex); } // runs from async void handlers
         }
 
         TextBox Text(string? value, string placeholder, Action<string?> set)

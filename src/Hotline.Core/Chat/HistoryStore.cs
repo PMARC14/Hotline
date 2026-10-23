@@ -68,17 +68,25 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         return title.Length > 60 ? title[..60].TrimEnd() + "…" : title;
     }
 
-    public string PathFor(string conversationId) => Path.Combine(directory, $"{conversationId}.jsonl");
+    /// <exception cref="ArgumentException">The id is not a plain id (<see cref="HistoryIds.IsSafe"/>).</exception>
+    public string PathFor(string conversationId) => Path.Combine(directory, $"{Checked(conversationId)}.jsonl");
 
-    private string MetaPathFor(string conversationId) => Path.Combine(directory, conversationId + MetaSuffix);
+    private string MetaPathFor(string conversationId) => Path.Combine(directory, Checked(conversationId) + MetaSuffix);
 
-    private static string? IdOf(string fileName) =>
-        fileName.EndsWith(MetaSuffix, StringComparison.OrdinalIgnoreCase) ? fileName[..^MetaSuffix.Length]
-        : fileName.EndsWith(".jsonl", StringComparison.OrdinalIgnoreCase) ? fileName[..^".jsonl".Length]
-        : null;
+    private static string Checked(string id) => HistoryIds.IsSafe(id) ? id : throw new ArgumentException("Not a conversation id.", nameof(id));
+
+    // Ids come back from file names and links: only plain ones count, so a stray file can't name a path.
+    private static string? IdOf(string fileName)
+    {
+        var id = fileName.EndsWith(MetaSuffix, StringComparison.OrdinalIgnoreCase) ? fileName[..^MetaSuffix.Length]
+            : fileName.EndsWith(".jsonl", StringComparison.OrdinalIgnoreCase) ? fileName[..^".jsonl".Length]
+            : null;
+        return HistoryIds.IsSafe(id) ? id : null;
+    }
 
     public void Append(string conversationId, ChatMessage m)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return;
         Directory.CreateDirectory(directory);
         var entry = new Entry(m.Id, m.Role, m.Text, m.At, m.BackendId,
             m.Attachments.Select(a => new AttachmentInfo(a.Name, a.Kind, a.MimeType)).ToList());
@@ -87,6 +95,7 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
 
     public IReadOnlyList<Entry> Load(string conversationId)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return [];
         var path = PathFor(conversationId);
         if (!File.Exists(path)) return [];
         // One damaged line (a crash mid-append, a hand edit) skips only that line, never the whole chat.
@@ -101,6 +110,7 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
 
     public void SaveMeta(string conversationId, Meta meta)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return;
         Directory.CreateDirectory(directory);
         var path = MetaPathFor(conversationId);
         var temp = path + ".tmp";
@@ -110,6 +120,7 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
 
     public Meta? LoadMeta(string conversationId)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return null;
         var path = MetaPathFor(conversationId);
         if (!File.Exists(path)) return null;
         var meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(path), Json);
@@ -126,7 +137,11 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         foreach (var chat in Directory.EnumerateFiles(directory).Where(f => IdOf(Path.GetFileName(f)) is not null).GroupBy(f => IdOf(Path.GetFileName(f))))
         {
             if (chat.Max(File.GetLastWriteTimeUtc) >= cutoff) continue;
-            foreach (var file in chat) { File.Delete(file); deleted++; }
+            foreach (var file in chat)
+            {
+                try { File.Delete(file); deleted++; }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { } // in use: the next start tries again
+            }
         }
         return deleted;
     }

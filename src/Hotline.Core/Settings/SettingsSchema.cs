@@ -53,6 +53,11 @@ public static class SettingsSchema
         => new(page, header, description, options.Select(o => new ChoiceOption(o.Value.ToString(), o.Label)).ToList(),
             s => get(s).ToString(), (s, v) => set(s, Enum.Parse<T>(v)), restart);
 
+    /// <summary>The picker entry for a stored language: "EN-us" shows as "en-US"; an unknown tag as "system".</summary>
+    private static string CanonicalLanguage(string? stored) =>
+        Languages.Resolve(stored) is null ? Languages.System
+            : Languages.Supported.FirstOrDefault(t => t.Equals(stored!.Trim(), StringComparison.OrdinalIgnoreCase)) ?? stored!.Trim();
+
     private static string? Blank(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
 
     /// <summary>The accent picker's "Custom" entry (settings.json stores the colour itself).</summary>
@@ -78,11 +83,8 @@ public static class SettingsSchema
     public static IReadOnlyList<SettingItem> Items { get; } =
     [
         new ChoiceItem(SettingsPage.General, nameof(Strings.Set_Language), nameof(Strings.Set_Language_Desc), LanguageOptions(),
-            s => Languages.Resolve(s.General.Language) is null ? Languages.System : s.General.Language.Trim(),
+            s => CanonicalLanguage(s.General.Language),
             (s, v) => s.General.Language = v, RequiresRestart: true),
-        Choice(SettingsPage.General, nameof(Strings.Set_CopilotKey), nameof(Strings.Set_CopilotKey_Desc),
-            [(Activation.CopilotKeyMode.Hotline, nameof(Strings.Set_CopilotKey_Hotline)), (Activation.CopilotKeyMode.RightCtrl, nameof(Strings.Set_CopilotKey_RightCtrl))],
-            s => s.Activation.CopilotKey, (s, v) => s.Activation.CopilotKey = v),
         Choice(SettingsPage.General, nameof(Strings.Set_Tap), null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
         Choice(SettingsPage.General, nameof(Strings.Set_Hold), null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
         new ToggleItem(SettingsPage.General, nameof(Strings.Set_Voice), nameof(Strings.Set_Voice_Desc),
@@ -152,6 +154,10 @@ public static class SettingsSchema
             s => s.Window.Anchor.Monitor, (s, v) => s.Window.Anchor.Monitor = string.IsNullOrWhiteSpace(v) ? PanelAnchor.Active : v.Trim()),
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_FixedWidth), nameof(Strings.Set_FixedWidth_Desc), 0, 8000, 10, "DIP",
             s => s.Window.Width ?? 0, (s, v) => s.Window.Width = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 320, 8000)),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatWidthPercent), nameof(Strings.Set_ChatWidthPercent_Desc), 0, 90, 1, "%",
+            s => s.Window.ChatWidthPercent, (s, v) => s.Window.ChatWidthPercent = v <= 0 ? 0 : Math.Clamp(v, 20, 90)),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatWidth), nameof(Strings.Set_ChatWidth_Desc), 0, 8000, 10, "DIP",
+            s => s.Window.ChatWidth ?? 0, (s, v) => s.Window.ChatWidth = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 320, 8000)),
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatHeight), nameof(Strings.Set_ChatHeight_Desc), 0, 8000, 10, "DIP",
             s => s.Window.ChatHeight ?? 0, (s, v) => s.Window.ChatHeight = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 60, 8000)),
         Choice(SettingsPage.Window, nameof(Strings.Set_Direction), nameof(Strings.Set_Direction_Desc),

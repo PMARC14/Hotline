@@ -30,13 +30,6 @@ public class AgyPermissionsTests
         Assert.Equal(["command(ls)"], AgyPermissions.Rules(AgyPermissions.AddRules("// note\n{ }", ["command(ls)"], []), "allow"));
     }
 
-    [Fact]
-    public void Read_only_preset_has_no_destructive_commands()
-    {
-        Assert.DoesNotContain(AgyPermissions.ReadOnlyCommandRules, r => r.Contains("Remove") || r.Contains("rm)") || r.Contains("push"));
-        Assert.Contains("command(Remove-Item)", AgyPermissions.DenyRules);
-    }
-
     [Theory]
     [InlineData("[]")]
     [InlineData("""{ "permissions": [] }""")]
@@ -49,6 +42,10 @@ public class AgyPermissionsTests
         => Assert.Equal(["command(ls)"], AgyPermissions.Rules("""{ "permissions": { "allow": [1, "command(ls)", null] } }""", "allow"));
 
     [Fact]
-    public void Preset_excludes_commands_that_run_script_blocks_or_write()
-        => Assert.DoesNotContain(AgyPermissions.ReadOnlyCommandRules, r => r is "command(Select-Object)" or "command(Where-Object)" or "command(git branch)" or "command(git diff)");
+    public void Read_only_preset_has_no_destructive_commands_or_ones_that_run_script_blocks_or_write()
+    {
+        Assert.DoesNotContain(AgyPermissions.ReadOnlyCommandRules, r => r.Contains("Remove") || r.Contains("rm)") || r.Contains("push"));
+        Assert.Contains("command(Remove-Item)", AgyPermissions.DenyRules);
+        Assert.DoesNotContain(AgyPermissions.ReadOnlyCommandRules, r => r is "command(Select-Object)" or "command(Where-Object)" or "command(git branch)" or "command(git diff)");
+    }
 }

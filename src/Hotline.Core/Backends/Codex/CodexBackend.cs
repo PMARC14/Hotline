@@ -39,7 +39,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
 
         var inherit = profile.Tools == ToolMode.Inherit;
         var cwd = inherit ? WorkingDirectory() : homeDirectory;
-        if (resume is not null && Resume!.WorkingDirectory is { Length: > 0 } was && Path.IsPathFullyQualified(was) && Directory.Exists(was)) cwd = was; // where it began (never recreate a deleted folder)
+        if (resume is not null && Resume!.WorkingDirectory is { Length: > 0 } was && Hotline.Core.Platform.SafeDirectory.IsLocal(was) && Directory.Exists(was)) cwd = was; // where it began (never recreate a deleted folder)
         Directory.CreateDirectory(cwd);
         string? reported = null;
         var images = new List<string>();
@@ -122,7 +122,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         {
             await StopAsync(); // also when the caller stops reading early: no codex left running, images released
             foreach (var path in images)
-                try { File.Delete(path); } catch (IOException) { /* still open; the temp folder is cleaned by Windows */ }
+                try { File.Delete(path); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* still open: never replace the turn's own error */ }
         }
     }
 

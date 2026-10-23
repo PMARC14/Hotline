@@ -10,6 +10,12 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
 {
     public HotlineSettings Current { get; } = settings;
 
+    /// <summary>What reading settings.json and the connection files ignored (see <see cref="SettingsStore.SettingsProblems"/>).</summary>
+    public IReadOnlyList<string> Problems => store.SettingsProblems;
+
+    /// <summary>Set while settings.json as a whole can't be used; the settings in force are then kept.</summary>
+    public string? FileError => store.SettingsError;
+
     public event Action? Changed;
     /// <summary>After a reload from disk: ids of connections whose settings changed or that were removed.</summary>
     public event Action<IReadOnlyList<string>>? ConnectionsChanged;
@@ -95,11 +101,12 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         try
         {
             // The file on disk may be a half-finished hand edit (not valid JSON): keep a copy before replacing it.
-            if (File.Exists(store.FilePath) && store.TryRead() is null)
+            // Likewise one with ignored values: saving writes those fields out as their defaults.
+            if (File.Exists(store.FilePath) && (store.TryRead() is null || store.SettingsFileDamaged))
             {
                 var backup = $"{store.FilePath}.{DateTime.Now:yyyyMMdd-HHmmss}.bak";
                 File.Copy(store.FilePath, backup, overwrite: true);
-                log.Info($"settings.json wasn't valid; kept it as {backup} before saving");
+                log.Info($"settings.json had problems; kept it as {backup} before saving");
             }
             store.Save(Current);
             _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);

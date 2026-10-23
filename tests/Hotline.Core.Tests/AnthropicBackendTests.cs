@@ -137,7 +137,7 @@ public sealed class AnthropicBackendTests : IDisposable
         Assert.Empty(handler.Seen);
     }
 
-    private static HttpResponseMessage ToolUseStream(bool blankText = false)
+    private static HttpResponseMessage ToolUseStream()
     {
         var sb = new StringBuilder();
         sb.Append(Event("message_start", new
@@ -152,7 +152,7 @@ public sealed class AnthropicBackendTests : IDisposable
         sb.Append(Event("content_block_delta", new { type = "content_block_delta", index = 1, delta = new { type = "input_json_delta", partial_json = "{\"path\":" } }));
         sb.Append(Event("content_block_delta", new { type = "content_block_delta", index = 1, delta = new { type = "input_json_delta", partial_json = "\"a.txt\"}" } }));
         sb.Append(Event("content_block_stop", new { type = "content_block_stop", index = 1 }));
-        if (blankText)
+        // a whitespace-only text block, which the API refuses to be sent back
         {
             sb.Append(Event("content_block_start", new { type = "content_block_start", index = 2, content_block = new { type = "text", text = "" } }));
             sb.Append(Event("content_block_delta", new { type = "content_block_delta", index = 2, delta = new { type = "text_delta", text = "\n\n" } }));
@@ -183,29 +183,11 @@ public sealed class AnthropicBackendTests : IDisposable
         Assert.Equal("files__read_file", first.GetProperty("tools")[0].GetProperty("name").GetString());
         var messages = JsonDocument.Parse(handler.Seen[1].Body).RootElement.GetProperty("messages").EnumerateArray().ToList();
         var assistant = messages[^2].GetProperty("content").EnumerateArray().ToList();
+        Assert.Equal(["thinking", "tool_use"], assistant.Select(c => c.GetProperty("type").GetString())); // the blank text block is dropped
         Assert.Equal(("thinking", "SIG123"), (assistant[0].GetProperty("type").GetString(), assistant[0].GetProperty("signature").GetString()));
         Assert.Equal(("tool_use", "toolu_1"), (assistant[1].GetProperty("type").GetString(), assistant[1].GetProperty("id").GetString()));
         Assert.Equal("a.txt", assistant[1].GetProperty("input").GetProperty("path").GetString());
         var result = messages[^1].GetProperty("content")[0];
         Assert.Equal(("tool_result", "toolu_1"), (result.GetProperty("type").GetString(), result.GetProperty("tool_use_id").GetString()));
-    }
-
-    [Fact]
-    public async Task Whitespace_only_text_blocks_are_not_sent_back()
-    {
-        var host = new ToolLoopTests.FakeToolHost();
-        var calls = 0;
-        var handler = new Handler(_ => ++calls == 1 ? ToolUseStream(blankText: true) : Stream(texts: ["Done."]));
-        var secrets = new InMemorySecretStore();
-        secrets.Set(SecretKeys.ApiKey("claude-api"), "sk-ant-test");
-        var profile = Claude();
-        profile.Tools = ToolMode.Inherit;
-        var b = new AnthropicBackend(profile, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")), host);
-
-        await Collect(b.StreamAsync([U("1", "read a.txt")], default));
-
-        var messages = JsonDocument.Parse(handler.Seen[1].Body).RootElement.GetProperty("messages").EnumerateArray().ToList();
-        var types = messages[^2].GetProperty("content").EnumerateArray().Select(c => c.GetProperty("type").GetString()).ToList();
-        Assert.Equal(["thinking", "tool_use"], types);
     }
 }

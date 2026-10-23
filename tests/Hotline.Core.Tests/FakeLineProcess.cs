@@ -12,6 +12,8 @@ public sealed class FakeLineProcess : ILineProcess
     public bool HasExited { get; private set; }
     public bool Disposed { get; private set; }
     public string StandardErrorTail { get; set; } = "";
+    /// <summary>When set, writing to stdin fails with this (a process that already closed its end).</summary>
+    public Exception? WriteFailure { get; set; }
     public bool InputCompleted { get; private set; }
     /// <summary>One-shot programs (codex exec): the output ends once stdin is closed and the scripted lines are read.</summary>
     public bool ExitWhenInputCompletes { get; init; }
@@ -24,6 +26,7 @@ public sealed class FakeLineProcess : ILineProcess
 
     public Task WriteLineAsync(string line, CancellationToken ct)
     {
+        if (WriteFailure is not null) throw WriteFailure;
         Written.Add(line);
         foreach (var o in Respond?.Invoke(line) ?? []) _out.Writer.TryWrite(o);
         return Task.CompletedTask;

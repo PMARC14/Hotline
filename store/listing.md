@@ -52,7 +52,6 @@ NATIVE, LIGHT AND YOURS
 • Everything is a plain file you can edit: settings, connections, prompts, the buttons in the bar.
 • Tools, carefully: API connections can use tools from your MCP servers; anything that changes something asks you
   first.
-• The Copilot key can also act as a Right Ctrl key, if you'd rather have that.
 
 PRIVATE BY DESIGN
 Hotline AI has no server and collects nothing: no account, no analytics, no ads. Your messages go only to the AI
@@ -88,8 +87,7 @@ Pick your accent colour (Hotline purple, your Windows accent or any colour) and 
 16. Optional tools from your MCP servers, with approval before any change
 17. No account, no analytics, no ads; keys stay in Windows Credential Locker
 18. Free and open source
-19. The Copilot key can act as Right Ctrl instead
-20. Native on x64 and ARM64 PCs
+19. Native on x64 and ARM64 PCs
 
 ## Screenshot captions (200 characters each; same text as on the images)
 

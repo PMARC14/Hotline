@@ -46,7 +46,11 @@ internal sealed class SelfTestLinks(ChatPresenter presenter, Func<SettingsHost?>
         log.Info($"selftest selection: {(read is null ? "none" : $"{read.Text.Length} chars")} ({Native.ClassNameOf(fg)})");
     }
 
-    private async Task CheckVoiceAsync() => log.Info($"selftest voice: {await presenter.VoiceSelfTestAsync()}");
+    private async Task CheckVoiceAsync()
+    {
+        try { log.Info($"selftest voice: {await presenter.VoiceSelfTestAsync()}"); }
+        catch (Exception ex) { log.Error("selftest voice FAILED", ex); }
+    }
 
     private async Task CheckToolsAsync(McpToolHost host)
     {

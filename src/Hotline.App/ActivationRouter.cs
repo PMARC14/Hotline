@@ -38,7 +38,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
             case ProtocolForResultsActivatedEventArgs forResults:
                 inputs = Copy(forResults.Data);
                 caller = forResults.CallerPackageFamilyName;
-                KeepImage(inputs); // a temporary photo may be deleted once we report completion
+                if (AppActionRequest.IsWindowsCaller(caller)) KeepImage(inputs); // a temporary photo may be deleted once we report completion
                 forResults.ProtocolForResultsOperation?.ReportCompleted(new Windows.Foundation.Collections.ValueSet());
                 break;
             case IProtocolActivatedEventArgsWithCallerPackageFamilyNameAndData withData:
@@ -56,10 +56,12 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     private static void KeepImage(Dictionary<string, string>? inputs)
     {
         if (inputs is null || !inputs.TryGetValue("image", out var path)) return;
+        // Before any File.Exists/Copy: a network path would make Windows connect to the share (and leak the user's hash).
+        if (!AppActionRequest.IsSafeLocalImagePath(path)) return;
         try
         {
             var ext = Path.GetExtension(path).ToLowerInvariant();
-            if (ext is not (".png" or ".jpg" or ".jpeg") || !File.Exists(path) || new FileInfo(path).Length > 20 * 1024 * 1024) return;
+            if (!File.Exists(path) || new FileInfo(path).Length > 20 * 1024 * 1024) return;
             Directory.CreateDirectory(ActionImagesFolder);
             var copy = Path.Combine(ActionImagesFolder, Guid.NewGuid().ToString("N") + ext);
             File.Copy(path, copy);
@@ -88,7 +90,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     public void OnActivation(ActivationRequest request)
     {
         log.Info($"activation kind={request.Kind} first={request.IsFirstLaunch}");
-        log.Debug($"activation uri={request.Uri}");
+        log.Debug($"activation uri={LogText.SafeUri(request.Uri)}"); // never the query: App Actions links carry your text or images
         if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
         {
             DemoRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["scene"]);
@@ -120,11 +122,6 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     public void OnKey(KeyEvent e, KeySource source)
     {
-        if (settings.CopilotKey == CopilotKeyMode.RightCtrl && source != KeySource.Hotkey)
-        {
-            log.Info($"key {e} via {source} ignored (the Copilot key acts as Right Ctrl)");
-            return;
-        }
         if (!deduper.ShouldHandle(e, source))
         {
             log.Info($"key {e} via {source} (duplicate, ignored)");

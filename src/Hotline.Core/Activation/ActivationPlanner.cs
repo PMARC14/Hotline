@@ -29,7 +29,9 @@ public static class ActivationPlanner
             : string.Equals(r.Uri?.Host, "tray", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false)
             // hotline://answer: a click on the "answer finished" notification
             : string.Equals(r.Uri?.Host, "answer", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, true, ReadSelection: false)
-            : new ActivationPlan(null, true),
+            // Anything else from a link (hotline://open, a web page's own text): any page can launch it, so it never
+            // reads the selection of the app in front. A key press (above) and a normal launch below still do.
+            : new ActivationPlan(null, true, ReadSelection: false),
         ActivationKind.StartupTask when r.IsFirstLaunch => new ActivationPlan(null, false), // signed in: stay in tray
         _ => new ActivationPlan(null, true),
     };

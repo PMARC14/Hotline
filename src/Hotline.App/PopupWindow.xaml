@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Hotline.App"
     Title="Hotline">
-    <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="0"
+    <!-- Padding 10 on every side: ToolbarPlan.PanelPadding (keep them equal; the bar's room is the width less 2 x this). -->
+    <Grid x:Name="Root" x:FieldModifier="internal" Padding="10" RowSpacing="0"
           AllowDrop="True" KeyDown="Root_KeyDown">
         <Grid.Resources>
           <ResourceDictionary>
@@ -52,6 +53,33 @@
                 <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
                 <Setter Property="FontSize" Value="15" />
             </Style>
+            <!-- toolbar.json "style": outline and filled take the theme's own button brushes (contrast themes included);
+                 size is set per button (ToolbarRenderer). Hover and pressed keep the template's states. -->
+            <Style x:Key="ToolbarButtonOutline" TargetType="Button" BasedOn="{StaticResource ToolbarButton}">
+                <Setter Property="BorderBrush" Value="{ThemeResource ButtonBorderBrush}" /><Setter Property="BorderThickness" Value="1" />
+            </Style>
+            <Style x:Key="ToolbarButtonFilled" TargetType="Button" BasedOn="{StaticResource ToolbarButton}">
+                <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+            </Style>
+            <Style x:Key="ToolbarButtonOutlineFilled" TargetType="Button" BasedOn="{StaticResource ToolbarButtonOutline}">
+                <Setter Property="Background" Value="{ThemeResource ButtonBackground}" />
+            </Style>
+            <!-- The same for the pin (a toggle button). -->
+            <Style x:Key="ToolbarToggle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
+                <Setter Property="Width" Value="36" /><Setter Property="Height" Value="32" />
+                <Setter Property="Padding" Value="0" /><Setter Property="Background" Value="Transparent" />
+                <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
+                <Setter Property="FontSize" Value="15" />
+            </Style>
+            <Style x:Key="ToolbarToggleOutline" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggle}">
+                <Setter Property="BorderBrush" Value="{ThemeResource ToggleButtonBorderBrush}" /><Setter Property="BorderThickness" Value="1" />
+            </Style>
+            <Style x:Key="ToolbarToggleFilled" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggle}">
+                <Setter Property="Background" Value="{ThemeResource ToggleButtonBackground}" />
+            </Style>
+            <Style x:Key="ToolbarToggleOutlineFilled" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggleOutline}">
+                <Setter Property="Background" Value="{ThemeResource ToggleButtonBackground}" />
+            </Style>
           </ResourceDictionary>
         </Grid.Resources>
         <Grid.RowDefinitions>
@@ -77,7 +105,35 @@
 
         <!-- The bar: the top button row (toolbar.json "top"; collapsed when empty) and the message box. -->
         <StackPanel x:Name="BarStack" x:FieldModifier="internal" Grid.Row="2">
-        <Grid x:Name="TopToolbar" x:FieldModifier="internal" ColumnSpacing="2" Margin="0,0,0,8" Visibility="Collapsed" />
+        <Grid x:Name="TopToolbar" x:FieldModifier="internal" ColumnSpacing="0" Margin="0,0,0,8" Visibility="Collapsed">
+            <Grid.Resources>
+                <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBackgroundDisabled" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="Transparent" />
+                <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+                <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+                <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
+                <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
+                <!-- A long name is cut off with "…" at the bar's text size (it used to shrink until unreadable);
+                     the full name is in the list and in the tooltip. -->
+                <DataTemplate x:Key="FitText">
+                    <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" />
+                </DataTemplate>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                    <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
+                    <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
+                    <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
+                    <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Opacity" Value="0.85" /><Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </Grid.Resources>
+        </Grid>
         <Border x:Name="Composer" x:FieldModifier="internal" CornerRadius="12" Padding="4" BorderThickness="1"
                 Background="{ThemeResource ComposerSurface}" BorderBrush="{ThemeResource ControlStrokeColorDefaultBrush}">
             <StackPanel Spacing="4">
@@ -121,77 +177,67 @@
         </Border>
         </StackPanel>
 
-        <!-- Bottom toolbar: room for more features (model/effort picker arrives in Plan 3b). -->
-        <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings. -->
-        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2" Margin="0,8,0,0">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="Auto" />
-                <ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" /><ColumnDefinition Width="Auto" />
-            </Grid.ColumnDefinitions>
-            <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Width="36" Height="32" Padding="0" BorderThickness="0"
-                          Background="Transparent" FontFamily="Segoe Fluent Icons" FontSize="15" Content="&#xE718;"
+        <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings.
+             Arranged at runtime from ~/.hotline/toolbar.json (ToolbarRenderer): [left group] [*] [right group] in each
+             row; a button listed nowhere is in no row. -->
+        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="0" Margin="0,8,0,0">
+            <Grid.Resources>
+                <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBackgroundDisabled" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="Transparent" />
+                <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="Transparent" />
+                <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
+                <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
+                <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
+                <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
+                <!-- A long name is cut off with "…" at the bar's text size (it used to shrink until unreadable);
+                     the full name is in the list and in the tooltip. -->
+                <DataTemplate x:Key="FitText">
+                    <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" />
+                </DataTemplate>
+                <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
+                    <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
+                    <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
+                    <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
+                    <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
+                    <Setter Property="Opacity" Value="0.85" /><Setter Property="VerticalAlignment" Value="Center" />
+                </Style>
+            </Grid.Resources>
+            <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Style="{StaticResource ToolbarToggle}" Content="&#xE718;"
                           ToolTipService.ToolTip="{local:Loc Key=Popup_Pin}" />
-            <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Grid.Column="1" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7C4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureWindow}" />
-            <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE7F4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureScreen}" />
-            <!-- Arranged at runtime from ~/.hotline/toolbar.json (see PopupWindow.ApplyToolbar). -->
-            <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Grid.Column="2" Style="{StaticResource ToolbarButton}"
-                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" Visibility="Collapsed" />
-            <!-- Pickers blend into the bar (no fill/border) until hovered; order: effort, model, provider. -->
-            <StackPanel x:Name="PickersPanel" x:FieldModifier="internal" Grid.Column="3" Orientation="Horizontal" Spacing="2"
-                        VerticalAlignment="Center" HorizontalAlignment="Right">
-                <StackPanel.Resources>
-                    <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBackgroundDisabled" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBorderBrushDisabled" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBorderBrushPointerOver" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBorderBrushPressed" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBorderBrushFocused" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBackgroundFocused" Color="Transparent" />
-                    <SolidColorBrush x:Key="ComboBoxBackgroundUnfocused" Color="Transparent" />
-                    <SolidColorBrush x:Key="TextControlBackground" Color="Transparent" />
-                    <SolidColorBrush x:Key="TextControlBorderBrush" Color="Transparent" />
-                    <Thickness x:Key="ComboBoxBorderThemeThickness">0</Thickness>
-                    <Thickness x:Key="TextControlBorderThemeThickness">0</Thickness>
-                    <!-- Picker text shrinks to fit the (fixed-width) box instead of being cut off. -->
-                    <!-- A long name is cut off with "…" at the bar's text size (it used to shrink until unreadable);
-                         the full name is in the list and in the tooltip. -->
-                    <DataTemplate x:Key="FitText">
-                        <TextBlock Text="{Binding}" TextTrimming="CharacterEllipsis" TextWrapping="NoWrap" VerticalAlignment="Center" />
-                    </DataTemplate>
-                    <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
-                        <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
-                        <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
-                        <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
-                        <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
-                        <Setter Property="Opacity" Value="0.85" />
-                    </Style>
-                </StackPanel.Resources>
-                <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Bar_EffortTip}" />
-                <ComboBox x:Name="ModelBox" x:FieldModifier="internal"
-                          ToolTipService.ToolTip="{local:Loc Key=Popup_Model}" />
-                <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Popup_Provider}" />
-            </StackPanel>
-            <Button x:Name="PromptButton" x:FieldModifier="internal" Grid.Column="5" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
+                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" />
+            <!-- The three pickers are ordinary items of the bar (ToolbarRenderer puts each where toolbar.json lists it); they blend
+                 in (no fill/border) until hovered. Their look is in the Resources of both rows. -->
+            <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Bar_EffortTip}" />
+            <ComboBox x:Name="ModelBox" x:FieldModifier="internal"
+                      ToolTipService.ToolTip="{local:Loc Key=Popup_Model}" />
+            <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Popup_Provider}" />
+            <Button x:Name="PromptButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8A5;" ToolTipService.ToolTip="{local:Loc Key=Conn_SystemPrompt}">
                 <Button.Flyout>
                     <MenuFlyout x:Name="PromptMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
                 </Button.Flyout>
             </Button>
-            <Button x:Name="RecentButton" x:FieldModifier="internal" Grid.Column="6" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="RecentButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
-            <Button x:Name="ContinueInButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" Visibility="Collapsed" />
-            <Button x:Name="NewChatButton" x:FieldModifier="internal" Grid.Column="7" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="ContinueInButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" />
+            <Button x:Name="NewChatButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
-            <Button x:Name="SettingsButton" x:FieldModifier="internal" Grid.Column="8" Style="{StaticResource ToolbarButton}"
+            <Button x:Name="SettingsButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
         </Grid>
         <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
-        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-12,-10,-12,-10" Visibility="Collapsed" />
+        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-10" Visibility="Collapsed" />
     </Grid>
 </Window>

@@ -83,4 +83,42 @@ public class AgyTurnParserTests
         Assert.Empty(FeedAll(p, "warning: something", "", """{"event":"heartbeat"}"""));
         Assert.False(p.Completed);
     }
+
+    [Theory]
+    [InlineData("""{"event":"result","result":null}""")]
+    [InlineData("""{"event":5}""")]
+    [InlineData("""{"event":"step_update","step_update":null}""")]
+    [InlineData("""{"event":"step_update","step_update":{"step_type":"agent_response","text_delta":5}}""")]
+    [InlineData("""{"event":"step_update","step_update":{"step_type":"agent_response","text_delta":"x","step_index":"one"}}""")]
+    [InlineData("""{"event":"result","result":{"status":"SUCCESS","response":"","denied_actions":"no"}}""")]
+    [InlineData("""{"event":"result","result":{"status":"SUCCESS","response":"","denied_actions":[5,null]}}""")]
+    [InlineData("[1,2]")]
+    public void The_agy_parser_skips_lines_with_unexpected_value_types(string line)
+        => _ = new AgyTurnParser().Feed(line).ToList();
+
+    [Fact]
+    public void Denied_actions_of_odd_shape_still_end_the_turn_without_throwing()
+    {
+        var parser = new AgyTurnParser();
+        _ = parser.Feed("""{"event":"result","result":{"status":"SUCCESS","response":"","denied_actions":[{"action":"rm"}]}}""").ToList();
+        Assert.True(parser.Completed);
+        Assert.Contains("rm", parser.Error);
+    }
+
+    [Theory]
+    [InlineData("UNAUTHENTICATED: please sign in", BackendErrorKind.NotLoggedIn)]
+    [InlineData("You are not logged in", BackendErrorKind.NotLoggedIn)]
+    [InlineData("RESOURCE_EXHAUSTED: quota exceeded", BackendErrorKind.RateLimited)]
+    [InlineData("workspace is not trusted", BackendErrorKind.NotConfigured)]
+    [InlineData("agy wasn't allowed to: read_file", BackendErrorKind.Unsupported)]
+    [InlineData("something else broke", BackendErrorKind.Failed)]
+    public void Maps_error_text_to_kind(string error, BackendErrorKind kind)
+        => Assert.Equal(kind, AgyErrors.Map(error).Kind);
+
+    [Fact]
+    public void Messages_are_actionable()
+    {
+        Assert.Contains("agy", AgyErrors.Map("not logged in").Message);
+        Assert.Contains("something else broke", AgyErrors.Map("something else broke").Message);
+    }
 }

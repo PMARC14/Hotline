@@ -86,19 +86,14 @@ public class CodexModelsTests
     }
 
     [Fact]
-    public async Task Process_that_exits_or_fails_to_start_falls_through_to_curated()
+    public async Task Process_that_exits_fails_to_start_or_lists_nothing_falls_through_to_curated()
     {
         var f = new FakeLineProcessFactory { Create = () => { var p = new FakeLineProcess(); p.Exit(); return p; } };
         Assert.Equal(CodexModels.Curated, await Lister(f).ListAsync(Profile, default));
         var g = new FakeLineProcessFactory { Create = () => throw new InvalidOperationException("no") };
         Assert.Equal(CodexModels.Curated, await Lister(g, cache: "{").ListAsync(Profile, default));
-    }
-
-    [Fact]
-    public async Task Empty_app_server_list_falls_through()
-    {
-        var f = new FakeLineProcessFactory { Create = () => Server([[]]) };
-        Assert.Equal(CodexModels.Curated, await Lister(f).ListAsync(Profile, default));
+        var empty = new FakeLineProcessFactory { Create = () => Server([[]]) };
+        Assert.Equal(CodexModels.Curated, await Lister(empty).ListAsync(Profile, default));
     }
 
     [Fact]
@@ -129,16 +124,12 @@ public class CodexModelsTests
     [InlineData("[1,2]")]
     public void Unusable_cache_gives_null(string json) => Assert.Null(CodexModels.ParseCache(json));
 
+    // The shipped list and the effort levels Codex accepts: pinned data (a change should be deliberate).
     [Fact]
-    public void Curated_list_starts_with_the_default()
+    public void The_curated_list_starts_with_the_default_and_the_levels_include_max_and_ultra()
     {
         Assert.Equal("gpt-6.1-sol", CodexModels.Curated[0].Id);
         Assert.Equal(8, CodexModels.Curated.Count);
-    }
-
-    [Fact]
-    public void Codex_lists_models_and_accepts_the_new_effort_levels()
-    {
         Assert.True(ConnectionTypes.Of(BackendType.Codex).ListsModels);
         Assert.Contains("max", CodexProtocol.EffortLevels);
         Assert.Contains("ultra", CodexProtocol.EffortLevels);

@@ -23,7 +23,8 @@ public sealed class McpConfig
     /// <summary>Problems in an otherwise readable file (e.g. an unknown approval value, which counts as "deny").</summary>
     public IReadOnlyList<string> Warnings { get; init; } = [];
 
-    private static readonly JsonDocumentOptions ReadOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
+    // A key twice in one object is an error anywhere in the file (not only where it's read, and never a crash).
+    private static readonly JsonDocumentOptions ReadOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true, AllowDuplicateProperties = false };
 
     private const string Example = """
         {
@@ -49,7 +50,8 @@ public sealed class McpConfig
             }
             return Parse(File.ReadAllText(path));
         }
-        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException)
+        // ArgumentException: a key twice in one object (JsonObject refuses it when it's read).
+        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException or ArgumentException)
         {
             return new McpConfig { Error = L.F(Strings.Mcp_Unreadable, ex.Message) };
         }
@@ -62,13 +64,14 @@ public sealed class McpConfig
         if (root["mcpServers"] is JsonObject list)
             foreach (var (name, node) in list)
             {
-                if (node is not JsonObject s || s["command"]?.GetValue<string>() is not { Length: > 0 } command) continue;
+                if (node is not JsonObject s || Text(s["command"]) is not { Length: > 0 } command) continue;
                 var args = s["args"] is JsonArray a ? a.Select(x => x?.ToString() ?? "").ToList() : [];
-                var env = s["env"] is JsonObject e
-                    ? e.ToDictionary(kv => kv.Key, kv => kv.Value?.ToString() ?? "", StringComparer.OrdinalIgnoreCase)
-                    : new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                // Windows variable names ignore case: "PATH" and "Path" are one variable, the last one wins.
+                var env = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+                if (s["env"] is JsonObject e)
+                    foreach (var (k, v) in e) env[k] = v?.ToString() ?? "";
                 var disabled = s["disabled"] is JsonValue d && d.TryGetValue<bool>(out var off) && off;
-                servers.Add(new McpServerConfig(name, command, args, env, disabled, s["cwd"]?.GetValue<string>(), s["displayName"]?.GetValue<string>()));
+                servers.Add(new McpServerConfig(name, command, args, env, disabled, Text(s["cwd"]), Text(s["displayName"])));
             }
         var approvals = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase);
         var warnings = new List<string>();
@@ -83,25 +86,38 @@ public sealed class McpConfig
         return new McpConfig { Servers = servers, Approvals = approvals, Warnings = warnings };
     }
 
+    /// <summary>A string value, or null when the node is missing or not a string (a hand-edit slip must not break the whole file).</summary>
+    private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
+
     /// <summary>
-    /// Writes one approval rule, keeping everything else in the file. Comments can't be kept, so the previous file is
-    /// first copied to mcp.json.bak-&lt;timestamp&gt; (never overwrite a user's file without a backup).
+    /// Writes one approval rule, keeping everything else in the file. A rewrite loses comments and formatting, so the
+    /// previous file is first copied to mcp.json.bak-&lt;timestamp&gt; (never overwrite a user's file without a backup).
     /// </summary>
     public static void SaveApproval(string path, string key, ToolApproval approval)
     {
         lock (SaveLock) // two "Always" clicks at once must not lose a rule
         {
             var original = File.Exists(path) ? File.ReadAllText(path) : null;
-            var parsed = original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions);
-            if (original is not null && parsed is not JsonObject)
-                throw new JsonException("mcp.json isn't a JSON object, so the approval wasn't saved (the file was left as it is).");
-            var root = parsed as JsonObject ?? new JsonObject();
-            if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
-            rules[key] = approval.ToString().ToLowerInvariant();
-            // Comments are what a rewrite loses: keep a copy of a commented file (never replacing an earlier backup).
-            if (original is not null && (original.Contains("//") || original.Contains("/*"))) WriteBackup(path, original);
+            JsonObject root;
+            try
+            {
+                var parsed = original is null ? null : JsonNode.Parse(original, documentOptions: ReadOptions);
+                if (original is not null && parsed is not JsonObject)
+                    throw new JsonException("mcp.json isn't a JSON object, so the approval wasn't saved (the file was left as it is).");
+                root = parsed as JsonObject ?? new JsonObject();
+                if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
+                rules[key] = approval.ToString().ToLowerInvariant();
+            }
+            catch (ArgumentException ex) // a key twice in one object
+            {
+                throw new JsonException("mcp.json has a duplicate key, so the approval wasn't saved (the file was left as it is).", ex);
+            }
+            var updated = root.ToJsonString(new JsonSerializerOptions { WriteIndented = true });
+            if (updated == original) return; // the rule was already there
+            if (original is not null) WriteBackup(path, original); // never replacing an earlier backup
+            Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
             var tmp = $"{path}.{Guid.NewGuid():N}.tmp";
-            File.WriteAllText(tmp, root.ToJsonString(new JsonSerializerOptions { WriteIndented = true }));
+            File.WriteAllText(tmp, updated);
             File.Move(tmp, path, overwrite: true);
         }
     }
@@ -119,86 +135,12 @@ public sealed class McpConfig
                 using var stream = new FileStream(backup, FileMode.CreateNew);
                 using var writer = new StreamWriter(stream);
                 writer.Write(content);
+                writer.Flush();
+                stream.Flush();
+                Settings.BackupFiles.Prune(path); // every approval saved is one more copy: keep the newest ten
                 return;
             }
             catch (IOException) when (File.Exists(backup) && i < 100) { /* taken: try the next name */ }
         }
-    }
-}
-
-public static class ToolPolicy
-{
-    /// <summary>
-    /// A deny (for the tool or for "server/*") always wins; otherwise the specific rule, then "server/*", then the
-    /// default: read-only tools run, others ask.
-    /// </summary>
-    public static ToolApproval Decide(IReadOnlyDictionary<string, ToolApproval> approvals, string server, string tool, bool readOnly)
-    {
-        var hasSpecific = approvals.TryGetValue($"{server}/{tool}", out var specific);
-        var hasWildcard = approvals.TryGetValue($"{server}/*", out var wildcard);
-        if (hasSpecific && specific == ToolApproval.Deny || hasWildcard && wildcard == ToolApproval.Deny) return ToolApproval.Deny;
-        if (hasSpecific) return specific;
-        if (hasWildcard) return wildcard;
-        return readOnly ? ToolApproval.Allow : ToolApproval.Ask;
-    }
-}
-
-public static class ToolNames
-{
-    /// <summary>Names with '/' or '*' would make approval keys ("server/tool", "server/*") ambiguous.</summary>
-    public static bool IsAmbiguous(string name) => name.Contains('/') || name.Contains('*');
-
-    /// <summary>
-    /// A function name every API accepts (^[A-Za-z_][A-Za-z0-9_-]{0,63}$ — Gemini needs a letter or "_" first), unique
-    /// within <paramref name="used"/>.
-    /// </summary>
-    public static string ForApi(string server, string tool, HashSet<string> used)
-    {
-        static string Clean(string s) => new(s.Select(c => char.IsAsciiLetterOrDigit(c) || c is '_' or '-' ? c : '_').ToArray());
-        var baseName = $"{Clean(server)}__{Clean(tool)}";
-        if (!char.IsAsciiLetter(baseName[0]) && baseName[0] != '_') baseName = "_" + baseName;
-        if (baseName.Length > 60) baseName = baseName[..60];
-        var name = baseName;
-        for (var i = 2; !used.Add(name); i++) name = $"{baseName[..Math.Min(baseName.Length, 60 - i.ToString().Length)]}_{i}";
-        return name;
-    }
-}
-
-/// <summary>
-/// The Windows on-device agent registry (odr.exe, build 26220.7262+): `odr.exe mcp list` prints the registered agent
-/// connectors as JSON. Each becomes a server named windows-&lt;id&gt; launched through its manifest's mcp_config.
-/// </summary>
-public static class OdrDiscovery
-{
-    public static string? FindOdr(Func<string, bool> exists, string? windowsDir, string? localAppData)
-    {
-        foreach (var candidate in new[]
-                 {
-                     windowsDir is null ? null : Path.Combine(windowsDir, "System32", "odr.exe"),
-                     localAppData is null ? null : Path.Combine(localAppData, "Microsoft", "WindowsApps", "odr.exe"),
-                 })
-            if (candidate is not null && exists(candidate)) return candidate;
-        return null;
-    }
-
-    public static IReadOnlyList<McpServerConfig> Parse(string json)
-    {
-        var result = new List<McpServerConfig>();
-        try
-        {
-            var root = JsonNode.Parse(json, documentOptions: new JsonDocumentOptions { AllowTrailingCommas = true });
-            var items = root as JsonArray ?? (root?["servers"] as JsonArray) ?? [];
-            foreach (var item in items.OfType<JsonObject>())
-            {
-                var config = item["manifest"]?["server"]?["mcp_config"] as JsonObject;
-                if (config?["command"]?.GetValue<string>() is not { Length: > 0 } command) continue;
-                var id = item["id"]?.GetValue<string>() ?? item["manifest"]?["name"]?.GetValue<string>() ?? command;
-                var args = config["args"] is JsonArray a ? a.Select(x => x?.ToString() ?? "").ToList() : [];
-                var display = item["manifest"]?["display_name"]?.GetValue<string>() ?? id;
-                result.Add(new McpServerConfig($"windows-{id}", command, args, new Dictionary<string, string>(), DisplayName: display));
-            }
-        }
-        catch (Exception ex) when (ex is JsonException or InvalidOperationException or FormatException) { }
-        return result;
     }
 }

@@ -10,13 +10,18 @@ public sealed class ToolsTests : IDisposable
     public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private string McpPath => Path.Combine(_dir, "mcp.json");
 
+    private void WriteMcp(string json)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(McpPath, json);
+    }
+
     // ---- mcp.json ------------------------------------------------------------------------------
 
     [Fact]
     public void Parses_the_common_mcpServers_format_and_approvals()
     {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(McpPath, """
+        WriteMcp("""
             {
               // pasted from another app
               "mcpServers": {
@@ -52,37 +57,92 @@ public sealed class ToolsTests : IDisposable
     [Fact]
     public void Saving_an_approval_keeps_everything_else_in_the_file()
     {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(McpPath, """{ "mcpServers": { "files": { "command": "npx", "custom": 5 } } }""");
+        WriteMcp("""{ "mcpServers": { "files": { "command": "npx", "custom": 5 } } }""");
         McpConfig.SaveApproval(McpPath, "files/write_file", ToolApproval.Allow);
         var text = File.ReadAllText(McpPath);
         Assert.Contains("\"custom\": 5", text);
         Assert.Equal(ToolApproval.Allow, McpConfig.Load(McpPath).Approvals["files/write_file"]);
     }
 
-    // ---- policy --------------------------------------------------------------------------------
+    [Fact]
+    public void Env_keys_differing_only_in_case_take_the_last_value()
+    {
+        var config = McpConfig.Parse("""{ "mcpServers": { "a": { "command": "x.exe", "env": { "PATH": "C:\\one", "Path": "C:\\two" } } } }""");
+        Assert.Equal(@"C:\two", Assert.Single(config.Servers).Env["PATH"]);
+    }
 
     [Theory]
-    [InlineData(true, null, ToolApproval.Allow)]      // read-only: no prompt
-    [InlineData(false, null, ToolApproval.Ask)]       // may change things: ask
-    [InlineData(true, "deny", ToolApproval.Deny)]     // explicit deny wins
-    [InlineData(false, "allow", ToolApproval.Allow)]
-    public void Policy(bool readOnly, string? rule, ToolApproval expected)
+    [InlineData("""{ "mcpServers": { "a": { "command": "x.exe" }, "a": { "command": "y.exe" } } }""")]
+    [InlineData("""{ "approvals": { "a/x": "allow", "a/x": "deny" } }""")]
+    [InlineData("""{ "mcpServers": { "a": { "command": "x.exe", "env": { "K": "1", "K": "2" } } } }""")]
+    public void Duplicate_keys_make_the_file_unreadable_not_a_crash(string json)
     {
-        var approvals = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase);
-        if (rule is not null) approvals["files/tool"] = Enum.Parse<ToolApproval>(rule, ignoreCase: true);
-        Assert.Equal(expected, ToolPolicy.Decide(approvals, "files", "tool", readOnly));
+        WriteMcp(json);
+        var config = McpConfig.Load(McpPath);
+        Assert.NotNull(config.Error);
+        Assert.Empty(config.Servers);
+        Assert.Equal(json, File.ReadAllText(McpPath)); // left as it is
+        Assert.Throws<JsonException>(() => McpConfig.SaveApproval(McpPath, "a/y", ToolApproval.Allow)); // the caller logs a JsonException
+        Assert.Equal(json, File.ReadAllText(McpPath));
     }
 
     [Fact]
-    public void Server_wildcards_apply_and_specific_rules_win()
+    public void Config_with_a_non_string_command_cwd_or_name_skips_only_that_part()
     {
-        var approvals = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase)
+        var config = McpConfig.Parse("""
+            {
+              "mcpServers": {
+                "bad": { "command": true },
+                "num": { "command": "tool", "cwd": 123, "displayName": [1] },
+                "ok": { "command": "tool2", "cwd": "C:\\work", "displayName": "Okay" }
+              }
+            }
+            """);
+        Assert.Null(config.Error);
+        Assert.Equal(["num", "ok"], config.Servers.Select(s => s.Name));
+        Assert.Null(config.Servers[0].WorkingDirectory);
+        Assert.Null(config.Servers[0].DisplayName);
+        Assert.Equal("Okay", config.Servers[1].DisplayName);
+    }
+
+    [Fact]
+    public void Saving_an_approval_creates_the_folder_when_it_is_missing()
+    {
+        var path = Path.Combine(_dir, "not-yet", "mcp.json");
+        McpConfig.SaveApproval(path, "files/read", ToolApproval.Allow);
+        Assert.Equal(ToolApproval.Allow, McpConfig.Load(path).Approvals["files/read"]);
+    }
+
+    [Fact]
+    public void Saving_an_approval_backs_up_any_file_it_overwrites()
+    {
+        const string original = """{ "mcpServers": {} }""";
+        WriteMcp(original);
+        McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow);
+        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "mcp.json.bak-*"))));
+        // Nothing to change: nothing written, no new backup.
+        McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow);
+        Assert.Single(Directory.GetFiles(_dir, "mcp.json.bak-*"));
+    }
+
+    // ---- policy --------------------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(true, "tool", null, ToolApproval.Allow)]      // read-only: no prompt
+    [InlineData(false, "tool", null, ToolApproval.Ask)]       // may change things: ask
+    [InlineData(true, "tool", "files/tool=deny", ToolApproval.Deny)] // explicit deny wins
+    [InlineData(false, "tool", "files/tool=allow", ToolApproval.Allow)]
+    [InlineData(false, "write", "files/*=allow,files/delete=deny", ToolApproval.Allow)]  // server wildcard applies...
+    [InlineData(false, "delete", "files/*=allow,files/delete=deny", ToolApproval.Deny)]  // ...and the specific rule wins
+    public void Policy(bool readOnly, string tool, string? rules, ToolApproval expected)
+    {
+        var approvals = new Dictionary<string, ToolApproval>(StringComparer.OrdinalIgnoreCase);
+        foreach (var rule in rules?.Split(',') ?? [])
         {
-            ["files/*"] = ToolApproval.Allow, ["files/delete"] = ToolApproval.Deny,
-        };
-        Assert.Equal(ToolApproval.Allow, ToolPolicy.Decide(approvals, "files", "write", readOnly: false));
-        Assert.Equal(ToolApproval.Deny, ToolPolicy.Decide(approvals, "files", "delete", readOnly: false));
+            var parts = rule.Split('=');
+            approvals[parts[0]] = Enum.Parse<ToolApproval>(parts[1], ignoreCase: true);
+        }
+        Assert.Equal(expected, ToolPolicy.Decide(approvals, "files", tool, readOnly));
     }
 
     // ---- Windows on-device agent registry ------------------------------------------------------
@@ -136,34 +196,26 @@ public sealed class ToolsTests : IDisposable
 
     private McpToolHost Host(FakeSession session, Func<ToolCallRequest, CancellationToken, Task<ToolDecision>> approve, string mcpJson)
     {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(McpPath, mcpJson);
+        WriteMcp(mcpJson);
         return new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(session), approve, new FileLog(Path.Combine(_dir, "h.log")), McpPath);
     }
 
     private const string OneServer = """{ "mcpServers": { "files": { "command": "x" } } }""";
 
-    [Fact]
-    public async Task Read_only_tools_run_without_asking()
+    [Theory]
+    [InlineData(true, 0, false, "tool done", 1)]  // read-only tools run without asking
+    [InlineData(false, 1, true, "declined", 0)]   // others ask; deny is an error result, not a call
+    public async Task Tools_ask_unless_read_only_and_deny_is_an_error_result_not_a_call(bool readOnly, int expectedAsks, bool expectError, string expectedText, int expectedCalls)
     {
-        var session = new FakeSession(("read", true));
+        var session = new FakeSession(("tool", readOnly));
         var asked = 0;
         var host = Host(session, (_, _) => { asked++; return Task.FromResult(ToolDecision.Deny); }, OneServer);
         var tools = await host.GetToolsAsync(default);
         var result = await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default);
-        Assert.Equal(("read done", false, 0), (result.Text, result.IsError, asked));
-    }
-
-    [Fact]
-    public async Task Other_tools_ask_and_deny_is_an_error_result_not_a_call()
-    {
-        var session = new FakeSession(("write", false));
-        var host = Host(session, (_, _) => Task.FromResult(ToolDecision.Deny), OneServer);
-        var tools = await host.GetToolsAsync(default);
-        var result = await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default);
-        Assert.True(result.IsError);
-        Assert.Contains("declined", result.Text);
-        Assert.Empty(session.Called);
+        Assert.Equal(expectError, result.IsError);
+        Assert.Contains(expectedText, result.Text);
+        Assert.Equal(expectedAsks, asked);
+        Assert.Equal(expectedCalls, session.Called.Count);
     }
 
     [Fact]
@@ -182,8 +234,7 @@ public sealed class ToolsTests : IDisposable
     [Fact]
     public async Task Denied_tools_are_not_offered_and_a_failing_server_does_not_break_others()
     {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(McpPath, """{ "mcpServers": { "good": { "command": "x" }, "bad": { "command": "y" } }, "approvals": { "good/secret": "deny" } }""");
+        WriteMcp("""{ "mcpServers": { "good": { "command": "x" }, "bad": { "command": "y" } }, "approvals": { "good/secret": "deny" } }""");
         var good = new FakeSession(("read", true), ("secret", true));
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
             (server, _) => server.Name == "bad" ? throw new InvalidOperationException("won't start") : Task.FromResult<IMcpSession>(good),

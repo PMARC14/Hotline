@@ -1,5 +1,7 @@
 using System.Diagnostics;
 using System.Text;
+using Hotline.Core.Chat;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Processes;
 
@@ -31,11 +33,16 @@ public sealed class SystemLineProcessFactory(Action<Process>? onStarted = null) 
 public sealed class SystemLineProcess : ILineProcess
 {
     private const int StderrKeep = 4000;
+    /// <summary>Longest stdout line read (16M chars): a stream-json event is far smaller, even with images in it.</summary>
+    public const int MaxLineChars = 16 * 1024 * 1024;
     private readonly Process _process;
     private readonly StringBuilder _stderr = new();
+    private readonly BoundedLineReader _stdout;
+    private readonly string _name;
 
-    public SystemLineProcess(string exe, IReadOnlyList<string> args, string workingDirectory, Action<Process>? onStarted)
+    public SystemLineProcess(string exe, IReadOnlyList<string> args, string workingDirectory, Action<Process>? onStarted, int maxLineChars = MaxLineChars)
     {
+        _name = Path.GetFileNameWithoutExtension(exe);
         var psi = new ProcessStartInfo(exe)
         {
             WorkingDirectory = workingDirectory,
@@ -51,17 +58,29 @@ public sealed class SystemLineProcess : ILineProcess
         foreach (var a in args) psi.ArgumentList.Add(a);
         ProcessLaunches.Noted();
         _process = Process.Start(psi) ?? throw new InvalidOperationException($"Could not start {exe}");
-        onStarted?.Invoke(_process);
-        _process.ErrorDataReceived += (_, e) =>
+        try
         {
-            if (e.Data is null) return;
-            lock (_stderr)
+            onStarted?.Invoke(_process);
+            _stdout = new BoundedLineReader(_process.StandardOutput, maxLineChars);
+            _process.ErrorDataReceived += (_, e) =>
             {
-                _stderr.AppendLine(e.Data);
-                if (_stderr.Length > StderrKeep) _stderr.Remove(0, _stderr.Length - StderrKeep);
-            }
-        };
-        _process.BeginErrorReadLine();
+                if (e.Data is null) return;
+                lock (_stderr)
+                {
+                    _stderr.AppendLine(e.Data);
+                    if (_stderr.Length > StderrKeep) _stderr.Remove(0, _stderr.Length - StderrKeep);
+                }
+            };
+            _process.BeginErrorReadLine();
+        }
+        catch
+        {
+            // Nothing owns the child yet (the caller never gets this object): don't leave it running.
+            try { _process.Kill(entireProcessTree: true); }
+            catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or AggregateException) { }
+            _process.Dispose();
+            throw;
+        }
     }
 
     public bool HasExited => _process.HasExited;
@@ -80,7 +99,16 @@ public sealed class SystemLineProcess : ILineProcess
         catch (Exception ex) when (ex is IOException or ObjectDisposedException or InvalidOperationException) { /* already exited or closed */ }
     }
 
-    public Task<string?> ReadLineAsync(CancellationToken ct) => _process.StandardOutput.ReadLineAsync(ct).AsTask();
+    public async Task<string?> ReadLineAsync(CancellationToken ct)
+    {
+        try { return await _stdout.ReadLineAsync(ct); }
+        catch (OutputTooLongException)
+        {
+            // The turn can't be parsed any more: stop the CLI (the backends start a new one for the next turn).
+            await KillAsync();
+            throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_OutputTooLong, _name));
+        }
+    }
 
     public async Task WaitForExitAsync(TimeSpan timeout)
     {
@@ -89,7 +117,7 @@ public sealed class SystemLineProcess : ILineProcess
         catch (OperationCanceledException) { /* still running; take what we have */ }
     }
 
-    public async ValueTask DisposeAsync()
+    private async Task KillAsync()
     {
         try
         {
@@ -101,6 +129,11 @@ public sealed class SystemLineProcess : ILineProcess
         }
         // AggregateException: a child of the CLI exited (or couldn't be opened) while the tree was being killed.
         catch (Exception ex) when (ex is InvalidOperationException or System.ComponentModel.Win32Exception or AggregateException) { /* already gone / exiting */ }
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        try { await KillAsync(); }
         finally { _process.Dispose(); }
     }
 }

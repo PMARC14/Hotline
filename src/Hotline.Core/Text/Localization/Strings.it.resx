@@ -14,10 +14,6 @@
   <data name="Set_Key_CaptureRegion" xml:space="preserve"><value>Cattura un'area</value></data>
   <data name="Set_Key_Voice" xml:space="preserve"><value>Input vocale (tieni premuto per parlare)</value></data>
   <data name="Set_Key_None" xml:space="preserve"><value>Non fare nulla</value></data>
-  <data name="Set_CopilotKey" xml:space="preserve"><value>Tasto Copilot</value></data>
-  <data name="Set_CopilotKey_Desc" xml:space="preserve"><value>Come Ctrl destro, Copilot+C equivale a Ctrl+C e il tasto non apre più Hotline (usa il tasto di scelta rapida aggiuntivo qui sotto o l'icona nell'area di notifica). Funziona con le tastiere il cui tasto Copilot invia Win+Shift+F23 (la maggior parte).</value></data>
-  <data name="Set_CopilotKey_Hotline" xml:space="preserve"><value>Apre Hotline</value></data>
-  <data name="Set_CopilotKey_RightCtrl" xml:space="preserve"><value>Funziona come Ctrl destro</value></data>
   <data name="Set_Tap" xml:space="preserve"><value>Pressione breve del tasto Copilot</value></data>
   <data name="Set_Hold" xml:space="preserve"><value>Pressione prolungata del tasto Copilot</value></data>
   <data name="Set_Voice" xml:space="preserve"><value>Input vocale</value></data>
@@ -258,9 +254,9 @@ Nega:
   <data name="Memory_Edit" xml:space="preserve"><value>Modifica la memoria</value></data>
   <data name="Memory_Empty" xml:space="preserve"><value>Vuota. «/remember qualcosa» nella casella del messaggio aggiunge una riga.</value></data>
   <data name="Memory_Lines" xml:space="preserve"><value>{0} riga/righe. Ogni chat le vede finché Memoria è attiva.</value></data>
-  <data name="Actions_Intro" xml:space="preserve"><value>Digita / all'inizio di un messaggio per usarne una: «/translate un testo» oppure «/summarize» con un allegato. Ogni azione è un file Markdown; la sua prima riga è la descrizione mostrata nell'elenco. I nomi possono contenere lettere, cifre, - e _.</value></data>
-  <data name="Actions_New" xml:space="preserve"><value>Nuova azione</value></data>
-  <data name="Actions_OpenFolder" xml:space="preserve"><value>Apri la cartella delle azioni</value></data>
+  <data name="Actions_Intro" xml:space="preserve"><value>Le azioni rapide sono scorciatoie: digita / nella casella del messaggio e scegline una, ad esempio “/translate some text” o “/summarize” con un allegato. Ognuna è un piccolo file Markdown nella tua cartella delle azioni rapide: la prima riga è la descrizione mostrata nell'elenco, e il resto è ciò che viene inviato insieme al testo. I nomi possono contenere lettere, cifre, - e _.</value></data>
+  <data name="Actions_New" xml:space="preserve"><value>Nuova azione rapida</value></data>
+  <data name="Actions_OpenFolder" xml:space="preserve"><value>Apri la cartella delle azioni rapide</value></data>
   <data name="Pc_Build" xml:space="preserve"><value>build {0}</value></data>
   <data name="Pc_OcrLanguages" xml:space="preserve"><value>{0} lingua/e OCR</value></data>
   <data name="Pc_OcrMissing" xml:space="preserve"><value>Nessuna lingua OCR: Impostazioni › Data/ora e lingua › Lingua e area geografica › aggiungi una lingua con il riconoscimento ottico dei caratteri</value></data>
@@ -268,11 +264,14 @@ Nega:
   <data name="Pc_VoiceMissing" xml:space="preserve"><value>{0} — Impostazioni › Privacy e sicurezza › Comandi vocali › Riconoscimento vocale online, e un microfono</value></data>
   <data name="Pc_Agents" xml:space="preserve"><value>Connettori degli agenti di Windows</value></data>
   <data name="Pc_AgentsOk" xml:space="preserve"><value>odr.exe trovato; i suoi connettori compaiono come server di strumenti windows-…</value></data>
-  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe non trovato (non ancora attivato su questo PC)</value></data>
-  <data name="Pc_AgentsBuild" xml:space="preserve"><value>richiede la build di Windows 26220.7262 o successiva (ad es. 26H2)</value></data>
+  <data name="Pc_AgentsNotOn" xml:space="preserve"><value>odr.exe non trovato: Windows elenca ancora i connettori di agenti come anteprima e non è stato distribuito a questo PC</value></data>
+  <data name="Pc_AgentsBuild" xml:space="preserve"><value>richiede una build recente di Windows 11 (26220.7262 o successiva); Windows elenca ancora i connettori di agenti come anteprima</value></data>
   <data name="Pc_Actions" xml:space="preserve"><value>Azioni app (Click to Do)</value></data>
   <data name="Pc_ActionsOk" xml:space="preserve"><value>registrate; Click to Do stesso richiede un PC Copilot+</value></data>
   <data name="Pc_ActionsBuild" xml:space="preserve"><value>richiede Windows 11 24H2 (build 26100) o successivo</value></data>
+  <data name="Pc_ToolbarOk" xml:space="preserve"><value>toolbar.json è a posto</value></data>
+  <data name="Pc_ToolbarWarnings" xml:space="preserve"><value>toolbar.json ha {0} problema/i, corretto/i in memoria (il file non cambia): {1}</value></data>
+  <data name="Pc_ToolbarNoSettings" xml:space="preserve"><value>Nessun pulsante Impostazioni nella barra: le Impostazioni si aprono solo dall'icona nell'area di notifica.</value></data>
   <data name="Startup_On" xml:space="preserve"><value>Attivato — Hotline si avvia nell'area di notifica all'accesso.</value></data>
   <data name="Startup_OffByUser" xml:space="preserve"><value>Disattivato (in Impostazioni di Windows › App › Avvio). Attiva Hotline da lì.</value></data>
   <data name="Startup_OffByPolicy" xml:space="preserve"><value>Disattivato (bloccato da un criterio della tua organizzazione).</value></data>
@@ -394,6 +393,8 @@ Nega:
   <data name="Api_Timeout" xml:space="preserve"><value>{0} non ha risposto in tempo.</value></data>
   <data name="Api_NeedKey" xml:space="preserve"><value>Aggiungi una chiave API per {0} in Impostazioni › Connessioni IA.</value></data>
   <data name="Api_BadEndpoint" xml:space="preserve"><value>L'endpoint di {0} non è un indirizzo http(s) valido: {1}</value></data>
+  <data name="Api_Redirected" xml:space="preserve"><value>{0} ha reindirizzato a {1}. Imposta l'indirizzo finale nella connessione.</value></data>
+  <data name="Api_TooLarge" xml:space="preserve"><value>{0} ha inviato una risposta troppo grande, quindi è stato interrotto.</value></data>
   <data name="Api_RetryRateLimited" xml:space="preserve"><value>{0} ha raggiunto il limite di richieste, nuovo tentativo tra {1} s…</value></data>
   <data name="Api_RetryBusy" xml:space="preserve"><value>{0} è occupato, nuovo tentativo tra {1} s…</value></data>
   <data name="Api_KeyRejected" xml:space="preserve"><value>{0} ha rifiutato la chiave API. {1}</value></data>
@@ -406,6 +407,7 @@ Nega:
   <data name="Api_ToolStopped" xml:space="preserve"><value>{0} si è fermato ({1}) mentre chiedeva uno strumento; non è stato eseguito nulla.</value></data>
   <data name="Api_ToolCut" xml:space="preserve"><value>{0}: la connessione si è chiusa prima che la richiesta dello strumento fosse completa; non è stato eseguito nulla.</value></data>
   <data name="Cli_Stopped" xml:space="preserve"><value>{0} si è arrestato in modo imprevisto.</value></data>
+  <data name="Cli_OutputTooLong" xml:space="preserve"><value>{0} ha inviato più output in una sola volta di quanti ne legga Hotline, quindi è stato interrotto.</value></data>
   <data name="Cli_NoFolder" xml:space="preserve"><value>La cartella di lavoro di {0} non esiste: {1}. Scegline un'altra in Impostazioni › Connessioni IA.</value></data>
   <data name="Claude_NotInstalled" xml:space="preserve"><value>Claude Code non è installato. Installalo da claude.com/claude-code, esegui `claude` una volta per accedere, poi riprova.</value></data>
   <data name="Agy_NotSignedIn" xml:space="preserve"><value>agy non ha effettuato l'accesso. Esegui `agy` una volta in un terminale per accedere, poi riprova.</value></data>
@@ -434,7 +436,36 @@ Nega:
   <data name="Mcp_ConfigBrokenKept" xml:space="preserve"><value>{0} Resta in vigore l'ultima versione valida.</value></data>
   <data name="Mcp_Exited" xml:space="preserve"><value>il server è terminato (codice di uscita {0})</value></data>
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossibile avviare {0}</value></data>
+  <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Impossibile avviare il server {0}: "{1}" viene eseguito tramite cmd.exe, che non può passare in sicurezza i caratteri " % ^ &amp; | &lt; &gt; ! o interruzioni di riga in "command" o "args". Punta "command" al file .exe del programma oppure rimuovi tali caratteri.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossibile leggere toolbar.json: {0}</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>Altro</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Niente qui</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu del pulsante …</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Sposta nella casella del pulsante …</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Sposta nel menu ciò che non entra</value></data>
+  <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json è un file di versione 1; i file di versione 1 non vengono più letti, quindi viene utilizzata la barra predefinita.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} non è un tipo di valore valido qui; viene utilizzato il valore predefinito.</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} non è compreso tra {2}; viene utilizzato il valore predefinito.</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} è al di fuori dell'intervallo tra {2} e {3}; viene utilizzato un valore sicuro.</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} compare più di una volta; viene utilizzato l'ultimo.</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: il tipo di connessione {1} non è noto, pertanto questo file non viene utilizzato.</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: un altro file ha già l'id {1}, quindi questo file non viene utilizzato.</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>Impossibile leggere {0} ({1}); il file viene lasciato così com'è.</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} deve contenere un oggetto JSON; lasciato invariato.</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(e altri {0})</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Parte delle impostazioni è stata ignorata</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Il resto viene applicato. Impostazioni › Avanzate elenca tutto.</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Impossibile leggere un file di impostazioni</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline mantiene le impostazioni correnti finché non viene risolto.</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemi nei file delle impostazioni</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>I valori ignorati utilizzano le impostazioni predefinite. Correggi il file e Hotline lo applicherà subito.</value></data>
+  <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Una parte di toolbar.json è stata ignorata</value></data>
+  <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Il resto del file viene comunque applicato. Impostazioni › Finestra › Righe di pulsanti mostra cosa è stato ignorato.</value></data>
+  <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json non è stato possibile usare</value></data>
+  <data name="Bar_NoticeKept" xml:space="preserve"><value>La barra mantiene l'ultimo layout finché il file non viene corretto.</value></data>
+  <data name="Bar_OpenSettings" xml:space="preserve"><value>Apri Impostazioni</value></data>
+  <data name="Bar_ActionMissing" xml:space="preserve"><value>Azione rapida '{0}' non trovata</value></data>
+  <data name="Bar_ActionBusy" xml:space="preserve"><value>Termina prima la dettatura, poi usa questo pulsante.</value></data>
   <data name="Agy_SettingsNotObject" xml:space="preserve"><value>Il settings.json di agy non è un oggetto JSON; non viene modificato.</value></data>
   <data name="Agy_PermissionsNotObject" xml:space="preserve"><value>«permissions» nel settings.json di agy non è un oggetto; non viene modificato.</value></data>
   <data name="Agy_ListNotList" xml:space="preserve"><value>«permissions.{0}» nel settings.json di agy non è un elenco; non viene modificato.</value></data>
@@ -453,7 +484,8 @@ Nega:
   <data name="Codex_Reconnecting" xml:space="preserve"><value>Codex si sta riconnettendo…</value></data>
   <data name="Choose_Title" xml:space="preserve"><value>Scegli come si connette Hotline</value></data>
   <data name="Choose_Body" xml:space="preserve"><value>Scegli l'IA che Hotline deve usare. Finché non lo fai, non viene inviato né eseguito nulla.</value></data>
-  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code o Antigravity non è installato su questo PC. Installane uno ed esegui l'accesso, oppure usa una chiave API.</value></data>
+  <data name="Choose_NoneFound" xml:space="preserve"><value>Claude Code, Codex o Antigravity non è installato su questo PC. Installane uno ed esegui l'accesso, oppure usa una chiave API.</value></data>
+  <data name="Choose_NotInstalled" xml:space="preserve"><value>Non installato su questo PC: {0}. Installalo ed esegui l'accesso per usarlo qui.</value></data>
   <data name="Choose_Use" xml:space="preserve"><value>Usa {0}</value></data>
   <data name="Choose_ApiKey" xml:space="preserve"><value>Usa una chiave API…</value></data>
   <data name="Choose_CopilotKey" xml:space="preserve"><value>Imposta Hotline come app del tasto Copilot</value></data>
@@ -470,7 +502,7 @@ Nega:
   <data name="Recent_ContinueIn" xml:space="preserve"><value>Continua questa chat in</value></data>
   <data name="Recent_ContinueFailed" xml:space="preserve"><value>Impossibile aprire {0}: {1}</value></data>
   <data name="Conn_LaunchArgs" xml:space="preserve"><value>Opzioni di avvio (avanzato)</value></data>
-  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Sostituisce le opzioni che Hotline aggiunge per questa modalità (separate da spazi). Quelle che servono a Hotline per comunicare con il programma vengono sempre aggiunte, e quelle pericolose solo da «Approva tutto». Vuoto = impostazioni di Hotline.</value></data>
+  <data name="Conn_LaunchArgs_Desc" xml:space="preserve"><value>Sostituisce i flag aggiuntivi che Hotline di solito aggiunge per questa modalità (separati da spazi). I flag necessari a Hotline per comunicare con il programma e, in modalità solo chat, quelli che gli impediscono di utilizzare i propri strumenti vengono sempre aggiunti. I flag che approvano strumenti o ignorano i controlli delle autorizzazioni vengono ignorati qui: solo “Approve everything” può attivarli. Vuoto = impostazioni predefinite di Hotline.</value></data>
   <data name="Conn_LaunchArgs_Default" xml:space="preserve"><value>Impostazioni di Hotline</value></data>
   <data name="Conn_MaxTokens" xml:space="preserve"><value>Lunghezza massima della risposta</value></data>
   <data name="Conn_MaxTokens_Desc" xml:space="preserve"><value>Numero massimo di token per risposta. Se è troppo basso, una risposta lunga si interrompe prima. Vuoto = valore predefinito del modello.</value></data>
@@ -495,19 +527,19 @@ Nega:
   <data name="Hotkey_NotSet" xml:space="preserve"><value>Non impostata</value></data>
   <data name="Hotkey_NeedsModifier" xml:space="preserve"><value>Aggiungi Ctrl, Alt, Maiusc o Win</value></data>
   <data name="Hotkey_Unsupported" xml:space="preserve"><value>Questo tasto non si può usare</value></data>
-  <data name="Actions_Restore" xml:space="preserve"><value>Ripristina le azioni predefinite</value></data>
-  <data name="Actions_Restored" xml:space="preserve"><value>{0} azioni predefinite aggiunte o aggiornate.</value></data>
+  <data name="Actions_Restore" xml:space="preserve"><value>Ripristina le azioni rapide integrate</value></data>
+  <data name="Actions_Restored" xml:space="preserve"><value>{0} azioni rapide integrate aggiunte o aggiornate.</value></data>
   <data name="Actions_Rename" xml:space="preserve"><value>Rinomina</value></data>
   <data name="Actions_RenameInvalid" xml:space="preserve"><value>Usa lettere, cifre, - e _, e un nome non ancora usato.</value></data>
   <data name="Actions_DeleteConfirm" xml:space="preserve"><value>Eliminare /{0}?</value></data>
   <data name="Actions_NewName" xml:space="preserve"><value>Nuovo nome</value></data>
   <data name="Hotkey_InUse" xml:space="preserve"><value>Un'altra app usa già questa scorciatoia</value></data>
   <data name="Advanced_Reset" xml:space="preserve"><value>Reimposta</value></data>
-  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ripristina le impostazioni allo stato iniziale di installazione. Tutto viene prima copiato in {0}\backups. Per passare da un set di impostazioni all'altro, sostituisci settings.json (o un file in connections) con un'altra copia: Hotline la applicherà subito. Le impostazioni predefinite sono in {1}.</value></data>
+  <data name="Advanced_Reset_Desc" xml:space="preserve"><value>Ripristina le impostazioni e le righe di pulsanti allo stato iniziale di installazione. Tutto viene prima copiato in {0}\backups. Per passare da un set di impostazioni all'altro, sostituisci settings.json (o un file in connections) con un'altra copia: Hotline la applicherà subito. Le impostazioni predefinite sono in {1}.</value></data>
   <data name="Advanced_ResetAll" xml:space="preserve"><value>Reimposta tutto</value></data>
   <data name="Advanced_ResetAllBody" xml:space="preserve"><value>settings.json, tutte le connessioni (e le relative chiavi API), la barra degli strumenti e mcp.json tornano allo stato iniziale di installazione. Prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup (le chiavi API non sono incluse).</value></data>
   <data name="Advanced_ResetAllTitle" xml:space="preserve"><value>Reimpostare tutto?</value></data>
-  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json viene reimpostato sui valori predefiniti. Connessioni, prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup.</value></data>
+  <data name="Advanced_ResetBody" xml:space="preserve"><value>settings.json e toolbar.json vengono reimpostati sui valori predefiniti. Connessioni, prompt, azioni rapide, memoria e cronologia vengono mantenuti. Viene prima creato un backup.</value></data>
   <data name="Advanced_ResetConfirm" xml:space="preserve"><value>Reimposta</value></data>
   <data name="Advanced_ResetDone" xml:space="preserve"><value>Operazione completata. I file precedenti si trovano in {0}.</value></data>
   <data name="Advanced_ResetSettings" xml:space="preserve"><value>Reimposta impostazioni</value></data>
@@ -531,6 +563,45 @@ Nega:
   <data name="Grip_Tip" xml:space="preserve"><value>Trascina per spostare; fai clic con il pulsante destro del mouse per salvare questa posizione</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Altezza della chat</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Altezza massima raggiunta dalla chat. 0 = automatica (la percentuale di altezza massima sopra indicata).</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>Sposta la configurazione di Hotline su un altro PC o mantienine una copia. Il backup è un singolo file .zip contenente gli elementi selezionati; nient'altro (cronologia chat, memoria, registri) viene incluso.</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Impostazioni</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Righe di pulsanti e immagini dei pulsanti personalizzate</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Strumenti (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Suoni</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>Connessioni IA</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Azioni rapide</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompt</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json viene esportato così com'è scritto. I suoi valori env possono contenere segreti come token: mantieni il file al sicuro o lascia deselezionata questa opzione.</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>Le chiavi API non sono incluse: rimangono in Gestione credenziali di Windows. Inseriscile di nuovo sul nuovo PC.</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>Esporta</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>Scegli cosa includere nel file di backup.</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>Seleziona tutto</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>Deseleziona tutto</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>Esporta...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Backup di Hotline</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>Salvati {1} file in {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Salvati {1} file in {0}. {2} file sono stati esclusi (troppo grandi o non utilizzabili).</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>Impossibile scrivere il backup: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>Importa</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>Ripristina da un file di backup. I file con lo stesso nome vengono sostituiti (quelli vecchi vengono prima copiati in una cartella di backup); gli altri file rimangono invariati.</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>Scegli file...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup creato il {0} con Hotline {1}</value></data>
+  <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>Questo backup non contiene nulla da importare.</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>Impossibile importare questo file: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>Importa</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>{0} file importati, {1} ignorati.</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nessun elemento importato: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>I file sostituiti sono stati copiati in {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>Apri cartella di backup</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Ignorato: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>Queste connessioni richiedono ancora una chiave API: {0}. Apri Connessioni AI e inseriscila.</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>Le impostazioni e la barra dei pulsanti si applicano subito; suoni, righe di pulsanti e azioni rapide si aggiornano al prossimo utilizzo.</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Larghezza chat (percentuale)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Il pannello si allarga a questa quota della larghezza dello schermo all'avvio di una chat e si restringe a una nuova chat. 0 = mantiene la larghezza. Una larghezza fissa sotto disattiva questa opzione.</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>Larghezza chat</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>La larghezza a cui si espande il pannello all'avvio di una chat, in DIP. 0 = usa la percentuale sopra.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Espansione della chat</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automaticamente</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatica: verso l'alto, a meno che non ci sia spazio sopra. Su o Giù mantiene tale direzione.</value></data>
@@ -580,11 +651,84 @@ Un pannello spostato si aprirà alla posizione predefinita la volta successiva, 
   <data name="Guide_Direction_Title" xml:space="preserve"><value>In alto o in basso</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La chat cresce a partire dalla barra dei messaggi: verso l'alto, a meno che non manchi spazio, quindi verso il basso. Impostazioni › Finestra può mantenerla verso l'alto o verso il basso e imposta la posizione, la larghezza e l'altezza della chat.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Righe di pulsanti</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Righe di pulsanti mostra, nasconde e riordina i pulsanti, sopra o sotto la casella dei messaggi.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Impostazioni › Finestra › Righe di pulsanti mostra la barra come sei aree: a sinistra, al centro e a destra della riga sopra la casella dei messaggi, e le stesse tre sotto. Trascina un pulsante o un selettore per spostarlo all'interno di un'area o in un'altra, oppure usa i relativi pulsanti freccia (Alt+freccia cambia area, Ctrl+freccia cambia l'ordine). Ciò che nascondi rimane in “Non mostrati”. Ogni pulsante può avere la propria dimensione, un contorno o un riempimento, e puoi aggiungere pulsanti personalizzati che eseguono un'azione rapida o inseriscono un testo. I pulsanti che non entrano passano in un menu ⋯.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suoni</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Impostazioni › Aspetto › Suoni riproduce un suono quando il pannello si apre o si chiude: un suono di Windows o un .wav nella cartella dei suoni. Disattivato per impostazione predefinita.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Le impostazioni sono file</value></data>
   <data name="Guide_Files_Body" xml:space="preserve"><value>Tutto si trova nella cartella .hotline e viene applicato non appena salvi: settings.json, un file per connessione, prompt, azioni rapide e toolbar.json. Sostituisci un file per cambiare configurazione; Impostazioni › Avanzate › Reimposta riparte da capo, con una backup.
 Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</value></data>
   <data name="Guide_Intro" xml:space="preserve"><value>Tutto quello che fa Hotline, in breve. Ogni parte indica dove modificarlo in Impostazioni.</value></data>
+  <data name="Quad_TopLeft" xml:space="preserve"><value>In alto a sinistra</value></data>
+  <data name="Quad_TopCenter" xml:space="preserve"><value>In alto al centro</value></data>
+  <data name="Quad_TopRight" xml:space="preserve"><value>In alto a destra</value></data>
+  <data name="Quad_BottomLeft" xml:space="preserve"><value>In basso a sinistra</value></data>
+  <data name="Quad_BottomCenter" xml:space="preserve"><value>In basso al centro</value></data>
+  <data name="Quad_BottomRight" xml:space="preserve"><value>In basso a destra</value></data>
+  <data name="Bar_SizeCustom" xml:space="preserve"><value>Personalizzato</value></data>
+  <data name="Bar_OutlineColor" xml:space="preserve"><value>Colore del contorno</value></data>
+  <data name="Bar_ColorAccent" xml:space="preserve"><value>Colore accento</value></data>
+  <data name="Bar_ColorRed" xml:space="preserve"><value>Rosso</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>Arancione</value></data>
+  <data name="Bar_ColorYellow" xml:space="preserve"><value>Giallo</value></data>
+  <data name="Bar_ColorGreen" xml:space="preserve"><value>Verde</value></data>
+  <data name="Bar_ColorTeal" xml:space="preserve"><value>Foglia di tè</value></data>
+  <data name="Bar_ColorBlue" xml:space="preserve"><value>Blu</value></data>
+  <data name="Bar_ColorPurple" xml:space="preserve"><value>Viola</value></data>
+  <data name="Bar_ColorPink" xml:space="preserve"><value>Rosa</value></data>
+  <data name="Bar_PickerWidth" xml:space="preserve"><value>Larghezza in pulsanti</value></data>
+  <data name="Bar_NotShown" xml:space="preserve"><value>Non mostrato</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Trascina gli elementi tra i quattro gruppi o usa i pulsanti sotto ciascun elemento. Con un elemento selezionato, Alt+tasti freccia lo spostano in un altro gruppo e Ctrl+Sinistra o Ctrl+Destra lo spostano all'interno del suo gruppo. Le modifiche vengono salvate in toolbar.json e applicate immediatamente.</value></data>
+  <data name="Bar_ToLeft" xml:space="preserve"><value>Sposta nel gruppo a sinistra</value></data>
+  <data name="Bar_ToRight" xml:space="preserve"><value>Sposta nel gruppo a destra</value></data>
+  <data name="Bar_Pickers" xml:space="preserve"><value>Selettori</value></data>
+  <data name="Bar_Chip_effort" xml:space="preserve"><value>Sforzo</value></data>
+  <data name="Bar_Chip_model" xml:space="preserve"><value>Modello</value></data>
+  <data name="Bar_Chip_provider" xml:space="preserve"><value>Provider</value></data>
+  <data name="Bar_ItemStyle" xml:space="preserve"><value>Dimensioni e aspetto</value></data>
+  <data name="Bar_BarStyle" xml:space="preserve"><value>Intera barra</value></data>
+  <data name="Bar_Size" xml:space="preserve"><value>Dimensioni</value></data>
+  <data name="Bar_SizeCompact" xml:space="preserve"><value>Compatto</value></data>
+  <data name="Bar_SizeNormal" xml:space="preserve"><value>Normale</value></data>
+  <data name="Bar_SizeWide" xml:space="preserve"><value>Largo</value></data>
+  <data name="Bar_Outline" xml:space="preserve"><value>Contorno</value></data>
+  <data name="Bar_Filled" xml:space="preserve"><value>Pieno</value></data>
+  <data name="Bar_AsBar" xml:space="preserve"><value>Come l'intera barra</value></data>
+  <data name="Bar_Width" xml:space="preserve"><value>Larghezza</value></data>
+  <data name="Bar_Height" xml:space="preserve"><value>Altezza</value></data>
+  <data name="Bar_Auto" xml:space="preserve"><value>Automatico</value></data>
+  <data name="Bar_UseBarLook" xml:space="preserve"><value>Usa l'aspetto dell'intera barra</value></data>
+  <data name="Bar_Custom" xml:space="preserve"><value>Pulsanti personalizzati</value></data>
+  <data name="Bar_CustomNone" xml:space="preserve"><value>Ancora nessun pulsante personalizzato.</value></data>
+  <data name="Bar_CustomAdd" xml:space="preserve"><value>Aggiungi un pulsante</value></data>
+  <data name="Bar_CustomNewTitle" xml:space="preserve"><value>Nuovo pulsante</value></data>
+  <data name="Bar_CustomEditTitle" xml:space="preserve"><value>Modifica pulsante</value></data>
+  <data name="Bar_CustomSave" xml:space="preserve"><value>Salva</value></data>
+  <data name="Bar_CustomLabel" xml:space="preserve"><value>Etichetta</value></data>
+  <data name="Bar_CustomId" xml:space="preserve"><value>Id: {0} (creato dall'etichetta; non può essere modificato in seguito)</value></data>
+  <data name="Bar_CustomIcon" xml:space="preserve"><value>Icona</value></data>
+  <data name="Bar_CustomQuickAction" xml:space="preserve"><value>Esegui un'azione rapida</value></data>
+  <data name="Bar_CustomText" xml:space="preserve"><value>Inserisci testo</value></data>
+  <data name="Bar_CustomSend" xml:space="preserve"><value>Invia subito</value></data>
+  <data name="Bar_CustomNoActions" xml:space="preserve"><value>Non ci sono ancora azioni rapide (Impostazioni › Azioni rapide).</value></data>
+  <data name="Bar_CustomRuns" xml:space="preserve"><value>Esegue /{0}</value></data>
+  <data name="Bar_CustomInserts" xml:space="preserve"><value>Inserisce testo</value></data>
+  <data name="Bar_CustomSends" xml:space="preserve"><value>Invia testo</value></data>
+  <data name="Bar_CustomDeleteConfirm" xml:space="preserve"><value>Eliminare il pulsante "{0}"?</value></data>
+  <data name="Bar_CustomNeedsLabel" xml:space="preserve"><value>Inserisci un'etichetta.</value></data>
+  <data name="Bar_CustomNeedsAction" xml:space="preserve"><value>Scegli un'azione rapida o inserisci del testo.</value></data>
+  <data name="Bar_CustomBadAction" xml:space="preserve"><value>Il nome dell'azione rapida non è valido.</value></data>
+  <data name="Bar_CustomTooMany" xml:space="preserve"><value>Ci sono già 24 pulsanti personalizzati; eliminane prima uno.</value></data>
+  <data name="Bar_CustomGroupFull" xml:space="preserve"><value>Il gruppo in basso a sinistra è pieno (40 elementi); libera prima spazio.</value></data>
+  <data name="Bar_CustomRefused" xml:space="preserve"><value>Impossibile salvare questo pulsante; controlla l'etichetta, l'icona e l'azione.</value></data>
+  <data name="Bar_CustomPicture" xml:space="preserve"><value>Scegli un'immagine…</value></data>
+  <data name="Bar_CustomPictureClear" xml:space="preserve"><value>Usa invece un'icona integrata</value></data>
+  <data name="Bar_CustomPictureHint" xml:space="preserve"><value>Oppure usa un'immagine personalizzata: un PNG di massimo 256 KB, tra 16 e 256 pixel per lato.</value></data>
+  <data name="Bar_CustomPicturePreview" xml:space="preserve"><value>L'immagine scelta</value></data>
+  <data name="Bar_IconNotPng" xml:space="preserve"><value>Solo PNG: scegli un'immagine .png.</value></data>
+  <data name="Bar_IconTooLarge" xml:space="preserve"><value>Questa immagine è troppo grande: massimo 256 KB.</value></data>
+  <data name="Bar_IconSize" xml:space="preserve"><value>L'immagine deve avere dimensioni comprese tra 16 e 256 pixel per lato.</value></data>
+  <data name="Bar_IconCorrupt" xml:space="preserve"><value>Questo file non è un PNG valido.</value></data>
+  <data name="Bar_IconUnreadable" xml:space="preserve"><value>Impossibile leggere o copiare questa immagine; scegli un PNG salvato su questo PC.</value></data>
+  <data name="Bar_SaveFailed" xml:space="preserve"><value>Impossibile salvare toolbar.json: {0}</value></data>
+  <data name="Bar_Warnings" xml:space="preserve"><value>Corretto durante la lettura di toolbar.json (salvando qui viene scritto il file corretto):</value></data>
 </root>

@@ -41,7 +41,6 @@ NATIVO, LEGGERO E TUO
 • Risposte complete: titoli, elenchi, tabelle, codice con pulsante Copia, formule e disegni semplici.
 • Tutto è un file modificabile: impostazioni, connessioni, prompt, i pulsanti della barra.
 • Strumenti, con attenzione: le connessioni API possono usare gli strumenti dei tuoi server MCP; tutto ciò che modifica qualcosa ti chiede prima conferma.
-• Il tasto Copilot può anche fare da Ctrl destro, se preferisci.
 
 PRIVATO PER SCELTA
 Hotline AI non ha server e non raccoglie nulla: nessun account, nessuna analisi, nessuna pubblicità. I tuoi messaggi
@@ -77,8 +76,7 @@ Scegli il colore principale (viola Hotline, quello di Windows o qualsiasi colore
 16. Strumenti opzionali dai tuoi server MCP, con approvazione prima di ogni modifica
 17. Nessun account, nessuna analisi, nessuna pubblicità; le chiavi restano in Gestione credenziali di Windows
 18. Gratuito e open source
-19. Il tasto Copilot può fare invece da Ctrl destro
-20. Nativo su PC x64 e ARM64
+19. Nativo su PC x64 e ARM64
 
 ## Didascalie degli screenshot
 

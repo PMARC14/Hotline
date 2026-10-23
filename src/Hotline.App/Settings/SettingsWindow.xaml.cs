@@ -27,12 +27,14 @@ public sealed partial class SettingsWindow : Window
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private string _mcpPath = "";
     private string? _odrPath;
+    /// <summary>The width (DIP) the panel's button rows have, or would have when it opens (the button rows editor's "Move what doesn't fit"); null in tests.</summary>
+    private readonly Func<double>? _barRoom;
 
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
         PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
-        string? mcpPath = null, string? odrPath = null)
+        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null)
     {
-        (_toolHost, _mcpPath, _odrPath) = (toolHost, mcpPath ?? "", odrPath);
+        (_toolHost, _mcpPath, _odrPath, _barRoom) = (toolHost, mcpPath ?? "", odrPath, barRoom);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
@@ -101,12 +103,14 @@ public sealed partial class SettingsWindow : Window
             case "Actions": BuildActionsPage(); break;
             case "About": BuildAboutPage(); break;
             case "Guide": BuildGuidePage(); break;
+            case "Backup": BuildBackupPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
-                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildToolbarSection(); BuildSoundsSection(); }
+                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildSoundsSection(); }
+                if (page == SettingsPage.Window) BuildToolbarSection();
                 if (page == SettingsPage.Chat) BuildMemoryCard();
                 break;
         }
@@ -164,7 +168,7 @@ public sealed partial class SettingsWindow : Window
                 var box = new NumberBox
                 {
                     Minimum = n.Min, Maximum = n.Max, SmallChange = n.Step, LargeChange = n.Step * 10, Value = n.Get(s), Width = 150,
-                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
                 };
                 box.ValueChanged += (_, e) => { if (!double.IsNaN(e.NewValue)) _settings.Update(x => n.Set(x, e.NewValue)); };
                 var label = n.Unit is null ? (UIElement)box : new StackPanel
@@ -298,7 +302,7 @@ public sealed partial class SettingsWindow : Window
                 if (state == Windows.ApplicationModel.StartupTaskState.DisabledByUser)
                     await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
             }
-            else StartupRegistration.Disable();
+            else await StartupRegistration.DisableAsync();
             Refresh();
         };
         PageHost.Children.Add(CardWithStatus(Strings.Settings_Startup, status, toggle));
@@ -369,6 +373,23 @@ public sealed partial class SettingsWindow : Window
             return b;
         }
         var folder = Path.GetDirectoryName(_settingsFile)!;
+        // What the last read of settings.json and the connection files ignored, at the top of the page (like the panel's notice).
+        var problems = _settings.Problems;
+        if (_settings.FileError is not null || problems.Count > 0)
+        {
+            var lines = new List<string>();
+            if (_settings.FileError is { } fileError) lines.Add(fileError + " " + Strings.Settings_NoticeKept);
+            lines.AddRange(problems.Take(15).Select(p => Hotline.Core.Diagnostics.LogText.Clean(p).Replace("\n    ", " ")));
+            if (problems.Count > 15) lines.Add(L.F(Strings.Settings_AndMore, problems.Count - 15));
+            PageHost.Children.Insert(0, new InfoBar
+            {
+                IsOpen = true, IsClosable = false,
+                Severity = _settings.FileError is not null ? InfoBarSeverity.Error : InfoBarSeverity.Warning,
+                Title = Strings.Advanced_ProblemsTitle,
+                Message = Strings.Advanced_ProblemsBody + "\n" + string.Join("\n", lines),
+                ActionButton = Link(Strings.Common_OpenFolder, () => CliRunner.OpenFolder(folder)),
+            });
+        }
         PageHost.Children.Add(Card(Strings.Advanced_SettingsFile, _settingsFile, new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
@@ -399,7 +420,7 @@ public sealed partial class SettingsWindow : Window
                 ShowPage("Advanced");
                 PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Success, Message = L.F(Strings.Advanced_ResetDone, backup) });
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            catch (Exception ex) // also a credential-store failure; this runs fire-and-forget
             {
                 _log.Error("settings reset failed", ex);
                 PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Error, Message = ex.Message });

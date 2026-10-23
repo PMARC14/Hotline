@@ -3,12 +3,19 @@ namespace Hotline.Core.Platform;
 /// <summary>The Windows build and revision (e.g. 26200.9457).</summary>
 public readonly record struct WindowsBuild(int Build, int Revision)
 {
-    /// <summary>From "10.0.26200.9457" (or "26200.9457"); 0.0 when it can't be read.</summary>
-    public static WindowsBuild Parse(string version)
+    /// <summary>From "10.0.26200.9457", "10.0.26100" or "26200.9457"; 0.0 when it can't be read.</summary>
+    public static WindowsBuild Parse(string? version)
     {
+        if (string.IsNullOrWhiteSpace(version)) return new WindowsBuild(0, 0);
         var parts = version.Split('.');
-        int At(int fromEnd) => parts.Length >= fromEnd && int.TryParse(parts[^fromEnd], out var n) ? n : 0;
-        return parts.Length >= 4 ? new WindowsBuild(At(2), At(1)) : new WindowsBuild(At(parts.Length >= 2 ? 2 : 1), parts.Length >= 2 ? At(1) : 0);
+        int At(int index) => int.TryParse(parts[index], out var n) ? n : 0;
+        return parts.Length switch
+        {
+            >= 4 => new WindowsBuild(At(2), At(3)),
+            3 => new WindowsBuild(At(2), 0), // major.minor.build
+            2 => new WindowsBuild(At(0), At(1)),
+            _ => new WindowsBuild(At(0), 0),
+        };
     }
 
     public override string ToString() => $"{Build}.{Revision}";
@@ -23,6 +30,16 @@ public static class PlatformSupport
     /// <summary>App Actions on Windows (Click to Do, the action catalog): Windows 11 24H2 (26100) and later.</summary>
     public static bool AppActions(WindowsBuild v) => v.Build >= 26100;
 
-    /// <summary>The on-device agent registry (odr.exe) with Windows' MCP connectors: 26220.7262 and later.</summary>
+    /// <summary>The on-device agent registry (odr.exe) with Windows' MCP connectors: 26220.7262 and later. A build number is not
+    /// proof: Microsoft still calls the connectors a preview, and 26H2 (26300) can be above it without odr.exe being delivered.</summary>
     public static bool AgentConnectors(WindowsBuild v) => v.Build > 26220 || (v.Build == 26220 && v.Revision >= 7262);
+
+    /// <summary>What This PC says about agent connectors: the build is too old, the build qualifies but odr.exe isn't there
+    /// (a preview that isn't delivered to this PC), or odr.exe was found.</summary>
+    public static AgentConnectorsState AgentConnectorsStateOf(WindowsBuild v, bool odrPresent) =>
+        odrPresent ? AgentConnectorsState.Ready
+        : AgentConnectors(v) ? AgentConnectorsState.PreviewNotDelivered
+        : AgentConnectorsState.BuildTooOld;
 }
+
+public enum AgentConnectorsState { BuildTooOld, PreviewNotDelivered, Ready }

@@ -31,19 +31,16 @@ public class AttachmentFactoryTests
         Assert.Equal("héllo", a.AsText());
     }
 
-    [Fact]
-    public void Oversized_image_is_rejected_with_reason()
+    [Theory]
+    [InlineData("big.png", 21 * 1024 * 1024, "20 MB")]
+    [InlineData("huge.log", 201 * 1024, "200")]
+    public void Oversized_attachments_are_rejected_with_reason(string name, int size, string limit)
     {
         var ex = Assert.Throws<AttachmentRejectedException>(() =>
-            AttachmentFactory.FromBytes("big.png", null, new byte[21 * 1024 * 1024], Limits));
-        Assert.Contains("big.png", ex.Message);
-        Assert.Contains("20 MB", ex.Message);
+            AttachmentFactory.FromBytes(name, null, new byte[size], Limits));
+        Assert.Contains(name, ex.Message);
+        Assert.Contains(limit, ex.Message);
     }
-
-    [Fact]
-    public void Oversized_text_is_rejected()
-        => Assert.Throws<AttachmentRejectedException>(() =>
-            AttachmentFactory.FromBytes("huge.log", null, new byte[201 * 1024], Limits));
 
     [Fact]
     public void Non_utf8_text_is_rejected()

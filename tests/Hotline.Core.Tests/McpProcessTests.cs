@@ -9,12 +9,50 @@ public class McpProcessTests
     private static McpServerConfig Server(string command, string[] args, Dictionary<string, string>? env = null, string? cwd = null) =>
         new("fs", command, args, env ?? new Dictionary<string, string>(), WorkingDirectory: cwd);
 
+    // A PC with Node's npx.cmd shim and node.exe in C:\nodejs, uvx.exe in C:\uv.
+    private static readonly Dictionary<string, string> NodePath = new() { ["PATH"] = @"C:\nodejs;C:\uv", ["PATHEXT"] = ".COM;.EXE;.BAT;.CMD" };
+    private static bool NodeFiles(string path) => path is @"C:\nodejs\npx.cmd" or @"C:\nodejs\node.exe" or @"C:\uv\uvx.exe" or @"C:\tools\my server.exe";
+
     [Fact]
-    public void Wraps_the_command_in_cmd_on_windows_like_the_sdk()
+    public void Wraps_cmd_shims_in_cmd_on_windows_like_the_sdk()
     {
-        var psi = McpProcess.CreateStartInfo(Server("npx", ["-y", "@modelcontextprotocol/server-filesystem", "C:\\work"]), windows: true);
+        var psi = McpProcess.CreateStartInfo(Server("npx", ["-y", "@modelcontextprotocol/server-filesystem", "C:\\work", @"C:\My Documents", "--flag=a,b;c"], NodePath), windows: true, NodeFiles);
         Assert.Equal("cmd.exe", psi.FileName);
-        Assert.Equal(["/c", "npx", "-y", "@modelcontextprotocol/server-filesystem", "C:\\work"], psi.ArgumentList);
+        Assert.Equal(["/c", "npx", "-y", "@modelcontextprotocol/server-filesystem", "C:\\work", @"C:\My Documents", "--flag=a,b;c"], psi.ArgumentList);
+    }
+
+    [Fact]
+    public void Runs_an_exe_directly_with_its_arguments_as_they_are()
+    {
+        var psi = McpProcess.CreateStartInfo(Server("uvx", ["mcp-server-fetch", "a&b|c", "100%", "has space & \"quote\""], NodePath), windows: true, NodeFiles);
+        Assert.Equal(@"C:\uv\uvx.exe", psi.FileName); // the full path: the server's own PATH, not Hotline's
+        Assert.Equal(["mcp-server-fetch", "a&b|c", "100%", "has space & \"quote\""], psi.ArgumentList);
+
+        var spaced = McpProcess.CreateStartInfo(Server(@"C:\tools\my server.exe", ["x"]), windows: true, NodeFiles);
+        Assert.Equal(@"C:\tools\my server.exe", spaced.FileName);
+        Assert.Equal(["x"], spaced.ArgumentList);
+    }
+
+    [Theory]
+    [InlineData("\" & calc & \"")]
+    [InlineData("has space \" & calc \"")]
+    [InlineData("%COMSPEC%")]
+    [InlineData("a^b")]
+    [InlineData("a&b")]
+    [InlineData("a|b")]
+    [InlineData("a<b")]
+    [InlineData("a>b")]
+    [InlineData("!PATH!")]
+    [InlineData("line\nbreak")]
+    [InlineData("line\rbreak")]
+    public void Refuses_what_cmd_cant_pass_safely(string arg)
+    {
+        foreach (var server in new[] { Server("npx", ["-y", arg], NodePath), Server("not-installed", [arg], NodePath), Server("npx" + arg, [], NodePath) })
+        {
+            var ex = Assert.Throws<IOException>(() => McpProcess.CreateStartInfo(server, windows: true, NodeFiles));
+            Assert.Contains("fs", ex.Message);
+            Assert.Contains("cmd.exe", ex.Message);
+        }
     }
 
     [Fact]
@@ -26,13 +64,6 @@ public class McpProcessTests
         var unix = McpProcess.CreateStartInfo(Server("npx", ["a&b"]), windows: false);
         Assert.Equal("npx", unix.FileName);
         Assert.Equal(["a&b"], unix.ArgumentList);
-    }
-
-    [Fact]
-    public void Caret_escapes_shell_characters_only_in_arguments_without_whitespace()
-    {
-        var psi = McpProcess.CreateStartInfo(Server("uvx", ["a&b|c<d>e^f", "has space & amp"]), windows: true);
-        Assert.Equal(["/c", "uvx", "a^&b^|c^<d^>e^^f", "has space & amp"], psi.ArgumentList);
     }
 
     [Fact]
@@ -50,15 +81,11 @@ public class McpProcessTests
     }
 
     [Fact]
-    public void Working_directory_defaults_to_the_current_directory()
+    public void Working_directory_defaults_to_the_current_one_and_environment_is_inherited_with_server_overrides()
     {
         Assert.Equal(Environment.CurrentDirectory, McpProcess.CreateStartInfo(Server("node", []), windows: true).WorkingDirectory);
         Assert.Equal(@"D:\x", McpProcess.CreateStartInfo(Server("node", [], cwd: @"D:\x"), windows: true).WorkingDirectory);
-    }
 
-    [Fact]
-    public void Environment_is_inherited_with_the_server_overrides_on_top()
-    {
         var psi = McpProcess.CreateStartInfo(Server("node", [], new() { ["HOTLINE_TEST_VAR"] = "1", ["PATH"] = "custom" }), windows: true);
         Assert.Equal("1", psi.Environment["HOTLINE_TEST_VAR"]);
         Assert.Equal("custom", psi.Environment["PATH"]);

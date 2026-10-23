@@ -44,7 +44,9 @@ public static class ConnectionTypes
             ["low", "medium", "high"], true, nameof(Strings.Type_Local_Desc), ImagesByDefault: false),
     ];
 
-    public static ConnectionTypeInfo Of(BackendType type) => All.First(t => t.Type == type);
+    /// <summary>The type's info. A hand-edited file can hold a number that is no type (it can't be used: BackendFactory.IsAvailable); it reads as OpenAI-compatible instead of throwing.</summary>
+    public static ConnectionTypeInfo Of(BackendType type) =>
+        All.FirstOrDefault(t => t.Type == type) ?? All.First(t => t.Type == BackendType.OpenAiCompatible);
 
     /// <summary>A connection that runs the user's installed CLI (Antigravity, Claude Code, Codex).</summary>
     public static bool IsCli(BackendType type) => All.FirstOrDefault(t => t.Type == type)?.Has(ConnectionField.CliPath) == true;

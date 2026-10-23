@@ -15,16 +15,12 @@ public sealed class SendRouterTests : IDisposable
         return new SendRouter(actions);
     }
 
-    [Fact]
-    public void Plain_text_is_sent_as_typed() =>
-        Assert.Equal(new SendRoute.Message("hello", null), Router().Route("  hello ", hasAttachments: false));
-
-    [Fact]
-    public void Nothing_to_send() => Assert.IsType<SendRoute.Nothing>(Router().Route("  ", hasAttachments: false));
-
-    [Fact]
-    public void Attachments_alone_are_sent() =>
-        Assert.Equal(new SendRoute.Message("", null), Router().Route("", hasAttachments: true));
+    [Theory]
+    [InlineData("  hello ", false, "hello")]   // sent as typed, trimmed
+    [InlineData("", true, "")]                 // attachments alone are sent
+    [InlineData("  ", false, null)]            // nothing to send
+    public void Plain_input_is_sent_or_dropped(string text, bool hasAttachments, string? sent) =>
+        Assert.Equal(sent is null ? new SendRoute.Nothing() : (SendRoute)new SendRoute.Message(sent, null), Router().Route(text, hasAttachments));
 
     [Fact]
     public void Remember_saves_instead_of_sending()
@@ -68,4 +64,13 @@ public sealed class SendRouterTests : IDisposable
     [Fact]
     public void A_quick_action_with_nothing_to_work_on_asks_for_text() =>
         Assert.Equal(new SendRoute.NeedsText("summarize"), Router().Route("/summarize", hasAttachments: false));
+
+    [Fact]
+    public void Plain_text_is_sent_as_it_is_even_when_it_looks_like_a_command()
+    {
+        Assert.Equal(new SendRoute.Message("/remember my PIN", null), SendRouter.Plain(" /remember my PIN ", hasAttachments: false));
+        Assert.Equal(new SendRoute.Message("/fix teh", null), SendRouter.Plain("/fix teh", hasAttachments: false));
+        Assert.IsType<SendRoute.Nothing>(SendRouter.Plain("  ", hasAttachments: false));
+        Assert.Equal(new SendRoute.Message("", null), SendRouter.Plain("", hasAttachments: true));
+    }
 }

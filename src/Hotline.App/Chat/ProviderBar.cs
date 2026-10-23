@@ -130,11 +130,10 @@ internal sealed class ProviderBar(
     private static void NameTip(ComboBox box, string what) =>
         ToolTipService.SetToolTip(box, box.SelectedItem is string s && s.Trim().Length > 0 ? $"{what}: {s.Trim()}" : what);
 
-    private static readonly string[] HideOrder =["effort", "provider", "model"];
-
     /// <summary>
-    /// Gives the pickers explicit widths from the space the fixed buttons leave (see ToolbarLayout): the bar never
-    /// reflows when a picker's text changes and the buttons on the right never get pushed off the edge.
+    /// Fits the button rows to the panel (left buttons that don't fit go into the "⋯" menu) and gives the pickers explicit
+    /// widths from the space the buttons leave (see ToolbarPlan.PlanRow): the bar never reflows when a picker's text changes and
+    /// no button gets pushed off the edge.
     /// </summary>
     private bool _layoutQueued;
 
@@ -144,37 +143,35 @@ internal sealed class ProviderBar(
         _layoutQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
         {
             _layoutQueued = false;
-            popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
-            Layout();
+            try
+            {
+                popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
+                Layout();
+            }
+            catch (Exception ex) { log.Error("laying out the button rows failed", ex); } // escaping a queued callback ends the process
         });
     }
 
     private void Layout()
     {
-        var bar = popup.PickersPanel.Parent as Grid ?? popup.Toolbar; // the row the pickers are in
-        // The room is the row's container width (the panel minus its padding), never the row's own width: that one grows
+        // The room is the rows' container width (the panel minus its padding), never a row's own width: that one grows
         // with the pickers when the buttons don't fit, and sizing from it shrank them a little on every pass.
         var room = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
         if (room <= 0) return;
-        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag) && c.Visibility == Visibility.Visible)
-                             .Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
-                         + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
-        var effortAvailable = popup.EffortBox.Items.Count > 0;
-        var widths = ToolbarLayout.Compute(room, fixedWidth, popup.PickersPanel.Spacing,
-            [
-                new("effort", 72, 56, effortAvailable && Shown("effort"), Max: 96),
-                new("model", 150, 84, Shown("model"), Max: 260),
-                new("provider", 128, 72, Shown("provider"), Max: 240),
-            ], HideOrder);
-        Apply(popup.EffortBox, widths["effort"]);
-        Apply(popup.ModelBox, widths["model"]);
-        Apply(popup.ProviderBox, widths["provider"]);
+        // Widths are whole button widths (toolbar.json "span"); the pickers on the bar and their minimum are the plan's business
+        // (ToolbarPlan.PlanRow, the same call the tests make): only the effort picker can have nothing to show.
+        List<string> available = ["model", "provider"];
+        if (popup.EffortBox.Items.Count > 0) available.Add("effort");
+        var widths = popup.FitToolbar(room, available);
+        Apply(popup.EffortBox, widths.GetValueOrDefault("effort"));
+        Apply(popup.ModelBox, widths.GetValueOrDefault("model"));
+        Apply(popup.ProviderBox, widths.GetValueOrDefault("provider"));
 
         static void Apply(ComboBox box, double width)
         {
             var visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (box.Visibility != visibility) box.Visibility = visibility;
-            if (width > 0 && box.Width != width) box.Width = width; // unchanged values never start another layout
+            if (width > 0 && box.Width != ToolbarPlan.Inner(width)) box.Width = ToolbarPlan.Inner(width); // the cell's width less its inset (the renderer set the margin); unchanged values never start another layout
         }
     }
 
@@ -293,7 +290,4 @@ internal sealed class ProviderBar(
         popup.PromptMenu.Items.Add(create);
         popup.PromptMenu.Items.Add(folder);
     }
-
-    /// <summary>An item is in either button row.</summary>
-    private bool Shown(string item) => popup.ToolbarItems.Contains(item) || popup.TopToolbarItems.Contains(item);
 }

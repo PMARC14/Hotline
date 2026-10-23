@@ -54,12 +54,15 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
             using (var response = sent!)
             {
                 await using var stream = await response.Content.ReadAsStreamAsync(ct);
-                await foreach (var data in ApiCommon.SseData(stream, ct))
+                await foreach (var data in ApiCommon.SseData(stream, ct, name: ApiCommon.Name(profile)))
                 {
                     if (data == "[DONE]") { done = true; break; }
-                    JsonElement root;
-                    try { root = JsonDocument.Parse(data).RootElement; }
+                    JsonDocument doc;
+                    try { doc = JsonDocument.Parse(data); }
                     catch (JsonException) { continue; }
+                    using var chunk = doc;
+                    var root = doc.RootElement;
+                    if (root.ValueKind != JsonValueKind.Object) continue; // a proxy's odd chunk
                     if (root.TryGetProperty("error", out _))
                         throw new BackendException(BackendErrorKind.Failed, $"{ApiCommon.Name(profile)}: {ApiCommon.ErrorMessage(data)}");
                     if (!root.TryGetProperty("choices", out var choices) || choices.ValueKind != JsonValueKind.Array || choices.GetArrayLength() == 0
