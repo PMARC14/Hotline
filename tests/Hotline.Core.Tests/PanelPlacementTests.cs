@@ -77,6 +77,11 @@ public class PanelPlacementTests
         Assert.Equal(new RectI(500, 250, 700, 450), PanelPlacement.Resize(start, ResizeEdge.Top, 0, -50, 600, 100, Work));
         Assert.Equal(new RectI(500, 300, 750, 450), PanelPlacement.Resize(start, ResizeEdge.Bottom | ResizeEdge.Right, 50, 50, 600, 100, Work));
         Assert.Equal(new RectI(500, 0, 700, 700), PanelPlacement.Resize(start, ResizeEdge.Top, 0, -900, 600, 100, Work)); // stops at the work area
+
+        // a rect partly off the work area still keeps the minimum size
+        var off = PanelPlacement.Resize(new RectI(-100, 300, 350, 400), ResizeEdge.Left, -1, 0, 320, 100, Work);
+        Assert.True(off.Width >= 320 && off.Height == 400, off.ToString());
+        Assert.True(off.X >= Work.X);
     }
 
     [Fact]
@@ -117,4 +122,24 @@ public class PanelPlacementTests
         Assert.Equal(bar, r.Height);
         Assert.Equal(tall.Y + tall.Height, r.Y + r.Height); // the bar's edge stays put
     }
+
+    [Fact]
+    public void Full_grow_mode_jumps_to_max_once_there_is_content()
+    {
+        var bar = new RectI(680, 736, 560, 120);
+        Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full).Height);
+        Assert.Equal(120, PopupGeometry.GrowUp(bar, 120, 560, Work, GrowMode.Full).Height); // bar only: stays a bar
+        Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Grow).Height);
+    }
+
+    [Theory]
+    [InlineData(2880, 2.0, 40, 600, 1000, 600)]   // 1440 DIP wide screen -> 576 -> clamped up to 600
+    [InlineData(3840, 1.0, 40, 600, 1000, 1000)]  // 3840 DIP -> 1536 -> clamped down to 1000
+    [InlineData(2560, 1.0, 30, 600, 1000, 768)]   // 30% of 2560
+    [InlineData(1920, 1.5, 50, 600, 1000, 640)]   // 1280 DIP * 50%
+    [InlineData(3840, 2.0, 40, 100, 5000, 768)]   // the same fraction of the same DIP width ...
+    [InlineData(1920, 1.0, 40, 100, 5000, 768)]   // ... at another scale
+    [InlineData(1000, 1.0, 10, 700, 500, 700)]    // max below min: min wins
+    public void Width_is_percent_of_work_area_in_dip_clamped(int workPx, double scale, double pct, int min, int max, int expected)
+        => Assert.Equal(expected, PopupGeometry.RelativeWidthDip(workPx, scale, pct, min, max));
 }

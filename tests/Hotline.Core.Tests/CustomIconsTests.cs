@@ -69,13 +69,8 @@ public sealed class CustomIconsTests : IDisposable
     // ---- Validate ----
 
     [Fact]
-    public void Validate_accepts_a_real_png_and_our_own()
-    {
+    public void Validate_accepts_a_png_from_a_real_encoder() =>
         Assert.Equal(CustomIconProblem.None, CustomIcons.Validate(Real16));
-        Assert.Equal(CustomIconProblem.None, CustomIcons.Validate(Png(16, 16)));
-        Assert.Equal(CustomIconProblem.None, CustomIcons.Validate(Png(256, 256)));
-        Assert.Equal(CustomIconProblem.None, CustomIcons.Validate(Png(16, 256))); // any aspect within the range
-    }
 
     [Fact]
     public void Validate_rejects_what_isnt_a_png()
@@ -89,6 +84,9 @@ public sealed class CustomIconsTests : IDisposable
     }
 
     [Theory]
+    [InlineData(16u, 16u, CustomIconProblem.None)]
+    [InlineData(256u, 256u, CustomIconProblem.None)]
+    [InlineData(16u, 256u, CustomIconProblem.None)] // any aspect within the range
     [InlineData(100000u, 100000u, CustomIconProblem.TooBig)]
     [InlineData(257u, 16u, CustomIconProblem.TooBig)]
     [InlineData(uint.MaxValue, uint.MaxValue, CustomIconProblem.TooBig)]

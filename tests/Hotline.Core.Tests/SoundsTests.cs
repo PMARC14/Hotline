@@ -43,6 +43,26 @@ public sealed class SoundsTests : IDisposable
         Assert.Equal(wav, Sounds.Resolve(SoundsDir, new SoundChoice(SoundKind.Windows, "Notification.Default"), e => e == "Notification.Default" ? wav : null));
         Assert.Null(Sounds.Resolve(SoundsDir, new SoundChoice(SoundKind.Windows, "SystemHand"), _ => "")); // no sound in the scheme
         Assert.Null(Sounds.Resolve(SoundsDir, new SoundChoice(SoundKind.Windows, @"..\x"), _ => wav)); // not an event name
+
+        // event names may have spaces, and a bare file name resolves in the media folder
+        var media = Path.Combine(_dir, "Media");
+        Directory.CreateDirectory(media);
+        File.WriteAllBytes(Path.Combine(media, "Windows Logon.wav"), [1]);
+        var choice = Sounds.Parse("windows:Windows Logon");
+        Assert.Equal(Path.Combine(media, "Windows Logon.wav"), Sounds.Resolve(_dir, choice, _ => "Windows Logon.wav", media));
+        Assert.Null(Sounds.Resolve(_dir, Sounds.Parse(@"windows:a\b"), _ => "x.wav", media)); // not an event name
+        Assert.Null(Sounds.Resolve(_dir, choice, _ => @"\\server\share\x.wav", media)); // no network paths
+        File.WriteAllBytes(Path.Combine(media, "x.mp3"), [1]);
+        Assert.Null(Sounds.Resolve(_dir, choice, _ => Path.Combine(media, "x.mp3"), media)); // .wav only
+    }
+
+    [Fact]
+    public void A_null_sound_in_the_file_reads_as_off()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "window": { "openSound": null, "closeSound": "  " } }""");
+        var s = new SettingsStore(_dir).Load();
+        Assert.Equal(("off", "off"), (s.Window.OpenSound, s.Window.CloseSound));
     }
 
     [Fact]

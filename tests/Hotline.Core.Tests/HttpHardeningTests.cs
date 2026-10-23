@@ -72,25 +72,17 @@ public sealed class HttpHardeningTests : IDisposable
         Assert.DoesNotContain("k=1", ex.Message);
     }
 
-    [Fact]
-    public async Task Sse_line_over_the_limit_fails_clearly()
+    [Theory]
+    [InlineData(5000, 1, "")]  // one long line, no newline at all
+    [InlineData(90, 50, "\n")]  // an event made of many small data lines is capped too
+    public async Task Sse_over_the_limit_fails_clearly(int lineChars, int lines, string end)
     {
-        var bytes = Encoding.UTF8.GetBytes("data: " + new string('x', 5000)); // no newline at all
+        var bytes = Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("data: " + new string('x', lineChars) + end, lines)));
         var ex = await Assert.ThrowsAsync<BackendException>(async () =>
         {
             await foreach (var _ in ApiCommon.SseData(new MemoryStream(bytes), default, maxChars: 1000)) { }
         });
         Assert.Equal(BackendErrorKind.Failed, ex.Kind);
-    }
-
-    [Fact]
-    public async Task Sse_event_made_of_many_small_data_lines_is_capped_too()
-    {
-        var bytes = Encoding.UTF8.GetBytes(string.Concat(Enumerable.Repeat("data: " + new string('y', 90) + "\n", 50)));
-        await Assert.ThrowsAsync<BackendException>(async () =>
-        {
-            await foreach (var _ in ApiCommon.SseData(new MemoryStream(bytes), default, maxChars: 1000)) { }
-        });
     }
 
     [Fact]

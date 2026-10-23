@@ -11,12 +11,15 @@ public sealed class SelectionTests : IDisposable
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
-    [Fact]
-    public void Selection_becomes_a_named_text_attachment()
+    [Theory]
+    [InlineData("Notepad", "Selected text from Notepad")]
+    [InlineData(null, "Selected text")]   // unknown app: a plain name
+    [InlineData("  ", "Selected text")]
+    public void Selection_becomes_a_named_text_attachment(string? app, string name)
     {
-        var a = SelectionAttachment.Create("  some text\r\n", "Notepad");
+        var a = SelectionAttachment.Create("  some text\r\n", app);
         Assert.NotNull(a);
-        Assert.Equal("Selected text from Notepad", a!.Name);
+        Assert.Equal(name, a!.Name);
         Assert.Equal(AttachmentKind.Text, a.Kind);
         Assert.Equal("text/plain", a.MimeType);
         Assert.Equal("some text", a.AsText());
@@ -27,13 +30,6 @@ public sealed class SelectionTests : IDisposable
     [InlineData("")]
     [InlineData(" \r\n\t ")]
     public void No_attachment_for_an_empty_selection(string? text) => Assert.Null(SelectionAttachment.Create(text, "Notepad"));
-
-    [Fact]
-    public void Unknown_app_gets_a_plain_name()
-    {
-        Assert.Equal("Selected text", SelectionAttachment.Create("x", null)!.Name);
-        Assert.Equal("Selected text", SelectionAttachment.Create("x", "  ")!.Name);
-    }
 
     [Fact]
     public void Long_selections_are_cut_with_a_note()
