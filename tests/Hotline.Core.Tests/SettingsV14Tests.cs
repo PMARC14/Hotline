@@ -20,14 +20,22 @@ public sealed class SettingsV14Tests : IDisposable
     private static JsonObject Activation(string settingsText)
         => JsonNode.Parse(settingsText, documentOptions: new() { CommentHandling = System.Text.Json.JsonCommentHandling.Skip })!["activation"]!.AsObject();
 
-    [Fact]
-    public void V13_file_with_copilotKey_is_rewritten_without_it_and_kept_as_bak()
+    [Theory]
+    [InlineData("1")]
+    [InlineData("null")]
+    [InlineData("true")]
+    [InlineData("\"rightCtrl\"")]
+    [InlineData("\"RIGHTCTRL\"")]
+    [InlineData("\"somethingElse\"")]
+    [InlineData("{ \"mode\": \"rightCtrl\" }")]
+    [InlineData("[1, \"x\", null]")]
+    public void CopilotKey_of_any_value_is_dropped_without_failing_and_the_file_kept_as_bak(string value)
     {
-        const string original = """
+        var original = $$"""
             {
               // my settings
               "schemaVersion": 13,
-              "activation": { "fallbackHotkey": "Ctrl+Alt+H", "copilotKey": "rightCtrl" }
+              "activation": { "copilotKey": {{value}}, "fallbackHotkey": "Ctrl+Alt+K" }
             }
             """;
         WriteSettings(original);
@@ -35,7 +43,8 @@ public sealed class SettingsV14Tests : IDisposable
         var s = New().Load();
 
         Assert.Equal(14, s.SchemaVersion);
-        Assert.Equal("Ctrl+Alt+H", s.Activation.FallbackHotkey);
+        Assert.Equal("Ctrl+Alt+K", s.Activation.FallbackHotkey); // the file was read, not replaced by defaults
+        Assert.False(File.Exists(SettingsPath + ".bad"));
         Assert.Equal(original, File.ReadAllText(SettingsPath + ".bak"));
         Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
         var rewritten = File.ReadAllText(SettingsPath);
@@ -45,29 +54,12 @@ public sealed class SettingsV14Tests : IDisposable
     }
 
     [Theory]
-    [InlineData("1")]
-    [InlineData("null")]
-    [InlineData("true")]
-    [InlineData("\"RIGHTCTRL\"")]
-    [InlineData("\"somethingElse\"")]
-    [InlineData("{ \"mode\": \"rightCtrl\" }")]
-    [InlineData("[1, \"x\", null]")]
-    public void CopilotKey_of_any_value_is_dropped_without_failing(string value)
+    [InlineData(13, 800)] // a width chosen before v14 is kept
+    [InlineData(14, 600)] // and one chosen on v14
+    public void Own_min_width_is_kept(int schema, int width)
     {
-        WriteSettings($$"""{ "schemaVersion": 13, "activation": { "copilotKey": {{value}}, "fallbackHotkey": "Ctrl+Alt+K" } }""");
-
-        var s = New().Load();
-
-        Assert.Equal("Ctrl+Alt+K", s.Activation.FallbackHotkey); // the file was read, not replaced by defaults
-        Assert.False(File.Exists(SettingsPath + ".bad"));
-        Assert.False(Activation(File.ReadAllText(SettingsPath)).ContainsKey("copilotKey"));
-    }
-
-    [Fact]
-    public void Own_min_width_is_kept()
-    {
-        WriteSettings("""{ "schemaVersion": 13, "window": { "minWidth": 800 } }""");
-        Assert.Equal(800, New().Load().Window.MinWidth);
+        WriteSettings($$"""{ "schemaVersion": {{schema}}, "window": { "minWidth": {{width}} } }""");
+        Assert.Equal(width, New().Load().Window.MinWidth);
     }
 
     [Fact]
@@ -79,23 +71,6 @@ public sealed class SettingsV14Tests : IDisposable
         File.WriteAllText(Path.Combine(connections, "My-Claude.json"), """{ "id": "My-Claude", "type": "claudeCode", "name": "B" }""");
         WriteSettings("""{ "schemaVersion": 14, "chat": { "defaultBackend": "my-claude", "order": ["a", "My-Claude"] } }""");
         Assert.Equal("My-Claude", New().Load().Chat.DefaultBackend);
-    }
-
-    [Fact]
-    public void Min_width_600_chosen_on_v14_is_kept()
-    {
-        WriteSettings("""{ "schemaVersion": 14, "window": { "minWidth": 600 } }""");
-        Assert.Equal(600, New().Load().Window.MinWidth);
-    }
-
-    [Fact]
-    public void Fresh_install_has_width_460_and_schema_14()
-    {
-        var s = New().Load();
-        Assert.Equal(460, s.Window.MinWidth);
-        Assert.Equal(14, s.SchemaVersion);
-        Assert.Equal(14, HotlineSettings.CurrentSchemaVersion);
-        Assert.False(File.Exists(SettingsPath + ".old"));
     }
 
     [Theory]
