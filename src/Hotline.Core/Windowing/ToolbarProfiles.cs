@@ -34,7 +34,12 @@ public static class ToolbarProfiles
 
     private static IReadOnlyList<ToolbarProfile> Build() =>
     [
-        new("default", Doc("Today's layout: the pickers in the top row, the nine buttons bottom left.",
+        new("default", Doc("The shipped layout (the owner's): effort, model and provider across the top row; capture, prompt and chat buttons below.",
+            Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", "\"prompt\", \"continueIn\"", "\"recent\", \"newChat\", \"settings\""),
+            top: Group("\"effort\"", "\"model\"", "\"provider\""),
+            overrides: "{ \"effort\": { \"span\": 3 }, \"provider\": { \"span\": 4 } }")),
+
+        new("nine-buttons-pickers-top", Doc("The layout up to 0.4: the pickers in the top row, the nine buttons bottom left.",
             Group(Buttons), top: Group(Pickers))),
 
         new("pickers-bottom-left-before", Doc("The pickers at the start of the bottom-left group, before the buttons.",

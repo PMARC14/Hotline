@@ -8,12 +8,15 @@ public sealed class ToolbarPickerSpanTests
     private static ToolbarModel Read(string overrides, string pickers = "\"effort\", \"model\", \"provider\"") => ToolbarModel.Resolve(
         $$"""{ "version": 2, "items": { "left": ["pin", {{pickers}}] }, "overrides": {{overrides}} }""");
 
+    /// <summary>The shipped layout without its own picker widths: pickers at the built-in 2 / 4 / 3 (the file default).</summary>
+    private static readonly ToolbarModel Plain = ToolbarModel.Defaults with { PickerSpans = new Dictionary<string, int>() };
+
     // ---- the file ----
 
     [Fact]
-    public void Defaults_are_two_four_and_three_button_widths()
+    public void Unwritten_spans_are_two_four_and_three_button_widths()
     {
-        var m = ToolbarModel.Defaults;
+        var m = Plain;
         Assert.Equal((2, 4, 3), (m.EffectiveSpan("effort"), m.EffectiveSpan("model"), m.EffectiveSpan("provider")));
         Assert.Empty(m.PickerSpans);
         Assert.Equal((1, 8), (ToolbarModel.MinSpan, ToolbarModel.MaxSpan));
@@ -124,7 +127,7 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void EffectiveSpan_of_anything_else_is_one_and_clamps_an_in_memory_value()
     {
-        var m = ToolbarModel.Defaults with { PickerSpans = new Dictionary<string, int> { ["model"] = 99, ["effort"] = -4 } };
+        var m = Plain with { PickerSpans = new Dictionary<string, int> { ["model"] = 99, ["effort"] = -4 } };
         Assert.Equal(8, m.EffectiveSpan("model"));
         Assert.Equal(1, m.EffectiveSpan("effort"));
         Assert.Equal(1, m.EffectiveSpan("pin"));
@@ -136,7 +139,7 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void SetPickerSpan_sets_clamps_and_round_trips()
     {
-        var m = ToolbarModel.Defaults;
+        var m = Plain;
         var six = ToolbarEditor.SetPickerSpan(m, "model", 6);
         Assert.Equal(6, six.EffectiveSpan("model"));
         Assert.Equal(six, ToolbarModel.Resolve(six.ToJson()));
@@ -147,23 +150,23 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void SetPickerSpan_back_to_the_default_removes_the_entry()
     {
-        var six = ToolbarEditor.SetPickerSpan(ToolbarModel.Defaults, "model", 6);
+        var six = ToolbarEditor.SetPickerSpan(Plain, "model", 6);
         var back = ToolbarEditor.SetPickerSpan(six, "model", 4);
         Assert.Empty(back.PickerSpans);
-        Assert.Equal(ToolbarModel.Defaults, back);
+        Assert.Equal(Plain, back);
     }
 
     [Fact]
     public void SetPickerSpan_that_changes_nothing_returns_the_input()
     {
-        var m = ToolbarEditor.SetPickerSpan(ToolbarModel.Defaults, "model", 6);
+        var m = ToolbarEditor.SetPickerSpan(Plain, "model", 6);
         Assert.Same(m, ToolbarEditor.SetPickerSpan(m, "model", 6));
     }
 
     [Fact]
     public void SetPickerSpan_same_instance_cases()
     {
-        var m = ToolbarModel.Defaults;
+        var m = Plain;
         Assert.Same(m, ToolbarEditor.SetPickerSpan(m, "model", 4)); // the default already
         Assert.Same(m, ToolbarEditor.SetPickerSpan(m, "pin", 3)); // not a picker
         Assert.Same(m, ToolbarEditor.SetPickerSpan(m, "nope", 3));
@@ -176,7 +179,7 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void SetPickerSpan_works_on_a_hidden_picker_and_hide_keeps_the_span()
     {
-        var hidden = ToolbarEditor.Hide(ToolbarModel.Defaults, "model");
+        var hidden = ToolbarEditor.Hide(Plain, "model");
         var set = ToolbarEditor.SetPickerSpan(hidden, "model", 7);
         Assert.Equal(7, set.EffectiveSpan("model"));
         Assert.Equal(set, ToolbarModel.Resolve(set.ToJson()));
@@ -188,10 +191,10 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void Moving_the_pickers_keeps_their_spans()
     {
-        var m = ToolbarEditor.SetPickerSpan(ToolbarModel.Defaults, "provider", 5);
+        var m = ToolbarEditor.SetPickerSpan(Plain, "provider", 5);
         var moved = ToolbarEditor.ShiftTo(m, "model", Shift.Down);
         Assert.Equal(5, moved.EffectiveSpan("provider"));
-        Assert.Contains("model", moved.Items(Quadrant.BottomLeft));
+        Assert.Contains("model", moved.Items(Quadrant.BottomCenter));
     }
 
     // ---- the layout ----
@@ -203,21 +206,21 @@ public sealed class ToolbarPickerSpanTests
     public void The_unit_is_one_standard_button_width_whatever_the_bar_size(ButtonSize size)
     {
         Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
-        var specs = ToolbarPlan.PickerSpecs(ToolbarModel.Defaults with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
+        var specs = ToolbarPlan.PickerSpecs(Plain with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
         Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
     }
 
     [Fact]
     public void The_unit_ignores_one_buttons_own_size()
     {
-        var m = ToolbarModel.Defaults with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 80) } };
+        var m = Plain with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 80) } };
         Assert.Equal(80.0, ToolbarPlan.PickerSpecs(m, ["effort"]).First(s => s.Name == "effort").Preferred);
     }
 
     [Fact]
     public void Specs_are_span_times_unit_with_a_readable_floor_capped_at_the_pickers_own_width()
     {
-        var m = ToolbarModel.Defaults;
+        var m = Plain;
         var specs = ToolbarPlan.PickerSpecs(m, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
         Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
         Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
@@ -239,7 +242,7 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void An_unavailable_picker_is_not_available_in_the_specs()
     {
-        var specs = ToolbarPlan.PickerSpecs(ToolbarModel.Defaults, ["model"]).ToDictionary(s => s.Name);
+        var specs = ToolbarPlan.PickerSpecs(Plain, ["model"]).ToDictionary(s => s.Name);
         Assert.False(specs["effort"].Available);
         Assert.True(specs["model"].Available);
         Assert.False(specs["provider"].Available);
@@ -248,7 +251,7 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void A_span_is_a_maximum_too()
     {
-        var m = ToolbarEditor.SetPickerSpan(ToolbarModel.Defaults, "model", 8);
+        var m = ToolbarEditor.SetPickerSpan(Plain, "model", 8);
         var specs = ToolbarPlan.PickerSpecs(m, ["effort", "model", "provider"]);
         var widths = ToolbarLayout.Compute(5000, 100, 4, specs, ["effort", "provider", "model"]);
         Assert.Equal((80.0, 320.0, 120.0), (widths["effort"], widths["model"], widths["provider"]));

@@ -9,7 +9,7 @@ namespace Hotline.Core.Tests;
 /// </summary>
 public sealed class ToolbarProfileTests
 {
-    private const double Spacing = 2; // the rows' ColumnSpacing in PopupWindow.xaml (pickers are columns of the row, so the same gap)
+    private const double Spacing = ToolbarPlan.CellGap; // the rows have no column gap: each cell holds its own padding
     private const double Eps = 1e-9;
     private static readonly double[] Widths = [320, 400, 680, 1000, 1600];
     private static readonly string[] AllPickers = ["effort", "model", "provider"];
@@ -240,13 +240,13 @@ public sealed class ToolbarProfileTests
     // ---- what the interesting layouts promise ----
 
     [Fact]
-    public void The_default_pickers_are_80_160_and_120_wide_at_every_bar_size()
+    public void The_default_pickers_are_120_160_and_160_wide_at_every_bar_size()
     {
         // Changed: they used to scale with the bar size (compact 40/80/60, wide 160/320/240); the unit is now one standard button width.
         foreach (var size in Enum.GetValues<ButtonSize>())
         {
             var f = Plan(Sized("default", size), top: true, 1000);
-            Assert.Equal((80.0, 160.0, 120.0), (f.PickerWidths["effort"], f.PickerWidths["model"], f.PickerWidths["provider"]));
+            Assert.Equal((120.0, 160.0, 160.0), (f.PickerWidths["effort"], f.PickerWidths["model"], f.PickerWidths["provider"]));
         }
     }
 

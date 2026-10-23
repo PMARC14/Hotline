@@ -65,6 +65,34 @@ public static class PopupGeometry
         return Math.Min(maxPx, Math.Max(size, previousPx));
     }
 
+    /// <summary>
+    /// The width (DIP) the panel grows to when a chat starts, or null for no growth: the explicit <paramref name="chatWidth"/>, else
+    /// <paramref name="chatWidthPercent"/> of the work area clamped to [min, max]. Never when the panel's width was set (<paramref name="width"/>:
+    /// a fixed width, which a manual resize saves), when neither is set (the default), or when the target is not wider than the
+    /// <paramref name="startDip"/> it opens at.
+    /// </summary>
+    public static int? ChatWidthDip(int? width, int? chatWidth, double chatWidthPercent, int workAreaWidthPx, double scale, int minDip, int maxDip, int startDip)
+    {
+        if (width is not null) return null;
+        int target;
+        if (chatWidth is { } explicitWidth) target = explicitWidth;
+        else if (chatWidthPercent > 0) target = RelativeWidthDip(workAreaWidthPx, scale, chatWidthPercent, minDip, maxDip);
+        else return null;
+        return target > startDip ? target : null;
+    }
+
+    /// <summary>
+    /// The rectangle widened to <paramref name="targetPx"/> around its horizontal centre, then slid back inside the work area (and no
+    /// wider than it). A target that is not wider leaves it as it is.
+    /// </summary>
+    public static RectI GrowWidth(RectI rect, int targetPx, RectI work)
+    {
+        if (targetPx <= rect.Width) return rect;
+        var w = Math.Min(targetPx, work.Width);
+        var x = Math.Clamp(rect.X + (rect.Width - w) / 2, work.X, work.X + work.Width - w);
+        return rect with { X = x, Width = w };
+    }
+
     /// <summary>Panel width in DIPs: percent of the work area (converted from physical pixels), clamped to [min, max].</summary>
     public static int RelativeWidthDip(int workAreaWidthPx, double scale, double percent, int minDip, int maxDip)
         => Math.Clamp((int)Math.Round(workAreaWidthPx / scale * percent / 100.0), minDip, Math.Max(minDip, maxDip));

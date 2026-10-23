@@ -6,7 +6,7 @@ namespace Hotline.Core.Tests;
 /// span, floor and place in the hide order, in either row and any group.</summary>
 public sealed class ToolbarPickersApartTests
 {
-    private const double Spacing = 2;
+    private const double Spacing = ToolbarPlan.CellGap; // the rows have no column gap: each cell holds its own padding
 
     private static ToolbarModel Model(string bottom, string top = "{}", string overrides = "{}") => ToolbarModel.Resolve(
         $$"""{ "version": 2, "items": {{bottom}}, "top": {{top}}, "overrides": {{overrides}} }""");

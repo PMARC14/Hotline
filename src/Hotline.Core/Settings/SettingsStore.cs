@@ -329,6 +329,8 @@ public sealed class SettingsStore(string directory)
         s.Window.Anchor.Y = double.IsFinite(s.Window.Anchor.Y) ? Math.Clamp(s.Window.Anchor.Y, 0.0, 1.0) : 0.8;
         if (s.Window.Width is { } width) s.Window.Width = Math.Clamp(width, 320, 8000);
         if (s.Window.ChatHeight is { } chat) s.Window.ChatHeight = Math.Clamp(chat, 60, 8000);
+        if (s.Window.ChatWidth is { } chatWidth) s.Window.ChatWidth = Math.Clamp(chatWidth, 320, 8000);
+        s.Window.ChatWidthPercent = !double.IsFinite(s.Window.ChatWidthPercent) || s.Window.ChatWidthPercent <= 0 ? 0 : Math.Clamp(s.Window.ChatWidthPercent, 20, 90);
         s.Window.OpenSound = string.IsNullOrWhiteSpace(s.Window.OpenSound) ? Windowing.Sounds.Off : s.Window.OpenSound.Trim();
         s.Window.CloseSound = string.IsNullOrWhiteSpace(s.Window.CloseSound) ? Windowing.Sounds.Off : s.Window.CloseSound.Trim();
         s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);

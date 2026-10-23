@@ -82,11 +82,11 @@ public sealed class ToolbarPlanTests
     // ---- rows ----
 
     [Fact]
-    public void Defaults_put_the_pickers_on_top_and_the_buttons_bottom_left()
+    public void Defaults_put_the_pickers_across_the_top_and_the_buttons_in_three_groups_below()
     {
         var m = ToolbarModel.Defaults;
-        Assert.Equal(new RowPlan(["effort", "model", "provider"], [], []), ToolbarPlan.Row(m, top: true));
-        Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"], [], []),
+        Assert.Equal(new RowPlan(["effort"], ["model"], ["provider"]), ToolbarPlan.Row(m, top: true));
+        Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion"], ["prompt", "continueIn"], ["recent", "newChat", "settings"]),
             ToolbarPlan.Row(m, top: false));
         Assert.Equal(["effort", "model", "provider"], ToolbarPlan.PickerOrder(m));
     }

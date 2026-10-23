@@ -408,7 +408,7 @@ public sealed class ToolbarEditorTests
         for (var i = 0; i < 24; i++) m = ToolbarEditor.AddCustom(m, Text($"b{i}"));
         Assert.Equal(24, m.Buttons.Count);
         Assert.Same(m, ToolbarEditor.AddCustom(m, Text("b24")));
-        Assert.Equal(9 + 24, m.Items(BL).Count);
+        Assert.Equal(4 + 24, m.Items(BL).Count);
         AssertValid(m);
     }
 

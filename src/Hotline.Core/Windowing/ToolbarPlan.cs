@@ -51,6 +51,23 @@ public static class ToolbarPlan
     /// <summary>A custom button's largest glyph: its icon is one of a few plain ones, drawn no bigger than an 80-DIP button holds.</summary>
     public const int MaxCustomFont = 22;
 
+    /// <summary>
+    /// The bar is a grid of cells: an item's size from <see cref="Metrics(ButtonStyle, bool)"/> is its OUTER cell, its padding inside. Cells touch
+    /// (no column gap), so doubling or halving a button still lines up with the rest and a row is the sum of its cells. The visible
+    /// button is the cell less <see cref="CellInset"/> on each side (<see cref="Inner"/>), so touching items show a 2 DIP gap.
+    /// </summary>
+    public const double CellGap = 0, CellInset = 1;
+
+    /// <summary>The visible size of an item in a cell of <paramref name="cell"/> DIPs.</summary>
+    public static double Inner(double cell) => Math.Max(0, cell - 2 * CellInset);
+
+    /// <summary>The panel's padding on every side (DIP); PopupWindow.xaml's Root Padding is this value.</summary>
+    public const double PanelPadding = 10;
+
+    /// <summary>The panel width whose bar room is <paramref name="buttons"/> normal buttons across: the buttons plus the padding on both sides
+    /// (11 buttons = 460, about a quarter of a 1920-wide screen at 100%).</summary>
+    public static double WidthForButtons(int buttons) => buttons * BaseWidth + 2 * PanelPadding;
+
     /// <summary>The one base size every preset is a multiple of (DIP; the glyph in points): change these to rescale them all.</summary>
     public const double BaseWidth = 40, BaseHeight = 36, BaseFont = 16;
 

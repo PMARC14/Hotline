@@ -15,7 +15,7 @@ public sealed class SettingsStoreTests : IDisposable
         var store = New();
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal(40, s.Window.WidthPercent);
+        Assert.Equal(25, s.Window.WidthPercent);
         Assert.Equal(0, s.Window.Height);
         Assert.True(File.Exists(store.FilePath));
     }
@@ -118,7 +118,7 @@ public sealed class SettingsStoreTests : IDisposable
 
         var s = New().Load();
 
-        Assert.Equal(680, s.Window.MinWidth);
+        Assert.Equal(460, s.Window.MinWidth);
     }
 
     [Fact]

@@ -10,7 +10,7 @@ namespace Hotline.Core.Tests;
 /// </summary>
 public sealed class ToolbarRobustnessTests
 {
-    private const double Spacing = 2; // the rows' Grid.ColumnSpacing
+    private const double Spacing = ToolbarPlan.CellGap; // the rows have no column gap: each cell holds its own padding
     private const double PickersMin = 150;
     private const int MaxCustom = 80, MinDip = 20;
     // A built-in button is at most wide (twice the base) or an explicit 80; its glyph 0.8 to 1.2 times the base's.

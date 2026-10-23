@@ -89,10 +89,10 @@ public sealed class SettingsV14Tests : IDisposable
     }
 
     [Fact]
-    public void Fresh_install_has_width_680_and_schema_14()
+    public void Fresh_install_has_width_460_and_schema_14()
     {
         var s = New().Load();
-        Assert.Equal(680, s.Window.MinWidth);
+        Assert.Equal(460, s.Window.MinWidth);
         Assert.Equal(14, s.SchemaVersion);
         Assert.Equal(14, HotlineSettings.CurrentSchemaVersion);
         Assert.False(File.Exists(SettingsPath + ".old"));

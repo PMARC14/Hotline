@@ -70,18 +70,24 @@ public sealed record ToolbarModel(
     /// picker or the more button), each once. Empty unless a more button is placed (<see cref="Resolve"/> drops the entries otherwise).</summary>
     public IReadOnlyList<string> Menu { get; init; } = [];
 
-    /// <summary>Today's layout (the owner's, 2026-10-16): pickers in the top row, the rest bottom left.</summary>
+    /// <summary>The shipped layout, the owner's own (2026-10-22): the three pickers across the top row (effort 3, model 4, provider 4
+    /// buttons wide); capture buttons, prompt and continue-in, and recent / new chat / settings in the bottom row.</summary>
     public static ToolbarModel Defaults { get; } = new(
         Layout(q => q switch
         {
-            Quadrant.BottomLeft => ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"],
-            Quadrant.TopLeft => ["effort", "model", "provider"],
+            Quadrant.BottomLeft => ["pin", "captureWindow", "captureScreen", "captureRegion"],
+            Quadrant.BottomCenter => ["prompt", "continueIn"],
+            Quadrant.BottomRight => ["recent", "newChat", "settings"],
+            Quadrant.TopLeft => ["effort"],
+            Quadrant.TopCenter => ["model"],
+            Quadrant.TopRight => ["provider"],
             _ => [],
         }),
         new ButtonStyle(ButtonSize.Normal, false, false),
         new Dictionary<string, ButtonStyle>(StringComparer.OrdinalIgnoreCase),
         [],
-        []);
+        [])
+    { PickerSpans = new Dictionary<string, int> { ["effort"] = 3, ["provider"] = 4 } };
 
     private static IReadOnlyDictionary<Quadrant, IReadOnlyList<string>> Layout(Func<Quadrant, IReadOnlyList<string>> items) =>
         Order.ToDictionary(q => q, items);
@@ -193,8 +199,10 @@ public sealed record ToolbarModel(
         var buttons = ReadButtons(root["buttons"], warnings);
         var known = BuiltIn.Concat(buttons.Select(b => b.Id)).ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
         var (placed, explicitlyEmpty) = ReadQuadrants(root, known, warnings);
+        var defaulted = false;
         if (placed.Values.All(l => l.Count == 0) && !explicitlyEmpty)
         {
+            defaulted = true;
             warnings.Add("toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used");
             placed = Order.ToDictionary(q => q, q => Defaults.Items(q).ToList());
         }
@@ -202,6 +210,8 @@ public sealed record ToolbarModel(
         var menu = ReadMenu(root["menu"], known, placed, warnings);
         var style = ReadStyle(root["style"], "style", warnings);
         var overrides = ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings, out var spans);
+        // The default layout comes with the default picker widths unless the file chose its own.
+        if (defaulted && spans.Count == 0) spans = Defaults.PickerSpans;
         return new ToolbarModel(
             Layout(q => placed[q]),
             style with { Size = style.Size ?? ButtonSize.Normal, Outline = style.Outline ?? false, Filled = style.Filled ?? false },

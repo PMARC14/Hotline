@@ -5,7 +5,7 @@ namespace Hotline.Core.Tests;
 /// <summary>The optional "more" button and toolbar.json's "menu": reading, planning (merging with the automatic overflow) and editing.</summary>
 public sealed class ToolbarMoreMenuTests
 {
-    private const double Spacing = 2;
+    private const double Spacing = ToolbarPlan.CellGap; // the rows have no column gap: each cell holds its own padding
     private const double Eps = 1e-9;
 
     private static ToolbarModel Read(string bottomLeft, string bottomRight, string menu, string extra = "") =>
@@ -123,7 +123,7 @@ public sealed class ToolbarMoreMenuTests
         Assert.Empty(ToolbarPlan.PlanRow(m, top: false, 1000, Spacing).Menu);
         var withMore = ToolbarModel.Defaults with
         {
-            Placed = ToolbarModel.Defaults.Placed.ToDictionary(p => p.Key, p => p.Key == Quadrant.BottomRight ? ["more"] : p.Value),
+            Placed = ToolbarModel.Defaults.Placed.ToDictionary(p => p.Key, p => p.Key == Quadrant.TopCenter ? ["more"] : p.Value),
             Menu = ["recent", "effort", "more", "pin"],
         };
         Assert.Empty(ToolbarPlan.MenuItems(withMore).Where(id => id is "effort" or "more" or "pin" or "recent")); // pin and recent are on the bar; pickers and more never
@@ -188,7 +188,7 @@ public sealed class ToolbarMoreMenuTests
         var one = ToolbarEditor.MoveToMenu(m, "recent", int.MaxValue);
         AssertEdit(m, one);
         Assert.Equal(["recent"], one.Menu);
-        Assert.DoesNotContain("recent", one.Items(Quadrant.BottomLeft));
+        Assert.DoesNotContain("recent", one.Items(Quadrant.BottomRight));
         Assert.DoesNotContain("recent", ToolbarEditor.Hidden(one));
         var two = ToolbarEditor.DropToMenu(one, "pin", 0);
         AssertEdit(one, two);
@@ -196,7 +196,7 @@ public sealed class ToolbarMoreMenuTests
         var back = ToolbarEditor.MoveTo(two, "recent", Quadrant.TopRight, 0);
         AssertEdit(two, back);
         Assert.Equal(["pin"], back.Menu);
-        Assert.Equal(["recent"], back.Items(Quadrant.TopRight));
+        Assert.Equal("recent", back.Items(Quadrant.TopRight)[0]); // inserted at the front, before the provider
         var shown = ToolbarEditor.Show(two, "pin", Quadrant.TopLeft);
         Assert.Equal(["recent"], shown.Menu);
         Assert.Contains("pin", shown.Items(Quadrant.TopLeft));
@@ -210,7 +210,7 @@ public sealed class ToolbarMoreMenuTests
         var m = ToolbarEditor.MoveToMenu(hidden, "newChat", 0);
         AssertEdit(hidden, m);
         Assert.Equal(["newChat"], m.Menu);
-        Assert.Equal(["more"], m.Items(Quadrant.BottomRight));
+        Assert.Equal(["recent", "settings", "more"], m.Items(Quadrant.BottomRight));
         Assert.DoesNotContain("newChat", ToolbarEditor.Hidden(m));
     }
 
@@ -289,14 +289,14 @@ public sealed class ToolbarMoreMenuTests
     {
         var m = WithMore();
         const double room = 320;
-        var expected = ToolbarPlan.PlanRow(m, top: false, room, 2).Menu;
+        var expected = ToolbarPlan.PlanRow(m, top: false, room, Spacing).Menu;
         Assert.NotEmpty(expected);
         var filled = ToolbarEditor.FillMenuFromOverflow(m, room, room);
         AssertEdit(m, filled);
         Assert.Equal(expected, filled.Menu);
-        Assert.All(expected, id => Assert.DoesNotContain(id, filled.Items(Quadrant.BottomLeft)));
+        Assert.All(expected, id => Assert.DoesNotContain(id, Enum.GetValues<Quadrant>().SelectMany(filled.Items)));
         // Everything that fits stays: nothing more is dropped by the planner now.
-        Assert.Empty(ToolbarPlan.PlanRow(filled, top: false, room, 2).Dropped);
+        Assert.Empty(ToolbarPlan.PlanRow(filled, top: false, room, Spacing).Dropped);
     }
 
     [Fact]

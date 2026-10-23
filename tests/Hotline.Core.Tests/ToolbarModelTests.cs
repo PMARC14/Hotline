@@ -67,13 +67,13 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
-    public void Defaults_are_todays_layout()
+    public void Defaults_are_the_owners_layout()
     {
         var d = ToolbarModel.Defaults;
-        Assert.Equal(["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"], d.Items(Quadrant.BottomLeft));
-        Assert.Equal(["effort", "model", "provider"], d.Items(Quadrant.TopLeft));
-        Assert.Empty(d.Items(Quadrant.BottomRight));
-        Assert.Empty(d.Items(Quadrant.TopRight));
+        Assert.Equal(["pin", "captureWindow", "captureScreen", "captureRegion"], d.Items(Quadrant.BottomLeft));
+        Assert.Equal(["effort"], d.Items(Quadrant.TopLeft));
+        Assert.Equal(["recent", "newChat", "settings"], d.Items(Quadrant.BottomRight));
+        Assert.Equal(["provider"], d.Items(Quadrant.TopRight));
         Assert.Equal(new ButtonStyle(ButtonSize.Normal, false, false), d.Style);
         Assert.Empty(d.Overrides);
         Assert.Empty(d.Buttons);

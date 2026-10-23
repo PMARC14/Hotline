@@ -98,8 +98,8 @@ public static class ToolbarEditor
         return true;
     }
 
-    /// <summary>The button rows' column spacing (PopupWindow.xaml), which the planner needs.</summary>
-    private const double RowSpacing = 2;
+    /// <summary>The button rows' column spacing, which the planner needs.</summary>
+    private const double RowSpacing = ToolbarPlan.CellGap;
 
     /// <summary>
     /// "Move what doesn't fit into the menu": runs the renderer's planner for both rows at the given panel widths (DIP) and moves the

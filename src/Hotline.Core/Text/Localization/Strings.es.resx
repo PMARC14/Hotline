@@ -583,6 +583,10 @@ Denegar:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Expansión del chat</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automáticamente</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automático: hacia arriba, salvo que no haya espacio. Arriba o Abajo lo fija en esa dirección.</value></data>
