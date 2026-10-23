@@ -67,6 +67,9 @@ internal sealed class ToolbarRenderer
         // focused pin button and turned pinning off.
         foreach (var b in _builtIn.Values) b.AllowFocusOnInteraction = false;
         _pickers = new Dictionary<string, ComboBox> { ["effort"] = popup.EffortBox, ["model"] = popup.ModelBox, ["provider"] = popup.ProviderBox };
+        // Every item is a cell of the grid with its padding inside (ToolbarPlan.CellGap / CellInset): the rows have no column gap.
+        popup.TopToolbar.ColumnSpacing = popup.Toolbar.ColumnSpacing = ToolbarPlan.CellGap;
+        foreach (var picker in _pickers.Values) picker.Margin = new Thickness(ToolbarPlan.CellInset);
         _top = new Row(popup.TopToolbar, MoreButton());
         _bottom = new Row(popup.Toolbar, MoreButton());
         _top.More.Flyout = OverflowMenu(() => _top);
@@ -76,7 +79,7 @@ internal sealed class ToolbarRenderer
 
     private static Button MoreButton()
     {
-        var more = new Button { Content = Glyphs.More, AllowFocusOnInteraction = false };
+        var more = new Button { Content = Glyphs.More, AllowFocusOnInteraction = false, Margin = new Thickness(ToolbarPlan.CellInset) };
         ToolTipService.SetToolTip(more, Strings.Transcript_More);
         AutomationProperties.SetName(more, Strings.Transcript_More);
         return more;
@@ -240,8 +243,12 @@ internal sealed class ToolbarRenderer
     {
         var key = (button is ToggleButton ? "ToolbarToggle" : "ToolbarButton") + (style.Outline == true ? "Outline" : "") + (style.Filled == true ? "Filled" : "");
         if (_popup.Root.Resources[key] is Style look && button.Style != look) button.Style = look;
-        if (button.Width != size.Width) button.Width = size.Width;
-        if (button.Height != size.Height) button.Height = size.Height;
+        // The size is the item's whole cell; the button is that less the inset on each side, so touching cells keep a visible gap.
+        var (width, height) = (ToolbarPlan.Inner(size.Width), ToolbarPlan.Inner(size.Height));
+        var inset = new Thickness(ToolbarPlan.CellInset);
+        if (button.Margin != inset) button.Margin = inset;
+        if (button.Width != width) button.Width = width;
+        if (button.Height != height) button.Height = height;
         if (button.FontSize != size.FontSize) button.FontSize = size.FontSize;
         // The outline in a colour (the file's #RRGGBB, validated by Resolve, or the accent) over the style's grey border: a
         // brush made from parsed bytes, never markup. Hover and pressed keep the template's own states.

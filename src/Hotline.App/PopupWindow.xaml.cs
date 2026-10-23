@@ -535,6 +535,10 @@ public sealed partial class PopupWindow : Window
             contentPx = PopupGeometry.TwoStep(previous, contentPx, bar.Height, Math.Max(bar.Height, maxPx), _conversation);
         }
         _targetRect = _growUp ? PopupGeometry.GrowUp(bar, contentPx, maxPx, _work, GrowMode) : PopupGeometry.GrowDown(bar, contentPx, maxPx, _work, GrowMode);
+        // Once a chat has started the panel may also widen (window.chatWidth*), around its centre: the same resize as the height's,
+        // never a separate one. Shrinking back is the same call without a conversation.
+        if (_conversation && ChatWidthPx is { } widePx) _targetRect = PopupGeometry.GrowWidth(_targetRect, widePx, _work);
+        _widthGrown = _targetRect.Width > bar.Width;
         // During a chat the panel slides to its new height; anything else (no message yet, a new chat, placing) moves at once.
         // The bar's edge stays put: the bottom when growing up, the top when growing down.
         if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
@@ -551,6 +555,16 @@ public sealed partial class PopupWindow : Window
         StopAnimation();
         if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
     }
+
+    /// <summary>The panel is wider than the bar it opened at (the chat width): a move then keeps the start width as the bar's.</summary>
+    private bool _widthGrown;
+
+    /// <summary>The width the panel grows to when a chat starts (physical pixels), or null: no growth is set, a width was fixed in the
+    /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
+    private int? ChatWidthPx => _fixedPx is not null ? null
+        : PopupGeometry.ChatWidthDip(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width, _scale,
+            _settings.MinWidth, _settings.MaxWidth, (int)Math.Round(_bar.Width / _scale)) is { } dip
+            ? (int)Math.Round(dip * _scale) : null;
 
     private bool _animating;
     private double _animatedHeight;
@@ -667,12 +681,14 @@ public sealed partial class PopupWindow : Window
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
         var h = (int)Math.Round(_settings.Height * _scale);
-        _bar = new RectI(rect.X, rect.Y, rect.Width, h); // BarPx below reads this monitor's bar height
+        // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
+        var (barX, barW) = !resized && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
+        _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
         // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
         void BarAt(bool up)
         {
             var line = up ? rect.Y + rect.Height : rect.Y + Math.Min(BarPx, rect.Height);
-            _bar = new RectI(rect.X, line - h, rect.Width, h);
+            _bar = new RectI(barX, line - h, barW, h);
         }
         BarAt(_growUp);
         var wasUp = _growUp;

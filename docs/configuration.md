@@ -36,11 +36,13 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 |---|---|---|
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `680` / `1000` | Panel width: % of the screen, clamped (DIPs) |
-| `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
+| `window.widthPercent` / `minWidth` / `maxWidth` | `25` / `460` / `1000` | Panel width at opening: % of the screen, clamped (DIPs). The default `minWidth` is a whole number of buttons across plus the panel padding: 11 buttons x 40 + 2 x 10 = 460 |
+| `window.height` / `maxHeightPercent` | `0` / `60` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
 | `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule. A width you saved yourself is kept |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
+| `window.chatWidthPercent` | `0` | The panel grows this wide (% of the screen, 20-90, clamped to `minWidth`..`maxWidth`) when a chat starts and shrinks back on a new chat, around its centre. `0` = it keeps its width; a value no wider than the opening width does the same |
+| `window.chatWidth` | `null` | The chat width in DIPs; `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
 | `window.backdrop` | `acrylicThin` | `acrylic`, `acrylicThin`, `mica`, `solid` |
@@ -177,10 +179,10 @@ Within a group, items run left to right; the center group sits in the free space
 ```jsonc
 {
   "version": 2,
-  "top":   { "left": ["effort", "model", "provider"], "right": [] },
+  "top":   { "left": ["effort"], "center": ["model"], "right": ["provider"] },
   "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
-             "center": ["prompt", "recent", "continueIn"],
-             "right": ["newChat", "settings"] },
+             "center": ["prompt", "continueIn"],
+             "right": ["recent", "newChat", "settings"] },
   "menu": [],
   "style": { "size": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
@@ -201,7 +203,11 @@ Within a group, items run left to right; the center group sits in the free space
 | `buttons` | Your own buttons, by id (see below) |
 
 **Sizes.** The three sizes are multiples of one base size (today 40 × 36 DIPs, icon 16): `compact` is half of it,
-`normal` the base, `wide` twice it; the icon is 0.8, 1 and 1.2 times the base's.
+`normal` the base, `wide` twice it; the icon is 0.8, 1 and 1.2 times the base's. Every item is a **cell** of a 40-DIP grid and
+the size is the cell's whole size, its padding included: the cells touch (no gap between columns) and the visible button is the
+cell less 1 DIP on each side (a normal button shows 38 × 34, so two touching buttons are 2 DIPs apart). Doubling or halving a
+button therefore still lines up: two normal buttons are as wide as one wide button or four compact ones, and a row is always the sum
+of its cells. The bar's room is the panel's width less its padding, 10 DIPs on every side.
 
 | `size` | Button (width × height, DIPs) | Icon |
 |---|---|---|
@@ -234,9 +240,11 @@ left, top center, top right). They ignore `style` and the style keys of `overrid
 
 | Picker | Default `span` | Width | Narrowest before it hides |
 |---|---|---|---|
-| `effort` | 2 | 80 DIPs | 56 DIPs |
+| `effort` | 2 (3 in the shipped file) | 80 (120) DIPs | 56 DIPs |
 | `model` | 4 | 160 DIPs | 84 DIPs |
-| `provider` | 3 | 120 DIPs | 72 DIPs |
+| `provider` | 3 (4 in the shipped file) | 120 (160) DIPs | 72 DIPs |
+
+A picker of span N is N cells wide, outer: span 3 is 120, span 4 is 160, span 1 is 40 (the drop-down itself is 1 DIP narrower on each side). The narrowest widths are outer widths too.
 
 The span is a maximum as well as the preferred width: a picker never grows past it. In a short row each picker shrinks
 evenly, down to the narrowest in the table (still readable; never past its own width, so a span of 1 is exactly 40 DIPs);
@@ -267,7 +275,7 @@ draws them; each is a complete `toolbar.json` (in `ToolbarProfiles`). Use any as
 
 | Name | What it shows |
 |---|---|
-| `default` | pickers in the top row, nine buttons bottom left |
+| `default` | the shipped layout: pickers across the top row, nine buttons in three groups below |
 | `pickers-bottom-left-before` / `-after` / `-between` | the pickers in the bottom-left group before, after, or in the middle of the buttons |
 | `pickers-bottom-centre` / `-crowded` | the pickers in the bottom-centre group, with few or many buttons on their left |
 | `pickers-bottom-right` / `-after-buttons` | the pickers in the bottom-right group, alone or after some buttons |
@@ -335,8 +343,8 @@ edited and deleted there. The pickers (effort, model, provider) are moved, shift
 
 **Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json`, with the previous file
 in `backups\reset-<time>\`. A hidden copy of the default file is rewritten at every start in
-`.defaults\toolbar.json`. New installs get the same layout as before 0.4 (pickers in the top row, the other buttons
-bottom left).
+`.defaults\toolbar.json`. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 4);
+bottom row pin and the three captures on the left, prompt and Continue in in the centre, recent, new chat and settings on the right.
 
 **The old format.** Before 0.4, `toolbar.json` had `top` and `items` as plain arrays and a `spacer` item. That format
 is not converted: such a file is left untouched, the default bar runs and the warning is shown. To change the bar,

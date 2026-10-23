@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Hotline.App"
     Title="Hotline">
-    <Grid x:Name="Root" x:FieldModifier="internal" Padding="12,10,12,10" RowSpacing="0"
+    <!-- Padding 10 on every side: ToolbarPlan.PanelPadding (keep them equal; the bar's room is the width less 2 x this). -->
+    <Grid x:Name="Root" x:FieldModifier="internal" Padding="10" RowSpacing="0"
           AllowDrop="True" KeyDown="Root_KeyDown">
         <Grid.Resources>
           <ResourceDictionary>
@@ -104,7 +105,7 @@
 
         <!-- The bar: the top button row (toolbar.json "top"; collapsed when empty) and the message box. -->
         <StackPanel x:Name="BarStack" x:FieldModifier="internal" Grid.Row="2">
-        <Grid x:Name="TopToolbar" x:FieldModifier="internal" ColumnSpacing="2" Margin="0,0,0,8" Visibility="Collapsed">
+        <Grid x:Name="TopToolbar" x:FieldModifier="internal" ColumnSpacing="0" Margin="0,0,0,8" Visibility="Collapsed">
             <Grid.Resources>
                 <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
                 <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
@@ -179,7 +180,7 @@
         <!-- Bottom toolbar: pin, capture, who answers (provider / model / effort), prompt, new chat, settings.
              Arranged at runtime from ~/.hotline/toolbar.json (ToolbarRenderer): [left group] [*] [right group] in each
              row; a button listed nowhere is in no row. -->
-        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="2" Margin="0,8,0,0">
+        <Grid x:Name="Toolbar" x:FieldModifier="internal" Grid.Row="3" ColumnSpacing="0" Margin="0,8,0,0">
             <Grid.Resources>
                 <SolidColorBrush x:Key="ComboBoxBackground" Color="Transparent" />
                 <SolidColorBrush x:Key="ComboBoxBorderBrush" Color="Transparent" />
@@ -237,6 +238,6 @@
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
         </Grid>
         <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
-        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-12,-10,-12,-10" Visibility="Collapsed" />
+        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-10" Visibility="Collapsed" />
     </Grid>
 </Window>

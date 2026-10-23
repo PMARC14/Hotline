@@ -53,9 +53,9 @@ public partial class App
             var scale = _popup?.Root.XamlRoot?.RasterizationScale ?? 1.0;
             var work = Microsoft.UI.Windowing.DisplayArea.Primary.WorkArea.Width;
             var width = window.Width ?? Hotline.Core.Windowing.PopupGeometry.RelativeWidthDip(work, scale, window.WidthPercent, window.MinWidth, window.MaxWidth);
-            return Math.Max(0, width - 24); // the panel's side padding (12 + 12 in PopupWindow.xaml)
+            return Math.Max(0, width - 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding); // the panel's side padding (PopupWindow.xaml)
         }
-        catch (Exception ex) { _log?.Error("working out the panel width for the button rows failed", ex); return Math.Max(0, window.MinWidth - 24); }
+        catch (Exception ex) { _log?.Error("working out the panel width for the button rows failed", ex); return Math.Max(0, window.MinWidth - 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding); }
     }
 
     private bool _toolbarApplied;

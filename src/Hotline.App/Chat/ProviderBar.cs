@@ -171,7 +171,7 @@ internal sealed class ProviderBar(
         {
             var visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (box.Visibility != visibility) box.Visibility = visibility;
-            if (width > 0 && box.Width != width) box.Width = width; // unchanged values never start another layout
+            if (width > 0 && box.Width != ToolbarPlan.Inner(width)) box.Width = ToolbarPlan.Inner(width); // the cell's width less its inset (the renderer set the margin); unchanged values never start another layout
         }
     }
 

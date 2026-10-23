@@ -68,6 +68,17 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
       "version 1 files are no longer read" warning; Settings › Advanced › Reset settings puts the default bar back
       (a backup is made first).
 
+### Panel size and bar grid (0.5)
+- [ ] Padding is 10 DIPs on all four sides (message box, bar rows, chat text); the Alt grips still sit on the outer edge.
+- [ ] Default panel is about a quarter of the screen wide (460 DIP at 1920 px, 100%) and the default bar fits it: nothing in the
+      "..." menu, three pickers filling the top row.
+- [ ] Buttons and drop-downs line up on one grid: set `size` wide on one button, or compact on four, and the rows above and below
+      still end at the same edges; touching items show a 2 DIP gap; compact buttons still show their icon.
+- [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): sending the first message widens the panel around its centre in the same
+      resize as the height; New chat (Ctrl+N) shrinks it back; near a screen edge it slides back inside. With `window.width` set, or after
+      resizing by hand, it never widens. Default (0) never widens. Moving the widened panel with Alt keeps its start width.
+- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
+
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.
 - [ ] While answering: Enter doesn't stop it (a note says how); Esc stops it; the Stop button stops it; Retry on an
