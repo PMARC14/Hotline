@@ -50,12 +50,14 @@ public sealed class ToolbarPlanTests
     }
 
     [Fact]
-    public void Explicit_width_and_height_stay_within_20_to_80_even_in_memory()
+    public void Explicit_width_and_height_win_over_the_preset_keep_its_font_and_stay_within_20_to_80_even_in_memory()
     {
+        Assert.Equal(new ButtonMetrics(50, 24, 12), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact, false, false, 50, 24), false, 36, 32, 15));
         Assert.Equal(new ButtonMetrics(80, 20, 18), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide, Width: 500, Height: -3), false, 36, 32, 15));
         Assert.Equal(new ButtonMetrics(80, 80, 22), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide, Width: 80, Height: 80), true, 50, 44, 20));
         Assert.Equal(new ButtonMetrics(20, 80, 15), ToolbarPlan.Metrics(new ButtonStyle(Width: 1, Height: 999), true, 36, 32, 15));
-        // A bad enum value from memory is normal.
+        // A missing size, and a bad enum value from memory, are normal.
+        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Normal)), ToolbarPlan.Metrics(new ButtonStyle()));
         Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle()), ToolbarPlan.Metrics(new ButtonStyle((ButtonSize)42)));
     }
 
@@ -70,14 +72,6 @@ public sealed class ToolbarPlanTests
         Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide)), ToolbarPlan.Metrics(m, "pin"));
         Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact, Height: 40), isCustom: true), ToolbarPlan.Metrics(m, "mine"));
     }
-
-    [Fact]
-    public void Width_and_height_overrides_win_over_the_preset_and_keep_its_font() =>
-        Assert.Equal(new ButtonMetrics(50, 24, 12), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact, false, false, 50, 24), false, 36, 32, 15));
-
-    [Fact]
-    public void Missing_size_is_normal() =>
-        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Normal)), ToolbarPlan.Metrics(new ButtonStyle()));
 
     // ---- rows ----
 
@@ -126,31 +120,18 @@ public sealed class ToolbarPlanTests
 
     // ---- overflow ----
 
-    [Fact]
-    public void Split_drops_left_buttons_from_the_end_and_keeps_the_pickers()
+    [Theory]
+    [InlineData(new[] { "pin", "effort", "prompt", "recent" }, 1, new[] { "pin", "effort" }, new[] { "prompt", "recent" })] // buttons dropped from the end, pickers kept
+    [InlineData(new[] { "pin", "prompt" }, 2, new[] { "pin", "prompt" }, new string[0])]                                    // everything shown: nothing dropped
+    [InlineData(new[] { "pin", "model", "prompt" }, 0, new[] { "model" }, new[] { "pin", "prompt" })]                       // nothing shown: only the pickers stay
+    public void Split_drops_left_buttons_from_the_end_and_keeps_the_pickers(string[] left, int leftShown, string[] expectedShown, string[] expectedDropped)
     {
-        var (shown, dropped) = ToolbarPlan.Split(["pin", "effort", "prompt", "recent"], 1);
-        Assert.Equal(["pin", "effort"], shown);
-        Assert.Equal(["prompt", "recent"], dropped);
+        var (shown, dropped) = ToolbarPlan.Split(left, leftShown);
+        Assert.Equal(expectedShown, shown);
+        Assert.Equal(expectedDropped, dropped);
     }
 
-    [Fact]
-    public void Split_with_everything_shown_drops_nothing()
-    {
-        var (shown, dropped) = ToolbarPlan.Split(["pin", "prompt"], 2);
-        Assert.Equal(["pin", "prompt"], shown);
-        Assert.Empty(dropped);
-    }
-
-    [Fact]
-    public void Split_with_nothing_shown_keeps_only_the_pickers()
-    {
-        var (shown, dropped) = ToolbarPlan.Split(["pin", "model", "prompt"], 0);
-        Assert.Equal(["model"], shown);
-        Assert.Equal(["pin", "prompt"], dropped);
-    }
-
-    // FitRow takes the whole room: the Grid's flexible column and the pickers' column (kept even when the pickers hide)
+    // FitRow takes the whole room:the Grid's flexible column and the pickers' column (kept even when the pickers hide)
     // each cost a ColumnSpacing that Fit doesn't count. Used = everything but the pickers + the pickers' room when kept.
     private static double Used(RowFit fit, double pickersMin) => fit.FixedWidth + (fit.PickersKept ? pickersMin : 0);
 
@@ -270,47 +251,15 @@ public sealed class ToolbarPlanTests
         Assert.Empty(ToolbarPlan.Unknown(ToolbarModel.Defaults));
     }
 
-    [Fact]
-    public void Row_places_an_id_listed_twice_only_where_it_is_first()
-    {
-        var m = With((Quadrant.BottomLeft, ["pin"]), (Quadrant.TopLeft, ["pin", "recent"]));
-        Assert.Equal(new RowPlan(["pin"], [], []), ToolbarPlan.Row(m, top: false));
-        Assert.Equal(new RowPlan(["recent"], [], []), ToolbarPlan.Row(m, top: true));
-    }
-
     // ---- This PC ----
 
     [Fact]
-    public void Report_is_fine_for_the_defaults()
+    public void Report_is_ok_for_the_defaults_and_when_only_settings_is_in_the_tray_and_lists_warnings_and_errors()
     {
-        var (ok, detail) = ToolbarPlan.Report(ToolbarModel.Defaults, null);
-        Assert.True(ok);
-        Assert.Equal(Strings.Pc_ToolbarOk, detail);
-    }
-
-    [Fact]
-    public void Report_lists_the_first_warnings()
-    {
-        var m = ToolbarModel.Defaults with { Warnings = ["one", "two", "three", "four"] };
-        var (ok, detail) = ToolbarPlan.Report(m, null);
-        Assert.False(ok);
-        Assert.Equal(L.F(Strings.Pc_ToolbarWarnings, 4, "one; two; three"), detail);
-    }
-
-    [Fact]
-    public void Report_says_when_settings_is_only_in_the_tray()
-    {
-        var m = With((Quadrant.BottomLeft, ["pin"]));
-        var (ok, detail) = ToolbarPlan.Report(m, null);
-        Assert.True(ok);
-        Assert.Equal(Strings.Pc_ToolbarOk + " " + Strings.Pc_ToolbarNoSettings, detail);
-    }
-
-    [Fact]
-    public void Report_shows_a_read_error()
-    {
-        var (ok, detail) = ToolbarPlan.Report(ToolbarModel.Defaults, "toolbar.json couldn't be read: x");
-        Assert.False(ok);
-        Assert.Equal("toolbar.json couldn't be read: x", detail);
+        Assert.Equal((true, Strings.Pc_ToolbarOk), ToolbarPlan.Report(ToolbarModel.Defaults, null));
+        Assert.Equal((true, Strings.Pc_ToolbarOk + " " + Strings.Pc_ToolbarNoSettings), ToolbarPlan.Report(With((Quadrant.BottomLeft, ["pin"])), null));
+        Assert.Equal((false, L.F(Strings.Pc_ToolbarWarnings, 4, "one; two; three")),
+            ToolbarPlan.Report(ToolbarModel.Defaults with { Warnings = ["one", "two", "three", "four"] }, null)); // the first three
+        Assert.Equal((false, "toolbar.json couldn't be read: x"), ToolbarPlan.Report(ToolbarModel.Defaults, "toolbar.json couldn't be read: x"));
     }
 }

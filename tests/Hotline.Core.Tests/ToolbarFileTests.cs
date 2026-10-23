@@ -15,21 +15,21 @@ public sealed class ToolbarFileTests : IDisposable
 
     private const string V1Text = "{\n  // rows\n  \"top\": [\"effort\", \"model\", \"provider\"],\n  \"items\": [\"pin\", \"spacer\", \"settings\"]\n}";
 
-    [Fact]
-    public void Missing_file_writes_the_defaults()
+    /// <summary>The user's file is byte-for-byte what it was, and nothing (.old, .bak, .tmp) appeared next to it.</summary>
+    private void AssertUntouched(byte[] before)
     {
-        var load = ToolbarFile.Load(File_);
-        Assert.Equal(ToolbarModel.Defaults, load.Model);
-        Assert.Null(load.Error);
-        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(File_));
+        Assert.Equal(before, File.ReadAllBytes(File_));
+        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
     }
 
     [Fact]
-    public void Missing_folder_is_created()
+    public void Missing_folder_is_created_and_the_defaults_are_written()
     {
         var path = Path.Combine(_root, "sub", "toolbar.json");
-        Assert.Equal(ToolbarModel.Defaults, ToolbarFile.Load(path).Model);
-        Assert.True(File.Exists(path));
+        var load = ToolbarFile.Load(path);
+        Assert.Equal(ToolbarModel.Defaults, load.Model);
+        Assert.Null(load.Error);
+        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(path));
     }
 
     [Fact]
@@ -46,24 +46,25 @@ public sealed class ToolbarFileTests : IDisposable
             Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.BottomLeft), load.Model.Items(Quadrant.BottomLeft));
             Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.TopLeft), load.Model.Items(Quadrant.TopLeft));
             Assert.Equal([Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported], load.Model.Warnings);
-            Assert.Equal(before, File.ReadAllBytes(File_));
-            Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName)); // no .old, .bak or .tmp
+            AssertUntouched(before);
         }
     }
 
-    [Fact]
-    public void V2_file_loads_without_a_warning_and_is_not_rewritten()
+    [Theory]
+    [InlineData(2, false)]
+    [InlineData(3, true)] // a newer version is read as far as it is understood (with a warning), and never rewritten
+    public void V2_and_newer_files_load_and_are_not_rewritten(int version, bool warns)
     {
-        var text = "{ \"version\": 2, \"top\": { \"left\": [\"pin\"], \"right\": [] }, \"items\": { \"left\": [\"settings\"], \"right\": [] } }";
+        var text = "{ \"version\": " + version + ", \"top\": { \"left\": [\"pin\"], \"right\": [] }, \"items\": { \"left\": [\"settings\"], \"right\": [] } }";
         File.WriteAllText(File_, text);
+        var before = File.ReadAllBytes(File_);
 
         var load = ToolbarFile.Load(File_);
 
         Assert.Null(load.Error);
-        Assert.Empty(load.Model.Warnings);
+        Assert.Equal(warns, load.Model.Warnings.Count > 0);
         Assert.Equal(["pin"], load.Model.Items(Quadrant.TopLeft));
-        Assert.Equal(text, File.ReadAllText(File_));
-        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
+        AssertUntouched(before);
     }
 
     [Fact]
@@ -78,12 +79,11 @@ public sealed class ToolbarFileTests : IDisposable
 
         Assert.Null(load.Error);
         Assert.NotEmpty(load.Model.Warnings);
-        Assert.Equal(before, File.ReadAllBytes(File_));
-        Assert.False(File.Exists(File_ + ".old"));
+        AssertUntouched(before);
     }
 
     [Theory]
-    [InlineData("")]
+    [InlineData("")] // a zero-byte file
     [InlineData("   \n")]
     [InlineData("{ \"version\": 2, \"items\": { \"left\": [\"pin\"")]
     [InlineData("not json at all")]
@@ -97,33 +97,7 @@ public sealed class ToolbarFileTests : IDisposable
 
         Assert.False(string.IsNullOrEmpty(load.Error));
         Assert.Equal(ToolbarModel.Defaults, load.Model);
-        Assert.Equal(before, File.ReadAllBytes(File_));
-        Assert.False(File.Exists(File_ + ".old"));
-    }
-
-    [Fact]
-    public void Zero_byte_file_sets_Error_and_is_left_alone()
-    {
-        File.WriteAllBytes(File_, []);
-        var load = ToolbarFile.Load(File_);
-        Assert.False(string.IsNullOrEmpty(load.Error));
-        Assert.Equal(ToolbarModel.Defaults, load.Model);
-        Assert.Empty(File.ReadAllBytes(File_));
-    }
-
-    [Fact]
-    public void Newer_version_is_read_but_never_rewritten()
-    {
-        var text = "{ \"version\": 3, \"top\": { \"left\": [\"pin\"], \"right\": [] }, \"items\": { \"left\": [\"settings\"], \"right\": [] }, \"future\": 1 }";
-        File.WriteAllText(File_, text);
-        var before = File.ReadAllBytes(File_);
-
-        var load = ToolbarFile.Load(File_);
-
-        Assert.Null(load.Error);
-        Assert.Equal(["pin"], load.Model.Items(Quadrant.TopLeft));
-        Assert.Equal(before, File.ReadAllBytes(File_));
-        Assert.False(File.Exists(File_ + ".old"));
+        AssertUntouched(before);
     }
 
     [Fact]

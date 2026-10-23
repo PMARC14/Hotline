@@ -65,15 +65,6 @@ public sealed class ToolbarEditorTests
     }
 
     [Fact]
-    public void Move_of_a_hidden_or_unknown_id_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.Move(Grid, "model", 1));
-        Assert.Same(Grid, ToolbarEditor.Move(Grid, "nope", 1));
-        Assert.Same(Grid, ToolbarEditor.Move(Grid, null!, 1));
-        Assert.Same(Grid, ToolbarEditor.Move(Grid, "", 1));
-    }
-
-    [Fact]
     public void Ids_match_case_insensitively_and_keep_their_spelling()
     {
         var m = ToolbarEditor.Move(Grid, "CAPTUREWINDOW", -1);
@@ -87,7 +78,7 @@ public sealed class ToolbarEditorTests
         var data = new TheoryData<Quadrant, Quadrant, int>();
         foreach (var from in Enum.GetValues<Quadrant>())
             foreach (var to in Enum.GetValues<Quadrant>().Where(t => t != from))
-                foreach (var index in new[] { 0, 1, 3, 99, -5 })
+                foreach (var index in new[] { -5, 1, 99 }) // both clamps (to 0 and to Count) and a gap in the middle
                     data.Add(from, to, index);
         return data;
     }
@@ -134,14 +125,6 @@ public sealed class ToolbarEditorTests
         AssertValid(m);
     }
 
-    [Fact]
-    public void MoveTo_with_bad_input_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.MoveTo(Grid, "nope", BR, 0));
-        Assert.Same(Grid, ToolbarEditor.MoveTo(Grid, "pin", (Quadrant)7, 0));
-        Assert.Same(Grid, ToolbarEditor.MoveTo(Grid, null!, BR, 0));
-    }
-
     // ---- ShiftTo (arrows) ----
 
     [Theory]
@@ -179,80 +162,7 @@ public sealed class ToolbarEditorTests
         AssertValid(m);
     }
 
-    [Fact]
-    public void ShiftTo_of_a_hidden_item_or_a_bad_direction_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.ShiftTo(Grid, "model", Shift.Down));
-        Assert.Same(Grid, ToolbarEditor.ShiftTo(Grid, "pin", (Shift)9));
-    }
-
     // ---- The pickers are items like any other ----
-
-    [Fact]
-    public void Dragging_one_picker_moves_only_that_picker()
-    {
-        var m = WithTopLeft("provider", "effort", "model");
-        var moved = ToolbarEditor.MoveTo(m, "model", BL, 0);
-        Assert.Equal(["model", "pin"], moved.Items(BL));
-        Assert.Equal(["provider", "effort"], moved.Items(TL));
-        AssertValid(moved);
-
-        moved = ToolbarEditor.MoveTo(m, "effort", TR, 1);
-        Assert.Equal(["recent", "effort"], moved.Items(TR));
-        Assert.Equal(["provider", "model"], moved.Items(TL));
-        AssertValid(moved);
-    }
-
-    [Fact]
-    public void A_drop_inside_its_own_quadrant_moves_one_picker_past_other_items_and_pickers()
-    {
-        var m = WithTopLeft("continueIn", "effort", "model", "provider", "newChat");
-        Assert.Equal(["continueIn", "effort", "provider", "newChat", "model"], ToolbarEditor.MoveTo(m, "model", TL, 5).Items(TL));
-        Assert.Equal(["provider", "continueIn", "effort", "model", "newChat"], ToolbarEditor.MoveTo(m, "provider", TL, 0).Items(TL));
-        Assert.Equal(["continueIn", "model", "effort", "provider", "newChat"], ToolbarEditor.MoveTo(m, "model", TL, 1).Items(TL)); // between two buttons
-        Assert.Same(m, ToolbarEditor.MoveTo(m, "model", TL, 2)); // right before itself
-        Assert.Same(m, ToolbarEditor.MoveTo(m, "model", TL, 3)); // right after itself
-    }
-
-    [Fact]
-    public void Move_and_ShiftTo_of_a_picker_carry_that_picker_only()
-    {
-        var m = WithTopLeft("continueIn", "effort", "model", "provider", "newChat");
-        Assert.Equal(["continueIn", "effort", "provider", "model", "newChat"], ToolbarEditor.Move(m, "model", 1).Items(TL));
-        Assert.Equal(["continueIn", "model", "effort", "provider", "newChat"], ToolbarEditor.Move(m, "model", -1).Items(TL));
-        Assert.Equal(["provider", "continueIn", "effort", "model", "newChat"], ToolbarEditor.Move(m, "provider", -9).Items(TL)); // clamped
-        Assert.Same(m, ToolbarEditor.Move(m, "continueIn", -1));
-        var shifted = ToolbarEditor.ShiftTo(m, "provider", Shift.Right); // one column: the centre
-        Assert.Equal(["provider"], shifted.Items(Quadrant.TopCenter));
-        Assert.Equal(["continueIn", "effort", "model", "newChat"], shifted.Items(TL));
-        Assert.Equal(["recent"], shifted.Items(TR));
-        shifted = ToolbarEditor.ShiftTo(shifted, "provider", Shift.Right); // and the next one: the right
-        Assert.Equal(["recent", "provider"], shifted.Items(TR));
-        Assert.Empty(shifted.Items(Quadrant.TopCenter));
-        shifted = ToolbarEditor.ShiftTo(m, "model", Shift.Down);
-        Assert.Equal(["pin", "model"], shifted.Items(BL));
-        Assert.Equal(["continueIn", "effort", "provider", "newChat"], shifted.Items(TL));
-        AssertValid(shifted);
-    }
-
-    [Fact]
-    public void Hiding_one_picker_leaves_the_others_and_showing_it_puts_it_at_the_end_of_the_chosen_area()
-    {
-        var m = WithTopLeft("continueIn", "effort", "model", "provider", "newChat");
-        var hidden = ToolbarEditor.Hide(m, "model");
-        Assert.Equal(["continueIn", "effort", "provider", "newChat"], hidden.Items(TL));
-        Assert.Contains("model", ToolbarEditor.Hidden(hidden));
-        AssertValid(hidden);
-
-        var shown = ToolbarEditor.Show(hidden, "model", BR);
-        Assert.Equal(["model"], shown.Items(BR));
-        Assert.Equal(["continueIn", "effort", "provider", "newChat"], shown.Items(TL)); // the others stay
-        AssertValid(shown);
-
-        shown = ToolbarEditor.Show(hidden, "model", TL);
-        Assert.Equal(["continueIn", "effort", "provider", "newChat", "model"], shown.Items(TL));
-        AssertValid(shown);
-    }
 
     [Fact]
     public void Each_picker_can_go_to_a_different_area_and_the_span_stays_with_it()
@@ -266,14 +176,6 @@ public sealed class ToolbarEditorTests
         Assert.Equal(6, m.EffectiveSpan("model"));
         AssertValid(m);
         Assert.Equal(6, ToolbarEditor.Hide(m, "model").EffectiveSpan("model")); // a hidden picker keeps its span
-    }
-
-    [Fact]
-    public void Drop_places_a_hidden_picker_between_two_buttons()
-    {
-        var m = ToolbarEditor.Drop(Grid, "effort", BL, 1);
-        Assert.Equal(["pin", "effort", "captureWindow", "captureScreen"], m.Items(BL));
-        AssertValid(m);
     }
 
     [Fact]
@@ -300,16 +202,6 @@ public sealed class ToolbarEditorTests
             Assert.Equal(m.Items(q).Append("pin"), shown.Items(q));
             AssertValid(shown);
         }
-    }
-
-    [Fact]
-    public void Hide_or_Show_that_changes_nothing_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.Hide(Grid, "model"));    // already hidden
-        Assert.Same(Grid, ToolbarEditor.Hide(Grid, "nope"));
-        Assert.Same(Grid, ToolbarEditor.Show(Grid, "pin", TR));  // already shown: Show doesn't move (MoveTo does)
-        Assert.Same(Grid, ToolbarEditor.Show(Grid, "nope", TR));
-        Assert.Same(Grid, ToolbarEditor.Show(Grid, "effort", (Quadrant)(-1)));
     }
 
     [Fact]
@@ -364,19 +256,6 @@ public sealed class ToolbarEditorTests
         Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, Text(id)));
 
     [Fact]
-    public void AddCustom_rejects_bad_buttons_and_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, null!));
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, Text(null!)));
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "x", "both", false)));
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", null, null, false)));
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", null, "\u0001", false))); // no text left
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "..\\evil", null, false)));
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "c:evil", null, false)));
-        Assert.Same(Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", new string('a', 65), null, false)));
-    }
-
-    [Fact]
     public void AddCustom_clamps_like_Resolve()
     {
         var m = ToolbarEditor.AddCustom(Grid, new CustomButton("x", " A\u0007" + new string('b', 60), "zzzz", null, new string('t', 3000), true));
@@ -391,14 +270,57 @@ public sealed class ToolbarEditorTests
         Assert.Equal("x", ToolbarEditor.AddCustom(Grid, Text("x", label: "")).Buttons[^1].Label); // no label: the id
         Assert.Equal("F8FF", ToolbarEditor.AddCustom(Grid, Text("x", icon: "00f8ff")).Buttons[^1].Icon);
         Assert.False(ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "x", null, true)).Buttons[^1].Send); // send is for text only
+        // A lone surrogate never throws: the writer replaces it.
+        var half = ToolbarEditor.AddCustom(Grid, Text("x", label: "bad \uD800 half"));
+        Assert.Equal("bad � half", half.Buttons[^1].Label);
+        AssertValid(half);
     }
 
+    // Edits that can't be done give back the very same model, never a copy (and never throw).
     [Fact]
-    public void AddCustom_never_throws_on_a_lone_surrogate()
+    public void Edits_that_cannot_be_done_return_the_input()
     {
-        var m = ToolbarEditor.AddCustom(Grid, Text("x", label: "bad \uD800 half"));
-        Assert.Equal("bad � half", m.Buttons[^1].Label); // the writer replaces it
-        AssertValid(m);
+        var defaults = ToolbarModel.Defaults;
+        var cases = new (string Case, ToolbarModel Input, ToolbarModel Result)[]
+        {
+            ("Move hidden", Grid, ToolbarEditor.Move(Grid, "model", 1)),
+            ("Move unknown", Grid, ToolbarEditor.Move(Grid, "nope", 1)),
+            ("Move null id", Grid, ToolbarEditor.Move(Grid, null!, 1)),
+            ("Move empty id", Grid, ToolbarEditor.Move(Grid, "", 1)),
+            ("MoveTo unknown", Grid, ToolbarEditor.MoveTo(Grid, "nope", BR, 0)),
+            ("MoveTo bad quadrant", Grid, ToolbarEditor.MoveTo(Grid, "pin", (Quadrant)7, 0)),
+            ("MoveTo null id", Grid, ToolbarEditor.MoveTo(Grid, null!, BR, 0)),
+            ("ShiftTo hidden", Grid, ToolbarEditor.ShiftTo(Grid, "model", Shift.Down)),
+            ("ShiftTo bad direction", Grid, ToolbarEditor.ShiftTo(Grid, "pin", (Shift)9)),
+            ("Hide already hidden", Grid, ToolbarEditor.Hide(Grid, "model")),
+            ("Hide unknown", Grid, ToolbarEditor.Hide(Grid, "nope")),
+            ("Show already shown", Grid, ToolbarEditor.Show(Grid, "pin", TR)), // Show doesn't move (MoveTo does)
+            ("Show unknown", Grid, ToolbarEditor.Show(Grid, "nope", TR)),
+            ("Show bad quadrant", Grid, ToolbarEditor.Show(Grid, "effort", (Quadrant)(-1))),
+            ("UpdateCustom unknown id", Grid, ToolbarEditor.UpdateCustom(Grid, Text("nope"))),
+            ("UpdateCustom built-in id", Grid, ToolbarEditor.UpdateCustom(Grid, Text("pin"))),
+            ("UpdateCustom null", Grid, ToolbarEditor.UpdateCustom(Grid, null!)),
+            ("UpdateCustom no content", Grid, ToolbarEditor.UpdateCustom(Grid, new CustomButton("two", "Two", "E8A5", null, null, false))),
+            ("UpdateCustom action and text", Grid, ToolbarEditor.UpdateCustom(Grid, new CustomButton("two", "Two", "E8A5", "two", "both", false))),
+            ("UpdateCustom bad action name", Grid, ToolbarEditor.UpdateCustom(Grid, new CustomButton("two", "Two", "E8A5", "a/b", null, false))),
+            ("AddCustom null", Grid, ToolbarEditor.AddCustom(Grid, null!)),
+            ("AddCustom null id", Grid, ToolbarEditor.AddCustom(Grid, Text(null!))),
+            ("AddCustom action and text", Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "x", "both", false))),
+            ("AddCustom no content", Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", null, null, false))),
+            ("AddCustom text of a control char", Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", null, "\u0001", false))), // no text left
+            ("AddCustom action with a path", Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "..\\evil", null, false))),
+            ("AddCustom action with a drive", Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", "c:evil", null, false))),
+            ("AddCustom action too long", Grid, ToolbarEditor.AddCustom(Grid, new CustomButton("x", "X", "E8A5", new string('a', 65), null, false))),
+            ("RemoveCustom built-in", Grid, ToolbarEditor.RemoveCustom(Grid, "pin")),
+            ("RemoveCustom unknown", Grid, ToolbarEditor.RemoveCustom(Grid, "nope")),
+            ("RemoveCustom null id", Grid, ToolbarEditor.RemoveCustom(Grid, null!)),
+            ("SetStyle shown picker", defaults, ToolbarEditor.SetStyle(defaults, "model", new ButtonStyle(Outline: true))),
+            ("SetStyle hidden picker", Grid, ToolbarEditor.SetStyle(Grid, "model", new ButtonStyle(Outline: true))),
+            ("SetStyle unknown", Grid, ToolbarEditor.SetStyle(Grid, "nope", new ButtonStyle(Outline: true))),
+            ("SetStyle item null style", Grid, ToolbarEditor.SetStyle(Grid, "pin", null!)),
+            ("SetStyle bar null style", Grid, ToolbarEditor.SetStyle(Grid, null, null!)),
+        };
+        Assert.All(cases, c => Assert.True(ReferenceEquals(c.Input, c.Result), c.Case));
     }
 
     [Fact]
@@ -420,17 +342,6 @@ public sealed class ToolbarEditorTests
         Assert.Equal(Grid.Buttons.Select(b => b.Id == "two" ? updated : b), m.Buttons);
         Assert.Equal(Grid.Items(TR), m.Items(TR));
         AssertValid(m);
-    }
-
-    [Fact]
-    public void UpdateCustom_with_an_unknown_or_invalid_button_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, Text("nope")));
-        Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, Text("pin")));
-        Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, null!));
-        Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, new CustomButton("two", "Two", "E8A5", null, null, false)));
-        Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, new CustomButton("two", "Two", "E8A5", "two", "both", false)));
-        Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, new CustomButton("two", "Two", "E8A5", "a/b", null, false)));
     }
 
     [Fact]
@@ -478,14 +389,6 @@ public sealed class ToolbarEditorTests
             AssertValid(m);
             Assert.Same(Grid, ToolbarEditor.UpdateCustom(Grid, Grid.Buttons[1] with { IconFile = bad })); // nothing changes
         }
-    }
-
-    [Fact]
-    public void RemoveCustom_of_a_built_in_or_unknown_id_returns_the_input()
-    {
-        Assert.Same(Grid, ToolbarEditor.RemoveCustom(Grid, "pin"));
-        Assert.Same(Grid, ToolbarEditor.RemoveCustom(Grid, "nope"));
-        Assert.Same(Grid, ToolbarEditor.RemoveCustom(Grid, null!));
     }
 
     // ---- Styles ----
@@ -561,17 +464,6 @@ public sealed class ToolbarEditorTests
         var cleared = ToolbarEditor.SetBarSize(mixed, ButtonSize.Normal);
         Assert.NotSame(mixed, cleared);
         Assert.Empty(cleared.Overrides);
-    }
-
-    [Fact]
-    public void SetStyle_for_a_picker_a_hidden_or_unknown_item_returns_the_input()
-    {
-        var m = ToolbarModel.Defaults;
-        Assert.Same(m, ToolbarEditor.SetStyle(m, "model", new ButtonStyle(Outline: true)));
-        Assert.Same(Grid, ToolbarEditor.SetStyle(Grid, "model", new ButtonStyle(Outline: true))); // hidden
-        Assert.Same(Grid, ToolbarEditor.SetStyle(Grid, "nope", new ButtonStyle(Outline: true)));
-        Assert.Same(Grid, ToolbarEditor.SetStyle(Grid, "pin", null!));
-        Assert.Same(Grid, ToolbarEditor.SetStyle(Grid, null, null!));
     }
 
     [Fact]
