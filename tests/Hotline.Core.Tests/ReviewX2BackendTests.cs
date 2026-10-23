@@ -24,56 +24,38 @@ public sealed class ReviewX2BackendTests : IDisposable
         return items;
     }
 
-    [Fact]
-    public async Task Sse_last_event_ended_by_one_newline_then_eof_is_not_dropped()
-    {
-        Assert.Equal(["a"], await Events("data: a\n"));
-        Assert.Equal(["a", "b"], await Events("data: a\n\ndata: b\n"));
-    }
-
-    [Fact]
-    public async Task Sse_last_event_without_any_newline_is_kept()
-    {
-        Assert.Equal(["a"], await Events("data: a"));
-    }
-
-    [Fact]
-    public async Task Sse_event_ended_by_blank_line_is_not_repeated_at_eof()
-    {
-        Assert.Equal(["a"], await Events("data: a\n\n"));
-    }
+    [Theory]
+    [InlineData("data: a\n", "a")]                  // last event ended by one newline then EOF is not dropped
+    [InlineData("data: a\n\ndata: b\n", "a|b")]
+    [InlineData("data: a", "a")]                    // no newline at all is kept
+    [InlineData("data: a\n\n", "a")]                // ended by a blank line is not repeated at EOF
+    public async Task Sse_events_at_the_end_of_the_stream(string sse, string expected)
+        => Assert.Equal(expected.Split('|'), await Events(sse));
 
     // ---- odd JSON shapes from proxies end up as skipped chunks, not InvalidOperationException ----
 
-    private static async Task<string> RunGemini(params string[] data)
+    private static async Task<string> Run(BackendProfile p, params string[] data)
     {
         var handler = new FixedHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
         {
             Content = new StringContent(string.Concat(data.Select(d => $"data: {d}\n\n")), Encoding.UTF8, "text/event-stream"),
         });
         var secrets = new InMemorySecretStore();
-        secrets.Set(SecretKeys.ApiKey("g"), "k");
-        var p = new BackendProfile { Id = "g", Name = "G", Type = BackendType.Gemini, Model = "gemini-3.8-flash" };
-        var b = new GeminiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(Path.GetTempPath(), "hotline-tests-x2.log")));
+        secrets.Set(SecretKeys.ApiKey(p.Id), "k");
+        var log = new FileLog(Path.Combine(Path.GetTempPath(), "hotline-tests-x2.log"));
+        IChatBackend b = p.Type == BackendType.Gemini
+            ? new GeminiBackend(p, new HttpClient(handler), secrets, _ => "", log)
+            : new OpenAiBackend(p, new HttpClient(handler), secrets, _ => "", log);
         var text = "";
         await foreach (var d in b.StreamAsync([new("1", ChatRole.User, "hi", [], Now)], default)) text += d.Text;
         return text;
     }
 
-    private static async Task<string> RunOpenAi(params string[] data)
-    {
-        var handler = new FixedHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Content = new StringContent(string.Concat(data.Select(d => $"data: {d}\n\n")), Encoding.UTF8, "text/event-stream"),
-        });
-        var p = new BackendProfile { Id = "o", Name = "O", Type = BackendType.OpenAiCompatible, Model = "m", Endpoint = "https://api.example.com/v1" };
-        var secrets = new InMemorySecretStore();
-        secrets.Set(SecretKeys.ApiKey("o"), "k");
-        var b = new OpenAiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(Path.GetTempPath(), "hotline-tests-x2.log")));
-        var text = "";
-        await foreach (var d in b.StreamAsync([new("1", ChatRole.User, "hi", [], Now)], default)) text += d.Text;
-        return text;
-    }
+    private static Task<string> RunGemini(params string[] data)
+        => Run(new BackendProfile { Id = "g", Name = "G", Type = BackendType.Gemini, Model = "gemini-3.8-flash" }, data);
+
+    private static Task<string> RunOpenAi(params string[] data)
+        => Run(new BackendProfile { Id = "o", Name = "O", Type = BackendType.OpenAiCompatible, Model = "m", Endpoint = "https://api.example.com/v1" }, data);
 
     private sealed class FixedHandler(Func<HttpResponseMessage> respond) : HttpMessageHandler
     {
@@ -97,22 +79,6 @@ public sealed class ReviewX2BackendTests : IDisposable
 
     // ---- Claude Code ----
 
-    private sealed class ClosedStdinProcess : ILineProcess
-    {
-        public bool HasExited => true;
-        public string StandardErrorTail => "Invalid API key - Please run /login";
-        public Task WriteLineAsync(string line, CancellationToken ct) => throw new IOException("The pipe is being closed.");
-        public Task<string?> ReadLineAsync(CancellationToken ct) => Task.FromResult<string?>(null);
-        public void CompleteInput() { }
-        public Task WaitForExitAsync(TimeSpan timeout) => Task.CompletedTask;
-        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-    }
-
-    private sealed class OneProcessFactory(Func<ILineProcess> make) : ILineProcessFactory
-    {
-        public ILineProcess Start(string exe, IReadOnlyList<string> args, string workingDirectory) => make();
-    }
-
     private ClaudeCodeBackend Claude(ILineProcessFactory factory, bool keep = true) =>
         new(new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode, KeepCliSessions = keep }, () => @"C:\claude.exe",
             factory, new FileLog(Path.Combine(_dir, "h.log")), _ => "SYSTEM", Path.Combine(_dir, "home"));
@@ -120,7 +86,16 @@ public sealed class ReviewX2BackendTests : IDisposable
     [Fact]
     public async Task Claude_exiting_at_once_reports_its_error_instead_of_a_broken_pipe()
     {
-        var b = Claude(new OneProcessFactory(() => new ClosedStdinProcess()));
+        var factory = new FakeLineProcessFactory
+        {
+            Create = () =>
+            {
+                var p = new FakeLineProcess { StandardErrorTail = "Invalid API key - Please run /login", WriteFailure = new IOException("The pipe is being closed.") };
+                p.Exit(); // already gone: reads end at once
+                return p;
+            },
+        };
+        var b = Claude(factory);
         var ex = await Assert.ThrowsAsync<BackendException>(async () =>
         {
             await foreach (var _ in b.StreamAsync([new("1", ChatRole.User, "hi", [], Now)], default)) { }

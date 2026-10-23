@@ -142,14 +142,11 @@ public sealed class ApiReviewFixesTests : IDisposable
         Assert.Single(m.Attachments);
     }
 
-    [Fact]
-    public void Malformed_endpoint_with_a_key_is_refused()
-        => Assert.Throws<BackendException>(() => Hotline.Core.Backends.Api.ApiCommon.RequireSafeTransport(new BackendProfile { Name = "X" }, "not a url", "key"));
-
     [Theory]
-    [InlineData("http://127.0.0.1.evil.com/v1")]
+    [InlineData("not a url")]                      // malformed
+    [InlineData("http://127.0.0.1.evil.com/v1")]   // lookalike loopback hosts
     [InlineData("http://localhost.evil.com/v1")]
-    public void Lookalike_loopback_hosts_are_not_loopback(string endpoint)
+    public void Unsafe_endpoints_are_refused_when_a_key_would_be_sent(string endpoint)
         => Assert.Throws<BackendException>(() => Hotline.Core.Backends.Api.ApiCommon.RequireSafeTransport(new BackendProfile { Name = "X" }, endpoint, "key"));
 
     [Fact]
