@@ -22,15 +22,11 @@ public sealed class ToolbarPickersApartTests
         Assert.Equal(["pin", "effort", "model", "prompt"], f.Shown);
         Assert.Equal(["provider", "settings"], f.RightShown);
         Assert.Empty(f.Menu);
-    }
-
-    [Fact]
-    public void Each_picker_keeps_its_own_span_override()
-    {
+        // A span override is read per picker, wherever it is listed.
         var m = Model("""{ "left": ["effort"], "center": ["model"], "right": ["provider"] }""",
             overrides: """{ "effort": { "span": 6 }, "model": { "span": 1 }, "provider": { "span": 8 } }""");
-        var f = ToolbarPlan.PlanRow(m, top: false, 2000, Spacing);
-        Assert.Equal(new Dictionary<string, double> { ["effort"] = 240, ["model"] = 40, ["provider"] = 320 }, f.PickerWidths);
+        Assert.Equal(new Dictionary<string, double> { ["effort"] = 240, ["model"] = 40, ["provider"] = 320 },
+            ToolbarPlan.PlanRow(m, top: false, 2000, Spacing).PickerWidths);
     }
 
     [Fact]
