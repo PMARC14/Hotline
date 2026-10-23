@@ -30,22 +30,36 @@ public sealed class PlatformTests
     [Fact]
     public void A_missing_command_is_reported_as_missing() => Assert.Null(CommandResolver.Find("npx", null, Path, Ext, Files()));
 
+    [Fact]
+    public void CommandResolver_survives_a_command_with_a_nul_character()
+        => Assert.Null(CommandResolver.Find("np\0x", @"C:\work", @"C:\bin", ".EXE", _ => false));
+
+    [Fact]
+    public void CommandResolver_never_touches_a_network_path()
+    {
+        var touched = new List<string>();
+        bool Exists(string p) { touched.Add(p); return false; }
+        Assert.Null(CommandResolver.Find(@"\\evil\share\tool.exe", null, "", ".EXE", Exists));
+        Assert.Null(CommandResolver.Find(@"\\evil\share\tool", null, "", ".EXE", Exists));
+        Assert.Null(CommandResolver.Find("tool", @"\\evil\share", "", ".EXE", Exists));
+        Assert.Null(CommandResolver.Find(".\\tool", @"\\evil\share", "", ".EXE", Exists));
+        Assert.Null(CommandResolver.Find("tool", null, @"\\evil\share", ".EXE", Exists));
+        Assert.Empty(touched);
+    }
+
     [Theory]
     [InlineData("npx", "Node.js")]
     [InlineData("node", "Node.js")]
     [InlineData("uvx", "uv")]
     [InlineData("python", "Python")]
     [InlineData("docker", "Docker Desktop")]
+    [InlineData("mytool", "isn't installed or isn't on PATH")] // unknown: still a clear message
     public void The_message_says_what_to_install(string command, string install)
     {
         var message = CommandResolver.MissingMessage("files", command);
         Assert.Contains($"\"{command}\"", message);
         Assert.Contains(install, message);
     }
-
-    [Fact]
-    public void An_unknown_command_still_gets_a_clear_message() =>
-        Assert.Contains("isn't installed or isn't on PATH", CommandResolver.MissingMessage("x", "mytool"));
 
     [Theory]
     [InlineData(22631, 0, false)]
@@ -71,7 +85,4 @@ public sealed class PlatformTests
     [InlineData(26100, 1, true, AgentConnectorsState.Ready)] // found is found, whatever the build number says
     public void Agent_connectors_state_says_why_they_are_not_there(int build, int revision, bool odrPresent, AgentConnectorsState expected) =>
         Assert.Equal(expected, PlatformSupport.AgentConnectorsStateOf(new WindowsBuild(build, revision), odrPresent));
-
-    [Fact]
-    public void Builds_read_from_a_version_string() => Assert.Equal(new WindowsBuild(26200, 9457), WindowsBuild.Parse("10.0.26200.9457"));
 }

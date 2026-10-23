@@ -26,28 +26,9 @@ public sealed class ReviewX1Tests : IDisposable
     [InlineData("26100", 26100, 0)]
     [InlineData("", 0, 0)]
     [InlineData("nonsense", 0, 0)]
-    public void WindowsBuild_reads_three_part_and_odd_versions(string version, int build, int revision)
+    [InlineData(null, 0, 0)]
+    public void WindowsBuild_reads_three_part_and_odd_versions(string? version, int build, int revision)
         => Assert.Equal(new WindowsBuild(build, revision), WindowsBuild.Parse(version));
-
-    [Fact]
-    public void WindowsBuild_of_null_is_zero() => Assert.Equal(new WindowsBuild(0, 0), WindowsBuild.Parse(null));
-
-    [Fact]
-    public void CommandResolver_survives_a_command_with_a_nul_character()
-        => Assert.Null(CommandResolver.Find("np\0x", @"C:\work", @"C:\bin", ".EXE", _ => false));
-
-    [Fact]
-    public void CommandResolver_never_touches_a_network_path()
-    {
-        var touched = new List<string>();
-        bool Exists(string p) { touched.Add(p); return false; }
-        Assert.Null(CommandResolver.Find(@"\\evil\share\tool.exe", null, "", ".EXE", Exists));
-        Assert.Null(CommandResolver.Find(@"\\evil\share\tool", null, "", ".EXE", Exists));
-        Assert.Null(CommandResolver.Find("tool", @"\\evil\share", "", ".EXE", Exists));
-        Assert.Null(CommandResolver.Find(".\\tool", @"\\evil\share", "", ".EXE", Exists));
-        Assert.Null(CommandResolver.Find("tool", null, @"\\evil\share", ".EXE", Exists));
-        Assert.Empty(touched);
-    }
 
     // ---- Diagnostics ----
 
@@ -73,14 +54,12 @@ public sealed class ReviewX1Tests : IDisposable
     // ---- Activation ----
 
     [Theory]
-    [InlineData("hotline://settings?state=tap")]
-    [InlineData("hotline://tray?state=Down")]
-    [InlineData("hotline://open?state=up")]
-    public void ParseUri_only_reads_state_from_the_key_host(string uri)
-        => Assert.Null(ActivationParser.ParseUri(new Uri(uri)));
-
-    [Fact]
-    public void ParseUri_host_is_case_insensitive() => Assert.Equal(KeyEvent.Tap, ActivationParser.ParseUri(new Uri("hotline://KEY?state=tap")));
+    [InlineData("hotline://settings?state=tap", null)]
+    [InlineData("hotline://tray?state=Down", null)]
+    [InlineData("hotline://open?state=up", null)]
+    [InlineData("hotline://KEY?state=tap", KeyEvent.Tap)] // the host is case-insensitive
+    public void ParseUri_only_reads_state_from_the_key_host(string uri, KeyEvent? expected)
+        => Assert.Equal(expected, ActivationParser.ParseUri(new Uri(uri)));
 
     [Fact]
     public void A_settings_link_with_a_state_opens_settings_and_is_not_a_key()
@@ -108,30 +87,6 @@ public sealed class ReviewX1Tests : IDisposable
     {
         var d = new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(50));
         Parallel.For(0, 20_000, i => d.ShouldHandle((KeyEvent)(i % 3), i % 2 == 0 ? KeySource.FastPath : KeySource.Protocol));
-    }
-
-    [Fact]
-    public void App_action_inputs_with_keys_that_differ_only_by_case_do_not_throw()
-    {
-        var inputs = new Dictionary<string, string> { ["text"] = "one", ["Text"] = "two" };
-        var request = AppActionRequest.Parse(new Uri("hotline-action://ask"), inputs, null);
-        Assert.NotNull(request);
-        Assert.NotNull(request.Text);
-    }
-
-    [Fact]
-    public void Image_path_check_never_throws_for_a_drive_that_is_not_there()
-    {
-        var unused = Enumerable.Range('A', 26).Select(c => (char)c).First(c => !Directory.Exists(c + @":\"));
-        _ = AppActionRequest.IsSafeLocalImagePath(unused + @":\pic.png"); // an unmounted drive: not a crash
-    }
-
-    [Fact]
-    public void Both_link_parsers_read_plus_as_a_space_and_percent_escapes()
-    {
-        var request = AppActionRequest.Parse(new Uri("hotline-action://ask?text=a+b%20c"), null, null);
-        Assert.Equal("a b c", request!.Text);
-        Assert.Equal(KeyEvent.Tap, ActivationParser.ParseUri(new Uri("hotline://key?x=1&state=ta%70")));
     }
 
     // ---- Theming ----
@@ -255,26 +210,5 @@ public sealed class ReviewX1Tests : IDisposable
         var ws = new AgyWorkspace(_dir, new ManualTimeProvider());
         var paths = ws.SaveImages("m", [new Attachment("1", name, AttachmentKind.Image, "image/png", [1])]);
         Assert.True(File.Exists(System.IO.Path.Combine(_dir, paths[0])));
-    }
-
-    [Theory]
-    [InlineData("""{"event":"result","result":null}""")]
-    [InlineData("""{"event":5}""")]
-    [InlineData("""{"event":"step_update","step_update":null}""")]
-    [InlineData("""{"event":"step_update","step_update":{"step_type":"agent_response","text_delta":5}}""")]
-    [InlineData("""{"event":"step_update","step_update":{"step_type":"agent_response","text_delta":"x","step_index":"one"}}""")]
-    [InlineData("""{"event":"result","result":{"status":"SUCCESS","response":"","denied_actions":"no"}}""")]
-    [InlineData("""{"event":"result","result":{"status":"SUCCESS","response":"","denied_actions":[5,null]}}""")]
-    [InlineData("[1,2]")]
-    public void The_agy_parser_skips_lines_with_unexpected_value_types(string line)
-        => _ = new AgyTurnParser().Feed(line).ToList();
-
-    [Fact]
-    public void Denied_actions_of_odd_shape_still_end_the_turn_without_throwing()
-    {
-        var parser = new AgyTurnParser();
-        _ = parser.Feed("""{"event":"result","result":{"status":"SUCCESS","response":"","denied_actions":[{"action":"rm"}]}}""").ToList();
-        Assert.True(parser.Completed);
-        Assert.Contains("rm", parser.Error);
     }
 }

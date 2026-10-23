@@ -5,27 +5,14 @@ namespace Hotline.Core.Tests;
 public class GrowAndFitTests
 {
     private static readonly RectI Work = new(0, 0, 1920, 1040);
-    private static readonly RectI Bar = new(680, 736, 560, 120); // bottom edge at 856
 
-    [Fact]
-    public void Grows_upward_keeping_bottom_edge()
-        => Assert.Equal(new RectI(680, 456, 560, 400), PopupGeometry.GrowUp(Bar, 400, 560, Work));
-
-    [Fact]
-    public void Never_shrinks_below_bar()
-        => Assert.Equal(Bar, PopupGeometry.GrowUp(Bar, 50, 560, Work));
-
-    [Fact]
-    public void Caps_at_max_height()
-        => Assert.Equal(560, PopupGeometry.GrowUp(Bar, 2000, 560, Work).Height);
-
-    [Fact]
-    public void Stays_inside_work_area_top()
-    {
-        var r = PopupGeometry.GrowUp(new RectI(680, 100, 560, 120), 600, 600, Work);
-        Assert.Equal(0, r.Y);
-        Assert.Equal(600, r.Height);
-    }
+    [Theory]
+    [InlineData(736, 400, 560, 456, 400)]  // grows upward, keeping the bottom edge
+    [InlineData(736, 50, 560, 736, 120)]   // never shrinks below the bar
+    [InlineData(736, 2000, 560, 296, 560)] // capped at the maximum height
+    [InlineData(100, 600, 600, 0, 600)]    // stays inside the work area's top
+    public void Grows_upward_keeping_the_bottom_edge_within_the_work_area(int barY, int wanted, int max, int expectedY, int expectedHeight)
+        => Assert.Equal(new RectI(680, expectedY, 560, expectedHeight), PopupGeometry.GrowUp(new RectI(680, barY, 560, 120), wanted, max, Work));
 
     // Bar (empty panel) 120 px, maximum 720 px, so halfway is 420 px.
     [Theory]

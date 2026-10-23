@@ -107,16 +107,12 @@ public sealed class SvgMarkdownLimitsTests
         _ => "",
     }));
 
-    [Fact]
-    public void Markdown_quotes_20000_deep_do_not_throw()
+    [Theory]
+    [InlineData(">", " deep text")]
+    [InlineData("- ", "deep text")]
+    public void Markdown_quotes_and_lists_20000_deep_do_not_throw(string prefix, string text)
     {
-        Assert.Contains("deep text", AllText(MarkdownModel.Parse(string.Concat(Enumerable.Repeat(">", 20_000)) + " deep text")));
-    }
-
-    [Fact]
-    public void Markdown_lists_20000_deep_do_not_throw()
-    {
-        Assert.Contains("deep text", AllText(MarkdownModel.Parse(string.Concat(Enumerable.Repeat("- ", 20_000)) + "deep text")));
+        Assert.Contains("deep text", AllText(MarkdownModel.Parse(string.Concat(Enumerable.Repeat(prefix, 20_000)) + text)));
     }
 
     [Fact]
@@ -150,23 +146,16 @@ public sealed class SvgMarkdownLimitsTests
 
     // ---- R3: markdown + svg scanning ----
 
-    [Fact]
-    public void Many_unclosed_svg_tags_parse_in_linear_time()
+    [Theory]
+    [InlineData("<svg ", 40_000, 0)]
+    [InlineData("<svg><circle r=\"1\"/></svg>\n\n", 5_000, 5_000)]
+    public void Many_unclosed_or_closed_svg_blocks_parse_in_linear_time(string snippet, int repeat, int expectedDrawings)
     {
-        var md = string.Concat(Enumerable.Repeat("<svg ", 40_000));
-        var watch = System.Diagnostics.Stopwatch.StartNew();
-        MarkdownModel.Parse(md);
-        Assert.True(watch.ElapsedMilliseconds < 2000, $"{watch.ElapsedMilliseconds} ms");
-    }
-
-    [Fact]
-    public void Many_closed_svg_blocks_parse_in_linear_time()
-    {
-        var md = string.Concat(Enumerable.Repeat("<svg><circle r=\"1\"/></svg>\n\n", 5_000));
+        var md = string.Concat(Enumerable.Repeat(snippet, repeat));
         var watch = System.Diagnostics.Stopwatch.StartNew();
         var blocks = MarkdownModel.Parse(md);
         Assert.True(watch.ElapsedMilliseconds < 2000, $"{watch.ElapsedMilliseconds} ms");
-        Assert.Equal(5_000, blocks.OfType<MdSvg>().Count());
+        if (expectedDrawings > 0) Assert.Equal(expectedDrawings, blocks.OfType<MdSvg>().Count());
     }
 
     [Theory]

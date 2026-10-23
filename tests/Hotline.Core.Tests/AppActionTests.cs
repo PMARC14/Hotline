@@ -80,6 +80,30 @@ public sealed class AppActionTests
     public void Nothing_to_work_on_is_ignored() => Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(), Windows));
 
     [Fact]
+    public void App_action_inputs_with_keys_that_differ_only_by_case_do_not_throw()
+    {
+        var inputs = new Dictionary<string, string> { ["text"] = "one", ["Text"] = "two" };
+        var request = AppActionRequest.Parse(new Uri("hotline-action://ask"), inputs, null);
+        Assert.NotNull(request);
+        Assert.NotNull(request.Text);
+    }
+
+    [Fact]
+    public void Image_path_check_never_throws_for_a_drive_that_is_not_there()
+    {
+        var unused = Enumerable.Range('A', 26).Select(c => (char)c).First(c => !Directory.Exists(c + @":\"));
+        _ = AppActionRequest.IsSafeLocalImagePath(unused + @":\pic.png"); // an unmounted drive: not a crash
+    }
+
+    [Fact]
+    public void Both_link_parsers_read_plus_as_a_space_and_percent_escapes()
+    {
+        var request = AppActionRequest.Parse(new Uri("hotline-action://ask?text=a+b%20c"), null, null);
+        Assert.Equal("a b c", request!.Text);
+        Assert.Equal(KeyEvent.Tap, ActivationParser.ParseUri(new Uri("hotline://key?x=1&state=ta%70")));
+    }
+
+    [Fact]
     public void Very_long_text_is_cut() =>
         Assert.True(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(("text", new string('a', 200_000))), Windows)!.Text!.Length <= AppActionRequest.MaxTextChars);
 

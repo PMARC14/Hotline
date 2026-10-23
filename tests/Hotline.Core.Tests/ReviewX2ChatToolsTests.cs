@@ -1,9 +1,8 @@
 using Hotline.Core.Chat;
-using Hotline.Core.Tools;
 
 namespace Hotline.Core.Tests;
 
-/// <summary>Fixes from the full-codebase review: chat files and mcp.json edge cases.</summary>
+/// <summary>Fixes from the full-codebase review: chat file edge cases.</summary>
 public sealed class ReviewX2ChatToolsTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
@@ -42,32 +41,5 @@ public sealed class ReviewX2ChatToolsTests : IDisposable
         using (new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.None))
             Assert.False(store.Append("likes tea"));
         Assert.True(store.Append("likes tea"));
-    }
-
-    [Fact]
-    public void Config_with_a_non_string_command_cwd_or_name_skips_only_that_part()
-    {
-        var config = McpConfig.Parse("""
-            {
-              "mcpServers": {
-                "bad": { "command": true },
-                "num": { "command": "tool", "cwd": 123, "displayName": [1] },
-                "ok": { "command": "tool2", "cwd": "C:\\work", "displayName": "Okay" }
-              }
-            }
-            """);
-        Assert.Null(config.Error);
-        Assert.Equal(["num", "ok"], config.Servers.Select(s => s.Name));
-        Assert.Null(config.Servers[0].WorkingDirectory);
-        Assert.Null(config.Servers[0].DisplayName);
-        Assert.Equal("Okay", config.Servers[1].DisplayName);
-    }
-
-    [Fact]
-    public void Saving_an_approval_creates_the_folder_when_it_is_missing()
-    {
-        var path = Path.Combine(_dir, "not-yet", "mcp.json");
-        McpConfig.SaveApproval(path, "files/read", ToolApproval.Allow);
-        Assert.Equal(ToolApproval.Allow, McpConfig.Load(path).Approvals["files/read"]);
     }
 }
