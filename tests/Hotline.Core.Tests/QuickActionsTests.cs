@@ -7,11 +7,17 @@ public sealed class QuickActionsTests : IDisposable
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"), "actions");
     public void Dispose() { if (Directory.Exists(Path.GetDirectoryName(_dir))) Directory.Delete(Path.GetDirectoryName(_dir)!, recursive: true); }
 
-    [Fact]
-    public void First_run_writes_the_defaults_once()
+    private QuickActions Ready()
     {
         var actions = new QuickActions(_dir);
         actions.EnsureDefaults();
+        return actions;
+    }
+
+    [Fact]
+    public void First_run_writes_the_defaults_once()
+    {
+        var actions = Ready();
         Assert.Equal(["bullets", "explain", "fix", "formal", "reply", "shorter", "summarize", "translate"], actions.List().Select(a => a.Name));
         File.Delete(Path.Combine(_dir, "fix.md"));
         actions.EnsureDefaults(); // a deleted default stays deleted
@@ -21,8 +27,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void Users_add_actions_by_dropping_in_files_and_they_apply_live()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         File.WriteAllText(Path.Combine(_dir, "tone.md"), "\n\nMake the text below friendlier.\nKeep it short.");
         var tone = Assert.Single(actions.List(), a => a.Name == "tone");
         Assert.Equal("Make the text below friendlier.", tone.Description);
@@ -40,30 +45,23 @@ public sealed class QuickActionsTests : IDisposable
     }
 
     [Fact]
-    public void A_missing_folder_lists_nothing()
-    {
-        Assert.Empty(new QuickActions(_dir).List());
-    }
+    public void A_missing_folder_lists_nothing() => Assert.Empty(new QuickActions(_dir).List());
 
     [Theory]
     [InlineData("/tr", "tr")]
     [InlineData("/", "")]
     [InlineData("/Translate", "Translate")]
-    public void Suggestion_query_is_the_name_being_typed(string text, string query) =>
+    [InlineData("hello", null)]
+    [InlineData("/translate hello", null)] // past the name: no list
+    [InlineData(" /tr", null)]
+    [InlineData("/a/b", null)]
+    public void Suggestion_query_is_the_name_being_typed_only_in_a_leading_command(string text, string? query) =>
         Assert.Equal(query, QuickActions.SuggestionQuery(text));
-
-    [Theory]
-    [InlineData("hello")]
-    [InlineData("/translate hello")] // past the name: no list
-    [InlineData(" /tr")]
-    [InlineData("/a/b")]
-    public void No_suggestions_outside_a_leading_command(string text) => Assert.Null(QuickActions.SuggestionQuery(text));
 
     [Fact]
     public void Matches_by_prefix_case_insensitively()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         Assert.Equal(["summarize"], actions.Matching("SU").Select(a => a.Name));
         Assert.Equal(10, actions.Matching("").Count); // the eight defaults + the built-ins /remember and /resume
     }
@@ -71,8 +69,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void Expands_the_message_after_the_command()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         var result = actions.Expand("/fix  teh cat sat\nsecond line", hasAttachments: false);
         Assert.NotNull(result);
         Assert.Equal("fix", result!.Value.Action.Name);
@@ -82,8 +79,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void An_empty_message_applies_the_action_to_the_attachments()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         var result = actions.Expand("/summarize", hasAttachments: true);
         Assert.Equal(actions.List().Single(a => a.Name == "summarize").Instruction + "\n\nApply this to the attached content.", result!.Value.Text);
     }
@@ -91,8 +87,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void An_empty_message_with_nothing_attached_needs_text()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         var result = actions.Expand("/explain ", hasAttachments: false);
         Assert.NotNull(result);
         Assert.Null(result!.Value.Text);
@@ -102,18 +97,12 @@ public sealed class QuickActionsTests : IDisposable
     [InlineData("/unknown hi")]
     [InlineData("hi /fix")]
     [InlineData("/fixit now")]
-    public void Anything_else_is_sent_unchanged(string text)
-    {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
-        Assert.Null(actions.Expand(text, hasAttachments: false));
-    }
+    public void Anything_else_is_sent_unchanged(string text) => Assert.Null(Ready().Expand(text, hasAttachments: false));
 
     [Fact]
     public void Edits_apply_on_the_next_use_even_with_the_list_cached()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         _ = actions.List();
         var path = Path.Combine(_dir, "fix.md");
         File.WriteAllText(path, "Fix it differently.");
@@ -132,8 +121,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void A_file_locked_during_a_read_is_picked_up_on_the_next_use()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         using (new FileStream(Path.Combine(_dir, "fix.md"), FileMode.Open, FileAccess.ReadWrite, FileShare.None))
             Assert.DoesNotContain(actions.List(), a => a.Name == "fix");
         Assert.Contains(actions.List(), a => a.Name == "fix");
@@ -142,8 +130,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void Create_and_delete_from_settings()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         var name = actions.Create();
         Assert.Equal("my-action", name);
         Assert.Equal("my-action-2", actions.Create());
@@ -175,8 +162,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void Untouched_defaults_and_built_ins_describe_themselves_in_the_interface_language()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         File.WriteAllText(Path.Combine(_dir, "fix.md"), "Fix it my way.\nAnd more.\n");
         var all = actions.Matching("");
         Assert.Equal(Hotline.Core.Text.Localization.Strings.Action_translate_Desc, all.Single(a => a.Name == "translate").Description);
@@ -201,8 +187,7 @@ public sealed class QuickActionsTests : IDisposable
     [InlineData("missing", "other", false)]
     public void Rename(string from, string to, bool ok)
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         Assert.Equal(ok, actions.Rename(from, to));
         if (ok) Assert.Contains(actions.List(), a => a.Name == to);
     }
@@ -220,8 +205,7 @@ public sealed class QuickActionsTests : IDisposable
     [Fact]
     public void Apply_finds_the_action_by_its_name_without_parsing_text()
     {
-        var actions = new QuickActions(_dir);
-        actions.EnsureDefaults();
+        var actions = Ready();
         var result = actions.Apply("fix", "  /remember this  ", hasAttachments: false);
         Assert.Equal("fix", result?.Action.Name);
         Assert.EndsWith("\n\n---\n\n/remember this", result?.Text);

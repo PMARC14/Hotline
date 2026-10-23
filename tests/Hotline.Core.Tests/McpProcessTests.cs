@@ -16,9 +16,9 @@ public class McpProcessTests
     [Fact]
     public void Wraps_cmd_shims_in_cmd_on_windows_like_the_sdk()
     {
-        var psi = McpProcess.CreateStartInfo(Server("npx", ["-y", "@modelcontextprotocol/server-filesystem", "C:\\work"], NodePath), windows: true, NodeFiles);
+        var psi = McpProcess.CreateStartInfo(Server("npx", ["-y", "@modelcontextprotocol/server-filesystem", "C:\\work", @"C:\My Documents", "--flag=a,b;c"], NodePath), windows: true, NodeFiles);
         Assert.Equal("cmd.exe", psi.FileName);
-        Assert.Equal(["/c", "npx", "-y", "@modelcontextprotocol/server-filesystem", "C:\\work"], psi.ArgumentList);
+        Assert.Equal(["/c", "npx", "-y", "@modelcontextprotocol/server-filesystem", "C:\\work", @"C:\My Documents", "--flag=a,b;c"], psi.ArgumentList);
     }
 
     [Fact]
@@ -67,13 +67,6 @@ public class McpProcessTests
     }
 
     [Fact]
-    public void Plain_arguments_with_spaces_still_go_through_cmd()
-    {
-        var psi = McpProcess.CreateStartInfo(Server("npx", ["-y", @"C:\My Documents", "--flag=a,b;c"], NodePath), windows: true, NodeFiles);
-        Assert.Equal(["/c", "npx", "-y", @"C:\My Documents", "--flag=a,b;c"], psi.ArgumentList);
-    }
-
-    [Fact]
     public void Streams_are_redirected_utf8_without_bom_and_no_window()
     {
         var psi = McpProcess.CreateStartInfo(Server("node", []), windows: true);
@@ -88,15 +81,11 @@ public class McpProcessTests
     }
 
     [Fact]
-    public void Working_directory_defaults_to_the_current_directory()
+    public void Working_directory_defaults_to_the_current_one_and_environment_is_inherited_with_server_overrides()
     {
         Assert.Equal(Environment.CurrentDirectory, McpProcess.CreateStartInfo(Server("node", []), windows: true).WorkingDirectory);
         Assert.Equal(@"D:\x", McpProcess.CreateStartInfo(Server("node", [], cwd: @"D:\x"), windows: true).WorkingDirectory);
-    }
 
-    [Fact]
-    public void Environment_is_inherited_with_the_server_overrides_on_top()
-    {
         var psi = McpProcess.CreateStartInfo(Server("node", [], new() { ["HOTLINE_TEST_VAR"] = "1", ["PATH"] = "custom" }), windows: true);
         Assert.Equal("1", psi.Environment["HOTLINE_TEST_VAR"]);
         Assert.Equal("custom", psi.Environment["PATH"]);
