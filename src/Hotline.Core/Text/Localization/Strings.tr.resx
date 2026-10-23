@@ -548,6 +548,41 @@ Reddet:
   <data name="Grip_Tip" xml:space="preserve"><value>Taşımak için sürükleyin; bu konumu kaydetmek için sağ tıklayın</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Sohbet yüksekliği</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Sohbetin en fazla büyüyeceği boyut. 0 = otomatik (yukarıdaki maksimum yükseklik yüzdesi).</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Sohbet genişleme yönü</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatik olarak</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatik: yukarıda yer kalmadığı durumlar dışında yukarı doğru. Up veya Down bu yönü korur.</value></data>

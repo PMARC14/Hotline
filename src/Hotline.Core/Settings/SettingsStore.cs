@@ -21,7 +21,7 @@ public sealed class SettingsStore(string directory)
     /// <summary>Ids whose files this store loaded or wrote: only these are ever deleted (when a connection is removed).</summary>
     private readonly HashSet<string> _ownedIds = new(StringComparer.OrdinalIgnoreCase);
 
-    private static readonly JsonSerializerOptions ConnectionOptions = new()
+    internal static readonly JsonSerializerOptions ConnectionOptions = new()
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
@@ -32,7 +32,7 @@ public sealed class SettingsStore(string directory)
         Converters = { new JsonStringEnumConverter(JsonNamingPolicy.CamelCase, allowIntegerValues: false) },
     };
 
-    private static readonly JsonSerializerOptions Options = new()
+    internal static readonly JsonSerializerOptions Options = new()
     {
         WriteIndented = true,
         PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
