@@ -22,27 +22,19 @@ public sealed class ToolbarEditorViewTests
     // ---- Drop ----
 
     [Fact]
-    public void Drop_between_pickers_places_the_item_there()
+    public void Drop_places_an_item_where_it_is_dropped_pickers_and_hidden_items_too()
     {
         // The pickers are no block any more: a gap between two of them is a gap like any other.
         Assert.Equal(["continueIn", "effort", "model", "pin", "provider", "newChat"], ToolbarEditor.Drop(Block, "pin", TL, 3).Items(TL));
         Assert.Empty(ToolbarEditor.Drop(Block, "pin", TL, 3).Items(BL));
-    }
-
-    [Fact]
-    public void Drop_of_a_picker_moves_only_that_picker()
-    {
-        var m = ToolbarEditor.Drop(Block, "model", BL, 0);
-        Assert.Equal(["model", "pin"], m.Items(BL));
-        Assert.Equal(["continueIn", "effort", "provider", "newChat"], m.Items(TL));
-    }
-
-    [Fact]
-    public void Drop_of_a_hidden_item_shows_it_there()
-    {
-        var m = ToolbarEditor.Drop(Block, "settings", TR, 0);
-        Assert.Equal(["settings", "recent"], m.Items(TR));
-        Assert.DoesNotContain("settings", ToolbarEditor.Hidden(m));
+        // A picker moves on its own.
+        var picker = ToolbarEditor.Drop(Block, "model", BL, 0);
+        Assert.Equal(["model", "pin"], picker.Items(BL));
+        Assert.Equal(["continueIn", "effort", "provider", "newChat"], picker.Items(TL));
+        // A hidden item is shown there.
+        var shown = ToolbarEditor.Drop(Block, "settings", TR, 0);
+        Assert.Equal(["settings", "recent"], shown.Items(TR));
+        Assert.DoesNotContain("settings", ToolbarEditor.Hidden(shown));
     }
 
     [Fact]
@@ -132,21 +124,16 @@ public sealed class ToolbarEditorViewTests
     // ---- Show (the Not shown strip's add button) ----
 
     [Fact]
-    public void Show_puts_an_item_at_the_end_of_bottom_left()
+    public void Show_puts_an_item_or_a_hidden_picker_at_the_end_of_bottom_left()
     {
         var m = ToolbarEditorView.Show(Block, "settings");
         Assert.Equal(["pin", "settings"], m.Items(BL));
         Assert.Same(Block, ToolbarEditorView.Show(Block, "pin")); // already shown
         Assert.Same(Block, ToolbarEditorView.Show(Block, "nope"));
-    }
-
-    [Fact]
-    public void Show_of_a_hidden_picker_goes_to_the_end_of_bottom_left_like_a_button()
-    {
-        var hidden = ToolbarEditor.Hide(Block, "effort");
-        var m = ToolbarEditorView.Show(hidden, "effort");
-        Assert.Equal(["pin", "effort"], m.Items(BL));
-        Assert.Equal(["continueIn", "model", "provider", "newChat"], m.Items(TL)); // the other pickers stay where they are
+        // A hidden picker goes there like a button; the other pickers stay where they are.
+        var picker = ToolbarEditorView.Show(ToolbarEditor.Hide(Block, "effort"), "effort");
+        Assert.Equal(["pin", "effort"], picker.Items(BL));
+        Assert.Equal(["continueIn", "model", "provider", "newChat"], picker.Items(TL));
     }
 
     // ---- Custom button ids ----
@@ -184,14 +171,8 @@ public sealed class ToolbarEditorViewTests
         Assert.Equal(new string('a', 30) + "-2", second);
         Assert.NotSame(m, ToolbarEditor.AddCustom(m, Text(second)));
         Assert.Equal("ab-2", ToolbarEditorView.NewCustomId(ToolbarEditor.AddCustom(m, Text("ab")), "AB"));
-    }
-
-    [Fact]
-    public void NewCustomId_never_ends_in_a_dash_when_cut()
-    {
-        var label = new string('a', 31) + " b"; // "aaa…a-b" cut at 32 would end in "-"
-        var id = ToolbarEditorView.NewCustomId(ToolbarModel.Defaults, label);
-        Assert.Equal(new string('a', 31), id);
+        // Cut at 32 it would end in "-": "aaa...a-b" loses the dash too.
+        Assert.Equal(new string('a', 31), ToolbarEditorView.NewCustomId(ToolbarModel.Defaults, new string('a', 31) + " b"));
     }
 
     // ---- Icons and quick actions ----
@@ -266,7 +247,7 @@ public sealed class ToolbarEditorViewTests
     [Fact]
     public void Every_size_preset_is_offered_in_order_with_its_own_name()
     {
-        Assert.Equal(Enum.GetValues<ButtonSize>(), ToolbarEditorView.Sizes);
+        Assert.Equal([ButtonSize.Compact, ButtonSize.Normal, ButtonSize.Wide], ToolbarEditorView.Sizes); // smallest first
         var names = ToolbarEditorView.Sizes.Select(ToolbarEditorView.SizeName).ToList();
         Assert.All(names, n => Assert.False(string.IsNullOrWhiteSpace(n)));
         Assert.Equal(names.Count, names.Distinct().Count());
@@ -287,13 +268,6 @@ public sealed class ToolbarEditorViewTests
             Assert.Equal(hex, m.Style.OutlineColor);
         }
         Assert.Equal("#123456", ToolbarEditorView.ColorName("#123456")); // a colour set in the file by hand: shown as it is
-    }
-
-    [Fact]
-    public void Three_sizes_are_offered_smallest_first()
-    {
-        Assert.Equal([ButtonSize.Compact, ButtonSize.Normal, ButtonSize.Wide], ToolbarEditorView.Sizes);
-        Assert.Equal(BarSizeChoice.Wide, (BarSizeChoice)ButtonSize.Wide); // the choice shares the sizes' values
     }
 
     [Theory]

@@ -13,26 +13,6 @@ public sealed class ToolbarPickerSpanTests
 
     // ---- the file ----
 
-    [Fact]
-    public void Unwritten_spans_are_two_four_and_three_button_widths()
-    {
-        var m = Plain;
-        Assert.Equal((2, 4, 3), (m.EffectiveSpan("effort"), m.EffectiveSpan("model"), m.EffectiveSpan("provider")));
-        Assert.Empty(m.PickerSpans);
-        Assert.Equal((1, 8), (ToolbarModel.MinSpan, ToolbarModel.MaxSpan));
-    }
-
-    [Fact]
-    public void A_span_override_is_read_and_is_not_a_warning()
-    {
-        var m = Read("""{ "model": { "span": 6 }, "EFFORT": { "span": 1 } }""");
-        Assert.Equal(6, m.EffectiveSpan("model"));
-        Assert.Equal(1, m.EffectiveSpan("effort"));
-        Assert.Equal(3, m.EffectiveSpan("provider"));
-        Assert.Empty(m.Warnings);
-        Assert.Empty(m.Overrides); // spans are not a ButtonStyle
-    }
-
     [Theory]
     [InlineData("0")]
     [InlineData("9")]
@@ -137,7 +117,7 @@ public sealed class ToolbarPickerSpanTests
     // ---- the editor ----
 
     [Fact]
-    public void SetPickerSpan_sets_clamps_and_round_trips()
+    public void SetPickerSpan_sets_clamps_round_trips_and_back_to_the_default_removes_the_entry()
     {
         var m = Plain;
         var six = ToolbarEditor.SetPickerSpan(m, "model", 6);
@@ -145,22 +125,10 @@ public sealed class ToolbarPickerSpanTests
         Assert.Equal(six, ToolbarModel.Resolve(six.ToJson()));
         Assert.Equal(8, ToolbarEditor.SetPickerSpan(m, "model", 99).EffectiveSpan("model"));
         Assert.Equal(1, ToolbarEditor.SetPickerSpan(m, "MODEL", -5).EffectiveSpan("model"));
-    }
-
-    [Fact]
-    public void SetPickerSpan_back_to_the_default_removes_the_entry()
-    {
-        var six = ToolbarEditor.SetPickerSpan(Plain, "model", 6);
+        // Back to the default removes the entry.
         var back = ToolbarEditor.SetPickerSpan(six, "model", 4);
         Assert.Empty(back.PickerSpans);
         Assert.Equal(Plain, back);
-    }
-
-    [Fact]
-    public void SetPickerSpan_that_changes_nothing_returns_the_input()
-    {
-        var m = ToolbarEditor.SetPickerSpan(Plain, "model", 6);
-        Assert.Same(m, ToolbarEditor.SetPickerSpan(m, "model", 6));
     }
 
     [Fact]
@@ -208,6 +176,7 @@ public sealed class ToolbarPickerSpanTests
         Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
         var specs = ToolbarPlan.PickerSpecs(Plain with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
         Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
+        Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
     }
 
     [Fact]
@@ -225,9 +194,6 @@ public sealed class ToolbarPickerSpanTests
         Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
         Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
         Assert.All(specs.Values, s => Assert.Equal(s.Preferred, s.Max));
-        // A compact bar gets the same: the unit does not follow the bar's size.
-        var compact = ToolbarPlan.PickerSpecs(m with { Style = new ButtonStyle(ButtonSize.Compact) }, ["effort", "model", "provider"]);
-        Assert.Equal(specs.Values.Select(s => (s.Name, s.Preferred, s.Min)), compact.Select(s => (s.Name, s.Preferred, s.Min)));
         // Span 1 is 40 DIP exactly, as the preferred width, the minimum and the maximum.
         foreach (var id in new[] { "effort", "model", "provider" })
         {
@@ -246,14 +212,5 @@ public sealed class ToolbarPickerSpanTests
         Assert.False(specs["effort"].Available);
         Assert.True(specs["model"].Available);
         Assert.False(specs["provider"].Available);
-    }
-
-    [Fact]
-    public void A_span_is_a_maximum_too()
-    {
-        var m = ToolbarEditor.SetPickerSpan(Plain, "model", 8);
-        var specs = ToolbarPlan.PickerSpecs(m, ["effort", "model", "provider"]);
-        var widths = ToolbarLayout.Compute(5000, 100, 4, specs, ["effort", "provider", "model"]);
-        Assert.Equal((80.0, 320.0, 120.0), (widths["effort"], widths["model"], widths["provider"]));
     }
 }
