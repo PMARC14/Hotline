@@ -230,6 +230,7 @@ public partial class App : Application
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
         ApplyToolbarFile(dataDir);
+        ReportSettingsProblems(store);
         WatchSettingsFile(store);
         _settingsService.ConnectionsChanged += ids =>
         {

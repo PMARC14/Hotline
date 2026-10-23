@@ -64,6 +64,12 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
       second "..." in the row; the other row keeps its own "...". Self-test steps P31-P33 draw these (logs\selftest\).
 - [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About ›
       This PC lists what was ignored; a file Hotline can't read is left as it is.
+- [ ] Put `"backdrop": "glass"` in the `window` section of `settings.json` and save: a notice "Part of your settings was
+      ignored" appears in the panel at once (naming `window.backdrop`) and the look doesn't change; Settings › Advanced shows the
+      same at the top with an Open folder button. Fix the word → the notice goes. Type `{ "window": ` and save → "A settings
+      file can't be read", the current settings stay; the same text is not announced twice. Then change a setting in Settings:
+      a `settings.json.<time>.bak` with your text appears beside a valid file.
+- [ ] Put `"type": "nope"` in a `connections\*.json` file: the notice names that file, the connection is not listed, the file is unchanged.
 - [ ] An old (v1) `toolbar.json` is left untouched: the default bar runs and Settings › About › This PC shows the
       "version 1 files are no longer read" warning; Settings › Advanced › Reset settings puts the default bar back
       (a backup is made first).

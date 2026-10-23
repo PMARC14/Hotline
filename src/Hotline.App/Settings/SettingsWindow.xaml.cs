@@ -373,6 +373,23 @@ public sealed partial class SettingsWindow : Window
             return b;
         }
         var folder = Path.GetDirectoryName(_settingsFile)!;
+        // What the last read of settings.json and the connection files ignored, at the top of the page (like the panel's notice).
+        var problems = _settings.Problems;
+        if (_settings.FileError is not null || problems.Count > 0)
+        {
+            var lines = new List<string>();
+            if (_settings.FileError is { } fileError) lines.Add(fileError + " " + Strings.Settings_NoticeKept);
+            lines.AddRange(problems.Take(15).Select(p => Hotline.Core.Diagnostics.LogText.Clean(p).Replace("\n    ", " ")));
+            if (problems.Count > 15) lines.Add(L.F(Strings.Settings_AndMore, problems.Count - 15));
+            PageHost.Children.Insert(0, new InfoBar
+            {
+                IsOpen = true, IsClosable = false,
+                Severity = _settings.FileError is not null ? InfoBarSeverity.Error : InfoBarSeverity.Warning,
+                Title = Strings.Advanced_ProblemsTitle,
+                Message = Strings.Advanced_ProblemsBody + "\n" + string.Join("\n", lines),
+                ActionButton = Link(Strings.Common_OpenFolder, () => CliRunner.OpenFolder(folder)),
+            });
+        }
         PageHost.Children.Add(Card(Strings.Advanced_SettingsFile, _settingsFile, new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,

@@ -27,8 +27,13 @@ public sealed partial class PromptLibrary(string directory)
     public IReadOnlyList<string> List()
     {
         if (!System.IO.Directory.Exists(directory)) return [DefaultName];
-        var names = System.IO.Directory.EnumerateFiles(directory, "*.md").Select(Path.GetFileNameWithoutExtension)
-            .OfType<string>().Where(IsValidName).Where(n => !IsDefault(n)).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        List<string> names;
+        try
+        {
+            names = System.IO.Directory.EnumerateFiles(directory, "*.md").Select(Path.GetFileNameWithoutExtension)
+                .OfType<string>().Where(IsValidName).Where(n => !IsDefault(n)).Order(StringComparer.OrdinalIgnoreCase).ToList();
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { names = []; } // the folder went away or is locked down
         names.Insert(0, DefaultName);
         return names;
     }

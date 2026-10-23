@@ -9,6 +9,10 @@ public class ConfigProblemsTests
         => Assert.Equal("a; b; c", ConfigProblems.Summary(["a", "b", "c"]));
 
     [Fact]
+    public void A_chosen_number_are_shown_then_the_translated_count()
+        => Assert.Equal("a; b (and 3 more)", ConfigProblems.Summary(["a", "b", "c", "d", "e"], 2, "(and {0} more)"));
+
+    [Fact]
     public void Many_problems_show_the_first_three_and_a_count()
         => Assert.Equal("a; b; c (and 2 more)", ConfigProblems.Summary(["a", "b", "c", "d", "e"]));
 

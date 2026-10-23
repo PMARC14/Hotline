@@ -16,7 +16,9 @@ public partial class App
             try
             {
                 ApplyToolbarFile(dir);
-                if (store.TryRead() is not { } fromDisk) { _log?.Info("settings.json not readable yet (being edited?); keeping current settings"); return; }
+                var fromDisk = store.TryRead();
+                ReportSettingsProblems(store);
+                if (fromDisk is null) { _log?.Info("settings.json not readable yet (being edited?); keeping current settings"); return; }
                 if (_settingsService!.Reload(fromDisk)) _log?.Info("settings.json changed on disk; applied");
             }
             catch (Exception ex) { _log?.Error("reloading settings failed", ex); }

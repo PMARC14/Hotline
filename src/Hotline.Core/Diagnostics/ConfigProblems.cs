@@ -16,6 +16,15 @@ public static class ConfigProblems
         return problems.Count > MaxShown ? $"{shown} (and {problems.Count - MaxShown} more)" : shown;
     }
 
+    /// <summary>
+    /// The first <paramref name="maxShown"/> problems, then <paramref name="more"/> (a translated "(and {0} more)") for the rest.
+    /// </summary>
+    public static string Summary(IReadOnlyList<string> problems, int maxShown, string more)
+    {
+        var shown = string.Join("; ", problems.Take(maxShown).Select(One));
+        return problems.Count > maxShown ? $"{shown} {string.Format(System.Globalization.CultureInfo.CurrentCulture, more, problems.Count - maxShown)}" : shown;
+    }
+
     /// <summary>Changes when the problems change; empty when there are none (so the notice can be taken away).</summary>
     public static string Key(string? error, IReadOnlyList<string> problems) =>
         error is null && problems.Count == 0 ? "" : $"{error}\n{string.Join("\n", problems)}";

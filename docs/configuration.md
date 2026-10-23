@@ -76,8 +76,22 @@ settings.json is schema version 14 (0.4). Hotline is pre-1.0 and does not conver
 missing `schemaVersion` is read as it is (every value is checked and clamped) and gets the current version the next
 time Settings saves it. No archive is made for that.
 
-A half-saved or broken `settings.json` is ignored while Hotline runs (your file is never overwritten without a
-timestamped backup); at startup a broken file is copied to `settings.json.bad` and defaults are used in memory.
+### Broken files
+
+A hand edit that goes wrong costs only what is wrong, never the whole file, and nothing is deleted or silently overwritten.
+What is ignored is listed in the panel (a notice with a way to Settings; at most five lines, then "and N more"), in
+Settings › Advanced (at the top, with an Open folder button) and in the log (`settings:` lines, never the full value:
+at most 40 characters, cleaned). Fix the file and the notice goes away by itself.
+
+| File | What happens |
+|---|---|
+| `settings.json`, one value wrong (a mistyped word for an option, text where a number belongs, `null`, a number too large, an object where a value belongs) | That one setting keeps its default; every other setting applies. The file is not rewritten. A value outside the allowed range is reported too and pulled in to the nearest allowed value. A key given twice uses the last one |
+| `settings.json`, not a JSON object, empty, or a syntax error (also a half-saved file) | At startup: defaults run in memory and the file is copied to `settings.json.bad` (not copied again while it has the same text). While Hotline runs: the settings in force stay and the problem is reported once. The file itself is left as it is until you change something in Settings; that writes a valid file and first keeps the damaged one as `settings.json.<time>.bak` |
+| `connections\<id>.json`, one value wrong | That value keeps its default (a wrong `approveAllTools` is off, a wrong `tools` is chat-only); the connection loads |
+| `connections\<id>.json`, unreadable, not an object, an unknown `type`, or an id already used by another file | The file is not used and not touched (never overwritten or deleted); the notice names it. A file with an ignored value is copied to `<id>.json.<time>.bak` before Settings rewrites it |
+| `mcp.json` | A server entry or approval of the wrong kind is skipped alone (an unknown approval word counts as "deny", with a warning). A syntax error or a key given twice makes the whole file unreadable: no servers run and the file is left as it is |
+| `prompts\*.md`, `actions\*.md` | A file that is locked, too large (actions), unreadable or badly named is skipped; the rest are listed. A prompt that can't be read falls back to `default.md` |
+| `toolbar.json` | See *toolbar.json* below |
 
 ## connections\<id>.json
 
