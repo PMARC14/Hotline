@@ -7,44 +7,18 @@ public class KeyEventDeduperTests
     private readonly ManualTimeProvider _clock = new();
     private KeyEventDeduper New() => new(_clock, TimeSpan.FromMilliseconds(1000));
 
-    [Fact]
-    public void First_event_is_handled()
-        => Assert.True(New().ShouldHandle(KeyEvent.Tap, KeySource.FastPath));
-
-    [Fact]
-    public void Same_press_from_other_channel_within_window_is_dropped()
+    [Theory]
+    [InlineData(KeyEvent.Tap, KeySource.FastPath, 400, KeyEvent.Tap, KeySource.Protocol, false)]      // protocol launch + redirect latency
+    [InlineData(KeyEvent.Tap, KeySource.Protocol, 1001, KeyEvent.Tap, KeySource.FastPath, true)]      // after the window
+    [InlineData(KeyEvent.Tap, KeySource.FastPath, 80, KeyEvent.Tap, KeySource.FastPath, true)]        // same channel: a real repeat
+    [InlineData(KeyEvent.HoldStart, KeySource.FastPath, 10, KeyEvent.HoldStop, KeySource.Protocol, true)] // different event
+    public void Second_event_is_dropped_only_as_a_duplicate_from_the_other_channel(
+        KeyEvent first, KeySource firstSource, int delayMs, KeyEvent second, KeySource secondSource, bool handled)
     {
         var d = New();
-        d.ShouldHandle(KeyEvent.Tap, KeySource.FastPath);
-        _clock.Advance(TimeSpan.FromMilliseconds(400)); // protocol launch + redirect latency
-        Assert.False(d.ShouldHandle(KeyEvent.Tap, KeySource.Protocol));
-    }
-
-    [Fact]
-    public void Same_press_from_other_channel_after_window_is_handled()
-    {
-        var d = New();
-        d.ShouldHandle(KeyEvent.Tap, KeySource.Protocol);
-        _clock.Advance(TimeSpan.FromMilliseconds(1001));
-        Assert.True(d.ShouldHandle(KeyEvent.Tap, KeySource.FastPath));
-    }
-
-    [Fact]
-    public void Rapid_repeats_from_same_channel_are_real_presses()
-    {
-        var d = New();
-        d.ShouldHandle(KeyEvent.Tap, KeySource.FastPath);
-        _clock.Advance(TimeSpan.FromMilliseconds(80));
-        Assert.True(d.ShouldHandle(KeyEvent.Tap, KeySource.FastPath));
-    }
-
-    [Fact]
-    public void Different_event_within_window_is_handled()
-    {
-        var d = New();
-        d.ShouldHandle(KeyEvent.HoldStart, KeySource.FastPath);
-        _clock.Advance(TimeSpan.FromMilliseconds(10));
-        Assert.True(d.ShouldHandle(KeyEvent.HoldStop, KeySource.Protocol));
+        Assert.True(d.ShouldHandle(first, firstSource)); // the first event is always handled
+        _clock.Advance(TimeSpan.FromMilliseconds(delayMs));
+        Assert.Equal(handled, d.ShouldHandle(second, secondSource));
     }
 
     [Fact]

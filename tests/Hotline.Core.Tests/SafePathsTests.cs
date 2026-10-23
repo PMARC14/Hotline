@@ -41,12 +41,11 @@ public sealed class SafePathsTests
         Assert.False(SafeDirectory.IsLocal("C:\\x\0y"));
     }
 
+    // UNC and device paths are already refused for images by Unsafe_paths_are_not_local; this adds the file type.
     [Theory]
-    [InlineData("//attacker.com/share/a.png")]
-    [InlineData(@"\\?\UNC\attacker.com\share\a.png")]
     [InlineData(@"C:\x.exe")]
     [InlineData("relative.png")]
-    public void Images_from_unsafe_places_or_types_are_refused(string path) => Assert.False(AppActionRequest.IsSafeLocalImagePath(path));
+    public void Images_of_unsafe_types_are_refused(string path) => Assert.False(AppActionRequest.IsSafeLocalImagePath(path));
 
     [Theory]
     [InlineData(@"C:\Users\me\shot.png")]
@@ -58,6 +57,7 @@ public sealed class SafePathsTests
     [InlineData("0123456789ab")]
     [InlineData("c1")]
     [InlineData("a-b_C9")]
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 64, the longest allowed
     public void Plain_history_ids_are_safe(string id) => Assert.True(HistoryIds.IsSafe(id));
 
     [Theory]
@@ -70,12 +70,6 @@ public sealed class SafePathsTests
     [InlineData("a.b")]
     [InlineData("a b")]
     [InlineData("x\0y")]
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 65, one too long
     public void Odd_history_ids_are_refused(string? id) => Assert.False(HistoryIds.IsSafe(id));
-
-    [Fact]
-    public void Very_long_history_ids_are_refused()
-    {
-        Assert.True(HistoryIds.IsSafe(new string('a', 64)));
-        Assert.False(HistoryIds.IsSafe(new string('a', 65)));
-    }
 }
