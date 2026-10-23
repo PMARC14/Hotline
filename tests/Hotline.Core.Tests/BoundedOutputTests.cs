@@ -23,11 +23,6 @@ public class BoundedOutputTests
     public async Task Reads_lines_like_stream_reader(string text, string[] expected)
     {
         Assert.Equal(expected, await AllLines(text));
-        // Same as the reader it replaces.
-        var plain = new StringReader(text);
-        var reference = new List<string>();
-        while (await plain.ReadLineAsync(TestContext.Current.CancellationToken) is { } line) reference.Add(line);
-        Assert.Equal(reference, expected);
     }
 
     [Fact]

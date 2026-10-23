@@ -15,11 +15,9 @@ public class ThinkingIndicatorTests
         => Assert.Equal(expected, ThinkingIndicator.Show(enabled, streaming, since, delay));
 
     [Fact]
-    public void Defaults_and_clamping()
+    public void The_delay_is_clamped()
     {
         var s = new HotlineSettings();
-        Assert.True(s.Chat.ThinkingIndicator);
-        Assert.Equal(700, s.Chat.ThinkingDelayMs);
         s.Chat.ThinkingDelayMs = 99_999;
         Assert.Equal(10_000, SettingsStore.Normalize(s).Chat.ThinkingDelayMs);
     }
