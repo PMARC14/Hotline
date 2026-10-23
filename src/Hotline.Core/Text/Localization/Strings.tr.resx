@@ -438,27 +438,27 @@ Reddet:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} sunucusu başlatılamıyor: "{1}", cmd.exe üzerinden çalışıyor; bu da "command" veya "args" içindeki " % ^ &amp; | &lt; &gt; ! karakterlerini veya satır sonlarını güvenli bir şekilde aktaramaz. "command" öğesini programın .exe dosyasına yönlendirin veya bu karakterleri kaldırın.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
-  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
-  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
-  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
-  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
-  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>Daha fazla</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Burada hiçbir şey yok</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>… düğmesinin menüsü</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>… düğmesinin kutusuna taşı</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Sığmayanları menüye taşı</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json bir sürüm 1 dosyasıdır; sürüm 1 dosyaları artık okunmamaktadır, bu nedenle varsayılan çubuk kullanılır.</value></data>
-  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is the wrong kind of value here; the default is used.</value></data>
-  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} isn't one of {2}; the default is used.</value></data>
-  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} is outside {2} to {3}; a safe value is used.</value></data>
-  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} appears more than once; the last one is used.</value></data>
-  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: the connection type {1} isn't known, so this file is not used.</value></data>
-  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: another file already has the id {1}, so this file is not used.</value></data>
-  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} can't be read ({1}); it is left as it is.</value></data>
-  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} must contain one JSON object; it is left as it is.</value></data>
-  <data name="Settings_AndMore" xml:space="preserve"><value>(and {0} more)</value></data>
-  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Part of your settings was ignored</value></data>
-  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} The rest applies. Settings › Advanced lists everything.</value></data>
-  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>A settings file can't be read</value></data>
-  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline keeps the settings it has until it is fixed.</value></data>
-  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problems in your settings files</value></data>
-  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignored values use their defaults. Fix the file and Hotline picks it up right away.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} burada geçersiz bir değer türüdür; varsayılan değer kullanıldı.</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1}, {2} değerlerinden biri değil; varsayılan kullanılır.</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1}, {2} ile {3} aralığının dışında; güvenli bir değer kullanıldı.</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} birden fazla kez görünüyor; sonuncusu kullanılır.</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: bağlantı türü {1} bilinmiyor, bu nedenle bu dosya kullanılmıyor.</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: Başka bir dosya zaten {1} kimliğine sahip, bu nedenle bu dosya kullanılmıyor.</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} okunamıyor ({1}); olduğu gibi bırakıldı.</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} bir JSON nesnesi içermelidir; olduğu gibi bırakıldı.</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(ve {0} tane daha)</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Ayarlarınızın bir kısmı yoksayıldı</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Geri kalanı geçerlidir. Ayarlar › Gelişmiş her şeyi listeler.</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Bir ayar dosyası okunamıyor</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline, düzeltilene kadar mevcut ayarlarını korur.</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Ayar dosyalarınızdaki sorunlar</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Yoksayılan değerler varsayılanlarını kullanır. Dosyayı düzeltin; Hotline bunu hemen algılar.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json dosyasının bir kısmı yoksayıldı</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Dosyanın geri kalanı geçerliliğini korur. Ayarlar › Pencere › Düğme satırları neyin yoksayıldığını gösterir.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json kullanılamadı</value></data>
@@ -563,45 +563,45 @@ Reddet:
   <data name="Grip_Tip" xml:space="preserve"><value>Taşımak için sürükleyin; bu konumu kaydetmek için sağ tıklayın</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Sohbet yüksekliği</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Sohbetin en fazla büyüyeceği boyut. 0 = otomatik (yukarıdaki maksimum yükseklik yüzdesi).</value></data>
-  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
-  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
-  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
-  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
-  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
-  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
-  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
-  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
-  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
-  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
-  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
-  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
-  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
-  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
-  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
-  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
-  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
-  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
-  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>Yedekleme</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>Hotline kurulumunuzu başka bir bilgisayara taşıyın veya bir kopyasını saklayın. Yedek, işaretlediğiniz bölümleri içeren tek bir .zip dosyasıdır; başka hiçbir şey (sohbet geçmişi, bellek, günlükler) dahil edilmez.</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Ayarlar</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Düğme satırları ve özel düğme resimleri</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Araçlar (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sesler</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI bağlantıları</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Hızlı eylemler</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>İstemler</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json yazıldığı gibi dışa aktarılır. env değerleri belirteç gibi gizli bilgiler içerebilir: dosyayı güvende tutun veya bu seçeneği işaretsiz bırakın.</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>API anahtarları dahil değildir: Windows Kimlik Bilgileri Yöneticisi'nde kalırlar. Yeni bilgisayarda bunları tekrar girin.</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>Dışa aktar</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>Yedekleme dosyasına nelerin dahil edileceğini seçin.</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>Tümünü seç</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>Hiçbirini seçme</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>Dışa aktar...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline yedeği</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>{1} dosya {0} konumuna kaydedildi</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>{1} dosya {0} konumuna kaydedildi. {2} dosya dışarıda bırakıldı (çok büyük veya kullanılamaz).</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>Yedek yazılamadı: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>İçe Aktar</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>Bir yedekleme dosyasından geri yükleyin. Aynı ada sahip dosyalar değiştirilir (eskileri önce bir yedekleme klasörüne kopyalanır); diğer dosyalar olduğu gibi kalır.</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>Dosya seç...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>Yedek {0} tarihinde Hotline {1} ile oluşturuldu</value></data>
   <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
-  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
-  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
-  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
-  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
-  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
-  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
-  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
-  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
-  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
-  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
-  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>Bu yedeklemede içe aktarılacak hiçbir şey yok.</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>Bu dosya içe aktarılamıyor: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>İçe aktar</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>{0} dosya içe aktarıldı, {1} atlandı.</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>Hiçbir şey içe aktarılmadı: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>Değiştirilen dosyalar şuraya kopyalandı: {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>Yedekleme klasörünü aç</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Atlandı: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>Bu bağlantılar için hâlâ bir API anahtarı gerekiyor: {0}. Yapay Zeka bağlantılarını açın ve anahtarı girin.</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>Ayarlar ve düğme çubuğu hemen uygulanır; sesler, düğme satırları ve hızlı eylemler bir sonraki kullanımda yenilenir.</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Sohbet genişliği (yüzde)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel, bir sohbet başladığında ekran genişliğinin bu payına kadar genişler ve yeni bir sohbette tekrar küçülür. 0 = genişliğini korur. Aşağıda sabit bir genişlik belirlemek bunu kapatır.</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>Sohbet genişliği</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Bir sohbet başladığında panelin genişleyeceği boyut (DIP cinsinden). 0 = yukarıdaki yüzdeyi kullan.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Sohbet genişleme yönü</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatik olarak</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatik: yukarıda yer kalmadığı durumlar dışında yukarı doğru. Up veya Down bu yönü korur.</value></data>

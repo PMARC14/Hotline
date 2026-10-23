@@ -438,27 +438,27 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>無法啟動 {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 伺服器無法啟動："{1}" 透過 cmd.exe 執行，無法安全傳遞 "command" 或 "args" 中的 " % ^ &amp; | &lt; &gt; ! 字元或換行符號。請將 "command" 指向程式的 .exe，或移除這些字元。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>無法讀取 toolbar.json:{0}</value></data>
-  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
-  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
-  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
-  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
-  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>這裡沒有任何內容</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>「…」按鈕選單</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>移至 … 按鈕的方塊中</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>將放不下的項目移至功能表</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json 是版本 1 檔案；不再讀取版本 1 檔案，因此使用預設列。</value></data>
-  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is the wrong kind of value here; the default is used.</value></data>
-  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} isn't one of {2}; the default is used.</value></data>
-  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} is outside {2} to {3}; a safe value is used.</value></data>
-  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} appears more than once; the last one is used.</value></data>
-  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: the connection type {1} isn't known, so this file is not used.</value></data>
-  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: another file already has the id {1}, so this file is not used.</value></data>
-  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} can't be read ({1}); it is left as it is.</value></data>
-  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} must contain one JSON object; it is left as it is.</value></data>
-  <data name="Settings_AndMore" xml:space="preserve"><value>(and {0} more)</value></data>
-  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Part of your settings was ignored</value></data>
-  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} The rest applies. Settings › Advanced lists everything.</value></data>
-  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>A settings file can't be read</value></data>
-  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline keeps the settings it has until it is fixed.</value></data>
-  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problems in your settings files</value></data>
-  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignored values use their defaults. Fix the file and Hotline picks it up right away.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}：{1} 在此為錯誤的值類型；將使用預設值。</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}：{1} 不是 {2} 之一；將使用預設值。</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}：{1} 超出 {2} 至 {3} 的範圍；已使用安全值。</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} 出現多次；將使用最後一個。</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}：未知的連線類型 {1}，因此不使用此檔案。</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}：另一個檔案已包含 id {1}，因此未使用此檔案。</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>無法讀取 {0}（{1}）；維持原樣。</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} 必須包含一個 JSON 物件；維持原樣。</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(以及另外 {0} 項)</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>已略過部分設定</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 其餘項目仍會套用。「設定 › 進階」中列出了所有項目。</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>無法讀取設定檔</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline 將保留現有設定，直到問題修正。</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定檔發生問題</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>忽略的值將使用預設值。修正檔案後，Hotline 會立即載入。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} 檔案的其餘部分仍然適用。設定 › 視窗 › 按鈕列 顯示了已忽略的內容。</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>無法使用 toolbar.json</value></data>
@@ -563,45 +563,45 @@
   <data name="Grip_Tip" xml:space="preserve"><value>拖曳以移動；按一下滑鼠右鍵以儲存此位置</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>聊天高度</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>聊天展開的最大高度。0 = 自動 (即上方的最大高度百分比)。</value></data>
-  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
-  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
-  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
-  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
-  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
-  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
-  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
-  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
-  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
-  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
-  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
-  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
-  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
-  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
-  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
-  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
-  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
-  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
-  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>備份</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與自訂按鈕圖片</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>工具 (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>音效</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 連線</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>快速動作</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>提示詞</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json 將依原樣匯出。其 env 值可能包含權杖等機密資訊：請妥善保管檔案，或取消勾選此項目。</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>不包含 API 金鑰：它們仍保留在 Windows 認證管理員中。請在新電腦上重新輸入。</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>匯出</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>選擇要納入備份檔案的項目。</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>全選</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>取消全選</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>匯出...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline 備份</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>已儲存 {1} 個檔案至 {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>已儲存 {1} 個檔案至 {0}。已略過 {2} 個檔案（過大或無法使用）。</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>無法寫入備份：{0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>匯入</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>從備份檔案還原。同名檔案將被取代（舊檔案會先複製到備份資料夾）；其他檔案保持不變。</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>選擇檔案...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>備份於 {0} 使用 Hotline {1} 建立</value></data>
   <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
-  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
-  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
-  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
-  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
-  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
-  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
-  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
-  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
-  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
-  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
-  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>此備份沒有可匯入的內容。</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>無法匯入此檔案：{0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>匯入</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>已匯入 {0} 個檔案，略過 {1} 個。</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>未匯入任何內容: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>已替換的檔案已複製到 {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>開啟備份資料夾</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>已略過：{0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>這些連線仍需要 API 金鑰：{0}。請開啟「AI 連線」並輸入。</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>設定與按鈕列會立即套用；音效、按鈕列與快速動作將在下次使用時重新整理。</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>聊天寬度 (百分比)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>聊天開始時面板會展開至螢幕寬度的此比例，並在新聊天時縮回。0 = 保持寬度。在下方設定固定寬度會關閉此功能。</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>聊天寬度</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>開始聊天時面板展開的寬度 (以 DIP 為單位)。0 = 使用上方的百分比。</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>聊天展開方向</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>自動：向上展開，除非上方沒有足夠空間。Up 或 Down 會固定為該方向。</value></data>

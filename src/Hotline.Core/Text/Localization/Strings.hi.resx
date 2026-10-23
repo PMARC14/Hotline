@@ -111,7 +111,7 @@
   <data name="Nav_Appearance" xml:space="preserve"><value>रूप</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>विंडो</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>चैट और इतिहास</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>टूल</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>टूल्स</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>उन्नत</value></data>
   <data name="Nav_About" xml:space="preserve"><value>के बारे में</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline को फिर से शुरू करने के बाद लागू होता है।)</value></data>
@@ -438,27 +438,27 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} सर्वर प्रारंभ नहीं हो सकता: "{1}" cmd.exe के माध्यम से चलता है, जो "command" या "args" में " % ^ &amp; | &lt; &gt; ! वर्णों या लाइन ब्रेक को सुरक्षित रूप से पास नहीं कर सकता। "command" को प्रोग्राम के .exe पर इंगित करें, या उन वर्णों को हटा दें।</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
-  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
-  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
-  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
-  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
-  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>अधिक</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>यहाँ कुछ नहीं है</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>… बटन का मेनू</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>… बटन के बॉक्स में ले जाएं</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>जो फिट न हो उसे मेनू में ले जाएं</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json एक version 1 फ़ाइल है; version 1 फ़ाइलें अब नहीं पढ़ी जाती हैं, इसलिए डिफ़ॉल्ट बार का उपयोग किया जाता है।</value></data>
-  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is the wrong kind of value here; the default is used.</value></data>
-  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} isn't one of {2}; the default is used.</value></data>
-  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} is outside {2} to {3}; a safe value is used.</value></data>
-  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} appears more than once; the last one is used.</value></data>
-  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: the connection type {1} isn't known, so this file is not used.</value></data>
-  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: another file already has the id {1}, so this file is not used.</value></data>
-  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} can't be read ({1}); it is left as it is.</value></data>
-  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} must contain one JSON object; it is left as it is.</value></data>
-  <data name="Settings_AndMore" xml:space="preserve"><value>(and {0} more)</value></data>
-  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Part of your settings was ignored</value></data>
-  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} The rest applies. Settings › Advanced lists everything.</value></data>
-  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>A settings file can't be read</value></data>
-  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline keeps the settings it has until it is fixed.</value></data>
-  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problems in your settings files</value></data>
-  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignored values use their defaults. Fix the file and Hotline picks it up right away.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} यहाँ अमान्य प्रकार का मान है; डिफ़ॉल्ट का उपयोग किया गया है।</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1}, {2} में से एक नहीं है; डिफ़ॉल्ट का उपयोग किया जाता है।</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1}, {2} से {3} के बाहर है; एक सुरक्षित मान का उपयोग किया जाता है।</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} एक से अधिक बार दिखाई देता है; अंतिम का उपयोग किया जाता है।</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: कनेक्शन प्रकार {1} ज्ञात नहीं है, इसलिए इस फ़ाइल का उपयोग नहीं किया जाता है।</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: किसी अन्य फ़ाइल में पहले से id {1} मौजूद है, इसलिए इस फ़ाइल का उपयोग नहीं किया गया है।</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} को पढ़ा नहीं जा सकता ({1}); इसे जैसा है वैसा ही छोड़ दिया गया है।</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} में एक JSON ऑब्जेक्ट होना चाहिए; इसे जैसा है वैसा ही छोड़ दिया गया है।</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(और {0} अन्य)</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>आपकी सेटिंग्स का कुछ हिस्सा अनदेखा किया गया</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} बाकी लागू होता है। सेटिंग्स › उन्नत सब कुछ सूचीबद्ध करता है।</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>सेटिंग्स फ़ाइल पढ़ी नहीं जा सकती</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline अपनी सेटिंग्स तब तक बनाए रखता है जब तक इसे ठीक नहीं किया जाता।</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>आपकी सेटिंग्स फ़ाइलों में समस्याएँ हैं</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>अनदेखे मान अपने डिफ़ॉल्ट का उपयोग करते हैं। फ़ाइल को ठीक करें और Hotline इसे तुरंत लागू कर देगा।</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json के एक भाग को अनदेखा किया गया</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} शेष फ़ाइल अभी भी लागू होती है। सेटिंग्स › विंडो › बटन पंक्तियाँ दिखाता है कि क्या अनदेखा किया गया था।</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json का उपयोग नहीं किया जा सका</value></data>
@@ -563,45 +563,45 @@
   <data name="Grip_Tip" xml:space="preserve"><value>स्थानांतरित करने के लिए खींचें; इस स्थान को सहेजने के लिए राइट-क्लिक करें</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>चैट की ऊँचाई</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>चैट का अधिकतम विस्तार। 0 = स्वचालित (ऊपर दिया गया अधिकतम ऊँचाई प्रतिशत)।</value></data>
-  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
-  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
-  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
-  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
-  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
-  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
-  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
-  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
-  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
-  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
-  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
-  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
-  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
-  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
-  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
-  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
-  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
-  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
-  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>बैकअप</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>अपने Hotline सेटअप को दूसरे PC पर ले जाएँ, या एक प्रति सुरक्षित रखें। बैकअप एक .zip फ़ाइल होती है जिसमें आपके द्वारा चुने गए भाग होते हैं; इसके अलावा कुछ भी (चैट इतिहास, मेमोरी, लॉग) शामिल नहीं है।</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>सेटिंग्स</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियाँ और कस्टम बटन छवियां</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>टूल्स (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>त्वरित कार्रवाइयां</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json जैसा लिखा है वैसा ही निर्यात किया जाता है। इसके env मानों में टोकन जैसे रहस्य हो सकते हैं: फ़ाइल को सुरक्षित रखें, या इसे अनचेक रहने दें।</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>API कुंजियाँ शामिल नहीं हैं: वे Windows क्रेडेंशियल लॉकर में रहती हैं। नए PC पर उन्हें फिर से दर्ज करें।</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>निर्यात</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>चुनें कि बैकअप फ़ाइल में क्या शामिल करना है।</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>सभी चुनें</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>कोई नहीं चुनें</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>निर्यात करें...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline बैकअप</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>{0} में {1} फ़ाइलें सहेजी गईं</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>{0} में {1} फ़ाइलें सहेजी गईं। {2} फ़ाइलें छोड़ दी गईं (बहुत बड़ी या अनुपयोगी)।</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>बैकअप लिखा नहीं जा सका: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>आयात करें</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>बैकअप फ़ाइल से पुनर्स्थापित करें। समान नाम वाली फ़ाइलों को बदल दिया जाता है (पुरानी फ़ाइलें पहले बैकअप फ़ोल्डर में कॉपी की जाती हैं); अन्य फ़ाइलें जैसी हैं वैसी ही रहती हैं।</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>फ़ाइल चुनें...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>{0} को Hotline {1} के साथ बनाया गया बैकअप</value></data>
   <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
-  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
-  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
-  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
-  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
-  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
-  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
-  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
-  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
-  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
-  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
-  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>इस बैकअप में आयात करने के लिए कुछ नहीं है।</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>यह फ़ाइल आयात नहीं की जा सकती: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>आयात करें</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>{0} फ़ाइलें आयात की गईं, {1} छोड़ी गईं।</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>कुछ भी आयात नहीं किया गया: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>बदली गई फ़ाइलें {0} में कॉपी कर दी गईं</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>बैकअप फ़ोल्डर खोलें</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>छोड़ा गया: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>इन कनेक्शनों को अभी भी एक API कुंजी की आवश्यकता है: {0}। AI कनेक्शन खोलें और इसे दर्ज करें।</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>सेटिंग्स और बटन बार तुरंत लागू होते हैं; ध्वनियाँ, बटन पंक्तियाँ और त्वरित कार्रवाइयां अगली बार उपयोग किए जाने पर रीफ़्रेश होंगी।</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>चैट चौड़ाई (प्रतिशत)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>चैट शुरू होने पर पैनल स्क्रीन की चौड़ाई के इस हिस्से तक फैल जाता है, और नई चैट पर वापस सिकुड़ जाता है। 0 = यह अपनी चौड़ाई बनाए रखता है। नीचे दी गई निश्चित चौड़ाई इसे बंद कर देती है।</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>चैट की चौड़ाई</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>चैट शुरू होने पर पैनल की चौड़ाई, DIP में। 0 = ऊपर दिए गए प्रतिशत का उपयोग करें।</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>चैट का विस्तार</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>स्वचालित रूप से</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>स्वचालित: ऊपर की ओर, जब तक कि ऊपर जगह न हो। Up या Down इसे उसी दिशा में रखता है।</value></data>

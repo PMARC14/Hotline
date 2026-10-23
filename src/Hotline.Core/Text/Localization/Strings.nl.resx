@@ -111,7 +111,7 @@
   <data name="Nav_Appearance" xml:space="preserve"><value>Weergave</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>Venster</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>Chat en geschiedenis</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>Hulpmiddelen</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Extra's</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>Geavanceerd</value></data>
   <data name="Nav_About" xml:space="preserve"><value>Over</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Geldt na het opnieuw starten van Hotline.)</value></data>
@@ -438,27 +438,27 @@ Weigeren:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>De {0}-server kan niet worden gestart: "{1}" wordt uitgevoerd via cmd.exe, waardoor de tekens " % ^ &amp; | &lt; &gt; ! of reeleinden in "command" of "args" niet veilig kunnen worden doorgegeven. Verwijs met "command" naar de .exe van het programma of verwijder deze tekens.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
-  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
-  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
-  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
-  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
-  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Niets hier</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu van knop …</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Verplaatsen naar het vak van de knop …</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Wat niet past verplaatsen naar het menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json is een versie 1-bestand; versie 1-bestanden worden niet meer gelezen, dus wordt de standaardbalk gebruikt.</value></data>
-  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is the wrong kind of value here; the default is used.</value></data>
-  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} isn't one of {2}; the default is used.</value></data>
-  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} is outside {2} to {3}; a safe value is used.</value></data>
-  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} appears more than once; the last one is used.</value></data>
-  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: the connection type {1} isn't known, so this file is not used.</value></data>
-  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: another file already has the id {1}, so this file is not used.</value></data>
-  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} can't be read ({1}); it is left as it is.</value></data>
-  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} must contain one JSON object; it is left as it is.</value></data>
-  <data name="Settings_AndMore" xml:space="preserve"><value>(and {0} more)</value></data>
-  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Part of your settings was ignored</value></data>
-  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} The rest applies. Settings › Advanced lists everything.</value></data>
-  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>A settings file can't be read</value></data>
-  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline keeps the settings it has until it is fixed.</value></data>
-  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problems in your settings files</value></data>
-  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignored values use their defaults. Fix the file and Hotline picks it up right away.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is hier het verkeerde waardetype; de standaardwaarde wordt gebruikt.</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} is niet een van {2}; de standaardwaarde wordt gebruikt.</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} ligt buiten {2} tot {3}; er wordt een veilige waarde gebruikt.</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} komt vaker dan één keer voor; de laatste wordt gebruikt.</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: het verbindingstype {1} is niet bekend, dus dit bestand wordt niet gebruikt.</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: een ander bestand heeft al de id {1}, dus dit bestand wordt niet gebruikt.</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} kan niet worden gelezen ({1}); het blijft ongewijzigd.</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} moet één JSON-object bevatten; het blijft ongewijzigd.</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(en nog {0})</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Een deel van uw instellingen is genegeerd</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} De rest wordt toegepast. Instellingen › Geavanceerd toont alles.</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Een instellingenbestand kan niet worden gelezen</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline behoudt de huidige instellingen totdat het is opgelost.</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemen in uw instellingenbestanden</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Genegeerde waarden gebruiken de standaardwaarden. Corrigeer het bestand en Hotline past het direct toe.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Een deel van toolbar.json is genegeerd</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} De rest van het bestand is nog steeds van toepassing. Instellingen › Venster › Knoppenrijen toont wat er is genegeerd.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json kon niet worden gebruikt</value></data>
@@ -563,45 +563,45 @@ Weigeren:
   <data name="Grip_Tip" xml:space="preserve"><value>Sleep om te verplaatsen; klik met de rechtermuisknop om deze positie op te slaan</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chathoogte</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maximale chathoogte. 0 = automatisch (het bovenstaande maximale hoogtepercentage).</value></data>
-  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
-  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
-  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
-  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
-  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>Back-up</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>Verplaats uw Hotline-configuratie naar een andere pc of bewaar een kopie. Een back-up is één .zip-bestand met de onderdelen die u aanvinkt; niets anders (chatgeschiedenis, geheugen, logboeken) wordt meegenomen.</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Instellingen</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en aangepaste knopafbeeldingen</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Extra's (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Geluiden</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Snelle acties</value></data>
   <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
-  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
-  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
-  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
-  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
-  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
-  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
-  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
-  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
-  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
-  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
-  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
-  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
-  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
-  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json wordt geëxporteerd zoals het is geschreven. De env-waarden kunnen geheimen zoals tokens bevatten: bewaar het bestand veilig of laat dit uitgevinkt.</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>API-sleutels zijn niet inbegrepen: deze blijven in Windows Referentiebeheer. Voer ze opnieuw in op de nieuwe pc.</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>Exporteren</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>Kies wat er in het back-upbestand wordt opgenomen.</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>Alles selecteren</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>Niets selecteren</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>Exporteren...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline-back-up</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>{1} bestanden opgeslagen in {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>{1} bestanden opgeslagen in {0}. {2} bestanden zijn weggelaten (te groot of niet bruikbaar).</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>De back-up kon niet worden geschreven: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>Importeren</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>Herstellen vanuit een back-upbestand. Bestanden met dezelfde naam worden vervangen (de oude worden eerst naar een back-upmap gekopieerd); andere bestanden blijven zoals ze zijn.</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>Bestand kiezen...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>Back-up gemaakt op {0} met Hotline {1}</value></data>
   <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
-  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
-  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
-  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
-  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
-  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
-  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
-  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
-  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
-  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
-  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
-  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>Deze back-up bevat niets om te importeren.</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>Dit bestand kan niet worden geïmporteerd: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>Importeren</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>{0} bestanden geïmporteerd, {1} overgeslagen.</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>Er is niets geïmporteerd: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>De vervangen bestanden zijn gekopieerd naar {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>Back-upmap openen</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Overgeslagen: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>Deze verbindingen hebben nog een API-sleutel nodig: {0}. Open AI-verbindingen en voer deze in.</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>Instellingen en de knoppenbalk worden direct toegepast; geluiden, knoppenrijen en snelle acties worden bij het volgende gebruik vernieuwd.</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chatbreedte (percentage)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Het venster groeit naar dit aandeel van de schermbreedte wanneer een chat start en krimpt terug bij een nieuwe chat. 0 = behoudt de breedte. Een vaste breedte hieronder schakelt dit uit.</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>Chatbreedte</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>De breedte waarnaar het deelvenster uitbreidt wanneer een chat start, in DIP. 0 = gebruik het bovenstaande percentage.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Chat breidt uit</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatisch</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatisch: omhoog, tenzij er bovenaan geen ruimte is. Up of Down houdt die richting aan.</value></data>

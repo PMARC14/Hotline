@@ -438,27 +438,27 @@ Tolak:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Server {0} tidak dapat dimulai: "{1}" berjalan melalui cmd.exe, yang tidak dapat meneruskan karakter " % ^ &amp; | &lt; &gt; ! atau jeda baris dengan aman dalam "command" atau "args". Arahkan "command" ke .exe program, atau hapus karakter tersebut.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
-  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
-  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
-  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
-  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
-  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>Lainnya</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Tidak ada apa-apa di sini</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu tombol …</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Pindahkan ke kotak tombol …</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Pindahkan yang tidak muat ke menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json adalah file versi 1; file versi 1 tidak lagi dibaca, sehingga bilah default yang digunakan.</value></data>
-  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is the wrong kind of value here; the default is used.</value></data>
-  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} isn't one of {2}; the default is used.</value></data>
-  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} is outside {2} to {3}; a safe value is used.</value></data>
-  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} appears more than once; the last one is used.</value></data>
-  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: the connection type {1} isn't known, so this file is not used.</value></data>
-  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: another file already has the id {1}, so this file is not used.</value></data>
-  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} can't be read ({1}); it is left as it is.</value></data>
-  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} must contain one JSON object; it is left as it is.</value></data>
-  <data name="Settings_AndMore" xml:space="preserve"><value>(and {0} more)</value></data>
-  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Part of your settings was ignored</value></data>
-  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} The rest applies. Settings › Advanced lists everything.</value></data>
-  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>A settings file can't be read</value></data>
-  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline keeps the settings it has until it is fixed.</value></data>
-  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problems in your settings files</value></data>
-  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignored values use their defaults. Fix the file and Hotline picks it up right away.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} bukan jenis nilai yang sesuai di sini; nilai default digunakan.</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} bukan salah satu dari {2}; default digunakan.</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} berada di luar {2} hingga {3}; nilai yang aman digunakan.</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} muncul lebih dari sekali; yang terakhir digunakan.</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: jenis koneksi {1} tidak diketahui, sehingga file ini tidak digunakan.</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: file lain sudah memiliki id {1}, sehingga file ini tidak digunakan.</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} tidak dapat dibaca ({1}); dibiarkan apa adanya.</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} harus berisi satu objek JSON; dibiarkan apa adanya.</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(dan {0} lainnya)</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Sebagian pengaturan Anda diabaikan</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Sisanya berlaku. Pengaturan › Lanjutan mencantumkan semuanya.</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>File pengaturan tidak dapat dibaca</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline mempertahankan pengaturan yang dimilikinya hingga diperbaiki.</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Masalah pada file pengaturan Anda</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Nilai yang diabaikan menggunakan defaultnya. Perbaiki file dan Hotline akan langsung menerapkannya.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Sebagian dari toolbar.json diabaikan</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Bagian berkas lainnya tetap berlaku. Pengaturan › Jendela › Baris tombol menunjukkan apa yang diabaikan.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>toolbar.json tidak dapat digunakan</value></data>
@@ -563,45 +563,45 @@ Tolak:
   <data name="Grip_Tip" xml:space="preserve"><value>Tarik untuk memindahkan; klik kanan untuk menyimpan posisi ini</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Tinggi obrolan</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Tinggi maksimal bentangan obrolan. 0 = otomatis (persentase tinggi maksimum di atas).</value></data>
-  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
-  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
-  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
-  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
-  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
-  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
-  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
-  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
-  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
-  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
-  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
-  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
-  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
-  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
-  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
-  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
-  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
-  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
-  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>Cadangan</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>Pindahkan konfigurasi Hotline Anda ke PC lain, atau simpan salinannya. Cadangan adalah satu file .zip yang berisi bagian-bagian yang Anda centang; tidak ada hal lain (riwayat obrolan, memori, log) yang disertakan.</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Pengaturan</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Baris tombol dan gambar tombol kustom</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Alat (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Suara</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>Koneksi AI</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Tindakan cepat</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompt</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json diekspor apa adanya. Nilai env di dalamnya dapat menyimpan rahasia seperti token: simpan file dengan aman, atau biarkan tidak dicentang.</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>Kunci API tidak disertakan: kunci tetap tersimpan di Windows Credential Locker. Masukkan kembali di PC baru.</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>Ekspor</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>Pilih apa saja yang akan dimasukkan ke dalam file cadangan.</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>Pilih semua</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>Pilih tidak ada</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>Ekspor...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Cadangan Hotline</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>Menyimpan {1} file ke {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Menyimpan {1} file ke {0}. {2} file dilewati (terlalu besar atau tidak dapat digunakan).</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>Cadangan tidak dapat ditulis: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>Impor</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>Pulihkan dari file cadangan. File dengan nama yang sama akan diganti (file lama disalin ke folder cadangan terlebih dahulu); file lain tetap seperti semula.</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>Pilih file...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>Cadangan dibuat {0} dengan Hotline {1}</value></data>
   <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
-  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
-  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
-  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
-  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
-  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
-  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
-  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
-  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
-  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
-  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
-  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>Cadangan ini tidak memuat apa pun untuk diimpor.</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>File ini tidak dapat diimpor: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>Impor</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>{0} file diimpor, {1} dilewati.</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>Tidak ada yang diimpor: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>File yang diganti telah disalin ke {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>Buka folder cadangan</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Dilewati: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>Koneksi ini masih memerlukan kunci API: {0}. Buka Koneksi AI dan masukkan.</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>Pengaturan dan bilah tombol langsung diterapkan; suara, baris tombol, dan tindakan cepat akan dimuat ulang saat digunakan berikutnya.</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Lebar obrolan (persen)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel membesar hingga persentase lebar layar ini saat obrolan dimulai, dan mengecil kembali saat obrolan baru. 0 = mempertahankan lebarnya. Lebar tetap di bawah ini mematikan fitur ini.</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>Lebar obrolan</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Lebar panel saat obrolan dimulai, dalam DIP. 0 = gunakan persentase di atas.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Arah obrolan membesar</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatis</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatis: ke atas, kecuali tidak ada ruang di atas. Up atau Down mempertahankannya pada arah tersebut.</value></data>

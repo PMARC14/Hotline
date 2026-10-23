@@ -438,27 +438,27 @@ Từ chối:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>không thể khởi động {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Máy chủ {0} không thể khởi động: "{1}" chạy qua cmd.exe, vốn không thể truyền an toàn các ký tự " % ^ &amp; | &lt; &gt; ! hoặc dấu ngắt dòng trong "command" hoặc "args". Hãy trỏ "command" vào tệp .exe của chương trình hoặc xóa các ký tự đó.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Không thể đọc toolbar.json: {0}</value></data>
-  <data name="Bar_more" xml:space="preserve"><value>More</value></data>
-  <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
-  <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>
-  <data name="Bar_ToMenu" xml:space="preserve"><value>Move to the … button's box</value></data>
-  <data name="Bar_FillMenu" xml:space="preserve"><value>Move what doesn't fit into the menu</value></data>
+  <data name="Bar_more" xml:space="preserve"><value>Thêm</value></data>
+  <data name="Bar_NothingHere" xml:space="preserve"><value>Không có gì ở đây</value></data>
+  <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu của nút …</value></data>
+  <data name="Bar_ToMenu" xml:space="preserve"><value>Chuyển vào hộp của nút …</value></data>
+  <data name="Bar_FillMenu" xml:space="preserve"><value>Chuyển các mục không vừa vào menu</value></data>
   <data name="Bar_VersionOneUnsupported" xml:space="preserve"><value>toolbar.json là tệp phiên bản 1; các tệp phiên bản 1 không còn được đọc nữa, vì vậy thanh mặc định được sử dụng.</value></data>
-  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} is the wrong kind of value here; the default is used.</value></data>
-  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} isn't one of {2}; the default is used.</value></data>
-  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} is outside {2} to {3}; a safe value is used.</value></data>
-  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} appears more than once; the last one is used.</value></data>
-  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: the connection type {1} isn't known, so this file is not used.</value></data>
-  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: another file already has the id {1}, so this file is not used.</value></data>
-  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>{0} can't be read ({1}); it is left as it is.</value></data>
-  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} must contain one JSON object; it is left as it is.</value></data>
-  <data name="Settings_AndMore" xml:space="preserve"><value>(and {0} more)</value></data>
-  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Part of your settings was ignored</value></data>
-  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} The rest applies. Settings › Advanced lists everything.</value></data>
-  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>A settings file can't be read</value></data>
-  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline keeps the settings it has until it is fixed.</value></data>
-  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problems in your settings files</value></data>
-  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignored values use their defaults. Fix the file and Hotline picks it up right away.</value></data>
+  <data name="Settings_ProblemWrongType" xml:space="preserve"><value>{0}: {1} là loại giá trị không hợp lệ ở đây; giá trị mặc định được sử dụng.</value></data>
+  <data name="Settings_ProblemUnknown" xml:space="preserve"><value>{0}: {1} không thuộc {2}; giá trị mặc định sẽ được dùng.</value></data>
+  <data name="Settings_ProblemRange" xml:space="preserve"><value>{0}: {1} nằm ngoài phạm vi từ {2} đến {3}; một giá trị an toàn sẽ được sử dụng.</value></data>
+  <data name="Settings_ProblemDuplicate" xml:space="preserve"><value>{0} xuất hiện nhiều lần; giá trị cuối cùng sẽ được dùng.</value></data>
+  <data name="Settings_ProblemConnectionType" xml:space="preserve"><value>{0}: loại kết nối {1} không xác định, vì vậy tệp này không được sử dụng.</value></data>
+  <data name="Settings_ProblemDuplicateId" xml:space="preserve"><value>{0}: một tệp khác đã có id {1}, vì vậy tệp này không được dùng.</value></data>
+  <data name="Settings_ProblemUnreadable" xml:space="preserve"><value>Không thể đọc {0} ({1}); giữ nguyên như hiện tại.</value></data>
+  <data name="Settings_ProblemNotObject" xml:space="preserve"><value>{0} phải chứa một đối tượng JSON; tệp được giữ nguyên.</value></data>
+  <data name="Settings_AndMore" xml:space="preserve"><value>(và thêm {0} mục nữa)</value></data>
+  <data name="Settings_NoticeProblemsTitle" xml:space="preserve"><value>Một phần cài đặt của bạn đã bị bỏ qua</value></data>
+  <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Phần còn lại vẫn được áp dụng. Cài đặt › Nâng cao liệt kê mọi thứ.</value></data>
+  <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Không thể đọc tệp cài đặt</value></data>
+  <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline giữ nguyên các cài đặt hiện tại cho đến khi sự cố được khắc phục.</value></data>
+  <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Sự cố trong tệp cài đặt của bạn</value></data>
+  <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Các giá trị bị bỏ qua sẽ dùng giá trị mặc định. Hãy sửa tệp và Hotline sẽ áp dụng ngay.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Một phần của toolbar.json đã bị bỏ qua</value></data>
   <data name="Bar_NoticeProblems" xml:space="preserve"><value>{0} Phần còn lại của tệp vẫn áp dụng. Cài đặt › Cửa sổ › Các hàng nút hiển thị những gì đã bị bỏ qua.</value></data>
   <data name="Bar_NoticeUnreadableTitle" xml:space="preserve"><value>Không thể sử dụng toolbar.json</value></data>
@@ -563,45 +563,45 @@ Từ chối:
   <data name="Grip_Tip" xml:space="preserve"><value>Kéo để di chuyển; nhấp chuột phải để lưu vị trí này</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chiều cao đoạn chat</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Mức tối đa đoạn chat có thể mở rộng. 0 = tự động (phần trăm chiều cao tối đa ở trên).</value></data>
-  <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
-  <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
-  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
-  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
-  <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
-  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Quick actions</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompts</value></data>
-  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json is exported as it is written. Its env values can hold secrets such as tokens: keep the file safe, or leave this unticked.</value></data>
-  <data name="Backup_ConnNote" xml:space="preserve"><value>API keys are not included: they stay in the Windows Credential Locker. Enter them again on the new PC.</value></data>
-  <data name="Backup_Export_Title" xml:space="preserve"><value>Export</value></data>
-  <data name="Backup_Export_Desc" xml:space="preserve"><value>Choose what goes into the backup file.</value></data>
-  <data name="Backup_SelectAll" xml:space="preserve"><value>Select all</value></data>
-  <data name="Backup_SelectNone" xml:space="preserve"><value>Select none</value></data>
-  <data name="Backup_ExportButton" xml:space="preserve"><value>Export...</value></data>
-  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Hotline backup</value></data>
-  <data name="Backup_Exported" xml:space="preserve"><value>Saved {1} files to {0}</value></data>
-  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Saved {1} files to {0}. {2} files were left out (too large or not usable).</value></data>
-  <data name="Backup_ExportFailed" xml:space="preserve"><value>The backup could not be written: {0}</value></data>
-  <data name="Backup_Import_Title" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_Import_Desc" xml:space="preserve"><value>Restore from a backup file. Files with the same name are replaced (the old ones are copied to a backup folder first); other files stay as they are.</value></data>
-  <data name="Backup_Choose" xml:space="preserve"><value>Choose file...</value></data>
-  <data name="Backup_PackageInfo" xml:space="preserve"><value>Backup made {0} with Hotline {1}</value></data>
+  <data name="Nav_Backup" xml:space="preserve"><value>Sao lưu</value></data>
+  <data name="Backup_Intro" xml:space="preserve"><value>Chuyển thiết lập Hotline của bạn sang máy tính khác hoặc giữ một bản sao. Bản sao lưu là một tệp .zip duy nhất chứa các phần bạn đánh dấu; không bao gồm những mục khác (lịch sử trò chuyện, bộ nhớ, nhật ký).</value></data>
+  <data name="Backup_Cat_Settings" xml:space="preserve"><value>Cài đặt</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Các hàng nút và hình ảnh nút tùy chỉnh</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Công cụ (mcp.json)</value></data>
+  <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Âm thanh</value></data>
+  <data name="Backup_Cat_Connections" xml:space="preserve"><value>Kết nối AI</value></data>
+  <data name="Backup_Cat_Actions" xml:space="preserve"><value>Thao tác nhanh</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Lời nhắc</value></data>
+  <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json được xuất như hiện tại. Các giá trị env của nó có thể chứa thông tin mật như mã token: hãy giữ tệp an toàn hoặc bỏ chọn mục này.</value></data>
+  <data name="Backup_ConnNote" xml:space="preserve"><value>Khóa API không được bao gồm: chúng vẫn được lưu trong Windows Credential Locker. Vui lòng nhập lại trên máy tính mới.</value></data>
+  <data name="Backup_Export_Title" xml:space="preserve"><value>Xuất</value></data>
+  <data name="Backup_Export_Desc" xml:space="preserve"><value>Chọn nội dung cần đưa vào tệp sao lưu.</value></data>
+  <data name="Backup_SelectAll" xml:space="preserve"><value>Chọn tất cả</value></data>
+  <data name="Backup_SelectNone" xml:space="preserve"><value>Bỏ chọn tất cả</value></data>
+  <data name="Backup_ExportButton" xml:space="preserve"><value>Xuất...</value></data>
+  <data name="Backup_ExportPickerType" xml:space="preserve"><value>Bản sao lưu Hotline</value></data>
+  <data name="Backup_Exported" xml:space="preserve"><value>Đã lưu {1} tệp vào {0}</value></data>
+  <data name="Backup_ExportedSkipped" xml:space="preserve"><value>Đã lưu {1} tệp vào {0}. {2} tệp đã bị loại trừ (quá lớn hoặc không dùng được).</value></data>
+  <data name="Backup_ExportFailed" xml:space="preserve"><value>Không thể ghi bản sao lưu: {0}</value></data>
+  <data name="Backup_Import_Title" xml:space="preserve"><value>Nhập</value></data>
+  <data name="Backup_Import_Desc" xml:space="preserve"><value>Khôi phục từ tệp sao lưu. Các tệp có cùng tên sẽ được thay thế (các tệp cũ sẽ được sao chép vào thư mục sao lưu trước); các tệp khác vẫn giữ nguyên.</value></data>
+  <data name="Backup_Choose" xml:space="preserve"><value>Chọn tệp...</value></data>
+  <data name="Backup_PackageInfo" xml:space="preserve"><value>Bản sao lưu được tạo vào {0} với Hotline {1}</value></data>
   <data name="Backup_PackageCount" xml:space="preserve"><value>{0} ({1})</value></data>
-  <data name="Backup_PackageEmpty" xml:space="preserve"><value>This backup holds nothing to import.</value></data>
-  <data name="Backup_PackageInvalid" xml:space="preserve"><value>This file cannot be imported: {0}</value></data>
-  <data name="Backup_ImportButton" xml:space="preserve"><value>Import</value></data>
-  <data name="Backup_ImportDone" xml:space="preserve"><value>Imported {0} files, skipped {1}.</value></data>
-  <data name="Backup_ImportFailed" xml:space="preserve"><value>Nothing was imported: {0}</value></data>
-  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>The files that were replaced were copied to {0}</value></data>
-  <data name="Backup_OpenBackup" xml:space="preserve"><value>Open backup folder</value></data>
-  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Skipped: {0}</value></data>
-  <data name="Backup_NeedKeys" xml:space="preserve"><value>These connections still need an API key: {0}. Open AI connections and enter it.</value></data>
-  <data name="Backup_LiveNote" xml:space="preserve"><value>Settings and the button bar apply at once; sounds, button rows and quick actions refresh the next time they are used.</value></data>
-  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
-  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
-  <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Backup_PackageEmpty" xml:space="preserve"><value>Bản sao lưu này không có nội dung nào để nhập.</value></data>
+  <data name="Backup_PackageInvalid" xml:space="preserve"><value>Không thể nhập tệp này: {0}</value></data>
+  <data name="Backup_ImportButton" xml:space="preserve"><value>Nhập</value></data>
+  <data name="Backup_ImportDone" xml:space="preserve"><value>Đã nhập {0} tệp, bỏ qua {1} tệp.</value></data>
+  <data name="Backup_ImportFailed" xml:space="preserve"><value>Không có gì được nhập: {0}</value></data>
+  <data name="Backup_ImportBackupAt" xml:space="preserve"><value>Các tệp đã được thay thế được sao chép vào {0}</value></data>
+  <data name="Backup_OpenBackup" xml:space="preserve"><value>Mở thư mục sao lưu</value></data>
+  <data name="Backup_ImportSkipped" xml:space="preserve"><value>Đã bỏ qua: {0}</value></data>
+  <data name="Backup_NeedKeys" xml:space="preserve"><value>Các kết nối này vẫn cần khóa API: {0}. Hãy mở Kết nối AI và nhập khóa.</value></data>
+  <data name="Backup_LiveNote" xml:space="preserve"><value>Cài đặt và thanh nút được áp dụng ngay lập tức; âm thanh, các hàng nút và thao tác nhanh sẽ được làm mới trong lần sử dụng tiếp theo.</value></data>
+  <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Độ rộng trò chuyện (phần trăm)</value></data>
+  <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Bảng điều khiển sẽ mở rộng đến tỷ lệ này của chiều rộng màn hình khi cuộc trò chuyện bắt đầu và thu nhỏ lại khi có cuộc trò chuyện mới. 0 = giữ nguyên chiều rộng. Chiều rộng cố định bên dưới sẽ tắt tính năng này.</value></data>
+  <data name="Set_ChatWidth" xml:space="preserve"><value>Độ rộng trò chuyện</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Chiều rộng bảng điều khiển mở rộng khi bắt đầu cuộc trò chuyện, tính bằng DIP. 0 = dùng tỷ lệ phần trăm ở trên.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Chiều mở rộng của đoạn chat</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Tự động</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Tự động: hướng lên trên, trừ khi không còn chỗ ở phía trên. Up hoặc Down sẽ giữ nguyên hướng đó.</value></data>
