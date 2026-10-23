@@ -6,21 +6,21 @@ public class MarkdownModelTests
 {
     private static MdText T(string text, MdStyle style = MdStyle.None) => new(text, style);
 
-    [Fact]
-    public void Paragraph_with_styles()
+    public static TheoryData<string, MdInline[]> InlineStyleCases => new()
     {
-        var p = Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse("a **b** *c* ~~d~~ `e`")));
-        Assert.Equal(
-            [T("a "), T("b", MdStyle.Bold), T(" "), T("c", MdStyle.Italic), T(" "), T("d", MdStyle.Strike), T(" "), T("e", MdStyle.Code)],
-            p.Inlines);
-    }
+        { "a **b** *c* ~~d~~ `e`", [T("a "), T("b", MdStyle.Bold), T(" "), T("c", MdStyle.Italic), T(" "), T("d", MdStyle.Strike), T(" "), T("e", MdStyle.Code)] },
+        { "***both***", [T("both", MdStyle.Bold | MdStyle.Italic)] },
+        { "Press <kbd>Ctrl</kbd>+<kbd>C</kbd>", [T("Press "), T("Ctrl", MdStyle.Code), T("+"), T("C", MdStyle.Code)] }, // no tags shown
+        { "<strong>s</strong>", [T("s", MdStyle.Bold)] },
+        { "<em>s</em>", [T("s", MdStyle.Italic)] },
+        { "<del>s</del>", [T("s", MdStyle.Strike)] },
+        { "<code>s</code>", [T("s", MdStyle.Code)] },
+    };
 
-    [Fact]
-    public void Nested_emphasis_combines_styles()
-    {
-        var p = Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse("***both***")));
-        Assert.Equal([T("both", MdStyle.Bold | MdStyle.Italic)], p.Inlines);
-    }
+    [Theory]
+    [MemberData(nameof(InlineStyleCases))]
+    public void Inline_syntax_and_common_html_map_to_styles(string md, MdInline[] expected)
+        => Assert.Equal(expected, Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse(md))).Inlines);
 
     [Fact]
     public void Heading_levels()
@@ -127,21 +127,6 @@ public class MarkdownModelTests
         Assert.Equal(3, MarkdownModel.FirstChangedIndex(a, a));
         Assert.Equal(0, MarkdownModel.FirstChangedIndex([], b));
     }
-
-    [Fact]
-    public void Kbd_tags_render_as_code_without_showing_tags()
-    {
-        var p = Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse("Press <kbd>Ctrl</kbd>+<kbd>C</kbd>")));
-        Assert.Equal([T("Press "), T("Ctrl", MdStyle.Code), T("+"), T("C", MdStyle.Code)], p.Inlines);
-    }
-
-    [Theory]
-    [InlineData("<strong>s</strong>", MdStyle.Bold)]
-    [InlineData("<em>s</em>", MdStyle.Italic)]
-    [InlineData("<del>s</del>", MdStyle.Strike)]
-    [InlineData("<code>s</code>", MdStyle.Code)]
-    public void Common_inline_html_maps_to_styles(string md, MdStyle style)
-        => Assert.Equal([T("s", style)], Assert.IsType<MdParagraph>(Assert.Single(MarkdownModel.Parse(md))).Inlines);
 
     [Fact]
     public void Br_tag_is_a_line_break_and_unknown_tags_are_hidden()
