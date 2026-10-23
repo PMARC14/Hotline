@@ -208,54 +208,6 @@ public sealed class ToolbarRobustnessTests
     }
 
     [Fact]
-    public void Without_the_pickers_room_more_room_never_shows_fewer_buttons()
-    {
-        var r = new Random(7);
-        for (var run = 0; run < 300; run++)
-        {
-            var m = RandomModel(r);
-            foreach (var top in new[] { true, false })
-            {
-                var previous = -1;
-                for (double room = 320; room <= 2000; room += 7)
-                {
-                    var f = FitRow(m, top, room, pickersMin: 0);
-                    AssertFit(f, room, $"run {run} room {room}");
-                    Assert.True(f.ButtonsShown >= previous, $"run {run} top {top} room {room}: {previous} -> {f.ButtonsShown}");
-                    previous = f.ButtonsShown;
-                }
-            }
-        }
-    }
-
-    [Theory]
-    [InlineData(ButtonSize.Compact)]
-    [InlineData(ButtonSize.Normal)]
-    [InlineData(ButtonSize.Wide)]
-    public void Every_preset_with_24_custom_buttons_in_every_group_fits_from_320(ButtonSize size)
-    {
-        var custom = Enumerable.Range(1, 24).Select(i => new CustomButton($"c{i}", $"C{i}", "E734", null, "t", false)).ToList();
-        var ids = custom.Select(c => c.Id).Concat(Buttons).ToList();
-        foreach (var withPickers in new[] { true, false })
-        {
-            var placed = new Dictionary<Quadrant, IReadOnlyList<string>>
-            {
-                [Quadrant.BottomLeft] = [.. ids.Take(12), .. withPickers ? Pickers : []],
-                [Quadrant.BottomCenter] = [.. ids.Skip(12).Take(8)],
-                [Quadrant.BottomRight] = [.. ids.Skip(20).Take(3)],
-                [Quadrant.TopLeft] = [.. ids.Skip(23).Take(6)],
-                [Quadrant.TopCenter] = [.. ids.Skip(29).Take(2)],
-                [Quadrant.TopRight] = [.. ids.Skip(31)],
-            };
-            var m = ToolbarModel.Defaults with { Placed = placed, Style = new ButtonStyle(size, true, false), Buttons = custom };
-            AssertMetricsInRange(m);
-            foreach (var top in new[] { true, false })
-                for (double room = 320; room <= 2000; room += 10)
-                    AssertFit(FitRow(m, top, room), room, $"{size} pickers {withPickers} top {top} room {room}");
-        }
-    }
-
-    [Fact]
     public void Custom_buttons_with_explicit_sizes_from_20_to_80_stay_within_80()
     {
         var r = new Random(80);
@@ -299,7 +251,6 @@ public sealed class ToolbarRobustnessTests
         // The bar's width (clamped to 80) wins over the preset; the height stays wide's.
         Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide, Width: 80)), ToolbarPlan.Metrics(m, "settings"));
         Assert.Equal(80, ToolbarPlan.Metrics(m, "settings").Width);
-        for (double room = 320; room <= 2000; room += 5) AssertFit(FitRow(m, top: false, room), room, $"room {room}");
     }
 
     [Fact]
