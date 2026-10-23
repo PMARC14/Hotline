@@ -103,6 +103,7 @@ public sealed partial class SettingsWindow : Window
             case "Actions": BuildActionsPage(); break;
             case "About": BuildAboutPage(); break;
             case "Guide": BuildGuidePage(); break;
+            case "Backup": BuildBackupPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));

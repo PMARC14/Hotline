@@ -342,6 +342,22 @@ bottom left).
 is not converted: such a file is left untouched, the default bar runs and the warning is shown. To change the bar,
 write the version 2 format above (or delete the file to get the defaults back).
 
+## Backup (Settings > Backup)
+
+Settings > Backup exports the parts you tick to one `hotline-settings-<yyyyMMdd-HHmm>.zip` and imports such a file on
+another PC. A package holds `hotline-export.json` (format, app version, date, and every file's size and SHA-256) plus,
+per tick: Settings (`settings.json`), Button rows (`toolbar.json` and `icons\*.png`), Tools (`mcp.json`), Sounds
+(`sounds\*.wav`), AI connections (`connections\*.json`), Quick actions (`actions\*.md`) and Prompts (`prompts\*.md`).
+
+Never included: logs, chat history, `memory.md`, `backups\`, `.defaults`, `.bak`/`.old` files, and **API keys** (they stay in
+the Windows Credential Locker; enter them again on the new PC, the import lists the connections that have none yet).
+`mcp.json` is exported exactly as written, and its `env` values can hold secrets: keep such a package private.
+
+An import only accepts the file names above (anything else, `..` paths and oversized or damaged files refuse the package),
+checks every file's content, adds and replaces files and never deletes. Each file it replaces is first copied to
+`backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. Settings and the bar apply
+live (the file watchers pick the files up); sounds, button rows and quick actions are read on their next use.
+
 ## Upgrading to 0.4
 
 Hotline is pre-1.0, so `settings.json` from before 0.4 is not converted or archived: it is read as it is. The

@@ -123,6 +123,17 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Appearance › Bottom bar: add, remove, move items, Reset → the panel's bar follows.
 - [ ] AI connections: move a connection up/down → the Provider picker order follows.
 
+### Backup (Settings > Backup)
+- [ ] Export with everything ticked: the save dialog proposes `hotline-settings-<date>-<time>.zip`; the InfoBar shows the path
+      and file count; the zip has no logs, history, memory or `.bak` files. The window stays responsive while it writes.
+- [ ] "Select none" disables Export; the MCP tick shows the secrets note, the connections tick the "no API keys" note.
+- [ ] Import on a second user profile / after deleting some actions: Choose file lists only the categories present with
+      counts, date and version; Import writes them, the InfoBar shows the counts and "Open backup folder" opens
+      `backups\import-<time>`; replaced files are in there.
+- [ ] A connection imported without a key is listed as needing one; the Credential Locker is unchanged.
+- [ ] A renamed/corrupted zip, or one with a changed file inside, is refused with a message and nothing is written.
+- [ ] After an import: a changed theme/bar applies at once; a new sound, quick action and button row are usable.
+
 ### First run and support
 - [ ] Delete `%USERPROFILE%\.hotline\.first-run-shown`, open the panel → the "Welcome to Hotline" note with "What's sent".
 - [ ] Delete `.support-note-shown`, ask something → after the answer, "Enjoying Hotline?" with "Support Hotline"; it
