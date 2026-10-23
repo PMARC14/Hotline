@@ -1,12 +1,15 @@
 using Hotline.Core.Activation;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Settings;
 
 /// <summary>
-/// Loads/saves settings.json. Never throws: bad content is backed up to .bad and replaced with defaults;
-/// an unreadable/locked file yields in-memory defaults (the file is left untouched).
+/// Loads/saves settings.json. Never throws. It reads field by field: a bad value keeps that field's default and is listed
+/// in <see cref="SettingsProblems"/>; a file that isn't a JSON object or has a syntax error is copied to .bad and runs on
+/// defaults in memory (the file itself stays as it is until the user changes something in Settings). An unreadable/locked
+/// file yields in-memory defaults (the file is left untouched).
 /// </summary>
 public sealed class SettingsStore(string directory)
 {
@@ -17,6 +20,22 @@ public sealed class SettingsStore(string directory)
 
     /// <summary>Connection files that couldn't be read (left untouched; never overwritten or deleted).</summary>
     public IReadOnlyList<string> BrokenConnectionFiles { get; private set; } = [];
+
+    private List<string> _mainProblems = [];
+    private List<string> _connectionProblems = [];
+    private readonly HashSet<string> _damagedConnectionFiles = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// What the last read of settings.json and the connection files ignored or couldn't use (at most 50 sentences each).
+    /// Empty when all is well; a successful <see cref="Save"/> clears the part about settings.json.
+    /// </summary>
+    public IReadOnlyList<string> SettingsProblems => [.. _mainProblems, .. _connectionProblems];
+
+    /// <summary>Set while settings.json as a whole can't be used (syntax error, not an object): the file is left as it is.</summary>
+    public string? SettingsError { get; private set; }
+
+    /// <summary>True when the file on disk has something Save would overwrite: a syntax error or ignored values.</summary>
+    public bool SettingsFileDamaged => SettingsError is not null || _mainProblems.Count > 0;
 
     /// <summary>Ids whose files this store loaded or wrote: only these are ever deleted (when a connection is removed).</summary>
     private readonly HashSet<string> _ownedIds = new(StringComparer.OrdinalIgnoreCase);
@@ -55,10 +74,8 @@ public sealed class SettingsStore(string directory)
         {
             if (!File.Exists(FilePath)) return null;
             var text = File.ReadAllText(FilePath);
-            var s = JsonSerializer.Deserialize<HotlineSettings>(text, Options);
-            if (s is null) return null;
-            s.Chat ??= new ChatSettings();
-            var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
+            var (s, legacy, failure) = Parse(text);
+            if (s is null) { SettingsError = failure; return null; } // keep what is running; the problem is reported
             var (files, broken) = ReadConnectionFiles();
             BrokenConnectionFiles = broken; // a file broken (or fixed) since start: the next save must leave it alone
             foreach (var f in files) _ownedIds.Add(f.Id); // a file added while running is ours to delete when its connection is removed
@@ -69,7 +86,7 @@ public sealed class SettingsStore(string directory)
                 s.Chat.Order is { Count: > 0 } order ? order : LegacyOrder(legacy));
             return Normalize(s);
         }
-        catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { return null; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
     }
 
     public HotlineSettings Load()
@@ -86,16 +103,33 @@ public sealed class SettingsStore(string directory)
         try
         {
             var text = File.ReadAllText(FilePath);
-            var s = JsonSerializer.Deserialize<HotlineSettings>(text, Options)
-                    ?? throw new JsonException("settings.json contained null");
-            s.Chat ??= new ChatSettings();
-            var legacy = HasLegacyBackends(text) ? s.Chat.Backends : null;
+            var (s, legacy, failure) = Parse(text);
+            if (s is null)
+            {
+                // Keep the user's file as it is (they can fix it; a fix applies live) plus a copy, and run on defaults
+                // in memory. Earlier copies are never overwritten.
+                SettingsError = failure;
+                try
+                {
+                    var bad = FilePath + ".bad";
+                    if (!(File.Exists(bad) && File.ReadAllText(bad) == text)) // this very text may be kept already
+                    {
+                        if (File.Exists(bad)) bad = $"{FilePath}.{DateTime.Now:yyyyMMdd-HHmmss}.bad";
+                        File.Copy(FilePath, bad, overwrite: false);
+                    }
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+                var fallback = new HotlineSettings();
+                fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
+                return Normalize(fallback);
+            }
             s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
             Normalize(s);
             // The old inline "backends" list (moved into connection files) or newly added options rewrite the file:
             // every setting stays visible and editable there. The previous file (it may hold comments) is kept as
-            // settings.json.bak. An older schemaVersion alone changes nothing: it is stamped on the next save.
-            if (legacy is not null || HasMissingOptions(text, s))
+            // settings.json.bak. An older schemaVersion alone changes nothing: it is stamped on the next save. A file
+            // with ignored values is not rewritten for new options: the user's wording stays visible until they fix it.
+            if (legacy is not null || (_mainProblems.Count == 0 && HasMissingOptions(text, s)))
             {
                 try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
                 // Connection files are written only when the old "backends" list moves into them; otherwise they
@@ -105,28 +139,65 @@ public sealed class SettingsStore(string directory)
             }
             return s;
         }
-        catch (JsonException)
-        {
-            // Keep the user's file as it is (they can fix it; a fix applies live) plus a copy, and run on defaults
-            // in memory. Earlier copies are never overwritten.
-            try
-            {
-                var bad = FilePath + ".bad";
-                if (File.Exists(bad)) bad = $"{FilePath}.{DateTime.Now:yyyyMMdd-HHmmss}.bad";
-                File.Copy(FilePath, bad, overwrite: false);
-            }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-            var fallback = new HotlineSettings();
-            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
-            return Normalize(fallback);
-        }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             return new HotlineSettings();
         }
     }
 
+    /// <summary>
+    /// settings.json text → settings, field by field (see <see cref="LenientReader"/>), plus the old inline connection list
+    /// when there is one. Settings is null (and the failure given) when the text isn't a JSON object. Updates the problem list.
+    /// </summary>
+    private (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) Parse(string text)
+    {
+        if (!LenientReader.TryParse(text, FileName, out var doc, out var failure)) return (null, null, failure);
+        using (doc)
+        {
+            var problems = new ReadProblems();
+            var s = new HotlineSettings();
+            LenientReader.Populate(doc!.RootElement, s, FileName, "", problems);
+            List<BackendProfile>? legacy = null;
+            if (LastMember(doc.RootElement, "chat") is { ValueKind: JsonValueKind.Object } chat && LastMember(chat, "backends") is { } backends)
+            {
+                if (backends.ValueKind != JsonValueKind.Array)
+                    problems.Add(L.F(Strings.Settings_ProblemWrongType, $"{FileName} › chat.backends", LenientReader.Describe(backends)));
+                else
+                {
+                    legacy = [];
+                    var index = 0;
+                    foreach (var item in backends.EnumerateArray())
+                    {
+                        var label = $"{FileName} › chat.backends[{index++}]";
+                        if (item.ValueKind != JsonValueKind.Object) { problems.Add(L.F(Strings.Settings_ProblemWrongType, label, LenientReader.Describe(item))); continue; }
+                        if (LenientReader.ReadProfile(item, label, problems) is { } profile) legacy.Add(profile);
+                    }
+                }
+            }
+            s.Chat.Backends = legacy ?? [];
+            _mainProblems = problems.All.ToList();
+            SettingsError = null;
+            return (s, legacy, null);
+        }
+    }
+
+    /// <summary>The value of the last member with this name (any case), as JSON's duplicate rule has it; null when absent.</summary>
+    private static JsonElement? LastMember(JsonElement obj, string name)
+    {
+        JsonElement? found = null;
+        foreach (var member in obj.EnumerateObject())
+            if (member.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) found = member.Value;
+        return found;
+    }
+
     public void Save(HotlineSettings s)
+    {
+        SaveCore(s);
+        _mainProblems = []; // a fresh, valid file was just written
+        SettingsError = null;
+    }
+
+    private void SaveCore(HotlineSettings s)
     {
         Directory.CreateDirectory(directory);
         s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
@@ -163,36 +234,49 @@ public sealed class SettingsStore(string directory)
         return safe.Length == 0 ? "connection" : safe;
     }
 
-    private static bool HasLegacyBackends(string settingsText)
-    {
-        try
-        {
-            using var doc = JsonDocument.Parse(settingsText, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
-            return doc.RootElement.ValueKind == JsonValueKind.Object
-                   && doc.RootElement.EnumerateObject().FirstOrDefault(p => p.NameEquals("chat") || p.Name.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is { ValueKind: JsonValueKind.Object } chat
-                   && chat.EnumerateObject().Any(p => p.Name.Equals("backends", StringComparison.OrdinalIgnoreCase));
-        }
-        catch (JsonException) { return false; }
-    }
-
     /// <summary>Reads every connections/*.json. The file name is the id when the file has none.</summary>
     private (List<BackendProfile> Profiles, List<string> Broken) ReadConnectionFiles()
     {
         var profiles = new List<BackendProfile>();
         var broken = new List<string>();
+        var problems = new ReadProblems();
+        _damagedConnectionFiles.Clear();
+        _connectionProblems = [];
         if (!Directory.Exists(ConnectionsDirectory)) return (profiles, broken);
         foreach (var file in Directory.EnumerateFiles(ConnectionsDirectory, "*.json").Order(StringComparer.OrdinalIgnoreCase))
         {
+            var label = $"{ConnectionsFolder}/{Path.GetFileName(file)}";
             try
             {
-                var p = JsonSerializer.Deserialize<BackendProfile>(File.ReadAllText(file), ConnectionOptions);
-                if (p is null) { broken.Add(file); continue; }
-                if (string.IsNullOrWhiteSpace(p.Id)) p.Id = Path.GetFileNameWithoutExtension(file);
-                if (profiles.Any(x => x.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))) { broken.Add(file); continue; } // duplicate id
-                profiles.Add(p);
+                if (!LenientReader.TryParse(File.ReadAllText(file), label, out var doc, out var failure))
+                {
+                    problems.Add(failure!);
+                    broken.Add(file);
+                    continue;
+                }
+                using (doc)
+                {
+                    var before = problems.All.Count;
+                    var p = LenientReader.ReadProfile(doc!.RootElement, label, problems);
+                    if (p is null) { broken.Add(file); continue; } // e.g. an unknown type: never guessed
+                    if (problems.All.Count > before) _damagedConnectionFiles.Add(Path.GetFullPath(file));
+                    if (string.IsNullOrWhiteSpace(p.Id)) p.Id = Path.GetFileNameWithoutExtension(file);
+                    if (profiles.Any(x => x.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase)))
+                    {
+                        problems.Add(L.F(Strings.Settings_ProblemDuplicateId, label, LenientReader.Quote(p.Id)));
+                        broken.Add(file); // duplicate id
+                        continue;
+                    }
+                    profiles.Add(p);
+                }
             }
-            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { broken.Add(file); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                problems.Add(L.F(Strings.Settings_ProblemUnreadable, label, ex.GetType().Name));
+                broken.Add(file);
+            }
         }
+        _connectionProblems = problems.All.ToList();
         return (profiles, broken);
     }
 
@@ -233,7 +317,13 @@ public sealed class SettingsStore(string directory)
             if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)))
                 continue; // the user's unreadable file stays exactly as it is
             var json = JsonSerializer.Serialize(p, ConnectionOptions);
-            if (!File.Exists(path) || File.ReadAllText(path) != json) WriteAtomic(path, json);
+            if (!File.Exists(path) || File.ReadAllText(path) != json)
+            {
+                // A file with ignored values is about to lose them: keep the user's version beside it first.
+                if (_damagedConnectionFiles.Remove(Path.GetFullPath(path)) && File.Exists(path))
+                    File.Copy(path, $"{path}.{DateTime.Now:yyyyMMdd-HHmmss}.bak", overwrite: true);
+                WriteAtomic(path, json);
+            }
             _ownedIds.Add(p.Id);
         }
         var inUse = new HashSet<string>(profiles.Select(p => Path.GetFullPath(ConnectionPath(p.Id))), StringComparer.OrdinalIgnoreCase);
@@ -279,7 +369,7 @@ public sealed class SettingsStore(string directory)
 
     private void TrySave(HotlineSettings s)
     {
-        try { Save(s); }
+        try { SaveCore(s); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
     }
 

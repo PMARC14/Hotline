@@ -67,10 +67,7 @@ public sealed class SettingsStoreTests : IDisposable
 
     [Theory]
     [InlineData("{ not json")]
-    [InlineData("""{ "activation": { "tap": "Teleport" } }""")]
     [InlineData("null")]
-    [InlineData("""{ "activation": { "tap": 42 } }""")]
-    [InlineData("""{ "window": { "theme": 7 } }""")]
     public void Corrupt_file_is_backed_up_and_defaults_used(string content)
     {
         Directory.CreateDirectory(_dir);
@@ -82,6 +79,25 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
         Assert.Equal(content, File.ReadAllText(path + ".bad"));
         Assert.Equal(content, File.ReadAllText(path)); // the user's file is left alone
+    }
+
+    [Theory]
+    [InlineData("""{ "activation": { "tap": "Teleport" } }""")]
+    [InlineData("""{ "activation": { "tap": 42 } }""")]
+    [InlineData("""{ "window": { "theme": 7 } }""")]
+    public void A_bad_field_keeps_its_default_and_the_file_is_left_alone(string content)
+    {
+        Directory.CreateDirectory(_dir);
+        var path = Path.Combine(_dir, SettingsStore.FileName);
+        File.WriteAllText(path, content);
+
+        var store = New();
+        var s = store.Load();
+
+        Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
+        Assert.Equal(ThemeChoice.System, s.Window.Theme);
+        Assert.Single(store.SettingsProblems);
+        Assert.Equal(content, File.ReadAllText(path)); // not rewritten: the user's wording stays until they fix it
     }
 
     [Theory]
