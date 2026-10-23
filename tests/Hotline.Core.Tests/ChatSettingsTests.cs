@@ -3,10 +3,17 @@ using Hotline.Core.Backends;
 
 namespace Hotline.Core.Tests;
 
-public sealed class HistorySettingsTests : IDisposable
+public sealed class ChatSettingsTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
+
+    private HotlineSettings LoadJson(string json)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), json);
+        return new SettingsStore(_dir).Load();
+    }
 
     [Fact]
     public void History_settings_default_on_and_round_trip_through_settings_json()
@@ -22,19 +29,6 @@ public sealed class HistorySettingsTests : IDisposable
         Assert.Contains("\"historyListSize\": 50", json);
         var back = new Settings.SettingsStore(_dir).Load();
         Assert.Equal((50, false, false), (back.Chat.HistoryListSize, back.Chat.ResumeWhileTyping, back.Chat.CliTranscripts));
-    }
-}
-
-public sealed class ChatSettingsTests : IDisposable
-{
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
-
-    private HotlineSettings LoadJson(string json)
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), json);
-        return new SettingsStore(_dir).Load();
     }
 
     [Fact]
@@ -66,13 +60,12 @@ public sealed class ChatSettingsTests : IDisposable
     public void Older_settings_without_connection_files_get_no_connection_added()
         => Assert.Empty(LoadJson("""{ "schemaVersion": 11, "chat": { "defaultBackend": "agy" } }""").Chat.Backends);
 
-    [Fact]
-    public void Unknown_default_backend_falls_back_to_first()
-        => Assert.Equal("g", LoadJson("""{ "chat": { "defaultBackend": "nope", "backends": [ { "id": "g", "type": "gemini" } ] } }""").Chat.DefaultBackend);
-
-    [Fact]
-    public void Unknown_default_backend_with_no_connections_is_unchosen()
-        => Assert.Equal("", LoadJson($$"""{ "schemaVersion": {{HotlineSettings.CurrentSchemaVersion}}, "chat": { "defaultBackend": "nope" } }""").Chat.DefaultBackend);
+    [Theory]
+    [InlineData("""{ "chat": { "defaultBackend": "nope", "backends": [ { "id": "g", "type": "gemini" } ] } }""", "g")] // unknown -> first
+    [InlineData("""{ "schemaVersion": CURRENT, "chat": { "defaultBackend": "nope" } }""", "")]                          // unknown, none to fall back to
+    [InlineData("""{ "schemaVersion": 10, "chat": { "defaultBackend": "  " } }""", "")]                                 // blank stays unchosen
+    public void Default_backend_is_the_first_connection_or_unchosen(string json, string expected)
+        => Assert.Equal(expected, LoadJson(json.Replace("CURRENT", HotlineSettings.CurrentSchemaVersion.ToString())).Chat.DefaultBackend);
 
     [Fact]
     public void Backends_without_id_are_dropped_and_blank_names_use_id()
@@ -86,8 +79,4 @@ public sealed class ChatSettingsTests : IDisposable
     [Fact]
     public void Null_chat_section_gets_defaults()
         => Assert.Equal(300, LoadJson("""{ "chat": null }""").Chat.HistoryListSize);
-
-    [Fact]
-    public void Blank_default_stays_unchosen_on_current_settings()
-        => Assert.Equal("", LoadJson("""{ "schemaVersion": 10, "chat": { "defaultBackend": "  " } }""").Chat.DefaultBackend);
 }

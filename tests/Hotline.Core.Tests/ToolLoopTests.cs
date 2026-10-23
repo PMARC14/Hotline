@@ -68,6 +68,9 @@ public sealed class ToolLoopTests : IDisposable
 
     private static string TextChunk(string text) => JsonSerializer.Serialize(new { choices = new[] { new { delta = new { content = text } } } });
 
+    private OpenAiBackend Local(Handler handler, IToolHost host, ToolMode tools = ToolMode.Inherit) =>
+        new(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = tools }, new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+
     [Fact]
     public async Task OpenAi_runs_streamed_tool_calls_and_feeds_results_back()
     {
@@ -76,8 +79,7 @@ public sealed class ToolLoopTests : IDisposable
             ? Sse(TextChunk("Let me look."), ToolCallChunk(0, "call_1", "files__read_file", "{\"pa"), ToolCallChunk(0, null, null, "th\":\"a.txt\"}"),
                   """{"choices":[{"delta":{},"finish_reason":"tool_calls"}]}""", "[DONE]")
             : Sse(TextChunk("It says hi."), "[DONE]"));
-        var b = new OpenAiBackend(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = ToolMode.Inherit },
-            new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        var b = Local(handler, host);
 
         var text = await Collect(b.StreamAsync([U("what's in a.txt?")], default));
 
@@ -106,8 +108,7 @@ public sealed class ToolLoopTests : IDisposable
             ? Sse(NoIndex("call_1", "files__read_file", "{\"pa"), NoIndex(null, null, "th\":\"a"), NoIndex(null, null, ".txt\"}"),
                   """{"choices":[{"delta":{},"finish_reason":"tool_calls"}]}""", "[DONE]")
             : Sse(TextChunk("ok"), "[DONE]"));
-        var b = new OpenAiBackend(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = ToolMode.Inherit },
-            new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        var b = Local(handler, host);
         await Collect(b.StreamAsync([U("read a.txt")], default));
         Assert.Equal(("files__read_file", """{"path":"a.txt"}"""), Assert.Single(host.Calls));
     }
@@ -117,8 +118,7 @@ public sealed class ToolLoopTests : IDisposable
     {
         var host = new FakeToolHost();
         var handler = new Handler((_, _) => Sse(ToolCallChunk(0, "call_1", "files__read_file", "{\"pa")));
-        var b = new OpenAiBackend(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = ToolMode.Inherit },
-            new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        var b = Local(handler, host);
         await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("read a.txt")], default)));
         Assert.Empty(host.Calls);
     }
@@ -127,7 +127,7 @@ public sealed class ToolLoopTests : IDisposable
     public async Task OpenAi_chat_only_connections_get_no_tools()
     {
         var handler = new Handler((_, _) => Sse(TextChunk("hi"), "[DONE]"));
-        var b = new OpenAiBackend(new BackendProfile { Id = "l", Type = BackendType.Local }, new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, new FakeToolHost());
+        var b = Local(handler, new FakeToolHost(), ToolMode.ChatOnly);
         await Collect(b.StreamAsync([U("hi")], default));
         Assert.False(JsonDocument.Parse(handler.Bodies[0]).RootElement.TryGetProperty("tools", out _));
     }
@@ -137,7 +137,7 @@ public sealed class ToolLoopTests : IDisposable
     {
         var host = new FakeToolHost();
         var handler = new Handler((_, _) => Sse(ToolCallChunk(0, "c", "files__read_file", "{}"), """{"choices":[{"delta":{},"finish_reason":"tool_calls"}]}""", "[DONE]"));
-        var b = new OpenAiBackend(new BackendProfile { Id = "l", Type = BackendType.Local, Tools = ToolMode.Inherit }, new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        var b = Local(handler, host);
         var text = await Collect(b.StreamAsync([U("loop forever")], default));
         Assert.Equal(ToolLoop.MaxRounds, host.Calls.Count);
         Assert.Contains("Stopped", text);
