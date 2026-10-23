@@ -56,6 +56,7 @@ public sealed class HistoryStoreTests : IDisposable
     [InlineData(@"C:\escape")]
     [InlineData("a/b")]
     [InlineData("")]
+    [InlineData("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")] // 65 characters: too long
     public void An_unsafe_id_never_touches_the_disk_and_never_throws(string id)
     {
         var store = new HistoryStore(_dir, _clock);
@@ -67,14 +68,6 @@ public sealed class HistoryStoreTests : IDisposable
         Assert.Throws<ArgumentException>(() => store.PathFor(id));
         Assert.False(Directory.Exists(_dir)); // nothing was created
         Assert.False(File.Exists(Path.Combine(Path.GetDirectoryName(_dir)!, "escape.jsonl")));
-    }
-
-    [Fact]
-    public void A_very_long_id_is_refused()
-    {
-        var store = new HistoryStore(_dir, _clock);
-        store.Append(new string('a', 65), new ChatMessage("m", ChatRole.User, "x", [], _clock.GetUtcNow()));
-        Assert.False(Directory.Exists(_dir));
     }
 
     [Fact]
