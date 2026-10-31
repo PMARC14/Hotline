@@ -37,8 +37,6 @@ public sealed class ActivationSettings
     public string? FallbackHotkey { get; set; }
 }
 
-public enum PopupLayout { QuickView, CommandBar, SidePanel }
-
 /// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
 public enum ThemeChoice { System, Light, Dark, HighContrast }
 
@@ -47,7 +45,6 @@ public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 
 public sealed class WindowSettings
 {
-    public PopupLayout Layout { get; set; } = PopupLayout.QuickView;
     /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
     public double WidthPercent { get; set; } = 25;
     public int MinWidth { get; set; } = (int)Windowing.ToolbarPlan.WidthForButtons(11);
@@ -65,7 +62,7 @@ public sealed class WindowSettings
     /// [MinWidth, MaxWidth]; no wider than it opened means no growth. A fixed <see cref="Width"/> (a manual resize saves one) never grows.
     /// </summary>
     public double ChatWidthPercent { get; set; }
-    /// <summary>The width the panel grows to when a chat starts, in DIPs; null = <see cref="ChatWidthPercent"/>.</summary>
+    /// <summary>The width the panel grows to when a chat starts, in DIPs (kept within MinWidth..MaxWidth); null = <see cref="ChatWidthPercent"/>.</summary>
     public int? ChatWidth { get; set; }
     /// <summary>Most the chat grows to, in DIPs; null = MaxHeightPercent of the screen.</summary>
     public int? ChatHeight { get; set; }

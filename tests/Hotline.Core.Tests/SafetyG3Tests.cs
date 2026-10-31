@@ -182,6 +182,21 @@ public sealed class SafetyG3Tests : IDisposable
         Assert.Null(new SettingsStore(_dir).Load().Window.FontSize); // settings.json was reset too
     }
 
+    // ---- item 9: window.layout was written and read nowhere ----------------------------------------
+
+    [Fact]
+    public void An_old_file_with_window_layout_loads_without_a_problem_and_the_next_save_drops_it()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Main, """{ "window": { "layout": "sidePanel", "width": 700 } }""");
+        var store = new SettingsStore(_dir);
+        var s = store.Load();
+        Assert.Equal(700, s.Window.Width);
+        Assert.Empty(store.SettingsProblems);
+        store.Save(s);
+        Assert.DoesNotContain("layout", File.ReadAllText(Main));
+    }
+
     // ---- item 7: a locked settings.json at start-up ------------------------------------------------
 
     [Fact]

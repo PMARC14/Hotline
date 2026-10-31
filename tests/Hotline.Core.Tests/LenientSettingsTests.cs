@@ -55,7 +55,7 @@ public sealed class LenientSettingsTests : IDisposable
     {
         // unknown enum words, and numbers where an enum belongs
         { "window.theme", "\"mauve\"" }, { "window.theme", "7" }, { "window.theme", "null" },
-        { "window.backdrop", "\"glass\"" }, { "window.layout", "[]" }, { "window.scrollbar", "{\"a\":1}" },
+        { "window.backdrop", "\"glass\"" }, { "window.scrollbar", "{\"a\":1}" },
         { "window.growDirection", "true" }, { "activation.tap", "\"Teleport\"" }, { "activation.hold", "42" },
         { "chat.growMode", "\"huge\"" }, { "chat.ocr", "1" }, { "chat.memoryTool", "\"sometimes\"" },
         // a number given as a string, a string given as a number, null where it isn't allowed

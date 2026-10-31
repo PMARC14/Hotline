@@ -564,6 +564,46 @@
   <data name="Grip_Tip" xml:space="preserve"><value>드래그하여 이동, 마우스 오른쪽 단추로 클릭하여 이 위치 저장</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>채팅 높이</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>채팅이 늘어나는 최대 높이입니다. 0 = 자동(위의 최대 높이 비율).</value></data>
+  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>The file is larger than a settings backup can be.</value></data>
+  <data name="Backup_Err_NotZip" xml:space="preserve"><value>This isn't a readable .zip file.</value></data>
+  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>The file holds more than {0} files.</value></data>
+  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} appears twice (or differs only in capital letters).</value></data>
+  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Unexpected entry: {0}.</value></data>
+  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} is larger than 8 MB.</value></data>
+  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} compresses suspiciously well.</value></data>
+  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>The files add up to more than 64 MB.</value></data>
+  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is missing).</value></data>
+  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json is too large.</value></data>
+  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} is not the size it says.</value></data>
+  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} is listed in the backup but missing.</value></data>
+  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} is not in the backup's list.</value></data>
+  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} doesn't match the backup's list (changed or damaged).</value></data>
+  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is not valid).</value></data>
+  <data name="Backup_Err_Newer" xml:space="preserve"><value>This backup was made by a newer version of Hotline. Update Hotline to import it.</value></data>
+  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Not a Hotline settings backup (the file list is missing).</value></data>
+  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Not a Hotline settings backup (the file list is not valid).</value></data>
+  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json can't be read).</value></data>
+  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>The settings folder isn't a usable path.</value></data>
+  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>The files that would be replaced couldn't be copied to a backup folder first.</value></data>
+  <data name="Backup_Why_TooMany" xml:space="preserve"><value>too many files</value></data>
+  <data name="Backup_Why_Link" xml:space="preserve"><value>a link, not a file</value></data>
+  <data name="Backup_Why_Big" xml:space="preserve"><value>larger than 8 MB</value></data>
+  <data name="Backup_Why_Total" xml:space="preserve"><value>the backup would pass 64 MB</value></data>
+  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>couldn't be read</value></data>
+  <data name="Backup_Why_BadName" xml:space="preserve"><value>not a name a backup can hold</value></data>
+  <data name="Backup_Why_Folder" xml:space="preserve"><value>couldn't be listed</value></data>
+  <data name="Backup_Why_BadPath" xml:space="preserve"><value>not a usable path</value></data>
+  <data name="Backup_Why_Outside" xml:space="preserve"><value>outside the settings folder</value></data>
+  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>its folder is a link</value></data>
+  <data name="Backup_Why_Locked" xml:space="preserve"><value>couldn't be written (in use or read-only)</value></data>
+  <data name="Backup_Why_NotWav" xml:space="preserve"><value>not a .wav sound</value></data>
+  <data name="Backup_Why_NotPng" xml:space="preserve"><value>not a usable picture (PNG, 16-256 px)</value></data>
+  <data name="Backup_Why_NotText" xml:space="preserve"><value>not a text file</value></data>
+  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>not readable as settings</value></data>
+  <data name="Backup_Why_NotObject" xml:space="preserve"><value>not a JSON object</value></data>
+  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>not readable</value></data>
+  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>larger than a quick action can be (64 KB)</value></data>
+  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>not readable as a connection</value></data>
   <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
   <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
   <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>

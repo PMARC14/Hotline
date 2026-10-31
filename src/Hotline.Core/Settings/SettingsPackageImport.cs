@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Hotline.Core.Backends;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Settings;
 
@@ -24,7 +25,7 @@ public static partial class SettingsPackage
         var plan = new List<(string Path, string Full, byte[] Data)>();
         string root;
         try { root = Path.GetFullPath(dataDirectory).TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar) + Path.DirectorySeparatorChar; }
-        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException) { return Failed("The settings folder isn't a usable path."); }
+        catch (Exception ex) when (ex is ArgumentException or NotSupportedException or PathTooLongException) { return Failed(Strings.Backup_Err_BadFolder); }
 
         foreach (var (path, data) in loaded.Files.OrderBy(f => f.Key, StringComparer.Ordinal))
         {
@@ -60,7 +61,7 @@ public static partial class SettingsPackage
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
             {
-                return Failed("The files that would be replaced couldn't be copied to a backup folder first.");
+                return Failed(Strings.Backup_Err_BackupFailed);
             }
         }
 
@@ -102,9 +103,9 @@ public static partial class SettingsPackage
             try
             {
                 var file = Path.Combine(dataDirectory, path.Replace('/', Path.DirectorySeparatorChar));
-                var profile = JsonSerializer.Deserialize<BackendProfile>(File.ReadAllText(file), SettingsStore.ConnectionOptions);
+                var profile = SettingsStore.ParseConnection(File.ReadAllText(file), path, Path.GetFileNameWithoutExtension(path), new ReadProblems(), out _);
                 if (profile is null) continue;
-                var id = string.IsNullOrWhiteSpace(profile.Id) ? Path.GetFileNameWithoutExtension(path) : profile.Id;
+                var id = profile.Id;
                 if (ConnectionTypes.IsCli(profile.Type) || ConnectionTypes.Of(profile.Type).ApiKeyOptional) continue;
                 if (string.IsNullOrEmpty(secrets.Get(SecretKeys.ApiKey(id)))) ids.Add(id);
             }

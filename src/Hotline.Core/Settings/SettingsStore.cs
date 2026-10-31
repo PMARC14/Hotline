@@ -187,10 +187,23 @@ public sealed class SettingsStore(string directory)
     /// </summary>
     private (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) Parse(string text)
     {
+        var problems = new ReadProblems();
+        var result = ParseSettings(text, problems);
+        if (result.Settings is null) return result;
+        _mainProblems = problems.All.ToList();
+        SettingsError = null;
+        return result;
+    }
+
+    /// <summary>
+    /// The reading of settings.json text, shared by the app (<see cref="Load"/>, <see cref="TryRead"/>) and by a backup import's
+    /// check, so what an import accepts is exactly what loading would accept. Nothing is stored.
+    /// </summary>
+    internal static (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) ParseSettings(string text, ReadProblems problems)
+    {
         if (!LenientReader.TryParse(text, FileName, out var doc, out var failure)) return (null, null, failure);
         using (doc)
         {
-            var problems = new ReadProblems();
             var s = new HotlineSettings();
             LenientReader.Populate(doc!.RootElement, s, FileName, "", problems);
             List<BackendProfile>? legacy = null;
@@ -211,9 +224,25 @@ public sealed class SettingsStore(string directory)
                 }
             }
             s.Chat.Backends = legacy ?? [];
-            _mainProblems = problems.All.ToList();
-            SettingsError = null;
             return (s, legacy, null);
+        }
+    }
+
+    /// <summary>
+    /// One connection file's text → the connection, exactly as loading reads it (a missing id is the file name; the id is otherwise
+    /// the file's own, whatever the file is called). Null with <paramref name="failure"/> set when the text isn't a JSON object or
+    /// names an unknown connection type.
+    /// </summary>
+    internal static BackendProfile? ParseConnection(string text, string label, string fileStem, ReadProblems problems, out string? failure)
+    {
+        failure = null;
+        if (!LenientReader.TryParse(text, label, out var doc, out var why)) { failure = why; return null; }
+        using (doc)
+        {
+            var p = LenientReader.ReadProfile(doc!.RootElement, label, problems);
+            if (p is null) { failure = problems.All.LastOrDefault() ?? label; return null; } // an unknown type: never guessed
+            if (string.IsNullOrWhiteSpace(p.Id)) p.Id = fileStem;
+            return p;
         }
     }
 
@@ -328,26 +357,21 @@ public sealed class SettingsStore(string directory)
             var label = $"{ConnectionsFolder}/{Path.GetFileName(file)}";
             try
             {
-                if (!LenientReader.TryParse(File.ReadAllText(file), label, out var doc, out var failure))
+                var p = ParseConnection(File.ReadAllText(file), label, Path.GetFileNameWithoutExtension(file), problems, out var failure);
+                if (p is null)
                 {
-                    problems.Add(failure!);
+                    if (failure is not null && !problems.All.Contains(failure)) problems.Add(failure);
                     broken.Add(file);
                     continue;
                 }
-                using (doc)
+                if (profiles.Any(x => x.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase)))
                 {
-                    var p = LenientReader.ReadProfile(doc!.RootElement, label, problems);
-                    if (p is null) { broken.Add(file); continue; } // e.g. an unknown type: never guessed
-                    if (string.IsNullOrWhiteSpace(p.Id)) p.Id = Path.GetFileNameWithoutExtension(file);
-                    if (profiles.Any(x => x.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase)))
-                    {
-                        problems.Add(L.F(Strings.Settings_ProblemDuplicateId, label, LenientReader.Quote(p.Id)));
-                        broken.Add(file); // duplicate id
-                        continue;
-                    }
-                    profiles.Add(p);
-                    _sources[p.Id] = Path.GetFullPath(file); // saved back to this very file, whatever it is called
+                    problems.Add(L.F(Strings.Settings_ProblemDuplicateId, label, LenientReader.Quote(p.Id)));
+                    broken.Add(file); // duplicate id
+                    continue;
                 }
+                profiles.Add(p);
+                _sources[p.Id] = Path.GetFullPath(file); // saved back to this very file, whatever it is called
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {

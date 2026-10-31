@@ -67,7 +67,7 @@ public static class PopupGeometry
 
     /// <summary>
     /// The width (DIP) the panel grows to when a chat starts, or null for no growth: the explicit <paramref name="chatWidth"/>, else
-    /// <paramref name="chatWidthPercent"/> of the work area clamped to [min, max]. Never when the panel's width was set (<paramref name="width"/>:
+    /// <paramref name="chatWidthPercent"/> of the work area. Either way it is clamped to [min, max] (<c>window.minWidth</c> / <c>window.maxWidth</c>). Never when the panel's width was set (<paramref name="width"/>:
     /// a fixed width, which a manual resize saves), when neither is set (the default), or when the target is not wider than the
     /// <paramref name="startDip"/> it opens at.
     /// </summary>
@@ -75,7 +75,7 @@ public static class PopupGeometry
     {
         if (width is not null) return null;
         int target;
-        if (chatWidth is { } explicitWidth) target = explicitWidth;
+        if (chatWidth is { } explicitWidth) target = Math.Clamp(explicitWidth, minDip, Math.Max(minDip, maxDip));
         else if (chatWidthPercent > 0) target = RelativeWidthDip(workAreaWidthPx, scale, chatWidthPercent, minDip, maxDip);
         else return null;
         return target > startDip ? target : null;

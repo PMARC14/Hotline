@@ -13,7 +13,40 @@ namespace Hotline.Core.Settings;
 public enum SettingsCategory { Settings, Toolbar, Mcp, Sounds, Connections, Actions, Prompts }
 
 /// <summary>A file left out of an export or import, with the reason (a plain English note, never the file's content).</summary>
-public sealed record SkippedFile(string Path, string Reason);
+public sealed record SkippedFile(string Path, string Reason)
+{
+    /// <summary>The reason in the interface language (<see cref="Reason"/> stays English: it is what the log gets).</summary>
+    public string Text => SkipReasons.Keys.TryGetValue(Reason, out var key) ? L.Get(key) : Reason;
+}
+
+/// <summary>The skip reasons and their resource keys.</summary>
+public static class SkipReasons
+{
+    public const string FolderUnreadable = "couldn't be listed";
+
+    public static readonly Dictionary<string, string> Keys = new()
+    {
+        ["too many files"] = nameof(Strings.Backup_Why_TooMany),
+        ["a link, not a file"] = nameof(Strings.Backup_Why_Link),
+        ["larger than 8 MB"] = nameof(Strings.Backup_Why_Big),
+        ["the backup would pass 64 MB"] = nameof(Strings.Backup_Why_Total),
+        ["couldn't be read"] = nameof(Strings.Backup_Why_Unreadable),
+        ["not a name a backup can hold"] = nameof(Strings.Backup_Why_BadName),
+        [FolderUnreadable] = nameof(Strings.Backup_Why_Folder),
+        ["not a usable path"] = nameof(Strings.Backup_Why_BadPath),
+        ["outside the settings folder"] = nameof(Strings.Backup_Why_Outside),
+        ["its folder is a link"] = nameof(Strings.Backup_Why_FolderLink),
+        ["couldn't be written (in use or read-only)"] = nameof(Strings.Backup_Why_Locked),
+        ["not a .wav sound"] = nameof(Strings.Backup_Why_NotWav),
+        ["not a usable picture (PNG, 16-256 px)"] = nameof(Strings.Backup_Why_NotPng),
+        ["not a text file"] = nameof(Strings.Backup_Why_NotText),
+        ["not readable as settings"] = nameof(Strings.Backup_Why_NotSettings),
+        ["not a JSON object"] = nameof(Strings.Backup_Why_NotObject),
+        ["not readable"] = nameof(Strings.Backup_Why_NotReadable),
+        ["larger than a quick action can be (64 KB)"] = nameof(Strings.Backup_Why_ActionBig),
+        ["not readable as a connection"] = nameof(Strings.Backup_Why_NotConnection),
+    };
+}
 
 public sealed record ExportResult(int FileCount, IReadOnlyList<SkippedFile> Skipped);
 
@@ -112,6 +145,7 @@ public static partial class SettingsPackage
             {
                 // Pictures and sounds are compressed already (and a stored entry keeps the import's ratio check out of the way).
                 var level = path.EndsWith(".png", StringComparison.Ordinal) || path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+                            || WouldTripRatioCheck(data)
                     ? CompressionLevel.NoCompression : CompressionLevel.Optimal;
                 var entry = zip.CreateEntry(path, level);
                 entry.LastWriteTime = stamp;
@@ -126,6 +160,34 @@ public static partial class SettingsPackage
         return new ExportResult(files.Count, skipped);
     }
 
+    /// <summary>
+    /// True when compressing <paramref name="data"/> would pass the ratio the reader refuses (see <see cref="MaxRatio"/>): a very
+    /// repetitive text file. Such a file is stored uncompressed instead, so every file this writer produces can be imported again.
+    /// </summary>
+    private static bool WouldTripRatioCheck(byte[] data)
+    {
+        if (data.Length <= RatioFloor) return false;
+        using var counter = new CountingStream();
+        using (var deflate = new DeflateStream(counter, CompressionLevel.Optimal, leaveOpen: true)) deflate.Write(data);
+        return counter.Count * (MaxRatio / 2) < data.Length; // a margin of two: the zip's own deflate may differ a little
+    }
+
+    private sealed class CountingStream : Stream
+    {
+        public long Count { get; private set; }
+        public override bool CanRead => false;
+        public override bool CanSeek => false;
+        public override bool CanWrite => true;
+        public override long Length => Count;
+        public override long Position { get => Count; set => throw new NotSupportedException(); }
+        public override void Flush() { }
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+        public override void SetLength(long value) => throw new NotSupportedException();
+        public override void Write(byte[] buffer, int offset, int count) => Count += count;
+        public override void Write(ReadOnlySpan<byte> buffer) => Count += buffer.Length;
+    }
+
     private static IEnumerable<Candidate> Candidates(string dataDirectory, List<SettingsCategory> ticked, List<SkippedFile> skipped)
     {
         foreach (var category in ticked)
@@ -134,12 +196,12 @@ public static partial class SettingsPackage
             switch (category)
             {
                 case SettingsCategory.Settings: names.Add("settings.json"); break;
-                case SettingsCategory.Toolbar: names.Add("toolbar.json"); names.AddRange(Listing(dataDirectory, "icons", "*.png")); break;
+                case SettingsCategory.Toolbar: names.Add("toolbar.json"); names.AddRange(Listing(dataDirectory, "icons", "*.png", skipped)); break;
                 case SettingsCategory.Mcp: names.Add("mcp.json"); break;
-                case SettingsCategory.Sounds: names.AddRange(Listing(dataDirectory, "sounds", "*.wav")); break;
-                case SettingsCategory.Connections: names.AddRange(Listing(dataDirectory, "connections", "*.json")); break;
-                case SettingsCategory.Actions: names.AddRange(Listing(dataDirectory, "actions", "*.md")); break;
-                case SettingsCategory.Prompts: names.AddRange(Listing(dataDirectory, "prompts", "*.md")); break;
+                case SettingsCategory.Sounds: names.AddRange(Listing(dataDirectory, "sounds", "*.wav", skipped)); break;
+                case SettingsCategory.Connections: names.AddRange(Listing(dataDirectory, "connections", "*.json", skipped)); break;
+                case SettingsCategory.Actions: names.AddRange(Listing(dataDirectory, "actions", "*.md", skipped)); break;
+                case SettingsCategory.Prompts: names.AddRange(Listing(dataDirectory, "prompts", "*.md", skipped)); break;
             }
             foreach (var name in names.Order(StringComparer.Ordinal))
             {
@@ -153,7 +215,7 @@ public static partial class SettingsPackage
     }
 
     /// <summary>The files of one folder as "folder/name" (the pattern also matches longer extensions on Windows; Classify sorts that out).</summary>
-    private static IEnumerable<string> Listing(string dataDirectory, string folder, string pattern)
+    private static IEnumerable<string> Listing(string dataDirectory, string folder, string pattern, List<SkippedFile> skipped)
     {
         try
         {
@@ -162,7 +224,11 @@ public static partial class SettingsPackage
                 ? Directory.EnumerateFiles(path, pattern).Select(f => folder + "/" + Path.GetFileName(f)).ToList()
                 : [];
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return []; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            skipped.Add(new(folder + "/", SkipReasons.FolderUnreadable)); // not silently: the user must know this part is missing
+            return [];
+        }
     }
 
     private static void WriteManifest(Stream stream, List<SettingsCategory> ticked, List<(string Path, byte[] Data)> files, DateTimeOffset created, string appVersion)
@@ -217,7 +283,7 @@ public static partial class SettingsPackage
                 while ((n = input.Read(buffer, 0, buffer.Length)) > 0)
                 {
                     copy.Write(buffer, 0, n);
-                    if (copy.Length > MaxTotalBytes + MaxManifestBytes) return Refuse("The file is larger than a settings backup can be.");
+                    if (copy.Length > MaxTotalBytes + MaxManifestBytes) return Refuse(Strings.Backup_Err_TooLarge);
                 }
                 copy.Position = 0;
                 stream = copy;
@@ -227,14 +293,14 @@ public static partial class SettingsPackage
         }
         catch (Exception ex) when (ex is InvalidDataException or IOException or NotSupportedException or UnauthorizedAccessException)
         {
-            return Refuse("This isn't a readable .zip file.");
+            return Refuse(Strings.Backup_Err_NotZip);
         }
     }
 
     private static Loaded Read(ZipArchive zip)
     {
         var entries = zip.Entries;
-        if (entries.Count > MaxEntries) return Refuse($"The file holds more than {MaxEntries} files.");
+        if (entries.Count > MaxEntries) return Refuse(L.F(Strings.Backup_Err_TooManyFiles, MaxEntries));
 
         // Structure first, before anything is decompressed: names, duplicates, declared sizes.
         var problems = new List<string>();
@@ -245,18 +311,18 @@ public static partial class SettingsPackage
         foreach (var entry in entries)
         {
             var name = entry.FullName;
-            if (!seen.Add(name)) { problems.Add($"{LogName(name)} appears twice (or differs only in capital letters)."); continue; }
+            if (!seen.Add(name)) { problems.Add(L.F(Strings.Backup_Err_Twice, LogName(name))); continue; }
             if (name == ManifestName) { manifestEntry = entry; continue; }
-            if (Classify(name) is not { } known) { problems.Add($"Unexpected entry: {LogName(name)}."); continue; }
-            if (entry.Length > MaxEntryBytes) { problems.Add($"{LogName(name)} is larger than 8 MB."); continue; }
+            if (Classify(name) is not { } known) { problems.Add(L.F(Strings.Backup_Err_Unexpected, LogName(name))); continue; }
+            if (entry.Length > MaxEntryBytes) { problems.Add(L.F(Strings.Backup_Err_EntryTooBig, LogName(name))); continue; }
             if (entry.Length > RatioFloor && entry.CompressedLength * MaxRatio < entry.Length)
-                problems.Add($"{LogName(name)} compresses suspiciously well.");
+                problems.Add(L.F(Strings.Backup_Err_Ratio, LogName(name)));
             declared += entry.Length;
             members.Add((entry, known.Category));
         }
-        if (declared > MaxTotalBytes) problems.Add("The files add up to more than 64 MB.");
-        if (manifestEntry is null) problems.Add("Not a Hotline settings backup (hotline-export.json is missing).");
-        else if (manifestEntry.Length > MaxManifestBytes) problems.Add("hotline-export.json is too large.");
+        if (declared > MaxTotalBytes) problems.Add(Strings.Backup_Err_TotalTooBig);
+        if (manifestEntry is null) problems.Add(Strings.Backup_Err_NoManifest);
+        else if (manifestEntry.Length > MaxManifestBytes) problems.Add(Strings.Backup_Err_ManifestBig);
         if (problems.Count > 0) return Refuse(problems);
 
         var manifest = ParseManifest(manifestEntry!);
@@ -270,21 +336,21 @@ public static partial class SettingsPackage
         {
             using var s = entry.Open();
             var data = ReadBounded(s, entry.Length);
-            if (data is null || data.Length != entry.Length) { problems.Add($"{LogName(entry.FullName)} is not the size it says."); continue; }
+            if (data is null || data.Length != entry.Length) { problems.Add(L.F(Strings.Backup_Err_SizeLies, LogName(entry.FullName))); continue; }
             actual += data.Length;
-            if (actual > MaxTotalBytes) { problems.Add("The files add up to more than 64 MB."); break; }
+            if (actual > MaxTotalBytes) { problems.Add(Strings.Backup_Err_TotalTooBig); break; }
             files[entry.FullName] = data;
             counts[category] = counts.GetValueOrDefault(category) + 1;
         }
         if (problems.Count == 0)
         {
             foreach (var path in manifest.Files.Keys.Where(p => !files.ContainsKey(p)))
-                problems.Add($"{LogName(path)} is listed in the backup but missing.");
+                problems.Add(L.F(Strings.Backup_Err_Missing, LogName(path)));
             foreach (var (path, data) in files)
             {
-                if (!manifest.Files.TryGetValue(path, out var listed)) problems.Add($"{LogName(path)} is not in the backup's list.");
+                if (!manifest.Files.TryGetValue(path, out var listed)) problems.Add(L.F(Strings.Backup_Err_Unlisted, LogName(path)));
                 else if (listed.Size != data.Length || !listed.Sha256.Equals(Convert.ToHexStringLower(SHA256.HashData(data)), StringComparison.OrdinalIgnoreCase))
-                    problems.Add($"{LogName(path)} doesn't match the backup's list (changed or damaged).");
+                    problems.Add(L.F(Strings.Backup_Err_Mismatch, LogName(path)));
             }
         }
         if (problems.Count > 0) return Refuse(problems, manifest.Format, manifest.AppVersion, manifest.Created);
@@ -320,16 +386,16 @@ public static partial class SettingsPackage
             using var doc = JsonDocument.Parse(stream, new JsonDocumentOptions { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip });
             var root = doc.RootElement;
             if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("format", out var f) || !f.TryGetInt32(out var format) || format < 1)
-                return Bad("Not a Hotline settings backup (hotline-export.json is not valid).");
+                return Bad(Strings.Backup_Err_ManifestInvalid);
             if (format > CurrentFormat)
-                return Bad("This backup was made by a newer version of Hotline. Update Hotline to import it.", format);
+                return Bad(Strings.Backup_Err_Newer, format);
 
             var version = root.TryGetProperty("appVersion", out var v) && v.ValueKind == JsonValueKind.String ? LogName(v.GetString()) : null;
             DateTimeOffset? created = root.TryGetProperty("created", out var c) && c.ValueKind == JsonValueKind.String
                 && DateTimeOffset.TryParse(c.GetString(), System.Globalization.CultureInfo.InvariantCulture, System.Globalization.DateTimeStyles.None, out var when)
                 ? when : null;
             if (!root.TryGetProperty("files", out var list) || list.ValueKind != JsonValueKind.Array)
-                return Bad("Not a Hotline settings backup (the file list is missing).");
+                return Bad(Strings.Backup_Err_ListMissing);
             foreach (var item in list.EnumerateArray())
             {
                 if (item.ValueKind != JsonValueKind.Object
@@ -337,13 +403,13 @@ public static partial class SettingsPackage
                     || !item.TryGetProperty("size", out var z) || !z.TryGetInt64(out var size)
                     || !item.TryGetProperty("sha256", out var h) || h.ValueKind != JsonValueKind.String
                     || !files.TryAdd(p.GetString()!, (size, h.GetString()!)))
-                    return Bad("Not a Hotline settings backup (the file list is not valid).", format);
+                    return Bad(Strings.Backup_Err_ListInvalid, format);
             }
             return new Manifest(format, version, created, files, null);
         }
         catch (Exception ex) when (ex is JsonException or InvalidDataException or IOException or InvalidOperationException)
         {
-            return Bad("Not a Hotline settings backup (hotline-export.json can't be read).");
+            return Bad(Strings.Backup_Err_ManifestUnreadable);
         }
     }
 }

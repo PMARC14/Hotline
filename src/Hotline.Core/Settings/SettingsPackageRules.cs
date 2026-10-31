@@ -114,14 +114,15 @@ public static partial class SettingsPackage
             switch (category)
             {
                 case SettingsCategory.Settings:
-                    return JsonSerializer.Deserialize<HotlineSettings>(text, SettingsStore.Options) is null ? "not readable as settings" : null;
+                    // The very reading loading uses: a wrong value or a newer enum word only costs that field (the app warns and goes on).
+                    return SettingsStore.ParseSettings(text, new ReadProblems()).Settings is null ? "not readable as settings" : null;
                 case SettingsCategory.Toolbar:
                     return ToolbarModel.Parse(text, []) is JsonObject ? null : "not a JSON object"; // field-level problems are the reader's warnings
                 case SettingsCategory.Mcp:
                     McpConfig.Parse(text);
                     return null;
                 case SettingsCategory.Connections:
-                    return ValidateConnection(dataDirectory, path, text);
+                    return ValidateConnection(path, text);
                 case SettingsCategory.Actions:
                     return bytes.Length > QuickActions.MaxFileBytes ? "larger than a quick action can be (64 KB)" : null;
                 default:
@@ -134,15 +135,11 @@ public static partial class SettingsPackage
         }
     }
 
-    private static string? ValidateConnection(string dataDirectory, string path, string text)
-    {
-        var profile = JsonSerializer.Deserialize<BackendProfile>(text, SettingsStore.ConnectionOptions);
-        if (profile is null) return "not readable as a connection";
-        // The store reads a file with no id as its file name, and names the file of an id with odd characters by a safe form.
-        var stem = Path.GetFileNameWithoutExtension(path);
-        if (string.IsNullOrWhiteSpace(profile.Id)) return null;
-        var safe = Path.GetFileNameWithoutExtension(new SettingsStore(dataDirectory).ConnectionPath(profile.Id));
-        return profile.Id.Equals(stem, StringComparison.OrdinalIgnoreCase) || safe.Equals(stem, StringComparison.OrdinalIgnoreCase)
-            ? null : "its id doesn't match the file name";
-    }
+    /// <summary>
+    /// The very reading loading uses (<see cref="SettingsStore.ParseConnection"/>): refused only when it isn't a JSON object or its
+    /// type is unknown. An id that differs from the file name is fine: the app saves the connection back to the file it came from.
+    /// </summary>
+    private static string? ValidateConnection(string path, string text) =>
+        SettingsStore.ParseConnection(text, path, Path.GetFileNameWithoutExtension(path), new ReadProblems(), out _) is null
+            ? "not readable as a connection" : null;
 }

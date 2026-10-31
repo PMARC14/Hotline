@@ -68,6 +68,14 @@ public sealed class ChatWidthTests : IDisposable
     [Fact]
     public void No_chat_width_set_means_no_growth() => Assert.Null(Chat());
 
+    [Theory]
+    [InlineData(5000, 1000)] // wider than window.maxWidth: held to it (as the percentage is)
+    [InlineData(700, 700)]
+    public void An_explicit_chat_width_is_clamped_to_the_maximum(int chatWidth, int expected) => Assert.Equal(expected, Chat(chatWidth: chatWidth));
+
+    [Fact]
+    public void An_explicit_chat_width_below_the_minimum_grows_nothing() => Assert.Null(Chat(chatWidth: 100)); // clamped up to the 460 it opens at
+
     [Fact]
     public void A_percentage_is_taken_of_the_work_area_and_clamped_to_min_and_max()
     {

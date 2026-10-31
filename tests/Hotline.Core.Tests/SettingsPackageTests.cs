@@ -477,7 +477,7 @@ public sealed class SettingsPackageTests : IDisposable
             ("sounds/bad.wav", "RIFFxxxxNOPE"u8.ToArray()),
             ("sounds/short.wav", "RIFF"u8.ToArray()),
             E("connections/c1.json", "{ nope"),
-            E("connections/c2.json", Conn("other")),     // id differs from the file name
+            E("connections/c2.json", Conn("other")),     // id differs from the file name: the app reads that fine, so it is imported
             E("actions/nul.md".Replace("nul", "withnul"), "a\0b"),
             E("prompts/nul.md".Replace("nul", "pn"), "a\0b"),
             E("actions/good.md", "Good."),
@@ -487,10 +487,10 @@ public sealed class SettingsPackageTests : IDisposable
         ]);
         var result = Import(zip);
         Assert.Null(result.Error);
-        Assert.Equal(["actions/good.md", "connections/good.json", "icons/good.png", "sounds/good.wav"], result.Written.Order(StringComparer.Ordinal));
-        Assert.Equal(10, result.Skipped.Count);
+        Assert.Equal(["actions/good.md", "connections/c2.json", "connections/good.json", "icons/good.png", "sounds/good.wav"], result.Written.Order(StringComparer.Ordinal));
+        Assert.Equal(9, result.Skipped.Count);
         Assert.All(result.Skipped, s => Assert.False(string.IsNullOrWhiteSpace(s.Reason)));
-        Assert.Equal(["actions/good.md", "connections/good.json", "icons/good.png", "sounds/good.wav"], Relative(Target));
+        Assert.Equal(["actions/good.md", "connections/c2.json", "connections/good.json", "icons/good.png", "sounds/good.wav"], Relative(Target));
     }
 
     [Fact]

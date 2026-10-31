@@ -48,13 +48,11 @@ public sealed class SettingsStoreTests : IDisposable
         var s = store.Load();
         s.Activation.Hold = KeyAction.RegionSelect;
         s.Activation.FallbackHotkey = "Ctrl+Alt+H";
-        s.Window.Layout = PopupLayout.SidePanel;
         store.Save(s);
 
         var loaded = New().Load();
         Assert.Equal(KeyAction.RegionSelect, loaded.Activation.Hold);
         Assert.Equal("Ctrl+Alt+H", loaded.Activation.FallbackHotkey);
-        Assert.Equal(PopupLayout.SidePanel, loaded.Window.Layout);
     }
 
     [Fact]
