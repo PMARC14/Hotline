@@ -18,7 +18,7 @@ public sealed class ToolbarPickersApartTests
     public void Roomy_row_gives_each_picker_its_own_span_whatever_group_it_is_in()
     {
         var f = ToolbarPlan.PlanRow(Apart, top: false, room: 900, Spacing);
-        Assert.Equal(new Dictionary<string, double> { ["effort"] = 80, ["model"] = 160, ["provider"] = 120 }, f.PickerWidths);
+        Assert.Equal(new Dictionary<string, double> { ["effort"] = 120, ["model"] = 160, ["provider"] = 160 }, f.PickerWidths);
         Assert.Equal(["pin", "effort", "model", "prompt"], f.Shown);
         Assert.Equal(["provider", "settings"], f.RightShown);
         Assert.Empty(f.Menu);
@@ -45,7 +45,7 @@ public sealed class ToolbarPickersApartTests
     {
         var m = Model("""{ "left": ["effort"], "center": ["model"], "right": ["provider"] }""");
         var roomy = ToolbarPlan.PlanRow(m, top: false, 2000, Spacing);
-        // Preferred 80 + 160 + 120; floors 56 + 84 + 72: a room in between shrinks all three, none past its floor or span.
+        // Preferred 120 + 160 + 160; floors 56 + 84 + 72: a room in between shrinks all three, none past its floor or span.
         var f = ToolbarPlan.PlanRow(m, top: false, 300, Spacing);
         Assert.All(f.PickerWidths, p => Assert.InRange(p.Value, ToolbarPlan.PickerFloor(p.Key), roomy.PickerWidths[p.Key]));
         Assert.All(f.PickerWidths, p => Assert.True(p.Value < roomy.PickerWidths[p.Key], p.Key));

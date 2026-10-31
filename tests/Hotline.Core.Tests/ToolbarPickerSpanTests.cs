@@ -8,10 +8,29 @@ public sealed class ToolbarPickerSpanTests
     private static ToolbarModel Read(string overrides, string pickers = "\"effort\", \"model\", \"provider\"") => ToolbarModel.Resolve(
         $$"""{ "version": 2, "items": { "left": ["pin", {{pickers}}] }, "overrides": {{overrides}} }""");
 
-    /// <summary>The shipped layout without its own picker widths: pickers at the built-in 2 / 4 / 3 (the file default).</summary>
+    /// <summary>The shipped layout: every picker at the default 3 / 4 / 4 button widths.</summary>
     private static readonly ToolbarModel Plain = ToolbarModel.Defaults with { PickerSpans = new Dictionary<string, int>() };
 
     // ---- the file ----
+
+    [Fact]
+    public void Every_picker_defaults_to_3_4_4_with_or_without_the_default_layout_and_the_shipped_file_has_no_span_entries()
+    {
+        foreach (var m in new[] { ToolbarModel.Defaults, Read("{}"), ToolbarModel.Resolve("""{ "version": 2, "items": { "left": [] }, "top": { "left": [] } }""") })
+            Assert.Equal((3, 4, 4), (m.EffectiveSpan("effort"), m.EffectiveSpan("model"), m.EffectiveSpan("provider")));
+        // A file that omits a span in a defaulted layout gets 3 / 4 / 4 too.
+        var defaulted = ToolbarModel.Resolve("""{ "version": 2 }""");
+        Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.TopLeft), defaulted.Items(Quadrant.TopLeft));
+        Assert.Empty(defaulted.PickerSpans);
+        Assert.Empty(ToolbarModel.Defaults.PickerSpans);
+        var json = ToolbarModel.Defaults.ToJson();
+        Assert.DoesNotContain("span", string.Concat(json.Split('\n').Where(l => !l.TrimStart().StartsWith("//"))));
+        // A span equal to the default is not written, even when set in memory.
+        var inMemory = ToolbarModel.Defaults with { PickerSpans = new Dictionary<string, int> { ["effort"] = 3, ["model"] = 5 } };
+        var written = inMemory.ToJson();
+        Assert.Contains("\"model\": { \"span\": 5 }", written);
+        Assert.DoesNotContain("\"effort\": { \"span\"", written);
+    }
 
     [Theory]
     [InlineData("0")]
@@ -175,15 +194,15 @@ public sealed class ToolbarPickerSpanTests
     {
         Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
         var specs = ToolbarPlan.PickerSpecs(Plain with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
-        Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
+        Assert.Equal((120.0, 160.0, 160.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
         Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
     }
 
     [Fact]
     public void The_unit_ignores_one_buttons_own_size()
     {
-        var m = Plain with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 80) } };
-        Assert.Equal(80.0, ToolbarPlan.PickerSpecs(m, ["effort"]).First(s => s.Name == "effort").Preferred);
+        var m = Plain with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Cells: 4) } };
+        Assert.Equal(120.0, ToolbarPlan.PickerSpecs(m, ["effort"]).First(s => s.Name == "effort").Preferred);
     }
 
     [Fact]
@@ -191,7 +210,7 @@ public sealed class ToolbarPickerSpanTests
     {
         var m = Plain;
         var specs = ToolbarPlan.PickerSpecs(m, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
-        Assert.Equal((80.0, 160.0, 120.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
+        Assert.Equal((120.0, 160.0, 160.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
         Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
         Assert.All(specs.Values, s => Assert.Equal(s.Preferred, s.Max));
         // Span 1 is 40 DIP exactly, as the preferred width, the minimum and the maximum.

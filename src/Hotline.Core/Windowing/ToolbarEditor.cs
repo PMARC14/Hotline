@@ -104,18 +104,20 @@ public static class ToolbarEditor
     /// <summary>
     /// "Move what doesn't fit into the menu": runs the renderer's planner for both rows at the given panel widths (DIP) and moves the
     /// buttons it puts into the automatic overflow into the "more" menu, after the entries already there (the bottom row's first, each in
-    /// bar order). With no more button placed one is added first (end of bottom right), as it takes room itself. When nothing would
-    /// overflow the input comes back (and no more button is added).
+    /// bar order). The rows are planned first as they are, without a more button: when nothing overflows the input comes back unchanged
+    /// (no more button is added, nothing is pushed out). Only then is a more button placed (end of bottom right; it takes the place of
+    /// the automatic "..." button, which is one cell as well) and the rows planned again.
     /// </summary>
     public static ToolbarModel FillMenuFromOverflow(ToolbarModel m, double topRoom, double bottomRoom)
     {
         if (m is null) return m!;
-        var lists = Lists(m);
-        if (!PlaceMore(m, lists)) return m;
-        var planned = With(m, lists);
-        var overflow = new[] { (Top: false, Room: bottomRoom), (Top: true, Room: topRoom) }
+        List<string> Overflow(ToolbarModel planned) => new[] { (Top: false, Room: bottomRoom), (Top: true, Room: topRoom) }
             .SelectMany(r => { var f = ToolbarPlan.PlanRow(planned, r.Top, r.Room, RowSpacing); return f.Dropped.Concat(f.RightDropped); })
             .Distinct().ToList();
+        if (Overflow(m).Count == 0) return m;
+        var lists = Lists(m);
+        if (!PlaceMore(m, lists)) return m;
+        var overflow = Overflow(With(m, lists));
         if (overflow.Count == 0) return m;
         foreach (var list in lists.Values) list.RemoveAll(x => overflow.Contains(x));
         var overrides = Overrides(m);
@@ -220,8 +222,8 @@ public static class ToolbarEditor
     }
 
     /// <summary>Sets the whole bar's style (<paramref name="id"/> null; unset fields get the defaults) or one shown item's
-    /// override (unset fields inherit; an empty style removes it). Width and height are clamped to 20-80. The pickers
-    /// take no styles.</summary>
+    /// override (unset fields inherit; an empty style removes it). The width is <c>Cells</c> (0.5, 1, 2, 3 or 4; anything
+    /// else is read back as unset); every button stays one cell high. The pickers take no styles.</summary>
     public static ToolbarModel SetStyle(ToolbarModel m, string? id, ButtonStyle s)
     {
         if (m is null || s is null) return m!;
@@ -233,19 +235,19 @@ public static class ToolbarEditor
         return Lenient(m, m with { Overrides = overrides }, null);
     }
 
-    /// <summary>The whole bar's size choice: every button gets <paramref name="size"/>, so the items' own sizes are cleared
-    /// (their other override keys stay; an override left empty goes). Unchanged: the input.</summary>
+    /// <summary>The whole bar's size choice: every button gets <paramref name="size"/>, so the bar's <c>cells</c> and the items' own sizes
+    /// and <c>cells</c> are cleared (their other override keys stay; an override left empty goes). Unchanged: the input.</summary>
     public static ToolbarModel SetBarSize(ToolbarModel m, ButtonSize size)
     {
         if (m is null || !Enum.IsDefined(size)) return m!;
         var overrides = Overrides(m);
         foreach (var (id, style) in overrides.ToList())
-            if (style.Size is not null)
+            if (style.Size is not null || style.Cells is not null)
             {
-                if (style with { Size = null } is var rest && rest == new ButtonStyle()) overrides.Remove(id);
+                if (style with { Size = null, Cells = null } is var rest && rest == new ButtonStyle()) overrides.Remove(id);
                 else overrides[id] = rest;
             }
-        return Lenient(m, m with { Style = m.Style with { Size = size }, Overrides = overrides }, null);
+        return Lenient(m, m with { Style = m.Style with { Size = size, Cells = null }, Overrides = overrides }, null);
     }
 
     /// <summary>Sets a picker's width in button widths (clamped to 1-8; shown or not: a hidden picker keeps it). A span equal to

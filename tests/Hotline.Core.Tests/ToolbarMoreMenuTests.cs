@@ -262,4 +262,23 @@ public sealed class ToolbarMoreMenuTests
         Assert.Same(roomy, ToolbarEditor.FillMenuFromOverflow(roomy, 5000, 5000));
         Assert.Same(m, ToolbarEditor.FillMenuFromOverflow(m, 5000, 5000)); // nothing to move, so no more button is added either
     }
+
+    [Fact]
+    public void FillMenuFromOverflow_creates_no_overflow_for_a_row_that_fits()
+    {
+        // Nine normal buttons fill 360 exactly; a more button must not be added (it would push the last one out).
+        var nine = ToolbarModel.Defaults with
+        {
+            Placed = Enum.GetValues<Quadrant>().ToDictionary(q => q, q => (IReadOnlyList<string>)(q == Quadrant.BottomLeft
+                ? ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"] : [])),
+        };
+        Assert.Empty(ToolbarPlan.PlanRow(nine, top: false, 360, Spacing).Dropped);
+        Assert.Same(nine, ToolbarEditor.FillMenuFromOverflow(nine, 360, 360));
+        // A tenth button overflows: the menu button takes the place of the automatic "..." (one cell as well).
+        var ten = ToolbarEditor.AddCustom(nine, new CustomButton("ten", "Ten", "E734", null, "t", false));
+        var filled = ToolbarEditor.FillMenuFromOverflow(ten, 360, 360);
+        AssertEdit(ten, filled);
+        Assert.Equal(ToolbarPlan.PlanRow(ten, top: false, 360, Spacing).Menu, filled.Menu);
+        Assert.Empty(ToolbarPlan.PlanRow(filled, top: false, 360, Spacing).Dropped);
+    }
 }

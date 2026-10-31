@@ -40,12 +40,16 @@ public static class ToolbarEditorView
         _ => Strings.Bar_SizeNormal,
     };
 
-    /// <summary>What the whole bar's size choice shows: the bar's size, or <see cref="BarSizeChoice.Custom"/> while an item has
-    /// a size of its own that differs from it. Derived, never stored: the file keeps the bar's size and the overrides.</summary>
+    /// <summary>What the whole bar's size choice shows, derived from the cell widths that are drawn (never stored): the preset whose
+    /// width the bar has (half, one or two cells), or <see cref="BarSizeChoice.Custom"/> when the bar's width is none of those
+    /// (e.g. <c>cells</c> 3), when any item has a <c>cells</c> value, or when an item's effective width differs from the bar's.</summary>
     public static BarSizeChoice BarSize(ToolbarModel m)
     {
-        var bar = m.Style.Size is { } s && Enum.IsDefined(s) ? s : ButtonSize.Normal;
-        return m.Overrides.Values.Any(o => o.Size is { } own && own != bar) ? BarSizeChoice.Custom : (BarSizeChoice)bar;
+        var width = ToolbarPlan.WidthCells(m.Style);
+        BarSizeChoice? preset = width switch { 0.5 => BarSizeChoice.Compact, 1 => BarSizeChoice.Normal, 2 => BarSizeChoice.Wide, _ => null };
+        if (preset is not { } choice) return BarSizeChoice.Custom;
+        var odd = m.Overrides.Any(o => o.Value.Cells is not null || ToolbarPlan.WidthCells(m.EffectiveStyle(o.Key)) != width);
+        return odd ? BarSizeChoice.Custom : choice;
     }
 
     /// <summary>The outline colour swatches besides the accent colour: red, orange, yellow, green, teal, blue, purple, pink

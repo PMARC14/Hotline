@@ -8,14 +8,15 @@ namespace Hotline.Core.Windowing;
 /// <summary>Where an item sits. The declaration order decides which place keeps an item listed in two.</summary>
 public enum Quadrant { BottomLeft, BottomCenter, BottomRight, TopLeft, TopCenter, TopRight }
 
-/// <summary>The size presets: half, once and twice one base size (see <see cref="ToolbarPlan.Metrics(ButtonStyle, bool)"/>);
-/// custom buttons stop at 80 DIP.</summary>
+/// <summary>The size presets: compact, normal and wide are half, one and two cells across; every button is one cell high
+/// (see <see cref="ToolbarPlan.Metrics(ButtonStyle)"/>).</summary>
 public enum ButtonSize { Compact, Normal, Wide }
 
 /// <summary>The look of the whole bar or of one item; a null field inherits (item, then bar, then the defaults).
-/// Width and height (DIP) apply to icon buttons only; pickers ignore all of it. <see cref="OutlineColor"/> is a validated
+/// <see cref="Cells"/> is the width in cells (0.5, 1, 2, 3 or 4; a button is always one cell high) and wins over <see cref="Size"/>;
+/// it applies to icon buttons only, pickers ignore all of it. <see cref="OutlineColor"/> is a validated
 /// "#RRGGBB" (upper case) for the outline, null for the accent colour.</summary>
-public sealed record ButtonStyle(ButtonSize? Size = null, bool? Outline = null, bool? Filled = null, int? Width = null, int? Height = null,
+public sealed record ButtonStyle(ButtonSize? Size = null, bool? Outline = null, bool? Filled = null, double? Cells = null,
     string? OutlineColor = null);
 
 /// <summary>A user-defined button: runs the quick action of that name (a file in actions\) or inserts <see cref="Text"/>
@@ -46,7 +47,15 @@ public sealed record ToolbarModel(
     public const int MaxButtons = 24, MaxItems = 40;
     /// <summary>A custom button id's longest length.</summary>
     public const int MaxId = 32;
-    private const int MaxLabel = 40, MaxText = 2000, MaxActionName = 64, MinDip = 20, MaxDip = 80;
+    private const int MaxLabel = 40, MaxText = 2000, MaxActionName = 64;
+
+    /// <summary>The widths in cells a button can have (toolbar.json "cells"); a cell is <see cref="ToolbarPlan.BaseWidth"/> wide.</summary>
+    public static readonly IReadOnlyList<double> CellChoices = [0.5, 1, 2, 3, 4];
+
+    /// <summary>Whether <paramref name="cells"/> is one of <see cref="CellChoices"/>.</summary>
+    public static bool IsCells(double cells) => CellChoices.Contains(cells);
+
+    private const string WidthHeightGone = "width and height are no longer used; use \"cells\" (0.5-4)";
 
     public static readonly IReadOnlyList<string> BuiltIn =
         ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings", "more"];
@@ -60,7 +69,7 @@ public sealed record ToolbarModel(
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
     /// <summary>Each picker's width in button widths when the file doesn't say.</summary>
-    private static int DefaultSpan(string id) => id.ToLowerInvariant() switch { "effort" => 2, "model" => 4, "provider" => 3, _ => 1 };
+    private static int DefaultSpan(string id) => id.ToLowerInvariant() switch { "effort" => 3, "model" => 4, "provider" => 4, _ => 1 };
 
     /// <summary>The pickers' own widths, in button widths, for the ones that differ from the default (lower-case id to
     /// <see cref="MinSpan"/>-<see cref="MaxSpan"/>). Kept for a picker that is hidden, too.</summary>
@@ -70,7 +79,7 @@ public sealed record ToolbarModel(
     /// picker or the more button), each once. Empty unless a more button is placed (<see cref="Resolve"/> drops the entries otherwise).</summary>
     public IReadOnlyList<string> Menu { get; init; } = [];
 
-    /// <summary>The shipped layout, the owner's own (2026-10-22): the three pickers across the top row (effort 3, model 4, provider 4
+    /// <summary>The shipped layout, the owner's own (2026-10-22): the three pickers across the top row (the default spans: effort 3, model 4, provider 4
     /// buttons wide); capture buttons, prompt and continue-in, and recent / new chat / settings in the bottom row.</summary>
     public static ToolbarModel Defaults { get; } = new(
         Layout(q => q switch
@@ -86,15 +95,16 @@ public sealed record ToolbarModel(
         new ButtonStyle(ButtonSize.Normal, false, false),
         new Dictionary<string, ButtonStyle>(StringComparer.OrdinalIgnoreCase),
         [],
-        [])
-    { PickerSpans = new Dictionary<string, int> { ["effort"] = 3, ["provider"] = 4 } };
+        []);
 
     private static IReadOnlyDictionary<Quadrant, IReadOnlyList<string>> Layout(Func<Quadrant, IReadOnlyList<string>> items) =>
         Order.ToDictionary(q => q, items);
 
     public IReadOnlyList<string> Items(Quadrant quadrant) => Placed.TryGetValue(quadrant, out var items) ? items : [];
 
-    /// <summary>The style of one item, per field: its override, else the bar's style, else the defaults.</summary>
+    /// <summary>The style of one item, per field: its override, else the bar's style, else the defaults. The width follows the
+    /// order override <c>cells</c> &gt; override <c>size</c> &gt; bar <c>cells</c> &gt; bar <c>size</c>: an item's own size beats a
+    /// bar-level <c>cells</c> (the bar's cells are inherited only while the item sets neither).</summary>
     public ButtonStyle EffectiveStyle(string id)
     {
         var o = Overrides.GetValueOrDefault(id);
@@ -102,12 +112,11 @@ public sealed record ToolbarModel(
             o?.Size ?? Style.Size ?? Defaults.Style.Size,
             o?.Outline ?? Style.Outline ?? Defaults.Style.Outline,
             o?.Filled ?? Style.Filled ?? Defaults.Style.Filled,
-            o?.Width ?? Style.Width,
-            o?.Height ?? Style.Height,
+            o?.Cells ?? (o?.Size is null ? Style.Cells : null),
             o?.OutlineColor ?? Style.OutlineColor);
     }
 
-    /// <summary>How many button widths a picker is wide: its span, else its default (effort 2, model 4, provider 3), clamped to
+    /// <summary>How many button widths a picker is wide: its span, else its default (effort 3, model 4, provider 4), clamped to
     /// 1-8. 1 for anything that is not a picker.</summary>
     public int EffectiveSpan(string? id)
     {
@@ -199,10 +208,8 @@ public sealed record ToolbarModel(
         var buttons = ReadButtons(root["buttons"], warnings);
         var known = BuiltIn.Concat(buttons.Select(b => b.Id)).ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
         var (placed, explicitlyEmpty) = ReadQuadrants(root, known, warnings);
-        var defaulted = false;
         if (placed.Values.All(l => l.Count == 0) && !explicitlyEmpty)
         {
-            defaulted = true;
             warnings.Add("toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used");
             placed = Order.ToDictionary(q => q, q => Defaults.Items(q).ToList());
         }
@@ -210,8 +217,6 @@ public sealed record ToolbarModel(
         var menu = ReadMenu(root["menu"], known, placed, warnings);
         var style = ReadStyle(root["style"], "style", warnings);
         var overrides = ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings, out var spans);
-        // The default layout comes with the default picker widths unless the file chose its own.
-        if (defaulted && spans.Count == 0) spans = Defaults.PickerSpans;
         return new ToolbarModel(
             Layout(q => placed[q]),
             style with { Size = style.Size ?? ButtonSize.Normal, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
@@ -391,8 +396,9 @@ public sealed record ToolbarModel(
             if (size is null) warnings.Add($"\"{where}.size\" {Show(sizeNode)} isn't compact, normal or wide; normal is used");
             size ??= ButtonSize.Normal;
         }
+        if ((o.ContainsKey("width") || o.ContainsKey("height")) && !warnings.Contains(WidthHeightGone)) warnings.Add(WidthHeightGone);
         return new ButtonStyle(size, Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
-            Dip(o["width"], $"{where}.width", warnings), Dip(o["height"], $"{where}.height", warnings), Color(o["outlineColor"], $"{where}.outlineColor", warnings));
+            Cells(o["cells"], $"{where}.cells", warnings), Color(o["outlineColor"], $"{where}.outlineColor", warnings));
     }
 
     /// <summary>"#RRGGBB" in upper case, or null (the accent colour) for anything else: never a name, markup or a brush.</summary>
@@ -415,16 +421,13 @@ public sealed record ToolbarModel(
         return null;
     }
 
-    private static int? Dip(JsonNode? node, string where, List<string> warnings)
+    /// <summary>A width in cells: 0.5, 1, 2, 3 or 4 (a JSON number), else a warning and null (the size's width applies).</summary>
+    private static double? Cells(JsonNode? node, string where, List<string> warnings)
     {
         if (node is null) return null;
-        if (node is not JsonValue v || !v.TryGetValue<double>(out var d) || !double.IsFinite(d))
-        {
-            warnings.Add($"\"{where}\" should be a number ({MinDip}-{MaxDip}); ignored");
-            return null;
-        }
-        if (d is < MinDip or > MaxDip) warnings.Add($"\"{where}\" {d} is outside {MinDip}-{MaxDip}; clamped");
-        return (int)Math.Round(Math.Clamp(d, MinDip, MaxDip));
+        if (node is JsonValue v && v.TryGetValue<double>(out var d) && IsCells(d)) return d;
+        warnings.Add($"\"{where}\" {Show(node)} isn't 0.5, 1, 2, 3 or 4 cells; the size's width is used");
+        return null;
     }
 
     /// <summary>Drops control characters (except line breaks and tabs in <paramref name="lines"/> text) and unpaired
@@ -458,8 +461,7 @@ public sealed record ToolbarModel(
         s.Size is { } size ? $"\"size\": \"{size.ToString().ToLowerInvariant()}\"" : null,
         s.Outline is { } outline ? $"\"outline\": {(outline ? "true" : "false")}" : null,
         s.Filled is { } filled ? $"\"filled\": {(filled ? "true" : "false")}" : null,
-        s.Width is { } w ? $"\"width\": {w}" : null,
-        s.Height is { } h ? $"\"height\": {h}" : null,
+        s.Cells is { } cells ? $"\"cells\": {cells.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}" : null,
         s.OutlineColor is { } c ? $"\"outlineColor\": {Str(c)}" : null,
     }.OfType<string>()) + " }";
 
@@ -473,7 +475,7 @@ public sealed record ToolbarModel(
     /// <summary>The "overrides" entries as written: the items' styles, then the pickers' spans.</summary>
     private IEnumerable<(string Key, string Value)> OverrideTexts() =>
         Overrides.Select(o => (o.Key, StyleText(o.Value)))
-            .Concat(Pickers.Where(PickerSpans.ContainsKey).Select(p => (p, "{ \"span\": " + PickerSpans[p] + " }")));
+            .Concat(Pickers.Where(p => PickerSpans.TryGetValue(p, out var n) && n != DefaultSpan(p)).Select(p => (p, "{ \"span\": " + PickerSpans[p] + " }")));
 
     /// <summary>The model as a v2 file with the comment header (what Settings saves; the renderer never writes).</summary>
     public string ToJson()
@@ -488,11 +490,11 @@ public sealed record ToolbarModel(
               // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
               // The effort, model and provider pickers are items like any other (each can sit in any area, between any buttons)
-              // but ignore the styles below; their only override is "span", their width in button widths ({{MinSpan}}-{{MaxSpan}}; effort 2, model 4, provider 3).
-              // "style": the whole bar; size is compact | normal | wide (half, once, twice the base), outline and filled are true | false,
+              // but ignore the styles below; their only override is "span", their width in button widths ({{MinSpan}}-{{MaxSpan}}; effort 3, model 4, provider 4; a span equal to that is not written).
+              // "style": the whole bar; size is compact | normal | wide = half | one | two cells across, every button one cell high;
+              // "cells" (0.5, 1, 2, 3 or 4) sets the width in cells and wins over size; outline and filled are true | false,
               // outlineColor is "#RRGGBB" (left out: the accent colour).
-              // "overrides": the same keys for one item, plus "width" and "height" ({{MinDip}}-{{MaxDip}}) for icon buttons.
-              // Custom buttons stay within {{MaxDip}} x {{MaxDip}} whatever the size.
+              // "overrides": one item's own "size", "cells", "outline", "filled" and "outlineColor" (an item's size beats the bar's cells).
               // "buttons": up to {{MaxButtons}} custom buttons; id a-z, 0-9 and -, label up to {{MaxLabel}} characters, icon a Segoe
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from

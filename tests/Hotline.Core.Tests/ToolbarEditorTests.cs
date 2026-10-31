@@ -347,7 +347,7 @@ public sealed class ToolbarEditorTests
     [Fact]
     public void RemoveCustom_clears_the_button_its_placement_and_its_override()
     {
-        var styled = ToolbarEditor.SetStyle(Grid, "two", new ButtonStyle(Width: 30));
+        var styled = ToolbarEditor.SetStyle(Grid, "two", new ButtonStyle(Cells: 3));
         Assert.True(styled.Overrides.ContainsKey("two"));
         var m = ToolbarEditor.RemoveCustom(styled, "two");
         Assert.DoesNotContain(m.Buttons, b => b.Id == "two");
@@ -394,10 +394,11 @@ public sealed class ToolbarEditorTests
     // ---- Styles ----
 
     [Fact]
-    public void SetStyle_for_the_bar_clamps_and_fills_the_defaults()
+    public void SetStyle_for_the_bar_drops_cells_that_are_not_allowed_and_fills_the_defaults()
     {
-        var m = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(ButtonSize.Wide, true, null, 500, 5));
-        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false, 80, 20), m.Style);
+        var m = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(ButtonSize.Wide, true, null, 1.3));
+        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false), m.Style);
+        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false, 3), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(ButtonSize.Wide, true, null, 3)).Style);
         Assert.Equal(new ButtonStyle(ButtonSize.Normal, false, false), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle()).Style);
         Assert.Equal(new ButtonStyle(ButtonSize.Normal, false, false), ToolbarEditor.SetStyle(m, null, new ButtonStyle()).Style);
         Assert.Equal(new ButtonStyle(ButtonSize.Normal, false, false), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle((ButtonSize)42)).Style);
@@ -405,11 +406,12 @@ public sealed class ToolbarEditorTests
     }
 
     [Fact]
-    public void SetStyle_for_an_item_sets_clamps_and_clears_its_override()
+    public void SetStyle_for_an_item_sets_cells_and_clears_its_override()
     {
-        var m = ToolbarEditor.SetStyle(Grid, "PIN", new ButtonStyle(Filled: true, Width: 100));
-        Assert.Equal(new ButtonStyle(Filled: true, Width: 80), m.Overrides["pin"]);
-        Assert.Equal(new ButtonStyle(ButtonSize.Normal, false, true, 80, null), m.EffectiveStyle("pin"));
+        var m = ToolbarEditor.SetStyle(Grid, "PIN", new ButtonStyle(Filled: true, Cells: 4));
+        Assert.Equal(new ButtonStyle(Filled: true, Cells: 4), m.Overrides["pin"]);
+        Assert.Equal(new ButtonStyle(ButtonSize.Normal, false, true, 4, null), m.EffectiveStyle("pin"));
+        Assert.Equal(new ButtonStyle(Filled: true), ToolbarEditor.SetStyle(Grid, "pin", new ButtonStyle(Filled: true, Cells: 100)).Overrides["pin"]);
         AssertValid(m);
         Assert.False(ToolbarEditor.SetStyle(m, "pin", new ButtonStyle()).Overrides.ContainsKey("pin"));
     }
@@ -434,14 +436,14 @@ public sealed class ToolbarEditorTests
     [Fact]
     public void SetBarSize_sizes_the_whole_bar_and_clears_only_the_items_sizes()
     {
-        var m = ToolbarEditor.SetStyle(Grid, null, Grid.Style with { Outline = true, Width = 40 });
+        var m = ToolbarEditor.SetStyle(Grid, null, Grid.Style with { Outline = true, Cells = 3 });
         m = ToolbarEditor.SetStyle(m, "pin", new ButtonStyle(ButtonSize.Compact, Filled: true));
         m = ToolbarEditor.SetStyle(m, "one", new ButtonStyle(ButtonSize.Wide, OutlineColor: "#E81123"));
         m = ToolbarEditor.SetStyle(m, "prompt", new ButtonStyle(ButtonSize.Wide));
         Assert.Equal(BarSizeChoice.Custom, ToolbarEditorView.BarSize(m));
 
         var wide = ToolbarEditor.SetBarSize(m, ButtonSize.Wide);
-        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false, 40), wide.Style); // the bar's other keys stay
+        Assert.Equal(new ButtonStyle(ButtonSize.Wide, true, false), wide.Style); // the bar's cells go with the size choice; its other keys stay
         Assert.Equal(new ButtonStyle(Filled: true), wide.Overrides["pin"]);
         Assert.Equal(new ButtonStyle(OutlineColor: "#E81123"), wide.Overrides["one"]);
         Assert.False(wide.Overrides.ContainsKey("prompt")); // nothing left of it
@@ -449,6 +451,35 @@ public sealed class ToolbarEditorTests
         Assert.Equal(BarSizeChoice.Wide, ToolbarEditorView.BarSize(wide));
         AssertValid(wide);
         Assert.Empty(ToolbarModel.Resolve(wide.ToJson()).Warnings);
+    }
+
+    [Fact]
+    public void SetBarSize_clears_the_cells_of_the_bar_and_of_every_item()
+    {
+        var m = ToolbarEditor.SetStyle(Grid, null, Grid.Style with { Cells = 3 });
+        m = ToolbarEditor.SetStyle(m, "pin", new ButtonStyle(Cells: 0.5, Filled: true));
+        m = ToolbarEditor.SetStyle(m, "one", new ButtonStyle(Cells: 4));
+        Assert.Equal(BarSizeChoice.Custom, ToolbarEditorView.BarSize(m));
+        var normal = ToolbarEditor.SetBarSize(m, ButtonSize.Normal);
+        Assert.Null(normal.Style.Cells);
+        Assert.Equal(new ButtonStyle(Filled: true), normal.Overrides["pin"]);
+        Assert.False(normal.Overrides.ContainsKey("one"));
+        Assert.Equal(BarSizeChoice.Normal, ToolbarEditorView.BarSize(normal));
+        Assert.All(new[] { "pin", "one", "prompt" }, id => Assert.Equal(1, ToolbarPlan.WidthCells(normal.EffectiveStyle(id))));
+    }
+
+    [Fact]
+    public void BarSize_is_derived_from_the_drawn_widths()
+    {
+        Assert.Equal(BarSizeChoice.Normal, ToolbarEditorView.BarSize(Grid));
+        Assert.Equal(BarSizeChoice.Wide, ToolbarEditorView.BarSize(Grid with { Style = Grid.Style with { Cells = 2 } }));      // cells 2 draws wide
+        Assert.Equal(BarSizeChoice.Compact, ToolbarEditorView.BarSize(Grid with { Style = new ButtonStyle(ButtonSize.Wide, Cells: 0.5) }));
+        Assert.Equal(BarSizeChoice.Custom, ToolbarEditorView.BarSize(Grid with { Style = Grid.Style with { Cells = 3 } }));
+        // An item's own size beats the bar's cells; its own cells are always Custom.
+        var bar3 = Grid with { Style = Grid.Style with { Cells = 3 } };
+        Assert.Equal(BarSizeChoice.Custom, ToolbarEditorView.BarSize(ToolbarEditor.SetStyle(Grid, "pin", new ButtonStyle(Cells: 1))));
+        Assert.Equal(1, ToolbarPlan.WidthCells(ToolbarEditor.SetStyle(bar3, "pin", new ButtonStyle(ButtonSize.Normal)).EffectiveStyle("pin")));
+        Assert.Equal(3, ToolbarPlan.WidthCells(bar3.EffectiveStyle("pin")));
     }
 
     [Fact]
@@ -521,7 +552,7 @@ public sealed class ToolbarEditorTests
                     7 => ToolbarEditor.RemoveCustom(m, id),
                     8 when random.Next(4) == 0 => ToolbarEditor.SetBarSize(m, (ButtonSize)random.Next(-1, 4)),
                     8 => ToolbarEditor.SetStyle(m, random.Next(3) == 0 ? null : id,
-                        new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(7), null, random.Next(2) == 0, random.Next(-50, 200), null,
+                        new ButtonStyle(random.Next(2) == 0 ? null : (ButtonSize)random.Next(7), null, random.Next(2) == 0, new[] { 0.5, 1, 2, 3, 4, 1.3, 0, 9 }[random.Next(8)],
                             colors[random.Next(colors.Length)])),
                     _ => ToolbarEditor.Move(m, id, 0),
                 };

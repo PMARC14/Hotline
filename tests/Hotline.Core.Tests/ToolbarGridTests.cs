@@ -55,6 +55,22 @@ public sealed class ToolbarGridTests
     }
 
     [Theory]
+    [InlineData(ButtonSize.Compact)]
+    [InlineData(ButtonSize.Normal)]
+    [InlineData(ButtonSize.Wide)]
+    public void Every_row_is_one_cell_high_at_every_size_and_cells_value(ButtonSize size)
+    {
+        foreach (var cells in new double?[] { null, 0.5, 1, 2, 3, 4 })
+        {
+            var m = Sized(size, [.. Four]) with { Overrides = Four.ToDictionary(id => id, id => new ButtonStyle(Cells: cells), StringComparer.OrdinalIgnoreCase) };
+            foreach (var id in Four) Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height);
+            // A row is the sum of its cell widths.
+            var width = ToolbarPlan.WidthCells(new ButtonStyle(size, Cells: cells)) * ToolbarPlan.BaseWidth;
+            Assert.Equal(4 * width, ToolbarPlan.PlanRow(m, top: false, 2000, ToolbarPlan.CellGap).Used);
+        }
+    }
+
+    [Theory]
     [InlineData(1, 40)]
     [InlineData(3, 120)]
     [InlineData(4, 160)]

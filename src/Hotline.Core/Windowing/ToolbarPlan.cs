@@ -46,11 +46,6 @@ public static class ToolbarPlan
         return [.. model.Menu.Where(id => Known(model, id) && !Stays(id) && !placed.Contains(id)).Distinct()];
     }
 
-    /// <summary>Explicit widths and heights, and every size of a custom button, stay within these (DIP).</summary>
-    public const int MinDip = 20, MaxDip = 80;
-    /// <summary>A custom button's largest glyph: its icon is one of a few plain ones, drawn no bigger than an 80-DIP button holds.</summary>
-    public const int MaxCustomFont = 22;
-
     /// <summary>
     /// The bar is a grid of cells: an item's size from <see cref="Metrics(ButtonStyle, bool)"/> is its OUTER cell, its padding inside. Cells touch
     /// (no column gap), so doubling or halving a button still lines up with the rest and a row is the sum of its cells. The visible
@@ -72,38 +67,29 @@ public static class ToolbarPlan
     public const double BaseWidth = 40, BaseHeight = 36, BaseFont = 16;
 
     /// <summary>
-    /// The size presets, from the base (<see cref="BaseWidth"/> × <see cref="BaseHeight"/>, glyph <see cref="BaseFont"/>):
-    /// compact is half of it (never under 20×20), normal the base, wide twice as wide but no higher (a row stays one cell high); the glyph is 0.8, 1 and 1.2 times the
-    /// base's. An item's width/height wins over its preset but stays within 20-80. A custom button (<paramref name="isCustom"/>)
-    /// never goes past 80×80 and a glyph of 22, whatever the bar's or its own size (a safety net should the base grow).
-    /// The renderer and every fit measure through here, so what is drawn is what was fitted.
+    /// The size of an icon button, from the base (<see cref="BaseWidth"/> x <see cref="BaseHeight"/>, glyph <see cref="BaseFont"/>).
+    /// Every button is exactly one cell high, whatever its size or <c>cells</c>, built-in or custom, so a row is as high as one
+    /// cell. Its width is <see cref="WidthCells"/> cells: compact half a cell (glyph 0.8 times the base's), normal one, wide two (the
+    /// same glyph as normal); a valid <c>cells</c> value (0.5, 1, 2, 3 or 4) wins over the size. The renderer and every fit
+    /// measure through here, so what is drawn is what was fitted.
     /// </summary>
-    public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom = false) =>
-        Metrics(style, isCustom, BaseWidth, BaseHeight, BaseFont);
+    public static ButtonMetrics Metrics(ButtonStyle style) => Metrics(style, BaseWidth, BaseHeight, BaseFont);
 
-    /// <summary><see cref="Metrics(ButtonStyle, bool)"/> from another base (tests).</summary>
-    public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom, double baseWidth, double baseHeight, double baseFont)
+    /// <summary><see cref="Metrics(ButtonStyle)"/> from another base (tests).</summary>
+    public static ButtonMetrics Metrics(ButtonStyle style, double baseWidth, double baseHeight, double baseFont)
     {
-        // Wide only widens (two cells across, the row stays one cell high); compact halves both.
-        var (widthScale, heightScale, glyph) = style.Size switch
-        {
-            ButtonSize.Compact => (0.5, 0.5, 0.8),
-            ButtonSize.Wide => (2.0, 1.0, 1.2),
-            _ => (1.0, 1.0, 1.0),
-        };
-        var width = Math.Max(MinDip, Math.Round(baseWidth * widthScale));
-        var height = Math.Max(MinDip, Math.Round(baseHeight * heightScale));
-        var font = Math.Round(baseFont * glyph);
-        // Resolve already clamps a file's width and height; a model built in memory (Settings, the self-test) may not be.
-        if (style.Width is { } w) width = Math.Clamp(w, MinDip, MaxDip);
-        if (style.Height is { } h) height = Math.Clamp(h, MinDip, MaxDip);
-        if (isCustom) (width, height, font) = (Math.Clamp(width, MinDip, MaxDip), Math.Clamp(height, MinDip, MaxDip), Math.Min(font, MaxCustomFont));
-        return new ButtonMetrics(width, height, font);
+        var cells = WidthCells(style);
+        // A half-cell button gets the smaller glyph, however it got to be half a cell.
+        return new ButtonMetrics(Math.Round(baseWidth * cells), baseHeight, cells < 1 ? Math.Round(baseFont * 0.8) : baseFont);
     }
 
-    /// <summary>The size of a placed item: its effective style, as a custom button when it is one.</summary>
-    public static ButtonMetrics Metrics(ToolbarModel model, string id) =>
-        Metrics(model.EffectiveStyle(id), model.Buttons.Any(b => b.Id == id));
+    /// <summary>How many cells wide a style draws: its <c>cells</c> when that is one of <see cref="ToolbarModel.CellChoices"/>, else
+    /// its size's width (compact 0.5, normal 1, wide 2; an unknown size is normal).</summary>
+    public static double WidthCells(ButtonStyle style) =>
+        style.Cells is { } c && ToolbarModel.IsCells(c) ? c : style.Size switch { ButtonSize.Compact => 0.5, ButtonSize.Wide => 2, _ => 1 };
+
+    /// <summary>The size of a placed item: its effective style (custom buttons are sized like the built-in ones).</summary>
+    public static ButtonMetrics Metrics(ToolbarModel model, string id) => Metrics(model.EffectiveStyle(id));
 
     /// <summary>
     /// A row's groups in order. Resolve gives only valid models, but Settings and the self-test build them in memory, so
@@ -259,7 +245,8 @@ public static class ToolbarPlan
         var rightIds = plan.Right.Where(id => !Stays(id)).ToList();
         // A row with the placed "more" button: that button is the row's menu button (always drawn, sized by its own style).
         var hasMore = plan.HasMore;
-        var overflowWidth = hasMore ? Metrics(model, ToolbarModel.MoreId).Width : Metrics(model.Style).Width;
+        // The automatic "..." button is always one cell wide; a placed more button is sized by its own style.
+        var overflowWidth = hasMore ? Metrics(model, ToolbarModel.MoreId).Width : BaseWidth;
 
         // Only this row's pickers: the other row's are planned by its own call.
         var specs = PickerSpecs(model, [.. (availablePickers ?? ToolbarModel.Pickers).Where(rowPickers.Contains)]).Where(p => rowPickers.Contains(p.Name)).ToList();
@@ -290,7 +277,7 @@ public static class ToolbarPlan
         var ok = model.Warnings.Count == 0;
         var detail = ok ? Strings.Pc_ToolbarOk
             : L.F(Strings.Pc_ToolbarWarnings, model.Warnings.Count, string.Join("; ", model.Warnings.Take(ReportedWarnings)));
-        if (!Enum.GetValues<Quadrant>().Any(q => model.Items(q).Contains("settings"))) detail += " " + Strings.Pc_ToolbarNoSettings;
+        if (!Enum.GetValues<Quadrant>().Any(q => model.Items(q).Contains("settings")) && !model.Menu.Contains("settings")) detail += " " + Strings.Pc_ToolbarNoSettings;
         return (ok, detail);
     }
 }

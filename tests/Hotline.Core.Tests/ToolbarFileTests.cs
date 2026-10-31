@@ -103,7 +103,7 @@ public sealed class ToolbarFileTests : IDisposable
     [Fact]
     public void Save_then_Load_equals_the_model_and_leaves_no_temp_file()
     {
-        var model = ToolbarModel.Defaults with { Style = new ButtonStyle(ButtonSize.Wide, true, false, 30, null) };
+        var model = ToolbarModel.Defaults with { Style = new ButtonStyle(ButtonSize.Wide, true, false, 3) };
         ToolbarFile.Save(File_, model);
         Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName)); // nothing to keep the first time
         ToolbarFile.Save(File_, model);

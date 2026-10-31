@@ -70,7 +70,7 @@ public sealed class ToolbarProfileTests
         Assert.Contains(m.Warnings, w => w.Contains("Repeated key"));
         Assert.NotEmpty(Enum.GetValues<Quadrant>().SelectMany(m.Items));
         Assert.Equal(6, m.EffectiveSpan("provider")); // the one good span survives
-        Assert.Equal(2, m.EffectiveSpan("effort"));
+        Assert.Equal(3, m.EffectiveSpan("effort"));
         Assert.Equal(4, m.EffectiveSpan("model"));
         Assert.Equal("ok", Assert.Single(m.Buttons).Id);
         Assert.False(Plan(m, top: false, 680).Shown.Count == 0);
@@ -114,8 +114,8 @@ public sealed class ToolbarProfileTests
                 foreach (var (id, width) in f.ButtonWidths)
                 {
                     Assert.Equal(ToolbarPlan.Metrics(m, id).Width, width);
-                    if (m.Buttons.Any(b => b.Id == id)) Assert.InRange(ToolbarPlan.Metrics(m, id).Height, 20, 80);
-                    if (m.Buttons.Any(b => b.Id == id)) Assert.InRange(width, 20, 80);
+                    Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height); // every button is one cell high
+                    Assert.InRange(width, 0.5 * ToolbarPlan.BaseWidth, 4 * ToolbarPlan.BaseWidth);
                 }
                 Assert.True(double.IsFinite(f.Used) && f.Used >= 0, where);
             }
@@ -167,7 +167,7 @@ public sealed class ToolbarProfileTests
             var row = ToolbarPlan.Row(m, top);
             var hasPickers = row.Droppable.Concat(row.Right).Any(ToolbarPlan.IsPicker);
             var rightIds = row.Right.Where(id => !ToolbarPlan.Stays(id)).ToList();
-            var overflow = row.HasMore ? ToolbarPlan.Metrics(m, ToolbarModel.MoreId).Width : ToolbarPlan.Metrics(m.Style).Width;
+            var overflow = row.HasMore ? ToolbarPlan.Metrics(m, ToolbarModel.MoreId).Width : ToolbarPlan.BaseWidth;
             foreach (var room in Widths.Concat(Sweep(to: 2000, step: 7)))
             {
                 var where = $"{name} {size} top {top} room {room}";
@@ -361,7 +361,7 @@ public sealed class ToolbarProfileTests
         var m = Sized("pickers-bottom-left-after", ButtonSize.Normal);
         var f = Plan(m, top: false, 1600, ["model", "provider"]);
         Assert.Equal(0, f.PickerWidths["effort"]);
-        Assert.Equal((160.0, 120.0), (f.PickerWidths["model"], f.PickerWidths["provider"]));
+        Assert.Equal((160.0, 160.0), (f.PickerWidths["model"], f.PickerWidths["provider"]));
         var none = Plan(m, top: false, 1600, []);
         Assert.All(none.PickerWidths.Values, w => Assert.Equal(0, w));
         Assert.False(none.Fit.PickersKept);
