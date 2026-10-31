@@ -177,7 +177,7 @@
   <data name="Conn_Endpoint" xml:space="preserve"><value>エンドポイント</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API のベース URL。</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>保存済み。入力すると上書きされます</value></data>
-  <data name="Conn_Optional" xml:space="preserve"><value>任意</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>省略可能</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>必須</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>キーを保存できませんでした</value></data>
   <data name="Conn_ApiKey" xml:space="preserve"><value>API キー</value></data>
@@ -439,47 +439,47 @@
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} サーバーを開始できません: "{1}" は cmd.exe 経由で実行されますが、"command" または "args" 内の " % ^ &amp; | &lt; &gt; ! の文字や改行を安全に渡すことができません。"command" でプログラムの .exe を指定するか、これらの文字を削除してください。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>幅 (セル)</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} は 0.5、1、2、3、4、compact、normal、wide のいずれでもありません。既定の幅が使用されます</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size と cells は width の古い名前です。width が使用されます</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} セル</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json が JSON オブジェクトではありません。デフォルト値が使用されます</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json を読み込めません ({0})。デフォルト値が使用されます</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>toolbar.json 内で重複したキー ({0})。最後の値が使用されます</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json のバージョン {0} は {1} ではありません。読み込める部分まで読み込みました</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json に項目がありません (空のバーには両行の左右グループが存在し、空である必要があります)。既定のレイアウトが使用されます</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" は "left" と "right" を持つオブジェクトである必要があります。無視されました</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}" はリストである必要があります。無視されました</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" には {1} 個を超える項目が指定されています。残りは無視されました</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} は項目 ID ではありません。無視されました</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>不明な項目 "{0}" は無視されました</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>"menu" 内の不明な項目 "{0}" は無視されました</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" にはボタンのみを指定できます。"{0}" は無視されました</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" はバー上にあるため保持されます。"menu" エントリは無視されます</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" が "menu" に2回指定されています。2つ目は無視されました</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>メニュー項目にはその他ボタンが必要です。無視されました</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}" はオブジェクトである必要があります。無視されました</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>{0} 個を超えるカスタムボタンがあります。残りは無視されます</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>カスタムボタン ID "{0}" は 1-{1} 文字の a-z、0-9、- である必要があります。無視されました</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>カスタムボタン "{0}" には組み込み ID があります。無視されました</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>カスタムボタン "{0}" はオブジェクトである必要があります。無視されました</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>カスタム ボタン "{0}": "quickAction" は actions\ 内のファイル名である必要があります (英数字、_、-、最大 {1} 文字)。無視されました</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>カスタム ボタン "{0}" には "quickAction" と "text" のいずれか1つのみが必要です。無視されました</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} は "{0}.png" (icons\ 内の画像) ではありません。アイコンが使用されます</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" はテキストである必要があります。無視されました</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} はアイコンコード (E000-F8FF) ではありません。デフォルトのアイコンが使用されます</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>"{0}" の2回目のオーバーライドは無視されました</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>"{0}" のオーバーライドは無視されました: ピッカーには "span"、"outline"、"outlineColor"、"filled" のみ指定できます</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>"span"、"outline"、"outlineColor"、"filled" 以外の "{0}" のオーバーライドは無視されました: ピッカーには幅やサイズがありません</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>"{0}" のオーバーライドは無視されました: その項目は表示されていません</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} は整数 {2}-{3} ではありません。デフォルト値が使用されます</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} は compact、normal、wide のいずれでもありません (size は width の古い名称です)。デフォルトの幅が使用されます</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height は使用されなくなりました: すべてのボタンの高さは 1 セルです</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} は #RRGGBB カラーではありません。アクセントカラーが使用されます</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" は {1} ではなく true または false にする必要があります。デフォルト値が使用されます</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} は 0.5、1、2、3、4 のいずれでもありません (cells は width の古い名前です)。デフォルトの幅が使用されます</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>現在のファイルのコピーを先に作成できなかったため、何も変更されませんでした ({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>このページを開いている間に toolbar.json が変更されました。再読み込みされたため前回の変更は適用されませんでした。もう一度やり直してください。</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>画像は変更されませんでした: toolbar.json を保存できませんでした。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>その他</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>ここには何もありません</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… ボタンのメニュー</value></data>
@@ -596,6 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>メッセージ ボックスの上</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>メッセージ ボックスの上に移動</value></data>
@@ -743,7 +745,7 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが6つの領域（メッセージ ボックスの上の行の左、中央、右、およびその下の行の同様の3つ）として表示されます。ボタンやピッカーをドラッグして領域内や別の領域へ移動するか、矢印ボタンを使用します (Alt+矢印で領域を移動、Ctrl+矢印で順序を変更)。非表示にしたものは「非表示」に待機します。各ボタンには独自の幅、枠線または塗りつぶしを設定でき (ドロップダウンにも枠線と塗りつぶしが適用されます)、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まらないボタンは ⋯ メニューに移動し、「… ボタンのボックス」(toolbar.json の menu キー) には保持することを選択したボタンが入ります。幅はセル数でカウントされます。ボタンの幅は 0.5、1、2、3、4 セル (width キー、compact、normal、wide は 0.5、1、2 に対応) で、各ピッカーには独自の幅があります。設定 › バックアップ では toolbar.json とボタン画像も保存されます。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>

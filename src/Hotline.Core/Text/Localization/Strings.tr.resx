@@ -439,47 +439,47 @@ Reddet:
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} sunucusu başlatılamıyor: "{1}", cmd.exe üzerinden çalışıyor; bu da "command" veya "args" içindeki " % ^ &amp; | &lt; &gt; ! karakterlerini veya satır sonlarını güvenli bir şekilde aktaramaz. "command" öğesini programın .exe dosyasına yönlendirin veya bu karakterleri kaldırın.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>Genişlik (hücre)</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} 0.5, 1, 2, 3, 4, compact, normal veya wide değil; varsayılan genişlik kullanılır</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size ve cells, width alanının eski adlarıdır; width kullanıldı</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} hücre</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json bir JSON nesnesi değil; varsayılanlar kullanıldı</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json okunamıyor ({0}); varsayılanlar kullanıldı</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>toolbar.json içinde yinelenen anahtar ({0}); son değer kullanıldı</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json sürümü {0}, {1} değil; okunabildiği kadarı okundu</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json hiçbir öğe göstermiyor (boş bir çubuk için her iki satırın sol ve sağ gruplarının mevcut ve boş olması gerekir); varsayılan düzen kullanılır</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" "left" ve "right" içeren bir nesne olmalıdır; yoksayıldı</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}" bir liste olmalıdır; yoksayıldı</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" {1} adetten fazla öğe listeliyor; geri kalanı yoksayıldı</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} bir öğe kimliği değil; yoksayıldı</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>Bilinmeyen öğe "{0}" yoksayıldı</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>"menu" içindeki bilinmeyen öğe "{0}" yoksayıldı</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" yalnızca düğmeleri kabul eder; "{0}" yoksayıldı</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" çubukta yer alıyor, bu yüzden orada kalır; "menu" girdisi yoksayıldı</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}", "menu" içinde iki kez listelenmiş; ikincisi yoksayıldı</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>Menü öğeleri için daha fazla düğmesi gerekir; yoksayıldılar</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}" bir nesne olmalıdır; yoksayıldı</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>{0} adetten fazla özel düğme var; kalanlar yoksayıldı</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>Özel düğme kimliği "{0}" 1-{1} karakter a-z, 0-9 veya - olmalıdır; yoksayıldı</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Özel düğme "{0}" yerleşik bir kimliğe sahip; yoksayıldı</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>Özel düğme "{0}" bir nesne olmalıdır; yoksayıldı</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>Özel düğme "{0}": "quickAction", actions\ içinde bir dosya adı olmalıdır (harfler, rakamlar, _ ve -, en fazla {1} karakter); yoksayıldı</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Özel düğme "{0}", "quickAction" ve "text" seçeneklerinden tam olarak birini gerektirir; yoksayıldı</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1}, "{0}.png" (icons\ içindeki bir resim) değil; simge kullanıldı</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" bir metin olmalıdır; yoksayıldı</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} bir simge kodu (E000-F8FF) değil; varsayılan simge kullanıldı</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>"{0}" için ikinci geçersiz kılma yoksayıldı</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>"{0}" için geçersiz kılma yoksayıldı: bir seçici yalnızca "span", "outline", "outlineColor" ve "filled" alır</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>"span", "outline", "outlineColor" ve "filled" dışındaki "{0}" geçersiz kılmaları yoksayıldı: seçici genişlik veya boyut almaz</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>"{0}" için geçersiz kılma yoksayıldı: o öğe gösterilmiyor</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1}, {2}-{3} tam sayısı değil; varsayılan kullanıldı</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} compact, normal veya wide değil (size, width adının eski halidir); varsayılan genişlik kullanıldı</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height artık kullanılmıyor: her düğme bir hücre yüksekliğindedir</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} bir #RRGGBB rengi değil; vurgu rengi kullanılır</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}", {1} değil true veya false olmalıdır; varsayılan kullanıldı</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1}, 0.5, 1, 2, 3 veya 4 değil (cells, width alanının eski adıdır); varsayılan genişlik kullanıldı</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>önce geçerli dosyanın bir kopyası oluşturulamadı, bu nedenle hiçbir şey değiştirilmedi ({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>Bu sayfa açıkken toolbar.json değiştirildi. Yeniden yüklendi ve son değişikliğiniz uygulanmadı: lütfen tekrar yapın.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Resim değiştirilmedi: toolbar.json kaydedilemedi.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Daha fazla</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Burada hiçbir şey yok</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… düğmesinin menüsü</value></data>
@@ -596,6 +596,8 @@ Reddet:
   <data name="Bar_BottomRow" xml:space="preserve"><value>İleti kutusunun altında</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Boş</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Düğme satırları</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>İleti kutusunun altına taşı</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>İleti kutusunun üstünde</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>İleti kutusunun üstüne taşı</value></data>
@@ -743,7 +745,7 @@ Taşınan bir panel, sabitlenmediği sürece (sabitleme düğmesi) bir sonraki a
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Yukarı veya aşağı</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Sohbet ileti çubuğundan genişler: yukarıda yer yoksa aşağı, aksi takdirde yukarı doğru. Ayarlar › Pencere bunu yukarı veya aşağı olarak sabitleyebilir; konumu, genişliği ve sohbet yüksekliğini belirler.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Ayarlar › Pencere › Düğme satırları, çubuğu altı alan olarak gösterir: ileti kutusunun üstündeki satırın solu, ortası ve sağı ile altındaki aynı üç alan. Bir düğmeyi veya seçiciyi bir alan içinde ya da başka bir alana taşımak için sürükleyin veya ok düğmelerini kullanın (Alt+ok alanı değiştirir, Ctrl+ok sırayı değiştirir). Gizledikleriniz “Gösterilmeyenler” bölümünde bekler. Her düğmenin kendi genişliği, ana hattı veya dolgusu olabilir (açılır menüler de ana hat ve dolguyu alır) ve hızlı bir eylem çalıştıran veya metin ekleyen kendi düğmelerinizi ekleyebilirsiniz. Sığmayan düğmeler bir ⋯ menüsüne taşınır ve “… düğmesinin kutusu” (toolbar.json içindeki menu anahtarı) orada tutmayı seçtiklerinizi barındırır. Genişlikler hücre cinsinden sayılır: bir düğme 0.5, 1, 2, 3 veya 4 hücre genişliğindedir (compact, normal ve wide değerlerinin 0.5, 1 ve 2 anlamına geldiği width anahtarı) ve her seçicinin kendi genişliği vardır. Ayarlar › Yedekleme ayrıca toolbar.json dosyasını ve düğme resimlerinizi de kaydeder.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sesler</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Ayarlar › Görünüm › Sesler panel açıldığında veya kapandığında bir ses çalar: bir Windows sesi veya sesler klasörünüzdeki bir .wav dosyası. Varsayılan olarak kapalıdır.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Ayarlar birer dosyadır</value></data>

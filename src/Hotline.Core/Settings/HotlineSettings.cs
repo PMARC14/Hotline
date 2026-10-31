@@ -46,7 +46,7 @@ public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 public sealed class WindowSettings
 {
     /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
-    public double WidthPercent { get; set; } = 25;
+    public double WidthPercent { get; set; } = 40;
     public int MinWidth { get; set; } = (int)Windowing.ToolbarPlan.WidthForButtons(11);
     public int MaxWidth { get; set; } = 1000;
     /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>

@@ -804,6 +804,14 @@ public sealed partial class PopupWindow : Window
         return _settings.Width ?? PopupGeometry.RelativeWidthDip(area.WorkArea.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
     }
 
+    /// <summary>Settings' note above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>
+    public string ScreenNote()
+    {
+        var (area, monitor, _) = HomeMonitor();
+        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        return Hotline.Core.Windowing.ScreenScale.Note(area.OuterBounds.Width, area.OuterBounds.Height, scale);
+    }
+
     /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>
     private (DisplayArea Area, nint Monitor, string How) HomeMonitor()
     {

@@ -173,7 +173,7 @@
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Зрозуміло, увімкнути</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Схвалювати все (небезпечно)</value></data>
   <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Пропускає всі перевірки дозволів {0}. Лише в режимі «власні інструменти програми».</value></data>
-  <data name="Conn_Name" xml:space="preserve"><value>Назва</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Ім'я</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Кінцева точка</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Базова URL-адреса API.</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>Збережено; введіть, щоб замінити</value></data>
@@ -439,47 +439,47 @@
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Не вдалося запустити сервер {0}: "{1}" запускається через cmd.exe, який не може безпечно передавати символи " % ^ &amp; | &lt; &gt; ! або розриви рядків у "command" або "args". Спрямуйте "command" на .exe-файл програми або вилучіть ці символи.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>Ширина (клітинки)</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} не є 0.5, 1, 2, 3, 4, compact, normal або wide; використовується ширина за замовчуванням</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size та cells — старі назви width; використано width</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} клітинок</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json не є об'єктом JSON; використано значення за замовчуванням</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>Не вдалося прочитати toolbar.json ({0}); використано значення за замовчуванням</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>Повторюваний ключ у toolbar.json ({0}); використано останнє значення</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>Версія toolbar.json {0} не є {1}; прочитано наскільки можливо</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json не містить елементів (для порожньої панелі ліві та праві групи обох рядків мають бути присутніми й порожніми); використовується макет за замовчуванням</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" має бути об'єктом із "left" та "right"; проігноровано</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}" має бути списком; проігноровано</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" містить понад {1} елементів; решту проігноровано</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} не є ідентифікатором елемента; проігноровано</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>Невідомий елемент "{0}" проігноровано</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Невідомий елемент "{0}" у "menu" проігноровано</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" приймає лише кнопки; "{0}" проігноровано</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" розташовано на панелі, тому там і залишається; запис "menu" проігноровано</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" вказано двічі в "menu"; другий запис проігноровано</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>Елементи меню потребують кнопки «Більше»; їх проігноровано</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}" має бути об'єктом; проігноровано</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>Більше ніж {0} користувацьких кнопок; решту проігноровано</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>Ідентифікатор користувацької кнопки "{0}" має містити 1-{1} символів a-z, 0-9 або -; проігноровано</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Користувацька кнопка "{0}" має вбудований ідентифікатор; проігноровано</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>Користувацька кнопка "{0}" має бути об'єктом; проігноровано</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>Власна кнопка "{0}": "quickAction" має бути назвою файлу в actions\ (літери, цифри, _ та -, не більше ніж {1} символів); проігноровано</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Для власної кнопки "{0}" потрібен лише один із параметрів: "quickAction" або "text"; проігноровано</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} не є "{0}.png" (зображення в icons\); використано піктограму</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" має бути текстом; проігноровано</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} не є кодом піктограми (E000-F8FF); використано стандартну піктограму</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Друге перевизначення для "{0}" проігноровано</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Перевизначення для "{0}" проігноровано: засіб вибору приймає лише "span", "outline", "outlineColor" та "filled"</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Перевизначення для "{0}" проігноровано, крім "span", "outline", "outlineColor" та "filled": засіб вибору не приймає ширину або розмір</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Перевизначення для "{0}" проігноровано: цей елемент не відображається</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} не є цілим числом {2}-{3}; використано значення за замовчуванням</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} не є compact, normal або wide (size — це стара назва width); використано ширину за замовчуванням</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height більше не використовується: кожна кнопка має висоту в одну клітинку</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} не є кольором #RRGGBB; використовується колір виділення</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" має мати значення true або false, а не {1}; використано значення за замовчуванням</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} не є 0.5, 1, 2, 3 або 4 (cells — стара назва width); використано ширину за замовчуванням</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>не вдалося спочатку створити копію поточного файлу, тому нічого не змінено ({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json змінився, поки ця сторінка була відкрита. Його було перезавантажено, і вашу останню зміну не застосовано: виконайте її знову.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Зображення не змінено: не вдалося зберегти toolbar.json.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Більше</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Тут нічого немає</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Меню кнопки «…»</value></data>
@@ -596,6 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>Під полем повідомлення</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Порожньо</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Рядки кнопок</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Перемістити під поле повідомлення</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Над полем повідомлення</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Перемістити над полем повідомлення</value></data>
@@ -743,7 +745,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Угору чи вниз</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Чат розгортається від рядка повідомлення: угору, якщо є місце, або вниз, якщо місця вгорі немає. Параметри › Вікно дозволяє зафіксувати напрямок угору чи вниз і налаштовує розташування, ширину та висоту чату.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Налаштування › Вікно › Рядки кнопок показує панель у вигляді шести областей: ліворуч, по центру та праворуч у рядку над полем повідомлення, і такі ж три під ним. Перетягніть кнопку або засіб вибору, щоб перемістити всередині області чи в іншу, або скористайтеся кнопками зі стрілками (Alt+стрілка змінює область, Ctrl+стрілка змінює порядок). Те, що ви приховуєте, очікує в «Не відображається». Кожна кнопка може мати власну ширину, контур або заливку (розкривні списки також підтримують контур і заливку), і ви можете додавати власні кнопки, які запускають швидку дію або вставляють текст. Кнопки, які не поміщаються, переміщуються в меню ⋯, а «Поле кнопки …» (ключ menu в toolbar.json) містить ті, які ви вирішите залишити там. Ширина рахується в клітинках: кнопка має ширину 0.5, 1, 2, 3 або 4 клітинки (ключ width, де compact, normal і wide означають 0.5, 1 і 2), а кожен засіб вибору має власну ширину. Налаштування › Резервне копіювання також зберігає toolbar.json і ваші зображення кнопок.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Звуки</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Параметри › Вигляд › Звуки відтворює звук під час відкриття або закриття панелі: системний звук Windows або файл .wav з вашої папки звуків. За замовчуванням вимкнено.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Параметри — це файли</value></data>

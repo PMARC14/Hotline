@@ -111,7 +111,7 @@
   <data name="Nav_Appearance" xml:space="preserve"><value>Weergave</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>Venster</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>Chat en geschiedenis</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>Extra</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Hulpmiddelen</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>Geavanceerd</value></data>
   <data name="Nav_About" xml:space="preserve"><value>Over</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Geldt na het opnieuw starten van Hotline.)</value></data>
@@ -439,47 +439,47 @@ Weigeren:
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>De {0}-server kan niet worden gestart: "{1}" wordt uitgevoerd via cmd.exe, waardoor de tekens " % ^ &amp; | &lt; &gt; ! of reeleinden in "command" of "args" niet veilig kunnen worden doorgegeven. Verwijs met "command" naar de .exe van het programma of verwijder deze tekens.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>Breedte (cellen)</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} is niet 0.5, 1, 2, 3, 4, compact, normal of wide; de standaardbreedte wordt gebruikt</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size en cells zijn de oude namen van width; width wordt gebruikt</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cellen</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json is geen JSON-object; de standaardwaarden worden gebruikt</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json kan niet worden gelezen ({0}); de standaardwaarden worden gebruikt</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>Herhaalde sleutel in toolbar.json ({0}); de laatste waarde wordt gebruikt</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json-versie {0} is niet {1}; gelezen voor zover mogelijk</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json bevat geen items (een lege balk vereist dat de linker- en rechtergroepen van beide rijen aanwezig en leeg zijn); de standaardindeling wordt gebruikt</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" moet een object zijn met "left" en "right"; genegeerd</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}" moet een lijst zijn; genegeerd</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" bevat meer dan {1} items; de rest wordt genegeerd</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} is geen item-id; genegeerd</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>Onbekend item "{0}" genegeerd</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Onbekend item "{0}" in "menu" genegeerd</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" accepteert alleen knoppen; "{0}" genegeerd</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" staat op de balk en blijft daar; het item "menu" wordt genegeerd</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" staat tweemaal in "menu"; het tweede item wordt genegeerd</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>Menu-items hebben een meer-knop nodig; ze worden genegeerd</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}" moet een object zijn; genegeerd</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>Meer dan {0} aangepaste knoppen; de rest wordt genegeerd</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>Aangepaste knop-id "{0}" moet 1-{1} tekens a-z, 0-9 of - bevatten; genegeerd</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Aangepaste knop "{0}" heeft een ingebouwde id; genegeerd</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>Aangepaste knop "{0}" moet een object zijn; genegeerd</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>Aangepaste knop "{0}": "quickAction" moet de naam zijn van een bestand in actions\ (letters, cijfers, _ en -, maximaal {1} tekens); genegeerd</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Aangepaste knop "{0}" vereist precies één van "quickAction" en "text"; genegeerd</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} is niet "{0}.png" (een afbeelding in icons\); het pictogram wordt gebruikt</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" moet tekst zijn; genegeerd</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} is geen pictogramcode (E000-F8FF); het standaardpictogram wordt gebruikt</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Tweede overschrijving voor "{0}" genegeerd</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Overschrijving voor "{0}" genegeerd: een kiezer accepteert alleen "span", "outline", "outlineColor" en "filled"</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Overschrijving voor "{0}" genegeerd behalve "span", "outline", "outlineColor" en "filled": een kiezer heeft geen breedte of grootte</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Overschrijving voor "{0}" genegeerd: dat item wordt niet weergegeven</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} is geen geheel getal {2}-{3}; de standaardwaarde wordt gebruikt</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} is niet compact, normal of wide (size is de oude naam van width); de standaardbreedte wordt gebruikt</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height wordt niet meer gebruikt: elke knop is één cel hoog</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} is geen #RRGGBB-kleur; de accentkleur wordt gebruikt</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" moet true of false zijn, niet {1}; de standaardwaarde wordt gebruikt</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} is niet 0.5, 1, 2, 3 of 4 (cells is de oude naam van width); de standaardbreedte wordt gebruikt</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>er kon niet eerst een kopie van het huidige bestand worden gemaakt, dus er is niets gewijzigd ({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json is gewijzigd terwijl deze pagina geopend was. Het bestand is opnieuw geladen en uw laatste wijziging is niet toegepast: voer deze opnieuw uit.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>De afbeelding is niet gewijzigd: toolbar.json kon niet worden opgeslagen.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niets hier</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu van knop …</value></data>
@@ -596,6 +596,8 @@ Weigeren:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Boven het berichtvak</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Naar boven het berichtvak verplaatsen</value></data>
@@ -659,7 +661,7 @@ Weigeren:
   <data name="Backup_Intro" xml:space="preserve"><value>Verplaats uw Hotline-configuratie naar een andere pc of bewaar een kopie. Een back-up is één .zip-bestand met de onderdelen die u aanvinkt; niets anders (chatgeschiedenis, geheugen, logboeken) wordt meegenomen.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en aangepaste knopafbeeldingen</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Hulpprogramma's (mcp.json)</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Hulpmiddelen (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>Snelle acties</value></data>
@@ -743,7 +745,7 @@ Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij he
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Omhoog of omlaag</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>De chat groeit vanaf de berichtenbalk: omhoog, tenzij er daarboven geen ruimte is, en dan omlaag. Instellingen › Venster kan dit vastzetten op omhoog of omlaag en stelt de positie, breedte en chathoogte in.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoprijen toont de balk als zes gebieden: links, midden en rechts van de rij boven het berichtvak, en dezelfde drie eronder. Sleep een knop of kiezer om deze binnen een gebied of naar een ander gebied te verplaatsen, of gebruik de pijltoetsen (Alt+pijl wijzigt het gebied, Ctrl+pijl wijzigt de volgorde). Wat u verbergt, wacht in “Niet weergegeven”. Elke knop kan een eigen breedte, omlijning of opvulling hebben (de vervolgkeuzelijsten nemen de omlijning en opvulling ook over), en u kunt eigen knoppen toevoegen die een snelle actie uitvoeren of tekst invoegen. Knoppen die niet passen, worden verplaatst naar een ⋯-menu, en “Het vak van de …-knop” (de menu-sleutel in toolbar.json) bevat de knoppen die u daar wilt bewaren. Breedtes worden geteld in cellen: een knop is 0.5, 1, 2, 3 of 4 cellen breed (de width-sleutel, waarbij compact, normal en wide staan voor 0.5, 1 en 2), en elke kiezer heeft zijn eigen breedte. Instellingen › Back-up slaat ook toolbar.json en uw knopafbeeldingen op.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Instellingen › Weergave › Geluiden speelt een geluid af wanneer het paneel opent of sluit: een Windows-geluid of een .wav in je geluidenmap. Standaard uitgeschakeld.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Instellingen zijn bestanden</value></data>

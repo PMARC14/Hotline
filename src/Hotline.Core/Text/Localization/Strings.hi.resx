@@ -106,7 +106,7 @@
   <data name="Settings_Title" xml:space="preserve"><value>Hotline सेटिंग्स</value></data>
   <data name="Nav_General" xml:space="preserve"><value>सामान्य</value></data>
   <data name="Nav_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
-  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट्स</value></data>
   <data name="Nav_Actions" xml:space="preserve"><value>त्वरित क्रियाएँ</value></data>
   <data name="Nav_Appearance" xml:space="preserve"><value>रूप</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>विंडो</value></data>
@@ -422,7 +422,7 @@
   <data name="Attach_Selection" xml:space="preserve"><value>चयनित टेक्स्ट</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} से चयनित टेक्स्ट</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>आप अधिकतम {0} फ़ाइलें संलग्न कर सकते हैं।</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>{0} में पाठ</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} में टेक्स्ट</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} चित्र नहीं पढ़ सकता।</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} फ़ाइलें नहीं पढ़ सकता।</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>'{0}' बैकएंड अभी उपलब्ध नहीं है।</value></data>
@@ -439,47 +439,47 @@
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} सर्वर प्रारंभ नहीं हो सकता: "{1}" cmd.exe के माध्यम से चलता है, जो "command" या "args" में " % ^ &amp; | &lt; &gt; ! वर्णों या लाइन ब्रेक को सुरक्षित रूप से पास नहीं कर सकता। "command" को प्रोग्राम के .exe पर इंगित करें, या उन वर्णों को हटा दें।</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>चौड़ाई (सेल)</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} 0.5, 1, 2, 3, 4, compact, normal या wide नहीं है; डिफ़ॉल्ट चौड़ाई का उपयोग किया जाता है</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size और cells चौड़ाई width के पुराने नाम हैं; width का उपयोग किया गया है</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} सेल</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json एक JSON ऑब्जेक्ट नहीं है; डिफ़ॉल्ट का उपयोग किया गया है</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json को पढ़ा नहीं जा सकता ({0}); डिफ़ॉल्ट का उपयोग किया गया है</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>toolbar.json में दोहराई गई कुंजी ({0}); अंतिम मान का उपयोग किया गया है</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json संस्करण {0}, {1} नहीं है; जहाँ तक संभव हो पढ़ा गया</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json में कोई आइटम नहीं है (खाली बार के लिए दोनों पंक्तियों के बाएँ और दाएँ समूह मौजूद और खाली होने चाहिए); डिफ़ॉल्ट लेआउट का उपयोग किया जाता है</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" "left" और "right" वाला ऑब्जेक्ट होना चाहिए; अनदेखा किया गया</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}" एक सूची होनी चाहिए; अनदेखा किया गया</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" में {1} से अधिक आइटम सूचीबद्ध हैं; बाकी को अनदेखा किया गया है</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} कोई आइटम आईडी नहीं है; अनदेखा किया गया</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>अज्ञात आइटम "{0}" अनदेखा किया गया</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>"menu" में अज्ञात आइटम "{0}" अनदेखा किया गया</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" में केवल बटन हो सकते हैं; "{0}" अनदेखा किया गया</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" बार पर है, इसलिए यह वहीं रहेगा; इसकी "menu" प्रविष्टि को अनदेखा किया गया</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" को "menu" में दो बार सूचीबद्ध किया गया है; दूसरे को अनदेखा किया गया</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>मेनू आइटम के लिए एक 'अधिक' बटन आवश्यक है; उन्हें अनदेखा किया गया है</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}" एक ऑब्जेक्ट होना चाहिए; अनदेखा किया गया</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>{0} से अधिक कस्टम बटन हैं; बाकी को अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>कस्टम बटन ID "{0}" में 1-{1} वर्ण (a-z, 0-9 या -) होने चाहिए; अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>कस्टम बटन "{0}" में एक बिल्ट-इन ID है; अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>कस्टम बटन "{0}" एक ऑब्जेक्ट होना चाहिए; अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>कस्टम बटन "{0}": "quickAction" actions\ में किसी फ़ाइल का नाम होना चाहिए (अक्षर, अंक, _ और -, अधिकतम {1} वर्ण); अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>कस्टम बटन "{0}" के लिए "quickAction" और "text" में से ठीक एक होना आवश्यक है; अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} "{0}.png" नहीं है (icons\ में एक चित्र); आइकन का उपयोग किया गया है</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" टेक्स्ट होना चाहिए; अनदेखा किया गया</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} कोई आइकन कोड नहीं है (E000-F8FF); डिफ़ॉल्ट आइकन का उपयोग किया गया है</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>"{0}" के लिए दूसरा ओवरराइड अनदेखा किया गया</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>"{0}" के लिए ओवरराइड अनदेखा किया गया: पिकर केवल "span", "outline", "outlineColor" और "filled" लेता है</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>"{0}" के लिए ओवरराइड को "span", "outline", "outlineColor" और "filled" को छोड़कर अनदेखा किया गया: पिकर में कोई चौड़ाई या आकार नहीं होता</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>"{0}" के लिए ओवरराइड अनदेखा किया गया: वह आइटम दिखाया नहीं गया है</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} कोई पूर्ण संख्या {2}-{3} नहीं है; डिफ़ॉल्ट का उपयोग किया गया है</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} compact, normal या wide नहीं है (size, width का पुराना नाम है); डिफ़ॉल्ट चौड़ाई का उपयोग किया गया है</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height का अब उपयोग नहीं किया जाता है: प्रत्येक बटन एक सेल ऊँचा है</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} एक #RRGGBB रंग नहीं है; एक्सेंट रंग का उपयोग किया जाता है</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" true या false होना चाहिए, {1} नहीं; डिफ़ॉल्ट का उपयोग किया गया है</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} 0.5, 1, 2, 3 या 4 नहीं है (cells चौड़ाई width का पुराना नाम है); डिफ़ॉल्ट चौड़ाई का उपयोग किया गया है</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>पहले वर्तमान फ़ाइल की प्रतिलिपि नहीं बनाई जा सकी, इसलिए कुछ भी नहीं बदला गया ({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>यह पृष्ठ खुला होने के दौरान toolbar.json बदल गया। इसे पुनः लोड किया गया, और आपका अंतिम परिवर्तन लागू नहीं हुआ: इसे फिर से करें।</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>तस्वीर नहीं बदली गई: toolbar.json को सहेजा नहीं जा सका।</value></data>
   <data name="Bar_more" xml:space="preserve"><value>अधिक</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>यहाँ कुछ नहीं है</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… बटन का मेनू</value></data>
@@ -596,6 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>संदेश बॉक्स के नीचे</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>खाली</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>संदेश बॉक्स के ऊपर</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>संदेश बॉक्स के ऊपर ले जाएँ</value></data>
@@ -663,7 +665,7 @@
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>त्वरित कार्रवाइयां</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>प्रॉम्प्ट्स</value></data>
   <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json जैसा लिखा है वैसा ही निर्यात किया जाता है। इसके env मानों में टोकन जैसे रहस्य हो सकते हैं: फ़ाइल को सुरक्षित रखें, या इसे अनचेक रहने दें।</value></data>
   <data name="Backup_ConnNote" xml:space="preserve"><value>API कुंजियाँ शामिल नहीं हैं: वे Windows क्रेडेंशियल लॉकर में रहती हैं। नए PC पर उन्हें फिर से दर्ज करें।</value></data>
   <data name="Backup_Export_Title" xml:space="preserve"><value>निर्यात</value></data>
@@ -743,7 +745,7 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
   <data name="Guide_Direction_Title" xml:space="preserve"><value>ऊपर या नीचे</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>चैट संदेश बार से बढ़ती है: ऊपर की ओर, जब तक कि ऊपर जगह न हो, फिर नीचे की ओर। सेटिंग्स › विंडो इसे ऊपर या नीचे रख सकती है और स्थिति, चौड़ाई और चैट की ऊंचाई सेट करती है।</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ बार को छह क्षेत्रों के रूप में दिखाती हैं: संदेश बॉक्स के ऊपर की पंक्ति का बायाँ, मध्य और दायाँ हिस्सा, और उसके नीचे वही तीन। किसी बटन या पिकर को किसी क्षेत्र के अंदर या दूसरे क्षेत्र में ले जाने के लिए उसे खींचें, या उसके तीर बटन का उपयोग करें (Alt+तीर क्षेत्र बदलता है, Ctrl+तीर क्रम बदलता है)। जिसे आप छिपाते हैं वह “दिखाया नहीं गया” में रहता है। प्रत्येक बटन की अपनी चौड़ाई, एक रूपरेखा या भराव हो सकता है (ड्रॉपडाउन भी रूपरेखा और भराव लेते हैं), और आप अपने स्वयं के बटन जोड़ सकते हैं जो त्वरित कार्रवाई चलाते हैं या टेक्स्ट डालते हैं। जो बटन फ़िट नहीं होते हैं वे ⋯ मेनू में चले जाते हैं, और “… बटन का बॉक्स” (toolbar.json में menu कुंजी) उन बटनों को रखता है जिन्हें आप वहाँ रखना चुनते हैं। चौड़ाई की गणना सेल में की जाती है: एक बटन 0.5, 1, 2, 3 या 4 सेल चौड़ा होता है (width कुंजी, जहाँ compact, normal और wide 0.5, 1 और 2 के लिए हैं), और प्रत्येक पिकर की अपनी चौड़ाई होती है। सेटिंग्स › बैकअप toolbar.json और आपके बटन चित्रों को भी सहेजता है।</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>सेटिंग्स फ़ाइलें हैं</value></data>

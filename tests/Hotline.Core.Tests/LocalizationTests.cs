@@ -69,7 +69,7 @@ public sealed partial class LocalizationTests
     [MemberData(nameof(Translations))]
     public void Every_message_formats(string tag)
     {
-        var args = Enumerable.Range(0, 5).Select(i => (object)$"<{i}>").ToArray();
+        var args = Enumerable.Range(0, 7).Select(i => (object)$"<{i}>").ToArray();
         foreach (var (key, text) in Set(CultureInfo.GetCultureInfo(tag)))
             if (Placeholders(text).Length > 0)
             {

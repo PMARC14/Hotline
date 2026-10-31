@@ -594,6 +594,8 @@ Deny:
   <data name="Bar_continueIn" xml:space="preserve"><value>Continue in</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Nothing to continue this chat in yet: no AI command-line tool is installed, or the chat has no messages.</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Button rows</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Above the message box</value></data>
   <data name="Bar_BottomRow" xml:space="preserve"><value>Below the message box</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Empty</value></data>

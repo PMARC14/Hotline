@@ -439,47 +439,47 @@
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 伺服器無法啟動："{1}" 透過 cmd.exe 執行，無法安全傳遞 "command" 或 "args" 中的 " % ^ &amp; | &lt; &gt; ! 字元或換行符號。請將 "command" 指向程式的 .exe，或移除這些字元。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>無法讀取 toolbar.json:{0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>寬度（儲存格）</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} 不是 0.5、1、2、3、4、compact、normal 或 wide；將使用預設寬度</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}"：size 與 cells 是 width 的舊名稱；將使用 width</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} 格</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json 不是 JSON 物件；將使用預設值</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>無法讀取 toolbar.json ({0})；已使用預設值</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>toolbar.json 中存在重複機碼 ({0})；將使用最後一個值</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json 版本 {0} 不是 {1}；已盡可能讀取</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json 未顯示任何項目（空白工具列需要兩行的左右群組均存在且為空）；將使用預設版面配置</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" 應為包含 "left" 和 "right" 的物件；已略過</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}" 應為清單；已略過</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" 列出的項目超過 {1} 個；其餘項目已略過</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} 不是項目 ID；已略過</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>未知的項目 "{0}" 已略過</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>"menu" 中的未知項目 "{0}" 已略過</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" 僅接受按鈕；已略過 "{0}"</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" 已在列上，因此保留在原處；其 "menu" 項目已被略過</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" 在 "menu" 中重複列出；第二個已被略過</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>選單項目需要「更多」按鈕；已略過</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}" 應為物件；已略過</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>自訂按鈕超過 {0} 個；其餘項目已被略過</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>自訂按鈕 ID "{0}" 必須為 1-{1} 個字元（a-z、0-9 或 -）；已略過</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>自訂按鈕 "{0}" 使用了內建 ID；已略過</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>自訂按鈕 "{0}" 應為物件；已略過</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>自訂按鈕 "{0}"："quickAction" 必須是 actions\ 中的檔案名稱（英文字母、數字、_ 與 -，最多 {1} 個字元）；已略過</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>自訂按鈕 "{0}" 必須在 "quickAction" 與 "text" 中擇一使用；已略過</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} 不是 "{0}.png"（icons\ 中的圖片）；將使用該圖示</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" 應為文字；已略過</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} 不是圖示代碼 (E000-F8FF)；已使用預設圖示</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>已略過 "{0}" 的第二次覆寫</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>已略過 "{0}" 的覆寫設定：選取器僅接受 "span"、"outline"、"outlineColor" 和 "filled"</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>除 "span"、"outline"、"outlineColor" 和 "filled" 外，針對 "{0}" 的覆寫皆已略過：選取器不支援設定寬度或大小</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>已略過 "{0}" 的覆寫設定：該項目未顯示</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} 不是整數 {2}-{3}；將使用預設值</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} 不是 compact、normal 或 wide（size 是 width 的舊名稱）；已使用預設寬度</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>不再使用 height：每個按鈕高度均為 1 格</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} 不是有效的 #RRGGBB 顏色；將使用輔色</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" 應為 true 或 false，而非 {1}；已使用預設值</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} 不是 0.5、1、2、3 或 4（cells 是 width 的舊名稱）；將使用預設寬度</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>無法先建立目前檔案的複本，因此未變更任何內容 ({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>開啟此頁面時 toolbar.json 已變更。已重新載入，且您上次所做的變更未套用：請重新變更。</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>圖片未變更：無法儲存 toolbar.json。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>這裡沒有任何內容</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>「…」按鈕選單</value></data>
@@ -596,6 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>訊息方塊上方</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>移至訊息方塊上方</value></data>
@@ -743,7 +745,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列 將工具列顯示為六個區域：訊息方塊上方列的左側、中央與右側，以及下方相同的這三個區域。拖曳按鈕或選擇器可在區域內移動或移至另一個區域，或使用其方向鍵按鈕（Alt+方向鍵切換區域，Ctrl+方向鍵變更順序）。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的寬度、外框或填滿（下拉式選單也支援外框和填滿），您也可以新增執行快速動作或插入文字的自訂按鈕。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 機碼）則存放您選擇保留在該處的按鈕。寬度以儲存格計算：按鈕寬度為 0.5、1、2、3 或 4 個儲存格（width 機碼，其中 compact、normal 和 wide 代表 0.5、1 和 2），且每個選擇器都有自己的寬度。設定 › 備份 也會儲存 toolbar.json 和您的按鈕圖片。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>

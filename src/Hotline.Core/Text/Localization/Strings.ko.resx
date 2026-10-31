@@ -439,47 +439,47 @@
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} 서버를 시작할 수 없습니다. "{1}"은(는) cmd.exe를 통해 실행되므로 "command" 또는 "args"의 " % ^ &amp; | &lt; &gt; ! 문자나 줄 바꿈을 안전하게 전달할 수 없습니다. "command"가 프로그램의 .exe를 가리키도록 설정하거나 해당 문자를 제거하세요.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다: {0}</value></data>
   <data name="Bar_WidthCells" xml:space="preserve"><value>너비(셀)</value></data>
-  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3, 4, compact, normal or wide; the default width is used</value></data>
-  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size and cells are the old names of width; width is used</value></data>
-  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0} cells</value></data>
-  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json isn't a JSON object; the defaults are used</value></data>
-  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json can't be read ({0}); the defaults are used</value></data>
-  <data name="BarW_Repeated" xml:space="preserve"><value>Repeated key in toolbar.json ({0}); the last value is used</value></data>
-  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json version {0} isn't {1}; read as far as it goes</value></data>
-  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used</value></data>
-  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}" should be an object with "left" and "right"; ignored</value></data>
-  <data name="BarW_List" xml:space="preserve"><value>"{0}" should be a list; ignored</value></data>
-  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}" lists more than {1} items; the rest are ignored</value></data>
-  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1} isn't an item id; ignored</value></data>
-  <data name="BarW_Unknown" xml:space="preserve"><value>Unknown item "{0}" ignored</value></data>
-  <data name="BarW_UnknownMenu" xml:space="preserve"><value>Unknown item "{0}" in "menu" ignored</value></data>
-  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu" takes buttons only; "{0}" ignored</value></data>
-  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}" is on the bar, so it stays there; its "menu" entry is ignored</value></data>
-  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}" is listed twice in "menu"; the second is ignored</value></data>
-  <data name="BarW_MenuNoMore" xml:space="preserve"><value>menu items need a more button; they are ignored</value></data>
-  <data name="BarW_Object" xml:space="preserve"><value>"{0}" should be an object; ignored</value></data>
-  <data name="BarW_TooManyButtons" xml:space="preserve"><value>More than {0} custom buttons; the rest are ignored</value></data>
-  <data name="BarW_ButtonId" xml:space="preserve"><value>Custom button id "{0}" must be 1-{1} characters a-z, 0-9 or -; ignored</value></data>
-  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>Custom button "{0}" has a built-in id; ignored</value></data>
-  <data name="BarW_ButtonObject" xml:space="preserve"><value>Custom button "{0}" should be an object; ignored</value></data>
-  <data name="BarW_ButtonAction" xml:space="preserve"><value>Custom button "{0}": "quickAction" must be the name of a file in actions\ (letters, digits, _ and -, at most {1} characters); ignored</value></data>
-  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>Custom button "{0}" needs exactly one of "quickAction" and "text"; ignored</value></data>
-  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1} isn't "{0}.png" (a picture in icons\); the icon is used</value></data>
-  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}" should be text; ignored</value></data>
-  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1} isn't an icon code (E000-F8FF); the default icon is used</value></data>
-  <data name="BarW_OverrideTwice" xml:space="preserve"><value>Second override for "{0}" ignored</value></data>
-  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>Override for "{0}" ignored: a picker takes only "span", "outline", "outlineColor" and "filled"</value></data>
-  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>Override for "{0}" ignored except "span", "outline", "outlineColor" and "filled": a picker takes no width or size</value></data>
-  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>Override for "{0}" ignored: that item isn't shown</value></data>
-  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1} isn't a whole number {2}-{3}; the default is used</value></data>
-  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1} isn't compact, normal or wide (size is the old name of width); the default width is used</value></data>
-  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height is no longer used: every button is one cell high</value></data>
-  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1} isn't a #RRGGBB colour; the accent colour is used</value></data>
-  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}" should be true or false, not {1}; the default is used</value></data>
-  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
-  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
-  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
+  <data name="BarW_WidthBad" xml:space="preserve"><value>"{0}" {1}은(는) 0.5, 1, 2, 3, 4, compact, normal 또는 wide가 아닙니다. 기본 너비가 사용됩니다</value></data>
+  <data name="BarW_WidthAlias" xml:space="preserve"><value>"{0}": size 및 cells는 width의 이전 이름입니다. width가 사용됩니다</value></data>
+  <data name="Bar_WidthNCells" xml:space="preserve"><value>{0}셀</value></data>
+  <data name="BarW_NotObject" xml:space="preserve"><value>toolbar.json이 JSON 개체가 아닙니다. 기본값이 사용됩니다</value></data>
+  <data name="BarW_CantRead" xml:space="preserve"><value>toolbar.json을 읽을 수 없습니다({0}). 기본값이 사용됩니다</value></data>
+  <data name="BarW_Repeated" xml:space="preserve"><value>toolbar.json의 반복된 키({0}). 마지막 값이 사용됩니다</value></data>
+  <data name="BarW_Version" xml:space="preserve"><value>toolbar.json 버전 {0}은(는) {1}이(가) 아닙니다. 가능한 부분까지만 읽었습니다</value></data>
+  <data name="BarW_NoItems" xml:space="preserve"><value>toolbar.json에 항목이 없습니다(빈 표시줄을 사용하려면 두 행의 왼쪽 및 오른쪽 그룹이 모두 존재하고 비어 있어야 함). 기본 레이아웃이 사용됩니다</value></data>
+  <data name="BarW_RowObject" xml:space="preserve"><value>"{0}"은(는) "left"와 "right"가 포함된 객체여야 합니다. 무시되었습니다</value></data>
+  <data name="BarW_List" xml:space="preserve"><value>"{0}"은(는) 목록이어야 합니다. 무시됨</value></data>
+  <data name="BarW_TooMany" xml:space="preserve"><value>"{0}"에 {1}개를 초과하는 항목이 나열되어 있습니다. 나머지는 무시되었습니다</value></data>
+  <data name="BarW_NotItemId" xml:space="preserve"><value>"{0}": {1}은(는) 항목 ID가 아닙니다. 무시됨</value></data>
+  <data name="BarW_Unknown" xml:space="preserve"><value>알 수 없는 항목 "{0}" 무시됨</value></data>
+  <data name="BarW_UnknownMenu" xml:space="preserve"><value>"menu"의 알 수 없는 항목 "{0}"은(는) 무시되었습니다</value></data>
+  <data name="BarW_MenuButtonsOnly" xml:space="preserve"><value>"menu"에는 버튼만 들어갈 수 있습니다. "{0}" 무시됨</value></data>
+  <data name="BarW_MenuOnBar" xml:space="preserve"><value>"{0}"이(가) 표시줄에 있으므로 유지됩니다. 해당 "menu" 항목은 무시됩니다</value></data>
+  <data name="BarW_MenuTwice" xml:space="preserve"><value>"{0}"이(가) "menu"에 두 번 나열되었습니다. 두 번째 항목은 무시됩니다</value></data>
+  <data name="BarW_MenuNoMore" xml:space="preserve"><value>메뉴 항목에는 더보기 버튼이 필요합니다. 무시되었습니다</value></data>
+  <data name="BarW_Object" xml:space="preserve"><value>"{0}"은(는) 객체여야 합니다. 무시되었습니다</value></data>
+  <data name="BarW_TooManyButtons" xml:space="preserve"><value>사용자 지정 버튼이 {0}개보다 많습니다. 나머지는 무시됩니다</value></data>
+  <data name="BarW_ButtonId" xml:space="preserve"><value>사용자 지정 버튼 ID "{0}"은(는) 1-{1}자의 a-z, 0-9 또는 -이어야 합니다. 무시되었습니다</value></data>
+  <data name="BarW_ButtonBuiltIn" xml:space="preserve"><value>사용자 지정 버튼 "{0}"에 기본 제공 ID가 있습니다. 무시되었습니다</value></data>
+  <data name="BarW_ButtonObject" xml:space="preserve"><value>사용자 지정 버튼 "{0}"은(는) 객체여야 합니다. 무시됨</value></data>
+  <data name="BarW_ButtonAction" xml:space="preserve"><value>사용자 정의 버튼 "{0}": "quickAction"은 actions\에 있는 파일 이름이어야 합니다(문자, 숫자, _ 및 -, 최대 {1}자). 무시됨</value></data>
+  <data name="BarW_ButtonOneOf" xml:space="preserve"><value>사용자 정의 버튼 "{0}"에는 "quickAction"과 "text" 중 정확히 하나만 필요합니다. 무시됨</value></data>
+  <data name="BarW_ButtonIconFile" xml:space="preserve"><value>"buttons.{0}.iconFile" {1}이(가) "{0}.png"(icons\의 그림)가 아닙니다. 아이콘이 사용됩니다</value></data>
+  <data name="BarW_ButtonText" xml:space="preserve"><value>"{0}"은(는) 텍스트여야 합니다. 무시되었습니다</value></data>
+  <data name="BarW_ButtonIcon" xml:space="preserve"><value>"{0}" {1}은(는) 아이콘 코드(E000-F8FF)가 아닙니다. 기본 아이콘이 사용됩니다</value></data>
+  <data name="BarW_OverrideTwice" xml:space="preserve"><value>"{0}"에 대한 두 번째 재정의가 무시되었습니다</value></data>
+  <data name="BarW_PickerSpanOnly" xml:space="preserve"><value>"{0}" 재정의 무시됨: 선택기는 "span", "outline", "outlineColor", "filled"만 허용합니다</value></data>
+  <data name="BarW_PickerNoStyles" xml:space="preserve"><value>"span", "outline", "outlineColor", "filled"를 제외한 "{0}" 재정의는 무시되었습니다. 선택기에는 너비나 크기가 없습니다</value></data>
+  <data name="BarW_OverrideNotShown" xml:space="preserve"><value>"{0}" 재정의 무시됨: 해당 항목이 표시되지 않습니다</value></data>
+  <data name="BarW_SpanBad" xml:space="preserve"><value>"{0}" {1}이(가) 정수 {2}-{3}이(가) 아닙니다. 기본값이 사용됩니다</value></data>
+  <data name="BarW_SizeBad" xml:space="preserve"><value>"{0}" {1}은(는) compact, normal, wide 중 하나가 아닙니다(size는 width의 이전 이름입니다). 기본 너비가 사용됩니다</value></data>
+  <data name="BarW_WidthHeightGone" xml:space="preserve"><value>height는 더 이상 사용되지 않습니다. 모든 버튼의 높이는 1셀입니다</value></data>
+  <data name="BarW_ColorBad" xml:space="preserve"><value>"{0}" {1}은(는) #RRGGBB 색상이 아닙니다. 테마 색상이 사용됩니다</value></data>
+  <data name="BarW_BoolBad" xml:space="preserve"><value>"{0}"은(는) {1}이(가) 아니라 true 또는 false여야 합니다. 기본값이 사용됩니다</value></data>
+  <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1}이(가) 0.5, 1, 2, 3, 4가 아닙니다(cells는 width의 이전 이름입니다). 기본 너비가 사용됩니다</value></data>
+  <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>현재 파일의 복사본을 먼저 만들 수 없어 아무것도 변경되지 않았습니다({0})</value></data>
+  <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>이 페이지가 열려 있는 동안 toolbar.json이 변경되었습니다. 다시 로드되어 마지막 변경 사항이 적용되지 않았습니다. 다시 변경해 주세요.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>이미지가 변경되지 않았습니다: toolbar.json을 저장할 수 없습니다.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>자세히</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>표시할 항목 없음</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… 단추 메뉴</value></data>
@@ -596,6 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>메시지 상자 위</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>메시지 상자 위로 이동</value></data>
@@ -743,7 +745,7 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>위 또는 아래</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>채팅은 메시지 표시줄을 기준으로 확장됩니다. 위쪽에 공간이 없는 경우가 아니면 위로, 공간이 없으면 아래로 확장됩니다. 설정 › 창에서 위 또는 아래로 고정할 수 있으며 위치, 너비 및 채팅 높이도 설정할 수 있습니다.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 버튼 행은 표시줄을 6개 영역(메시지 상자 위 행의 왼쪽, 가운데, 오른쪽 및 아래의 동일한 3개)으로 표시합니다. 버튼이나 선택기를 드래그하여 영역 내 또는 다른 영역으로 이동하거나 화살표 버튼을 사용하세요(Alt+화살표는 영역 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “표시 안 됨”에서 대기합니다. 각 버튼은 고유한 너비, 윤곽선 또는 채우기를 가질 수 있으며(드롭다운에도 윤곽선과 채우기가 적용됨), 빠른 작업을 실행하거나 텍스트를 삽입하는 사용자 정의 버튼을 추가할 수 있습니다. 맞지 않는 버튼은 ⋯ 메뉴로 이동하고 “… 버튼 상자”(toolbar.json의 menu 키)에는 그곳에 유지하도록 선택한 버튼이 들어갑니다. 너비는 셀 단위로 계산됩니다. 버튼은 0.5, 1, 2, 3 또는 4셀 너비이며(width 키, compact, normal, wide는 각각 0.5, 1, 2를 의미), 각 선택기는 고유한 너비를 가집니다. 설정 › 백업은 toolbar.json과 버튼 그림도 함께 저장합니다.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>소리</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>설정 › 모양 › 사운드에서 패널이 열리거나 닫힐 때 소리를 재생합니다: Windows 소리 또는 소리 폴더의 .wav 파일. 기본적으로 꺼져 있습니다.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>설정 파일</value></data>
@@ -760,7 +762,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_OutlineColor" xml:space="preserve"><value>윤곽선 색</value></data>
   <data name="Bar_ColorAccent" xml:space="preserve"><value>강조 색</value></data>
   <data name="Bar_ColorRed" xml:space="preserve"><value>빨강</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황색</value></data>
   <data name="Bar_ColorYellow" xml:space="preserve"><value>노랑</value></data>
   <data name="Bar_ColorGreen" xml:space="preserve"><value>초록</value></data>
   <data name="Bar_ColorTeal" xml:space="preserve"><value>청록</value></data>

@@ -29,12 +29,14 @@ public sealed partial class SettingsWindow : Window
     private string? _odrPath;
     /// <summary>The width (DIP) the panel's button rows have, or would have when it opens (the button rows editor's "Move what doesn't fit"); null in tests.</summary>
     private readonly Func<double>? _barRoom;
+    /// <summary>The scaling note shown above the button rows (see <see cref="Hotline.Core.Windowing.ScreenScale"/>); null in tests.</summary>
+    private readonly Func<string>? _screenNote;
 
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
         PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
-        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null)
+        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null, Func<string>? screenNote = null)
     {
-        (_toolHost, _mcpPath, _odrPath, _barRoom) = (toolHost, mcpPath ?? "", odrPath, barRoom);
+        (_toolHost, _mcpPath, _odrPath, _barRoom, _screenNote) = (toolHost, mcpPath ?? "", odrPath, barRoom, screenNote);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
