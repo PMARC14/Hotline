@@ -77,6 +77,6 @@ public sealed class SafetyG3HistoryTests : IDisposable
         c.Event += events.Add;
         Assert.True(c.Resume("old"));
         Assert.Equal("hello there", Assert.Single(c.Messages).Text);
-        Assert.Single(events.OfType<ConversationResumed>());
+        Assert.Equal("hello there", Assert.Single(events.OfType<ConversationResumed>()).Title); // a record without a title: the first message
     }
 }

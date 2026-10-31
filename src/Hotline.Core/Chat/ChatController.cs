@@ -115,7 +115,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             _messages.Add(message);
             Emit(new MessageRestored(message));
         }
-        var title = meta?.Title ?? HistoryStore.TitleOf(entries.FirstOrDefault(e => e.Role == ChatRole.User)?.Text ?? "");
+        var title = meta is { Title.Length: > 0 } ? meta.Title : HistoryStore.TitleOf(entries.FirstOrDefault(e => e.Role == ChatRole.User)?.Text ?? "");
         Emit(new ConversationResumed(conversationId, title, BackendId, entries.Count > 0));
         log.Info($"resumed conversation {conversationId} ({entries.Count} messages{(session is null ? "" : $", {_sessionBackendId} session")})");
         return true;

@@ -89,10 +89,7 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): the first message widens the panel around its centre in the same resize as the
       height; New chat (Ctrl+N) shrinks it back; near a screen edge it slides back inside. With `window.width` set, or after resizing by
       hand, it never widens; the default (0) never widens. Moving the widened panel with Alt keeps its start width.
-- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings. Type 1 in Chat width (percent): the
-      box shows 20 once saved; type 100 in a fixed width: it shows 320. `chatWidth` 5000 grows to `maxWidth`, not beyond.
-- [ ] Settings › Window › Growth = Full: an empty panel stays a bar (a long draft only fits its text); the first message jumps to the
-      maximum height; after dragging the panel to a height by hand, a new message keeps that height.
+- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.
@@ -150,6 +147,10 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] Title bar dark in dark mode; Windows Settings → Personalization → Colors → switch light/dark while Hotline runs →
       the panel and the settings window follow (Appearance › Theme = System).
 - [ ] Every page opens; changes apply at once and show up in `settings.json`.
+- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings. Type 1 in Chat width (percent): the
+      box shows 20 once saved; type 100 in a fixed width: it shows 320. `chatWidth` 5000 grows to `maxWidth`, not beyond.
+- [ ] Settings › Window › Growth = Full: an empty panel stays a bar (a long draft only fits its text); the first message jumps to the
+      maximum height; after dragging the panel to a height by hand, a new message keeps that height.
 - [ ] AI connections: move a connection up/down → the Provider picker order follows.
 - [ ] AI connections: Max tokens 99999999 or Temperature 5 → the box shows the kept value (1000000 / 2) after you leave it.
 - [ ] Lock a connection file (open it with a tool that denies sharing) and press Remove / Move / Duplicate, or lock a quick-action

@@ -219,7 +219,8 @@ internal sealed class ProviderBar(
         var (previousModel, previousEffort) = (profile.Model, profile.Effort);
         try
         {
-            settings.Update(_ => { profile.Model = model; profile.Effort = effort; });
+            if (settings.Update(_ => { profile.Model = model; profile.Effort = effort; }) is { Count: > 0 } problems)
+                throw new IOException(string.Join(" ", problems)); // not saved: handled below like any failure
             await invalidate(profile.Id);
             log.Info($"model for {profile.Id} = {model ?? "default"}");
         }
@@ -246,13 +247,13 @@ internal sealed class ProviderBar(
             {
                 var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
                 if (model == profile.Model) return;
-                settings.Update(_ => profile.Model = model);
+                if (settings.Update(_ => profile.Model = model) is { Count: > 0 } saved) throw new IOException(string.Join(" ", saved));
             }
             else
             {
                 var effort = level == DefaultLabel ? null : level;
                 if (effort == profile.Effort) return;
-                settings.Update(_ => profile.Effort = effort);
+                if (settings.Update(_ => profile.Effort = effort) is { Count: > 0 } saved) throw new IOException(string.Join(" ", saved));
             }
             await invalidate(profile.Id);
         }
@@ -302,7 +303,8 @@ internal sealed class ProviderBar(
                 if (profile is null) return;
                 try
                 {
-                    settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name);
+                    if (settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name) is { Count: > 0 } saved)
+                        throw new IOException(string.Join(" ", saved));
                     await invalidate(profile.Id);
                     notify(L.F(Strings.Bar_PromptChosen, name), InfoBarSeverity.Informational);
                 }

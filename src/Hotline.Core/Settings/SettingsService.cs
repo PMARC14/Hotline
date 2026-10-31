@@ -17,6 +17,8 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     public string? FileError => store.SettingsError;
 
     public event Action? Changed;
+    /// <summary>After a save that left something undone (a file that couldn't be backed up or written, two connections for one file): the problems.</summary>
+    public event Action<IReadOnlyList<string>>? SaveFailed;
     /// <summary>After a reload from disk: ids of connections whose settings changed or that were removed.</summary>
     public event Action<IReadOnlyList<string>>? ConnectionsChanged;
 
@@ -103,7 +105,11 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     private DateTime _knownWriteUtc = DateTime.MinValue;
     private bool _unsaved; // the last save failed: memory is newer than the disk, so a re-read must not replace it
 
-    public void Update(Action<HotlineSettings> change)
+    /// <summary>
+    /// Applies the change in memory and saves it. Returns what the save could not do (empty when all went well); the same list is
+    /// raised as <see cref="SaveFailed"/>. The change itself always applies in memory.
+    /// </summary>
+    public IReadOnlyList<string> Update(Action<HotlineSettings> change)
     {
         // A hand edit saved moments ago (settings.json or a connection file) may not have been reloaded yet (the file watcher
         // debounces): take a fresh snapshot in first, so this save doesn't overwrite it or delete a file that was just added.
@@ -115,6 +121,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         // Only a connection the change removed loses its file; one that merely isn't in memory yet is never deleted.
         var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var removed = before.Where(id => !kept.Contains(id)).ToList();
+        IReadOnlyList<string> problems = [];
         try
         {
             // A file that isn't what this process wrote (a hand edit, half-finished or with ignored values) is copied to
@@ -122,9 +129,17 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             store.Save(Current, removed);
             _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
             if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
-            foreach (var problem in store.WriteProblems) log.Info($"settings: {problem}");
+            problems = [.. store.WriteProblems];
+            foreach (var problem in problems) log.Info($"settings: {problem}");
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _unsaved = true; log.Error("saving settings failed", ex); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _unsaved = true;
+            log.Error("saving settings failed", ex);
+            problems = [ex.GetType().Name];
+        }
         Changed?.Invoke();
+        if (problems.Count > 0) SaveFailed?.Invoke(problems);
+        return problems;
     }
 }

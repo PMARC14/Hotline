@@ -107,13 +107,21 @@ public sealed class SafetyG3Tests : IDisposable
     }
 
     [Fact]
-    public void A_failed_save_does_not_let_the_next_update_revert_memory_to_the_disk()
+    public void A_save_that_could_not_be_made_is_reported_and_the_next_update_keeps_memory_instead_of_re_reading_the_disk()
     {
         Put("a.json", HandEdited);
         var service = Service(out var store);
-        service.Update(s => s.Chat.Backends[0].Name = "Edited");
-        Assert.Contains("Edited", File.ReadAllText(Conn("a.json")));
-        Assert.Empty(store.WriteProblems);
+        var raised = new List<string>();
+        service.SaveFailed += raised.AddRange;
+        store.BackupOverride = _ => throw new IOException("disk full");
+        var problems = service.Update(s => s.Chat.Backends[0].Name = "Edited");
+        Assert.NotEmpty(problems);
+        Assert.Equal(problems, raised);
+        Assert.Equal(HandEdited, File.ReadAllText(Conn("a.json"))); // left alone
+        store.BackupOverride = null;
+        service.Update(s => s.Window.FontSize = 20); // the disk still has the old name: memory must not be replaced by it
+        Assert.Equal("Edited", service.Current.Chat.Backends[0].Name);
+        Assert.Contains("Edited", File.ReadAllText(Conn("a.json"))); // and now it is written (with its copy)
     }
 
     // ---- item 3: a connection keeps its own file ---------------------------------------------------

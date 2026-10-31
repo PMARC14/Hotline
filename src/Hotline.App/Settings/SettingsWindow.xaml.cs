@@ -48,8 +48,9 @@ public sealed partial class SettingsWindow : Window
         AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(740 * scale)));
         ApplyTheme();
         _settings.Changed += OnSettingsChanged;
+        _settings.SaveFailed += OnSaveFailed;
         SystemTheme.Changed += OnSettingsChanged;
-        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; SystemTheme.Changed -= OnSettingsChanged; };
+        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 
@@ -66,6 +67,14 @@ public sealed partial class SettingsWindow : Window
     }
 
     private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
+
+    /// <summary>A save left something undone (a file couldn't be backed up or written): said at the top of the page, not only in the log.</summary>
+    private void OnSaveFailed(IReadOnlyList<string> problems) => DispatcherQueue.TryEnqueue(() =>
+        PageHost.Children.Insert(0, new InfoBar
+        {
+            IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
+            Message = string.Join(" ", problems.Take(3)),
+        }));
 
     private void ApplyTheme()
     {
