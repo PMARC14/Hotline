@@ -19,7 +19,11 @@ same files). Comments and trailing commas are allowed.
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
-| `settings.json.bak` | The previous settings.json, kept when Hotline rewrites a file you edited by hand (to add newly available options or to move an old inline `chat.backends` list into `connections\`) |
+| `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
+| `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept whenever Hotline is about to replace a file it did not write itself: a hand edit it rewrites (to add newly available options or to move an old inline `chat.backends` list into `connections\`), a damaged file, or an older run's file. Never overwritten; the newest 10 are kept |
+| `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
+| `connections\<id>.json.<time>.bak` | The previous connection file, kept the same way when Settings rewrites a file you edited by hand (newest 10 per file) |
+| `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it (newest 10) |
 | `toolbar.json.bak`, `toolbar.json.old` | The previous toolbar.json, kept when Settings replaces it (`.bak`: saving the bar; `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it; an archive is never overwritten) |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
@@ -43,10 +47,12 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule. A width you saved yourself is kept |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
 | `window.chatWidthPercent` | `0` | The panel grows this wide (% of the screen, 20-90, clamped to `minWidth`..`maxWidth`) when a chat starts and shrinks back on a new chat, around its centre. `0` = it keeps its width; a value no wider than the opening width does the same |
-| `window.chatWidth` | `null` | The chat width in DIPs; `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
+| `window.chatWidth` | `null` | The chat width in DIPs (kept within `minWidth`..`maxWidth`, as the percentage is); `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
 | `window.backdrop` | `acrylicThin` | `acrylic`, `acrylicThin`, `mica`, `solid` |
+| `window.theme` | `system` | The panel's colours: `system` (follows Windows), `light`, `dark`, `highContrast` (Hotline's own white-on-black; a Windows contrast theme is followed whatever this says) |
+| `window.accent` | `hotline` | The accent colour of the panel (send button, focus line, links) and of the button outline (`toolbar.json` `outline`, when it has no `outlineColor` of its own): `hotline` (Hotline's purple), `windows` (your Windows accent colour) or `#RRGGBB` |
 | `window.tintOpacity` / `luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` / `alwaysOnTop` | `true` / `true` | Hide when you click elsewhere; keep on top |
 | `window.fontSize` / `fontFamily` | Windows default / Segoe UI Variable | Text size (10–32; empty follows Windows' text size) and font |
@@ -74,9 +80,23 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
 
 settings.json is schema version 14. Hotline is pre-1.0 and does not convert older files: a lower or missing `schemaVersion`
-is read as it is (every value checked and clamped) and gets the current version when Settings next saves it; no archive is made. An
-old `activation.copilotKey` entry is dropped then ([copilot-key.md](copilot-key.md)). Connection files and API keys are untouched;
-the one remaining conversion splits an inline `chat.backends` list into `connections\` files (the old file kept as `settings.json.bak`).
+is read as it is (every value checked and clamped) and gets the current version in memory at once. The file itself is rewritten at
+startup when it lacks an option this version has (a missing `schemaVersion` is one) and has no ignored values, and otherwise when
+Settings next saves it; the previous file is first kept as `settings.json.<time>.bak`, and nothing is written if that copy can't be made.
+An old `activation.copilotKey` entry and an old `window.layout` (nothing ever read it) are dropped then ([copilot-key.md](copilot-key.md)).
+Connection files and API keys are untouched; the one remaining conversion splits an inline `chat.backends` list into
+`connections\` files.
+
+**Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and
+that is not exactly what Hotline itself last wrote, it copies it to `<file>.<time>.bak` (never over an older copy; the newest 10 per
+file are kept). If the copy can't be made (disk full, locked) that file is left as it is and the panel and Settings › Advanced list
+the problem. Hotline's own output replacing Hotline's own output makes no copies.
+
+**A connection keeps its file.** A connection is saved back to the file it was read from, whatever that file is called or whatever
+`id` it holds (`mine.json` with `"id": "local"` stays `mine.json`); only a new connection gets `<id>.json` (characters other than
+letters, digits, `-`, `_` and `.` become `-`). Two connections that would share one file (`work a` and `work-a`) are not allowed:
+the second is not saved and a problem is listed. Removing a connection in Settings deletes its own file; a file you drop in
+while Hotline runs is picked up before the next save and is never deleted unless you remove that connection.
 
 ### Broken files
 
@@ -329,8 +349,13 @@ the Windows Credential Locker; enter them again on the new PC, the import lists 
 
 An import only accepts the file names above (anything else, `..` paths and oversized or damaged files refuse the package),
 checks every file's content, adds and replaces files and never deletes. Each file it replaces is first copied to
-`backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. Settings and the bar apply
-live (the file watchers pick the files up); sounds, button rows and quick actions are read on their next use.
+`backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. The content check is the one
+loading uses: a file with a wrong value or a word from a newer version is accepted (the app warns and goes on, as with a hand edit),
+a connection file whose `id` differs from its file name is accepted; only a file that is not a JSON object (or a connection with an
+unknown `type`) is skipped. A folder that can't be listed is reported as left out, not silently empty. The export keeps every file it
+writes importable: a very repetitive text file (which would pass the import's compression-ratio check) is stored uncompressed.
+Settings, connections and the bar (`toolbar.json`) apply live (the file watchers pick the files up); sounds and quick actions are
+read on their next use.
 
 ## Codex
 

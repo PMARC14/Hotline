@@ -89,7 +89,10 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): the first message widens the panel around its centre in the same resize as the
       height; New chat (Ctrl+N) shrinks it back; near a screen edge it slides back inside. With `window.width` set, or after resizing by
       hand, it never widens; the default (0) never widens. Moving the widened panel with Alt keeps its start width.
-- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
+- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings. Type 1 in Chat width (percent): the
+      box shows 20 once saved; type 100 in a fixed width: it shows 320. `chatWidth` 5000 grows to `maxWidth`, not beyond.
+- [ ] Settings › Window › Growth = Full: an empty panel stays a bar (a long draft only fits its text); the first message jumps to the
+      maximum height; after dragging the panel to a height by hand, a new message keeps that height.
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.
@@ -99,6 +102,10 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] Settings › AI connections › Test connection: "Connected: N models, including …"; a wrong key shows the server's message.
 - [ ] 🕘 Recent chats reopens a chat; Ctrl+↑ in an empty box reopens the last one.
 - [ ] Code blocks and tables: Copy buttons work; the whole conversation can be selected in one drag.
+- [ ] A custom button with `"text": "/resume foo"` and `"send": false`: pressing it only puts the text in the box (the history list
+      does not open). Typing `/resume ` yourself still opens the history list.
+- [ ] Provider bar: pick a model while the connection's file is read-only or the app can't save: a notice appears and the picker
+      shows the previous model again (nothing is thrown). Same for the prompt in the "..." menu.
 
 ### Selected text
 - [ ] Select text in Notepad, Edge and Word, press the key → a "Selected text from …" chip; ✕ removes it; sending uses it.
@@ -144,6 +151,14 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       the panel and the settings window follow (Appearance › Theme = System).
 - [ ] Every page opens; changes apply at once and show up in `settings.json`.
 - [ ] AI connections: move a connection up/down → the Provider picker order follows.
+- [ ] AI connections: Max tokens 99999999 or Temperature 5 → the box shows the kept value (1000000 / 2) after you leave it.
+- [ ] Lock a connection file (open it with a tool that denies sharing) and press Remove / Move / Duplicate, or lock a quick-action
+      `.md` and press Delete: a red notice names the problem at the top of the page; Hotline keeps running.
+- [ ] Settings › Advanced › Reset everything with one connection file locked: the others are removed, a yellow notice lists the
+      locked file, and the removed connections' API keys are gone from the Credential Locker (check Settings › AI connections).
+- [ ] Edit a connection file by hand (compact JSON, or a file called `mine.json` holding `"id": "local"`), then change something in
+      Settings: the file keeps its name, and `<file>.<time>.bak` holds your version. Drop a new connection file in and change any
+      setting within a second: the new file is still there.
 
 ### Backup (Settings > Backup)
 - [ ] Export with everything ticked: the save dialog proposes `hotline-settings-<date>-<time>.zip`; the InfoBar shows the path
@@ -153,7 +168,13 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       counts, date and version; Import writes them, the InfoBar shows the counts and "Open backup folder" opens
       `backups\import-<time>`; replaced files are in there.
 - [ ] A connection imported without a key is listed as needing one; the Credential Locker is unchanged.
-- [ ] A renamed/corrupted zip, or one with a changed file inside, is refused with a message and nothing is written.
+- [ ] A renamed/corrupted zip, or one with a changed file inside, is refused with a message and nothing is written; the message and
+      any "Skipped: ..." lines are in the interface language (try German).
+- [ ] Choose a good package, then a corrupted one: after the failure the Import button and the tick boxes of the first package are
+      gone (the old package is not importable). Export over an existing zip while the disk is full or the file is open elsewhere: the
+      old zip is still intact (no `.tmp` is left).
+- [ ] A hand-edited `settings.json` with one wrong value, or a connection file called `renamed.json` holding another `id`, exports
+      and imports without being skipped.
 - [ ] After an import: a changed theme/bar applies at once; a new sound, quick action and button row are usable.
 
 ### First run and support
