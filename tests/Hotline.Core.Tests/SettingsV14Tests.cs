@@ -45,7 +45,7 @@ public sealed class SettingsV14Tests : IDisposable
         Assert.Equal(14, s.SchemaVersion);
         Assert.Equal("Ctrl+Alt+K", s.Activation.FallbackHotkey); // the file was read, not replaced by defaults
         Assert.False(File.Exists(SettingsPath + ".bad"));
-        Assert.Equal(original, File.ReadAllText(SettingsPath + ".bak"));
+        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
         Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
         var rewritten = File.ReadAllText(SettingsPath);
         Assert.DoesNotContain("copilotKey", rewritten, StringComparison.OrdinalIgnoreCase);

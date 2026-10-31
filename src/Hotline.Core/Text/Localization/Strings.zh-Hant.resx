@@ -564,6 +564,9 @@
   <data name="Grip_Tip" xml:space="preserve"><value>拖曳以移動；按一下滑鼠右鍵以儲存此位置</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>聊天高度</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>聊天展開的最大高度。0 = 自動 (即上方的最大高度百分比)。</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>備份</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>

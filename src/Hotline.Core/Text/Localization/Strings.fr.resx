@@ -564,6 +564,9 @@ Refuser :
   <data name="Grip_Tip" xml:space="preserve"><value>Faites glisser pour déplacer ; clic droit pour enregistrer cet emplacement</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Hauteur du chat</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Taille maximale atteinte par le chat. 0 = automatique (le pourcentage de hauteur maximale ci-dessus).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Sauvegarde</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Transférez votre configuration Hotline vers un autre PC ou conservez-en une copie. Une sauvegarde est un fichier .zip unique contenant les éléments cochés ; rien d'autre (historique des discussions, mémoire, journaux) n'est inclus.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Paramètres</value></data>

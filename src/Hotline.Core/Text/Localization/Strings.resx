@@ -570,6 +570,9 @@ Deny:
   <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). Hold Alt and drag a side edge to resize.</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chat height</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>The most the chat grows to. 0 = automatic (the maximum height percentage above).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>

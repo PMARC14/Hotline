@@ -564,6 +564,9 @@
   <data name="Grip_Tip" xml:space="preserve"><value>드래그하여 이동, 마우스 오른쪽 단추로 클릭하여 이 위치 저장</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>채팅 높이</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>채팅이 늘어나는 최대 높이입니다. 0 = 자동(위의 최대 높이 비율).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>백업</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Hotline 설정을 다른 PC로 이동하거나 복사본을 보관하세요. 백업은 선택한 항목만 포함하는 단일 .zip 파일입니다. 그 외의 항목(채팅 기록, 메모리, 로그)은 포함되지 않습니다.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>설정</value></data>

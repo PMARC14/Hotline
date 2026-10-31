@@ -564,6 +564,9 @@
   <data name="Grip_Tip" xml:space="preserve"><value>ドラッグで移動、右クリックでこの位置を保存</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>チャットの高さ</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>チャットの最大拡大サイズ。0 = 自動 (上記の最大高さの割合)。</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>バックアップ</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Hotline の設定を別の PC に移行するか、コピーを保持します。バックアップはチェックした項目のみを含む 1 つの .zip ファイルです。その他のデータ (チャット履歴、メモリ、ログ) は含まれません。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>

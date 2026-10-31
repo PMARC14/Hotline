@@ -181,7 +181,7 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(path, json);
         store.Load();
         Assert.Contains("\"defaultPrompt\"", File.ReadAllText(path));
-        Assert.True(File.Exists(path + ".bak"));
+        Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak")); // timestamped, never over an older copy
     }
 
     [Fact]
@@ -254,7 +254,7 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal("g", Assert.Single(s.Chat.Backends).Id);
         Assert.True(File.Exists(store.ConnectionPath("g")));
         Assert.DoesNotContain("backends", File.ReadAllText(SettingsPath));
-        Assert.True(File.Exists(SettingsPath + ".bak")); // the hand-edited file is still backed up before the rewrite
+        Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak")); // the hand-edited file is still backed up before the rewrite
         Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
     }
 

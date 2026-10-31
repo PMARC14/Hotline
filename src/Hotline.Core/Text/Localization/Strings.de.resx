@@ -564,6 +564,9 @@ Verweigern:
   <data name="Grip_Tip" xml:space="preserve"><value>Ziehen zum Verschieben; Rechtsklick zum Speichern dieser Position</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chathöhe</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maximale Chathöhe. 0 = automatisch (der obige maximale Höhenprozentsatz).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Sicherung</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Übertragen Sie Ihre Hotline-Konfiguration auf einen anderen PC oder behalten Sie eine Kopie. Eine Sicherung ist eine einzelne .zip-Datei mit den ausgewählten Elementen; nichts anderes (Chatverlauf, Speicher, Protokolle) ist enthalten.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Einstellungen</value></data>

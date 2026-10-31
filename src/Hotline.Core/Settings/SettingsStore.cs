@@ -23,13 +23,13 @@ public sealed class SettingsStore(string directory)
 
     private List<string> _mainProblems = [];
     private List<string> _connectionProblems = [];
-    private readonly HashSet<string> _damagedConnectionFiles = new(StringComparer.OrdinalIgnoreCase);
+    private List<string> _writeProblems = [];
 
     /// <summary>
     /// What the last read of settings.json and the connection files ignored or couldn't use (at most 50 sentences each).
     /// Empty when all is well; a successful <see cref="Save"/> clears the part about settings.json.
     /// </summary>
-    public IReadOnlyList<string> SettingsProblems => [.. _mainProblems, .. _connectionProblems];
+    public IReadOnlyList<string> SettingsProblems => [.. _mainProblems, .. _connectionProblems, .. _writeProblems];
 
     /// <summary>Set while settings.json as a whole can't be used (syntax error, not an object): the file is left as it is.</summary>
     public string? SettingsError { get; private set; }
@@ -37,8 +37,39 @@ public sealed class SettingsStore(string directory)
     /// <summary>True when the file on disk has something Save would overwrite: a syntax error or ignored values.</summary>
     public bool SettingsFileDamaged => SettingsError is not null || _mainProblems.Count > 0;
 
-    /// <summary>Ids whose files this store loaded or wrote: only these are ever deleted (when a connection is removed).</summary>
-    private readonly HashSet<string> _ownedIds = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>
+    /// The file each connection was read from or written to (id → full path). A connection is saved back to its own file whatever
+    /// its id looks like (<c>mine.json</c> holding <c>"id": "local"</c> stays <c>mine.json</c>); only a new one is named from its id.
+    /// Only these files are ever deleted, and only for a connection that was removed.
+    /// </summary>
+    private readonly Dictionary<string, string> _sources = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// Files whose current content may be replaced without a copy: what this store wrote or already backed up last
+    /// (full path → text). Anything else on disk (a hand edit, a file from a previous run) is copied to a .bak first.
+    /// </summary>
+    private readonly Dictionary<string, string> _safeToReplace = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>The ids of the connections whose files this store knows (read or written).</summary>
+    public IReadOnlyCollection<string> KnownConnectionIds => [.. _sources.Keys];
+
+    /// <summary>The file a connection was read from or saved to (full path), or null when it has none yet.</summary>
+    public string? SourcePath(string id) => _sources.GetValueOrDefault(id);
+
+    /// <summary>What the last <see cref="Save"/> couldn't do (a file left as it was because it couldn't be backed up or written, two connections for one file).</summary>
+    public IReadOnlyList<string> WriteProblems => _writeProblems;
+
+    /// <summary>The time stamped into backup file names (tests fix it).</summary>
+    public Func<DateTime> Clock { get; set; } = () => DateTime.Now;
+
+    /// <summary>Replaces the copy made before a file is replaced (tests make it fail).</summary>
+    public Action<string>? BackupOverride { get; set; }
+
+    private void MakeBackup(string path)
+    {
+        if (BackupOverride is { } custom) custom(path);
+        else BackupFiles.CopyStamped(path, Clock());
+    }
 
     internal static readonly JsonSerializerOptions ConnectionOptions = new()
     {
@@ -78,7 +109,6 @@ public sealed class SettingsStore(string directory)
             if (s is null) { SettingsError = failure; return null; } // keep what is running; the problem is reported
             var (files, broken) = ReadConnectionFiles();
             BrokenConnectionFiles = broken; // a file broken (or fixed) since start: the next save must leave it alone
-            foreach (var f in files) _ownedIds.Add(f.Id); // a file added while running is ours to delete when its connection is removed
             if (legacy is not null)
                 foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                     files.Add(p);
@@ -96,7 +126,8 @@ public sealed class SettingsStore(string directory)
             var fresh = new HotlineSettings();
             fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order);
             Normalize(fresh);
-            TrySave(fresh);
+            try { Directory.CreateDirectory(ConnectionsDirectory); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+            TrySaveMain(fresh); // connection files already there (settings.json was deleted) stay exactly as they are
             return fresh;
         }
 
@@ -126,12 +157,12 @@ public sealed class SettingsStore(string directory)
             s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
             Normalize(s);
             // The old inline "backends" list (moved into connection files) or newly added options rewrite the file:
-            // every setting stays visible and editable there. The previous file (it may hold comments) is kept as
-            // settings.json.bak. An older schemaVersion alone changes nothing: it is stamped on the next save. A file
-            // with ignored values is not rewritten for new options: the user's wording stays visible until they fix it.
+            // every setting stays visible and editable there. The previous file (it may hold comments) is first copied to
+            // settings.json.<time>.bak; if that copy can't be made the file is left as it is and a problem is reported. An older
+            // schemaVersion alone changes nothing: it is stamped on the next save. A file with ignored values is not rewritten
+            // for new options: the user's wording stays visible until they fix it.
             if (legacy is not null || (_mainProblems.Count == 0 && HasMissingOptions(text, s)))
             {
-                try { File.Copy(FilePath, FilePath + ".bak", overwrite: true); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
                 // Connection files are written only when the old "backends" list moves into them; otherwise they
                 // stay exactly as they are, byte for byte.
                 if (legacy is not null) TrySave(s);
@@ -141,7 +172,12 @@ public sealed class SettingsStore(string directory)
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
-            return new HotlineSettings();
+            // settings.json is locked or unreadable right now: the file stays as it is, the connections are still read and
+            // the problem is reported (a later save keeps a copy of whatever is on disk by then).
+            SettingsError = L.F(Strings.Settings_ProblemUnreadable, FileName, ex.GetType().Name);
+            var fallback = new HotlineSettings();
+            fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
+            return Normalize(fallback);
         }
     }
 
@@ -190,19 +226,28 @@ public sealed class SettingsStore(string directory)
         return found;
     }
 
-    public void Save(HotlineSettings s)
+    /// <summary>
+    /// Writes settings.json and the connection files. A file that exists and would change is first copied to
+    /// <c>&lt;file&gt;.&lt;time&gt;.bak</c> unless it is what this store wrote itself; if that copy can't be made the file is left
+    /// as it is and a problem is reported (<see cref="SettingsProblems"/>). <paramref name="removed"/> names the connections the
+    /// user removed: only their files are deleted (null: every connection this store knows that is no longer in the list).
+    /// </summary>
+    public void Save(HotlineSettings s, IEnumerable<string>? removed = null)
     {
-        SaveCore(s);
-        _mainProblems = []; // a fresh, valid file was just written
-        SettingsError = null;
+        if (SaveCore(s, removed))
+        {
+            _mainProblems = []; // a fresh, valid file was just written
+            SettingsError = null;
+        }
     }
 
-    private void SaveCore(HotlineSettings s)
+    private bool SaveCore(HotlineSettings s, IEnumerable<string>? removed = null, bool connections = true)
     {
+        _writeProblems = [];
         Directory.CreateDirectory(directory);
         s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
-        SaveConnections(s.Chat.Backends);        // first: if this fails, settings.json still has the old list
-        WriteAtomic(FilePath, SerializeMain(s));
+        if (connections) SaveConnections(s.Chat.Backends, removed); // first: if this fails, settings.json still has the old list
+        return ReplaceFile(FilePath, SerializeMain(s));
     }
 
     /// <summary>settings.json content: everything except the connections (they have their own files).</summary>
@@ -224,6 +269,42 @@ public sealed class SettingsStore(string directory)
         File.Move(tmp, path, overwrite: true);
     }
 
+    /// <summary>
+    /// Replaces a file's content. When the file exists with other content and that isn't something this store wrote (or already
+    /// copied), a timestamped .bak copy comes first; without the copy nothing is written. True when the file now holds the
+    /// content; false when it was skipped (a problem is then listed).
+    /// </summary>
+    private bool ReplaceFile(string path, string content)
+    {
+        var full = Path.GetFullPath(path);
+        var name = Path.GetFileName(path);
+        try
+        {
+            if (File.Exists(path))
+            {
+                var current = File.ReadAllText(path);
+                if (current == content) { _safeToReplace[full] = content; return true; }
+                if (!(_safeToReplace.TryGetValue(full, out var safe) && safe == current))
+                {
+                    try { MakeBackup(path); }
+                    catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                    {
+                        _writeProblems.Add(L.F(Strings.Settings_ProblemBackupFailed, name, ex.GetType().Name));
+                        return false;
+                    }
+                }
+            }
+            WriteAtomic(path, content);
+            _safeToReplace[full] = content;
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            _writeProblems.Add(L.F(Strings.Settings_ProblemWriteFailed, name, ex.GetType().Name));
+            return false;
+        }
+    }
+
     // ---- connection files ----------------------------------------------------------------------
 
     public string ConnectionPath(string id) => Path.Combine(ConnectionsDirectory, SafeFileName(id) + ".json");
@@ -240,7 +321,6 @@ public sealed class SettingsStore(string directory)
         var profiles = new List<BackendProfile>();
         var broken = new List<string>();
         var problems = new ReadProblems();
-        _damagedConnectionFiles.Clear();
         _connectionProblems = [];
         if (!Directory.Exists(ConnectionsDirectory)) return (profiles, broken);
         foreach (var file in Directory.EnumerateFiles(ConnectionsDirectory, "*.json").Order(StringComparer.OrdinalIgnoreCase))
@@ -256,10 +336,8 @@ public sealed class SettingsStore(string directory)
                 }
                 using (doc)
                 {
-                    var before = problems.All.Count;
                     var p = LenientReader.ReadProfile(doc!.RootElement, label, problems);
                     if (p is null) { broken.Add(file); continue; } // e.g. an unknown type: never guessed
-                    if (problems.All.Count > before) _damagedConnectionFiles.Add(Path.GetFullPath(file));
                     if (string.IsNullOrWhiteSpace(p.Id)) p.Id = Path.GetFileNameWithoutExtension(file);
                     if (profiles.Any(x => x.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase)))
                     {
@@ -268,6 +346,7 @@ public sealed class SettingsStore(string directory)
                         continue;
                     }
                     profiles.Add(p);
+                    _sources[p.Id] = Path.GetFullPath(file); // saved back to this very file, whatever it is called
                 }
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -287,7 +366,6 @@ public sealed class SettingsStore(string directory)
     {
         var (files, broken) = ReadConnectionFiles();
         BrokenConnectionFiles = broken;
-        foreach (var p in files) _ownedIds.Add(p.Id);
         if (legacy is not null)
             foreach (var p in legacy.Where(p => p is not null && !string.IsNullOrWhiteSpace(p.Id) && files.All(f => !f.Id.Equals(p.Id, StringComparison.OrdinalIgnoreCase))))
                 files.Add(p); // moved into files on the next save
@@ -305,36 +383,52 @@ public sealed class SettingsStore(string directory)
             .ThenBy(p => p.Name, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
-    /// <summary>Writes changed connection files and deletes the files of removed connections (only ones it owns).</summary>
-    private void SaveConnections(List<BackendProfile> profiles)
+    /// <summary>
+    /// Writes changed connection files (each back to the file it was read from; a new connection is named from its id) and
+    /// deletes the files of removed ones. Two connections never share a file: the one that would is not saved and a problem is listed.
+    /// </summary>
+    private void SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed)
     {
         Directory.CreateDirectory(ConnectionsDirectory);
-        var current = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var p in profiles)
+        var snapshot = profiles.ToList(); // other threads read the live list
+        var alive = new HashSet<string>(snapshot.Select(p => p.Id), StringComparer.OrdinalIgnoreCase);
+        var gone = (removed is null ? _sources.Keys.ToList() : removed.ToList())
+            .Where(id => !alive.Contains(id)).ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        // Who gets which file: connections with a file of their own first, then the new ones by their id.
+        var claimed = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var plan = new List<(BackendProfile Profile, string Path)>();
+        foreach (var p in snapshot.OrderBy(p => _sources.ContainsKey(p.Id) ? 0 : 1))
         {
-            var path = ConnectionPath(p.Id);
-            current.Add(p.Id);
-            if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), Path.GetFullPath(path), StringComparison.OrdinalIgnoreCase)))
-                continue; // the user's unreadable file stays exactly as it is
-            var json = JsonSerializer.Serialize(p, ConnectionOptions);
-            if (!File.Exists(path) || File.ReadAllText(path) != json)
+            var path = _sources.TryGetValue(p.Id, out var source) ? source : Path.GetFullPath(ConnectionPath(p.Id));
+            var other = claimed.TryGetValue(path, out var owner) ? owner
+                : _sources.Where(kv => alive.Contains(kv.Key) && !kv.Key.Equals(p.Id, StringComparison.OrdinalIgnoreCase)
+                                       && kv.Value.Equals(path, StringComparison.OrdinalIgnoreCase)).Select(kv => kv.Key).FirstOrDefault();
+            if (other is not null)
             {
-                // A file with ignored values is about to lose them: keep the user's version beside it first.
-                if (_damagedConnectionFiles.Remove(Path.GetFullPath(path)) && File.Exists(path))
-                    File.Copy(path, $"{path}.{DateTime.Now:yyyyMMdd-HHmmss}.bak", overwrite: true);
-                WriteAtomic(path, json);
+                _writeProblems.Add(L.F(Strings.Settings_ProblemSharedFile, LenientReader.Quote(p.Id), LenientReader.Quote(other), Path.GetFileName(path)));
+                continue;
             }
-            _ownedIds.Add(p.Id);
+            claimed[path] = p.Id;
+            plan.Add((p, path));
         }
-        var inUse = new HashSet<string>(profiles.Select(p => Path.GetFullPath(ConnectionPath(p.Id))), StringComparer.OrdinalIgnoreCase);
-        foreach (var id in _ownedIds.Where(id => !current.Contains(id)).ToList())
+
+        foreach (var (p, path) in plan)
         {
-            var path = Path.GetFullPath(ConnectionPath(id));
+            if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
+                continue; // the user's unreadable file stays exactly as it is
+            if (ReplaceFile(path, JsonSerializer.Serialize(p, ConnectionOptions))) _sources[p.Id] = path;
+        }
+
+        foreach (var id in gone)
+        {
+            if (!_sources.TryGetValue(id, out var path)) continue;
             if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
                 continue; // unreadable right now (an editor mid-save): its connection only looks removed; keep owning it
-            if (!inUse.Contains(path)) // two ids can map to one file name: never delete a file a remaining connection uses
+            if (!claimed.ContainsKey(path)) // never delete a file a remaining connection uses
                 try { File.Delete(path); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-            _ownedIds.Remove(id);
+            _sources.Remove(id);
+            _safeToReplace.Remove(path);
         }
     }
 
@@ -376,11 +470,7 @@ public sealed class SettingsStore(string directory)
     /// <summary>Writes settings.json only, leaving every connection file as it is.</summary>
     private void TrySaveMain(HotlineSettings s)
     {
-        try
-        {
-            s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
-            WriteAtomic(FilePath, SerializeMain(s));
-        }
+        try { SaveCore(s, connections: false); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
     }
 

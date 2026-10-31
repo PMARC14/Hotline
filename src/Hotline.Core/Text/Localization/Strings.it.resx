@@ -564,6 +564,9 @@ Nega:
   <data name="Grip_Tip" xml:space="preserve"><value>Trascina per spostare; fai clic con il pulsante destro del mouse per salvare questa posizione</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Altezza della chat</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Altezza massima raggiunta dalla chat. 0 = automatica (la percentuale di altezza massima sopra indicata).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Sposta la configurazione di Hotline su un altro PC o mantienine una copia. Il backup è un singolo file .zip contenente gli elementi selezionati; nient'altro (cronologia chat, memoria, registri) viene incluso.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Impostazioni</value></data>

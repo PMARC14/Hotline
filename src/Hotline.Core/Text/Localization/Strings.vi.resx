@@ -564,6 +564,9 @@ Từ chối:
   <data name="Grip_Tip" xml:space="preserve"><value>Kéo để di chuyển; nhấp chuột phải để lưu vị trí này</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chiều cao đoạn chat</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Mức tối đa đoạn chat có thể mở rộng. 0 = tự động (phần trăm chiều cao tối đa ở trên).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Sao lưu</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Chuyển thiết lập Hotline của bạn sang máy tính khác hoặc giữ một bản sao. Bản sao lưu là một tệp .zip duy nhất chứa các phần bạn đánh dấu; không bao gồm những mục khác (lịch sử trò chuyện, bộ nhớ, nhật ký).</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Cài đặt</value></data>

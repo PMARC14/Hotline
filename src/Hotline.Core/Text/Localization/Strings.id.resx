@@ -564,6 +564,9 @@ Tolak:
   <data name="Grip_Tip" xml:space="preserve"><value>Tarik untuk memindahkan; klik kanan untuk menyimpan posisi ini</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Tinggi obrolan</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Tinggi maksimal bentangan obrolan. 0 = otomatis (persentase tinggi maksimum di atas).</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Cadangan</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Pindahkan konfigurasi Hotline Anda ke PC lain, atau simpan salinannya. Cadangan adalah satu file .zip yang berisi bagian-bagian yang Anda centang; tidak ada hal lain (riwayat obrolan, memori, log) yang disertakan.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Pengaturan</value></data>

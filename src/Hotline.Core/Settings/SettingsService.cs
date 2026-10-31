@@ -21,18 +21,30 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     public event Action<IReadOnlyList<string>>? ConnectionsChanged;
 
     /// <summary>
-    /// Takes settings re-read from disk (the user edited settings.json) into the live objects other components hold.
-    /// Returns false (and raises nothing) when nothing changed, e.g. for Hotline's own saves.
+    /// Settings › Advanced › Reset (see <see cref="SettingsReset"/>), applied live. Never throws for a file problem: what could
+    /// not be backed up, deleted or written is listed in <see cref="ResetResult.Failed"/>.
     /// </summary>
-    /// <summary>Settings › Advanced › Reset (see <see cref="SettingsReset"/>), applied live.</summary>
-    public (string Backup, IReadOnlyList<string> Removed) Reset(bool everything)
+    public ResetResult Reset(bool everything)
     {
-        var result = SettingsReset.Reset(store, Path.GetDirectoryName(store.FilePath)!, Current, everything, DateTimeOffset.Now);
+        ResetResult result;
+        try { result = SettingsReset.Reset(store, Path.GetDirectoryName(store.FilePath)!, Current, everything, DateTimeOffset.Now); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            log.Error("settings reset failed", ex);
+            result = new ResetResult("", [], [ex.GetType().Name]);
+        }
         Reload(store.TryRead() ?? store.Load()); // Load when a scanner held the file a moment
-        log.Info($"settings reset ({(everything ? "everything" : "settings")}); backup in {result.Backup}");
+        log.Info($"settings reset ({(everything ? "everything" : "settings")}); backup in {result.Backup}"
+                 + (result.Failed.Count > 0 ? $"; {result.Failed.Count} file(s) could not be handled" : ""));
         return result;
     }
 
+    /// <summary>
+    /// Takes settings re-read from disk (the user edited settings.json) into the live objects other components hold.
+    /// Returns false (and raises nothing) when nothing changed, e.g. for Hotline's own saves. Always called on the UI thread
+    /// (the file watcher's timer, <see cref="Update"/> from Settings, <see cref="Reset"/>), which is why the live connection
+    /// list is changed in place.
+    /// </summary>
     public bool Reload(HotlineSettings fromDisk)
     {
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
@@ -89,29 +101,30 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     }
 
     private DateTime _knownWriteUtc = DateTime.MinValue;
+    private bool _unsaved; // the last save failed: memory is newer than the disk, so a re-read must not replace it
 
     public void Update(Action<HotlineSettings> change)
     {
-        // A hand edit saved moments ago may not have been reloaded yet (the file watcher debounces): take it in first
-        // so this save doesn't overwrite it.
-        if (File.Exists(store.FilePath) && File.GetLastWriteTimeUtc(store.FilePath) > _knownWriteUtc && store.TryRead() is { } fromDisk)
-            Reload(fromDisk);
+        // A hand edit saved moments ago (settings.json or a connection file) may not have been reloaded yet (the file watcher
+        // debounces): take a fresh snapshot in first, so this save doesn't overwrite it or delete a file that was just added.
+        var fromDisk = store.TryRead(); // once: it re-reads every connection file
+        if (fromDisk is not null && !_unsaved) Reload(fromDisk);
+        var before = Current.Chat.Backends.Select(b => b.Id).ToList();
         change(Current);
         SettingsStore.Normalize(Current);
+        // Only a connection the change removed loses its file; one that merely isn't in memory yet is never deleted.
+        var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var removed = before.Where(id => !kept.Contains(id)).ToList();
         try
         {
-            // The file on disk may be a half-finished hand edit (not valid JSON): keep a copy before replacing it.
-            // Likewise one with ignored values: saving writes those fields out as their defaults.
-            if (File.Exists(store.FilePath) && (store.TryRead() is null || store.SettingsFileDamaged))
-            {
-                var backup = $"{store.FilePath}.{DateTime.Now:yyyyMMdd-HHmmss}.bak";
-                File.Copy(store.FilePath, backup, overwrite: true);
-                log.Info($"settings.json had problems; kept it as {backup} before saving");
-            }
-            store.Save(Current);
-            _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
+            // A file that isn't what this process wrote (a hand edit, half-finished or with ignored values) is copied to
+            // <file>.<time>.bak by the store before it is replaced; without that copy it is left alone and a problem is listed.
+            store.Save(Current, removed);
+            _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
+            if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
+            foreach (var problem in store.WriteProblems) log.Info($"settings: {problem}");
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { log.Error("saving settings failed", ex); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _unsaved = true; log.Error("saving settings failed", ex); }
         Changed?.Invoke();
     }
 }
