@@ -157,7 +157,7 @@ public static class ToolbarEditor
     };
 
     /// <summary>Takes an item off the bar (to "Not shown"); its style override goes with it, as <see cref="ToolbarModel.Resolve"/>
-    /// keeps overrides only for shown items (a picker's span stays: see <see cref="SetPickerSpan"/>).</summary>
+    /// keeps overrides only for shown items (a picker's span and look stay: see <see cref="SetPickerSpan"/>).</summary>
     public static ToolbarModel Hide(ToolbarModel m, string id)
     {
         if (m is null) return m!;
@@ -166,7 +166,7 @@ public static class ToolbarEditor
         var lists = Lists(m);
         lists[at.Quadrant].Remove(at.Id);
         var overrides = Overrides(m);
-        overrides.Remove(at.Id);
+        if (!ToolbarPlan.IsPicker(at.Id)) overrides.Remove(at.Id); // a picker keeps its span and look, shown or not
         // The menu is ignored without a more button, so its entries go back to "Not shown" with it.
         var menu = at.Id == ToolbarModel.MoreId ? [] : m.Menu;
         return Strict(m, With(m, lists) with { Overrides = overrides, Menu = menu });
@@ -221,33 +221,37 @@ public static class ToolbarEditor
         });
     }
 
-    /// <summary>Sets the whole bar's style (<paramref name="id"/> null; unset fields get the defaults) or one shown item's
-    /// override (unset fields inherit; an empty style removes it). The width is <c>Cells</c> (0.5, 1, 2, 3 or 4; anything
-    /// else is read back as unset); every button stays one cell high. The pickers take no styles.</summary>
+    /// <summary>Sets the whole bar's style (<paramref name="id"/> null; unset fields get the defaults) or one item's override (unset
+    /// fields inherit; an empty style removes it). The width is <c>Width</c> in cells (0.5, 1, 2, 3 or 4; anything else is read back
+    /// as unset); every button stays one cell high. A shown button takes any field; a picker (shown or not) takes the look only (outline,
+    /// outline colour, filled): its width is its span, so a width given for it is dropped.</summary>
     public static ToolbarModel SetStyle(ToolbarModel m, string? id, ButtonStyle s)
     {
         if (m is null || s is null) return m!;
         if (id is null) return Lenient(m, m with { Style = s }, null);
-        if (Placed(m, id) is not { } at || ToolbarModel.Pickers.Contains(at.Id)) return m;
         var overrides = Overrides(m);
-        if (s == new ButtonStyle()) overrides.Remove(at.Id);
-        else overrides[at.Id] = s;
+        string key;
+        if (ToolbarModel.Pickers.FirstOrDefault(p => p.Equals(id, StringComparison.OrdinalIgnoreCase)) is { } picker) { key = picker; s = s with { Width = null }; }
+        else if (Placed(m, id) is { } at) key = at.Id;
+        else return m;
+        if (s == new ButtonStyle()) overrides.Remove(key);
+        else overrides[key] = s;
         return Lenient(m, m with { Overrides = overrides }, null);
     }
 
-    /// <summary>The whole bar's size choice: every button gets <paramref name="size"/>, so the bar's <c>cells</c> and the items' own sizes
-    /// and <c>cells</c> are cleared (their other override keys stay; an override left empty goes). Unchanged: the input.</summary>
-    public static ToolbarModel SetBarSize(ToolbarModel m, ButtonSize size)
+    /// <summary>The whole bar's width choice: every button gets <paramref name="width"/> cells (0.5, 1, 2, 3 or 4), so the items' own
+    /// widths are cleared (their other override keys stay; an override left empty goes). Any other width, or no change: the input.</summary>
+    public static ToolbarModel SetBarSize(ToolbarModel m, double width)
     {
-        if (m is null || !Enum.IsDefined(size)) return m!;
+        if (m is null || !ToolbarModel.IsCells(width)) return m!;
         var overrides = Overrides(m);
         foreach (var (id, style) in overrides.ToList())
-            if (style.Size is not null || style.Cells is not null)
+            if (style.Width is not null)
             {
-                if (style with { Size = null, Cells = null } is var rest && rest == new ButtonStyle()) overrides.Remove(id);
+                if (style with { Width = null } is var rest && rest == new ButtonStyle()) overrides.Remove(id);
                 else overrides[id] = rest;
             }
-        return Lenient(m, m with { Style = m.Style with { Size = size, Cells = null }, Overrides = overrides }, null);
+        return Lenient(m, m with { Style = m.Style with { Width = width }, Overrides = overrides }, null);
     }
 
     /// <summary>Sets a picker's width in button widths (clamped to 1-8; shown or not: a hidden picker keeps it). A span equal to

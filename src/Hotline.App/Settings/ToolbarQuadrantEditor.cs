@@ -21,7 +21,7 @@ namespace Hotline.App.Settings;
 /// The "..." button's box (toolbar.json "menu", the more item's menu) is a fourth kind of place: a card of its own above "Not shown", with a
 /// button that fills it from the buttons the bar currently drops into the overflow.
 /// UI Automation ids: quadrant-&lt;topleft|…&gt;, quadrant-menu (the box), bar-fill-menu, bar-menu-&lt;id&gt; (move to the box), bar-notshown, bar-item-&lt;id&gt; (the pickers too: effort, model, provider),
-/// bar-move-&lt;left|right&gt;-&lt;id&gt;, bar-shift-&lt;up|down|left|right&gt;-&lt;id&gt;, bar-hide-&lt;id&gt;, bar-style-&lt;id&gt; (its flyout: bar-look-&lt;size|width|height|outline|filled|reset&gt;),
+/// bar-move-&lt;left|right&gt;-&lt;id&gt;, bar-shift-&lt;up|down|left|right&gt;-&lt;id&gt;, bar-hide-&lt;id&gt;, bar-style-&lt;id&gt; (its flyout: bar-look-&lt;width|outline|outline-color|filled|reset&gt;; a picker's has no width),
 /// bar-span-&lt;picker&gt; (a picker's width, 1x-8x), bar-show-&lt;id&gt;, bar-size, bar-outline, bar-filled, bar-custom-add, bar-custom-edit-&lt;id&gt;, bar-custom-delete-&lt;id&gt;.
 /// </summary>
 internal sealed partial class ToolbarQuadrantEditor : StackPanel
@@ -432,7 +432,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     {
         var name = ItemName(_model, unit.Id);
         var top = q is Quadrant.TopLeft or Quadrant.TopCenter or Quadrant.TopRight;
-        // A picker's chip carries its width box; it takes no styles, so it has no style button.
+        // A picker's chip carries its width box (the span); its style button has the look only (outline, colour, filled).
         UIElement title = unit.IsPicker
             ? Chip(new StackPanel
             {
@@ -451,7 +451,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         buttons.Children.Add(SmallButton("\uE72A", Strings.Bar_ToRight, name, "bar-shift-right-" + unit.Id, unit.CanShiftRight, m => ToolbarEditor.ShiftTo(m, unit.Id, Shift.Right), unit.Id, item));
         if (ToolbarEditorView.CanMoveToMenu(_model, unit.Id))
             buttons.Children.Add(SmallButton("", Strings.Bar_ToMenu, name, "bar-menu-" + unit.Id, true, m => ToolbarEditor.MoveToMenu(m, unit.Id, int.MaxValue), unit.Id, "quadrant-" + Key(q)));
-        if (!unit.IsPicker) buttons.Children.Add(StyleButton(unit.Id, name));
+        buttons.Children.Add(StyleButton(unit.Id, name, unit.IsPicker)); // a picker's flyout has the look only: its width is the span box
         buttons.Children.Add(SmallButton("\uE711", Strings.Bar_Remove, name, "bar-hide-" + unit.Id, true, m => ToolbarEditor.Hide(m, unit.Id), unit.Id, "quadrant-" + Key(q)));
         var listItem = Item(unit.Id, item, name, new StackPanel { Spacing = 4, Children = { title, buttons } });
         listItem.PreviewKeyDown += (_, e) => OnItemKey(unit.Id, item, e);

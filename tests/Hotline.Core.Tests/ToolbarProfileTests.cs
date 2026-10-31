@@ -13,16 +13,17 @@ public sealed class ToolbarProfileTests
     private const double Eps = 1e-9;
     private static readonly double[] Widths = [320, 400, 680, 1000, 1600];
     private static readonly string[] AllPickers = ["effort", "model", "provider"];
+    private static readonly double[] BarWidths = [0.5, 1, 2];
 
     public static TheoryData<string> Names => [.. ToolbarProfiles.All.Select(p => p.Name)];
 
-    public static TheoryData<string, ButtonSize> NamesAndSizes =>
-        [.. ToolbarProfiles.All.SelectMany(p => Enum.GetValues<ButtonSize>().Select(s => (p.Name, s)))];
+    public static TheoryData<string, double> NamesAndSizes =>
+        [.. ToolbarProfiles.All.SelectMany(p => BarWidths.Select(s => (p.Name, s)))];
 
-    private static ToolbarModel Sized(string name, ButtonSize size)
+    private static ToolbarModel Sized(string name, double size)
     {
         var m = ToolbarModel.Resolve(ToolbarProfiles.Named(name).Json);
-        return m with { Style = m.Style with { Size = size } };
+        return m with { Style = m.Style with { Width = size } };
     }
 
     private static ToolbarPlan.RowLayout Plan(ToolbarModel m, bool top, double room, IReadOnlyCollection<string>? available = null) =>
@@ -80,7 +81,7 @@ public sealed class ToolbarProfileTests
 
     [Theory]
     [MemberData(nameof(NamesAndSizes))]
-    public void Every_row_is_planned_without_losing_anything(string name, ButtonSize size)
+    public void Every_row_is_planned_without_losing_anything(string name, double size)
     {
         var m = Sized(name, size);
         foreach (var top in new[] { true, false })
@@ -124,7 +125,7 @@ public sealed class ToolbarProfileTests
 
     [Theory]
     [MemberData(nameof(NamesAndSizes))]
-    public void Picker_widths_stay_within_their_spans_and_hide_in_order(string name, ButtonSize size)
+    public void Picker_widths_stay_within_their_spans_and_hide_in_order(string name, double size)
     {
         var m = Sized(name, size);
         var specs = ToolbarPlan.PickerSpecs(m, AllPickers).ToDictionary(s => s.Name);
@@ -159,7 +160,7 @@ public sealed class ToolbarProfileTests
 
     [Theory]
     [MemberData(nameof(NamesAndSizes))]
-    public void The_row_stays_in_the_room_except_for_the_documented_overshoot(string name, ButtonSize size)
+    public void The_row_stays_in_the_room_except_for_the_documented_overshoot(string name, double size)
     {
         var m = Sized(name, size);
         foreach (var top in new[] { true, false })
@@ -188,7 +189,7 @@ public sealed class ToolbarProfileTests
 
     [Theory]
     [MemberData(nameof(NamesAndSizes))]
-    public void Planning_is_repeatable_and_more_room_never_hides_what_was_shown(string name, ButtonSize size)
+    public void Planning_is_repeatable_and_more_room_never_hides_what_was_shown(string name, double size)
     {
         var m = Sized(name, size);
         foreach (var top in new[] { true, false })
@@ -224,7 +225,7 @@ public sealed class ToolbarProfileTests
 
     [Theory]
     [MemberData(nameof(NamesAndSizes))]
-    public void Resolve_of_the_sized_bar_is_stable(string name, ButtonSize size)
+    public void Resolve_of_the_sized_bar_is_stable(string name, double size)
     {
         var m = Sized(name, size);
         Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
@@ -233,15 +234,34 @@ public sealed class ToolbarProfileTests
 
     // ---- what the interesting layouts promise ----
 
+    [Fact]
+    public void The_two_look_profiles_style_the_pickers_and_read_without_warnings()
+    {
+        var outlined = ToolbarModel.Resolve(ToolbarProfiles.Named("outlined-pickers").Json);
+        Assert.Empty(outlined.Warnings);
+        Assert.Equal(new ButtonStyle(null, true, false, null), outlined.EffectiveStyle("provider"));
+        Assert.Equal(new ButtonStyle(null, true, true, "#E81123"), outlined.EffectiveStyle("effort"));
+        Assert.Equal(new ButtonStyle(null, false, false, null), outlined.EffectiveStyle("model"));
+
+        var filled = ToolbarModel.Resolve(ToolbarProfiles.Named("filled-outlined-bar").Json);
+        Assert.Empty(filled.Warnings);
+        Assert.Equal(new ButtonStyle(null, true, true, "#0078D4"), filled.EffectiveStyle("effort"));
+        Assert.Equal(new ButtonStyle(null, true, false, "#0078D4"), filled.EffectiveStyle("provider"));
+        Assert.Equal(2, filled.EffectiveSpan("provider"));
+        Assert.Equal(0.5, filled.EffectiveStyle("pin").Width);
+        Assert.Equal(3, filled.EffectiveStyle("prompt").Width);
+    }
+
+
     // The span times one standard button width is the width, whatever the bar size, and spare room never grows a picker past it.
     [Theory]
-    [InlineData("default", ButtonSize.Compact, true, 1000, 120, 160, 160)]
-    [InlineData("default", ButtonSize.Normal, true, 1000, 120, 160, 160)]
-    [InlineData("default", ButtonSize.Wide, true, 1000, 120, 160, 160)]
-    [InlineData("spans-all-1", ButtonSize.Normal, false, 1600, 40, 40, 40)]
-    [InlineData("spans-all-8", ButtonSize.Normal, true, 1800, 320, 320, 320)]
-    [InlineData("spans-mixed", ButtonSize.Normal, false, 1800, 40, 160, 320)]
-    public void Spans_set_the_picker_widths(string name, ButtonSize size, bool top, double room, double effort, double model, double provider)
+    [InlineData("default", 0.5, true, 1000, 120, 160, 160)]
+    [InlineData("default", 1, true, 1000, 120, 160, 160)]
+    [InlineData("default", 2, true, 1000, 120, 160, 160)]
+    [InlineData("spans-all-1", 1, false, 1600, 40, 40, 40)]
+    [InlineData("spans-all-8", 1, true, 1800, 320, 320, 320)]
+    [InlineData("spans-mixed", 1, false, 1800, 40, 160, 320)]
+    public void Spans_set_the_picker_widths(string name, double size, bool top, double room, double effort, double model, double provider)
     {
         var f = Plan(Sized(name, size), top, room);
         Assert.Equal((effort, model, provider), (f.PickerWidths["effort"], f.PickerWidths["model"], f.PickerWidths["provider"]));
@@ -253,7 +273,7 @@ public sealed class ToolbarProfileTests
     [InlineData("custom-24-wide-pickers-bottom-centre")]
     public void Pickers_in_the_centre_count_both_flexible_columns(string name)
     {
-        var m = Sized(name, ButtonSize.Normal);
+        var m = Sized(name, 1);
         Assert.All(ToolbarPlan.Row(m, top: false).Center, id => Assert.True(ToolbarPlan.IsPicker(id) || m.Buttons.Any(b => b.Id == id)));
         Assert.Contains(ToolbarPlan.Row(m, top: false).Center, ToolbarPlan.IsPicker);
         foreach (var room in Sweep(to: 2000, step: 5))
@@ -270,7 +290,7 @@ public sealed class ToolbarProfileTests
     [Fact]
     public void The_empty_bar_renders_nothing_and_does_not_throw()
     {
-        var m = Sized("empty-bar", ButtonSize.Normal);
+        var m = Sized("empty-bar", 1);
         Assert.Empty(Enum.GetValues<Quadrant>().SelectMany(m.Items));
         Assert.Empty(m.Warnings);
         foreach (var top in new[] { true, false })
@@ -288,7 +308,7 @@ public sealed class ToolbarProfileTests
     [Fact]
     public void A_group_over_the_cap_is_cut_at_40_read_without_unknown_ids_and_repeats()
     {
-        var m = Sized("all-items-in-one-group", ButtonSize.Normal);
+        var m = Sized("all-items-in-one-group", 1);
         Assert.Equal(36, m.Items(Quadrant.BottomLeft).Count); // of 40 read, 3 unknown ids and 1 repeat were dropped; 7 past the cap never read
         Assert.Equal(36, m.Items(Quadrant.BottomLeft).Distinct().Count());
         Assert.Contains(m.Warnings, w => w.Contains("more than 40"));
@@ -305,7 +325,7 @@ public sealed class ToolbarProfileTests
             [Quadrant.BottomLeft] = ["pin", "prompt"], // dropped first, before any right button
             [Quadrant.BottomRight] = [.. ids, "settings", "effort", "model", "provider"],
         };
-        var m = ToolbarModel.Defaults with { Placed = placed, Buttons = custom, Style = new ButtonStyle(ButtonSize.Wide) };
+        var m = ToolbarModel.Defaults with { Placed = placed, Buttons = custom, Style = new ButtonStyle(2) };
         var f = Plan(m, top: false, 680);
         var buttons = ids.Append("settings").ToList();
         Assert.Equal(0, f.Fit.LeftShown);
@@ -323,16 +343,16 @@ public sealed class ToolbarProfileTests
     }
 
     [Theory]
-    [InlineData(ButtonSize.Compact)]
-    [InlineData(ButtonSize.Normal)]
-    [InlineData(ButtonSize.Wide)]
-    public void The_24_custom_profiles_show_readable_pickers_at_680_and_320(ButtonSize size)
+    [InlineData(0.5)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void The_24_custom_profiles_show_readable_pickers_at_680_and_320(double size)
     {
         foreach (var name in new[] { "custom-24-pickers-bottom", "custom-24-wide-pickers-bottom-centre" })
             foreach (var room in new double[] { 680, 400, 320 })
             {
                 // A wide bar at 320: one 80-DIP right button, the 80-DIP "⋯" button and the pickers' 212 do not fit together.
-                if (size == ButtonSize.Wide && room == 320) continue;
+                if (size == 2 && room == 320) continue;
                 var f = Plan(Sized(name, size), top: false, room);
                 var specs = ToolbarPlan.PickerSpecs(Sized(name, size), AllPickers).ToDictionary(s => s.Name);
                 Assert.True(f.Used <= room + Eps, $"{name} {size} {room}: {f.Used}");
@@ -345,7 +365,7 @@ public sealed class ToolbarProfileTests
     [Fact]
     public void A_right_group_that_fits_exactly_is_unchanged()
     {
-        var m = Sized("only-right-group", ButtonSize.Normal);
+        var m = Sized("only-right-group", 1);
         var roomy = Plan(m, top: false, 1000);
         Assert.Empty(roomy.RightDropped);
         // Shrunk to the room the whole row needs (the pickers at their minimums): no button moves.
@@ -358,7 +378,7 @@ public sealed class ToolbarProfileTests
     [Fact]
     public void A_picker_that_is_not_available_takes_no_room_and_the_others_keep_theirs()
     {
-        var m = Sized("pickers-bottom-left-after", ButtonSize.Normal);
+        var m = Sized("pickers-bottom-left-after", 1);
         var f = Plan(m, top: false, 1600, ["model", "provider"]);
         Assert.Equal(0, f.PickerWidths["effort"]);
         Assert.Equal((160.0, 160.0), (f.PickerWidths["model"], f.PickerWidths["provider"]));

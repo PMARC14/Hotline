@@ -68,10 +68,9 @@ public static class ToolbarPlan
 
     /// <summary>
     /// The size of an icon button, from the base (<see cref="BaseWidth"/> x <see cref="BaseHeight"/>, glyph <see cref="BaseFont"/>).
-    /// Every button is exactly one cell high, whatever its size or <c>cells</c>, built-in or custom, so a row is as high as one
-    /// cell. Its width is <see cref="WidthCells"/> cells: compact half a cell (glyph 0.8 times the base's), normal one, wide two (the
-    /// same glyph as normal); a valid <c>cells</c> value (0.5, 1, 2, 3 or 4) wins over the size. The renderer and every fit
-    /// measure through here, so what is drawn is what was fitted.
+    /// Every button is exactly one cell high, whatever its width, built-in or custom, so a row is as high as one cell. Its width is
+    /// <see cref="WidthCells"/> cells (0.5, 1, 2, 3 or 4); a half-cell button gets a glyph 0.8 times the base's. The renderer and
+    /// every fit measure through here, so what is drawn is what was fitted.
     /// </summary>
     public static ButtonMetrics Metrics(ButtonStyle style) => Metrics(style, BaseWidth, BaseHeight, BaseFont);
 
@@ -79,14 +78,11 @@ public static class ToolbarPlan
     public static ButtonMetrics Metrics(ButtonStyle style, double baseWidth, double baseHeight, double baseFont)
     {
         var cells = WidthCells(style);
-        // A half-cell button gets the smaller glyph, however it got to be half a cell.
         return new ButtonMetrics(Math.Round(baseWidth * cells), baseHeight, cells < 1 ? Math.Round(baseFont * 0.8) : baseFont);
     }
 
-    /// <summary>How many cells wide a style draws: its <c>cells</c> when that is one of <see cref="ToolbarModel.CellChoices"/>, else
-    /// its size's width (compact 0.5, normal 1, wide 2; an unknown size is normal).</summary>
-    public static double WidthCells(ButtonStyle style) =>
-        style.Cells is { } c && ToolbarModel.IsCells(c) ? c : style.Size switch { ButtonSize.Compact => 0.5, ButtonSize.Wide => 2, _ => 1 };
+    /// <summary>How many cells wide a style draws: its <c>Width</c> when that is one of <see cref="ToolbarModel.CellChoices"/>, else 1.</summary>
+    public static double WidthCells(ButtonStyle style) => style.Width is { } c && ToolbarModel.IsCells(c) ? c : 1;
 
     /// <summary>The size of a placed item: its effective style (custom buttons are sized like the built-in ones).</summary>
     public static ButtonMetrics Metrics(ToolbarModel model, string id) => Metrics(model.EffectiveStyle(id));

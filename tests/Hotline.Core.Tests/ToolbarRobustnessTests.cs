@@ -54,10 +54,10 @@ public sealed class ToolbarRobustnessTests
     }
 
     private static ButtonStyle RandomStyle(Random r, bool bar) => new(
-        r.Next(4) == 0 && !bar ? null : Enum.GetValues<ButtonSize>()[r.Next(Enum.GetValues<ButtonSize>().Length)],
+        // In memory: Metrics must ignore a width Resolve would have dropped.
+        r.Next(4) == 0 && !bar ? null : new[] { 0.5, 1, 2, 3, 4, 0.5, 1, 2, 0, 5, 1.3, -2 }[r.Next(12)],
         r.Next(3) == 0 ? null : r.Next(2) == 0,
         r.Next(3) == 0 ? null : r.Next(2) == 0,
-        r.Next(3) == 0 ? new[] { 0.5, 1, 2, 3, 4, 0, 5, 1.3, -2 }[r.Next(9)] : null, // in memory: Metrics must ignore what Resolve would have
         r.Next(3) == 0 ? "#E81123" : null);
 
     /// <summary>A random bar built in memory (as Settings and the self-test do): up to 24 custom buttons, every built-in
@@ -205,34 +205,33 @@ public sealed class ToolbarRobustnessTests
     }
 
     [Fact]
-    public void Every_size_and_cells_value_is_exactly_one_cell_high_for_built_in_and_custom_buttons()
+    public void Every_width_value_is_exactly_one_cell_high_for_built_in_and_custom_buttons()
     {
-        foreach (var size in new ButtonSize?[] { null, ButtonSize.Compact, ButtonSize.Normal, ButtonSize.Wide })
-            foreach (var cells in new double?[] { null, 0.5, 1, 2, 3, 4, 0, 5, 1.3, double.NaN })
-            {
-                var style = new ButtonStyle(size, Cells: cells);
-                var m = ToolbarPlan.Metrics(style);
-                Assert.Equal(ToolbarPlan.BaseHeight, m.Height);
-                Assert.InRange(m.Width, MinWidth, MaxWidth);
-                Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(style, 70, 36, 30).Height);
-            }
+        foreach (var width in new double?[] { null, 0.5, 1, 2, 3, 4, 0, 5, 1.3, double.NaN })
+        {
+            var style = new ButtonStyle(width);
+            var m = ToolbarPlan.Metrics(style);
+            Assert.Equal(ToolbarPlan.BaseHeight, m.Height);
+            Assert.InRange(m.Width, MinWidth, MaxWidth);
+            Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(style, 70, 36, 30).Height);
+        }
     }
 
     [Fact]
     public void Resolve_of_24_custom_buttons_at_their_widest_on_a_wide_bar_stays_within_limits()
     {
         var buttons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "label": "C{{i}}", "text": "t" } """));
-        var overrides = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "size": "wide", "cells": 4, "height": 80 } """));
+        var overrides = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 4, "height": 80 } """));
         var ids = string.Join(", ", Enumerable.Range(1, 24).Select(i => $"\"c{i}\""));
         var m = ToolbarModel.Resolve($$"""
             { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] }, "items": { "left": [{{ids}}], "right": ["settings"] },
-              "style": { "size": "wide", "cells": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
+              "style": { "width": "wide", "cells": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
             """);
         Assert.Equal(24, m.Buttons.Count);
         AssertMetricsInRange(m);
         var widest = new ButtonMetrics(4 * ToolbarPlan.BaseWidth, ToolbarPlan.BaseHeight, ToolbarPlan.BaseFont);
         Assert.All(m.Buttons, b => Assert.Equal(widest, ToolbarPlan.Metrics(m, b.Id)));
-        // The bar's invalid cells are ignored: the wide size applies; the height stays one cell.
+        // The bar's old cells key is ignored next to its width: wide applies; the height stays one cell.
         Assert.Equal(new ButtonMetrics(2 * ToolbarPlan.BaseWidth, ToolbarPlan.BaseHeight, ToolbarPlan.BaseFont), ToolbarPlan.Metrics(m, "settings"));
     }
 

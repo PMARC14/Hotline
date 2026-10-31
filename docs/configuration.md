@@ -213,7 +213,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
              "center": ["prompt", "continueIn"],
              "right": ["recent", "newChat", "settings"] },
   "menu": [],
-  "style": { "size": "normal", "outline": false, "filled": false },
+  "style": { "width": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
   "buttons": {
     "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize" },
@@ -227,32 +227,37 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 | `top`, `items` | Objects with `left`, `center` (optional) and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below) |
 | `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order |
-| `style` | The look of the whole bar: `size` (`compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour), `cells` (the width in cells: 0.5, 1, 2, 3 or 4) |
-| `overrides` | Per item id: the same `size`, `cells`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. For a picker only `span`. The placed `more` button takes overrides like any item |
+| `style` | The look of the whole bar: `width` (the button width in cells: 0.5, 1, 2, 3 or 4, or the words `compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour) |
+| `overrides` | Per item id: the same `width`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. A picker takes `span` (its width), `outline`, `outlineColor` and `filled`, never `width`. The placed `more` button takes overrides like any item |
 | `buttons` | Your own buttons, by id (below) |
 
-**Cells and sizes.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). Every button is **one cell high**, always,
-built-in or custom, so every row is 36 DIPs high. `compact` is half a cell across (20 × 36, icon 13), `normal` one cell (40 × 36),
-`wide` two cells across (80 × 36, the same icon 16 as normal). `cells` (0.5, 1, 2, 3 or 4) sets the width in cells and wins over `size`
-(any other value is ignored with a warning and the size's width applies); an item's own `size` beats a `cells` set on the bar. The size
-is the cell's whole size, padding included: cells touch with no gap, and the visible button is the cell less 1 DIP on each side (a normal button
-shows 38 × 34, so neighbours are 2 DIPs apart). So two normal buttons are as wide as one wide or four compact ones, and a row is the sum of its
-cells. `width` and `height` keys from older files are no longer used: they are ignored with one warning per file. The automatic "..." button is
-always one cell (40 × 36), whatever the bar's size. In Settings the bar's size shows **Custom** while the widths drawn are not all one of the three
-sizes (some button has its own `cells` or size, or the bar's `cells` is 3 or 4); picking a size there clears the bar's and every button's own `cells`
-and size. A button's flyout has **Width (cells)** with 0.5, 1, 2, 3 and 4.
+**Width.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). Every button is **one cell high**, always,
+built-in or custom, so every row is 36 DIPs high. One key, `width`, says how many cells across a button is: 0.5, 1, 2, 3 or 4 (20 to 160 DIPs;
+the icon is 13 for half a cell and 16 otherwise). The words `compact`, `normal` and `wide` are shortcuts for 0.5, 1 and 2 (Hotline writes the
+word for those three and a number for 3 and 4). An item's own `width` beats the bar's, which beats the default of 1 cell. Any other value
+(a word that is none of the three, a number outside the five, or the DIP numbers of older files such as 80) is ignored with a warning and the
+default width applies. Files from before this key was one still load: `size` (the three words) and `cells` (the numbers) are read as
+old names of `width`, silently; if an entry has both `width` and one of them, `width` wins and one warning says so. Saving from Settings writes `width`
+only. A `height` key is not used (ignored with one warning per file). The width is the cell's whole size, padding included: cells touch with no gap, and the
+visible button is the cell less 1 DIP on each side (a normal button shows 38 × 34, so neighbours are 2 DIPs apart). So two normal buttons are as wide as one
+wide or four compact ones, and a row is the sum of its cells. The automatic "..." button is always one cell (40 × 36), whatever the bar's width. In
+Settings the bar's **Width** list and each button's flyout offer Compact, Normal, Wide, 3 cells and 4 cells (a button's also "Like the whole bar");
+the bar's list shows **Custom** while some button's width differs from the bar's, and picking a width there clears every button's own width.
 The bar's room is the panel's width less its padding (10 DIPs on every side).
 
 **Outline.** `"outline": true` draws a 1.5-DIP border in the accent colour (a contrast theme: the system highlight colour) or in
 `outlineColor` (`#` and six hex digits; anything else is ignored with a warning). With `filled` a button keeps both its background and outline.
+The pickers take the same three keys (`outline`, `outlineColor`, `filled`) from the bar's `style` and from their own `overrides` entry, per key
+(own entry, then the bar, then false), so an outlined bar outlines the drop-downs too, in the same colour and 1.5 DIPs thick, drawn inside their
+height; `filled` gives a drop-down the background a filled button has. A picker's width is not part of this: it stays its `span`.
 
 **Pickers.** `effort`, `model` and `provider` are three independent items: each can sit in any group of either row, between any
 buttons, and be moved, hidden or sized on its own. An id listed twice is shown at its first place (bottom left, bottom center, bottom
-right, top left, top center, top right). Pickers ignore `style`. A picker is one cell high like a button (its drop-down is 34 DIPs high with the 1 DIP inset). Their width is `span` cells of 40 DIPs (1-8, whatever the bar's size);
-`span` is the only `overrides` key a picker takes (anything else is dropped with a warning):
+right, top left, top center, top right). Pickers take the bar's look (`outline`, `outlineColor`, `filled`) but not its `width`. A picker is one cell high like a button (its drop-down is 34 DIPs high with the 1 DIP inset). Their width is `span` cells of 40 DIPs (1-8, whatever the bar's width);
+`span` and the three look keys are the only `overrides` keys a picker takes (anything else, such as `width`, is dropped with a warning):
 
 ```jsonc
-"overrides": { "model": { "span": 6 }, "effort": { "span": 1 } }
+"overrides": { "model": { "span": 6 }, "effort": { "span": 1, "outline": true, "outlineColor": "#E81123" } }
 ```
 
 | Picker | Default `span` | Width (DIPs) | Narrowest before it hides (outer width) |
@@ -261,7 +266,7 @@ right, top left, top center, top right). Pickers ignore `style`. A picker is one
 | `model` | 4 | 160 | 84 |
 | `provider` | 4 | 160 | 72 |
 
-A span equal to the default is not written to the file (the shipped file has no picker entries in `overrides`).
+A span equal to the default is not written to the file (the shipped file has no picker entries in `overrides`). A picker's look is kept for a hidden picker too, like its span.
 
 A span is a maximum as well as the preferred width (the drop-down itself is 1 DIP narrower on each side). In a short row the pickers
 shrink evenly down to the narrowest width (never past their own width); when that is not enough they hide one at a time: `effort`,
@@ -285,7 +290,7 @@ monitor the panel would open on and the live width) and moves what would overflo
 when something really overflows; a bar that fits is left as it is.
 
 **Reference layouts.** `ToolbarProfiles` holds complete `toolbar.json` examples, tried automatically at every panel width and bar size
-and drawn by the panel's self-test (steps P01-P45); use any as a starting point:
+and drawn by the panel's self-test (steps P01-P47); use any as a starting point:
 
 | Name | What it shows |
 |---|---|
@@ -297,7 +302,8 @@ and drawn by the panel's self-test (steps P01-P45); use any as a starting point:
 | `pickers-apart-corners`, `picker-between-buttons`, `pickers-one-per-row-right` | pickers placed one by one: effort top left, model top right, provider bottom centre; one picker between buttons; one in each row's right group |
 | `more-menu-bottom-right-with-5-items`, `more-menu-top-centre-with-overflow`, `more-in-both-rows` | `more` last in the bottom-right group with five buttons in its menu; `more` in the top-centre group with its row's overflow merging in; one row with `more` beside a crowded row that keeps its automatic "..." |
 | `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 cells wide; spans 1, 4 and 8 |
-| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact (half a cell) or wide (two cells), every button one cell high; a different size or `cells` on several buttons |
+| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact (half a cell) or wide (two cells), every button one cell high; a different `width` on several buttons |
+| `outlined-pickers`, `filled-outlined-bar` | the bar's outline on, so the drop-downs are outlined too (one in its own colour and filled, one switched off); a filled, blue-outlined bar with filled drop-downs (one not filled) |
 | `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |
 | `only-pickers`, `only-right-group`, `all-items-in-one-group` | a row of pickers only; a right group only; every possible item (36) in one group |
 | `empty-bar`, `damaged-file` | an explicitly empty bar; a damaged file that still renders |
@@ -317,7 +323,7 @@ and drawn by the panel's self-test (steps P01-P45); use any as a starting point:
   2000 characters) is put in the message box, and `"send": true` also sends it.
 - Nothing else can be run from a button: no URLs, files, programs or shell commands.
 
-**Limits.** At most 24 custom buttons and 40 items per group. An unknown `size` becomes `normal`; labels lose control characters.
+**Limits.** At most 24 custom buttons and 40 items per group. An invalid `width` is ignored (one cell); labels lose control characters.
 
 **A hand-edited file.** Comments and trailing commas are allowed. A bad value is replaced by its default alone, a key written twice
 uses the last, and the rest of the file still applies. An unknown id, an id that isn't text, or an item in two places is ignored (the

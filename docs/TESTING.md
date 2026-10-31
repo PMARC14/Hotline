@@ -52,8 +52,12 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] Drag a button inside a group, to another group, and to "Not shown" and back: the panel's bar follows within a second. Drop on an
       empty group and between two buttons. Drag one picker: only it moves.
 - [ ] The arrow buttons on a button and Alt+arrow / Ctrl+arrow give the same moves.
-- [ ] Bar look: compact, normal and wide; outline and filled (light, dark, a Windows contrast theme); one button with its own look;
-      "Use bar look" resets it. Hiding a styled button and showing it again keeps its look.
+- [ ] Bar look: Width compact, normal, wide, 3 and 4 cells (one list); outline and filled (light, dark, a Windows contrast theme); one button
+      with its own look; "Use bar look" resets it. Hiding a styled button and showing it again keeps its look.
+- [ ] Outline on the whole bar outlines the three drop-downs too, in the same colour (accent or `outlineColor`) and thickness, and they keep
+      their height; hover, press and open each: the outline stays and the usual hover/press background shows. Filled on the bar fills them like
+      the buttons. A picker's own style button (next to its width box) offers Outline, Outline color and Filled, no width; an override
+      (`"model": { "outline": false }`) switches one off; an old `toolbar.json` with `"style": { "size": "normal" }` loads with no warning.
 - [ ] Add a custom button that runs a quick action and one that inserts text (with and without Send): both work; delete the quick
       action's file → a notice, not a crash. A button called "Spacer" gets another id. A custom button with a PNG picture shows it.
 - [ ] Narrow the panel to 320 DIP with many buttons: what doesn't fit moves into a "..." menu; widen it: they come back; Pin, Prompt and
@@ -87,11 +91,12 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] Padding is 10 DIPs on all four sides; the Alt grips still sit on the outer edge.
 - [ ] The default panel is about a quarter of the screen wide (460 DIP at 1920 px, 100%) and the default bar fits it: nothing in the
       "..." menu, three pickers filling the top row.
-- [ ] Every row is one cell (36 DIP) high whatever the sizes (compact, wide, `cells` 0.5-4, custom buttons); pickers are as tall as buttons
-      (the self-test checks both after every look step and logs `selftest FAILED` otherwise).
+- [ ] Every row is one cell (36 DIP) high whatever the widths (compact, wide, `width` 0.5-4, custom buttons, outlined or filled pickers); pickers are as tall as
+      buttons and carry the bar's outline (the self-test checks all of it after every look step, P46 and P47 included, and logs `selftest FAILED` otherwise).
 - [ ] The Accent swatch (and "Like the bar") in Settings › Button rows matches the outline colour drawn on the bar (Hotline purple by default;
       the Windows accent when the theme matches it; a contrast theme's highlight).
-- [ ] A button's flyout offers Width (cells) 0.5-4; the bar size shows Custom when widths differ and picking a size resets them.
+- [ ] A button's flyout offers one Width list (Like the whole bar, Compact, Normal, Wide, 3 cells, 4 cells); the bar's Width list shows Custom when
+      widths differ and picking a width resets them.
 - [ ] Buttons and drop-downs line up on one grid: one button `wide`, or four `compact`, and the rows above and below still end at the
       same edges; touching items show a 2 DIP gap; compact buttons still show their icon.
 - [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): the first message widens the panel around its centre in the same resize as the

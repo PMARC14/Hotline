@@ -94,15 +94,15 @@ public static class ToolbarProfiles
             overrides: "{ \"effort\": { \"span\": 1 }, \"model\": { \"span\": 4 }, \"provider\": { \"span\": 8 } }")),
 
         new("all-compact", Doc("Every button half a cell wide (compact), one cell high; the pickers keep their size, bottom left after the buttons.",
-            Group($"{Buttons}, {Pickers}"), style: "{ \"size\": \"compact\" }")),
+            Group($"{Buttons}, {Pickers}"), style: "{ \"width\": \"compact\" }")),
 
         new("all-wide", Doc("Every button two cells wide (wide), one cell high; the pickers keep their size, in the top row.",
-            Group(Buttons), top: Group(Pickers), style: "{ \"size\": \"wide\" }")),
+            Group(Buttons), top: Group(Pickers), style: "{ \"width\": \"wide\" }")),
 
-        new("mixed-button-sizes", Doc("A different size or width in cells on several buttons (all one cell high), pickers bottom left after them.",
+        new("mixed-button-sizes", Doc("A different width on several buttons (all one cell high), pickers bottom left after them.",
             Group($"{Buttons}, {Pickers}"),
-            overrides: "{ \"pin\": { \"size\": \"compact\" }, \"captureWindow\": { \"size\": \"wide\" }, \"captureScreen\": { \"cells\": 4 }, "
-                       + "\"prompt\": { \"size\": \"wide\", \"outline\": true }, \"settings\": { \"cells\": 0.5 }, \"recent\": { \"cells\": 3, \"size\": \"compact\" } }")),
+            overrides: "{ \"pin\": { \"width\": \"compact\" }, \"captureWindow\": { \"width\": \"wide\" }, \"captureScreen\": { \"width\": 4 }, "
+                       + "\"prompt\": { \"width\": 2, \"outline\": true }, \"settings\": { \"width\": 0.5 }, \"recent\": { \"width\": 3 } }")),
 
         new("custom-24-pickers-bottom", Doc("Twenty-four custom buttons and the pickers in the bottom row: pickers in the middle of the left group.",
             Group($"\"pin\", {CustomIds(12)}, {Pickers}, {string.Join(", ", Enumerable.Range(13, 12).Select(i => $"\"c{i}\""))}", right: "\"settings\""),
@@ -110,7 +110,7 @@ public static class ToolbarProfiles
 
         new("custom-24-wide-pickers-bottom-centre", Doc("Twenty-four custom buttons, each two cells wide (wide), around the pickers in the bottom-centre group.",
             Group(CustomIds(8), Pickers, string.Join(", ", Enumerable.Range(9, 16).Select(i => $"\"c{i}\"")) + ", \"settings\""),
-            style: "{ \"size\": \"wide\" }", buttons: CustomButtons(24))),
+            style: "{ \"width\": \"wide\" }", buttons: CustomButtons(24))),
 
         new("only-pickers", Doc("Nothing but the three pickers, bottom left.",
             Group(Pickers))),
@@ -141,14 +141,23 @@ public static class ToolbarProfiles
             top: Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\", \"newChat\"", right: "\"settings\""),
             buttons: CustomButtons(12), menu: "\"c12\"")),
 
+        // The dropdowns take the bar's outline and fill (the look keys; their width is the span).
+        new("outlined-pickers", Doc("The bar's outline on, so the three pickers are outlined too; effort is red and filled by its own override, model is not outlined.",
+            Group(Buttons), top: Group(Pickers), style: "{ \"outline\": true }",
+            overrides: "{ \"effort\": { \"outlineColor\": \"#E81123\", \"filled\": true }, \"model\": { \"outline\": false } }")),
+
+        new("filled-outlined-bar", Doc("Every button and picker outlined in blue and filled, mixed widths, the pickers bottom left after the buttons.",
+            Group($"{Buttons}, {Pickers}"), style: "{ \"outline\": true, \"filled\": true, \"outlineColor\": \"#0078D4\" }",
+            overrides: "{ \"pin\": { \"width\": \"compact\" }, \"prompt\": { \"width\": 3 }, \"provider\": { \"span\": 2, \"filled\": false } }")),
+
         new("damaged-file",
             """
-            // A damaged file that still renders: wrong types, repeated keys, unknown ids, bad sizes and spans.
+            // A damaged file that still renders: wrong types, repeated keys, unknown ids, bad widths and spans.
             { "version": 2,
               "items": { "left": ["pin", 5, null, "bogus", "pin", "model", ["x"]], "left": ["settings", "effort", "NEWCHAT", "provider", "ok"], "right": "settings" },
               "top": [ "pin" ],
-              "style": { "size": "huge", "outline": "yes", "width": "wide", "cells": 1.3, "outlineColor": "red" },
-              "overrides": { "model": { "span": 99, "outline": true }, "effort": { "span": "2" }, "nobody": 3, "pin": { "height": 5000, "cells": "wide" }, "provider": { "span": 6 } },
+              "style": { "width": "huge", "size": "wide", "outline": "yes", "cells": 1.3, "outlineColor": "red" },
+              "overrides": { "model": { "span": 99, "outline": true, "width": 2 }, "effort": { "span": "2" }, "nobody": 3, "pin": { "height": 5000, "width": 80, "cells": "wide" }, "provider": { "span": 6 } },
               "buttons": { "Bad Id!": { "label": "x", "text": "t" }, "ok": { "label": "OK", "text": "hi" }, "both": { "quickAction": "a", "text": "b" } },
               "unknown": [1, 2, 3] }
             """),

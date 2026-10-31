@@ -70,7 +70,7 @@ public sealed class ToolbarFileTests : IDisposable
     [Fact]
     public void V2_file_with_a_bad_value_loads_and_is_not_rewritten()
     {
-        var text = ToolbarModel.Defaults.ToJson().Replace("\"size\": \"normal\"", "\"size\": 7");
+        var text = ToolbarModel.Defaults.ToJson().Replace("\"width\": \"normal\"", "\"width\": 7");
         Assert.NotEqual(ToolbarModel.Defaults.ToJson(), text);
         File.WriteAllText(File_, text);
         var before = File.ReadAllBytes(File_);
@@ -106,7 +106,7 @@ public sealed class ToolbarFileTests : IDisposable
     [Fact]
     public void Save_then_Load_equals_the_model_and_a_file_this_process_wrote_is_not_copied_again()
     {
-        var model = ToolbarModel.Defaults with { Style = new ButtonStyle(ButtonSize.Wide, true, false, 3) };
+        var model = ToolbarModel.Defaults with { Style = new ButtonStyle(3, true, false) };
         ToolbarFile.Save(File_, model);
         ToolbarFile.Save(File_, model);
         ToolbarFile.Save(File_, ToolbarModel.Defaults);
@@ -125,7 +125,7 @@ public sealed class ToolbarFileTests : IDisposable
         File.WriteAllText(File_, handEdited);
 
         ToolbarFile.Save(File_, ToolbarModel.Defaults);
-        ToolbarFile.Save(File_, ToolbarModel.Defaults with { Style = new ButtonStyle(ButtonSize.Wide) });
+        ToolbarFile.Save(File_, ToolbarModel.Defaults with { Style = new ButtonStyle(2) });
         ToolbarFile.Save(File_, ToolbarModel.Defaults); // the editor's later edits replace Hotline's own writes
 
         var copy = Assert.Single(Backups());

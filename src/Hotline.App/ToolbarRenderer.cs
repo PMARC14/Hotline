@@ -70,7 +70,13 @@ internal sealed class ToolbarRenderer
         // Every item is a cell of the grid with its padding inside (ToolbarPlan.CellGap / CellInset): the rows have no column gap.
         popup.TopToolbar.ColumnSpacing = popup.Toolbar.ColumnSpacing = ToolbarPlan.CellGap;
         // A picker is as tall as a button: the cell's height less the inset (PopupWindow.xaml's ComboBox styles carry the same value).
-        foreach (var picker in _pickers.Values) (picker.Margin, picker.Height) = (new Thickness(ToolbarPlan.CellInset), ToolbarPlan.Inner(ToolbarPlan.BaseHeight));
+        foreach (var (id, picker) in _pickers)
+        {
+            (picker.Margin, picker.Height) = (new Thickness(ToolbarPlan.CellInset), ToolbarPlan.Inner(ToolbarPlan.BaseHeight));
+            OwnLookBrushes(id, picker);
+        }
+        // A theme change (light, dark, contrast) changes the fill the filled look takes from the theme's button brush.
+        popup.Root.ActualThemeChanged += (_, _) => { if (Model is { } m) Restyle(m); };
         _top = new Row(popup.TopToolbar, MoreButton());
         _bottom = new Row(popup.Toolbar, MoreButton());
         _top.More.Flyout = OverflowMenu(() => _top);
@@ -121,7 +127,7 @@ internal sealed class ToolbarRenderer
             var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
-        // The look, after placing; only values that differ are set. The pickers take none of it (their widths are ProviderBar's).
+        // The look, after placing; only values that differ are set. The pickers take the outline and fill but not the width (that is ProviderBar's).
         // Sizes come from the same Metrics as Fit's widths (every button one cell high), so what is drawn is what was fitted.
         Restyle(model);
         Model = model;
@@ -233,8 +239,9 @@ internal sealed class ToolbarRenderer
         var accent = AccentOutline();
         foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
         foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
-        // The automatic "⋯" button is always one cell (BaseWidth x one cell high), whatever the bar's size or cells.
-        var overflowStyle = model.Style with { Size = ButtonSize.Normal, Cells = null };
+        foreach (var (id, box) in _pickers) ApplyPickerStyle(id, box, model.EffectiveStyle(id), accent);
+        // The automatic "⋯" button is always one cell (BaseWidth x one cell high), whatever the bar's width.
+        var overflowStyle = model.Style with { Width = 1 };
         ApplyStyle(_top.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
         ApplyStyle(_bottom.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
     }
@@ -268,6 +275,47 @@ internal sealed class ToolbarRenderer
             if (button.ReadLocalValue(Control.BorderThicknessProperty) != DependencyProperty.UnsetValue) button.ClearValue(Control.BorderThicknessProperty);
         }
     }
+
+    // ---- the pickers' look ----
+
+    /// <summary>Each picker's own fill and outline brushes. They are the picker's Background and BorderBrush for good, and also stand in
+    /// for the theme brushes of its fill and border states (the picker's own resources), so the look survives hover, press and focus:
+    /// a look change is a change of the brushes' colours (transparent = no look), never of the control's template or states.</summary>
+    private readonly Dictionary<string, (SolidColorBrush Fill, SolidColorBrush Outline)> _pickerBrushes = [];
+
+    private static readonly Windows.UI.Color NoColor = Windows.UI.Color.FromArgb(0, 0, 0, 0);
+
+    private void OwnLookBrushes(string id, ComboBox box)
+    {
+        var (fill, outline) = (new SolidColorBrush(NoColor), new SolidColorBrush(NoColor));
+        _pickerBrushes[id] = (fill, outline);
+        box.Background = fill;
+        box.BorderBrush = outline;
+        // The bar's pickers have transparent theme brushes for these states (PopupWindow.xaml); their own take the look instead.
+        // Hover and press keep the theme's own background (ComboBoxBackgroundPointerOver / Pressed).
+        foreach (var key in new[] { "ComboBoxBackground", "ComboBoxBackgroundFocused", "ComboBoxBackgroundUnfocused" }) box.Resources[key] = fill;
+        foreach (var key in new[] { "ComboBoxBorderBrush", "ComboBoxBorderBrushPointerOver", "ComboBoxBorderBrushPressed", "ComboBoxBorderBrushFocused" }) box.Resources[key] = outline;
+    }
+
+    /// <summary>A picker's outline (colour, or the accent; <see cref="OutlineThickness"/> inside its fixed height) and fill (the theme's button
+    /// background, like a filled button). Only values that differ are set.</summary>
+    private void ApplyPickerStyle(string id, ComboBox box, ButtonStyle style, Windows.UI.Color accent)
+    {
+        if (!_pickerBrushes.TryGetValue(id, out var brushes)) return;
+        var fill = style.Filled == true ? FillColor() : NoColor;
+        if (brushes.Fill.Color != fill) brushes.Fill.Color = fill;
+        var outline = style.Outline == true
+            ? style.OutlineColor is { } hex && ThemeColor.TryParse(hex, out var c) ? Windows.UI.Color.FromArgb(0xFF, c.R, c.G, c.B) : accent
+            : NoColor;
+        if (brushes.Outline.Color != outline) brushes.Outline.Color = outline;
+        var thickness = style.Outline == true ? OutlineThickness : new Thickness(0);
+        if (box.BorderThickness != thickness) box.BorderThickness = thickness;
+    }
+
+    /// <summary>The colour the filled buttons have (the theme's ButtonBackground), for a filled picker.</summary>
+    private static Windows.UI.Color FillColor() =>
+        Application.Current.Resources.TryGetValue("ButtonBackground", out var v) && v is SolidColorBrush { Color: var c } ? c
+        : Windows.UI.Color.FromArgb(0x30, 0x80, 0x80, 0x80);
 
     /// <summary>The default outline colour: <see cref="ToolbarAccent"/> (shared with Settings' swatches).</summary>
     private Windows.UI.Color AccentOutline() => ToolbarAccent.Resolve(_accent);

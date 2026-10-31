@@ -241,28 +241,35 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                 foreach (var (box, id) in new[] { (popup.EffortBox, "effort"), (popup.ModelBox, "model"), (popup.ProviderBox, "provider") })
                     if (box.Visibility == Microsoft.UI.Xaml.Visibility.Visible && box.ActualHeight > 0 && Math.Abs(box.ActualHeight - ToolbarPlan.Inner(ToolbarPlan.BaseHeight)) > 0.5)
                         log.Error($"selftest FAILED: {name}: the {id} picker is {box.ActualHeight} high, a button is {ToolbarPlan.Inner(ToolbarPlan.BaseHeight)}");
+                // The outline is the bar's look for the picker: 1.5 DIP drawn inside its height, none when it has no outline.
+                foreach (var (box, id) in new[] { (popup.EffortBox, "effort"), (popup.ModelBox, "model"), (popup.ProviderBox, "provider") })
+                {
+                    var wanted = popup.ToolbarModel.EffectiveStyle(id).Outline == true ? 1.5 : 0;
+                    if (Math.Abs(box.BorderThickness.Left - wanted) > 0.01)
+                        log.Error($"selftest FAILED: {name}: the {id} picker's border is {box.BorderThickness.Left}, not {wanted}");
+                }
             }
             var customButtons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$"""
                 "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
                 """));
             var customIds = string.Concat(Enumerable.Range(1, 24).Select(i => $", \"c{i}\""));
-            await Look("9-wide-outline", Bar("""{ "size": "wide", "outline": true }"""), 720);
-            await Look("10-compact-filled", Bar("""{ "size": "compact", "filled": true }"""), 720);
+            await Look("9-wide-outline", Bar("""{ "width": "wide", "outline": true }"""), 720);
+            await Look("10-compact-filled", Bar("""{ "width": "compact", "filled": true }"""), 720);
             // 24 custom buttons: at the narrowest width the left ones go into the ⋯ menu; wider they come back (no layout cycle either way).
             await Look("11-custom-720", Bar("{}", customIds, customButtons), 720);
             await Look("12-custom-320", Bar("{}", customIds, customButtons), 320);
             await Look("13-custom-1000", Bar("{}", customIds, customButtons), 1000);
             await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
             // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
-            await Look("15-damaged-file", Bar("""{ "size": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
-            // Wide (two cells across, one cell high) at the narrowest width: the left buttons go into the ⋯ menu (one cell); then mixed sizes.
-            await Look("16-wide-320", Bar("""{ "size": "wide", "outline": true }"""), 320);
-            await Look("17-mixed-sizes-720", Bar("""{ "size": "normal" }""", overrides: """ "pin": { "size": "compact" }, "prompt": { "size": "wide" } """), 720);
+            await Look("15-damaged-file", Bar("""{ "width": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
+            // Wide (two cells across, one cell high) at the narrowest width: the left buttons go into the ⋯ menu (one cell); then mixed widths.
+            await Look("16-wide-320", Bar("""{ "width": "wide", "outline": true }"""), 320);
+            await Look("17-mixed-widths-720", Bar("""{ "width": "normal" }""", overrides: """ "pin": { "width": "compact" }, "prompt": { "width": "wide" } """), 720);
             // Custom buttons at their widest (4 cells) on a wide bar: still one cell high (ToolbarPlan.Metrics).
-            var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "cells": 4 } """));
-            await Look("18-custom-4-cells-320", Bar("""{ "size": "wide" }""", customIds, customButtons, biggest), 320);
+            var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 4 } """));
+            await Look("18-custom-4-cells-320", Bar("""{ "width": "wide" }""", customIds, customButtons, biggest), 320);
             // A coloured outline bar-wide, and one item in another colour.
-            await Look("19-outline-colour", Bar("""{ "size": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            await Look("19-outline-colour", Bar("""{ "width": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
             // Items in the left, centre and right groups of both rows.
             await Look("20-centre-group", """
                 { "version": 2, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
@@ -290,8 +297,10 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             foreach (var name in new[] { "pickers-apart-corners", "picker-between-buttons", "pickers-one-per-row-right" }) await Profile(name, 680);
             // The more button and its box (P32-P34): five user entries, the row's overflow merged into the box, a crowded top row beside a more row.
             foreach (var name in new[] { "more-menu-bottom-right-with-5-items", "more-menu-top-centre-with-overflow", "more-in-both-rows" }) await Profile(name, 680);
-            // The shipped width (11 buttons, 460 DIP) too: the default layout and the size extremes there (P35 on).
+            // The shipped width (11 buttons, 460 DIP) too: the default layout and the width extremes there (P35-P45).
             foreach (var name in mixing.Concat(["default", "all-compact", "all-wide", "mixed-button-sizes"])) await Profile(name, (int)ToolbarPlan.WidthForButtons(11));
+            // The dropdowns take the bar's outline and fill (P46, P47): checked by CheckGrid (their height, their border) and by eye in the snapshots.
+            foreach (var name in new[] { "outlined-pickers", "filled-outlined-bar" }) await Profile(name, 680);
             popup.ApplyToolbar(userBar);
             popup.ResizeOffscreen(720);
             await Step("looks restored");

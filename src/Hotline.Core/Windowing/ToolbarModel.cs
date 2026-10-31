@@ -9,16 +9,11 @@ namespace Hotline.Core.Windowing;
 /// <summary>Where an item sits. The declaration order decides which place keeps an item listed in two.</summary>
 public enum Quadrant { BottomLeft, BottomCenter, BottomRight, TopLeft, TopCenter, TopRight }
 
-/// <summary>The size presets: compact, normal and wide are half, one and two cells across; every button is one cell high
-/// (see <see cref="ToolbarPlan.Metrics(ButtonStyle)"/>).</summary>
-public enum ButtonSize { Compact, Normal, Wide }
-
 /// <summary>The look of the whole bar or of one item; a null field inherits (item, then bar, then the defaults).
-/// <see cref="Cells"/> is the width in cells (0.5, 1, 2, 3 or 4; a button is always one cell high) and wins over <see cref="Size"/>;
-/// it applies to icon buttons only, pickers ignore all of it. <see cref="OutlineColor"/> is a validated
-/// "#RRGGBB" (upper case) for the outline, null for the accent colour.</summary>
-public sealed record ButtonStyle(ButtonSize? Size = null, bool? Outline = null, bool? Filled = null, double? Cells = null,
-    string? OutlineColor = null);
+/// <see cref="Width"/> is the width in cells (0.5, 1, 2, 3 or 4; a button is always one cell high) and applies to icon
+/// buttons only: a picker takes the look (<see cref="Outline"/>, <see cref="OutlineColor"/>, <see cref="Filled"/>) but its
+/// width is its span. <see cref="OutlineColor"/> is a validated "#RRGGBB" (upper case) for the outline, null for the accent colour.</summary>
+public sealed record ButtonStyle(double? Width = null, bool? Outline = null, bool? Filled = null, string? OutlineColor = null);
 
 /// <summary>A user-defined button: runs the quick action of that name (a file in actions\) or inserts <see cref="Text"/>
 /// in the message box (and sends it when <see cref="Send"/>). Exactly one of the two is set. <see cref="IconFile"/> is
@@ -50,11 +45,17 @@ public sealed record ToolbarModel(
     public const int MaxId = 32;
     private const int MaxLabel = 40, MaxText = 2000, MaxActionName = 64;
 
-    /// <summary>The widths in cells a button can have (toolbar.json "cells"); a cell is <see cref="ToolbarPlan.BaseWidth"/> wide.</summary>
+    /// <summary>The widths in cells a button can have (toolbar.json "width"); a cell is <see cref="ToolbarPlan.BaseWidth"/> wide.</summary>
     public static readonly IReadOnlyList<double> CellChoices = [0.5, 1, 2, 3, 4];
 
     /// <summary>Whether <paramref name="cells"/> is one of <see cref="CellChoices"/>.</summary>
     public static bool IsCells(double cells) => CellChoices.Contains(cells);
+
+    /// <summary>The words that stand for a width: compact 0.5, normal 1, wide 2 cells.</summary>
+    private static readonly (string Word, double Cells)[] WidthWords = [("compact", 0.5), ("normal", 1), ("wide", 2)];
+
+    /// <summary>The word of a width (compact, normal, wide) or null for 3 and 4 cells and for anything else.</summary>
+    public static string? WidthWord(double cells) => WidthWords.FirstOrDefault(w => w.Cells == cells).Word;
 
     /// <summary>A warning's text in the current language (<see cref="Resolve"/> stays pure: the text is the only thing that varies).</summary>
     private static string W(string format, params object[] args) => L.F(format, args);
@@ -94,7 +95,7 @@ public sealed record ToolbarModel(
             Quadrant.TopRight => ["provider"],
             _ => [],
         }),
-        new ButtonStyle(ButtonSize.Normal, false, false),
+        new ButtonStyle(1, false, false),
         new Dictionary<string, ButtonStyle>(StringComparer.OrdinalIgnoreCase),
         [],
         []);
@@ -104,17 +105,16 @@ public sealed record ToolbarModel(
 
     public IReadOnlyList<string> Items(Quadrant quadrant) => Placed.TryGetValue(quadrant, out var items) ? items : [];
 
-    /// <summary>The style of one item, per field: its override, else the bar's style, else the defaults. The width follows the
-    /// order override <c>cells</c> &gt; override <c>size</c> &gt; bar <c>cells</c> &gt; bar <c>size</c>: an item's own size beats a
-    /// bar-level <c>cells</c> (the bar's cells are inherited only while the item sets neither).</summary>
+    /// <summary>The style of one item, per field: its override, else the bar's style, else the defaults (the width: override, else
+    /// bar, else 1 cell). A picker gets the look only, its width is null (a picker's width is its span).</summary>
     public ButtonStyle EffectiveStyle(string id)
     {
         var o = Overrides.GetValueOrDefault(id);
+        var picker = Pickers.Contains(id, StringComparer.OrdinalIgnoreCase);
         return new ButtonStyle(
-            o?.Size ?? Style.Size ?? Defaults.Style.Size,
+            picker ? null : o?.Width ?? Style.Width ?? Defaults.Style.Width,
             o?.Outline ?? Style.Outline ?? Defaults.Style.Outline,
             o?.Filled ?? Style.Filled ?? Defaults.Style.Filled,
-            o?.Cells ?? (o?.Size is null ? Style.Cells : null),
             o?.OutlineColor ?? Style.OutlineColor);
     }
 
@@ -221,7 +221,7 @@ public sealed record ToolbarModel(
         var overrides = ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings, out var spans);
         return new ToolbarModel(
             Layout(q => placed[q]),
-            style with { Size = style.Size ?? ButtonSize.Normal, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
+            style with { Width = style.Width ?? 1, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
             overrides,
             buttons,
             warnings) { PickerSpans = spans, Menu = menu };
@@ -359,13 +359,16 @@ public sealed record ToolbarModel(
         var seenPickers = new HashSet<string>();
         foreach (var (key, value) in all)
         {
-            // A picker takes one key, "span" (its width in button widths), whether or not it is shown.
+            // A picker takes "span" (its width in button widths) and the look keys, whether or not it is shown.
             if (Pickers.FirstOrDefault(p => p.Equals(key, StringComparison.OrdinalIgnoreCase)) is { } picker)
             {
                 if (!seenPickers.Add(picker)) { warnings.Add(W(Strings.BarW_OverrideTwice, picker)); continue; }
                 if (value is not JsonObject own) { warnings.Add(W(Strings.BarW_PickerSpanOnly, picker)); continue; }
-                if (own.Any(p => p.Key != "span")) warnings.Add(W(Strings.BarW_PickerNoStyles, picker));
+                if (own.Any(p => p.Key is not ("span" or "outline" or "outlineColor" or "filled"))) warnings.Add(W(Strings.BarW_PickerNoStyles, picker));
                 if (own.ContainsKey("span") && Span(own["span"], picker, warnings) is { } span && span != DefaultSpan(picker)) picked[picker] = span;
+                var look = new ButtonStyle(null, Bool(own["outline"], $"overrides.{picker}.outline", warnings), Bool(own["filled"], $"overrides.{picker}.filled", warnings),
+                    Color(own["outlineColor"], $"overrides.{picker}.outlineColor", warnings));
+                if (look != new ButtonStyle()) overrides[picker] = look;
                 continue;
             }
             if (!ids.TryGetValue(key, out var id)) { warnings.Add(W(Strings.BarW_OverrideNotShown, Clean(key, MaxLabel, false))); continue; }
@@ -384,23 +387,52 @@ public sealed record ToolbarModel(
         return null;
     }
 
-    /// <summary>A style object; a bad field is left null (inherit) with a warning, except an unknown size, which is normal.</summary>
+    /// <summary>A style object; a bad field is left null (inherit) with a warning. The width is <c>width</c> (a number 0.5, 1, 2, 3 or 4, or
+    /// the word compact, normal or wide); <c>size</c> (the words) and <c>cells</c> (the numbers) are read as its old names, silently, but
+    /// <c>width</c> wins when both are there (one warning).</summary>
     private static ButtonStyle ReadStyle(JsonNode? node, string where, List<string> warnings)
     {
         if (node is null) return new ButtonStyle();
         if (node is not JsonObject o) { warnings.Add(W(Strings.BarW_Object, where)); return new ButtonStyle(); }
-        ButtonSize? size = null;
+        if (o.ContainsKey("height")) { var gone = W(Strings.BarW_WidthHeightGone); if (!warnings.Contains(gone)) warnings.Add(gone); }
+        return new ButtonStyle(ReadWidth(o, where, warnings), Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
+            Color(o["outlineColor"], $"{where}.outlineColor", warnings));
+    }
+
+    private static double? ReadWidth(JsonObject o, string where, List<string> warnings)
+    {
+        if (o["width"] is { } widthNode)
+        {
+            if (WidthOf(widthNode, true, true) is { } w)
+            {
+                if (o.ContainsKey("size") || o.ContainsKey("cells")) warnings.Add(W(Strings.BarW_WidthAlias, where));
+                return w;
+            }
+            warnings.Add(W(Strings.BarW_WidthBad, where + ".width", Show(widthNode)));
+        }
+        // The old names: cells (numbers) won over size (words) when an item had both.
+        double? result = null;
+        if (o["cells"] is { } cellsNode)
+        {
+            result = WidthOf(cellsNode, false, true);
+            if (result is null) warnings.Add(W(Strings.BarW_CellsBad, where + ".cells", Show(cellsNode)));
+        }
         if (o["size"] is { } sizeNode)
         {
-            size = sizeNode is JsonValue v && v.TryGetValue<string>(out var s)
-                ? Enum.GetValues<ButtonSize>().Cast<ButtonSize?>().FirstOrDefault(z => z.ToString()!.Equals(s, StringComparison.OrdinalIgnoreCase))
-                : null;
+            var size = WidthOf(sizeNode, true, false);
             if (size is null) warnings.Add(W(Strings.BarW_SizeBad, where + ".size", Show(sizeNode)));
-            size ??= ButtonSize.Normal;
+            result ??= size;
         }
-        if (o.ContainsKey("width") || o.ContainsKey("height")) { var gone = W(Strings.BarW_WidthHeightGone); if (!warnings.Contains(gone)) warnings.Add(gone); }
-        return new ButtonStyle(size, Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
-            Cells(o["cells"], $"{where}.cells", warnings), Color(o["outlineColor"], $"{where}.outlineColor", warnings));
+        return result;
+    }
+
+    /// <summary>A width in cells from a JSON value: one of <see cref="CellChoices"/> as a number, or compact, normal or wide as a word; null otherwise.</summary>
+    private static double? WidthOf(JsonNode node, bool words, bool numbers)
+    {
+        if (node is not JsonValue v) return null;
+        if (numbers && v.TryGetValue<double>(out var d) && IsCells(d)) return d;
+        if (words && v.TryGetValue<string>(out var s) && WidthWords.FirstOrDefault(x => x.Word.Equals(s, StringComparison.OrdinalIgnoreCase)) is { Word: not null } hit) return hit.Cells;
+        return null;
     }
 
     /// <summary>"#RRGGBB" in upper case, or null (the accent colour) for anything else: never a name, markup or a brush.</summary>
@@ -420,15 +452,6 @@ public sealed record ToolbarModel(
         if (node is null) return null;
         if (node is JsonValue v && v.TryGetValue<bool>(out var b)) return b;
         warnings.Add(W(Strings.BarW_BoolBad, where, Show(node)));
-        return null;
-    }
-
-    /// <summary>A width in cells: 0.5, 1, 2, 3 or 4 (a JSON number), else a warning and null (the size's width applies).</summary>
-    private static double? Cells(JsonNode? node, string where, List<string> warnings)
-    {
-        if (node is null) return null;
-        if (node is JsonValue v && v.TryGetValue<double>(out var d) && IsCells(d)) return d;
-        warnings.Add(W(Strings.BarW_CellsBad, where, Show(node)));
         return null;
     }
 
@@ -458,14 +481,17 @@ public sealed record ToolbarModel(
 
     private static string Str(string s) => JsonSerializer.Serialize(s, WriteOptions);
 
-    private static string StyleText(ButtonStyle s) => "{ " + string.Join(", ", new[]
+    /// <summary>The key-value texts of a style: the width as its word for 0.5, 1 and 2 cells and as a number for 3 and 4 (a width that is none of them is left out).</summary>
+    private static IEnumerable<string> StyleParts(ButtonStyle s)
     {
-        s.Size is { } size ? $"\"size\": \"{size.ToString().ToLowerInvariant()}\"" : null,
-        s.Outline is { } outline ? $"\"outline\": {(outline ? "true" : "false")}" : null,
-        s.Filled is { } filled ? $"\"filled\": {(filled ? "true" : "false")}" : null,
-        s.Cells is { } cells ? $"\"cells\": {cells.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture)}" : null,
-        s.OutlineColor is { } c ? $"\"outlineColor\": {Str(c)}" : null,
-    }.OfType<string>()) + " }";
+        if (s.Width is { } w && IsCells(w))
+            yield return "\"width\": " + (WidthWord(w) is { } word ? $"\"{word}\"" : w.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
+        if (s.Outline is { } outline) yield return $"\"outline\": {(outline ? "true" : "false")}";
+        if (s.Filled is { } filled) yield return $"\"filled\": {(filled ? "true" : "false")}";
+        if (s.OutlineColor is { } c) yield return $"\"outlineColor\": {Str(c)}";
+    }
+
+    private static string StyleText(ButtonStyle s) => "{ " + string.Join(", ", StyleParts(s)) + " }";
 
     private static string ButtonText(CustomButton b) =>
         $"{{ \"label\": {Str(b.Label)}, \"icon\": {Str(b.Icon)}, " + (b.IconFile is { } file ? $"\"iconFile\": {Str(file)}, " : "")
@@ -474,10 +500,16 @@ public sealed record ToolbarModel(
     private static string Entries<T>(IEnumerable<(string Key, T Value)> entries, Func<T, string> text) =>
         entries.Any() ? "{\n" + string.Join(",\n", entries.Select(e => $"    {Str(e.Key)}: {text(e.Value)}")) + "\n  }" : "{}";
 
-    /// <summary>The "overrides" entries as written: the items' styles, then the pickers' spans.</summary>
+    /// <summary>The "overrides" entries as written: the buttons' styles, then the pickers' span and look (no width).</summary>
     private IEnumerable<(string Key, string Value)> OverrideTexts() =>
-        Overrides.Select(o => (o.Key, StyleText(o.Value)))
-            .Concat(Pickers.Where(p => PickerSpans.TryGetValue(p, out var n) && n != DefaultSpan(p)).Select(p => (p, "{ \"span\": " + PickerSpans[p] + " }")));
+        Overrides.Where(o => !Pickers.Contains(o.Key, StringComparer.OrdinalIgnoreCase)).Select(o => (o.Key, StyleText(o.Value)))
+            .Concat(Pickers.Select(p => (Key: p, Parts: PickerParts(p))).Where(p => p.Parts.Count > 0).Select(p => (p.Key, "{ " + string.Join(", ", p.Parts) + " }")));
+
+    private List<string> PickerParts(string picker) =>
+    [
+        .. PickerSpans.TryGetValue(picker, out var n) && n != DefaultSpan(picker) ? [$"\"span\": {n}"] : Array.Empty<string>(),
+        .. Overrides.TryGetValue(picker, out var look) ? StyleParts(look with { Width = null }) : [],
+    ];
 
     /// <summary>The model as a v2 file with the comment header (what Settings saves; the renderer never writes).</summary>
     public string ToJson()
@@ -491,12 +523,13 @@ public sealed record ToolbarModel(
               // and a "right" group, listed left to right (the centre sits in the free space between the other two).
               // Leave an item out to hide it; an item sits in one place only.
               // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
-              // The effort, model and provider pickers are items like any other (each can sit in any area, between any buttons)
-              // but ignore the styles below; their only override is "span", their width in button widths ({{MinSpan}}-{{MaxSpan}}; effort 3, model 4, provider 4; a span equal to that is not written).
-              // "style": the whole bar; size is compact | normal | wide = half | one | two cells across, every button one cell high;
-              // "cells" (0.5, 1, 2, 3 or 4) sets the width in cells and wins over size; outline and filled are true | false,
+              // The effort, model and provider pickers are items like any other (each can sit in any area, between any buttons).
+              // They take the bar's look (outline, outlineColor, filled) but not its width: their width is the "span" override, in button
+              // widths ({{MinSpan}}-{{MaxSpan}}; effort 3, model 4, provider 4; a span equal to that is not written).
+              // "style": the whole bar. "width" is the width of a button in cells (0.5, 1, 2, 3 or 4; every button is one cell high);
+              // the words compact, normal and wide are shortcuts for 0.5, 1 and 2. outline and filled are true | false,
               // outlineColor is "#RRGGBB" (left out: the accent colour).
-              // "overrides": one item's own "size", "cells", "outline", "filled" and "outlineColor" (an item's size beats the bar's cells).
+              // "overrides": one item's own "width", "outline", "filled" and "outlineColor" (a picker's: "span", "outline", "filled", "outlineColor").
               // "buttons": up to {{MaxButtons}} custom buttons; id a-z, 0-9 and -, label up to {{MaxLabel}} characters, icon a Segoe
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from

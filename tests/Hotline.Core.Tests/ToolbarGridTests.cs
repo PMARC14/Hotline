@@ -8,7 +8,7 @@ public sealed class ToolbarGridTests
 {
     private static readonly string[] Four = ["pin", "captureWindow", "captureScreen", "captureRegion"];
 
-    private static ToolbarModel Sized(ButtonSize size, params string[] ids) => ToolbarModel.Defaults with
+    private static ToolbarModel Sized(double size, params string[] ids) => ToolbarModel.Defaults with
     {
         Style = new ButtonStyle(size, false, false),
         Placed = Enum.GetValues<Quadrant>().ToDictionary(q => q, q => (IReadOnlyList<string>)(q == Quadrant.BottomLeft ? ids : [])),
@@ -24,7 +24,7 @@ public sealed class ToolbarGridTests
         Assert.Equal(0, ToolbarPlan.Inner(1));
     }
 
-    private static double RowWidth(ButtonSize size, int count)
+    private static double RowWidth(double size, int count)
     {
         var m = Sized(size, [.. Four.Take(count)]);
         return ToolbarPlan.PlanRow(m, top: false, 2000, ToolbarPlan.CellGap).Used;
@@ -33,17 +33,17 @@ public sealed class ToolbarGridTests
     [Fact]
     public void Two_normal_buttons_are_one_wide_button_and_four_compact_ones()
     {
-        Assert.Equal(80, RowWidth(ButtonSize.Normal, 2));
-        Assert.Equal(80, RowWidth(ButtonSize.Wide, 1));
-        Assert.Equal(80, RowWidth(ButtonSize.Compact, 4));
-        Assert.Equal(40, RowWidth(ButtonSize.Compact, 2));
+        Assert.Equal(80, RowWidth(1, 2));
+        Assert.Equal(80, RowWidth(2, 1));
+        Assert.Equal(80, RowWidth(0.5, 4));
+        Assert.Equal(40, RowWidth(0.5, 2));
     }
 
     [Theory]
-    [InlineData(ButtonSize.Compact)]
-    [InlineData(ButtonSize.Normal)]
-    [InlineData(ButtonSize.Wide)]
-    public void Row_totals_are_the_sum_of_cell_widths_and_multiples_of_the_half_cell(ButtonSize size)
+    [InlineData(0.5)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Row_totals_are_the_sum_of_cell_widths_and_multiples_of_the_half_cell(double size)
     {
         foreach (var n in new[] { 1, 2, 3, 4 })
         {
@@ -55,17 +55,17 @@ public sealed class ToolbarGridTests
     }
 
     [Theory]
-    [InlineData(ButtonSize.Compact)]
-    [InlineData(ButtonSize.Normal)]
-    [InlineData(ButtonSize.Wide)]
-    public void Every_row_is_one_cell_high_at_every_size_and_cells_value(ButtonSize size)
+    [InlineData(0.5)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void Every_row_is_one_cell_high_at_every_bar_width_and_item_width(double bar)
     {
         foreach (var cells in new double?[] { null, 0.5, 1, 2, 3, 4 })
         {
-            var m = Sized(size, [.. Four]) with { Overrides = Four.ToDictionary(id => id, id => new ButtonStyle(Cells: cells), StringComparer.OrdinalIgnoreCase) };
+            var m = Sized(bar, [.. Four]) with { Overrides = Four.ToDictionary(id => id, id => new ButtonStyle(Width: cells), StringComparer.OrdinalIgnoreCase) };
             foreach (var id in Four) Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height);
             // A row is the sum of its cell widths.
-            var width = ToolbarPlan.WidthCells(new ButtonStyle(size, Cells: cells)) * ToolbarPlan.BaseWidth;
+            var width = ToolbarPlan.WidthCells(new ButtonStyle(cells ?? bar)) * ToolbarPlan.BaseWidth;
             Assert.Equal(4 * width, ToolbarPlan.PlanRow(m, top: false, 2000, ToolbarPlan.CellGap).Used);
         }
     }

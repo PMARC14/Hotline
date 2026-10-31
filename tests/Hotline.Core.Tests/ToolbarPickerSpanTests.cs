@@ -54,13 +54,18 @@ public sealed class ToolbarPickerSpanTests
     public void A_whole_number_written_with_a_fraction_part_of_zero_is_a_span()
         => Assert.Equal(5, Read("""{ "model": { "span": 5.0 } }""").EffectiveSpan("model"));
 
-    [Fact]
-    public void Other_keys_on_a_picker_are_still_ignored_with_a_warning_but_the_span_stays()
+    [Theory]
+    [InlineData("size")]
+    [InlineData("width")]
+    [InlineData("cells")]
+    [InlineData("height")]
+    [InlineData("bogus")]
+    public void Keys_a_picker_does_not_take_are_ignored_with_a_warning_but_the_span_and_look_stay(string key)
     {
-        var m = Read("""{ "model": { "outline": true, "span": 7 } }""");
+        var m = Read($$"""{ "model": { "outline": true, "{{key}}": "wide", "span": 7 } }""");
         Assert.Equal(7, m.EffectiveSpan("model"));
-        Assert.Empty(m.Overrides);
-        Assert.Contains(m.Warnings, w => w.Contains("model"));
+        Assert.Equal(new ButtonStyle(Outline: true), m.Overrides["model"]);
+        Assert.Contains(m.Warnings, w => w.Contains("model") && w.Contains("\"span\""));
     }
 
     [Fact]
@@ -187,10 +192,10 @@ public sealed class ToolbarPickerSpanTests
     // ---- the layout ----
 
     [Theory]
-    [InlineData(ButtonSize.Compact)]
-    [InlineData(ButtonSize.Normal)]
-    [InlineData(ButtonSize.Wide)]
-    public void The_unit_is_one_standard_button_width_whatever_the_bar_size(ButtonSize size)
+    [InlineData(0.5)]
+    [InlineData(1)]
+    [InlineData(2)]
+    public void The_unit_is_one_standard_button_width_whatever_the_bar_size(double size)
     {
         Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
         var specs = ToolbarPlan.PickerSpecs(Plain with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
@@ -201,7 +206,7 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void The_unit_ignores_one_buttons_own_size()
     {
-        var m = Plain with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Cells: 4) } };
+        var m = Plain with { Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 4) } };
         Assert.Equal(120.0, ToolbarPlan.PickerSpecs(m, ["effort"]).First(s => s.Name == "effort").Preferred);
     }
 

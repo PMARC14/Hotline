@@ -15,9 +15,9 @@ public sealed record EditorUnit(
 /// <summary>Why a custom button can't be added or saved as it is (Settings shows a notice for each).</summary>
 public enum CustomProblem { None, NoLabel, NoAction, BadQuickAction, TooManyButtons, GroupFull }
 
-/// <summary>The whole bar's size as Settings shows it: one of the sizes (same values as <see cref="ButtonSize"/>), or Custom
-/// when the items don't all share it.</summary>
-public enum BarSizeChoice { Compact = ButtonSize.Compact, Normal = ButtonSize.Normal, Wide = ButtonSize.Wide, Custom }
+/// <summary>The whole bar's width as Settings' compact / normal / wide / custom display: the preset whose width every button has
+/// (half, one or two cells), or Custom when it is another width or the items don't all share it.</summary>
+public enum BarSizeChoice { Compact, Normal, Wide, Custom }
 
 /// <summary>
 /// The pure half of Settings' quadrant editor (<see cref="ToolbarEditor"/> does the edits): what each strip shows, the
@@ -30,27 +30,35 @@ public static class ToolbarEditorView
     public static readonly IReadOnlyList<string> Icons =
         [ToolbarModel.DefaultIcon, "E8BD", "E8A5", "E70F", "E8C8", "E721", "E774", "E8F2", "E945", "E943", "E715", "E787", "E7C1", "EB51", "E8FB", "E897"];
 
-    /// <summary>The sizes the whole bar and each item can pick, smallest first.</summary>
-    public static readonly IReadOnlyList<ButtonSize> Sizes = Enum.GetValues<ButtonSize>();
+    /// <summary>The widths the whole bar and each item can pick (cells), smallest first.</summary>
+    public static IReadOnlyList<double> Widths => ToolbarModel.CellChoices;
 
-    public static string SizeName(ButtonSize size) => size switch
+    /// <summary>A width's name: Compact, Normal or Wide for 0.5, 1 and 2 cells, "3 cells" and "4 cells" for those.</summary>
+    public static string WidthName(double cells) => cells switch
     {
-        ButtonSize.Compact => Strings.Bar_SizeCompact,
-        ButtonSize.Wide => Strings.Bar_SizeWide,
-        _ => Strings.Bar_SizeNormal,
+        0.5 => Strings.Bar_SizeCompact,
+        1 => Strings.Bar_SizeNormal,
+        2 => Strings.Bar_SizeWide,
+        _ => L.F(Strings.Bar_WidthNCells, cells.ToString("0.##", CultureInfo.CurrentCulture)),
     };
 
-    /// <summary>What the whole bar's size choice shows, derived from the cell widths that are drawn (never stored): the preset whose
-    /// width the bar has (half, one or two cells), or <see cref="BarSizeChoice.Custom"/> when the bar's width is none of those
-    /// (e.g. <c>cells</c> 3), when any item has a <c>cells</c> value, or when an item's effective width differs from the bar's.</summary>
-    public static BarSizeChoice BarSize(ToolbarModel m)
+    /// <summary>The width every button of the bar is drawn with, or null when they differ: the bar's width, if no shown button of the
+    /// bar has a width of its own that differs from it (the pickers have no width).</summary>
+    public static double? BarWidth(ToolbarModel m)
     {
         var width = ToolbarPlan.WidthCells(m.Style);
-        BarSizeChoice? preset = width switch { 0.5 => BarSizeChoice.Compact, 1 => BarSizeChoice.Normal, 2 => BarSizeChoice.Wide, _ => null };
-        if (preset is not { } choice) return BarSizeChoice.Custom;
-        var odd = m.Overrides.Any(o => o.Value.Cells is not null || ToolbarPlan.WidthCells(m.EffectiveStyle(o.Key)) != width);
-        return odd ? BarSizeChoice.Custom : choice;
+        var odd = m.Overrides.Any(o => !ToolbarPlan.IsPicker(o.Key) && ToolbarPlan.WidthCells(m.EffectiveStyle(o.Key)) != width);
+        return odd ? null : width;
     }
+
+    /// <summary>The compact / normal / wide / custom display of <see cref="BarWidth"/> (derived from the cell widths drawn, never stored).</summary>
+    public static BarSizeChoice BarSize(ToolbarModel m) => BarWidth(m) switch
+    {
+        0.5 => BarSizeChoice.Compact,
+        1 => BarSizeChoice.Normal,
+        2 => BarSizeChoice.Wide,
+        _ => BarSizeChoice.Custom,
+    };
 
     /// <summary>The outline colour swatches besides the accent colour: red, orange, yellow, green, teal, blue, purple, pink
     /// (the Windows accent palette's, readable on light and dark).</summary>

@@ -245,12 +245,14 @@ public sealed class ToolbarEditorViewTests
     // ---- the look choices ----
 
     [Fact]
-    public void Every_size_preset_is_offered_in_order_with_its_own_name()
+    public void Every_width_is_offered_in_order_with_its_own_name()
     {
-        Assert.Equal([ButtonSize.Compact, ButtonSize.Normal, ButtonSize.Wide], ToolbarEditorView.Sizes); // smallest first
-        var names = ToolbarEditorView.Sizes.Select(ToolbarEditorView.SizeName).ToList();
+        Assert.Equal([0.5, 1, 2, 3, 4], ToolbarEditorView.Widths); // smallest first
+        var names = ToolbarEditorView.Widths.Select(ToolbarEditorView.WidthName).ToList();
         Assert.All(names, n => Assert.False(string.IsNullOrWhiteSpace(n)));
         Assert.Equal(names.Count, names.Distinct().Count());
+        Assert.Contains("3", names[3]);
+        Assert.Contains("4", names[4]);
     }
 
     [Fact]
@@ -271,20 +273,24 @@ public sealed class ToolbarEditorViewTests
     }
 
     [Theory]
-    [InlineData("", "", BarSizeChoice.Normal)] // no size anywhere: normal
-    [InlineData("\"size\": \"wide\"", "", BarSizeChoice.Wide)]
-    [InlineData("\"size\": \"compact\"", "\"pin\": { \"outline\": true }", BarSizeChoice.Compact)] // other keys don't matter
-    [InlineData("\"size\": \"wide\"", "\"pin\": { \"size\": \"wide\" }", BarSizeChoice.Wide)] // the same size again
-    [InlineData("\"size\": \"wide\"", "\"pin\": { \"size\": \"compact\" }", BarSizeChoice.Custom)]
-    [InlineData("", "\"settings\": { \"size\": \"wide\", \"filled\": true }", BarSizeChoice.Custom)]
-    public void The_bar_size_shows_custom_only_while_an_item_has_another_size(string style, string overrides, BarSizeChoice expected)
+    [InlineData("", "", BarSizeChoice.Normal, 1)] // no width anywhere: normal
+    [InlineData("\"width\": \"wide\"", "", BarSizeChoice.Wide, 2)]
+    [InlineData("\"width\": \"compact\"", "\"pin\": { \"outline\": true }", BarSizeChoice.Compact, 0.5)] // other keys don't matter
+    [InlineData("\"width\": \"wide\"", "\"pin\": { \"width\": 2 }", BarSizeChoice.Wide, 2)] // the same width again
+    [InlineData("\"width\": \"wide\"", "\"pin\": { \"width\": \"compact\" }", BarSizeChoice.Custom, 0)]
+    [InlineData("", "\"settings\": { \"width\": 3, \"filled\": true }", BarSizeChoice.Custom, 0)]
+    [InlineData("\"width\": 3", "", BarSizeChoice.Custom, 3)] // uniform, but not one of the three names
+    [InlineData("\"size\": \"wide\"", "\"pin\": { \"cells\": 2 }", BarSizeChoice.Wide, 2)] // the old names read the same
+    [InlineData("", "\"model\": { \"outline\": true }", BarSizeChoice.Normal, 1)] // a picker has no width
+    public void The_bar_width_shows_custom_only_while_an_item_has_another_width(string style, string overrides, BarSizeChoice expected, double uniform) // uniform: 0 = the widths differ
     {
         var m = ToolbarModel.Resolve($$"""
-            { "version": 2, "items": { "left": ["pin", "settings"], "right": [] }, "style": { {{style}} }, "overrides": { {{overrides}} } }
+            { "version": 2, "items": { "left": ["pin", "settings", "model"], "right": [] }, "style": { {{style}} }, "overrides": { {{overrides}} } }
             """);
         Assert.Empty(m.Warnings);
         Assert.Equal(expected, ToolbarEditorView.BarSize(m));
-        // Choosing a size for the whole bar always leaves it showing that size.
-        foreach (var size in ToolbarEditorView.Sizes) Assert.Equal((BarSizeChoice)size, ToolbarEditorView.BarSize(ToolbarEditor.SetBarSize(m, size)));
+        Assert.Equal(uniform == 0 ? null : uniform, ToolbarEditorView.BarWidth(m));
+        // Choosing a width for the whole bar always leaves it showing that width.
+        foreach (var width in ToolbarEditorView.Widths) Assert.Equal(width, ToolbarEditorView.BarWidth(ToolbarEditor.SetBarSize(m, width)));
     }
 }

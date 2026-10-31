@@ -16,21 +16,21 @@ public sealed class ToolbarPlanTests
 
     // The sizes: compact half a cell, normal one, wide two; every button one cell high, wide keeps the normal glyph.
     [Theory]
-    [InlineData(ButtonSize.Compact, 18, 36, 12)] // half of a 36 x 36 cell, glyph 0.8
-    [InlineData(ButtonSize.Normal, 36, 36, 15)]
-    [InlineData(ButtonSize.Wide, 72, 36, 15)] // twice as wide, no higher, the same icon
-    public void Size_presets(ButtonSize size, double width, double height, double font) =>
+    [InlineData(0.5, 18, 36, 12)] // half of a 36 x 36 cell, glyph 0.8
+    [InlineData(1, 36, 36, 15)]
+    [InlineData(2, 72, 36, 15)] // twice as wide, no higher, the same icon
+    public void Size_presets(double size, double width, double height, double font) =>
         Assert.Equal(new ButtonMetrics(width, height, font), ToolbarPlan.Metrics(new ButtonStyle(size, false, false), 36, 36, 15));
 
     [Fact]
     public void Todays_sizes_are_20_40_and_80_by_one_cell_high()
     {
-        Assert.Equal(new ButtonMetrics(20, 36, 13), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact)));
-        Assert.Equal(new ButtonMetrics(40, 36, 16), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Normal)));
-        Assert.Equal(new ButtonMetrics(80, 36, 16), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide)));
+        Assert.Equal(new ButtonMetrics(20, 36, 13), ToolbarPlan.Metrics(new ButtonStyle(0.5)));
+        Assert.Equal(new ButtonMetrics(40, 36, 16), ToolbarPlan.Metrics(new ButtonStyle(1)));
+        Assert.Equal(new ButtonMetrics(80, 36, 16), ToolbarPlan.Metrics(new ButtonStyle(2)));
         // A bigger base: every preset follows, the height stays the base's.
-        Assert.Equal(new ButtonMetrics(25, 44, 16), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact), 50, 44, 20));
-        Assert.Equal(new ButtonMetrics(100, 44, 20), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide), 50, 44, 20));
+        Assert.Equal(new ButtonMetrics(25, 44, 16), ToolbarPlan.Metrics(new ButtonStyle(0.5), 50, 44, 20));
+        Assert.Equal(new ButtonMetrics(100, 44, 20), ToolbarPlan.Metrics(new ButtonStyle(2), 50, 44, 20));
     }
 
     [Theory]
@@ -39,38 +39,34 @@ public sealed class ToolbarPlanTests
     [InlineData(2, 80, 16)]
     [InlineData(3, 120, 16)]
     [InlineData(4, 160, 16)]
-    public void Cells_set_the_width_and_the_height_is_always_one_cell(double cells, double width, double font)
-    {
-        foreach (var size in new ButtonSize?[] { null, ButtonSize.Compact, ButtonSize.Normal, ButtonSize.Wide })
-            Assert.Equal(new ButtonMetrics(width, ToolbarPlan.BaseHeight, font), ToolbarPlan.Metrics(new ButtonStyle(size, Cells: cells)));
-    }
+    public void The_width_sets_the_width_and_the_height_is_always_one_cell(double cells, double width, double font) =>
+        Assert.Equal(new ButtonMetrics(width, ToolbarPlan.BaseHeight, font), ToolbarPlan.Metrics(new ButtonStyle(cells)));
 
     [Fact]
-    public void Cells_that_are_not_allowed_in_memory_fall_back_to_the_size_and_a_bad_size_is_normal()
+    public void A_width_that_is_not_allowed_in_memory_is_one_cell_as_is_none()
     {
-        foreach (var bad in new[] { 0, 5, 1.3, -2, double.NaN, double.PositiveInfinity })
-            Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide)), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide, Cells: bad)));
-        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Normal)), ToolbarPlan.Metrics(new ButtonStyle()));
-        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle()), ToolbarPlan.Metrics(new ButtonStyle((ButtonSize)42)));
+        foreach (var bad in new[] { 0, 5, 1.3, -2, 42, double.NaN, double.PositiveInfinity })
+            Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(1)), ToolbarPlan.Metrics(new ButtonStyle(bad)));
+        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(1)), ToolbarPlan.Metrics(new ButtonStyle()));
     }
 
     [Fact]
     public void Custom_and_built_in_buttons_are_sized_alike_and_one_cell_high()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["pin", "mine"], "right": [] }, "style": { "size": "wide" },
-              "overrides": { "mine": { "size": "compact" } },
+            { "version": 2, "items": { "left": ["pin", "mine"], "right": [] }, "style": { "width": "wide" },
+              "overrides": { "mine": { "width": "compact" } },
               "buttons": { "mine": { "label": "Mine", "text": "hi" } } }
             """);
-        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide)), ToolbarPlan.Metrics(m, "pin"));
-        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact)), ToolbarPlan.Metrics(m, "mine"));
+        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(2)), ToolbarPlan.Metrics(m, "pin"));
+        Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(0.5)), ToolbarPlan.Metrics(m, "mine"));
         Assert.All(new[] { "pin", "mine", "more" }, id => Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height));
     }
 
     [Fact]
     public void The_automatic_overflow_button_is_one_cell_whatever_the_bar_size()
     {
-        foreach (var size in new[] { ButtonSize.Compact, ButtonSize.Wide })
+        foreach (var size in new[] { 0.5, 2 })
         {
             var m = With((Quadrant.BottomLeft, ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "newChat", "settings"]))
                 with { Style = new ButtonStyle(size, false, false) };
