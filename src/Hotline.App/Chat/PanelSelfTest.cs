@@ -225,7 +225,19 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                 popup.ApplyToolbar(ToolbarModel.Resolve(json));
                 await Step(name);
                 await Task.Delay(200);
+                CheckGrid(name);
                 await SnapshotAsync(name);
+            }
+            // The cell grid: every row that has something in it is exactly one cell (BaseHeight) high whatever the sizes, and a picker
+            // is as tall as a button (one cell less the inset the renderer gave it).
+            void CheckGrid(string name)
+            {
+                foreach (var (row, label) in new[] { (popup.TopToolbar, "top"), (popup.Toolbar, "bottom") })
+                    if (row.Visibility == Microsoft.UI.Xaml.Visibility.Visible && row.Children.Count > 0 && Math.Abs(row.ActualHeight - ToolbarPlan.BaseHeight) > 0.5)
+                        log.Error($"selftest FAILED: {name}: the {label} button row is {row.ActualHeight} high, not {ToolbarPlan.BaseHeight}");
+                foreach (var (box, id) in new[] { (popup.EffortBox, "effort"), (popup.ModelBox, "model"), (popup.ProviderBox, "provider") })
+                    if (box.Visibility == Microsoft.UI.Xaml.Visibility.Visible && box.ActualHeight > 0 && Math.Abs(box.ActualHeight - ToolbarPlan.Inner(ToolbarPlan.BaseHeight)) > 0.5)
+                        log.Error($"selftest FAILED: {name}: the {id} picker is {box.ActualHeight} high, a button is {ToolbarPlan.Inner(ToolbarPlan.BaseHeight)}");
             }
             var customButtons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$"""
                 "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
@@ -240,12 +252,12 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
             // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
             await Look("15-damaged-file", Bar("""{ "size": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
-            // Wide (twice the base) at the narrowest width: the left buttons go into the ⋯ menu (itself wide); then mixed sizes.
+            // Wide (two cells across, one cell high) at the narrowest width: the left buttons go into the ⋯ menu (one cell); then mixed sizes.
             await Look("16-wide-320", Bar("""{ "size": "wide", "outline": true }"""), 320);
             await Look("17-mixed-sizes-720", Bar("""{ "size": "normal" }""", overrides: """ "pin": { "size": "compact" }, "prompt": { "size": "wide" } """), 720);
-            // Custom buttons at their largest on a wide bar: drawn at most 80×80 (ToolbarPlan.Metrics).
-            var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 80, "height": 80 } """));
-            await Look("18-custom-max-320", Bar("""{ "size": "wide" }""", customIds, customButtons, biggest), 320);
+            // Custom buttons at their widest (4 cells) on a wide bar: still one cell high (ToolbarPlan.Metrics).
+            var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "cells": 4 } """));
+            await Look("18-custom-4-cells-320", Bar("""{ "size": "wide" }""", customIds, customButtons, biggest), 320);
             // A coloured outline bar-wide, and one item in another colour.
             await Look("19-outline-colour", Bar("""{ "size": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
             // Items in the left, centre and right groups of both rows.
@@ -267,14 +279,16 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             string[] others =
             [
                 "default", "pickers-top-right", "pickers-top-centre-both-rows", "spans-all-1", "spans-all-8", "spans-mixed", "all-compact", "all-wide",
-                "custom-24-wide-pickers-bottom-centre", "only-pickers", "all-items-in-one-group", "empty-bar", "damaged-file",
+                "custom-24-wide-pickers-bottom-centre", "only-pickers", "all-items-in-one-group", "empty-bar", "damaged-file", "mixed-button-sizes",
             ];
             foreach (var name in mixing.Concat(others)) await Profile(name, 680);
             foreach (var name in mixing) await Profile(name, 320);
-            // The pickers placed one by one (P28-P30): in two areas, between buttons, one per row.
+            // The pickers placed one by one (P29-P31): in two areas, between buttons, one per row.
             foreach (var name in new[] { "pickers-apart-corners", "picker-between-buttons", "pickers-one-per-row-right" }) await Profile(name, 680);
-            // The more button and its box (P31-P33): five user entries, the row's overflow merged into the box, a crowded top row beside a more row.
+            // The more button and its box (P32-P34): five user entries, the row's overflow merged into the box, a crowded top row beside a more row.
             foreach (var name in new[] { "more-menu-bottom-right-with-5-items", "more-menu-top-centre-with-overflow", "more-in-both-rows" }) await Profile(name, 680);
+            // The shipped width (11 buttons, 460 DIP) too: the default layout and the size extremes there (P35 on).
+            foreach (var name in mixing.Concat(["default", "all-compact", "all-wide", "mixed-button-sizes"])) await Profile(name, (int)ToolbarPlan.WidthForButtons(11));
             popup.ApplyToolbar(userBar);
             popup.ResizeOffscreen(720);
             await Step("looks restored");

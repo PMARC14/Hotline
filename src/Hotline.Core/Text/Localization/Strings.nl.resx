@@ -438,6 +438,7 @@ Weigeren:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>De {0}-server kan niet worden gestart: "{1}" wordt uitgevoerd via cmd.exe, waardoor de tekens " % ^ &amp; | &lt; &gt; ! of reeleinden in "command" of "args" niet veilig kunnen worden doorgegeven. Verwijs met "command" naar de .exe van het programma of verwijder deze tekens.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niets hier</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu van knop …</value></data>

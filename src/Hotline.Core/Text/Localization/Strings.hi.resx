@@ -438,6 +438,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} शुरू नहीं हो सका</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} सर्वर प्रारंभ नहीं हो सकता: "{1}" cmd.exe के माध्यम से चलता है, जो "command" या "args" में " % ^ &amp; | &lt; &gt; ! वर्णों या लाइन ब्रेक को सुरक्षित रूप से पास नहीं कर सकता। "command" को प्रोग्राम के .exe पर इंगित करें, या उन वर्णों को हटा दें।</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json पढ़ी नहीं जा सकी: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>अधिक</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>यहाँ कुछ नहीं है</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… बटन का मेनू</value></data>

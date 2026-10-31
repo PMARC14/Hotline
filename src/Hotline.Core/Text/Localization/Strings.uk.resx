@@ -438,6 +438,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>не вдалося запустити {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Не вдалося запустити сервер {0}: "{1}" запускається через cmd.exe, який не може безпечно передавати символи " % ^ &amp; | &lt; &gt; ! або розриви рядків у "command" або "args". Спрямуйте "command" на .exe-файл програми або вилучіть ці символи.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Не вдалося прочитати toolbar.json: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Більше</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Тут нічого немає</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Меню кнопки «…»</value></data>

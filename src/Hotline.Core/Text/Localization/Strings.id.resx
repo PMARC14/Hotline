@@ -438,6 +438,7 @@ Tolak:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Server {0} tidak dapat dimulai: "{1}" berjalan melalui cmd.exe, yang tidak dapat meneruskan karakter " % ^ &amp; | &lt; &gt; ! atau jeda baris dengan aman dalam "command" atau "args". Arahkan "command" ke .exe program, atau hapus karakter tersebut.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Lainnya</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Tidak ada apa-apa di sini</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu tombol …</value></data>

@@ -438,6 +438,7 @@ Reddet:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} başlatılamadı</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} sunucusu başlatılamıyor: "{1}", cmd.exe üzerinden çalışıyor; bu da "command" veya "args" içindeki " % ^ &amp; | &lt; &gt; ! karakterlerini veya satır sonlarını güvenli bir şekilde aktaramaz. "command" öğesini programın .exe dosyasına yönlendirin veya bu karakterleri kaldırın.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json okunamadı: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Daha fazla</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Burada hiçbir şey yok</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… düğmesinin menüsü</value></data>

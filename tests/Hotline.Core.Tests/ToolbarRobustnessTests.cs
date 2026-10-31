@@ -13,7 +13,7 @@ public sealed class ToolbarRobustnessTests
     private const double Spacing = ToolbarPlan.CellGap; // the rows have no column gap: each cell holds its own padding
     private const double PickersMin = 150;
     // A button is half a cell to four cells wide and always exactly one cell high; its glyph 0.8 to 1 times the base's.
-    private static readonly double MinWidth = 0.5 * ToolbarPlan.BaseWidth, MaxWidth = 4 * ToolbarPlan.BaseWidth, MaxBuiltInHeight = ToolbarPlan.BaseHeight;
+    private static readonly double MinWidth = 0.5 * ToolbarPlan.BaseWidth, MaxWidth = 4 * ToolbarPlan.BaseWidth;
     private static readonly double MinFont = Math.Round(0.8 * ToolbarPlan.BaseFont), MaxFont = ToolbarPlan.BaseFont;
 
     private static readonly string[] Buttons = [.. ToolbarModel.BuiltIn.Where(id => !ToolbarPlan.Stays(id))]; // the more button has its own tests (ToolbarMoreMenuTests)

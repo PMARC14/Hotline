@@ -38,7 +38,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private readonly Func<ContentDialog, Task<ContentDialogResult>> _showDialog;
     private readonly Style _cardStyle;
     private readonly FileLog _log;
-    /// <summary>The width (DIP) of the panel's button rows, for "Move what doesn't fit into the menu"; null = a typical 656.</summary>
+    /// <summary>The width (DIP) of the panel's button rows, for "Move what doesn't fit into the menu"; null = the default room of 11 buttons.</summary>
     private readonly Func<double>? _barRoom;
     /// <summary>Style overrides of items hidden in this session (Hide drops them), put back when the item is shown again.</summary>
     private readonly Dictionary<string, ButtonStyle> _stash = new(StringComparer.OrdinalIgnoreCase);
@@ -246,8 +246,8 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         AutomationProperties.SetName(fill, Strings.Bar_FillMenu);
         fill.Click += (_, _) =>
         {
-            // The panel's width, planned by the same code that draws the bar (both rows have that room).
-            var room = _barRoom?.Invoke() ?? 656;
+            // The narrowest width the panel is shown at, planned by the same code that draws the bar (both rows have that room).
+            var room = _barRoom?.Invoke() ?? ToolbarPlan.WidthForButtons(11) - 2 * ToolbarPlan.PanelPadding;
             Edit(m => ToolbarEditor.FillMenuFromOverflow(m, room, room), null, ("bar-fill-menu", "bar-fill-menu"));
         };
         return new StackPanel { Spacing = 6, Children = { card, fill } };

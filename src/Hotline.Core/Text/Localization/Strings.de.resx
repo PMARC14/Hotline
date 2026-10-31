@@ -438,6 +438,7 @@ Verweigern:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} konnte nicht gestartet werden</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Der Server {0} kann nicht gestartet werden: "{1}" wird über cmd.exe ausgeführt, wodurch die Zeichen " % ^ &amp; | &lt; &gt; ! oder Zeilenumbrüche in "command" oder "args" nicht sicher übergeben werden können. Verweisen Sie mit "command" auf die .exe des Programms oder entfernen Sie diese Zeichen.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json konnte nicht gelesen werden: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Mehr</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Hier ist nichts</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menü der Schaltfläche „…“</value></data>

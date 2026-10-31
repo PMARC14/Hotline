@@ -60,7 +60,7 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] "Move what doesn't fit into the menu" with the panel narrow: the buttons the bar would overflow end up in the box in bar order;
       at a wide panel nothing changes.
 - [ ] With `more` in one row and the panel narrow: that row's overflow is in the `more` menu after your entries (separator between),
-      no second "..." in the row; the other row keeps its own. Self-test steps P31-P33 draw these (`logs\selftest\`).
+      no second "..." in the row; the other row keeps its own. Self-test steps P32-P34 draw these (`logs\selftest\`).
 - [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About › This PC
       lists what was ignored; a file Hotline can't read is left as it is.
 - [ ] A version 1 `toolbar.json` is left untouched: the default bar runs with the "version 1 files are no longer read" warning;
@@ -75,6 +75,11 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 - [ ] Padding is 10 DIPs on all four sides; the Alt grips still sit on the outer edge.
 - [ ] The default panel is about a quarter of the screen wide (460 DIP at 1920 px, 100%) and the default bar fits it: nothing in the
       "..." menu, three pickers filling the top row.
+- [ ] Every row is one cell (36 DIP) high whatever the sizes (compact, wide, `cells` 0.5-4, custom buttons); pickers are as tall as buttons
+      (the self-test checks both after every look step and logs `selftest FAILED` otherwise).
+- [ ] The Accent swatch (and "Like the bar") in Settings › Button rows matches the outline colour drawn on the bar (Hotline purple by default;
+      the Windows accent when the theme matches it; a contrast theme's highlight).
+- [ ] A button's flyout offers Width (cells) 0.5-4; the bar size shows Custom when widths differ and picking a size resets them.
 - [ ] Buttons and drop-downs line up on one grid: one button `wide`, or four `compact`, and the rows above and below still end at the
       same edges; touching items show a 2 DIP gap; compact buttons still show their icon.
 - [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): the first message widens the panel around its centre in the same resize as the

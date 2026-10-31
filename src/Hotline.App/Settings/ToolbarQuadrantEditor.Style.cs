@@ -29,8 +29,8 @@ internal sealed partial class ToolbarQuadrantEditor
         Automation(_barOutline, "bar-outline", Strings.Bar_Outline);
         Automation(_barFilled, "bar-filled", Strings.Bar_Filled);
         Automation(_barColor, "bar-outline-color", Strings.Bar_OutlineColor);
-        // A size for the whole bar sizes every button (the items' own sizes go; a width or height set by hand stays).
-        // "Custom" only shows that the items differ: choosing it changes nothing.
+        // A size for the whole bar sizes every button (the bar's and the items' own cells and sizes go).
+        // "Custom" only shows that the widths differ: choosing it changes nothing.
         _barSize.SelectionChanged += (_, _) =>
         {
             if (!_syncing && _barSize.SelectedItem is ComboBoxItem { Tag: ButtonSize size }) Edit(m => ToolbarEditor.SetBarSize(m, size), null);
@@ -65,7 +65,7 @@ internal sealed partial class ToolbarQuadrantEditor
         try
         {
             var style = _model.Style;
-            // "Custom" is listed (after the sizes) only while it is the state: some item has a size of its own.
+            // "Custom" is listed (after the sizes) only while it is the state: the drawn widths differ from the three sizes.
             var choice = ToolbarEditorView.BarSize(_model);
             var custom = _barSize.Items.OfType<ComboBoxItem>().FirstOrDefault(i => i.Tag is BarSizeChoice.Custom);
             if (choice == BarSizeChoice.Custom && custom is null)
@@ -92,7 +92,7 @@ internal sealed partial class ToolbarQuadrantEditor
 
     /// <summary>The outline colour choices: <paramref name="first"/> (no colour of its own, drawn as <paramref name="firstSwatch"/>
     /// or the accent), then the swatches, each named for screen readers.</summary>
-    private static ComboBox ColorBox(string first, string? firstSwatch)
+    private ComboBox ColorBox(string first, string? firstSwatch)
     {
         var box = new ComboBox { Header = Strings.Bar_OutlineColor, MinWidth = 160 };
         box.Items.Add(ColorItem(NoColor, first, firstSwatch));
@@ -100,12 +100,13 @@ internal sealed partial class ToolbarQuadrantEditor
         return box;
     }
 
-    private static ComboBoxItem ColorItem(string tag, string name, string? swatch)
+    private ComboBoxItem ColorItem(string tag, string name, string? swatch)
     {
-        // The swatch from parsed bytes (a file's colour is validated by Resolve); the accent's from the theme.
-        Brush? fill = swatch is not null && ThemeColor.TryParse(swatch, out var c)
+        // The swatch from parsed bytes (a file's colour is validated by Resolve); no colour of its own shows the colour the bar really
+        // draws (the panel theme's accent, or a contrast theme's highlight: ToolbarAccent, the resolver the renderer uses).
+        Brush fill = swatch is not null && ThemeColor.TryParse(swatch, out var c)
             ? new SolidColorBrush(Windows.UI.Color.FromArgb(0xFF, c.R, c.G, c.B))
-            : Application.Current.Resources.TryGetValue("AccentFillColorDefaultBrush", out var accent) ? accent as Brush : null;
+            : new SolidColorBrush(ToolbarAccent.Current);
         var item = new ComboBoxItem
         {
             Tag = tag,
@@ -129,7 +130,7 @@ internal sealed partial class ToolbarQuadrantEditor
     }
 
     /// <summary>Selects <paramref name="hex"/> (null: the first entry); a colour set by hand in the file gets its own entry.</summary>
-    private static void SelectColor(ComboBox box, string? hex)
+    private void SelectColor(ComboBox box, string? hex)
     {
         var tag = hex ?? NoColor;
         var index = box.Items.OfType<ComboBoxItem>().ToList().FindIndex(i => i.Tag as string == tag);
@@ -141,7 +142,7 @@ internal sealed partial class ToolbarQuadrantEditor
         box.SelectedIndex = index;
     }
 
-    /// <summary>The item's look: size (or the bar's), width and height (20-80, empty = from the size), outline and its colour
+    /// <summary>The item's look: size (or the bar's), width in cells (0.5, 1, 2, 3 or 4; auto = from the size; always one cell high), outline and its colour
     /// (or the bar's), filled, and "use the whole bar's look". Each change is saved at once; the editor is rebuilt when the
     /// flyout closes.</summary>
     private Button StyleButton(string id, string itemName)
@@ -165,19 +166,15 @@ internal sealed partial class ToolbarQuadrantEditor
         var size = new ComboBox { Header = Strings.Bar_Size, MinWidth = 200 };
         size.Items.Add(new ComboBoxItem { Content = Strings.Bar_AsBar });
         foreach (var s in ToolbarEditorView.Sizes) size.Items.Add(new ComboBoxItem { Content = ToolbarEditorView.SizeName(s), Tag = s });
-        NumberBox Dip(string header) => new()
-        {
-            Header = header, Minimum = ToolbarPlan.MinDip, Maximum = ToolbarPlan.MaxDip, SmallChange = 1, LargeChange = 10, Width = 96, PlaceholderText = Strings.Bar_Auto,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
-        };
-        var (width, height) = (Dip(Strings.Bar_Width), Dip(Strings.Bar_Height));
+        var cells = new ComboBox { Header = Strings.Bar_WidthCells, MinWidth = 200 };
+        cells.Items.Add(new ComboBoxItem { Content = Strings.Bar_Auto });
+        foreach (var c in ToolbarModel.CellChoices) cells.Items.Add(new ComboBoxItem { Content = c.ToString("0.##", System.Globalization.CultureInfo.CurrentCulture), Tag = c });
         var outline = new CheckBox { Content = Strings.Bar_Outline };
         var color = ColorBox(Strings.Bar_AsBar, _model.Style.OutlineColor);
         var filled = new CheckBox { Content = Strings.Bar_Filled };
         var reset = new Button { Content = Strings.Bar_UseBarLook };
         Automation(size, "bar-look-size", $"{Strings.Bar_Size}: {itemName}");
-        Automation(width, "bar-look-width", $"{Strings.Bar_Width}: {itemName}");
-        Automation(height, "bar-look-height", $"{Strings.Bar_Height}: {itemName}");
+        Automation(cells, "bar-look-cells", $"{Strings.Bar_WidthCells}: {itemName}");
         Automation(outline, "bar-look-outline", $"{Strings.Bar_Outline}: {itemName}");
         Automation(color, "bar-look-outline-color", $"{Strings.Bar_OutlineColor}: {itemName}");
         Automation(filled, "bar-look-filled", $"{Strings.Bar_Filled}: {itemName}");
@@ -191,8 +188,7 @@ internal sealed partial class ToolbarQuadrantEditor
                 var own = _model.Overrides.GetValueOrDefault(id) ?? new ButtonStyle();
                 var effective = _model.EffectiveStyle(id);
                 size.SelectedIndex = own.Size is { } s ? ToolbarEditorView.Sizes.ToList().IndexOf(s) + 1 : 0;
-                width.Value = own.Width ?? double.NaN;
-                height.Value = own.Height ?? double.NaN;
+                cells.SelectedIndex = own.Cells is { } c && ToolbarModel.CellChoices.ToList().IndexOf(c) is var at and >= 0 ? at + 1 : 0;
                 outline.IsChecked = effective.Outline == true;
                 SelectColor(color, own.OutlineColor);
                 color.IsEnabled = effective.Outline == true; // set without a size change: the flyout stays open
@@ -206,11 +202,9 @@ internal sealed partial class ToolbarQuadrantEditor
             Edit(m => ToolbarEditor.SetStyle(m, id, change(m.Overrides.GetValueOrDefault(id) ?? new ButtonStyle())), id);
             Sync(); // what was saved (clamped), or the last good look when saving failed
         }
-        static int? Number(double v) => double.IsNaN(v) ? null : (int)Math.Round(v);
 
         size.SelectionChanged += (_, _) => Set(o => o with { Size = size.SelectedItem is ComboBoxItem { Tag: ButtonSize s } ? s : null });
-        width.ValueChanged += (_, e) => Set(o => o with { Width = Number(e.NewValue) });
-        height.ValueChanged += (_, e) => Set(o => o with { Height = Number(e.NewValue) });
+        cells.SelectionChanged += (_, _) => Set(o => o with { Cells = cells.SelectedItem is ComboBoxItem { Tag: double c } ? c : null });
         outline.Click += (_, _) => Set(o => o with { Outline = outline.IsChecked == true });
         color.SelectionChanged += (_, _) =>
         {
@@ -226,7 +220,7 @@ internal sealed partial class ToolbarQuadrantEditor
             {
                 new TextBlock { Text = itemName, Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"] },
                 size,
-                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { width, height } },
+                new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { cells } },
                 outline, color, filled, reset,
             },
         };

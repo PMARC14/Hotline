@@ -69,7 +69,8 @@ internal sealed class ToolbarRenderer
         _pickers = new Dictionary<string, ComboBox> { ["effort"] = popup.EffortBox, ["model"] = popup.ModelBox, ["provider"] = popup.ProviderBox };
         // Every item is a cell of the grid with its padding inside (ToolbarPlan.CellGap / CellInset): the rows have no column gap.
         popup.TopToolbar.ColumnSpacing = popup.Toolbar.ColumnSpacing = ToolbarPlan.CellGap;
-        foreach (var picker in _pickers.Values) picker.Margin = new Thickness(ToolbarPlan.CellInset);
+        // A picker is as tall as a button: the cell's height less the inset (PopupWindow.xaml's ComboBox styles carry the same value).
+        foreach (var picker in _pickers.Values) (picker.Margin, picker.Height) = (new Thickness(ToolbarPlan.CellInset), ToolbarPlan.Inner(ToolbarPlan.BaseHeight));
         _top = new Row(popup.TopToolbar, MoreButton());
         _bottom = new Row(popup.Toolbar, MoreButton());
         _top.More.Flyout = OverflowMenu(() => _top);
@@ -99,8 +100,8 @@ internal sealed class ToolbarRenderer
             if (CustomButtonPicture.Read(b, _log.Info) is { } picture)
             {
                 // Its picture instead of the glyph, sized from the style (never measured): the glyph comes back if it can't be drawn.
-                var size = ToolbarPlan.Metrics(model.EffectiveStyle(b.Id));
-                button.Content = CustomButtonPicture.View(picture, Math.Round(Math.Min(size.Width, size.Height) * 0.6), () =>
+                var size = ToolbarPlan.Metrics(model, b.Id);
+                button.Content = CustomButtonPicture.View(picture, Math.Round(Math.Min(ToolbarPlan.Inner(size.Width), ToolbarPlan.Inner(size.Height)) * 0.6), () =>
                 {
                     _log.Info($"button rows: picture {b.IconFile} can't be drawn; its icon is used");
                     button.Content = Glyph(b.Icon);
@@ -121,7 +122,7 @@ internal sealed class ToolbarRenderer
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
         }
         // The look, after placing; only values that differ are set. The pickers take none of it (their widths are ProviderBar's).
-        // Sizes come from the same Metrics as Fit's widths (custom buttons capped at 80 DIP), so what is drawn is what was fitted.
+        // Sizes come from the same Metrics as Fit's widths (every button one cell high), so what is drawn is what was fitted.
         Restyle(model);
         Model = model;
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
@@ -223,7 +224,7 @@ internal sealed class ToolbarRenderer
     public void SetAccent(string? hex)
     {
         if (_accent == hex) return;
-        _accent = hex;
+        _accent = ToolbarAccent.Theme = hex;
         if (Model is { } model) Restyle(model);
     }
 
@@ -232,8 +233,10 @@ internal sealed class ToolbarRenderer
         var accent = AccentOutline();
         foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
         foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
-        ApplyStyle(_top.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
-        ApplyStyle(_bottom.More, model.Style, ToolbarPlan.Metrics(model.Style), accent);
+        // The automatic "⋯" button is always one cell (BaseWidth x one cell high), whatever the bar's size or cells.
+        var overflowStyle = model.Style with { Size = ButtonSize.Normal, Cells = null };
+        ApplyStyle(_top.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
+        ApplyStyle(_bottom.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
     }
 
     /// <summary>The outline's thickness: drawn inside the button's fixed width and height, so it never changes the layout.</summary>
@@ -266,23 +269,8 @@ internal sealed class ToolbarRenderer
         }
     }
 
-    /// <summary>The default outline colour: a contrast theme's highlight colour, else the panel theme's accent (Hotline's purple
-    /// unless the user matches Windows or picks a colour), else Windows' accent if the theme gave none.</summary>
-    private Windows.UI.Color AccentOutline()
-    {
-        try
-        {
-            if (SystemTheme.Colors.Contrast is { } contrast && ThemeColor.TryParse(contrast.Highlight, out var h))
-                return Windows.UI.Color.FromArgb(0xFF, h.R, h.G, h.B);
-            if (_accent is not null && ThemeColor.TryParse(_accent, out var t))
-                return Windows.UI.Color.FromArgb(0xFF, t.R, t.G, t.B);
-            var accent = Ui.GetColorValue(Windows.UI.ViewManagement.UIColorType.Accent); // SystemAccentColor's source
-            return Windows.UI.Color.FromArgb(0xFF, accent.R, accent.G, accent.B);
-        }
-        catch (Exception) { return Windows.UI.Color.FromArgb(0xFF, 0x00, 0x78, 0xD4); } // WinRT can fail in any form: Windows' default blue
-    }
-
-    private static readonly Windows.UI.ViewManagement.UISettings Ui = new();
+    /// <summary>The default outline colour: <see cref="ToolbarAccent"/> (shared with Settings' swatches).</summary>
+    private Windows.UI.Color AccentOutline() => ToolbarAccent.Resolve(_accent);
 
     // ---- the "⋯" menu ----
 

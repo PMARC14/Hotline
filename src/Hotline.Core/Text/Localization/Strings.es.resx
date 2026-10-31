@@ -438,6 +438,7 @@ Denegar:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>no se pudo iniciar {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>El servidor {0} no se puede iniciar: "{1}" se ejecuta mediante cmd.exe, que no puede pasar de forma segura los caracteres " % ^ &amp; | &lt; &gt; ! o saltos de línea en "command" o "args". Apunta "command" al .exe del programa o elimina esos caracteres.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>No se pudo leer toolbar.json: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Más</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nada por aquí</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menú del botón …</value></data>

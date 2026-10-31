@@ -30,7 +30,7 @@ public partial class App
         var iconStamp = IconStamp(dataDir);
         if (_toolbarApplied && load.Model.Equals(_popup.ToolbarModel) && iconStamp == _iconStamp) return;
         _iconStamp = iconStamp;
-        if (!Enum.GetValues<Hotline.Core.Windowing.Quadrant>().SelectMany(load.Model.Items).Contains("settings"))
+        if (!Enum.GetValues<Hotline.Core.Windowing.Quadrant>().SelectMany(load.Model.Items).Concat(load.Model.Menu).Contains("settings"))
             _log?.Info("toolbar.json places no Settings button: Settings opens from the tray icon only");
         _toolbarApplied = true;
         try { _popup.ApplyToolbar(load.Model); }
@@ -38,24 +38,26 @@ public partial class App
     }
 
     /// <summary>
-    /// The width (DIP) the panel's button rows have: the live panel's when it has been laid out, else the one it opens with (the width setting,
-    /// or its percentage of the primary work area between the minimum and maximum). Settings' "Move what doesn't fit into the menu" plans with it.
+    /// The width (DIP) the button rows are planned at: the NARROWEST width the bar is shown at, so nothing planned to fit is cut off at
+    /// the other. That is the smaller of the width the panel opens with (the width setting, or its percentage of the work area of the
+    /// monitor it would open on, see PopupWindow.OpeningWidthDip) and the live panel's width when it has been laid out, less the panel's side
+    /// padding. Settings' "Move what doesn't fit into the menu" plans with it. Without a panel (or if the monitor can't be asked) the
+    /// width setting, else the default room of 11 buttons.
     /// </summary>
     private double BarRoom(Hotline.Core.Settings.WindowSettings window)
     {
+        var padding = 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding; // the panel's side padding (PopupWindow.xaml)
         try
         {
-            if (_popup is { } popup)
-            {
-                var live = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
-                if (live > 0) return live;
-            }
-            var scale = _popup?.Root.XamlRoot?.RasterizationScale ?? 1.0;
-            var work = Microsoft.UI.Windowing.DisplayArea.Primary.WorkArea.Width;
-            var width = window.Width ?? Hotline.Core.Windowing.PopupGeometry.RelativeWidthDip(work, scale, window.WidthPercent, window.MinWidth, window.MaxWidth);
-            return Math.Max(0, width - 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding); // the panel's side padding (PopupWindow.xaml)
+            var width = _popup?.OpeningWidthDip() ?? window.Width ?? Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11);
+            if (_popup is { } popup && popup.Root.ActualWidth is > 0 and var live) width = Math.Min(width, live);
+            return Math.Max(0, width - padding);
         }
-        catch (Exception ex) { _log?.Error("working out the panel width for the button rows failed", ex); return Math.Max(0, window.MinWidth - 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding); }
+        catch (Exception ex)
+        {
+            _log?.Error("working out the panel width for the button rows failed", ex);
+            return Math.Max(0, (window.Width ?? Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11)) - padding);
+        }
     }
 
     private bool _toolbarApplied;

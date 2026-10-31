@@ -48,10 +48,10 @@
             <SolidColorBrush x:Key="ScrollBarThumbFillPointerOver" Color="#8C9A9A9A" />
             <SolidColorBrush x:Key="ScrollBarThumbFillPressed" Color="#A6B0B0B0" />
             <Style x:Key="ToolbarButton" TargetType="Button" BasedOn="{StaticResource DefaultButtonStyle}">
-                <Setter Property="Width" Value="36" /><Setter Property="Height" Value="32" />
+                <Setter Property="Width" Value="38" /><Setter Property="Height" Value="34" />
                 <Setter Property="Padding" Value="0" /><Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
-                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
             <!-- toolbar.json "style": outline and filled take the theme's own button brushes (contrast themes included);
                  size is set per button (ToolbarRenderer). Hover and pressed keep the template's states. -->
@@ -66,10 +66,10 @@
             </Style>
             <!-- The same for the pin (a toggle button). -->
             <Style x:Key="ToolbarToggle" TargetType="ToggleButton" BasedOn="{StaticResource DefaultToggleButtonStyle}">
-                <Setter Property="Width" Value="36" /><Setter Property="Height" Value="32" />
+                <Setter Property="Width" Value="38" /><Setter Property="Height" Value="34" />
                 <Setter Property="Padding" Value="0" /><Setter Property="Background" Value="Transparent" />
                 <Setter Property="BorderThickness" Value="0" /><Setter Property="FontFamily" Value="Segoe Fluent Icons" />
-                <Setter Property="FontSize" Value="15" />
+                <Setter Property="FontSize" Value="16" />
             </Style>
             <Style x:Key="ToolbarToggleOutline" TargetType="ToggleButton" BasedOn="{StaticResource ToolbarToggle}">
                 <Setter Property="BorderBrush" Value="{ThemeResource ToggleButtonBorderBrush}" /><Setter Property="BorderThickness" Value="1" />
@@ -127,7 +127,7 @@
                 </DataTemplate>
                 <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
                     <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
-                    <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
+                    <Setter Property="Height" Value="34" /><Setter Property="FontSize" Value="12" />
                     <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
                     <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Opacity" Value="0.85" /><Setter Property="VerticalAlignment" Value="Center" />
@@ -202,7 +202,7 @@
                 </DataTemplate>
                 <Style TargetType="ComboBox" BasedOn="{StaticResource DefaultComboBoxStyle}">
                     <Setter Property="ItemTemplate" Value="{StaticResource FitText}" />
-                    <Setter Property="Height" Value="28" /><Setter Property="FontSize" Value="12" />
+                    <Setter Property="Height" Value="34" /><Setter Property="FontSize" Value="12" />
                     <Setter Property="Padding" Value="6,0,0,0" /><Setter Property="MinWidth" Value="0" />
                     <Setter Property="Background" Value="Transparent" /><Setter Property="BorderThickness" Value="0" />
                     <Setter Property="Opacity" Value="0.85" /><Setter Property="VerticalAlignment" Value="Center" />

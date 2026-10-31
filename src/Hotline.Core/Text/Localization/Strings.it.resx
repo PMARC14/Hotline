@@ -438,6 +438,7 @@ Nega:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>impossibile avviare {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Impossibile avviare il server {0}: "{1}" viene eseguito tramite cmd.exe, che non può passare in sicurezza i caratteri " % ^ &amp; | &lt; &gt; ! o interruzioni di riga in "command" o "args". Punta "command" al file .exe del programma oppure rimuovi tali caratteri.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Impossibile leggere toolbar.json: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Altro</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niente qui</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu del pulsante …</value></data>

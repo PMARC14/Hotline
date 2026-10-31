@@ -438,6 +438,7 @@
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} を起動できませんでした</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>{0} サーバーを開始できません: "{1}" は cmd.exe 経由で実行されますが、"command" または "args" 内の " % ^ &amp; | &lt; &gt; ! の文字や改行を安全に渡すことができません。"command" でプログラムの .exe を指定するか、これらの文字を削除してください。</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json を読み取れませんでした: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>その他</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>ここには何もありません</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… ボタンのメニュー</value></data>

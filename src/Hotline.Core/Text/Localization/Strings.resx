@@ -438,6 +438,7 @@ Deny:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>couldn't start {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>The {0} server can't start: "{1}" runs through cmd.exe, which can't safely pass the characters " % ^ &amp; | &lt; &gt; ! or line breaks in "command" or "args". Point "command" at the program's .exe, or remove those characters.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json couldn't be read: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>More</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>The … button's box</value></data>

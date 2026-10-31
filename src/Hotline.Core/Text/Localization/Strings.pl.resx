@@ -438,6 +438,7 @@ Zabroń:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>nie można uruchomić {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Nie można uruchomić serwera {0}: "{1}" jest uruchamiany za pośrednictwem cmd.exe, który nie może bezpiecznie przekazać znaków " % ^ &amp; | &lt; &gt; ! ani podziałów wiersza w parametrach "command" lub "args". Skieruj "command" na plik .exe programu lub usuń te znaki.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Nie można odczytać toolbar.json: {0}</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Więcej</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nic tu nie ma</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu przycisku …</value></data>

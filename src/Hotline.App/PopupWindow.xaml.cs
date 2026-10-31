@@ -122,6 +122,10 @@ public sealed partial class PopupWindow : Window
     /// <summary>The theme's accent colour for the bar's outlines (see <see cref="ToolbarRenderer.SetAccent"/>).</summary>
     public void SetToolbarAccent(string? hex) => _rows.SetAccent(hex);
 
+    /// <summary>The theme accent the bar's outlines use (#RRGGBB), null before a theme set one; Settings shows its swatch from it
+    /// (see <see cref="ToolbarAccent"/>).</summary>
+    public string? ToolbarAccentHex => ToolbarAccent.Theme;
+
     /// <summary>Rebuilds both button rows from the model (see <see cref="ToolbarRenderer"/>); the fit to the panel's width
     /// follows after layout (ProviderBar, through <see cref="ToolbarChanged"/>).</summary>
     public void ApplyToolbar(ToolbarModel model)
@@ -786,6 +790,15 @@ public sealed partial class PopupWindow : Window
         ChooseDirection();
         _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
         ApplyHeight(force: true);
+    }
+
+    /// <summary>The width (DIP) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
+    /// monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
+    public double OpeningWidthDip()
+    {
+        var (area, monitor, _) = HomeMonitor();
+        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        return _settings.Width ?? PopupGeometry.RelativeWidthDip(area.WorkArea.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
     }
 
     /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>

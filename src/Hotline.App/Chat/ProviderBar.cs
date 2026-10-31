@@ -171,6 +171,8 @@ internal sealed class ProviderBar(
         {
             var visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (box.Visibility != visibility) box.Visibility = visibility;
+            var height = ToolbarPlan.Inner(ToolbarPlan.BaseHeight); // as tall as a button (one cell less the inset)
+            if (box.Height != height) box.Height = height;
             if (width > 0 && box.Width != ToolbarPlan.Inner(width)) box.Width = ToolbarPlan.Inner(width); // the cell's width less its inset (the renderer set the margin); unchanged values never start another layout
         }
     }

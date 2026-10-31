@@ -207,16 +207,20 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 | `top`, `items` | Objects with `left`, `center` (optional) and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below) |
 | `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order |
-| `style` | The look of the whole bar: `size` (`compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour), `width` and `height` (20-80 DIPs) |
-| `overrides` | Per item id: the same `size`, `outline`, `outlineColor`, `filled`, `width`, `height`. A key you leave out comes from `style`, then the defaults. For a picker only `span` |
+| `style` | The look of the whole bar: `size` (`compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour), `cells` (the width in cells: 0.5, 1, 2, 3 or 4) |
+| `overrides` | Per item id: the same `size`, `cells`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. For a picker only `span`. The placed `more` button takes overrides like any item |
 | `buttons` | Your own buttons, by id (below) |
 
-**Cells and sizes.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). `compact` is half a cell (at least
-20 × 20, icon 13), `normal` one cell, `wide` two cells across and one high (80 × 36, icon 19). The size is the cell's whole size, padding included: cells touch
-with no gap, and the visible button is the cell less 1 DIP on each side (a normal button shows 38 × 34, so neighbours are 2 DIPs
-apart). So two normal buttons are as wide as one wide or four compact ones, and a row is the sum of its cells. `width`/`height` win over
-`size` but stay within 20-80. Custom buttons never exceed 80 × 80 (icon 22). The "..." button takes the bar's size. In Settings the
-bar's size shows **Custom** while some button has its own; picking a size there clears every button's own size.
+**Cells and sizes.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). Every button is **one cell high**, always,
+built-in or custom, so every row is 36 DIPs high. `compact` is half a cell across (20 × 36, icon 13), `normal` one cell (40 × 36),
+`wide` two cells across (80 × 36, the same icon 16 as normal). `cells` (0.5, 1, 2, 3 or 4) sets the width in cells and wins over `size`
+(any other value is ignored with a warning and the size's width applies); an item's own `size` beats a `cells` set on the bar. The size
+is the cell's whole size, padding included: cells touch with no gap, and the visible button is the cell less 1 DIP on each side (a normal button
+shows 38 × 34, so neighbours are 2 DIPs apart). So two normal buttons are as wide as one wide or four compact ones, and a row is the sum of its
+cells. `width` and `height` keys from older files are no longer used: they are ignored with one warning per file. The automatic "..." button is
+always one cell (40 × 36), whatever the bar's size. In Settings the bar's size shows **Custom** while the widths drawn are not all one of the three
+sizes (some button has its own `cells` or size, or the bar's `cells` is 3 or 4); picking a size there clears the bar's and every button's own `cells`
+and size. A button's flyout has **Width (cells)** with 0.5, 1, 2, 3 and 4.
 The bar's room is the panel's width less its padding (10 DIPs on every side).
 
 **Outline.** `"outline": true` draws a 1.5-DIP border in the accent colour (a contrast theme: the system highlight colour) or in
@@ -224,18 +228,20 @@ The bar's room is the panel's width less its padding (10 DIPs on every side).
 
 **Pickers.** `effort`, `model` and `provider` are three independent items: each can sit in any group of either row, between any
 buttons, and be moved, hidden or sized on its own. An id listed twice is shown at its first place (bottom left, bottom center, bottom
-right, top left, top center, top right). Pickers ignore `style`. Their width is `span` cells of 40 DIPs (1-8, whatever the bar's size);
+right, top left, top center, top right). Pickers ignore `style`. A picker is one cell high like a button (its drop-down is 34 DIPs high with the 1 DIP inset). Their width is `span` cells of 40 DIPs (1-8, whatever the bar's size);
 `span` is the only `overrides` key a picker takes (anything else is dropped with a warning):
 
 ```jsonc
 "overrides": { "model": { "span": 6 }, "effort": { "span": 1 } }
 ```
 
-| Picker | Default `span` (shipped file) | Width (DIPs) | Narrowest before it hides (outer width) |
+| Picker | Default `span` | Width (DIPs) | Narrowest before it hides (outer width) |
 |---|---|---|---|
-| `effort` | 2 (3) | 80 (120) | 56 |
-| `model` | 4 (4) | 160 | 84 |
-| `provider` | 3 (4) | 120 (160) | 72 |
+| `effort` | 3 | 120 | 56 |
+| `model` | 4 | 160 | 84 |
+| `provider` | 4 | 160 | 72 |
+
+A span equal to the default is not written to the file (the shipped file has no picker entries in `overrides`).
 
 A span is a maximum as well as the preferred width (the drop-down itself is 1 DIP narrower on each side). In a short row the pickers
 shrink evenly down to the narrowest width (never past their own width); when that is not enough they hide one at a time: `effort`,
@@ -254,11 +260,12 @@ after your entries and a separator, with no second "..." button; a row without `
 leave a short row; with nothing in the menu it still opens a disabled "Nothing here". A `menu` id that is also in a group stays in the
 group (warning); unknown ids, pickers, `more` and repeats are dropped (warning); `menu` without a `more` button is ignored (one
 warning). Settings › Button rows has a card for this box (drag items in and out, **Move to the ... button's box** on each item) and a
-button **Move what doesn't fit into the menu**, which plans the bar at the panel's current width and moves what would overflow into
-the box (adding `more` at the end of the bottom-right group if there is none).
+button **Move what doesn't fit into the menu**, which plans the bar at the narrowest width it is shown at (the smaller of the opening width on the
+monitor the panel would open on and the live width) and moves what would overflow into the box. It adds `more` (at the end of the bottom-right group) only
+when something really overflows; a bar that fits is left as it is.
 
 **Reference layouts.** `ToolbarProfiles` holds complete `toolbar.json` examples, tried automatically at every panel width and bar size
-and drawn by the panel's self-test (steps P01-P33); use any as a starting point:
+and drawn by the panel's self-test (steps P01-P45); use any as a starting point:
 
 | Name | What it shows |
 |---|---|
@@ -270,7 +277,7 @@ and drawn by the panel's self-test (steps P01-P33); use any as a starting point:
 | `pickers-apart-corners`, `picker-between-buttons`, `pickers-one-per-row-right` | pickers placed one by one: effort top left, model top right, provider bottom centre; one picker between buttons; one in each row's right group |
 | `more-menu-bottom-right-with-5-items`, `more-menu-top-centre-with-overflow`, `more-in-both-rows` | `more` last in the bottom-right group with five buttons in its menu; `more` in the top-centre group with its row's overflow merging in; one row with `more` beside a crowded row that keeps its automatic "..." |
 | `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 cells wide; spans 1, 4 and 8 |
-| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact or wide; a different size on several buttons |
+| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact (half a cell) or wide (two cells), every button one cell high; a different size or `cells` on several buttons |
 | `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |
 | `only-pickers`, `only-right-group`, `all-items-in-one-group` | a row of pickers only; a right group only; every possible item (36) in one group |
 | `empty-bar`, `damaged-file` | an explicitly empty bar; a damaged file that still renders |
@@ -306,7 +313,7 @@ as `toolbar.json.bak` (comments are not carried over).
 
 **Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json` (the previous file goes to
 `backups\reset-<time>\`); `.defaults\toolbar.json` is rewritten at every start. New installs get the owner's layout: effort, model and
-provider across the top row (spans 3, 4, 4); pin and the three captures on the bottom left, prompt and Continue in in the centre,
+provider across the top row (the default spans 3, 4, 4); pin and the three captures on the bottom left, prompt and Continue in in the centre,
 recent, new chat and settings on the right.
 
 ## Backup (Settings > Backup)
