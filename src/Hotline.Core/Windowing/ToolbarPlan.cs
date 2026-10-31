@@ -73,7 +73,7 @@ public static class ToolbarPlan
 
     /// <summary>
     /// The size presets, from the base (<see cref="BaseWidth"/> × <see cref="BaseHeight"/>, glyph <see cref="BaseFont"/>):
-    /// compact is half of it (never under 20×20), normal the base, wide twice it; the glyph is 0.8, 1 and 1.2 times the
+    /// compact is half of it (never under 20×20), normal the base, wide twice as wide but no higher (a row stays one cell high); the glyph is 0.8, 1 and 1.2 times the
     /// base's. An item's width/height wins over its preset but stays within 20-80. A custom button (<paramref name="isCustom"/>)
     /// never goes past 80×80 and a glyph of 22, whatever the bar's or its own size (a safety net should the base grow).
     /// The renderer and every fit measure through here, so what is drawn is what was fitted.
@@ -84,14 +84,15 @@ public static class ToolbarPlan
     /// <summary><see cref="Metrics(ButtonStyle, bool)"/> from another base (tests).</summary>
     public static ButtonMetrics Metrics(ButtonStyle style, bool isCustom, double baseWidth, double baseHeight, double baseFont)
     {
-        var (scale, glyph) = style.Size switch
+        // Wide only widens (two cells across, the row stays one cell high); compact halves both.
+        var (widthScale, heightScale, glyph) = style.Size switch
         {
-            ButtonSize.Compact => (0.5, 0.8),
-            ButtonSize.Wide => (2.0, 1.2),
-            _ => (1.0, 1.0),
+            ButtonSize.Compact => (0.5, 0.5, 0.8),
+            ButtonSize.Wide => (2.0, 1.0, 1.2),
+            _ => (1.0, 1.0, 1.0),
         };
-        var width = Math.Max(MinDip, Math.Round(baseWidth * scale));
-        var height = Math.Max(MinDip, Math.Round(baseHeight * scale));
+        var width = Math.Max(MinDip, Math.Round(baseWidth * widthScale));
+        var height = Math.Max(MinDip, Math.Round(baseHeight * heightScale));
         var font = Math.Round(baseFont * glyph);
         // Resolve already clamps a file's width and height; a model built in memory (Settings, the self-test) may not be.
         if (style.Width is { } w) width = Math.Clamp(w, MinDip, MaxDip);

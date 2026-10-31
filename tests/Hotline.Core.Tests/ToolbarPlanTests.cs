@@ -18,7 +18,7 @@ public sealed class ToolbarPlanTests
     [Theory]
     [InlineData(ButtonSize.Compact, 20, 20, 12)] // half is 18 × 16: kept at the 20-DIP minimum
     [InlineData(ButtonSize.Normal, 36, 32, 15)]
-    [InlineData(ButtonSize.Wide, 72, 64, 18)]
+    [InlineData(ButtonSize.Wide, 72, 32, 18)] // twice as wide, no higher
     public void Size_presets(ButtonSize size, double width, double height, double font) =>
         Assert.Equal(new ButtonMetrics(width, height, font), ToolbarPlan.Metrics(new ButtonStyle(size, false, false), false, 36, 32, 15));
 
@@ -27,18 +27,18 @@ public sealed class ToolbarPlanTests
     {
         var b = (W: ToolbarPlan.BaseWidth, H: ToolbarPlan.BaseHeight, F: ToolbarPlan.BaseFont);
         Assert.Equal(new ButtonMetrics(b.W, b.H, b.F), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Normal)));
-        Assert.Equal(new ButtonMetrics(2 * b.W, 2 * b.H, Math.Round(1.2 * b.F)), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide)));
+        Assert.Equal(new ButtonMetrics(2 * b.W, b.H, Math.Round(1.2 * b.F)), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide)));
         Assert.Equal(new ButtonMetrics(Math.Max(20, Math.Round(b.W / 2)), Math.Max(20, Math.Round(b.H / 2)), Math.Round(0.8 * b.F)),
             ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact)));
         // A bigger base: compact is a true half, and every preset follows.
         Assert.Equal(new ButtonMetrics(25, 22, 16), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Compact), false, 50, 44, 20));
-        Assert.Equal(new ButtonMetrics(100, 88, 24), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide), false, 50, 44, 20));
+        Assert.Equal(new ButtonMetrics(100, 44, 24), ToolbarPlan.Metrics(new ButtonStyle(ButtonSize.Wide), false, 50, 44, 20));
     }
 
     [Theory]
     [InlineData(ButtonSize.Compact, 25, 22, 16)]
     [InlineData(ButtonSize.Normal, 50, 44, 20)]
-    [InlineData(ButtonSize.Wide, 80, 80, 22)] // 100 × 88, glyph 24 for a built-in button
+    [InlineData(ButtonSize.Wide, 80, 44, 22)] // 100 × 44, glyph 24 for a built-in button
     public void Custom_buttons_keep_the_80_dip_limit_even_when_the_base_grows(ButtonSize size, double width, double height, double font) =>
         Assert.Equal(new ButtonMetrics(width, height, font), ToolbarPlan.Metrics(new ButtonStyle(size), true, 50, 44, 20));
 

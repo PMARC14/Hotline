@@ -212,7 +212,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 | `buttons` | Your own buttons, by id (below) |
 
 **Cells and sizes.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). `compact` is half a cell (at least
-20 × 20, icon 13), `normal` one cell, `wide` two (80 × 72, icon 19). The size is the cell's whole size, padding included: cells touch
+20 × 20, icon 13), `normal` one cell, `wide` two cells across and one high (80 × 36, icon 19). The size is the cell's whole size, padding included: cells touch
 with no gap, and the visible button is the cell less 1 DIP on each side (a normal button shows 38 × 34, so neighbours are 2 DIPs
 apart). So two normal buttons are as wide as one wide or four compact ones, and a row is the sum of its cells. `width`/`height` win over
 `size` but stay within 20-80. Custom buttons never exceed 80 × 80 (icon 22). The "..." button takes the bar's size. In Settings the
