@@ -111,7 +111,7 @@
   <data name="Nav_Appearance" xml:space="preserve"><value>Weergave</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>Venster</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>Chat en geschiedenis</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>Extra's</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>Extra</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>Geavanceerd</value></data>
   <data name="Nav_About" xml:space="preserve"><value>Over</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Geldt na het opnieuw starten van Hotline.)</value></data>
@@ -438,7 +438,7 @@ Weigeren:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>{0} kon niet worden gestart</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>De {0}-server kan niet worden gestart: "{1}" wordt uitgevoerd via cmd.exe, waardoor de tekens " % ^ &amp; | &lt; &gt; ! of reeleinden in "command" of "args" niet veilig kunnen worden doorgegeven. Verwijs met "command" naar de .exe van het programma of verwijder deze tekens.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json kon niet worden gelezen: {0}</value></data>
-  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Breedte (cellen)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niets hier</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu van knop …</value></data>
@@ -564,61 +564,61 @@ Weigeren:
   <data name="Grip_Tip" xml:space="preserve"><value>Sleep om te verplaatsen; klik met de rechtermuisknop om deze positie op te slaan</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chathoogte</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maximale chathoogte. 0 = automatisch (het bovenstaande maximale hoogtepercentage).</value></data>
-  <data name="Settings_ActionFailed" xml:space="preserve"><value>That didn't work: {0}</value></data>
-  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Reset, but these files could not be handled and were left as they are: {1}. The previous files are in {0}.</value></data>
-  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Couldn't change the model: {0}. The previous one is kept.</value></data>
-  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Couldn't list models: {0}</value></data>
-  <data name="Bar_PromptFailed" xml:space="preserve"><value>Couldn't change the prompt: {0}</value></data>
-  <data name="Attach_DropFailed" xml:space="preserve"><value>Couldn't attach dropped items: {0}</value></data>
-  <data name="Api_PlainHttp" xml:space="preserve"><value>Not sending the API key for {0} over plain http to {1}; use an https:// endpoint.</value></data>
-  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>The file is larger than a settings backup can be.</value></data>
-  <data name="Backup_Err_NotZip" xml:space="preserve"><value>This isn't a readable .zip file.</value></data>
-  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>The file holds more than {0} files.</value></data>
-  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} appears twice (or differs only in capital letters).</value></data>
-  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Unexpected entry: {0}.</value></data>
-  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} is larger than 8 MB.</value></data>
-  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} compresses suspiciously well.</value></data>
-  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>The files add up to more than 64 MB.</value></data>
-  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is missing).</value></data>
-  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json is too large.</value></data>
-  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} is not the size it says.</value></data>
-  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} is listed in the backup but missing.</value></data>
-  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} is not in the backup's list.</value></data>
-  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} doesn't match the backup's list (changed or damaged).</value></data>
-  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is not valid).</value></data>
-  <data name="Backup_Err_Newer" xml:space="preserve"><value>This backup was made by a newer version of Hotline. Update Hotline to import it.</value></data>
-  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Not a Hotline settings backup (the file list is missing).</value></data>
-  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Not a Hotline settings backup (the file list is not valid).</value></data>
-  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json can't be read).</value></data>
-  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>The settings folder isn't a usable path.</value></data>
-  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>The files that would be replaced couldn't be copied to a backup folder first.</value></data>
-  <data name="Backup_Why_TooMany" xml:space="preserve"><value>too many files</value></data>
-  <data name="Backup_Why_Link" xml:space="preserve"><value>a link, not a file</value></data>
-  <data name="Backup_Why_Big" xml:space="preserve"><value>larger than 8 MB</value></data>
-  <data name="Backup_Why_Total" xml:space="preserve"><value>the backup would pass 64 MB</value></data>
-  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>couldn't be read</value></data>
-  <data name="Backup_Why_BadName" xml:space="preserve"><value>not a name a backup can hold</value></data>
-  <data name="Backup_Why_Folder" xml:space="preserve"><value>couldn't be listed</value></data>
-  <data name="Backup_Why_BadPath" xml:space="preserve"><value>not a usable path</value></data>
-  <data name="Backup_Why_Outside" xml:space="preserve"><value>outside the settings folder</value></data>
-  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>its folder is a link</value></data>
-  <data name="Backup_Why_Locked" xml:space="preserve"><value>couldn't be written (in use or read-only)</value></data>
-  <data name="Backup_Why_NotWav" xml:space="preserve"><value>not a .wav sound</value></data>
-  <data name="Backup_Why_NotPng" xml:space="preserve"><value>not a usable picture (PNG, 16-256 px)</value></data>
-  <data name="Backup_Why_NotText" xml:space="preserve"><value>not a text file</value></data>
-  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>not readable as settings</value></data>
-  <data name="Backup_Why_NotObject" xml:space="preserve"><value>not a JSON object</value></data>
-  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>not readable</value></data>
-  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>larger than a quick action can be (64 KB)</value></data>
-  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>not readable as a connection</value></data>
-  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
-  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
-  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
+  <data name="Settings_ActionFailed" xml:space="preserve"><value>Dat is niet gelukt: {0}</value></data>
+  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Gereset, maar deze bestanden konden niet worden verwerkt en zijn ongewijzigd gebleven: {1}. De vorige bestanden staan in {0}.</value></data>
+  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Kon het model niet wijzigen: {0}. Het vorige model is behouden.</value></data>
+  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Kan modellen niet weergeven: {0}</value></data>
+  <data name="Bar_PromptFailed" xml:space="preserve"><value>Kon de prompt niet wijzigen: {0}</value></data>
+  <data name="Attach_DropFailed" xml:space="preserve"><value>Kan neergezette items niet bijvoegen: {0}</value></data>
+  <data name="Api_PlainHttp" xml:space="preserve"><value>De API-sleutel voor {0} wordt niet via onbeveiligde http naar {1} verzonden; gebruik een https://-eindpunt.</value></data>
+  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>Het bestand is groter dan een instellingenback-up mag zijn.</value></data>
+  <data name="Backup_Err_NotZip" xml:space="preserve"><value>Dit is geen leesbaar .zip-bestand.</value></data>
+  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>Het bestand bevat meer dan {0} bestanden.</value></data>
+  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} komt twee keer voor (of verschilt alleen in hoofdletters/kleine letters).</value></data>
+  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Onverwacht item: {0}.</value></data>
+  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} is groter dan 8 MB.</value></data>
+  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} comprimeert verdacht goed.</value></data>
+  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>De bestanden zijn samen groter dan 64 MB.</value></data>
+  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Geen back-up van Hotline-instellingen (hotline-export.json ontbreekt).</value></data>
+  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json is te groot.</value></data>
+  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} heeft niet de aangegeven grootte.</value></data>
+  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} staat vermeld in de back-up, maar ontbreekt.</value></data>
+  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} staat niet in de back-uplijst.</value></data>
+  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} komt niet overeen met de back-uplijst (gewijzigd of beschadigd).</value></data>
+  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Geen Hotline-instellingenback-up (hotline-export.json is ongeldig).</value></data>
+  <data name="Backup_Err_Newer" xml:space="preserve"><value>Deze back-up is gemaakt door een nieuwere versie van Hotline. Werk Hotline bij om deze te importeren.</value></data>
+  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Geen Hotline-instellingenback-up (de bestandslijst ontbreekt).</value></data>
+  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Geen Hotline-instellingenback-up (de bestandenlijst is ongeldig).</value></data>
+  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Geen Hotline-instellingenback-up (hotline-export.json kan niet worden gelezen).</value></data>
+  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>De instellingenmap is geen bruikbaar pad.</value></data>
+  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>De bestanden die vervangen zouden worden, konden niet eerst naar een back-upmap worden gekopieerd.</value></data>
+  <data name="Backup_Why_TooMany" xml:space="preserve"><value>te veel bestanden</value></data>
+  <data name="Backup_Why_Link" xml:space="preserve"><value>een koppeling, geen bestand</value></data>
+  <data name="Backup_Why_Big" xml:space="preserve"><value>groter dan 8 MB</value></data>
+  <data name="Backup_Why_Total" xml:space="preserve"><value>de back-up zou meer dan 64 MB zijn</value></data>
+  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>kon niet worden gelezen</value></data>
+  <data name="Backup_Why_BadName" xml:space="preserve"><value>geen naam die een back-up kan bevatten</value></data>
+  <data name="Backup_Why_Folder" xml:space="preserve"><value>kan niet worden weergegeven</value></data>
+  <data name="Backup_Why_BadPath" xml:space="preserve"><value>geen bruikbaar pad</value></data>
+  <data name="Backup_Why_Outside" xml:space="preserve"><value>buiten de instellingenmap</value></data>
+  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>de map is een koppeling</value></data>
+  <data name="Backup_Why_Locked" xml:space="preserve"><value>kan niet worden geschreven (in gebruik of alleen-lezen)</value></data>
+  <data name="Backup_Why_NotWav" xml:space="preserve"><value>geen .wav-geluid</value></data>
+  <data name="Backup_Why_NotPng" xml:space="preserve"><value>geen bruikbare afbeelding (PNG, 16-256 px)</value></data>
+  <data name="Backup_Why_NotText" xml:space="preserve"><value>geen tekstbestand</value></data>
+  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>niet leesbaar als instellingen</value></data>
+  <data name="Backup_Why_NotObject" xml:space="preserve"><value>geen JSON-object</value></data>
+  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>niet leesbaar</value></data>
+  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>groter dan toegestaan voor een snelle actie (64 KB)</value></data>
+  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>niet leesbaar als verbinding</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Kon geen reservekopie maken van {0} ({1}); het bestand is ongewijzigd gelaten.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Kon {0} niet schrijven ({1}); ongewijzigd gelaten.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>De verbinding {0} zou hetzelfde bestand gebruiken als {1} ({2}); deze is niet opgeslagen. Geef een andere id op.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Back-up</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Verplaats uw Hotline-configuratie naar een andere pc of bewaar een kopie. Een back-up is één .zip-bestand met de onderdelen die u aanvinkt; niets anders (chatgeschiedenis, geheugen, logboeken) wordt meegenomen.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en aangepaste knopafbeeldingen</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Extra's (mcp.json)</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Hulpprogramma's (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>Snelle acties</value></data>

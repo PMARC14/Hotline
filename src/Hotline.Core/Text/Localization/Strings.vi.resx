@@ -438,7 +438,7 @@ Từ chối:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>không thể khởi động {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Máy chủ {0} không thể khởi động: "{1}" chạy qua cmd.exe, vốn không thể truyền an toàn các ký tự " % ^ &amp; | &lt; &gt; ! hoặc dấu ngắt dòng trong "command" hoặc "args". Hãy trỏ "command" vào tệp .exe của chương trình hoặc xóa các ký tự đó.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Không thể đọc toolbar.json: {0}</value></data>
-  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Chiều rộng (ô)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Thêm</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Không có gì ở đây</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu của nút …</value></data>
@@ -564,56 +564,56 @@ Từ chối:
   <data name="Grip_Tip" xml:space="preserve"><value>Kéo để di chuyển; nhấp chuột phải để lưu vị trí này</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chiều cao đoạn chat</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Mức tối đa đoạn chat có thể mở rộng. 0 = tự động (phần trăm chiều cao tối đa ở trên).</value></data>
-  <data name="Settings_ActionFailed" xml:space="preserve"><value>That didn't work: {0}</value></data>
-  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Reset, but these files could not be handled and were left as they are: {1}. The previous files are in {0}.</value></data>
-  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Couldn't change the model: {0}. The previous one is kept.</value></data>
-  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Couldn't list models: {0}</value></data>
-  <data name="Bar_PromptFailed" xml:space="preserve"><value>Couldn't change the prompt: {0}</value></data>
-  <data name="Attach_DropFailed" xml:space="preserve"><value>Couldn't attach dropped items: {0}</value></data>
-  <data name="Api_PlainHttp" xml:space="preserve"><value>Not sending the API key for {0} over plain http to {1}; use an https:// endpoint.</value></data>
-  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>The file is larger than a settings backup can be.</value></data>
-  <data name="Backup_Err_NotZip" xml:space="preserve"><value>This isn't a readable .zip file.</value></data>
-  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>The file holds more than {0} files.</value></data>
-  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} appears twice (or differs only in capital letters).</value></data>
-  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Unexpected entry: {0}.</value></data>
-  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} is larger than 8 MB.</value></data>
-  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} compresses suspiciously well.</value></data>
-  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>The files add up to more than 64 MB.</value></data>
-  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is missing).</value></data>
-  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json is too large.</value></data>
-  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} is not the size it says.</value></data>
-  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} is listed in the backup but missing.</value></data>
-  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} is not in the backup's list.</value></data>
-  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} doesn't match the backup's list (changed or damaged).</value></data>
-  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is not valid).</value></data>
-  <data name="Backup_Err_Newer" xml:space="preserve"><value>This backup was made by a newer version of Hotline. Update Hotline to import it.</value></data>
-  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Not a Hotline settings backup (the file list is missing).</value></data>
-  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Not a Hotline settings backup (the file list is not valid).</value></data>
-  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json can't be read).</value></data>
-  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>The settings folder isn't a usable path.</value></data>
-  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>The files that would be replaced couldn't be copied to a backup folder first.</value></data>
-  <data name="Backup_Why_TooMany" xml:space="preserve"><value>too many files</value></data>
-  <data name="Backup_Why_Link" xml:space="preserve"><value>a link, not a file</value></data>
-  <data name="Backup_Why_Big" xml:space="preserve"><value>larger than 8 MB</value></data>
-  <data name="Backup_Why_Total" xml:space="preserve"><value>the backup would pass 64 MB</value></data>
-  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>couldn't be read</value></data>
-  <data name="Backup_Why_BadName" xml:space="preserve"><value>not a name a backup can hold</value></data>
-  <data name="Backup_Why_Folder" xml:space="preserve"><value>couldn't be listed</value></data>
-  <data name="Backup_Why_BadPath" xml:space="preserve"><value>not a usable path</value></data>
-  <data name="Backup_Why_Outside" xml:space="preserve"><value>outside the settings folder</value></data>
-  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>its folder is a link</value></data>
-  <data name="Backup_Why_Locked" xml:space="preserve"><value>couldn't be written (in use or read-only)</value></data>
-  <data name="Backup_Why_NotWav" xml:space="preserve"><value>not a .wav sound</value></data>
-  <data name="Backup_Why_NotPng" xml:space="preserve"><value>not a usable picture (PNG, 16-256 px)</value></data>
-  <data name="Backup_Why_NotText" xml:space="preserve"><value>not a text file</value></data>
-  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>not readable as settings</value></data>
-  <data name="Backup_Why_NotObject" xml:space="preserve"><value>not a JSON object</value></data>
-  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>not readable</value></data>
-  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>larger than a quick action can be (64 KB)</value></data>
-  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>not readable as a connection</value></data>
-  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
-  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
-  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
+  <data name="Settings_ActionFailed" xml:space="preserve"><value>Thao tác không thành công: {0}</value></data>
+  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Đã đặt lại, nhưng không thể xử lý các tệp này và đã giữ nguyên: {1}. Các tệp trước đó nằm trong {0}.</value></data>
+  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Không thể thay đổi mô hình: {0}. Mô hình trước đó được giữ nguyên.</value></data>
+  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Không thể liệt kê danh sách mô hình: {0}</value></data>
+  <data name="Bar_PromptFailed" xml:space="preserve"><value>Không thể thay đổi lời nhắc: {0}</value></data>
+  <data name="Attach_DropFailed" xml:space="preserve"><value>Không thể đính kèm các mục đã thả: {0}</value></data>
+  <data name="Api_PlainHttp" xml:space="preserve"><value>Không gửi khóa API của {0} qua http thông thường tới {1}; hãy sử dụng điểm cuối https://.</value></data>
+  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>Tệp lớn hơn kích thước cho phép của bản sao lưu cài đặt.</value></data>
+  <data name="Backup_Err_NotZip" xml:space="preserve"><value>Đây không phải là tệp .zip đọc được.</value></data>
+  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>Tệp chứa nhiều hơn {0} tệp.</value></data>
+  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} xuất hiện hai lần (hoặc chỉ khác nhau về chữ hoa/chữ thường).</value></data>
+  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Mục không mong muốn: {0}.</value></data>
+  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} lớn hơn 8 MB.</value></data>
+  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} có tỷ lệ nén cao một cách đáng ngờ.</value></data>
+  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>Tổng dung lượng tệp vượt quá 64 MB.</value></data>
+  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Không phải bản sao lưu cài đặt Hotline (thiếu hotline-export.json).</value></data>
+  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json quá lớn.</value></data>
+  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} không đúng kích thước được thông báo.</value></data>
+  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} có trong bản sao lưu nhưng bị thiếu.</value></data>
+  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} không có trong danh sách sao lưu.</value></data>
+  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} không khớp với danh sách sao lưu (bị thay đổi hoặc hỏng).</value></data>
+  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Không phải bản sao lưu cài đặt Hotline (hotline-export.json không hợp lệ).</value></data>
+  <data name="Backup_Err_Newer" xml:space="preserve"><value>Bản sao lưu này được tạo bởi phiên bản Hotline mới hơn. Hãy cập nhật Hotline để nhập.</value></data>
+  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Không phải bản sao lưu cài đặt Hotline (thiếu danh sách tệp).</value></data>
+  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Không phải bản sao lưu cài đặt Hotline (danh sách tệp không hợp lệ).</value></data>
+  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Không phải bản sao lưu cài đặt Hotline (không thể đọc hotline-export.json).</value></data>
+  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>Thư mục cài đặt không phải là đường dẫn hợp lệ.</value></data>
+  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>Không thể sao chép các tệp sắp bị thay thế vào thư mục sao lưu trước.</value></data>
+  <data name="Backup_Why_TooMany" xml:space="preserve"><value>quá nhiều tệp</value></data>
+  <data name="Backup_Why_Link" xml:space="preserve"><value>một liên kết, không phải tệp</value></data>
+  <data name="Backup_Why_Big" xml:space="preserve"><value>lớn hơn 8 MB</value></data>
+  <data name="Backup_Why_Total" xml:space="preserve"><value>bản sao lưu sẽ vượt quá 64 MB</value></data>
+  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>không thể đọc được</value></data>
+  <data name="Backup_Why_BadName" xml:space="preserve"><value>tên không hợp lệ cho bản sao lưu</value></data>
+  <data name="Backup_Why_Folder" xml:space="preserve"><value>không thể liệt kê</value></data>
+  <data name="Backup_Why_BadPath" xml:space="preserve"><value>đường dẫn không dùng được</value></data>
+  <data name="Backup_Why_Outside" xml:space="preserve"><value>bên ngoài thư mục cài đặt</value></data>
+  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>thư mục là một liên kết</value></data>
+  <data name="Backup_Why_Locked" xml:space="preserve"><value>không thể ghi (đang được sử dụng hoặc chỉ đọc)</value></data>
+  <data name="Backup_Why_NotWav" xml:space="preserve"><value>không phải âm thanh .wav</value></data>
+  <data name="Backup_Why_NotPng" xml:space="preserve"><value>hình ảnh không sử dụng được (PNG, 16-256 px)</value></data>
+  <data name="Backup_Why_NotText" xml:space="preserve"><value>không phải là tệp văn bản</value></data>
+  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>không thể đọc dưới dạng cài đặt</value></data>
+  <data name="Backup_Why_NotObject" xml:space="preserve"><value>không phải là một đối tượng JSON</value></data>
+  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>không thể đọc</value></data>
+  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>lớn hơn kích thước cho phép của một tác vụ nhanh (64 KB)</value></data>
+  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>không thể đọc dưới dạng kết nối</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Không thể tạo bản sao lưu của {0} trước ({1}); tệp đã được giữ nguyên.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Không thể ghi {0} ({1}); đã giữ nguyên hiện trạng.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>Kết nối {0} sẽ sử dụng cùng một tệp với {1} ({2}); chưa được lưu. Hãy cung cấp một id khác.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Sao lưu</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Chuyển thiết lập Hotline của bạn sang máy tính khác hoặc giữ một bản sao. Bản sao lưu là một tệp .zip duy nhất chứa các phần bạn đánh dấu; không bao gồm những mục khác (lịch sử trò chuyện, bộ nhớ, nhật ký).</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Cài đặt</value></data>

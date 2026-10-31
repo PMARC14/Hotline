@@ -177,7 +177,7 @@ Zabroń:
   <data name="Conn_Endpoint" xml:space="preserve"><value>Punkt końcowy</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Podstawowy adres URL interfejsu API.</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>Zapisany; wpisz, aby zastąpić</value></data>
-  <data name="Conn_Optional" xml:space="preserve"><value>Opcjonalny</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Opcjonalnie</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>Wymagany</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Nie można zapisać klucza</value></data>
   <data name="Conn_ApiKey" xml:space="preserve"><value>Klucz API</value></data>
@@ -422,7 +422,7 @@ Zabroń:
   <data name="Attach_Selection" xml:space="preserve"><value>Zaznaczony tekst</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>Zaznaczony tekst z {0}</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>Możesz dołączyć maksymalnie {0} plików.</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>Tekst z {0}</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Tekst w {0}</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} nie potrafi czytać obrazów.</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} nie potrafi czytać plików.</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>Zaplecze „{0}” nie jest jeszcze dostępne.</value></data>
@@ -438,7 +438,7 @@ Zabroń:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>nie można uruchomić {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Nie można uruchomić serwera {0}: "{1}" jest uruchamiany za pośrednictwem cmd.exe, który nie może bezpiecznie przekazać znaków " % ^ &amp; | &lt; &gt; ! ani podziałów wiersza w parametrach "command" lub "args". Skieruj "command" na plik .exe programu lub usuń te znaki.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>Nie można odczytać toolbar.json: {0}</value></data>
-  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Szerokość (komórki)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Więcej</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nic tu nie ma</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu przycisku …</value></data>
@@ -564,56 +564,56 @@ Zabroń:
   <data name="Grip_Tip" xml:space="preserve"><value>Przeciągnij, aby przesunąć; kliknij prawym przyciskiem myszy, aby zapisać to miejsce</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Wysokość czatu</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maksymalny rozmiar, do którego rozwija się czat. 0 = automatycznie (maksymalny procent wysokości powyżej).</value></data>
-  <data name="Settings_ActionFailed" xml:space="preserve"><value>That didn't work: {0}</value></data>
-  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Reset, but these files could not be handled and were left as they are: {1}. The previous files are in {0}.</value></data>
-  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Couldn't change the model: {0}. The previous one is kept.</value></data>
-  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Couldn't list models: {0}</value></data>
-  <data name="Bar_PromptFailed" xml:space="preserve"><value>Couldn't change the prompt: {0}</value></data>
-  <data name="Attach_DropFailed" xml:space="preserve"><value>Couldn't attach dropped items: {0}</value></data>
-  <data name="Api_PlainHttp" xml:space="preserve"><value>Not sending the API key for {0} over plain http to {1}; use an https:// endpoint.</value></data>
-  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>The file is larger than a settings backup can be.</value></data>
-  <data name="Backup_Err_NotZip" xml:space="preserve"><value>This isn't a readable .zip file.</value></data>
-  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>The file holds more than {0} files.</value></data>
-  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} appears twice (or differs only in capital letters).</value></data>
-  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Unexpected entry: {0}.</value></data>
-  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} is larger than 8 MB.</value></data>
-  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} compresses suspiciously well.</value></data>
-  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>The files add up to more than 64 MB.</value></data>
-  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is missing).</value></data>
-  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json is too large.</value></data>
-  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} is not the size it says.</value></data>
-  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} is listed in the backup but missing.</value></data>
-  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} is not in the backup's list.</value></data>
-  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} doesn't match the backup's list (changed or damaged).</value></data>
-  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is not valid).</value></data>
-  <data name="Backup_Err_Newer" xml:space="preserve"><value>This backup was made by a newer version of Hotline. Update Hotline to import it.</value></data>
-  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Not a Hotline settings backup (the file list is missing).</value></data>
-  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Not a Hotline settings backup (the file list is not valid).</value></data>
-  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json can't be read).</value></data>
-  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>The settings folder isn't a usable path.</value></data>
-  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>The files that would be replaced couldn't be copied to a backup folder first.</value></data>
-  <data name="Backup_Why_TooMany" xml:space="preserve"><value>too many files</value></data>
-  <data name="Backup_Why_Link" xml:space="preserve"><value>a link, not a file</value></data>
-  <data name="Backup_Why_Big" xml:space="preserve"><value>larger than 8 MB</value></data>
-  <data name="Backup_Why_Total" xml:space="preserve"><value>the backup would pass 64 MB</value></data>
-  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>couldn't be read</value></data>
-  <data name="Backup_Why_BadName" xml:space="preserve"><value>not a name a backup can hold</value></data>
-  <data name="Backup_Why_Folder" xml:space="preserve"><value>couldn't be listed</value></data>
-  <data name="Backup_Why_BadPath" xml:space="preserve"><value>not a usable path</value></data>
-  <data name="Backup_Why_Outside" xml:space="preserve"><value>outside the settings folder</value></data>
-  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>its folder is a link</value></data>
-  <data name="Backup_Why_Locked" xml:space="preserve"><value>couldn't be written (in use or read-only)</value></data>
-  <data name="Backup_Why_NotWav" xml:space="preserve"><value>not a .wav sound</value></data>
-  <data name="Backup_Why_NotPng" xml:space="preserve"><value>not a usable picture (PNG, 16-256 px)</value></data>
-  <data name="Backup_Why_NotText" xml:space="preserve"><value>not a text file</value></data>
-  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>not readable as settings</value></data>
-  <data name="Backup_Why_NotObject" xml:space="preserve"><value>not a JSON object</value></data>
-  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>not readable</value></data>
-  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>larger than a quick action can be (64 KB)</value></data>
-  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>not readable as a connection</value></data>
-  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
-  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
-  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
+  <data name="Settings_ActionFailed" xml:space="preserve"><value>To nie zadziałało: {0}</value></data>
+  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Zresetowano, ale tych plików nie udało się przetworzyć i pozostały bez zmian: {1}. Poprzednie pliki znajdują się w {0}.</value></data>
+  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Nie udało się zmienić modelu: {0}. Poprzedni został zachowany.</value></data>
+  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Nie udało się wyświetlić listy modeli: {0}</value></data>
+  <data name="Bar_PromptFailed" xml:space="preserve"><value>Nie udało się zmienić promptu: {0}</value></data>
+  <data name="Attach_DropFailed" xml:space="preserve"><value>Nie udało się załączyć upuszczonych elementów: {0}</value></data>
+  <data name="Api_PlainHttp" xml:space="preserve"><value>Klucz API dla {0} nie zostanie wysłany przez zwykłe http do {1}; użyj punktu końcowego https://.</value></data>
+  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>Plik jest większy niż dozwolony rozmiar kopii zapasowej ustawień.</value></data>
+  <data name="Backup_Err_NotZip" xml:space="preserve"><value>To nie jest czytelny plik .zip.</value></data>
+  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>Plik zawiera więcej niż {0} plików.</value></data>
+  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} występuje dwukrotnie (lub różni się tylko wielkością liter).</value></data>
+  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Nieoczekiwany wpis: {0}.</value></data>
+  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} przekracza 8 MB.</value></data>
+  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} kompresuje się podejrzanie dobrze.</value></data>
+  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>Łączny rozmiar plików przekracza 64 MB.</value></data>
+  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>To nie jest kopia zapasowa ustawień Hotline (brak hotline-export.json).</value></data>
+  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json jest zbyt duży.</value></data>
+  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} ma inny rozmiar niż zadeklarowany.</value></data>
+  <data name="Backup_Err_Missing" xml:space="preserve"><value>Plik {0} jest wymieniony w kopii zapasowej, ale go brakuje.</value></data>
+  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} nie znajduje się na liście kopii zapasowej.</value></data>
+  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} nie zgadza się z listą kopii zapasowej (zmieniony lub uszkodzony).</value></data>
+  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>To nie jest kopia zapasowa ustawień Hotline (plik hotline-export.json jest nieprawidłowy).</value></data>
+  <data name="Backup_Err_Newer" xml:space="preserve"><value>Ta kopia zapasowa została utworzona przez nowszą wersję Hotline. Zaktualizuj Hotline, aby ją zaimportować.</value></data>
+  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>To nie jest kopia zapasowa ustawień Hotline (brak listy plików).</value></data>
+  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>To nie jest kopia zapasowa ustawień Hotline (lista plików jest nieprawidłowa).</value></data>
+  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>To nie jest kopia zapasowa ustawień Hotline (nie można odczytać hotline-export.json).</value></data>
+  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>Folder ustawień nie jest prawidłową ścieżką.</value></data>
+  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>Plików, które miały zostać zastąpione, nie udało się najpierw skopiować do folderu kopii zapasowej.</value></data>
+  <data name="Backup_Why_TooMany" xml:space="preserve"><value>zbyt wiele plików</value></data>
+  <data name="Backup_Why_Link" xml:space="preserve"><value>link, a nie plik</value></data>
+  <data name="Backup_Why_Big" xml:space="preserve"><value>większy niż 8 MB</value></data>
+  <data name="Backup_Why_Total" xml:space="preserve"><value>kopia zapasowa przekroczyłaby 64 MB</value></data>
+  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>nie udało się odczytać</value></data>
+  <data name="Backup_Why_BadName" xml:space="preserve"><value>niedozwolona nazwa w kopii zapasowej</value></data>
+  <data name="Backup_Why_Folder" xml:space="preserve"><value>nie udało się wyświetlić zawartości</value></data>
+  <data name="Backup_Why_BadPath" xml:space="preserve"><value>ścieżka nie nadaje się do użytku</value></data>
+  <data name="Backup_Why_Outside" xml:space="preserve"><value>poza folderem ustawień</value></data>
+  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>jego folder jest łączem</value></data>
+  <data name="Backup_Why_Locked" xml:space="preserve"><value>nie udało się zapisać (plik używany lub tylko do odczytu)</value></data>
+  <data name="Backup_Why_NotWav" xml:space="preserve"><value>to nie jest dźwięk .wav</value></data>
+  <data name="Backup_Why_NotPng" xml:space="preserve"><value>obraz nie do użytku (PNG, 16-256 px)</value></data>
+  <data name="Backup_Why_NotText" xml:space="preserve"><value>nie jest plikiem tekstowym</value></data>
+  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>nie można odczytać jako ustawień</value></data>
+  <data name="Backup_Why_NotObject" xml:space="preserve"><value>nie jest obiektem JSON</value></data>
+  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>nie można odczytać</value></data>
+  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>większy niż dozwolony dla szybkiej akcji (64 KB)</value></data>
+  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>nie można odczytać jako połączenia</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Nie udało się najpierw utworzyć kopii zapasowej {0} ({1}); plik pozostawiono bez zmian.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Nie udało się zapisać {0} ({1}); pozostawiono bez zmian.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>Połączenie {0} używałoby tego samego pliku co {1} ({2}); nie zostało zapisane. Nadaj mu inny id.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Kopia zapasowa</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Przenieś konfigurację Hotline na inny komputer lub zachowaj kopię. Kopia zapasowa to pojedynczy plik .zip zawierający zaznaczone elementy; nic innego (historia czatu, pamięć, dzienniki) nie jest dołączane.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Ustawienia</value></data>
@@ -622,7 +622,7 @@ Zabroń:
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>Połączenia AI</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>Szybkie akcje</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Monity</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>Prompty</value></data>
   <data name="Backup_McpWarn" xml:space="preserve"><value>Plik mcp.json jest eksportowany w obecnej postaci. Jego wartości env mogą zawierać poufne dane, takie jak tokeny: chroń plik lub pozostaw tę opcję niezaznaczoną.</value></data>
   <data name="Backup_ConnNote" xml:space="preserve"><value>Klucze API nie są dołączone: pozostają w Menedżerze poświadczeń systemu Windows. Wprowadź je ponownie na nowym komputerze.</value></data>
   <data name="Backup_Export_Title" xml:space="preserve"><value>Eksport</value></data>

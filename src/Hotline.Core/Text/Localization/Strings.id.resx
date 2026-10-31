@@ -422,7 +422,7 @@ Tolak:
   <data name="Attach_Selection" xml:space="preserve"><value>Teks yang dipilih</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>Teks yang dipilih dari {0}</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>Anda dapat melampirkan hingga {0} file.</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>Teks di {0}</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Teks dalam {0}</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} tidak dapat membaca gambar.</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} tidak dapat membaca file.</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>Backend '{0}' belum tersedia.</value></data>
@@ -438,7 +438,7 @@ Tolak:
   <data name="Mcp_StartFailed" xml:space="preserve"><value>tidak dapat memulai {0}</value></data>
   <data name="Mcp_UnsafeArgument" xml:space="preserve"><value>Server {0} tidak dapat dimulai: "{1}" berjalan melalui cmd.exe, yang tidak dapat meneruskan karakter " % ^ &amp; | &lt; &gt; ! atau jeda baris dengan aman dalam "command" atau "args". Arahkan "command" ke .exe program, atau hapus karakter tersebut.</value></data>
   <data name="Bar_Unreadable" xml:space="preserve"><value>toolbar.json tidak dapat dibaca: {0}</value></data>
-  <data name="Bar_WidthCells" xml:space="preserve"><value>Width (cells)</value></data>
+  <data name="Bar_WidthCells" xml:space="preserve"><value>Lebar (sel)</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Lainnya</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Tidak ada apa-apa di sini</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu tombol …</value></data>
@@ -564,56 +564,56 @@ Tolak:
   <data name="Grip_Tip" xml:space="preserve"><value>Tarik untuk memindahkan; klik kanan untuk menyimpan posisi ini</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Tinggi obrolan</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Tinggi maksimal bentangan obrolan. 0 = otomatis (persentase tinggi maksimum di atas).</value></data>
-  <data name="Settings_ActionFailed" xml:space="preserve"><value>That didn't work: {0}</value></data>
-  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Reset, but these files could not be handled and were left as they are: {1}. The previous files are in {0}.</value></data>
-  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Couldn't change the model: {0}. The previous one is kept.</value></data>
-  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Couldn't list models: {0}</value></data>
-  <data name="Bar_PromptFailed" xml:space="preserve"><value>Couldn't change the prompt: {0}</value></data>
-  <data name="Attach_DropFailed" xml:space="preserve"><value>Couldn't attach dropped items: {0}</value></data>
-  <data name="Api_PlainHttp" xml:space="preserve"><value>Not sending the API key for {0} over plain http to {1}; use an https:// endpoint.</value></data>
-  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>The file is larger than a settings backup can be.</value></data>
-  <data name="Backup_Err_NotZip" xml:space="preserve"><value>This isn't a readable .zip file.</value></data>
-  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>The file holds more than {0} files.</value></data>
-  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} appears twice (or differs only in capital letters).</value></data>
-  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Unexpected entry: {0}.</value></data>
-  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} is larger than 8 MB.</value></data>
-  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} compresses suspiciously well.</value></data>
-  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>The files add up to more than 64 MB.</value></data>
-  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is missing).</value></data>
-  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json is too large.</value></data>
-  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} is not the size it says.</value></data>
-  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} is listed in the backup but missing.</value></data>
-  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} is not in the backup's list.</value></data>
-  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} doesn't match the backup's list (changed or damaged).</value></data>
-  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json is not valid).</value></data>
-  <data name="Backup_Err_Newer" xml:space="preserve"><value>This backup was made by a newer version of Hotline. Update Hotline to import it.</value></data>
-  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Not a Hotline settings backup (the file list is missing).</value></data>
-  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Not a Hotline settings backup (the file list is not valid).</value></data>
-  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Not a Hotline settings backup (hotline-export.json can't be read).</value></data>
-  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>The settings folder isn't a usable path.</value></data>
-  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>The files that would be replaced couldn't be copied to a backup folder first.</value></data>
-  <data name="Backup_Why_TooMany" xml:space="preserve"><value>too many files</value></data>
-  <data name="Backup_Why_Link" xml:space="preserve"><value>a link, not a file</value></data>
-  <data name="Backup_Why_Big" xml:space="preserve"><value>larger than 8 MB</value></data>
-  <data name="Backup_Why_Total" xml:space="preserve"><value>the backup would pass 64 MB</value></data>
-  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>couldn't be read</value></data>
-  <data name="Backup_Why_BadName" xml:space="preserve"><value>not a name a backup can hold</value></data>
-  <data name="Backup_Why_Folder" xml:space="preserve"><value>couldn't be listed</value></data>
-  <data name="Backup_Why_BadPath" xml:space="preserve"><value>not a usable path</value></data>
-  <data name="Backup_Why_Outside" xml:space="preserve"><value>outside the settings folder</value></data>
-  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>its folder is a link</value></data>
-  <data name="Backup_Why_Locked" xml:space="preserve"><value>couldn't be written (in use or read-only)</value></data>
-  <data name="Backup_Why_NotWav" xml:space="preserve"><value>not a .wav sound</value></data>
-  <data name="Backup_Why_NotPng" xml:space="preserve"><value>not a usable picture (PNG, 16-256 px)</value></data>
-  <data name="Backup_Why_NotText" xml:space="preserve"><value>not a text file</value></data>
-  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>not readable as settings</value></data>
-  <data name="Backup_Why_NotObject" xml:space="preserve"><value>not a JSON object</value></data>
-  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>not readable</value></data>
-  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>larger than a quick action can be (64 KB)</value></data>
-  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>not readable as a connection</value></data>
-  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Couldn't make a backup copy of {0} first ({1}); the file was left as it is.</value></data>
-  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Couldn't write {0} ({1}); it was left as it is.</value></data>
-  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>The connection {0} would use the same file as {1} ({2}); it was not saved. Give it a different id.</value></data>
+  <data name="Settings_ActionFailed" xml:space="preserve"><value>Tindakan gagal: {0}</value></data>
+  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Direset, tetapi file-file ini tidak dapat diproses dan dibiarkan apa adanya: {1}. File sebelumnya ada di {0}.</value></data>
+  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Tidak dapat mengubah model: {0}. Model sebelumnya tetap dipertahankan.</value></data>
+  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Tidak dapat membuat daftar model: {0}</value></data>
+  <data name="Bar_PromptFailed" xml:space="preserve"><value>Tidak dapat mengubah prompt: {0}</value></data>
+  <data name="Attach_DropFailed" xml:space="preserve"><value>Tidak dapat melampirkan item yang dilepas: {0}</value></data>
+  <data name="Api_PlainHttp" xml:space="preserve"><value>Tidak mengirim kunci API untuk {0} melalui http biasa ke {1}; gunakan endpoint https://.</value></data>
+  <data name="Backup_Err_TooLarge" xml:space="preserve"><value>File lebih besar dari batas ukuran cadangan pengaturan.</value></data>
+  <data name="Backup_Err_NotZip" xml:space="preserve"><value>Ini bukan file .zip yang dapat dibaca.</value></data>
+  <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>File memuat lebih dari {0} file.</value></data>
+  <data name="Backup_Err_Twice" xml:space="preserve"><value>{0} muncul dua kali (atau hanya berbeda huruf besar/kecil).</value></data>
+  <data name="Backup_Err_Unexpected" xml:space="preserve"><value>Entri tidak terduga: {0}.</value></data>
+  <data name="Backup_Err_EntryTooBig" xml:space="preserve"><value>{0} lebih besar dari 8 MB.</value></data>
+  <data name="Backup_Err_Ratio" xml:space="preserve"><value>{0} terkompresi dengan rasio yang mencurigakan.</value></data>
+  <data name="Backup_Err_TotalTooBig" xml:space="preserve"><value>Total ukuran file melebihi 64 MB.</value></data>
+  <data name="Backup_Err_NoManifest" xml:space="preserve"><value>Bukan cadangan pengaturan Hotline (hotline-export.json hilang).</value></data>
+  <data name="Backup_Err_ManifestBig" xml:space="preserve"><value>hotline-export.json terlalu besar.</value></data>
+  <data name="Backup_Err_SizeLies" xml:space="preserve"><value>{0} tidak sesuai ukuran yang tertera.</value></data>
+  <data name="Backup_Err_Missing" xml:space="preserve"><value>{0} tercantum dalam cadangan tetapi tidak ditemukan.</value></data>
+  <data name="Backup_Err_Unlisted" xml:space="preserve"><value>{0} tidak ada dalam daftar cadangan.</value></data>
+  <data name="Backup_Err_Mismatch" xml:space="preserve"><value>{0} tidak cocok dengan daftar cadangan (diubah atau rusak).</value></data>
+  <data name="Backup_Err_ManifestInvalid" xml:space="preserve"><value>Bukan cadangan pengaturan Hotline (hotline-export.json tidak valid).</value></data>
+  <data name="Backup_Err_Newer" xml:space="preserve"><value>Cadangan ini dibuat oleh versi Hotline yang lebih baru. Perbarui Hotline untuk mengimpornya.</value></data>
+  <data name="Backup_Err_ListMissing" xml:space="preserve"><value>Bukan cadangan pengaturan Hotline (daftar file tidak ada).</value></data>
+  <data name="Backup_Err_ListInvalid" xml:space="preserve"><value>Bukan cadangan pengaturan Hotline (daftar file tidak valid).</value></data>
+  <data name="Backup_Err_ManifestUnreadable" xml:space="preserve"><value>Bukan cadangan pengaturan Hotline (hotline-export.json tidak dapat dibaca).</value></data>
+  <data name="Backup_Err_BadFolder" xml:space="preserve"><value>Folder pengaturan bukan jalur yang dapat digunakan.</value></data>
+  <data name="Backup_Err_BackupFailed" xml:space="preserve"><value>File yang akan diganti tidak dapat disalin ke folder cadangan terlebih dahulu.</value></data>
+  <data name="Backup_Why_TooMany" xml:space="preserve"><value>terlalu banyak file</value></data>
+  <data name="Backup_Why_Link" xml:space="preserve"><value>sebuah tautan, bukan file</value></data>
+  <data name="Backup_Why_Big" xml:space="preserve"><value>lebih besar dari 8 MB</value></data>
+  <data name="Backup_Why_Total" xml:space="preserve"><value>cadangan akan melebihi 64 MB</value></data>
+  <data name="Backup_Why_Unreadable" xml:space="preserve"><value>tidak dapat dibaca</value></data>
+  <data name="Backup_Why_BadName" xml:space="preserve"><value>bukan nama yang dapat ditampung cadangan</value></data>
+  <data name="Backup_Why_Folder" xml:space="preserve"><value>tidak dapat didaftar</value></data>
+  <data name="Backup_Why_BadPath" xml:space="preserve"><value>jalur tidak dapat digunakan</value></data>
+  <data name="Backup_Why_Outside" xml:space="preserve"><value>di luar folder pengaturan</value></data>
+  <data name="Backup_Why_FolderLink" xml:space="preserve"><value>foldernya adalah tautan</value></data>
+  <data name="Backup_Why_Locked" xml:space="preserve"><value>tidak dapat ditulis (sedang digunakan atau hanya-baca)</value></data>
+  <data name="Backup_Why_NotWav" xml:space="preserve"><value>bukan suara .wav</value></data>
+  <data name="Backup_Why_NotPng" xml:space="preserve"><value>bukan gambar yang dapat digunakan (PNG, 16-256 px)</value></data>
+  <data name="Backup_Why_NotText" xml:space="preserve"><value>bukan file teks</value></data>
+  <data name="Backup_Why_NotSettings" xml:space="preserve"><value>tidak dapat dibaca sebagai pengaturan</value></data>
+  <data name="Backup_Why_NotObject" xml:space="preserve"><value>bukan objek JSON</value></data>
+  <data name="Backup_Why_NotReadable" xml:space="preserve"><value>tidak dapat dibaca</value></data>
+  <data name="Backup_Why_ActionBig" xml:space="preserve"><value>lebih besar dari batas tindakan cepat (64 KB)</value></data>
+  <data name="Backup_Why_NotConnection" xml:space="preserve"><value>tidak dapat dibaca sebagai koneksi</value></data>
+  <data name="Settings_ProblemBackupFailed" xml:space="preserve"><value>Tidak dapat membuat salinan cadangan dari {0} terlebih dahulu ({1}); file dibiarkan apa adanya.</value></data>
+  <data name="Settings_ProblemWriteFailed" xml:space="preserve"><value>Tidak dapat menulis {0} ({1}); dibiarkan apa adanya.</value></data>
+  <data name="Settings_ProblemSharedFile" xml:space="preserve"><value>Koneksi {0} akan menggunakan file yang sama dengan {1} ({2}); koneksi tidak disimpan. Berikan id yang berbeda.</value></data>
   <data name="Nav_Backup" xml:space="preserve"><value>Cadangan</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Pindahkan konfigurasi Hotline Anda ke PC lain, atau simpan salinannya. Cadangan adalah satu file .zip yang berisi bagian-bagian yang Anda centang; tidak ada hal lain (riwayat obrolan, memori, log) yang disertakan.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Pengaturan</value></data>
