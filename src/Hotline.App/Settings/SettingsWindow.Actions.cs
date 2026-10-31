@@ -32,7 +32,8 @@ public sealed partial class SettingsWindow
                     PrimaryButtonText = Strings.Common_Delete, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
                 };
                 if (await ShowDialogAsync(confirm) != ContentDialogResult.Primary) return;
-                actions.Delete(action.Name);
+                try { actions.Delete(action.Name); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("deleting a quick action failed", ex); return; } // a locked file
                 ShowPage("Actions");
             };
             buttons.Children.Add(edit);

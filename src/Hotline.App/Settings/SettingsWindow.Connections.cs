@@ -35,19 +35,27 @@ public sealed partial class SettingsWindow
         foreach (var type in ConnectionTypes.All)
         {
             var item = new MenuFlyoutItem { Text = type.DisplayName };
-            item.Click += (_, _) => { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); };
+            item.Click += (_, _) =>
+            {
+                try { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); }
+                catch (Exception ex) { Fail("adding a connection failed", ex); }
+            };
             addMenu.Items.Add(item);
         }
         add.Flyout = addMenu;
         var duplicate = new Button { Content = Strings.Conn_Duplicate, IsEnabled = any };
         duplicate.Click += (_, _) =>
         {
-            var source = _selectedConnection!;
-            string? copyId = null;
-            _settings.Update(s => copyId = ConnectionEditor.Duplicate(s.Chat, source).Id);
-            if (_secrets.Get(SecretKeys.ApiKey(source)) is { } key) _secrets.Set(SecretKeys.ApiKey(copyId!), key);
-            _selectedConnection = copyId;
-            ShowPage("Connections");
+            try
+            {
+                var source = _selectedConnection!;
+                string? copyId = null;
+                _settings.Update(s => copyId = ConnectionEditor.Duplicate(s.Chat, source).Id);
+                if (_secrets.Get(SecretKeys.ApiKey(source)) is { } key) _secrets.Set(SecretKeys.ApiKey(copyId!), key);
+                _selectedConnection = copyId;
+                ShowPage("Connections");
+            }
+            catch (Exception ex) { Fail("duplicating a connection failed", ex); }
         };
         var remove = new Button { Content = Strings.Common_Remove, IsEnabled = any };
         remove.Click += async (_, _) =>
@@ -62,19 +70,31 @@ public sealed partial class SettingsWindow
                 PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
-            _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
-            _secrets.Set(SecretKeys.ApiKey(id), null);
-            _selectedConnection = null;
-            ShowPage("Connections"); // before the wait: the old page's buttons still point at the removed connection
-            await _invalidate(id);
+            try
+            {
+                _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
+                _secrets.Set(SecretKeys.ApiKey(id), null);
+                _selectedConnection = null;
+                ShowPage("Connections"); // before the wait: the old page's buttons still point at the removed connection
+                await _invalidate(id);
+            }
+            catch (Exception ex) { Fail("removing a connection failed", ex); }
         };
         var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
-        makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };
+        makeDefault.Click += (_, _) =>
+        {
+            try { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); }
+            catch (Exception ex) { Fail("choosing the default connection failed", ex); }
+        };
         Button MoveButton(string glyph, string tip, int delta)
         {
             var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
-            b.Click += (_, _) => { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); };
+            b.Click += (_, _) =>
+            {
+                try { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); }
+                catch (Exception ex) { Fail("moving a connection failed", ex); }
+            };
             return b;
         }
         PageHost.Children.Add(new StackPanel
@@ -197,7 +217,7 @@ public sealed partial class SettingsWindow
     }
 
     /// <summary>A number setting that can be left empty (= the model's default).</summary>
-    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set)
+    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set, Func<double?> kept)
     {
         var box = new NumberBox
         {
@@ -205,7 +225,17 @@ public sealed partial class SettingsWindow
             SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, PlaceholderText = placeholder, MinWidth = 160,
             ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
         };
-        box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+        box.ValueChanged += async (_, e) =>
+        {
+            try
+            {
+                await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+                // Saving normalises (a temperature of 5 is kept as 2): show what was kept, not what was typed.
+                var now = kept() ?? double.NaN;
+                if (!(double.IsNaN(now) && double.IsNaN(box.Value)) && now != box.Value) box.Value = now;
+            }
+            catch (Exception ex) { Fail("saving the connection failed", ex); }
+        };
         return box;
     }
 
@@ -222,7 +252,7 @@ public sealed partial class SettingsWindow
                 _settings.Update(_ => change(p));
                 await _invalidate(p.Id);
             }
-            catch (Exception ex) { _log.Error("saving the connection failed", ex); } // runs from async void handlers
+            catch (Exception ex) { Fail("saving the connection failed", ex); } // runs from async void handlers
         }
 
         TextBox Text(string? value, string placeholder, Action<string?> set)
@@ -254,7 +284,8 @@ public sealed partial class SettingsWindow
                 catch (Exception) { keyBox.Header = Strings.Conn_KeySaveFailed; return; }
                 keyBox.Password = "";
                 keyBox.PlaceholderText = Strings.Conn_KeySaved;
-                await _invalidate(p.Id);
+                try { await _invalidate(p.Id); }
+                catch (Exception ex) { Fail("refreshing the connection failed", ex); }
             };
             host.Children.Add(Card(Strings.Conn_ApiKey, Strings.Conn_ApiKey_Desc, keyBox));
         }
@@ -358,10 +389,10 @@ public sealed partial class SettingsWindow
         host.Children.Add(Card(Strings.Conn_SystemPrompt, null, prompt));
         if (info.Has(ConnectionField.MaxTokens))
             host.Children.Add(Card(Strings.Conn_MaxTokens, Strings.Conn_MaxTokens_Desc,
-                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null))));
+                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null), () => p.MaxTokens)));
         if (info.Has(ConnectionField.Temperature))
             host.Children.Add(Card(Strings.Conn_Temperature, Strings.Conn_Temperature_Desc,
-                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null))));
+                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null), () => p.Temperature)));
 
         var def = Strings.Common_Default; // the "no override" entry (a typed "Default" in English means the same)
         bool IsDefault(string? v) => string.IsNullOrWhiteSpace(v) || v == def || v == "Default";

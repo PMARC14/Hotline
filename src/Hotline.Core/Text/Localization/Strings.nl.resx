@@ -564,6 +564,13 @@ Weigeren:
   <data name="Grip_Tip" xml:space="preserve"><value>Sleep om te verplaatsen; klik met de rechtermuisknop om deze positie op te slaan</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chathoogte</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>Maximale chathoogte. 0 = automatisch (het bovenstaande maximale hoogtepercentage).</value></data>
+  <data name="Settings_ActionFailed" xml:space="preserve"><value>That didn't work: {0}</value></data>
+  <data name="Advanced_ResetPartial" xml:space="preserve"><value>Reset, but these files could not be handled and were left as they are: {1}. The previous files are in {0}.</value></data>
+  <data name="Bar_ModelNotSaved" xml:space="preserve"><value>Couldn't change the model: {0}. The previous one is kept.</value></data>
+  <data name="Bar_ModelListFailed" xml:space="preserve"><value>Couldn't list models: {0}</value></data>
+  <data name="Bar_PromptFailed" xml:space="preserve"><value>Couldn't change the prompt: {0}</value></data>
+  <data name="Attach_DropFailed" xml:space="preserve"><value>Couldn't attach dropped items: {0}</value></data>
+  <data name="Api_PlainHttp" xml:space="preserve"><value>Not sending the API key for {0} over plain http to {1}; use an https:// endpoint.</value></data>
   <data name="Backup_Err_TooLarge" xml:space="preserve"><value>The file is larger than a settings backup can be.</value></data>
   <data name="Backup_Err_NotZip" xml:space="preserve"><value>This isn't a readable .zip file.</value></data>
   <data name="Backup_Err_TooManyFiles" xml:space="preserve"><value>The file holds more than {0} files.</value></data>

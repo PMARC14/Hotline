@@ -58,13 +58,30 @@ public sealed partial class SettingsWindow
                 var data = DataDirectory;
                 var result = await Task.Run(() =>
                 {
-                    using var stream = new FileStream(file.Path, FileMode.Create, FileAccess.Write, FileShare.None);
-                    return SettingsPackage.Export(data, chosen, stream);
+                    // Written beside the target and moved over it when complete: a failure half way never destroys an earlier backup.
+                    var temp = file.Path + ".tmp";
+                    try
+                    {
+                        ExportResult written;
+                        using (var stream = new FileStream(temp, FileMode.Create, FileAccess.Write, FileShare.None))
+                            written = SettingsPackage.Export(data, chosen, stream);
+                        File.Move(temp, file.Path, overwrite: true);
+                        return written;
+                    }
+                    finally
+                    {
+                        try { File.Delete(temp); }
+                        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+                    }
                 });
                 _log.Info($"settings exported: {result.FileCount} files, {result.Skipped.Count} left out");
-                ShowStatus(status, InfoBarSeverity.Success, result.Skipped.Count == 0
+                foreach (var s in result.Skipped.Take(20)) _log.Info($"export left out {SettingsPackage.LogName(s.Path)}: {s.Reason}");
+                var exported = result.Skipped.Count == 0
                     ? L.F(Strings.Backup_Exported, file.Path, result.FileCount)
-                    : L.F(Strings.Backup_ExportedSkipped, file.Path, result.FileCount, result.Skipped.Count));
+                    : L.F(Strings.Backup_ExportedSkipped, file.Path, result.FileCount, result.Skipped.Count);
+                if (result.Skipped.Count > 0)
+                    exported += "\n" + string.Join("\n", result.Skipped.Take(5).Select(s => L.F(Strings.Backup_ImportSkipped, SettingsPackage.LogName(s.Path) + " - " + s.Text)));
+                ShowStatus(status, result.Skipped.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning, exported);
             }
             catch (Exception ex)
             {
@@ -107,15 +124,17 @@ public sealed partial class SettingsWindow
                 picker.FileTypeFilter.Add(".zip");
                 WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
                 if (await picker.PickSingleFileAsync() is not { } file) return;
+                // The previous package goes first: if reading this one fails, the old one must not stay importable.
+                contents.Children.Clear();
+                importBoxes.Clear();
+                _importPath = null;
+                run.Visibility = Visibility.Collapsed;
+                RefreshImport();
                 var info = await Task.Run(() =>
                 {
                     using var stream = new FileStream(file.Path, FileMode.Open, FileAccess.Read, FileShare.Read);
                     return SettingsPackage.Inspect(stream);
                 });
-                contents.Children.Clear();
-                importBoxes.Clear();
-                _importPath = null;
-                run.Visibility = Visibility.Collapsed;
                 if (!info.IsValid)
                 {
                     ShowStatus(status, InfoBarSeverity.Error, L.F(Strings.Backup_PackageInvalid, string.Join(" ", info.Problems.Take(3))));
@@ -172,7 +191,7 @@ public sealed partial class SettingsWindow
                     return;
                 }
                 var lines = new List<string> { L.F(Strings.Backup_ImportDone, result.Written.Count, result.Skipped.Count) };
-                lines.AddRange(result.Skipped.Take(5).Select(s => L.F(Strings.Backup_ImportSkipped, SettingsPackage.LogName(s.Path) + " - " + s.Reason)));
+                lines.AddRange(result.Skipped.Take(5).Select(s => L.F(Strings.Backup_ImportSkipped, SettingsPackage.LogName(s.Path) + " - " + s.Text)));
                 if (result.BackupFolder is { } backup) lines.Add(L.F(Strings.Backup_ImportBackupAt, backup));
                 if (needKeys.Count > 0) lines.Add(L.F(Strings.Backup_NeedKeys, string.Join(", ", needKeys)));
                 lines.Add(Strings.Backup_LiveNote);

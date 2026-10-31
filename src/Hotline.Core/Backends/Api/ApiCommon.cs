@@ -34,7 +34,7 @@ public static partial class ApiCommon
         if (key is null) return;
         if (uri.Scheme != Uri.UriSchemeHttps && !uri.IsLoopback)
             throw new BackendException(BackendErrorKind.NotConfigured,
-                $"Not sending the API key for {Name(p)} over plain http to {uri.Host}; use an https:// endpoint.");
+                L.F(Strings.Api_PlainHttp, Name(p), uri.Host));
     }
 
     public static string Name(BackendProfile p) => string.IsNullOrWhiteSpace(p.Name) ? p.Id : p.Name;

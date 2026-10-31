@@ -19,9 +19,13 @@ Headless self-tests (nothing is shown; results in the log, lines starting `selft
 | Link (Win+R) | Checks |
 |---|---|
 | `hotline://selftest` | Transcript rendering (off-screen), OCR of the rendered text, the `/` list, a rate-limit note, every settings page |
-| `hotline://selftest?selection` | Reads the selection in the window in front via UI Automation; logs only its length |
 | `hotline://selftest?voice` | Dictation can be set up (never opens the microphone): `Success` or the reason |
-| `hotline://selftest?tools` | Starts the `mcp.json` servers and lists their tools |
+| `hotline://selftest?selection` | Reads the selection in the window in front via UI Automation; logs only its length. **Needs the marker file below** |
+| `hotline://selftest?tools` | Starts the `mcp.json` servers and lists their tools. **Needs the marker file below** |
+
+Any web page can open a `hotline://` link, so `?selection` (reads another app) and `?tools` (starts programs) are only run when the
+file `%USERPROFILE%\.hotline\.allow-selftest-extras` exists (create it yourself, empty: `type nul > "%USERPROFILE%\.hotline\.allow-selftest-extras"`;
+a web page cannot). Without it the log says `selftest ?tools refused: ...` and the plain self-test still runs. Delete the file when done.
 
 ## 2. Hands-on checklist
 

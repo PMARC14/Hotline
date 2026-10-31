@@ -27,11 +27,18 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     /// <summary>Gets the first look at every key (e.g. Esc cancels dictation); true when it handled the key.</summary>
     public Func<VirtualKey, bool>? KeyFilter { get; set; }
 
+    /// <summary>
+    /// The text the program put in the box (a custom button's text, an action): it is literal. While the box still holds exactly
+    /// this, typing-time commands ("/resume " opening the history list) are not interpreted; the first edit by the user ends that.
+    /// </summary>
+    private string? _literal;
+
     public string Text
     {
         get => popup.Input.Text;
         set
         {
+            _literal = value;
             popup.Input.Text = value;
             popup.Input.SelectionStart = value.Length;
         }
@@ -43,7 +50,9 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         var input = popup.Input;
         var start = Math.Min(input.SelectionStart, input.Text.Length);
         var end = Math.Min(start + input.SelectionLength, input.Text.Length);
-        input.Text = input.Text[..start] + text + input.Text[end..];
+        var combined = input.Text[..start] + text + input.Text[end..];
+        _literal = combined;
+        input.Text = combined;
         input.SelectionStart = start + text.Length;
     }
 
@@ -59,7 +68,13 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
         popup.Input.TextChanged += (_, _) =>
         {
-            if (resumeWhileTyping() && ResumeCommand.TryTyping(popup.Input.Text, out var query)) ResumeTyped?.Invoke(query);
+            var now = popup.Input.Text;
+            if (_literal is not null)
+            {
+                if (now == _literal) return; // inserted by a button, not typed: never a command
+                _literal = null;
+            }
+            if (resumeWhileTyping() && ResumeCommand.TryTyping(now, out var query)) ResumeTyped?.Invoke(query);
         };
         // ListViewItems added directly: ItemClick reports their content (the row), which carries the action too.
         popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: QuickAction a }) Complete(a); };

@@ -25,8 +25,16 @@ public static class PopupGeometry
     /// Grows the popup upward from its bar: keeps the bar's bottom edge, height = content clamped to
     /// [bar height, maxPx], and never above the work area's top.
     /// </summary>
-    public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode)
-        => GrowUp(bar, mode == Settings.GrowMode.Full && contentPx > bar.Height ? maxPx : contentPx, maxPx, workArea);
+    public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode, bool conversation = true, bool manualSize = false)
+        => GrowUp(bar, FullHeight(mode, contentPx, bar.Height, maxPx, conversation, manualSize), maxPx, workArea);
+
+    /// <summary>
+    /// The height to grow to: <see cref="Settings.GrowMode.Full"/> means the maximum, but only while a conversation is active and no
+    /// size was set by hand (a held manual height wins); before the first message, or in a new chat, the panel is a bar that fits
+    /// its content whatever the mode says. Anything else is the content's own height.
+    /// </summary>
+    public static int FullHeight(Settings.GrowMode mode, int contentPx, int barPx, int maxPx, bool conversation, bool manualSize)
+        => mode == Settings.GrowMode.Full && conversation && !manualSize && contentPx > barPx ? maxPx : contentPx;
 
     public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea)
     {
@@ -40,8 +48,8 @@ public static class PopupGeometry
     /// Grows the popup downward from its bar: keeps the bar's top edge, height = content clamped to
     /// [bar height, maxPx], and never below the work area's bottom.
     /// </summary>
-    public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode)
-        => GrowDown(bar, mode == Settings.GrowMode.Full && contentPx > bar.Height ? maxPx : contentPx, maxPx, workArea);
+    public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode, bool conversation = true, bool manualSize = false)
+        => GrowDown(bar, FullHeight(mode, contentPx, bar.Height, maxPx, conversation, manualSize), maxPx, workArea);
 
     public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea)
     {

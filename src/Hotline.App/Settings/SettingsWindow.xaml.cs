@@ -170,7 +170,18 @@ public sealed partial class SettingsWindow : Window
                     Minimum = n.Min, Maximum = n.Max, SmallChange = n.Step, LargeChange = n.Step * 10, Value = n.Get(s), Width = 150,
                     SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
                 };
-                box.ValueChanged += (_, e) => { if (!double.IsNaN(e.NewValue)) _settings.Update(x => n.Set(x, e.NewValue)); };
+                box.ValueChanged += (_, e) =>
+                {
+                    if (double.IsNaN(e.NewValue)) return;
+                    try
+                    {
+                        _settings.Update(x => n.Set(x, e.NewValue));
+                        // Saving normalises (1% becomes the 20% minimum, a width of 100 becomes 320): show what was kept, not what was typed.
+                        var kept = n.Get(_settings.Current);
+                        if (!double.IsNaN(kept) && kept != box.Value) box.Value = kept;
+                    }
+                    catch (Exception ex) { Fail("saving a setting failed", ex); }
+                };
                 var label = n.Unit is null ? (UIElement)box : new StackPanel
                 {
                     Orientation = Orientation.Horizontal, Spacing = 8,
@@ -259,6 +270,20 @@ public sealed partial class SettingsWindow : Window
 
         static bool Down(Windows.System.VirtualKey key) =>
             Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(key).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
+    }
+
+    /// <summary>
+    /// A failure inside a click or value handler (they run as async void, where an exception would take the app down): logged, and
+    /// shown as a notice at the top of the page. The message is the exception's own text.
+    /// </summary>
+    private void Fail(string what, Exception ex)
+    {
+        _log.Error(what, ex);
+        PageHost.Children.Insert(0, new InfoBar
+        {
+            IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
+            Message = L.F(Strings.Settings_ActionFailed, ex.Message),
+        });
     }
 
     /// <summary>Says when Windows' contrast theme or transparency switch overrides the colours or backdrop chosen here.</summary>
@@ -411,14 +436,20 @@ public sealed partial class SettingsWindow : Window
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             try
             {
-                var (backup, removed) = _settings.Reset(everything);
-                foreach (var id in removed)
+                var result = _settings.Reset(everything);
+                foreach (var id in result.Removed) // every removed connection's key goes, whatever else failed
                 {
-                    _secrets.Set(SecretKeys.ApiKey(id), null);
-                    await _invalidate(id);
+                    try
+                    {
+                        _secrets.Set(SecretKeys.ApiKey(id), null);
+                        await _invalidate(id);
+                    }
+                    catch (Exception ex) { _log.Error("removing a connection's key failed", ex); }
                 }
                 ShowPage("Advanced");
-                PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Success, Message = L.F(Strings.Advanced_ResetDone, backup) });
+                PageHost.Children.Insert(0, result.Failed.Count == 0
+                    ? new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Success, Message = L.F(Strings.Advanced_ResetDone, result.Backup) }
+                    : new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Warning, Message = L.F(Strings.Advanced_ResetPartial, result.Backup, string.Join(", ", result.Failed)) });
             }
             catch (Exception ex) // also a credential-store failure; this runs fire-and-forget
             {

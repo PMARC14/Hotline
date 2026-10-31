@@ -129,6 +129,12 @@ public class PanelPlacementTests
         var bar = new RectI(680, 736, 560, 120);
         Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full).Height);
         Assert.Equal(120, PopupGeometry.GrowUp(bar, 120, 560, Work, GrowMode.Full).Height); // bar only: stays a bar
+        // Full height is for a conversation: an empty composer taller than the bar (a longer draft) just fits its content...
+        Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full, conversation: false).Height);
+        Assert.Equal(200, PopupGeometry.GrowDown(bar, 200, 560, Work, GrowMode.Full, conversation: false).Height);
+        // ...and a height set by hand is kept, not replaced by the maximum.
+        Assert.Equal(300, PopupGeometry.GrowUp(bar, 300, 560, Work, GrowMode.Full, conversation: true, manualSize: true).Height);
+        Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full, conversation: true, manualSize: false).Height);
         Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Grow).Height);
     }
 

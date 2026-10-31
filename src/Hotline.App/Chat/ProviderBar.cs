@@ -216,9 +216,22 @@ internal sealed class ProviderBar(
         }
         else model = text.Trim(); // a typed model id
         if (model == profile.Model && effort == profile.Effort) return;
-        settings.Update(_ => { profile.Model = model; profile.Effort = effort; });
-        await invalidate(profile.Id);
-        log.Info($"model for {profile.Id} = {model ?? "default"}");
+        var (previousModel, previousEffort) = (profile.Model, profile.Effort);
+        try
+        {
+            settings.Update(_ => { profile.Model = model; profile.Effort = effort; });
+            await invalidate(profile.Id);
+            log.Info($"model for {profile.Id} = {model ?? "default"}");
+        }
+        catch (Exception ex)
+        {
+            // Called without anyone awaiting it: a failure must not vanish, and the picker must not show a model that was not kept.
+            log.Error($"changing the model for {profile.Id} failed", ex);
+            try { settings.Update(_ => { profile.Model = previousModel; profile.Effort = previousEffort; }); }
+            catch (Exception undo) { log.Error("restoring the previous model failed", undo); }
+            notify(L.F(Strings.Bar_ModelNotSaved, ex.Message), InfoBarSeverity.Warning);
+            popup.DispatcherQueue.TryEnqueue(Refresh); // the picker shows the previous model again
+        }
     }
 
     private async Task SetEffortAsync(string level)
@@ -226,19 +239,31 @@ internal sealed class ProviderBar(
         var profile = Current;
         if (profile is null) return;
         if (level == Strings.Effort_NA) return; // the placeholder item for models without effort levels
-        if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
+        var (previousModel, previousEffort) = (profile.Model, profile.Effort);
+        try
         {
-            var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
-            if (model == profile.Model) return;
-            settings.Update(_ => profile.Model = model);
+            if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
+            {
+                var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
+                if (model == profile.Model) return;
+                settings.Update(_ => profile.Model = model);
+            }
+            else
+            {
+                var effort = level == DefaultLabel ? null : level;
+                if (effort == profile.Effort) return;
+                settings.Update(_ => profile.Effort = effort);
+            }
+            await invalidate(profile.Id);
         }
-        else
+        catch (Exception ex)
         {
-            var effort = level == DefaultLabel ? null : level;
-            if (effort == profile.Effort) return;
-            settings.Update(_ => profile.Effort = effort);
+            log.Error($"changing the effort for {profile.Id} failed", ex);
+            try { settings.Update(_ => { profile.Model = previousModel; profile.Effort = previousEffort; }); }
+            catch (Exception undo) { log.Error("restoring the previous effort failed", undo); }
+            notify(L.F(Strings.Bar_ModelNotSaved, ex.Message), InfoBarSeverity.Warning);
+            popup.DispatcherQueue.TryEnqueue(Refresh);
         }
-        await invalidate(profile.Id);
     }
 
     /// <summary>Fills the model list (cached per connection). Quiet = background preload: problems are only logged.</summary>
@@ -259,7 +284,7 @@ internal sealed class ProviderBar(
             SetEnabled(_enabled); // levels just arrived: enable the effort picker
         }
         catch (ModelListException ex) { log.Info($"model list: {ex.Message}"); if (!quiet) notify(ex.Message, InfoBarSeverity.Warning); }
-        catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }
+        catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify(L.F(Strings.Bar_ModelListFailed, ex.Message), InfoBarSeverity.Warning); }
         finally { _updating = false; }
         QueueLayout();
     }
@@ -275,9 +300,17 @@ internal sealed class ProviderBar(
             item.Click += async (_, _) =>
             {
                 if (profile is null) return;
-                settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name);
-                await invalidate(profile.Id);
-                notify(L.F(Strings.Bar_PromptChosen, name), InfoBarSeverity.Informational);
+                try
+                {
+                    settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name);
+                    await invalidate(profile.Id);
+                    notify(L.F(Strings.Bar_PromptChosen, name), InfoBarSeverity.Informational);
+                }
+                catch (Exception ex) // an async void handler: nothing may escape
+                {
+                    log.Error("choosing the prompt failed", ex);
+                    notify(L.F(Strings.Bar_PromptFailed, ex.Message), InfoBarSeverity.Warning);
+                }
             };
             popup.PromptMenu.Items.Add(item);
         }

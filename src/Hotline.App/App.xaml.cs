@@ -144,7 +144,7 @@ public partial class App : Application
         var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
             () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
+            () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow)), // Update may Reload: UI thread
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
                 _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
@@ -218,7 +218,7 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
+        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, DataDirectory, _log);
         _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += scene => _presenter.Demo(scene);
         _router.GripsRequested += show => _presenter.ShowGrips(show);

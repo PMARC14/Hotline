@@ -538,7 +538,10 @@ public sealed partial class PopupWindow : Window
             var previous = _targetRect.Height > 0 ? _targetRect.Height : bar.Height;
             contentPx = PopupGeometry.TwoStep(previous, contentPx, bar.Height, Math.Max(bar.Height, maxPx), _conversation);
         }
-        _targetRect = _growUp ? PopupGeometry.GrowUp(bar, contentPx, maxPx, _work, GrowMode) : PopupGeometry.GrowDown(bar, contentPx, maxPx, _work, GrowMode);
+        // Full height only during a conversation and not over a size set by hand (see PopupGeometry.FullHeight).
+        var manual = _fixedPx is not null;
+        _targetRect = _growUp ? PopupGeometry.GrowUp(bar, contentPx, maxPx, _work, GrowMode, _conversation, manual)
+            : PopupGeometry.GrowDown(bar, contentPx, maxPx, _work, GrowMode, _conversation, manual);
         // Once a chat has started the panel may also widen (window.chatWidth*), around its centre: the same resize as the height's,
         // never a separate one. Shrinking back is the same call without a conversation.
         if (_conversation && ChatWidthPx is { } widePx) _targetRect = PopupGeometry.GrowWidth(_targetRect, widePx, _work);
