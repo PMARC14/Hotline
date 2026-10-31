@@ -210,11 +210,6 @@ public sealed partial class SettingsWindow
         PageHost.Children.Add(Card("memory.md", lines == 0 ? Strings.Memory_Empty : L.F(Strings.Memory_Lines, lines), edit));
     }
 
-    /// <summary>Quick actions: "/name" in the message box applies the file's instruction (actions\&lt;name&gt;.md).</summary>
-    /// <summary>
-    /// Quick actions: each one's command, description and full instruction, with Edit (the .md file in your editor),
-    /// Rename and Delete; New action, Restore default actions and the folder below. The files hold everything.
-    /// </summary>
     /// <summary>An action's instruction under its card: two lines, the whole text in the tooltip and in Edit (a page of full
     /// instructions is a wall of text).</summary>
     private static TextBlock InstructionPreview(string instruction)

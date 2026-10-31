@@ -65,17 +65,17 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     }
 
     /// <summary>
-    /// Continues a saved conversation: its messages come back (attachments as "[attached: name]" — their bytes are
-    /// never saved) and new turns are appended to the same history. A chat kept in a CLI's history switches back to
-    /// that connection and resumes its CLI conversation; others are replayed as context. A chat with only a record
-    /// (no transcript) starts empty in the panel and continues in the CLI's conversation.
-    /// </summary>
-    /// <summary>
     /// (connection id, CLI session id) → that conversation's messages from the CLI's own history, or null (set by the
     /// app; see CliTranscripts and chat.cliTranscripts). Used when reopening a chat Hotline kept only a record of.
     /// </summary>
     public Func<string, string, IReadOnlyList<HistoryStore.Entry>?>? CliTranscript { get; set; }
 
+    /// <summary>
+    /// Continues a saved conversation: its messages come back (attachments as "[attached: name]" — their bytes are
+    /// never saved) and new turns are appended to the same history. A chat kept in a CLI's history switches back to
+    /// that connection and resumes its CLI conversation; others are replayed as context. A chat with only a record
+    /// (no transcript) starts empty in the panel and continues in the CLI's conversation.
+    /// </summary>
     public bool Resume(string conversationId)
     {
         if (IsBusy || conversationId == ConversationId) return false; // never while answering, never into itself

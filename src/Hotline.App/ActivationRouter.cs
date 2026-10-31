@@ -78,8 +78,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     /// <summary>hotline://selftest renders a scripted conversation in the hidden panel (no typing).</summary>
     public event Action<Uri?>? SelfTestRequested;
-    /// <summary>hotline://demo shows the panel with a scripted example conversation (README screenshots; no AI call).</summary>
-    /// <summary>hotline://demo[?scene=…]: the scene name, or null.</summary>
+    /// <summary>hotline://demo[?scene=…] shows the panel with a scripted example conversation (README screenshots; no AI call): the scene name, or null.</summary>
     public event Action<string?>? DemoRequested;
     /// <summary>hotline://grips?show=1|0 (tests and screenshots): the Alt grips without holding Alt.</summary>
     public event Action<bool>? GripsRequested;

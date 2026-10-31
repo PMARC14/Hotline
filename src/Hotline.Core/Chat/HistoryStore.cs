@@ -56,7 +56,7 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
                 else if (meta is not null)
                     result.Add(new Summary(id, meta.Title.Length > 0 ? meta.Title : "(attachments)", meta.LastAt, meta.MessageCount, false, meta.BackendId));
             }
-            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { }
+            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or NotSupportedException or InvalidOperationException) { } // this chat only
         }
         return result;
     }
@@ -102,10 +102,18 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         return File.ReadLines(path).Where(l => !string.IsNullOrWhiteSpace(l)).Select(TryEntry).OfType<Entry>().ToList();
     }
 
+    /// <summary>
+    /// One transcript line, checked at the read boundary: a record that is valid JSON but lacks what the program relies on (no id or
+    /// text, a role that doesn't exist) is skipped on its own; missing optional parts (attachments) are normalised to empty.
+    /// </summary>
     private static Entry? TryEntry(string line)
     {
-        try { return JsonSerializer.Deserialize<Entry>(line, Json) is { Id: not null, Text: not null } e ? e : null; }
-        catch (JsonException) { return null; }
+        try
+        {
+            if (JsonSerializer.Deserialize<Entry>(line, Json) is not { Id: not null, Text: not null } e || !Enum.IsDefined(e.Role)) return null;
+            return e with { Attachments = (e.Attachments ?? []).Where(a => a is { Name: not null, MimeType: not null } && Enum.IsDefined(a.Kind)).ToList() };
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException) { return null; }
     }
 
     public void SaveMeta(string conversationId, Meta meta)
@@ -123,9 +131,13 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         if (!HistoryIds.IsSafe(conversationId)) return null;
         var path = MetaPathFor(conversationId);
         if (!File.Exists(path)) return null;
-        var meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(path), Json);
+        Meta? meta;
+        try { meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(path), Json); }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException) { return null; } // a damaged record is no record
+        if (meta is null) return null;
+        meta = meta with { Title = meta.Title ?? "", MessageCount = Math.Max(0, meta.MessageCount) }; // required parts the file may lack
         // The session ID goes back on a command line: drop anything that isn't a plain ID.
-        return meta is null ? null : CliSession.IsValidId(meta.SessionId) ? meta : meta with { SessionId = null };
+        return CliSession.IsValidId(meta.SessionId) ? meta : meta with { SessionId = null };
     }
 
     public int Prune(int retentionDays)
