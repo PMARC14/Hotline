@@ -21,6 +21,16 @@ public sealed class FileLogTests : IDisposable
     }
 
     [Fact]
+    public void ErrorCount_counts_the_errors_written_even_when_the_file_cannot_be_written()
+    {
+        var log = new FileLog(Path.Combine(_dir, "hotline.log"));
+        log.Info("fine");
+        log.Error("one");
+        log.Error("two", new InvalidOperationException());
+        Assert.Equal(2, log.ErrorCount);
+    }
+
+    [Fact]
     public void Rotates_when_over_max_size()
     {
         var path = Path.Combine(_dir, "hotline.log");

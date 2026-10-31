@@ -24,7 +24,7 @@ same files). Comments and trailing commas are allowed.
 | `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
 | `connections\<id>.json.<time>.bak` | The previous connection file, kept the same way when Settings rewrites a file you edited by hand (newest 10 per file) |
 | `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it (newest 10) |
-| `toolbar.json.bak`, `toolbar.json.old` | The previous toolbar.json, kept when Settings replaces it (`.bak`: saving the bar; `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it; an archive is never overwritten) |
+| `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json (`yyyyMMdd-HHmmss`), kept when Settings is about to replace a file Hotline did not write itself (a hand edit, with its comments and ignored entries); never overwritten, the newest 10 are kept, and nothing is replaced if the copy can't be made. Hotline's own earlier saves are not copied again. `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current one and
@@ -311,7 +311,7 @@ and drawn by the panel's self-test (steps P01-P45); use any as a starting point:
   a warning). It must be a PNG of at most 256 KB, 16-256 pixels per side (no SVG, ICO or animation); it is drawn at about 60% of the
   button's smaller side. If it is missing, damaged or outside those limits, the button shows its `icon` and the log says why (by file
   name). Settings (add or edit a custom button) › **Choose a picture…** copies your PNG to that name when you save (the original is never
-  changed); **Use a built-in icon instead** removes it; deleting the button deletes its picture.
+  changed); **Use a built-in icon instead** removes it; deleting the button deletes its picture. Replacing a picture under the same name redraws the bar at once (Hotline also watches `icons\*.png`), and if toolbar.json can't be saved with it, the previous picture is put back.
 - Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarize"` for `actions\summarize.md`;
   at most 64 characters, never a path); it runs on the current message and attachments, and a missing file shows a notice. `text` (up to
   2000 characters) is put in the message box, and `"send": true` also sends it.
@@ -329,7 +329,7 @@ so is a version 2 file with warnings; Hotline never rewrites a version 2 file by
 **A version 1 file** (`top` and `items` as plain arrays, with a `spacer`; before 0.4) is not converted: the defaults run with a
 warning and the file is left as it is. To change the bar, write the version 2 format or delete the file. What was ignored is listed in
 the panel, under Settings › About › This PC and in the log. Saving from Settings writes the corrected file and keeps the one it replaces
-as `toolbar.json.bak` (comments are not carried over).
+as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
 
 **Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json` (the previous file goes to
 `backups\reset-<time>\`); `.defaults\toolbar.json` is rewritten at every start. New installs get the owner's layout: effort, model and

@@ -121,14 +121,18 @@ internal sealed class ProviderBar(
             FillModels(current);
             FillEffort(current);
             ToolTipService.SetToolTip(popup.EffortBox, Strings.Bar_EffortTip);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(popup.EffortBox, Strings.Bar_EffortTip);
             SetEnabled(_enabled);
         }
         finally { _updating = false; }
         QueueLayout();
     }
 
-    private static void NameTip(ComboBox box, string what) =>
+    private static void NameTip(ComboBox box, string what)
+    {
         ToolTipService.SetToolTip(box, box.SelectedItem is string s && s.Trim().Length > 0 ? $"{what}: {s.Trim()}" : what);
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box, what); // the value is read separately, so the name is the kind of picker
+    }
 
     /// <summary>
     /// Fits the button rows to the panel (left buttons that don't fit go into the "⋯" menu) and gives the pickers explicit

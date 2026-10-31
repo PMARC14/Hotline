@@ -79,8 +79,28 @@ internal sealed partial class ToolbarQuadrantEditor
             }
             var (next, pictureReplaced) = await ToolbarCustomButtonDialog.ShowAsync(_model, existing, _quickActions(), _showDialog, XamlRoot, _log.Info);
             var focus = existing is null ? "bar-custom-add" : "bar-custom-edit-" + existing.Id;
-            if (next is not null) Edit(_ => next, existing?.Id, (focus, "bar-custom-add"));
-            else if (pictureReplaced) { _focus = (focus, "bar-custom-add"); QueueRebuild(); } // same model, new picture: redraw the list
+            // The new picture is already in icons\ (the dialog stored it): kept only once toolbar.json is saved with it.
+            var pictureId = existing?.Id ?? next?.Buttons.LastOrDefault()?.Id;
+            if (next is not null)
+            {
+                var saved = Edit(_ => next, existing?.Id, (focus, "bar-custom-add"));
+                if (pictureReplaced && pictureId is not null)
+                {
+                    if (saved) CustomIcons.Commit(CustomButtonPicture.Folder, pictureId);
+                    else if (CustomIcons.Rollback(CustomButtonPicture.Folder, pictureId))
+                    {
+                        _log.Info($"button rows: the picture of {pictureId} was put back (toolbar.json wasn't saved)");
+                        if (_notice.IsOpen is false) Notice(Strings.Bar_PictureNotSaved, InfoBarSeverity.Error);
+                    }
+                }
+            }
+            else if (pictureReplaced)
+            {
+                // Same model, new picture: toolbar.json is untouched, so the icons folder's watcher (App) redraws the bar.
+                if (existing is not null) CustomIcons.Commit(CustomButtonPicture.Folder, existing.Id);
+                _focus = (focus, "bar-custom-add");
+                QueueRebuild(); // redraw the list
+            }
             if (existing?.IconFile is not null) ForgetPicture(existing.Id);
         }
         catch (Exception ex) { _log.Error("button rows: custom button dialog failed", ex); }

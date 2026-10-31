@@ -191,9 +191,38 @@ public sealed class CustomIconsTests : IDisposable
         Assert.Equal("b2.png", CustomIcons.Import(Write("b.png", Png(32, 32)), Icons, "b2").FileName);
         var newer = Png(64, 64);
         Assert.Equal("b1.png", CustomIcons.Import(Write("c.png", newer), Icons, "b1").FileName);
+        CustomIcons.Commit(Icons, "b1"); // (the replaced picture is kept as .b1.prev until then)
+        CustomIcons.Commit(Icons, "b2");
         Assert.Equal(newer, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
         Assert.Equal(Png(32, 32), File.ReadAllBytes(Path.Combine(Icons, "b2.png")));
         Assert.Equal(["b1.png", "b2.png"], Directory.GetFiles(Icons).Select(Path.GetFileName).Order());
+    }
+
+    [Fact]
+    public void Rollback_puts_the_previous_picture_back_and_Commit_keeps_the_new_one()
+    {
+        var first = Png(16, 16);
+        CustomIcons.Import(Write("a.png", first), Icons, "b1");
+        CustomIcons.Commit(Icons, "b1");
+
+        CustomIcons.Import(Write("b.png", Png(32, 32)), Icons, "b1");
+        Assert.True(CustomIcons.Rollback(Icons, "b1"));
+        Assert.Equal(first, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
+
+        var second = Png(64, 64);
+        CustomIcons.Import(Write("c.png", second), Icons, "b1");
+        CustomIcons.Commit(Icons, "b1");
+        Assert.False(CustomIcons.Rollback(Icons, "b1")); // nothing left to restore
+        Assert.Equal(second, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
+        Assert.Equal(["b1.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
+    }
+
+    [Fact]
+    public void Rollback_of_a_first_picture_removes_it()
+    {
+        CustomIcons.Import(Write("a.png", Png(16, 16)), Icons, "b1");
+        Assert.True(CustomIcons.Rollback(Icons, "b1"));
+        Assert.Empty(Directory.GetFiles(Icons));
     }
 
     [Fact]

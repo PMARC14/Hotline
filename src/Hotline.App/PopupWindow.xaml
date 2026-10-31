@@ -97,7 +97,7 @@
         <Button x:Name="JumpToLatestButton" x:FieldModifier="internal" Grid.Row="0" Width="34" Height="34" Padding="0"
                 CornerRadius="17" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0,0,22,6"
                 FontFamily="Segoe Fluent Icons" FontSize="14" Content="&#xE74B;" Visibility="Collapsed"
-                ToolTipService.ToolTip="{local:Loc Key=Popup_JumpLatest}" />
+                ToolTipService.ToolTip="{local:Loc Key=Popup_JumpLatest}" AutomationProperties.Name="{local:Loc Key=Popup_JumpLatest}" />
         <TextBlock x:Name="StatusText" x:FieldModifier="internal" Margin="2,0" VerticalAlignment="Top" Opacity="0.6" IsHitTestVisible="False"
                    Style="{StaticResource CaptionTextBlockStyle}" Visibility="Collapsed" />
 
@@ -147,7 +147,7 @@
                         <ColumnDefinition Width="Auto" /><ColumnDefinition Width="*" /><ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
                     <Button x:Name="PlusButton" x:FieldModifier="internal" Width="44" Height="44" Padding="0" CornerRadius="10"
-                            FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xE710;" ToolTipService.ToolTip="{local:Loc Key=Popup_AddMenu}"
+                            FontFamily="Segoe Fluent Icons" FontSize="20" Content="&#xE710;" ToolTipService.ToolTip="{local:Loc Key=Popup_AddMenu}" AutomationProperties.Name="{local:Loc Key=Popup_AddMenu}"
                             VerticalAlignment="Bottom">
                         <Button.Flyout>
                             <MenuFlyout Placement="TopEdgeAlignedLeft">
@@ -171,7 +171,7 @@
                              ScrollViewer.VerticalScrollBarVisibility="Auto" />
                     <Button x:Name="SendButton" x:FieldModifier="internal" Grid.Column="2" Width="44" Height="44" Padding="0"
                             CornerRadius="10" Style="{StaticResource AccentButtonStyle}" FontFamily="Segoe Fluent Icons"
-                            FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="{local:Loc Key=Composer_Send}" VerticalAlignment="Bottom" />
+                            FontSize="16" Content="&#xE724;" ToolTipService.ToolTip="{local:Loc Key=Composer_Send}" AutomationProperties.Name="{local:Loc Key=Composer_Send}" VerticalAlignment="Bottom" />
                 </Grid>
             </StackPanel>
         </Border>
@@ -209,33 +209,33 @@
                 </Style>
             </Grid.Resources>
             <ToggleButton x:Name="PinButton" x:FieldModifier="internal" Style="{StaticResource ToolbarToggle}" Content="&#xE718;"
-                          ToolTipService.ToolTip="{local:Loc Key=Popup_Pin}" />
+                          ToolTipService.ToolTip="{local:Loc Key=Popup_Pin}" AutomationProperties.Name="{local:Loc Key=Popup_Pin}" />
             <Button x:Name="CaptureWindowButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE7C4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureWindow}" />
+                    Content="&#xE7C4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureWindow}" AutomationProperties.Name="{local:Loc Key=Popup_CaptureWindow}" />
             <Button x:Name="CaptureScreenButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE7F4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureScreen}" />
+                    Content="&#xE7F4;" ToolTipService.ToolTip="{local:Loc Key=Popup_CaptureScreen}" AutomationProperties.Name="{local:Loc Key=Popup_CaptureScreen}" />
             <Button x:Name="CaptureRegionButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" />
+                    Content="&#xF407;" ToolTipService.ToolTip="{local:Loc Key=Set_Key_CaptureRegion}" AutomationProperties.Name="{local:Loc Key=Set_Key_CaptureRegion}" />
             <!-- The three pickers are ordinary items of the bar (ToolbarRenderer puts each where toolbar.json lists it); they blend
                  in (no fill/border) until hovered. Their look is in the Resources of both rows. -->
-            <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Bar_EffortTip}" />
+            <ComboBox x:Name="EffortBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Bar_EffortTip}" AutomationProperties.Name="{local:Loc Key=Bar_EffortTip}" />
             <ComboBox x:Name="ModelBox" x:FieldModifier="internal"
-                      ToolTipService.ToolTip="{local:Loc Key=Popup_Model}" />
-            <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Popup_Provider}" />
+                      ToolTipService.ToolTip="{local:Loc Key=Popup_Model}" AutomationProperties.Name="{local:Loc Key=Popup_Model}" />
+            <ComboBox x:Name="ProviderBox" x:FieldModifier="internal" ToolTipService.ToolTip="{local:Loc Key=Popup_Provider}" AutomationProperties.Name="{local:Loc Key=Popup_Provider}" />
             <Button x:Name="PromptButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE8A5;" ToolTipService.ToolTip="{local:Loc Key=Conn_SystemPrompt}">
+                    Content="&#xE8A5;" ToolTipService.ToolTip="{local:Loc Key=Conn_SystemPrompt}" AutomationProperties.Name="{local:Loc Key=Conn_SystemPrompt}">
                 <Button.Flyout>
                     <MenuFlyout x:Name="PromptMenu" x:FieldModifier="internal" Placement="TopEdgeAlignedRight" />
                 </Button.Flyout>
             </Button>
             <Button x:Name="RecentButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" />
+                    Content="&#xE81C;" ToolTipService.ToolTip="{local:Loc Key=Popup_Recent}" AutomationProperties.Name="{local:Loc Key=Popup_Recent}" />
             <Button x:Name="ContinueInButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" />
+                    Content="&#xE756;" ToolTipService.ToolTip="{local:Loc Key=Recent_ContinueIn}" AutomationProperties.Name="{local:Loc Key=Recent_ContinueIn}" />
             <Button x:Name="NewChatButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" />
+                    Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" AutomationProperties.Name="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
-                    Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" />
+                    Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" AutomationProperties.Name="{local:Loc Key=Bar_settings}" />
         </Grid>
         <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
         <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-10" Visibility="Collapsed" />

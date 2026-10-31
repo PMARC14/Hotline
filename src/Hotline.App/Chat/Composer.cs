@@ -160,7 +160,9 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     public void SetBusy(bool busy)
     {
         popup.SendButton.Content = busy ? Glyphs.Stop : Glyphs.Send;
-        ToolTipService.SetToolTip(popup.SendButton, busy ? Strings.Composer_Stop : Strings.Composer_Send);
+        var name = busy ? Strings.Composer_Stop : Strings.Composer_Send;
+        ToolTipService.SetToolTip(popup.SendButton, name);
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(popup.SendButton, name); // else the glyph is the name
     }
 
     private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)

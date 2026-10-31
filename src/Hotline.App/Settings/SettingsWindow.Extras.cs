@@ -10,6 +10,8 @@ namespace Hotline.App.Settings;
 public sealed partial class SettingsWindow
 {
     private string DataDirectory => Path.GetDirectoryName(_settingsFile)!;
+    /// <summary>At most this many of toolbar.json's problems are listed in the page's InfoBar (then "(and N more)").</summary>
+    private const int MaxToolbarProblemLines = 10;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
     /// <summary>
@@ -34,11 +36,29 @@ public sealed partial class SettingsWindow
             PageHost.Children.Add(new InfoBar
             {
                 IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
-                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", load.Model.Warnings),
+                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", load.Model.Warnings.Take(MaxToolbarProblemLines))
+                    + (load.Model.Warnings.Count > MaxToolbarProblemLines
+                        ? "\n" + L.F(Strings.Settings_AndMore, load.Model.Warnings.Count - MaxToolbarProblemLines) : ""),
             });
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
-        PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, model => ToolbarFile.Save(ToolbarPath, model),
-            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom));
+        // The file as this page read or last saved it: an edit made while the page is open is never overwritten.
+        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
+        void Save(ToolbarModel model)
+        {
+            if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
+            ToolbarFile.Save(ToolbarPath, model);
+            stamp = ToolbarFile.Fingerprint(ToolbarPath);
+        }
+        ToolbarModel? Reload()
+        {
+            stamp = ToolbarFile.Fingerprint(ToolbarPath);
+            var again = ToolbarFile.Load(ToolbarPath);
+            if (again.Error is null) return again.Model;
+            ShowPage(_currentPage); // unreadable now: the page shows the error and Reset
+            return null;
+        }
+        PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, Save,
+            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload));
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 

@@ -111,6 +111,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         var userBar = popup.ToolbarModel;
         var userUp = popup.GrowsUp;
         Action? stopCounting = null;
+        var errorsBefore = log.ErrorCount;
+        var checks = 0;
         try
         {
             popup.ShowOffscreen();
@@ -132,6 +134,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             async Task Step(string name)
             {
                 log.Info($"selftest step: {name}");
+                checks++;
                 await Task.Delay(120); // let the frame be laid out and drawn
             }
             newChat(); // a real reset (stops any answer, clears the controller), as the demo does
@@ -306,6 +309,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             composer.Text = userDraft;
             newChat();
             popup.EndOffscreen();
+            // The one marker tests/smoke/smoke.ps1 waits for: always written last, whatever failed (every failure logged an error).
+            log.Info($"selftest complete: {checks} checks, {log.ErrorCount - errorsBefore} failed");
         }
     }
 

@@ -740,7 +740,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列將該列顯示為六個區域：訊息方塊上方一列的左、中、右，以及其下方的同樣三個區域。拖曳按鈕或選取器可將其在區域內移動或移至另一個區域，也可以使用其箭頭按鈕 (Alt+箭頭可切換區域，Ctrl+箭頭可變更順序)。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的大小、外框或填滿，您也可以新增自己的按鈕來執行快速指令或插入文字。放不下的按鈕會移至 ⋯ 功能表。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the cells key), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>

@@ -740,7 +740,7 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが 6 つのエリアとして表示されます: メッセージ ボックスの上の行の左、中央、右、そしてその下の同じ 3 つ。ボタンまたはピッカーをドラッグしてエリア内や別のエリアに移動するか、矢印ボタンを使用します (Alt+矢印でエリアを変更、Ctrl+矢印で順序を変更)。非表示にした項目は「非表示」に入ります。各ボタンには独自のサイズ、枠線または塗りつぶしを設定でき、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まりきらないボタンは ⋯ メニューに移動します。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the cells key), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>

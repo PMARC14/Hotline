@@ -54,10 +54,18 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     /// <summary>What gets keyboard focus after the next rebuild: the element with the first id, else the second.</summary>
     private (string Preferred, string Fallback)? _focus;
 
+    /// <summary>Thrown by the save callback when toolbar.json changed on disk since this editor read or last saved it.</summary>
+    public sealed class ChangedOnDiskException : Exception;
+
+    /// <summary>Reads toolbar.json anew (and notes its fingerprint) after <see cref="ChangedOnDiskException"/>; null when it can't be used.</summary>
+    private readonly Func<ToolbarModel?> _reload;
+
     public ToolbarQuadrantEditor(ToolbarModel model, Action<ToolbarModel> save, Func<IReadOnlyList<string>> quickActions,
-        Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Func<double>? barRoom = null)
+        Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Func<double>? barRoom = null,
+        Func<ToolbarModel?>? reload = null)
     {
         (_model, _save, _quickActions, _showDialog, _cardStyle, _log, _barRoom) = (model, save, quickActions, showDialog, cardStyle, log, barRoom);
+        _reload = reload ?? (() => null);
         Spacing = 8;
         Children.Add(_notice);
         Children.Add(new TextBlock { Text = Strings.Bar_EditorIntro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8 });
@@ -73,13 +81,13 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     /// <summary>Runs one edit; when it changes the model, saves it (keeping the last good model if that fails), moves a style
     /// override between the item and the stash when it is hidden or shown, and rebuilds this control, then focuses
     /// <paramref name="focus"/> (see <see cref="_focus"/>).</summary>
-    private void Edit(Func<ToolbarModel, ToolbarModel> edit, string? id, (string Preferred, string Fallback)? focus = null)
+    private bool Edit(Func<ToolbarModel, ToolbarModel> edit, string? id, (string Preferred, string Fallback)? focus = null)
     {
         var before = _model;
         ToolbarModel next;
         try { next = edit(before); }
-        catch (Exception ex) { _log.Error("button rows: edit failed", ex); return; } // ToolbarEditor never throws; a drop must never fail anyway
-        if (ReferenceEquals(next, before)) return;
+        catch (Exception ex) { _log.Error("button rows: edit failed", ex); return false; } // ToolbarEditor never throws; a drop must never fail anyway
+        if (ReferenceEquals(next, before)) return false;
         var (wasHidden, isHidden) = id is null ? (false, false) : (IsHidden(before, id), IsHidden(next, id));
         ButtonStyle? restored = null;
         if (wasHidden && !isHidden && _stash.TryGetValue(id!, out var stashed))
@@ -88,13 +96,27 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             restored = stashed;
         }
         try { _save(next); }
+        catch (ChangedOnDiskException)
+        {
+            // A hand edit or an import changed the file meanwhile: show what it holds now instead of overwriting it.
+            _log.Info("button rows: toolbar.json changed on disk; reloaded instead of saving");
+            if (_reload() is { } fresh)
+            {
+                _model = fresh;
+                _stash.Clear();
+                Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
+                _focus = focus ?? _focus;
+                QueueRebuild();
+            }
+            return false;
+        }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
             _log.Error("saving toolbar.json failed", ex);
             Notice(L.F(Strings.Bar_SaveFailed, ex.Message), InfoBarSeverity.Error);
             _focus = focus ?? _focus;
             QueueRebuild(); // back to what the file holds
-            return;
+            return false;
         }
         _model = next;
         if (_notice.Severity == InfoBarSeverity.Error) _notice.IsOpen = false;
@@ -102,6 +124,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         if (!wasHidden && isHidden && before.Overrides.TryGetValue(id!, out var dropped)) _stash[id!] = dropped;
         _focus = focus ?? _focus;
         QueueRebuild();
+        return true;
     }
 
     /// <summary>Not on the bar itself: in "Not shown" or in the box of the more button (its style override is kept aside either way).</summary>

@@ -105,7 +105,13 @@ public static class CustomIcons
         {
             Directory.CreateDirectory(iconsFolder);
             File.WriteAllBytes(temp, bytes);
-            File.Move(temp, Path.Combine(iconsFolder, name), overwrite: true);
+            // The picture being replaced is kept (not as a .png, so nothing lists it) until Commit or Rollback.
+            var target = Path.Combine(iconsFolder, name);
+            var previous = PreviousPath(iconsFolder, buttonId);
+            File.Delete(previous);
+            if (File.Exists(target)) File.Copy(target, previous, overwrite: true);
+            lock (FirstPictures) { if (File.Exists(previous)) FirstPictures.Remove(previous); else FirstPictures.Add(previous); }
+            File.Move(temp, target, overwrite: true);
             return (name, CustomIconProblem.None);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
@@ -116,6 +122,46 @@ public static class CustomIcons
         {
             try { if (File.Exists(temp)) File.Delete(temp); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        }
+    }
+
+    /// <summary>The .prev paths whose import created the button's first picture (so a rollback deletes it).</summary>
+    private static readonly HashSet<string> FirstPictures = new(StringComparer.OrdinalIgnoreCase);
+
+    private static string PreviousPath(string iconsFolder, string buttonId) => Path.Combine(iconsFolder, $".{buttonId}.prev");
+
+    /// <summary>The toolbar change that went with an <see cref="Import"/> was saved: the replaced picture is not needed any more.</summary>
+    public static void Commit(string iconsFolder, string buttonId)
+    {
+        if (!ToolbarModel.IsCustomId(buttonId)) return;
+        try
+        {
+            var previous = PreviousPath(iconsFolder, buttonId);
+            lock (FirstPictures) FirstPictures.Remove(previous);
+            File.Delete(previous);
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { }
+    }
+
+    /// <summary>The toolbar change that went with an <see cref="Import"/> failed: the picture before it is put back (a first
+    /// picture is removed). False when there was nothing to undo or it can't be done. Never throws.</summary>
+    public static bool Rollback(string iconsFolder, string buttonId)
+    {
+        if (!ToolbarModel.IsCustomId(buttonId)) return false;
+        try
+        {
+            var previous = PreviousPath(iconsFolder, buttonId);
+            var target = Path.Combine(iconsFolder, buttonId + ".png");
+            bool first;
+            lock (FirstPictures) first = FirstPictures.Remove(previous);
+            if (File.Exists(previous)) File.Move(previous, target, overwrite: true);
+            else if (first) File.Delete(target); // there was no picture before this import
+            else return false; // nothing pending (committed, or never imported)
+            return true;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
+        {
+            return false;
         }
     }
 

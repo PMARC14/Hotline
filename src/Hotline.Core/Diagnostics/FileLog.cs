@@ -15,8 +15,16 @@ public sealed class FileLog(string path, long maxBytes = 1_000_000)
 
     public void Info(string message) => Write("INFO", message);
 
+    private int _errors;
+
+    /// <summary>How many errors were logged so far (the self-test reports the difference over its run).</summary>
+    public int ErrorCount => Volatile.Read(ref _errors);
+
     public void Error(string message, Exception? ex = null)
-        => Write("ERROR", ex is null ? message : $"{message}: {ex}");
+    {
+        Interlocked.Increment(ref _errors);
+        Write("ERROR", ex is null ? message : $"{message}: {ex}");
+    }
 
     private void Write(string level, string message)
     {

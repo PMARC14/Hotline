@@ -25,10 +25,14 @@ public partial class App
         };
         try
         {
-            // settings.json and connections\*.json (one file per connection): edits, new and deleted files apply live.
-            _settingsWatcher = new FileSystemWatcher(dir, "*.json") { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, IncludeSubdirectories = true };
+            // settings.json, toolbar.json, icons\*.png and connections\*.json (one file per connection): edits, new and deleted files apply live.
+            _settingsWatcher = new FileSystemWatcher(dir, "*") { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, IncludeSubdirectories = true };
             var toolbarPath = Path.Combine(dir, "toolbar.json");
+            var iconsDir = Path.Combine(dir, "icons");
+            // icons\*.png too: a picture replaced under the same name changes no .json, but the bar must redraw (ApplyToolbarFile's IconStamp).
             bool Relevant(string? path) => path is not null && (string.Equals(path, store.FilePath, StringComparison.OrdinalIgnoreCase)
+                || (path.EndsWith(".png", StringComparison.OrdinalIgnoreCase)
+                    && string.Equals(Path.GetDirectoryName(path), iconsDir, StringComparison.OrdinalIgnoreCase))
                 || string.Equals(path, toolbarPath, StringComparison.OrdinalIgnoreCase)
                 || string.Equals(Path.GetDirectoryName(path), store.ConnectionsDirectory, StringComparison.OrdinalIgnoreCase));
             void Kick(string? path) { if (Relevant(path)) _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); }); }

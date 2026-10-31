@@ -12,7 +12,8 @@ powershell -File tests\smoke\smoke.ps1 -Install                           # buil
 ```
 
 The smoke test opens and closes the panel a few times and presses the fallback hotkey once — don't type while it
-runs. It ends with Hotline quit; start it again with `hotline://tray` (Win+R).
+runs. It ends with Hotline quit; start it again with `hotline://tray` (Win+R). It waits for the self-test's last line,
+`selftest complete: <n> checks, <m> failed` (after the size scenarios and profiles), and fails on any `FAILED` line.
 
 Headless self-tests (nothing is shown; results in the log, lines starting `selftest`):
 
@@ -67,6 +68,13 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       no second "..." in the row; the other row keeps its own. Self-test steps P32-P34 draw these (`logs\selftest\`).
 - [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About › This PC
       lists what was ignored; a file Hotline can't read is left as it is.
+- [ ] Hand-edit `toolbar.json` (add a comment) and save a change in Settings › Button rows: the edited file is kept once as
+      `toolbar.json.<time>.bak` (a second edit in Settings makes no new copy). With the page open, edit the file by hand, then drag an item:
+      the page reloads the file, shows "toolbar.json changed while this page was open" and does not overwrite it.
+- [ ] Settings › Button rows: replace a custom button's picture with another PNG of the same name: the bar shows it at once (no other edit).
+      Make toolbar.json read-only first and replace the picture: the old picture comes back and a save error is shown.
+- [ ] Narrator / Accessibility Insights on the panel: every bar button, the three pickers, the "..." button, Add (+) and Send/Stop have a
+      spoken name (not a symbol); Send becomes Stop while an answer streams. Make 12+ mistakes in `toolbar.json`: the Settings InfoBar lists 10 and "(and N more)".
 - [ ] A version 1 `toolbar.json` is left untouched: the default bar runs with the "version 1 files are no longer read" warning;
       Settings › Advanced › Reset settings puts the default bar back (a backup is made first).
 - [ ] `"backdrop": "glass"` in the `window` section of `settings.json`, saved: a notice "Part of your settings was ignored" appears in the
