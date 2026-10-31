@@ -1,3 +1,4 @@
+using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Hotline.Core.Settings;
@@ -43,24 +44,54 @@ public static class ToolbarFile
     private static ToolbarLoad Unreadable(string reason) =>
         new(ToolbarModel.Defaults, L.F(Strings.Bar_Unreadable, reason));
 
-    /// <summary>Writes the model as a v2 file: a temp file in the same folder, then moved over the old one. The file it
-    /// replaces is kept as <c>toolbar.json.bak</c> first (<paramref name="keepPrevious"/>): Settings rewrites a hand-edited
-    /// file from the model, which drops its comments and anything that was ignored. If the copy fails, nothing is replaced.</summary>
+    /// <summary>What this process last wrote to each path (full path → the bytes), to tell its own file from a hand edit.</summary>
+    private static readonly Dictionary<string, byte[]> LastWritten = new(StringComparer.OrdinalIgnoreCase);
+
+    /// <summary>A short fingerprint of the file's bytes (SHA-256 hex), or null when it is missing or can't be read. Settings compares it
+    /// before applying an edit to see whether the file changed since the page read or saved it.</summary>
+    public static string? Fingerprint(string path)
+    {
+        try { return File.Exists(path) ? Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(File.ReadAllBytes(path))) : null; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    /// <summary>Writes the model as a v2 file: a temp file in the same folder, then moved over the old one. Settings rewrites a
+    /// hand-edited file from the model, which drops its comments and anything that was ignored, so a file that isn't exactly what this
+    /// process last wrote there is first copied to <c>toolbar.json.&lt;yyyyMMdd-HHmmss&gt;.bak</c> (see <see cref="BackupFiles.CopyStamped"/>:
+    /// never over an older copy, the newest 10 kept) unless <paramref name="keepPrevious"/> is false. If that copy can't be made nothing is
+    /// replaced and an <see cref="IOException"/> says why (its message names the reason, for the notice).</summary>
     public static void Save(string path, ToolbarModel model, bool keepPrevious = true)
     {
+        path = Path.GetFullPath(path);
         if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder);
         var tmp = path + ".tmp";
+        var bytes = new UTF8Encoding(false).GetBytes(model.ToJson());
         try
         {
-            if (keepPrevious && File.Exists(path)) File.Copy(path, path + ".bak", overwrite: true);
-            File.WriteAllText(tmp, model.ToJson());
+            if (keepPrevious && File.Exists(path) && !IsOurLastWrite(path))
+            {
+                try { BackupFiles.CopyStamped(path); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                {
+                    throw new IOException(L.F(Strings.Bar_SaveBackupFailed, ex.Message), ex);
+                }
+            }
+            File.WriteAllBytes(tmp, bytes);
             File.Move(tmp, path, overwrite: true);
+            lock (LastWritten) LastWritten[path] = bytes;
         }
         catch
         {
             try { File.Delete(tmp); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* nothing more to do */ }
             throw;
         }
+    }
+
+    private static bool IsOurLastWrite(string path)
+    {
+        byte[]? ours;
+        lock (LastWritten) LastWritten.TryGetValue(path, out ours);
+        return ours is not null && File.ReadAllBytes(path).AsSpan().SequenceEqual(ours);
     }
 
     private static bool TrySave(string path, ToolbarModel model)

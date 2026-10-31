@@ -2,6 +2,7 @@ using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Windowing;
 
@@ -55,7 +56,8 @@ public sealed record ToolbarModel(
     /// <summary>Whether <paramref name="cells"/> is one of <see cref="CellChoices"/>.</summary>
     public static bool IsCells(double cells) => CellChoices.Contains(cells);
 
-    private const string WidthHeightGone = "width and height are no longer used; use \"cells\" (0.5-4)";
+    /// <summary>A warning's text in the current language (<see cref="Resolve"/> stays pure: the text is the only thing that varies).</summary>
+    private static string W(string format, params object[] args) => L.F(format, args);
 
     public static readonly IReadOnlyList<string> BuiltIn =
         ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings", "more"];
@@ -153,11 +155,11 @@ public sealed record ToolbarModel(
         {
             var warnings = new List<string>();
             var root = Parse(json, warnings);
-            return root is JsonObject o ? Read(o, warnings) : Defaults with { Warnings = ["toolbar.json isn't a JSON object; the defaults are used"] };
+            return root is JsonObject o ? Read(o, warnings) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
         }
         catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {
-            return Defaults with { Warnings = [$"toolbar.json can't be read ({Clean(ex.Message, 200, false)}); the defaults are used"] };
+            return Defaults with { Warnings = [W(Strings.BarW_CantRead, Clean(ex.Message, 200, false))] };
         }
     }
 
@@ -174,7 +176,7 @@ public sealed record ToolbarModel(
             // Valid apart from a repeated key: read it with the last value winning, a per-field fix like any other.
             using var doc = JsonDocument.Parse(json, RepeatedKeys);
             var root = LastWins(doc.RootElement.Clone());
-            warnings.Add($"Repeated key in toolbar.json ({Clean(strict.Message, 200, false)}); the last value is used");
+            warnings.Add(W(Strings.BarW_Repeated, Clean(strict.Message, 200, false)));
             return root;
         }
     }
@@ -201,16 +203,16 @@ public sealed record ToolbarModel(
         // The old format (no version or an older one, rows as plain arrays) is not converted any more: the defaults run and
         // the file is left as it is. A version 2 file with a bad row is read per field like any other.
         if ((root["version"] is null || version < CurrentVersion) && (root["items"] is JsonArray || root["top"] is JsonArray))
-            return Defaults with { Warnings = [Text.Localization.Strings.Bar_VersionOneUnsupported] };
+            return Defaults with { Warnings = [Strings.Bar_VersionOneUnsupported] };
         if (root["version"] is not null && version != CurrentVersion)
-            warnings.Add($"toolbar.json version {Show(root["version"])} isn't {CurrentVersion}; read as far as it goes");
+            warnings.Add(W(Strings.BarW_Version, Show(root["version"]), CurrentVersion));
 
         var buttons = ReadButtons(root["buttons"], warnings);
         var known = BuiltIn.Concat(buttons.Select(b => b.Id)).ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
         var (placed, explicitlyEmpty) = ReadQuadrants(root, known, warnings);
         if (placed.Values.All(l => l.Count == 0) && !explicitlyEmpty)
         {
-            warnings.Add("toolbar.json shows no items (an empty bar needs the left and right groups of both rows present and empty); the default layout is used");
+            warnings.Add(W(Strings.BarW_NoItems));
             placed = Order.ToDictionary(q => q, q => Defaults.Items(q).ToList());
         }
 
@@ -233,7 +235,7 @@ public sealed record ToolbarModel(
         var explicitlyEmpty = true;
         foreach (var rowName in new[] { "items", "top" })
             if (root[rowName] is { } row && row is not JsonObject)
-                warnings.Add($"\"{rowName}\" should be an object with \"left\" and \"right\"; ignored");
+                warnings.Add(W(Strings.BarW_RowObject, rowName));
         foreach (var q in Order)
         {
             var rowName = q is Quadrant.BottomLeft or Quadrant.BottomCenter or Quadrant.BottomRight ? "items" : "top";
@@ -241,16 +243,16 @@ public sealed record ToolbarModel(
             if ((root[rowName] as JsonObject)?[side] is not JsonArray list)
             {
                 if (side != "center") explicitlyEmpty = false; // the centre group is optional: a file without one is still an explicit empty bar
-                if ((root[rowName] as JsonObject)?[side] is not null) warnings.Add($"\"{rowName}.{side}\" should be a list; ignored");
+                if ((root[rowName] as JsonObject)?[side] is not null) warnings.Add(W(Strings.BarW_List, rowName + "." + side));
                 continue;
             }
             if (list.Count > 0) explicitlyEmpty = false;
-            if (list.Count > MaxItems) warnings.Add($"\"{rowName}.{side}\" lists more than {MaxItems} items; the rest are ignored");
+            if (list.Count > MaxItems) warnings.Add(W(Strings.BarW_TooMany, rowName + "." + side, MaxItems));
             foreach (var entry in list.Take(MaxItems))
             {
-                if (entry is not JsonValue value || !value.TryGetValue<string>(out var s)) { warnings.Add($"\"{rowName}.{side}\": {Show(entry)} isn't an item id; ignored"); continue; }
+                if (entry is not JsonValue value || !value.TryGetValue<string>(out var s)) { warnings.Add(W(Strings.BarW_NotItemId, rowName + "." + side, Show(entry))); continue; }
                 if (s.Equals("spacer", StringComparison.OrdinalIgnoreCase)) continue; // v1 leftover: groups replace it
-                if (!known.TryGetValue(s, out var id)) warnings.Add($"Unknown item \"{Clean(s, MaxLabel, false)}\" ignored");
+                if (!known.TryGetValue(s, out var id)) warnings.Add(W(Strings.BarW_Unknown, Clean(s, MaxLabel, false)));
                 else if (seen.Add(id)) placed[q].Add(id); // listed again later: the first place wins
             }
         }
@@ -263,22 +265,22 @@ public sealed record ToolbarModel(
     {
         var menu = new List<string>();
         if (node is null) return menu;
-        if (node is not JsonArray list) { warnings.Add("\"menu\" should be a list; ignored"); return menu; }
-        if (list.Count > MaxItems) warnings.Add($"\"menu\" lists more than {MaxItems} items; the rest are ignored");
+        if (node is not JsonArray list) { warnings.Add(W(Strings.BarW_List, "menu")); return menu; }
+        if (list.Count > MaxItems) warnings.Add(W(Strings.BarW_TooMany, "menu", MaxItems));
         var onBar = placed.Values.SelectMany(l => l).ToHashSet(StringComparer.OrdinalIgnoreCase);
         foreach (var entry in list.Take(MaxItems))
         {
-            if (entry is not JsonValue value || !value.TryGetValue<string>(out var s)) { warnings.Add($"\"menu\": {Show(entry)} isn't an item id; ignored"); continue; }
-            if (!known.TryGetValue(s, out var id)) warnings.Add($"Unknown item \"{Clean(s, MaxLabel, false)}\" in \"menu\" ignored");
+            if (entry is not JsonValue value || !value.TryGetValue<string>(out var s)) { warnings.Add(W(Strings.BarW_NotItemId, "menu", Show(entry))); continue; }
+            if (!known.TryGetValue(s, out var id)) warnings.Add(W(Strings.BarW_UnknownMenu, Clean(s, MaxLabel, false)));
             else if (Pickers.Contains(id, StringComparer.OrdinalIgnoreCase) || id.Equals(MoreId, StringComparison.OrdinalIgnoreCase))
-                warnings.Add($"\"menu\" takes buttons only; \"{id}\" ignored");
-            else if (onBar.Contains(id)) warnings.Add($"\"{id}\" is on the bar, so it stays there; its \"menu\" entry is ignored");
-            else if (menu.Contains(id, StringComparer.OrdinalIgnoreCase)) warnings.Add($"\"{id}\" is listed twice in \"menu\"; the second is ignored");
+                warnings.Add(W(Strings.BarW_MenuButtonsOnly, id));
+            else if (onBar.Contains(id)) warnings.Add(W(Strings.BarW_MenuOnBar, id));
+            else if (menu.Contains(id, StringComparer.OrdinalIgnoreCase)) warnings.Add(W(Strings.BarW_MenuTwice, id));
             else menu.Add(id);
         }
         if (menu.Count > 0 && !onBar.Contains(MoreId))
         {
-            warnings.Add("menu items need a more button; they are ignored");
+            warnings.Add(W(Strings.BarW_MenuNoMore));
             menu.Clear();
         }
         return menu;
@@ -288,27 +290,27 @@ public sealed record ToolbarModel(
     {
         var buttons = new List<CustomButton>();
         if (node is null) return buttons;
-        if (node is not JsonObject all) { warnings.Add("\"buttons\" should be an object; ignored"); return buttons; }
+        if (node is not JsonObject all) { warnings.Add(W(Strings.BarW_Object, "buttons")); return buttons; }
         foreach (var (id, def) in all)
         {
-            if (buttons.Count == MaxButtons) { warnings.Add($"More than {MaxButtons} custom buttons; the rest are ignored"); break; }
+            if (buttons.Count == MaxButtons) { warnings.Add(W(Strings.BarW_TooManyButtons, MaxButtons)); break; }
             var name = Clean(id, MaxLabel, false);
             if (!IsCustomId(id))
-                { warnings.Add($"Custom button id \"{name}\" must be 1-{MaxId} characters a-z, 0-9 or -; ignored"); continue; }
-            if (BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase)) { warnings.Add($"Custom button \"{name}\" has a built-in id; ignored"); continue; }
-            if (def is not JsonObject b) { warnings.Add($"Custom button \"{id}\" should be an object; ignored"); continue; }
+                { warnings.Add(W(Strings.BarW_ButtonId, name, MaxId)); continue; }
+            if (BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase)) { warnings.Add(W(Strings.BarW_ButtonBuiltIn, name)); continue; }
+            if (def is not JsonObject b) { warnings.Add(W(Strings.BarW_ButtonObject, id)); continue; }
 
             var label = Clean(String(b, "label", id, warnings) ?? "", MaxLabel, false);
             var quickAction = String(b, "quickAction", id, warnings) is { } qa ? Clean(qa, int.MaxValue, false) : null;
             if (quickAction is not null && !IsActionName(quickAction))
-                { warnings.Add($"Custom button \"{id}\": \"quickAction\" must be the name of a file in actions\\ (letters, digits, _ and -, at most {MaxActionName} characters); ignored"); continue; }
+                { warnings.Add(W(Strings.BarW_ButtonAction, id, MaxActionName)); continue; }
             var text = String(b, "text", id, warnings) is { } t && Clean(t, MaxText, true) is { Length: > 0 } x ? x : null;
-            if ((quickAction is null) == (text is null)) { warnings.Add($"Custom button \"{id}\" needs exactly one of \"quickAction\" and \"text\"; ignored"); continue; }
+            if ((quickAction is null) == (text is null)) { warnings.Add(W(Strings.BarW_ButtonOneOf, id)); continue; }
             // Only the name is checked here (Resolve reads no files): the renderer falls back to the glyph if the picture is gone.
             var iconFile = String(b, "iconFile", id, warnings);
             if (iconFile is not null && !CustomIcons.IsFileName(iconFile, id))
             {
-                warnings.Add($"\"buttons.{id}.iconFile\" {Show(b["iconFile"])} isn't \"{id}.png\" (a picture in icons\\); the icon is used");
+                warnings.Add(W(Strings.BarW_ButtonIconFile, id, Show(b["iconFile"])));
                 iconFile = null;
             }
             buttons.Add(new CustomButton(id, label.Length > 0 ? label : id, Icon(b["icon"], id, warnings), quickAction, text,
@@ -330,7 +332,7 @@ public sealed record ToolbarModel(
     {
         if (o[key] is null) return null;
         if (o[key] is JsonValue v && v.TryGetValue<string>(out var s)) return s;
-        warnings.Add($"\"buttons.{id}.{key}\" should be text; ignored");
+        warnings.Add(W(Strings.BarW_ButtonText, $"buttons.{id}.{key}"));
         return null;
     }
 
@@ -341,7 +343,7 @@ public sealed record ToolbarModel(
         if (node is JsonValue v && v.TryGetValue<string>(out var s) && s.Length is >= 4 and <= 6 && s.All(char.IsAsciiHexDigit)
             && Convert.ToInt32(s, 16) is var code and >= 0xE000 and <= 0xF8FF)
             return code.ToString("X4");
-        warnings.Add($"\"buttons.{id}.icon\" {Show(node)} isn't an icon code (E000-F8FF); the default icon is used");
+        warnings.Add(W(Strings.BarW_ButtonIcon, $"buttons.{id}.icon", Show(node)));
         return DefaultIcon;
     }
 
@@ -352,7 +354,7 @@ public sealed record ToolbarModel(
         var picked = new Dictionary<string, int>();
         spans = picked;
         if (node is null) return overrides;
-        if (node is not JsonObject all) { warnings.Add("\"overrides\" should be an object; ignored"); return overrides; }
+        if (node is not JsonObject all) { warnings.Add(W(Strings.BarW_Object, "overrides")); return overrides; }
         var ids = shown.ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
         var seenPickers = new HashSet<string>();
         foreach (var (key, value) in all)
@@ -360,14 +362,14 @@ public sealed record ToolbarModel(
             // A picker takes one key, "span" (its width in button widths), whether or not it is shown.
             if (Pickers.FirstOrDefault(p => p.Equals(key, StringComparison.OrdinalIgnoreCase)) is { } picker)
             {
-                if (!seenPickers.Add(picker)) { warnings.Add($"Second override for \"{picker}\" ignored"); continue; }
-                if (value is not JsonObject own) { warnings.Add($"Override for \"{picker}\" ignored: the pickers take only \"span\""); continue; }
-                if (own.Any(p => p.Key != "span")) warnings.Add($"Override for \"{picker}\" ignored except \"span\": the pickers take no styles");
+                if (!seenPickers.Add(picker)) { warnings.Add(W(Strings.BarW_OverrideTwice, picker)); continue; }
+                if (value is not JsonObject own) { warnings.Add(W(Strings.BarW_PickerSpanOnly, picker)); continue; }
+                if (own.Any(p => p.Key != "span")) warnings.Add(W(Strings.BarW_PickerNoStyles, picker));
                 if (own.ContainsKey("span") && Span(own["span"], picker, warnings) is { } span && span != DefaultSpan(picker)) picked[picker] = span;
                 continue;
             }
-            if (!ids.TryGetValue(key, out var id)) { warnings.Add($"Override for \"{Clean(key, MaxLabel, false)}\" ignored: that item isn't shown"); continue; }
-            if (overrides.ContainsKey(id)) { warnings.Add($"Second override for \"{id}\" ignored"); continue; }
+            if (!ids.TryGetValue(key, out var id)) { warnings.Add(W(Strings.BarW_OverrideNotShown, Clean(key, MaxLabel, false))); continue; }
+            if (overrides.ContainsKey(id)) { warnings.Add(W(Strings.BarW_OverrideTwice, id)); continue; }
             if (ReadStyle(value, $"overrides.{id}", warnings) is var style && style != new ButtonStyle()) overrides[id] = style;
         }
         return overrides;
@@ -378,7 +380,7 @@ public sealed record ToolbarModel(
     {
         if (node is JsonValue v && v.TryGetValue<double>(out var d) && double.IsFinite(d) && d == Math.Floor(d) && d is >= MinSpan and <= MaxSpan)
             return (int)d;
-        warnings.Add($"\"overrides.{picker}.span\" {Show(node)} isn't a whole number {MinSpan}-{MaxSpan}; the default is used");
+        warnings.Add(W(Strings.BarW_SpanBad, $"overrides.{picker}.span", Show(node), MinSpan, MaxSpan));
         return null;
     }
 
@@ -386,17 +388,17 @@ public sealed record ToolbarModel(
     private static ButtonStyle ReadStyle(JsonNode? node, string where, List<string> warnings)
     {
         if (node is null) return new ButtonStyle();
-        if (node is not JsonObject o) { warnings.Add($"\"{where}\" should be an object; ignored"); return new ButtonStyle(); }
+        if (node is not JsonObject o) { warnings.Add(W(Strings.BarW_Object, where)); return new ButtonStyle(); }
         ButtonSize? size = null;
         if (o["size"] is { } sizeNode)
         {
             size = sizeNode is JsonValue v && v.TryGetValue<string>(out var s)
                 ? Enum.GetValues<ButtonSize>().Cast<ButtonSize?>().FirstOrDefault(z => z.ToString()!.Equals(s, StringComparison.OrdinalIgnoreCase))
                 : null;
-            if (size is null) warnings.Add($"\"{where}.size\" {Show(sizeNode)} isn't compact, normal or wide; normal is used");
+            if (size is null) warnings.Add(W(Strings.BarW_SizeBad, where + ".size", Show(sizeNode)));
             size ??= ButtonSize.Normal;
         }
-        if ((o.ContainsKey("width") || o.ContainsKey("height")) && !warnings.Contains(WidthHeightGone)) warnings.Add(WidthHeightGone);
+        if (o.ContainsKey("width") || o.ContainsKey("height")) { var gone = W(Strings.BarW_WidthHeightGone); if (!warnings.Contains(gone)) warnings.Add(gone); }
         return new ButtonStyle(size, Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
             Cells(o["cells"], $"{where}.cells", warnings), Color(o["outlineColor"], $"{where}.outlineColor", warnings));
     }
@@ -406,7 +408,7 @@ public sealed record ToolbarModel(
     {
         if (node is null) return null;
         if (node is JsonValue v && v.TryGetValue<string>(out var s) && IsColor(s)) return s.ToUpperInvariant();
-        warnings.Add($"\"{where}\" {Show(node)} isn't a #RRGGBB colour; the accent colour is used");
+        warnings.Add(W(Strings.BarW_ColorBad, where, Show(node)));
         return null;
     }
 
@@ -417,7 +419,7 @@ public sealed record ToolbarModel(
     {
         if (node is null) return null;
         if (node is JsonValue v && v.TryGetValue<bool>(out var b)) return b;
-        warnings.Add($"\"{where}\" should be true or false, not {Show(node)}; the default is used");
+        warnings.Add(W(Strings.BarW_BoolBad, where, Show(node)));
         return null;
     }
 
@@ -426,7 +428,7 @@ public sealed record ToolbarModel(
     {
         if (node is null) return null;
         if (node is JsonValue v && v.TryGetValue<double>(out var d) && IsCells(d)) return d;
-        warnings.Add($"\"{where}\" {Show(node)} isn't 0.5, 1, 2, 3 or 4 cells; the size's width is used");
+        warnings.Add(W(Strings.BarW_CellsBad, where, Show(node)));
         return null;
     }
 
