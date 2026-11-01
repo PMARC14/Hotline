@@ -195,6 +195,16 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       and imports without being skipped.
 - [ ] After an import: a changed theme/bar applies at once; a new sound, quick action and button row are usable.
 
+### Continue in targets
+- [ ] Settings › Chat › Continue in: Add the ready-made entries (llama.cpp, Open WebUI, LM Studio, ChatGPT, Claude, Gemini), Edit, Remove;
+      each button has a name a screen reader reads ("Edit ChatGPT"). Open WebUI: Test shows the model count; a wrong key or an `http://`
+      address that isn't this PC says why.
+- [ ] A connection's page: *Use the shared list* / *Own list* / *None*; each chat's Continue in menu (toolbar button and history list) shows
+      only its own targets. A Local connection with no list offers the llama.cpp web UI.
+- [ ] A web target opens the browser with the chat in the box; a very long chat gives the "only your last message" notice and the chat is on
+      the clipboard. Open WebUI creates a real chat with every message. An app target opens the program; one pointing at a .cmd file only
+      shows a notice. A hand-edited `continueIn` with one wrong target: the others work and Settings › Advanced lists the problem.
+
 ### First run and support
 - [ ] Delete `%USERPROFILE%\.hotline\.first-run-shown`, open the panel → the "Welcome to Hotline" note with "What's sent".
 - [ ] Delete `.support-note-shown`, ask something → after the answer, "Enjoying Hotline?" with "Support Hotline"; it

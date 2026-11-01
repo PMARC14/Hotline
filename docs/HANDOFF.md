@@ -88,16 +88,24 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     (Prompt / Continue in, surviving a `toolbar.json` change), outlined pickers' hover / press, outline / filled / widths in light,
     dark and contrast themes, 24 custom buttons at a narrow panel, the pixel width model at 150% and 200%, Alt-drags across
     mixed-DPI monitors, and the Copilot key still arriving after the 26H2 upgrade.
-- **PR #29 `continue-in-targets` / `personal/gemini-web` (ships as 0.5):** Continue in to web pages, Open WebUI (a real chat) and
-  apps, from a shared list or per connection (plan `2026-10-15-continue-in-targets.md`). Merge `main` into it first: it conflicts
-  in the 17 `Strings*.resx` (keep both sides), `App.xaml.cs`, `SettingsWindow.xaml.cs` and this file. Hand tests:
+- **Continue in targets (0.5, PR #29 `continue-in-targets`, `main` merged in; `version.txt` is `0.5`):** after the CLIs, "Continue this chat in"
+  (`ContinueIn.Targets()`, the toolbar button and the history list) lists the user's targets: web pages (URL template, `{chat}` `{last}`
+  `{file}` `{model}` URL-encoded, http/https results only, over 8000 characters the last message goes and the chat is copied), Open WebUI
+  (`OpenWebUiChat`: a real chat through `POST /api/v1/chats/new`, key in Credential Locker as `continue:<url>:apiKey`, no redirects) and apps
+  (`ContinueTargets.FillCommand`: split like a command line, placeholders inside their own argument, never a shell, `.bat`/`.cmd` refused,
+  console left visible on purpose). Lists: `chat.continueIn` (shared; missing = the llama.cpp web UI of the first Local connection) and a
+  connection file's `continueIn` (missing = shared, `[]` = none). `LenientReader` reads both per target (a broken one is skipped with a
+  warning). UI: `SettingsWindow.ContinueIn.cs` (Chat page section, connection card; handlers guarded with `Fail`). Plan
+  `2026-10-15-continue-in-targets.md`. Hand tests:
   1. llama.cpp web UI (a Local connection's default target) opens with the conversation as the first message.
   2. Open WebUI: Settings › Chat › Continue in › Add › Open WebUI, address + key, **Test** shows the model count; continuing creates
      a real chat with every message. A wrong key or address gives a clear "Couldn't open…" notice.
-  3. LM Studio: opens with the whole chat on the clipboard. ChatGPT / Claude entries: the site opens with the chat in its box.
+  3. LM Studio: opens with the whole chat on the clipboard. ChatGPT / Claude entries: the site opens with the chat in its box. Gemini:
+     opens with the chat on the clipboard to paste. An app target pointing at a `.cmd` file: a notice, nothing starts.
   4. *None* on one connection and *Own list* on another: each chat shows only its own targets.
   5. A very long chat with a web target: the notice that only the last message went and the chat is on the clipboard.
-  A Gemini API connection has no default target (Gemini's site takes no message in its link); add one to test it.
+  6. The toolbar's Continue in button and the "..." menu show the same targets.
+  A Gemini API connection has no default target; add the ready-made **Gemini** entry. `personal/gemini-web` still needs `main` merged in.
 
 ### Deferred (not bugs to rediscover; from the reviews)
 
@@ -122,9 +130,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 1. **Merge PR #9 (0.4)** once the owner has hand-tested the list above (it fast-forwards `main`). Then S1 (schema freeze) and the other
    1.0 jobs, in the order given in [1.0-plan/README.md](1.0-plan/README.md).
-2. **0.5 (owner's scope):** Continue in (PR #29, above); region capture on multi-monitor / mixed DPI; multi-monitor behaviour of the
+2. **0.5 (owner's scope):** hand-test Continue in (above); region capture on multi-monitor / mixed DPI; multi-monitor behaviour of the
    bar; moving the bar and how it acts when pinned; the desktop hand test (clone, dev certificate per README,
-   `scripts/install.sh`); the shipped sound. Bump `version.txt` to 0.5 when it merges.
+   `scripts/install.sh`); the shipped sound. 
 3. **Before 1.0: schema freeze (decide with the owner; not started).** Findings of the read-only config design review (Opus):
    - unknown keys are dropped on save (carry them: `JsonExtensionData` / unknown nodes);
    - written-out defaults + rewrite-on-load versus sparse files;
@@ -221,7 +229,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 **Child processes (no console flashing)**
 - Only launches with `CreateNoWindow = true` avoid a visible console (`CliRunner`, `LineProcess`, `McpProcess` all do); `ContinueIn`
-  opens a console on purpose. Never wrap a child in `cmd /c`; kill whole process trees (job object).
+  opens a console on purpose (its app targets too). Never wrap a child in `cmd /c`; kill whole process trees (job object).
 
 **The CLIs**
 - **CLI histories:** Claude Code `~/.claude/projects/<folder>/<session>.jsonl` (type user/assistant, `message.content` string or blocks;

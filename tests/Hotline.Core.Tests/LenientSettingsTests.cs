@@ -72,6 +72,8 @@ public sealed class LenientSettingsTests : IDisposable
         { "window.width", "{\"x\":1}" }, { "window.anchor", "\"top\"" }, { "window.anchor.x", "\"left\"" },
         { "window.anchor.monitor", "[1]" }, { "diagnostics", "[]" }, { "diagnostics.verboseLogging", "{}" },
         { "general", "5" }, { "chat", "\"x\"" },
+        // the Continue in list: not an array
+        { "chat.continueIn", "\"x\"" }, { "chat.continueIn", "{}" },
     };
 
     [Theory]
@@ -348,6 +350,8 @@ public sealed class LenientSettingsTests : IDisposable
     [InlineData("args", "[1, 2]")]
     [InlineData("images", "\"yes\"")]
     [InlineData("endpoint", "5")]
+    [InlineData("continueIn", "\"all\"")]
+    [InlineData("continueIn", "{}")]
     public void One_bad_connection_field_keeps_its_default_and_the_rest_of_the_file_applies(string key, string json)
     {
         WriteConn("c1", $$"""{ "type": "anthropic", "name": "Mine", "model": "opus", "{{key}}": {{json}} }""");
@@ -365,6 +369,18 @@ public sealed class LenientSettingsTests : IDisposable
         Assert.Null(c.MaxTokens);
         Assert.Null(c.Args);
         Assert.Equal("Mine", c.Name);
+    }
+
+    [Theory]
+    [InlineData("""[{"kind":"web","name":"A","url":"http://a"},{"kind":"ftp","name":"B"},{"kind":"web"},"x",{"kind":"app","name":"C","command":5}]""")]
+    public void A_broken_continue_in_target_is_skipped_with_a_warning_and_the_others_stay(string list)
+    {
+        Write($$"""{ "chat": { "continueIn": {{list}} } }""");
+        var store = new SettingsStore(_dir);
+        var targets = store.Load().Chat.ContinueIn;
+        Assert.Equal(["A"], targets!.Select(t => t.Name));
+        Assert.Equal(4, store.SettingsProblems.Count);
+        Assert.All(store.SettingsProblems, p => Assert.Contains("chat.continueIn[", p));
     }
 
     [Fact]

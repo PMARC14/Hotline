@@ -109,6 +109,14 @@ internal static class LenientReader
                 continue;
             }
 
+            if (prop.PropertyType == typeof(List<Backends.ContinueTarget>)) // one broken target costs only itself
+            {
+                if (value.ValueKind == JsonValueKind.Null) prop.SetValue(target, null);
+                else if (value.ValueKind != JsonValueKind.Array) problems.Add(WrongType(where, value));
+                else prop.SetValue(target, ReadTargets(value, where, problems));
+                continue;
+            }
+
             try
             {
                 if (value.ValueKind == JsonValueKind.Null && !AllowsNull(prop)) throw new JsonException("null");
@@ -144,6 +152,29 @@ internal static class LenientReader
         var profile = new BackendProfile();
         Populate(obj, profile, label, "", problems);
         return profile;
+    }
+
+    /// <summary>A "Continue this chat in" list: targets that aren't an object with a known kind and a name are skipped, each with a warning.</summary>
+    private static List<Backends.ContinueTarget> ReadTargets(JsonElement array, string where, ReadProblems problems)
+    {
+        var list = new List<Backends.ContinueTarget>();
+        var index = 0;
+        foreach (var item in array.EnumerateArray())
+        {
+            var at = $"{where}[{index++}]";
+            try
+            {
+                var read = item.ValueKind == JsonValueKind.Object ? item.Deserialize<Backends.ContinueTarget>(SettingsStore.Options) : null;
+                var kind = item.ValueKind == JsonValueKind.Object && item.TryGetProperty("kind", out var k) && k.ValueKind == JsonValueKind.String;
+                if (read is null || !kind || string.IsNullOrWhiteSpace(read.Name)) problems.Add(WrongType(at, item));
+                else list.Add(read);
+            }
+            catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException)
+            {
+                problems.Add(WrongType(at, item));
+            }
+        }
+        return list;
     }
 
     // ---- helpers --------------------------------------------------------------------------------

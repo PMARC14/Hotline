@@ -74,6 +74,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
 | `chat.memoryTool` | `ask` | Whether API models may save to `memory.md` with Hotline's remember tool (Anthropic and Gemini even in chat-only mode; OpenAI-style connections once Tool use is on; never while `chat.memory` is off; every save shows a notice): `ask` (approve each; "Always" switches to `allow`), `allow`, `off` |
+| `chat.continueIn` | *(llama.cpp of a Local connection)* | The shared "Continue this chat in" targets (see *Continue in* below). Missing = the llama.cpp web UI at your first Local connection's address, or none |
 | `chat.voiceAutoSend` | `false` | With `voice`: send the message when you let go of the key (off: check it first, then press Enter) |
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
@@ -132,6 +133,7 @@ and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the
 | `extraArgs` | agy, Claude Code, Codex | Added on top, e.g. Claude Code `--mcp-config C:\mcp\servers.json`, Codex `--search` or `-c model_verbosity="low"` (Codex: sandbox, approval and folder flags are dropped) |
 | `keepCliSessions` | agy, Claude Code, Codex | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
 | `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\`. Reopened, a record-only chat still shows its messages: they're read from the CLI's own history (`chat.cliTranscripts`) |
+| `continueIn` | any | This connection's own "Continue this chat in" targets, replacing `chat.continueIn`; `[]` = none; missing = the shared list |
 | `agent` | agy | Custom agent used in chat-only mode (default `hotline`) |
 | `images` | APIs | Whether the model reads images (`true`/`false`; default: `false` for `local`, `true` otherwise). With `false`, screenshots go as their text (`chat.ocr`) |
 | `maxTokens` | APIs | Most tokens one answer may use (empty = the model's default; Claude API: 64000). Sent as `max_completion_tokens` to api.openai.com and Azure OpenAI, `max_tokens` to other OpenAI-style servers, `maxOutputTokens` to Gemini |
@@ -161,6 +163,32 @@ chosen one exists.
   on the same conversation. The other installed CLIs are under **More…**: a new session that reads the chat from a Markdown file (only
   when Hotline has the messages). A chat on an API connection lists the CLIs directly.
 
+## Continue in (chat apps and web pages)
+
+"Continue this chat in ▸" (top of the history list) offers, after the CLIs, the targets in `chat.continueIn` (or the
+chat's connection's own `continueIn`). Settings › Chat › **Continue in** edits the shared list; a connection's page
+picks *Use the shared list*, *Own list* or *None*. Each target:
+
+```json
+{ "kind": "web", "name": "llama.cpp", "url": "http://127.0.0.1:8080/?q={chat}&model={model}" }
+{ "kind": "openWebUi", "name": "Open WebUI", "url": "http://localhost:3000", "model": null }
+{ "kind": "app", "name": "LM Studio", "command": "%LOCALAPPDATA%\\Programs\\LM Studio\\LM Studio.exe", "copyChat": true }
+```
+
+| Kind | What happens |
+|---|---|
+| `web` | `url` is filled and opened in your browser. Only `http`/`https` results open. Longer than 8 000 characters: your last message goes in place of the chat, and the whole chat is copied |
+| `openWebUi` | Creates a real chat with every message through Open WebUI's API (`POST {url}/api/v1/chats/new`), then opens it. Its API key lives in Credential Locker (Settings' edit dialog), and is only sent over https or to this PC. `model`: the new chat's model (null = the chat's own) |
+| `app` | Starts `command` (a program and arguments, split like a command line; `%VARIABLES%` expanded; never through a shell; `.bat` and `.cmd` files are refused, a console program gets its own terminal window) |
+
+Placeholders: `{chat}` the whole conversation as one message asking the model to continue, `{last}` your last
+message, `{file}` the chat saved as Markdown, `{model}` the chat's model. In a URL they are URL-encoded; in a command
+each stays inside its own argument. `copyChat: true` also puts the whole chat (Markdown) on the clipboard first.
+A target that isn't an object with a known `kind` and a `name` is skipped with a warning in Settings › Advanced; the others
+still work. The Open WebUI key is never in a file.
+Ready-made entries in Settings: llama.cpp web UI, Open WebUI, LM Studio (opens it with the chat copied: its own chat
+files aren't a format other apps can rely on), ChatGPT, Claude.
+
 ## mcp.json (tools for API connections)
 
 ```jsonc
@@ -187,8 +215,11 @@ goes to `logs\hotline.log` (at most 20 lines a minute per server).
 Type `/` at the start of the message to list them (↑/↓, Tab or Enter to pick, Esc to close). `/name some text` sends
 the file's text as an instruction followed by your text; `/name` alone applies it to the attachments. The first line is
 the description in the list. Add your own by dropping in a file (letters, digits, `-` and `_` in the name); delete or
-edit the defaults freely: they're written only when the folder doesn't exist yet. Settings › **Quick actions** lists,
-creates, edits and deletes them.
+edit the defaults freely: they're written only when the folder doesn't exist yet; Settings › **Quick actions** ›
+*Restore default actions* adds missing defaults and updates untouched ones from an older version (edited files are never
+touched). Defaults you haven't edited, and the built-ins `/remember` and `/resume`, describe themselves in the
+interface language. Settings › Quick actions lists them with their instructions, and creates, edits (the `.md` file),
+renames and deletes them.
 
 ## Moving and resizing the panel
 

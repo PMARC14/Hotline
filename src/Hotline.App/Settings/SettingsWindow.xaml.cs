@@ -123,7 +123,7 @@ public sealed partial class SettingsWindow : Window
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
                 if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildSoundsSection(); }
                 if (page == SettingsPage.Window) BuildToolbarSection();
-                if (page == SettingsPage.Chat) BuildMemoryCard();
+                if (page == SettingsPage.Chat) { BuildMemoryCard(); BuildContinueInSection(); }
                 break;
         }
     }

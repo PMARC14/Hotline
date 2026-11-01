@@ -180,7 +180,8 @@ public partial class App : Application
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
-        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(scratchDir, "handoff"), InvalidateBackend, _log);
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(scratchDir, "handoff"), InvalidateBackend, _log, _secrets,
+            new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) }, m => _presenter.Notice(m, Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational));
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 
