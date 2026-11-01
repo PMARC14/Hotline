@@ -834,7 +834,7 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Continue_InsecureKey" xml:space="preserve"><value>Khóa API chỉ được gửi qua https hoặc tới PC này.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Địa chỉ không phải địa chỉ web http hoặc https.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>Chưa đặt chương trình cho đích này.</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>Tệp hàng loạt (.bat, .cmd) không được khởi động cùng cuộc trò chuyện trong đối số. Hãy trỏ tới chính chương trình đó.</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>Tiếp tục trong</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Nơi "Tiếp tục cuộc trò chuyện này trong" có thể đưa cuộc trò chuyện đến, ngoài Claude Code, Codex và agy. Mọi kết nối dùng danh sách này trừ khi có danh sách riêng.</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Nơi các cuộc trò chuyện của kết nối này có thể tiếp tục.</value></data>

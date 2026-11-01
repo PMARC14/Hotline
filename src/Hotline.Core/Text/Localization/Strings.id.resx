@@ -422,7 +422,7 @@ Tolak:
   <data name="Attach_Selection" xml:space="preserve"><value>Teks yang dipilih</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>Teks yang dipilih dari {0}</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>Anda dapat melampirkan hingga {0} file.</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>Teks di {0}</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Teks dalam {0}</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} tidak dapat membaca gambar.</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} tidak dapat membaca file.</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>Backend '{0}' belum tersedia.</value></data>
@@ -834,7 +834,7 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Continue_InsecureKey" xml:space="preserve"><value>Kunci API hanya dikirim melalui https atau ke PC ini.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Alamat bukan alamat web http atau https.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>Tidak ada program yang diatur untuk tujuan ini.</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>File batch (.bat, .cmd) tidak dimulai dengan obrolan dalam argumennya. Arahkan ke program itu sendiri.</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>Lanjutkan di</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Ke mana "Lanjutkan obrolan ini di" dapat membawa obrolan, selain Claude Code, Codex, dan agy. Setiap koneksi memakai daftar ini kecuali punya daftar sendiri.</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Tempat obrolan koneksi ini dapat dilanjutkan.</value></data>

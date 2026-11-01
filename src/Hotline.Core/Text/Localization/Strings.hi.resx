@@ -106,12 +106,12 @@
   <data name="Settings_Title" xml:space="preserve"><value>Hotline सेटिंग्स</value></data>
   <data name="Nav_General" xml:space="preserve"><value>सामान्य</value></data>
   <data name="Nav_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
-  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट्स</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
   <data name="Nav_Actions" xml:space="preserve"><value>त्वरित क्रियाएँ</value></data>
   <data name="Nav_Appearance" xml:space="preserve"><value>रूप</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>विंडो</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>चैट और इतिहास</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>उपकरण</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>टूल्स</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>उन्नत</value></data>
   <data name="Nav_About" xml:space="preserve"><value>के बारे में</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline को फिर से शुरू करने के बाद लागू होता है।)</value></data>
@@ -663,7 +663,7 @@
   <data name="Backup_Intro" xml:space="preserve"><value>अपने Hotline सेटअप को दूसरे PC पर ले जाएँ, या एक प्रति सुरक्षित रखें। बैकअप एक .zip फ़ाइल होती है जिसमें आपके द्वारा चुने गए भाग होते हैं; इसके अलावा कुछ भी (चैट इतिहास, मेमोरी, लॉग) शामिल नहीं है।</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>सेटिंग्स</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियाँ और कस्टम बटन छवियां</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>टूल्स (mcp.json)</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>उपकरण (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>त्वरित कार्रवाइयां</value></data>
@@ -834,7 +834,7 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Continue_InsecureKey" xml:space="preserve"><value>API कुंजी केवल https पर या इसी PC को भेजी जाती है।</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>यह पता http या https वेब पता नहीं है।</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>इस लक्ष्य के लिए कोई प्रोग्राम सेट नहीं है।</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>बैच फ़ाइलें (.bat, .cmd) तर्कों में चैट के साथ शुरू नहीं होती हैं। सीधे प्रोग्राम को निर्दिष्ट करें।</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>इसमें जारी रखें</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code, Codex और agy के अलावा "इस चैट को इसमें जारी रखें" चैट को कहाँ ले जा सकता है। हर कनेक्शन यही सूची इस्तेमाल करता है, जब तक उसकी अपनी सूची न हो।</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>इस कनेक्शन की चैट कहाँ जारी रह सकती हैं।</value></data>

@@ -209,7 +209,7 @@
   <data name="Conn_DefaultModel" xml:space="preserve"><value>默认模型</value></data>
   <data name="Conn_DefaultEffort" xml:space="preserve"><value>默认推理强度</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>测试连接</value></data>
-  <data name="Effort_minimal" xml:space="preserve"><value>最小</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>最低</value></data>
   <data name="Effort_low" xml:space="preserve"><value>低</value></data>
   <data name="Effort_medium" xml:space="preserve"><value>中</value></data>
   <data name="Effort_high" xml:space="preserve"><value>高</value></data>
@@ -834,7 +834,7 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Continue_InsecureKey" xml:space="preserve"><value>API 密钥只会通过 https 或发送到这台电脑。</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>该地址不是 http 或 https 网址。</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>此目标未设置程序。</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>批处理文件（.bat、.cmd）无法在其参数中附带聊天启动。请直接指向程序本身。</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>继续到</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>除 Claude Code、Codex 和 agy 外,“将此聊天继续到”还可以把聊天带到这些地方。每个连接都使用此列表,除非它有自己的列表。</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>此连接的聊天可以继续的地方。</value></data>

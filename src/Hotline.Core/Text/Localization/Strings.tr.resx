@@ -209,7 +209,7 @@ Reddet:
   <data name="Conn_DefaultModel" xml:space="preserve"><value>Varsayılan model</value></data>
   <data name="Conn_DefaultEffort" xml:space="preserve"><value>Varsayılan efor</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>Bağlantıyı test et</value></data>
-  <data name="Effort_minimal" xml:space="preserve"><value>Minimum</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>Minimal</value></data>
   <data name="Effort_low" xml:space="preserve"><value>Düşük</value></data>
   <data name="Effort_medium" xml:space="preserve"><value>Orta</value></data>
   <data name="Effort_high" xml:space="preserve"><value>Yüksek</value></data>
@@ -834,7 +834,7 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Continue_InsecureKey" xml:space="preserve"><value>API anahtarı yalnızca https üzerinden veya bu bilgisayara gönderilir.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Adres bir http veya https web adresi değil.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>Bu hedef için bir program ayarlanmadı.</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>Toplu iş dosyaları (.bat, .cmd) bağımsız değişkenlerinde bir sohbetle başlatılmaz. Doğrudan programın kendisini belirtin.</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>Şurada devam et</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code, Codex ve agy dışında "Bu sohbete şurada devam et"in bir sohbeti götürebileceği yerler. Kendi listesi olmayan her bağlantı bu listeyi kullanır.</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Bu bağlantının sohbetlerinin devam edebileceği yerler.</value></data>

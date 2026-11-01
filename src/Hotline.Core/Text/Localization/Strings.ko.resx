@@ -834,7 +834,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Continue_InsecureKey" xml:space="preserve"><value>API 키는 https 또는 이 PC로만 전송됩니다.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>주소가 http 또는 https 웹 주소가 아닙니다.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>이 대상에 설정된 프로그램이 없습니다.</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>배치 파일(.bat, .cmd)은 인수에 채팅을 포함하여 시작할 수 없습니다. 프로그램 자체를 지정하세요.</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>이어서 하기</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code, Codex, agy 외에 "이 채팅 이어서 하기"로 채팅을 가져갈 수 있는 곳입니다. 각 연결은 자체 목록이 없으면 이 목록을 사용합니다.</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>이 연결의 채팅을 이어서 할 수 있는 곳.</value></data>

@@ -834,7 +834,7 @@
   <data name="Continue_InsecureKey" xml:space="preserve"><value>Ключ API надсилається лише через https або на цей ПК.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>Адреса не є веб-адресою http або https.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>Для цієї цілі не задано програму.</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>Пакетні файли (.bat, .cmd) не запускаються з чатом в аргументах. Укажіть на саму програму.</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>Продовжити в</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Куди "Продовжити цей чат у" може перенести чат, окрім Claude Code, Codex і agy. Кожне підключення використовує цей список, якщо не має власного.</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Де можна продовжити чати цього підключення.</value></data>

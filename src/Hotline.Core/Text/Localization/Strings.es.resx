@@ -834,7 +834,7 @@ Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.<
   <data name="Continue_InsecureKey" xml:space="preserve"><value>La clave de API solo se envía por https o a este PC.</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>La dirección no es una dirección web http o https.</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>No hay ningún programa definido para este destino.</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>Los archivos por lotes (.bat, .cmd) no se inician con un chat en sus argumentos. Apunta al programa en sí.</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>Continuar en</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Adónde puede llevar un chat «Continuar este chat en», además de Claude Code, Codex y agy. Todas las conexiones usan esta lista salvo que tengan la suya.</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>Dónde pueden continuar los chats de esta conexión.</value></data>

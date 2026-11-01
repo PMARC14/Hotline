@@ -177,7 +177,7 @@
   <data name="Conn_Endpoint" xml:space="preserve"><value>エンドポイント</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API のベース URL。</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>保存済み。入力すると上書きされます</value></data>
-  <data name="Conn_Optional" xml:space="preserve"><value>任意</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>省略可能</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>必須</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>キーを保存できませんでした</value></data>
   <data name="Conn_ApiKey" xml:space="preserve"><value>API キー</value></data>
@@ -422,7 +422,7 @@
   <data name="Attach_Selection" xml:space="preserve"><value>選択したテキスト</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} で選択したテキスト</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>添付できるファイルは {0} 個までです。</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>{0} 内のテキスト</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} のテキスト</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} は画像を読めません。</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} はファイルを読めません。</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>バックエンド「{0}」はまだ利用できません。</value></data>
@@ -834,7 +834,7 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Continue_InsecureKey" xml:space="preserve"><value>API キーは https またはこの PC にだけ送信されます。</value></data>
   <data name="Continue_NotAWebAddress" xml:space="preserve"><value>アドレスが http または https の Web アドレスではありません。</value></data>
   <data name="Continue_NoCommand" xml:space="preserve"><value>このターゲットにはプログラムが設定されていません。</value></data>
-  <data name="Continue_NoBatch" xml:space="preserve"><value>Batch files (.bat, .cmd) aren't started with a chat in their arguments. Point to the program itself.</value></data>
+  <data name="Continue_NoBatch" xml:space="preserve"><value>バッチ ファイル (.bat、.cmd) は引数にチャットを含めて起動できません。プログラム自体を指定してください。</value></data>
   <data name="ContinueSet_Title" xml:space="preserve"><value>続きを開く</value></data>
   <data name="ContinueSet_Intro" xml:space="preserve"><value>Claude Code、Codex、agy のほかに「このチャットの続きを開く」でチャットを持っていける場所です。各接続は、独自の一覧がない限りこの一覧を使います。</value></data>
   <data name="ContinueSet_ConnectionDesc" xml:space="preserve"><value>この接続のチャットの続きを開ける場所。</value></data>
