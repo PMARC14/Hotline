@@ -372,7 +372,7 @@ internal sealed class ChatPresenter
         BusyChanged?.Invoke(busy);
     }
 
-    /// <summary>The panel's natural height: messages + notices + message box + toolbar + spacing (3×8) + padding (20).</summary>
+    /// <summary>The panel's natural height: messages + notices + message box + toolbar + spacing (3×8) + the panel's top and bottom padding.</summary>
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;

@@ -47,6 +47,9 @@ public sealed partial class PopupWindow : Window
         _guard = guard;
         _log = log;
         InitializeComponent();
+        // The grips reach the window's edge: the negated padding of Root (one source of truth, XAML has no way to bind it).
+        var pad = Root.Padding;
+        GripLayer.Margin = new Thickness(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
         _rows = new ToolbarRenderer(this, b => CustomButtonClicked?.Invoke(b), log);
 
@@ -214,7 +217,7 @@ public sealed partial class PopupWindow : Window
             if (cloaked) _log.Info($"panel open but cloaked ({state})"); // e.g. another virtual desktop: leave it
             // The content must fit the client area (2026-10-17: the window frame wasn't counted and the bottom of the
             // panel, with the move grip, was cut off).
-            var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale), MaxPx - FramePx);
+            var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, MinContentDip) * _scale), MaxPx - FramePx);
             if (_fixedPx is null && !_animating && AppWindow.ClientSize.Height > 0 && AppWindow.ClientSize.Height + 1 < needPx)
                 _log.Error($"panel content cut off: client {AppWindow.ClientSize.Height} px < content {needPx} px");
             if (visible && drawn) return;
@@ -531,7 +534,7 @@ public sealed partial class PopupWindow : Window
         var maxPx = MaxPx;
         var bar = _growUp ? _bar : DownBar;
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
-        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale) + FramePx;
+        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, MinContentDip) * _scale) + FramePx;
         if (_fixedPx is { } fixedPx) contentPx = fixedPx; // resized by hand: that height until the next open
         else if (GrowMode == GrowMode.Grow)
         {
@@ -612,6 +615,9 @@ public sealed partial class PopupWindow : Window
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 
+    /// <summary>The least content height (DIPs) assumed before the first layout pass: the panel's own top and bottom padding plus one control row.</summary>
+    private double MinContentDip => Root.Padding.Top + Root.Padding.Bottom + 48;
+
     private double _barDip;
     private bool _growUp = true;
 
@@ -622,7 +628,7 @@ public sealed partial class PopupWindow : Window
     private int FramePx => Math.Max(0, AppWindow.Size.Height - AppWindow.ClientSize.Height);
 
     /// <summary>The bar alone as a window height, in pixels (measured; a sane minimum before the first layout).</summary>
-    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, 56) * _scale) + FramePx);
+    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, MinContentDip) * _scale) + FramePx);
 
     /// <summary>
     /// The bar's rectangle: its bottom edge is the placement line in both directions, kept inside the work area (a line
