@@ -4,13 +4,9 @@ namespace Hotline.Core.Windowing;
 public enum Shift { Left, Right, Up, Down }
 
 /// <summary>
-/// The one editing model for the button rows (Settings' quadrant editor: drag and drop, the arrows, "Not shown", custom
-/// buttons, styles). Every edit is pure and never throws: it builds the new model, writes it with
-/// <see cref="ToolbarModel.ToJson"/> and reads it back with <see cref="ToolbarModel.Resolve"/>, so a result is valid by
-/// construction (<c>Resolve(result.ToJson()) == result</c>). An edit that is invalid or changes nothing returns the input
-/// instance. Ids match case-insensitively and keep their own spelling.
-/// <para>The pickers (effort, model, provider) are items like any other: each moves, drags, shifts, hides and shows on its
-/// own. Any item may be hidden, down to an empty bar.</para>
+/// The one editing model for the button rows (drag and drop, arrows, "Not shown", custom buttons, styles). Every edit is pure and
+/// never throws, goes through <see cref="ToolbarModel.ToJson"/> and <see cref="ToolbarModel.Resolve"/> (so a result is valid), and an
+/// invalid or no-op edit returns the input instance. Ids match case-insensitively; the pickers are items like any other.
 /// </summary>
 public static class ToolbarEditor
 {
@@ -102,11 +98,9 @@ public static class ToolbarEditor
     private const double RowSpacing = ToolbarPlan.CellGap;
 
     /// <summary>
-    /// "Move what doesn't fit into the menu": runs the renderer's planner for both rows at the given panel widths (DIP) and moves the
-    /// buttons it puts into the automatic overflow into the "more" menu, after the entries already there (the bottom row's first, each in
-    /// bar order). The rows are planned first as they are, without a more button: when nothing overflows the input comes back unchanged
-    /// (no more button is added, nothing is pushed out). Only then is a more button placed (end of bottom right; it takes the place of
-    /// the automatic "..." button, which is one cell as well) and the rows planned again.
+    /// "Move what doesn't fit into the menu": plans both rows at the given widths (DIP) and moves the buttons the automatic overflow
+    /// would take into the "more" menu, after its entries (bottom row first, bar order). Nothing overflowing returns the input
+    /// unchanged; otherwise a more button is added (end of bottom right) and the rows are planned again.
     /// </summary>
     public static ToolbarModel FillMenuFromOverflow(ToolbarModel m, double topRoom, double bottomRoom)
     {

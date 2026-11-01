@@ -82,7 +82,7 @@ public sealed record ToolbarModel(
     /// picker or the more button), each once. Empty unless a more button is placed (<see cref="Resolve"/> drops the entries otherwise).</summary>
     public IReadOnlyList<string> Menu { get; init; } = [];
 
-    /// <summary>The shipped layout, the owner's own (2026-11-01): the three pickers across the top row (effort 3, model 4, provider 5
+    /// <summary>The shipped layout: the three pickers across the top row (effort 3, model 4, provider 5
     /// cells wide); capture buttons, prompt and continue-in, and recent / new chat / settings (two cells wide each) in the bottom row.</summary>
     public static ToolbarModel Defaults { get; } = new(
         Layout(q => q switch

@@ -2,8 +2,8 @@
 
 Read this first, then `CLAUDE.md` (working rules; local, git-ignored) and, if present, `docs/local/HANDOFF-PRIVATE.md`
 (machine-specific notes; git-ignored). File formats and every setting: [configuration.md](configuration.md) (the single
-reference; this file does not repeat it). Hand tests: [TESTING.md](TESTING.md). Design spec:
-`docs/superpowers/specs/2026-09-30-hotline-design.md`; plans in `docs/superpowers/plans/`.
+reference; this file does not repeat it). Hand tests: [TESTING.md](TESTING.md). The old design specs and plans were removed
+from the tree (`git log -- docs/superpowers` has them).
 
 ## What Hotline is
 
@@ -13,105 +13,36 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## State (2026-11-01)
 
-- **Released:** GitHub **v0.3.0** (2026-10-17), before it v0.2.25 and v0.2.24. Releases are signed with Hotline's long-lived
-  self-signed certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; repo secrets `HOTLINE_SIGNING_PFX_BASE64` /
-  `_PASSWORD`; the owner keeps `certs/release/hotline-release.pfx` + password, git-ignored, and a backup in
-  `Documents\Hotline-release-certificate\`): users trust `Hotline.cer` once, then `.appinstaller` updates work.
-- **Microsoft Store** **Hotline AI** (`9PMW5CR6G3BC`): last bundle **0.3.0.0**. **No more Store bundles until just short of
-  1.0** (owner, 2026-10-17); GitHub releases continue on every push to `main`. Uploads are by hand (owner's choice):
-  `scripts/build-msix.sh --store --arch all --version X.Y.Z.0 …` ([RELEASING.md](RELEASING.md)), then the 17 listings in
-  `store/listings/`.
-- **0.3 in short:** history list (`HoldResize`), CLI chats resumable and shown from the CLI's own history
-  (`CliTranscripts`), Codex model list (`CodexModels`), no built-in agy connection, CLIs run in the home folder (scratch in
-  `~/.hotline/scratch`), Continue in, Reset settings / everything (hidden copy in `.defaults`), movable and resizable panel
-  (`window.anchor`, Alt grips, `PanelPlacement`), open/close sounds, thinking indicator, Settings › Guide in 17 languages.
-- **0.4 = PR #9 `windows-26h2` (draft, not merged; `version.txt` says `0.4`; `main` has not moved, so it fast-forwards; ready after
-  the owner's hand test).** Everything below is implemented and merged on that branch. The road to 1.0 is in
-  [1.0-plan/README.md](1.0-plan/README.md).
-  - **Button rows v2** (`toolbar.json` version 2; format in [configuration.md](configuration.md)). Two rows (`top`, `items`), each
-    with left / center / right groups; up to 24 custom buttons, optionally with a PNG `iconFile` (`CustomIcons`, copied to
-    `icons\<id>.png`). Read through `ToolbarModel.Resolve` (never throws; per-field fallback; warnings go through `ConfigProblems` to a
-    panel notice), edited through `ToolbarEditor`/`ToolbarEditorView` (Core), loaded and saved by `ToolbarFile`, laid out by
-    `ToolbarPlan`/`ToolbarLayout`, drawn by `ToolbarRenderer` (App); the Settings editor is `ToolbarQuadrantEditor*.cs`. A v1 file is
-    not converted (defaults + warning). Outline colour defaults to the panel theme's accent.
-  - **Toolbar model.** ONE `width` key in cells (0.5 / 1 / 2 / 3 / 4, or `compact` / `normal` / `wide`); `size` and `cells` are
-    silent aliases, old DIP `width` / `height` values are ignored with a warning. `ButtonStyle(Width, Outline, Filled, OutlineColor)`
-    (there is no `ButtonSize` enum); `ToolbarEditorView.BarWidth` is the bar's width, `BarSizeChoice` only a display helper. Every
-    cell is one cell (36 DIP) high; glyph 13 for half cells, 16 otherwise; the automatic "..." is always one cell. The `more` item
-    plus `menu` make a user-filled "..." box that the row's overflow merges into (`ToolbarPlan.Stays`, `alwaysOverflow`,
-    `ToolbarEditor.FillMenuFromOverflow`). The three pickers (effort / model / provider) are independent items with `span` 1-8
-    (defaults 3 / 4 / 4; outer height one cell) and also take `outline`, `outlineColor`, `filled`: each ComboBox owns fill and outline
-    brushes as its permanent Background / BorderBrush and as its state resources (**hover / press look UNVERIFIED by eye**).
-  - **Width model** (owner, 2026-10-31/11-01): `window.widthPercent` default 40 of the work area's REAL pixels; `minWidth` 400 and
-    `maxWidth` 1200 (pixels), `width` (hand resize) and `chatWidth` are real pixels too; Windows scaling is
-    ignored for widths, heights stay in scaled units (DIP). Schema 15 migrates explicit pre-v14 files once: old default
-    limits 600/1000 become 400/1200, custom limits keep their numbers with a notice, and saved `width`/`chatWidth` are cleared
-    with a notice so percentages apply again. The old file is backed up before rewriting; schema 14 and unversioned files keep
-    their pixel widths. `chatWidthPercent` default 0 (no growth). Settings shows
-    one short line, `ScreenScale.Line` (screen pixels, scaling %, Windows' scaled interface size), above the button rows (no longer
-    explanations in Settings: owner's call). Owner's screen: 2880 x 1800 at 200% (1440 x 900 scaled units). Open item: `PanelPlacement.Rescale` keeps a pinned
-    panel's size in scaled units across monitors of different scale.
-  - **Reference layouts** `ToolbarProfiles`, drawn by self-test steps P01..P47 (PNGs in `~/.hotline/logs/selftest/`): P35-P45 repeat
-    the shipped-width profiles at 460 DIP (`ToolbarPlan.WidthForButtons(11)`), P46-P47 are the outlined-picker profiles. The
-    self-test checks row height 36, picker height 34 and border thickness, and logs ONE final line
-    `selftest complete: N checks, M failed` (M excludes the deliberate simulated failure); `tests/smoke/smoke.ps1` waits for it.
-  - **Settings files are read field by field** (`LenientReader`; `SettingsStore.SettingsProblems` / `SettingsError`; notice tag
-    `settings-problems`; Advanced-page InfoBar); old settings.json versions are not migrated; schema v14; `window.layout` is gone;
-    `window.theme` / `window.accent` are documented. A syntax error gives a `.bad` copy.
-  - **Files and safety (G3 / G4).** `BackupFiles.CopyStamped` makes a timestamped `.bak` (newest 10) before settings.json, a
-    connection file or toolbar.json is replaced when the file is not what Hotline last wrote; "no backup, no write". `SettingsStore`
-    remembers each connection's source path, saves back to it and rejects colliding destinations; only explicit removals delete files
-    (`Update` merges a fresh snapshot first). `SettingsService.Update` returns the problems and raises `SaveFailed`;
-    `SettingsService.Reset` returns a `ResetResult`; a locked settings.json at startup still loads the connections. Import validates
-    with the same lenient readers as loading; export writes a temp file then moves it, keeps ratio limits and reports enumeration
-    failures. The toolbar editor compares `ToolbarFile.Fingerprint` before saving and reloads with a notice if the file changed;
-    picture replace is transactional (`icons\.<id>.prev`, Commit / Rollback) and the watcher also sees `icons\*.png`. Toolbar
-    warnings are resx keys `BarW_*` (capped at 10 lines in Settings). Built-in controls have `AutomationProperties.Name`. The
-    `hotline://selftest` options `?tools` / `?selection` need the marker file `~/.hotline/.allow-selftest-extras`. `async void`
-    handlers in Settings / `ProviderBar` are guarded (`SettingsWindow.Fail`). Damaged history records are skipped one by one. A
-    custom button whose `text` starts `/resume ` no longer runs the command (literal-insertion flag in `Composer`). Full-height mode
-    applies only during a conversation.
-  - **Export/import:** Settings › Backup; `SettingsPackage` (zip, manifest format 1; categories Settings / Toolbar / Mcp / Sounds /
-    Connections / Actions / Prompts; limits 400 entries, 8 MB per entry, 64 MB total; zip-slip rules; import never deletes and backs
-    replaced files up to `backups\import-<time>`; API keys never exported).
-  - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)). 26H2 agent
-    connectors are still a Windows preview (no `odr.exe` on this PC); Phi Silica / Windows AI APIs: deferred, maybe never.
-  - **Security pass** (multi-model audit, verified, fixed with tests): UNC/device paths refused (`SafeDirectory`,
-    `AppActionRequest.IsSafeLocalImagePath`), history ids validated (`HistoryIds`), response-size caps, chat-only isolation flags
-    always applied and tool pre-approval flags dropped, CLI output capped, `ShellOpen` limited to Hotline's own files, MCP `.exe`
-    started directly and `cmd.exe` refused for unsafe characters, SVG `style` allow-listed, `LogText` (secrets redacted, link queries
-    never logged).
-  - **Reviews done:** X1-X4 (`git log --grep "Review"`) and, on 2026-10-31, Opus (core + app) and Codex Astra high (whole repo) plus
-    Gemini Flash; the verified findings are fixed and merged, what is left is under *Deferred* below. A fresh review after S1 and the
-    feature jobs is planned before 1.0.
-  - **Tests:** Core unit tests (count not rechecked here), `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it),
-    `hotline://selftest`. The suite was consolidated once (~10%: most proposed deletions were rejected); [TESTING.md](TESTING.md)
-    has the hand-test list.
-  - **Not hand-tested yet (owner):** mouse drags (inside and between groups, to "Not shown", across monitors and DPI), the "..." menu
-    (Prompt / Continue in, surviving a `toolbar.json` change), outlined pickers' hover / press, outline / filled / widths in light,
-    dark and contrast themes, 24 custom buttons at a narrow panel, the pixel width model at 150% and 200%, Alt-drags across
-    mixed-DPI monitors, and the Copilot key still arriving after the 26H2 upgrade.
-- **Continue in targets (0.5, PR #29 `continue-in-targets`, `main` merged in; `version.txt` is `0.5`):** after the CLIs, "Continue this chat in"
-  (`ContinueIn.Targets()`, the toolbar button and the history list) lists the user's targets: web pages (URL template, `{chat}` `{last}`
-  `{file}` `{model}` URL-encoded, http/https results only, over 8000 characters the last message goes and the chat is copied), Open WebUI
-  (`OpenWebUiChat`: a real chat through `POST /api/v1/chats/new`, key in Credential Locker as `continue:<url>:apiKey`, no redirects) and apps
-  (`ContinueTargets.FillCommand`: split like a command line, placeholders inside their own argument, never a shell, `.bat`/`.cmd` refused,
-  console left visible on purpose). Lists: `chat.continueIn` (shared; missing = the llama.cpp web UI of the first Local connection) and a
-  connection file's `continueIn` (missing = shared, `[]` = none). `LenientReader` reads both per target (a broken one is skipped with a
-  warning). UI: `SettingsWindow.ContinueIn.cs` (Chat page section, connection card; handlers guarded with `Fail`). Plan
-  `2026-10-15-continue-in-targets.md`. Hand tests:
-  1. llama.cpp web UI (a Local connection's default target) opens with the conversation as the first message.
-  2. Open WebUI: Settings › Chat › Continue in › Add › Open WebUI, address + key, **Test** shows the model count; continuing creates
-     a real chat with every message. A wrong key or address gives a clear "Couldn't open…" notice.
-  3. LM Studio: opens with the whole chat on the clipboard. ChatGPT / Claude entries: the site opens with the chat in its box. Gemini:
-     opens with the chat on the clipboard to paste. An app target pointing at a `.cmd` file: a notice, nothing starts.
-  4. *None* on one connection and *Own list* on another: each chat shows only its own targets.
-  5. A very long chat with a web target: the notice that only the last message went and the chat is on the clipboard.
-  6. The toolbar's Continue in button and the "..." menu show the same targets.
-  A Gemini API connection has no default target; add the ready-made **Gemini** entry. `personal/gemini-web` still needs `main` merged in.
+- **On `main`:** 0.4 and 0.5 are merged (GitHub releases v0.4.0, v0.5.0 and v0.5.1; `version.txt` says `0.5`), including Continue in
+  targets. Every push to `main` that changes code publishes the next patch release, signed with Hotline's long-lived self-signed
+  certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12); certificate, signing secrets and the Store flow are in
+  [RELEASING.md](RELEASING.md).
+- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`), last bundle **0.3.0.0**. **No more Store bundles until just short of 1.0**
+  (owner, 2026-10-17). Uploads are by hand (RELEASING.md), then the 17 listings in `store/listings/`.
+- **Next:** the road to 1.0 under *Next work* (schema freeze first). The owner's hand-test lists are in [TESTING.md](TESTING.md).
+- **Where things are documented** (this file does not repeat them): file formats and every setting in
+  [configuration.md](configuration.md); the button rows (`toolbar.json` v2, `ToolbarModel.Resolve` / `ToolbarEditor` / `ToolbarPlan` /
+  `ToolbarLayout` / `ToolbarRenderer`, reference layouts `ToolbarProfiles` drawn by self-test steps P01..P47); the width model
+  (real pixels, `ScreenScale.Line`); settings read field by field (`LenientReader`); safe file writes (`BackupFiles.CopyStamped`,
+  "no backup, no write"); Backup export/import (`SettingsPackage`); Continue in targets (`ContinueIn.Targets()`,
+  `ContinueTargets.FillCommand`, `OpenWebUiChat`; UI in `SettingsWindow.ContinueIn.cs`).
+- **Open items:** `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale; the
+  dropdowns' hover / press look with outline or fill is **UNVERIFIED by eye**. `personal/gemini-web` still needs `main` merged in.
+- Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)).
+- **Security pass** (multi-model audit, verified, fixed with tests): UNC/device paths refused (`SafeDirectory`,
+  `AppActionRequest.IsSafeLocalImagePath`), history ids validated (`HistoryIds`), response-size caps, chat-only isolation flags
+  always applied and tool pre-approval flags dropped, CLI output capped, `ShellOpen` limited to Hotline's own files, MCP `.exe`
+  started directly and `cmd.exe` refused for unsafe characters, SVG `style` allow-listed, `LogText` (secrets redacted, link queries
+  never logged). Findings still open are under *Deferred*.
+- **Tests:** Core unit tests, `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it), `hotline://selftest` (the self-test
+  also fails a row that is not one cell high and logs `selftest complete: N checks, M failed`). `hotline://selftest` options `?tools` /
+  `?selection` need the marker file `~/.hotline/.allow-selftest-extras`.
 
 ### Deferred (not bugs to rediscover; from the reviews)
 
+- **Windows AI (deferred, maybe never):** Phi Silica is replaced by "Aion Instruct" (Microsoft Learn, 2026-10-12), so code to the
+  stable `LanguageModel` surface, never a model name, and hide it unless probed supported (no download without consent). Hotline's
+  on-device route is the Local connection. Windows agent connectors are discovered with `odr.exe mcp list`.
 - **Design notes (Argon/Flash):** `ThisPc` is static, `ActivationRouter` is coupled to `PopupWindow`, `App` is a monolith.
 - **Small:** tray icon HICON leak; ComboBox `TextSubmitted` `e.Handled`; `ReportHeight` runs in SizeChanged; `CopyImage` on the UI
   thread; `PanelTheme.Style` read before `Update`; `PanelGrips` cursors; sounds not reloading a replaced .wav; Claude
@@ -131,36 +62,44 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **Merge PR #9 (0.4)** once the owner has hand-tested the list above (it fast-forwards `main`). Then S1 (schema freeze) and the other
-   1.0 jobs, in the order given in [1.0-plan/README.md](1.0-plan/README.md).
-2. **0.5 (owner's scope):** hand-test Continue in (above); region capture on multi-monitor / mixed DPI; multi-monitor behaviour of the
-   bar; moving the bar and how it acts when pinned; the desktop hand test (clone, dev certificate per README,
-   `scripts/install.sh`); the shipped sound. 
-3. **Before 1.0: schema freeze (decide with the owner; not started).** Findings of the read-only config design review (Opus):
-   - unknown keys are dropped on save (carry them: `JsonExtensionData` / unknown nodes);
-   - written-out defaults + rewrite-on-load versus sparse files;
-   - one versioning rule (`version` vs `schemaVersion`; a `$schema` file);
-   - a connection file's name should be its id (the id is stored twice);
-   - `mcp.json` `env` secrets versus the Credential Locker rule;
-   - app state (`.first-run-shown`, `supportReminder`) mixed into config;
-   - one backup policy in `backups\` (there are ~7 schemes today);
-   - renames while still allowed: `window.height` → `minHeight`, `backends` → `connections`, toolbar `items` → `bottom`, key names that carry units;
-   - docs drift.
-4. **1.0** when: hand tests done, multi-monitor capture OK, 26H2 merged, a Store update certified with all languages, and settings
-   files staying compatible from then on. No native-speaker reviews or RTL planned. Paid signing (winget-pkgs) only if Hotline
-   gets popular.
-5. Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
+### Road to 1.0
+
+Owner decisions: everything below is in 1.0; the file formats are frozen from 1.0 (migrations, never breaking changes); the one
+exception is Windows agent connectors verification, which moves to 1.1 if they cannot be tested. The maintainer's detailed job
+briefs are kept outside the repo; the summaries here are what a fresh session needs. Work in this order:
+
+1. **S1 schema freeze** (first, merged before the rest): unknown keys survive saves; one `version` rule with migrations (no
+   `schemaVersion` / `version` split); no rewrite on load; a connection file's name = its id; app state (`.first-run-shown`,
+   `supportReminder`) in `state.json`, not in config; one backup policy in `backups\` (about 7 schemes today); 3 renames with aliases
+   (`window.height` to `minHeight`, `backends` to `connections`, toolbar `items` to `bottom`); JSON schemas and frozen compatibility
+   fixtures. Also decide `mcp.json` `env` secrets versus the Credential Locker rule.
+2. After S1, in parallel (disjoint files): **E1** security leftovers (see *Deferred*); **F1** chat basics (edit/resend, regenerate,
+   history search, pin, export, context meter); **D2** support bundle, first-run flow, accessibility.
+3. Outlines, one job each (Core TDD + UI): **H** attachments (PDF/Office text, size caps, text only) and "ask about this window"
+   context; **I** local models (Ollama, LM Studio presets and model lists); **J** tools (web search, MCP gallery, safe built-ins);
+   **K** voice read-aloud; **L** `hotline ask` CLI and a shell entry; **N** customization (profiles, per-action hotkeys, quick-action
+   variables, placement presets, theme gallery, sync folder).
+4. 0.5 items still open: multi-monitor / mixed-DPI region capture and bar behaviour, moving the bar and how it acts when pinned, the
+   shipped sound, and the owner's desktop hand tests ([TESTING.md](TESTING.md)).
+5. Release: one certified Store update with all 17 languages (new strings arrive as English placeholders; [TRANSLATING.md](TRANSLATING.md)),
+   the signing fix from E1, an accessibility pass (Narrator, Accessibility Insights), then 1.0. A fresh multi-model review after S1
+   and the feature jobs is planned first. No native-speaker reviews or RTL planned; paid signing (winget-pkgs) only if Hotline gets popular.
+
+**Agent connectors (Windows) - testing note.** Hotline discovers connectors through `odr.exe mcp list` (`OdrDiscovery`, shown as
+`windows-...` servers) when the file exists; this PC (26H2, build 26300) has none. To test, use a spare machine or VM on a 25H2
+build with KB5070316 or an Insider Dev build, turn on Settings > System > AI components > **Experimental agentic features**
+(administrator, off by default), and run `odr mcp list`. Sources: <https://www.elevenforum.com/posts/674378/>,
+<https://windowsreport.com/kb5070316-adds-native-mcp-smarter-app-updates-and-midi-2-0-tools-to-windows-11-25h2/>. If it cannot be
+tested before 1.0, ship the code as is, label it preview, and verify in 1.1.
+
+Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
 
 ## Versions (toward 1.0)
 
-- `version.txt` holds major.minor (now `0.4`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch being the next
-  number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml); bumping to `0.5` starts at
-  **v0.5.0**. The Store package is the same version plus `.0`; the Store only needs each submission, compared left to right, to be
-  higher than the last (`0.3.0.0` follows `0.2.25.0`).
-- **0.3** released 2026-10-17. **0.4** button rows v2, 26H2 wording, Right Ctrl mode dropped, settings read leniently, backup (#9).
-  **0.5** everything left above; feature complete for 1.0, then only fixes, polish and one Store update certified with all 17
-  languages. **1.0** when that update is through and nothing that breaks existing settings files is pending; from then on settings
-  files must keep working across updates (migrations, never breaking changes).
+`version.txt` holds major.minor (now `0.5`). Every code push to `main` publishes `v<major.minor>.<patch>`, the patch being the next
+number in that line from the existing tags (`scripts/next-version.sh`, used by release.yml); the Store package is the same version
+plus `.0` and each submission must be higher than the last. 0.3 and 0.4 are released, 0.5 is on `main`; **1.0** comes when the
+Road to 1.0 is done and a Store update with all 17 languages is certified.
 
 ## Architecture map
 
@@ -172,7 +111,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     `Api/` (`ApiCommon` SSE/errors/https rule, `OpenAiBackend`, `GeminiBackend`, `AnthropicBackend`).
   - `Chat/` `ChatController` (turns, cancel, retry, resume; records each chat's `CliSession`), `HistoryStore` (JSONL +
     `<id>.meta.json`), `PromptLibrary`, `QuickActions`, `MemoryStore`, `OcrPlan`, `VoiceText`, attachments.
-  - `Settings/` `HotlineSettings` (schema v14), `SettingsStore` (settings.json + `connections/*.json`, `LenientReader`, side-effect-free
+  - `Settings/` `HotlineSettings` (schema v15), `SettingsStore` (settings.json + `connections/*.json`, `LenientReader`, side-effect-free
     `TryRead`), `SettingsService` (live Update/Reload, merge-by-id), `SettingsSchema` (pages), `SettingsReset`, `SettingsPackage*`
     (export/import), `BackupFiles`, `FileArchive`, `Guide`.
   - `Text/` `MarkdownModel` (Markdig → blocks; math, SVG, task lists), `LatexText`, `SvgSanitizer`, `Localization/`.
@@ -221,7 +160,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   reached a focused pin button. Now: any open panel closes when that frame takes focus (the toggle that follows counts as that close,
   within the 300-ms guard), bar buttons never keep keyboard focus, and the log names who takes focus (`deactivated: focus went to …`).
 - **Copilot key:** needs package identity (hence MSIX; [RELEASING.md](RELEASING.md)); cold start arrives as `ProtocolForResults`; the fast
-  path is a `WM_APP+1` message to the registered window.
+  path is a `WM_APP+1` message to the registered window. Tap and hold arrive only through the fast path (the protocol sends no
+  duplicates); a hold's key-up arrives 10-45 ms after its key-down.
 - **Windows on-device agent registry:** connectors run only via `odr.exe` (build 26220.7262+).
 - **Clipboard:** `OpenClipboard(NULL)` + `EmptyClipboard` leaves it ownerless and every `SetClipboardData` then fails; restoring needs a
   real owner window (`ClipboardOwner`: message-only window on its own pumping thread). Never send Ctrl+C unless UIA confirmed "no text

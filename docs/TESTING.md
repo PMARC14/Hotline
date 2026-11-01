@@ -102,7 +102,6 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] `window.chatWidthPercent` 50 (or `chatWidth` 700): the first message widens the panel around its centre in the same resize as the
       height; New chat (Ctrl+N) shrinks it back; near a screen edge it slides back inside. With `window.width` set, or after resizing by
       hand, it never widens; the default (0) never widens. Moving the widened panel with Alt keeps its start width.
-- [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
 - [ ] Panel width is real pixels, scaling ignored: set `widthPercent` 20, then 40, at Windows scaling 150% and at 200% (sign out/in if asked). The panel
       is the same share of the screen at both (2880 px wide: 40% = 1152 px, 20% = 576 px but never under `minWidth` 400);
       buttons and text are bigger at 200%, and a narrow panel moves buttons into the "..." box.
@@ -204,6 +203,10 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] A web target opens the browser with the chat in the box; a very long chat gives the "only your last message" notice and the chat is on
       the clipboard. Open WebUI creates a real chat with every message. An app target opens the program; one pointing at a .cmd file only
       shows a notice. A hand-edited `continueIn` with one wrong target: the others work and Settings › Advanced lists the problem.
+- [ ] The llama.cpp web UI (a Local connection's default target) opens with the conversation as its first message. LM Studio opens with
+      the whole chat on the clipboard; ChatGPT and Claude open with the chat in their box; Gemini (ready-made entry; a Gemini API
+      connection has none by default) opens with the chat on the clipboard to paste.
+- [ ] The toolbar's Continue in button and the "..." menu show the same targets.
 
 ### First run and support
 - [ ] Delete `%USERPROFILE%\.hotline\.first-run-shown`, open the panel → the "Welcome to Hotline" note with "What's sent".
@@ -214,5 +217,13 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       "\"nosuchtool\" isn't installed or isn't on PATH…"; for `npx` without Node.js it says to install Node.js.
 - [ ] Settings › About: version, and the GitHub Sponsors / Ko-fi / GitHub / License links open the right pages.
 - [ ] On GitHub, the repository shows a **Sponsor** button listing GitHub Sponsors and Ko-fi (after you've enrolled).
+
+### Not hand-tested yet (0.4 leftovers)
+- [ ] Mouse drags in Button rows: inside and between groups, to "Not shown", across monitors and DPI.
+- [ ] The "..." menu (Prompt, Continue in) survives a `toolbar.json` change.
+- [ ] Outlined pickers' hover and press look; outline, filled and widths in light, dark and contrast themes.
+- [ ] 24 custom buttons at a narrow panel; the pixel width model at 150% and 200%.
+- [ ] Alt-drags across mixed-DPI monitors (a pinned panel keeps its size in scaled units: `PanelPlacement.Rescale`).
+- [ ] The Copilot key still arrives after the 26H2 upgrade.
 
 When you're done, leave Hotline running in the tray with the panel closed.

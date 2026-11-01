@@ -146,14 +146,9 @@ public static class ToolbarPlan
     }
 
     /// <summary>
-    /// <see cref="ToolbarLayout.Fit"/> for one Grid row <c>[left…] [⋯?] [*] [centre… [*]]? [right…]</c> of <paramref name="room"/> DIPs, with
-    /// the row's pickers (wherever they sit in it) when <paramref name="hasPickers"/>; the widths are the buttons', pickers
-    /// excluded. The pickers count as one extra column here (one gap kept for them; <see cref="PlanRow"/> adds the others when
-    /// it knows how many stay). Fit counts neither the flexible column's gap nor, without a reserve, that column's gap: both
-    /// are taken off the room here. Fit's overshoot contract: when the overflow button would stick out while the pickers keep
-    /// <paramref name="pickersMin"/>, the row is fitted again without that room and the pickers shrink and hide in what
-    /// is left. Only an overshoot that remains then (not even one right button and the overflow button fit, a panel narrower
-    /// than about two buttons) is accepted. The pickers keep their minimum room before the right group gives up buttons.
+    /// <see cref="ToolbarLayout.Fit"/> for one Grid row <c>[left…] [⋯?] [*] [centre… [*]]? [right…]</c> of <paramref name="room"/> DIPs;
+    /// the widths are the buttons' (pickers excluded, counted as one extra column when <paramref name="hasPickers"/>). The pickers
+    /// keep <paramref name="pickersMin"/> before the right group gives up buttons; if that overshoots, the row is fitted again without it.
     /// </summary>
     public static RowFit FitRow(double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
         bool hasPickers, double pickersMin, double overflowWidth, bool hasCenter = false, bool alwaysOverflow = false)
@@ -202,17 +197,8 @@ public static class ToolbarPlan
             return new PickerSpec(id, width, Math.Min(width, PickerFloor(id)), available.Contains(id), Max: width);
         })];
 
-    /// <summary>How one row is laid out at a width: see <see cref="PlanRow"/>.</summary>
-    /// <param name="Plan">The row's groups.</param>
-    /// <param name="Shown">The left and centre ids that stay in the row, pickers included, in order.</param>
-    /// <param name="Dropped">The left and centre buttons in the "⋯" menu, in order (never a picker).</param>
-    /// <param name="PickerWidths">The width of each picker in this row, 0 = hidden; empty when the row has none.</param>
-    /// <param name="ButtonWidths">The width of each button kept in the row (the right group and the shown left ones).</param>
-    /// <param name="Fit">How the buttons fit (shown count, "⋯", whether the pickers kept their minimum, the fixed width).</param>
-    /// <param name="Used">The width of the whole row: the fixed part, the pickers and the gaps between them (each shown picker is a column).</param>
-    /// <param name="RightShown">The right group's ids that stay in the row (pickers included), in order.</param>
-    /// <param name="RightDropped">The right group's buttons in the "⋯" menu, in order; they follow <paramref name="Dropped"/> there.</param>
-    /// <param name="UserMenu">The buttons the user put in the "more" button's menu (<see cref="MenuItems"/>) when this row holds it; they come first in the menu.</param>
+    /// <summary>How one row is laid out at a width (see <see cref="PlanRow"/>): the groups, the ids shown and dropped into the "⋯" menu
+    /// (left and centre, then the right group's; never a picker), each picker's and button's width (0 = hidden) and the row's used width.</summary>
     public sealed record RowLayout(
         RowPlan Plan, IReadOnlyList<string> Shown, IReadOnlyList<string> Dropped, IReadOnlyDictionary<string, double> PickerWidths,
         IReadOnlyDictionary<string, double> ButtonWidths, RowFit Fit, double Used,
@@ -224,12 +210,9 @@ public static class ToolbarPlan
     }
 
     /// <summary>
-    /// Everything the renderer decides for one row in <paramref name="room"/> DIPs, in one pure call (the renderer, ProviderBar and
-    /// the tests all go through here): which left/centre buttons stay or move into "⋯" (<see cref="FitRow"/>, with the pickers'
-    /// minimum kept back while they can have it; the right group gives up buttons only when it alone is too wide) and the pickers' widths from what is left (<see cref="ToolbarLayout.Compute"/>).
-    /// <paramref name="spacing"/> is the row's column spacing (between any two items, pickers too);
-    /// <paramref name="availablePickers"/> are the pickers with something to show (null = all of them). Each picker of the row
-    /// is its own elastic column in the group it is listed in; they all shrink together and hide in <see cref="PickerHideOrder"/>.
+    /// Everything the renderer decides for one row in <paramref name="room"/> DIPs, in one pure call: which buttons stay or move into "⋯"
+    /// (<see cref="FitRow"/>) and the pickers' widths from what is left (<see cref="ToolbarLayout.Compute"/>). <paramref name="spacing"/> is the
+    /// column spacing; <paramref name="availablePickers"/> are the pickers with something to show (null = all).
     /// </summary>
     public static RowLayout PlanRow(ToolbarModel model, bool top, double room, double spacing,
         IReadOnlyCollection<string>? availablePickers = null)

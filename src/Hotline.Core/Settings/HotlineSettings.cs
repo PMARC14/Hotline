@@ -152,10 +152,8 @@ public sealed class BackendProfile
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
     /// <summary>
-    /// Replaces Hotline's usual extra launch flags for this connection's mode. The flags Hotline needs to talk to the CLI
-    /// (print mode, stream-json) and, in chat-only mode, the isolation flags that keep it from using its own tools are always
-    /// added; flags that approve tools or skip permission checks are dropped from this list: only ApproveAllTools turns them
-    /// on. Null = Hotline's defaults.
+    /// Replaces Hotline's usual extra launch flags for this mode (null = defaults). Required and chat-only isolation flags are
+    /// always added; flags that approve tools or skip permission checks are dropped: only ApproveAllTools turns them on.
     /// </summary>
     public List<string>? Args { get; set; }
     /// <summary>
@@ -170,10 +168,8 @@ public sealed class BackendProfile
     /// <summary>Tool use: CLI connections (agy, Claude Code, Codex) use their own tools; API connections Hotline's MCP tools.</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
     /// <summary>
-    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy/Claude Code --dangerously-skip-permissions, Codex
-    /// --dangerously-bypass-approvals-and-sandbox), including
-    /// shell commands and file edits, with no prompt. Off: the CLI's own permission rules apply (in the background,
-    /// anything that would ask is denied).
+    /// DANGEROUS. Inherit mode only: auto-approve every tool request, shell commands and file edits included, with no prompt
+    /// (--dangerously-skip-permissions / --dangerously-bypass-approvals-and-sandbox). Off: the CLI's own permission rules apply.
     /// </summary>
     public bool ApproveAllTools { get; set; }
     /// <summary>Folder the CLI works in when Tools = Inherit. Null or missing = your user folder.</summary>

@@ -20,9 +20,7 @@ namespace Hotline.App.Settings;
 /// only this control is rebuilt, never the page, and not while one of its flyouts is open (a rebuild would close it).
 /// The "..." button's box (toolbar.json "menu", the more item's menu) is a fourth kind of place: a card of its own above "Not shown", with a
 /// button that fills it from the buttons the bar currently drops into the overflow.
-/// UI Automation ids: quadrant-&lt;topleft|…&gt;, quadrant-menu (the box), bar-fill-menu, bar-menu-&lt;id&gt; (move to the box), bar-notshown, bar-item-&lt;id&gt; (the pickers too: effort, model, provider),
-/// bar-move-&lt;left|right&gt;-&lt;id&gt;, bar-shift-&lt;up|down|left|right&gt;-&lt;id&gt;, bar-hide-&lt;id&gt;, bar-style-&lt;id&gt; (its flyout: bar-look-&lt;width|outline|outline-color|filled|reset&gt;; a picker's has no width),
-/// bar-span-&lt;picker&gt; (a picker's width, 1x-8x), bar-show-&lt;id&gt;, bar-size, bar-outline, bar-filled, bar-custom-add, bar-custom-edit-&lt;id&gt;, bar-custom-delete-&lt;id&gt;.
+/// UI Automation ids: `quadrant-*` for the groups and the box, `bar-*` for the rest (`bar-item-<id>`, `bar-move-*`, `bar-span-<picker>`, ...).
 /// </summary>
 internal sealed partial class ToolbarQuadrantEditor : StackPanel
 {

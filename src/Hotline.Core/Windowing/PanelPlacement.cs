@@ -7,7 +7,7 @@ namespace Hotline.Core.Windowing;
 public enum ResizeEdge { None = 0, Left = 1, Top = 2, Right = 4, Bottom = 8 }
 
 /// <summary>
-/// Where the panel's bar sits and which way its chat grows (spec: docs/superpowers/specs/2026-10-16-panel-placement-design.md).
+/// Where the panel's bar sits and which way its chat grows.
 /// All rectangles are physical pixels in virtual-screen coordinates; sizes in settings are DIPs.
 /// </summary>
 public static class PanelPlacement

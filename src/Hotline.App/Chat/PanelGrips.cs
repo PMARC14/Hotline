@@ -11,7 +11,7 @@ namespace Hotline.App.Chat;
 
 /// <summary>
 /// Hold Alt over the panel (or while it has focus): a grip appears on the bar's outer edge to move it, and handles on
-/// the edges and corners to resize it (spec: docs/superpowers/specs/2026-10-16-panel-placement-design.md). They are
+/// the edges and corners to resize it. They are
 /// drawn over the content in their own layer, so showing them never changes the layout. A drag moves the real window
 /// (physical pixels from the cursor); the panel works out its new spot when the drag ends.
 /// </summary>

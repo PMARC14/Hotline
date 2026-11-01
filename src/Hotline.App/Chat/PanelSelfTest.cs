@@ -118,7 +118,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         {
             popup.ShowOffscreen();
             // Rendering health: frames drawn and layout cycles during the test. A layout cycle can leave the window
-            // undrawable for good (2026-10-17: every later open was blank), so either one fails the test.
+            // undrawable for good (every later open is blank), so either one fails the test.
             var cyclesBefore = App.LayoutCycles;
             var frames = 0;
             void OnFrame(object? s, object e) => frames++;
@@ -193,7 +193,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             finally { ShowGrips?.Invoke(false); }
             if (Math.Abs(barWithGrips - barBefore) > 0.5) log.Error($"selftest FAILED: the grips changed the layout ({barBefore} -> {barWithGrips})");
             else log.Info($"selftest grips ok ({popup.GripLayer.Children.Count} handles)");
-            // Narrower than the button row (the condition of the 2026-10-17 layout cycle), then back.
+            // Narrower than the button row (the condition of the layout cycle), then back.
             popup.ResizeOffscreen(360);
             await Step("narrow panel");
             await Task.Delay(400);

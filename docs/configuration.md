@@ -13,7 +13,7 @@ same files). Comments and trailing commas are allowed.
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
-| `icons\<id>.png.<time>.bak` | The previous picture, copied before a replacement (newest 10 per file). No replacement if the backup fails; these copies remain after the button rows are saved |
+| `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file) |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
@@ -21,12 +21,14 @@ same files). Comments and trailing commas are allowed.
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
 | `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
-| `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept whenever Hotline is about to replace a file it did not write itself: a hand edit it rewrites (to add newly available options or to move an old inline `chat.backends` list into `connections\`), a damaged file, or an older run's file. Never overwritten; the newest 10 are kept |
+| `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept when Hotline replaces a file it did not write itself (a hand edit it rewrites, a damaged file, an older run's file) |
 | `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
-| `connections\<id>.json.<time>.bak` | The previous connection file, kept when Settings rewrites a file you edited by hand or removes a connection (newest 10 per file). A failed backup or deletion keeps the file and its API key |
-| `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it (newest 10) |
-| `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json (`yyyyMMdd-HHmmss`), kept when Settings is about to replace a file Hotline did not write itself (a hand edit, with its comments and ignored entries); never overwritten, the newest 10 are kept, and nothing is replaced if the copy can't be made. Hotline's own earlier saves are not copied again. `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
+| `connections\<id>.json.<time>.bak` | The previous connection file, kept when Settings rewrites a hand-edited file or removes a connection. A failed backup or deletion keeps the file and its API key |
+| `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it |
+| `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json, kept when Settings replaces a file Hotline did not write itself (a hand edit, with its comments). `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
+
+**An old inline connection list** (a `chat.backends` array in `settings.json`, from before connections were files) is split into `connections\` files the first time such a file is read; `settings.json` is copied to a stamped `.bak` first and the connection files are never overwritten.
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current one and
 Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset settings** puts
@@ -81,18 +83,10 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
 
-settings.json is schema version 15. On upgrading a file with `schemaVersion` below 14, widths change from scaled units (DIPs)
-to real pixels: old default `minWidth` 600 and `maxWidth` 1000 become 400 and 1200 (each independently). Other explicit minimum
-and maximum widths keep their numbers, with a notice to check Settings > Window. Saved `width` and `chatWidth` values are
-cleared to `null`, with the same notice, so the percentage rules apply again. Values are still checked and clamped.
-Schema 14 files already use pixels and keep their widths. A file without `schemaVersion` counts as current and keeps its widths too.
-The migrated file is stamped 15 and rewritten at startup if it has no other reading problems; the notice appears once.
-Otherwise, a lower schema version alone does not rewrite the file. Files are also rewritten at startup when they lack an option
-this version has (a missing `schemaVersion` is one) and have no ignored values, or when Settings next saves them.
-Before any rewrite the previous file is kept as `settings.json.<time>.bak`; if that copy fails, nothing is written.
-An old `activation.copilotKey` entry and an old `window.layout` (nothing ever read it) are dropped then ([copilot-key.md](copilot-key.md)).
-Connection files and API keys are untouched; an older conversion also splits an inline `chat.backends` list into
-`connections\` files.
+settings.json is schema version 15. Upgrading a file below 14 converts widths from scaled units to real pixels: the old default
+`minWidth` 600 / `maxWidth` 1000 become 400 / 1200, other limits keep their numbers, and saved `width` / `chatWidth` are cleared (one
+notice; check Settings > Window). A lower version alone does not rewrite the file; a missing option or a Settings save does. An old
+`activation.copilotKey` and `window.layout` are dropped then ([copilot-key.md](copilot-key.md)).
 
 **Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and
 that is not exactly what Hotline itself last wrote, it copies it to `<file>.<time>.bak` (never over an older copy; the newest 10 per
@@ -192,8 +186,10 @@ message, `{file}` the chat saved as Markdown, `{model}` the chat's model. In a U
 each stays inside its own argument. `copyChat: true` also puts the whole chat (Markdown) on the clipboard first.
 A target that isn't an object with a known `kind` and a `name` is skipped with a warning in Settings › Advanced; the others
 still work. The Open WebUI key is never in a file.
-Ready-made entries in Settings: llama.cpp web UI, Open WebUI, LM Studio (opens it with the chat copied: its own chat
-files aren't a format other apps can rely on), ChatGPT, Claude.
+Ready-made entries in Settings: llama.cpp web UI, Open WebUI, LM Studio, ChatGPT, Claude.
+What the apps accept (checked 2026-10-15): the llama.cpp web UI takes `?q=` (starts a conversation and sends the text) and
+`?model=` (picks the model); its import is only a JSON file in its Settings. Open WebUI has the API above. LM Studio has no URL
+and no import (its chats are undocumented files), so it opens with the chat copied.
 
 ## mcp.json (tools for API connections)
 
@@ -268,19 +264,16 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 | `overrides` | Per item id: the same `width`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. A picker takes `span` (its width), `outline`, `outlineColor` and `filled`, never `width`. The placed `more` button takes overrides like any item |
 | `buttons` | Your own buttons, by id (below) |
 
-**Width.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). Every button is **one cell high**, always,
-built-in or custom, so every row is 36 DIPs high. One key, `width`, says how many cells across a button is: 0.5, 1, 2, 3 or 4 (20 to 160 DIPs;
-the icon is 13 for half a cell and 16 otherwise). The words `compact`, `normal` and `wide` are shortcuts for 0.5, 1 and 2 (Hotline writes the
-word for those three and a number for 3 and 4). An item's own `width` beats the bar's, which beats the default of 1 cell. Any other value
-(a word that is none of the three, a number outside the five, or the DIP numbers of older files such as 80) is ignored with a warning and the
-default width applies. Files from before this key was one still load: `size` (the three words) and `cells` (the numbers) are read as
-old names of `width`, silently; if an entry has both `width` and one of them, `width` wins and one warning says so. Saving from Settings writes `width`
-only. A `height` key is not used (ignored with one warning per file). The width is the cell's whole size, padding included: cells touch with no gap, and the
-visible button is the cell less 1 DIP on each side (a normal button shows 38 × 34, so neighbours are 2 DIPs apart). So two normal buttons are as wide as one
-wide or four compact ones, and a row is the sum of its cells. The automatic "..." button is always one cell (40 × 36), whatever the bar's width. In
-Settings the bar's **Width** list and each button's flyout offer Compact, Normal, Wide, 3 cells and 4 cells (a button's also "Like the whole bar");
-the bar's list shows **Custom** while some button's width differs from the bar's, and picking a width there clears every button's own width.
-The bar's room is the panel's width less its padding (10 DIPs on every side).
+**Width.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs, and every button is one cell high, so every row is 36 DIPs
+high. `width` says how many cells across: 0.5, 1, 2, 3 or 4 (20 to 160 DIPs; the icon is 13 for half a cell, else 16). `compact`,
+`normal` and `wide` are words for 0.5, 1 and 2 (Hotline writes the word for those three, a number for 3 and 4). An item's own `width`
+beats the bar's, which beats the default of 1. Any other value (including the DIP numbers of older files such as 80) is ignored with a
+warning. The old names `size` (the words) and `cells` (the numbers) are still read silently; if an entry has both, `width` wins with
+one warning; saving writes `width` only. `height` is ignored (one warning per file). A cell touches its neighbours; the visible button
+is the cell less 1 DIP on each side (a normal button shows 38 × 34). A row is the sum of its cells, and the bar's room is the panel's
+width less its padding (10 DIPs on every side). The automatic "..." button is always one cell. In Settings the bar's **Width** list
+and each button's flyout offer Compact, Normal, Wide, 3 and 4 cells (a button's also "Like the whole bar"); the bar's list shows
+**Custom** while a button's width differs, and picking a width there clears every button's own width.
 
 **Outline.** `"outline": true` draws a 1.5-DIP border in the accent colour (a contrast theme: the system highlight colour) or in
 `outlineColor` (`#` and six hex digits; anything else is ignored with a warning). With `filled` a button keeps both its background and outline.
@@ -288,10 +281,11 @@ The pickers take the same three keys (`outline`, `outlineColor`, `filled`) from 
 (own entry, then the bar, then false), so an outlined bar outlines the drop-downs too, in the same colour and 1.5 DIPs thick, drawn inside their
 height; `filled` gives a drop-down the background a filled button has. A picker's width is not part of this: it stays its `span`.
 
-**Pickers.** `effort`, `model` and `provider` are three independent items: each can sit in any group of either row, between any
-buttons, and be moved, hidden or sized on its own. An id listed twice is shown at its first place (bottom left, bottom center, bottom
-right, top left, top center, top right). Pickers take the bar's look (`outline`, `outlineColor`, `filled`) but not its `width`. A picker is one cell high like a button (its drop-down is 34 DIPs high with the 1 DIP inset). Their width is `span` cells of 40 DIPs (1-8, whatever the bar's width);
-`span` and the three look keys are the only `overrides` keys a picker takes (anything else, such as `width`, is dropped with a warning):
+**Pickers.** `effort`, `model` and `provider` are three independent items: each can sit in any group of either row and be moved,
+hidden or sized on its own; an id listed twice is shown at its first place. They take the bar's look (`outline`, `outlineColor`,
+`filled`) but not its `width`, are one cell high (the drop-down is 34 DIPs with the 1 DIP inset), and are `span` cells wide (1-8,
+whatever the bar's width). `span` and the three look keys are the only `overrides` keys a picker takes (anything else is dropped with
+a warning):
 
 ```jsonc
 "overrides": { "model": { "span": 6 }, "effort": { "span": 1, "outline": true, "outlineColor": "#E81123" } }
@@ -303,13 +297,11 @@ right, top left, top center, top right). Pickers take the bar's look (`outline`,
 | `model` | 4 | 160 | 84 |
 | `provider` | 4 | 160 | 72 |
 
-A span equal to the default is not written to the file (the shipped file has no picker entries in `overrides`). A picker's look is kept for a hidden picker too, like its span.
-
-A span is a maximum as well as the preferred width (the drop-down itself is 1 DIP narrower on each side). In a short row the pickers
-shrink evenly down to the narrowest width (never past their own width); when that is not enough they hide one at a time: `effort`,
-then `provider`, then `model`. A span for a hidden picker is kept. Pickers never go into an overflow menu: the row first moves
-buttons there (left group, then center, from their ends, then the right group's first buttons) so the pickers keep their narrowest
-widths, and only when not even one right button, the "..." button and those widths fit do the pickers shrink and hide. Pickers of one
+A span equal to the default is not written to the file; a hidden picker keeps its span and look. A span is a maximum as well as the
+preferred width (the drop-down is 1 DIP narrower on each side). In a short row the pickers shrink evenly down to the narrowest width
+above; when that is not enough they hide one at a time: `effort`, then `provider`, then `model`. Pickers never go into an overflow
+menu: the row first moves buttons there (left group, then center, from their ends, then the right group's first buttons), and only
+when not even one right button, the "..." button and the pickers' narrowest widths fit do the pickers shrink and hide. Pickers of one
 row share what is left evenly; the other row is fitted on its own.
 
 **Overflow and the `more` button.** A row too narrow for its buttons moves them into an automatic "..." menu: the center group's
@@ -326,24 +318,9 @@ button **Move what doesn't fit into the menu**, which plans the bar at the narro
 monitor the panel would open on and the live width) and moves what would overflow into the box. It adds `more` (at the end of the bottom-right group) only
 when something really overflows; a bar that fits is left as it is.
 
-**Reference layouts.** `ToolbarProfiles` holds complete `toolbar.json` examples, tried automatically at every panel width and bar size
-and drawn by the panel's self-test (steps P01-P47); use any as a starting point:
-
-| Name | What it shows |
-|---|---|
-| `default` | the shipped layout: pickers across the top row, nine buttons in three groups below |
-| `pickers-bottom-left-before` / `-after` / `-between` | the pickers in the bottom-left group before, after, or in the middle of the buttons |
-| `pickers-bottom-centre` / `-crowded` | the pickers in the bottom-centre group, with few or many buttons on their left |
-| `pickers-bottom-right` / `-after-buttons` | the pickers in the bottom-right group, alone or after some buttons |
-| `pickers-top-right`, `pickers-top-centre-both-rows` | the pickers in the top row's right or centre group (centre: with buttons in both rows) |
-| `pickers-apart-corners`, `picker-between-buttons`, `pickers-one-per-row-right` | pickers placed one by one: effort top left, model top right, provider bottom centre; one picker between buttons; one in each row's right group |
-| `more-menu-bottom-right-with-5-items`, `more-menu-top-centre-with-overflow`, `more-in-both-rows` | `more` last in the bottom-right group with five buttons in its menu; `more` in the top-centre group with its row's overflow merging in; one row with `more` beside a crowded row that keeps its automatic "..." |
-| `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 cells wide; spans 1, 4 and 8 |
-| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact (half a cell) or wide (two cells), every button one cell high; a different `width` on several buttons |
-| `outlined-pickers`, `filled-outlined-bar` | the bar's outline on, so the drop-downs are outlined too (one in its own colour and filled, one switched off); a filled, blue-outlined bar with filled drop-downs (one not filled) |
-| `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |
-| `only-pickers`, `only-right-group`, `all-items-in-one-group` | a row of pickers only; a right group only; every possible item (36) in one group |
-| `empty-bar`, `damaged-file` | an explicitly empty bar; a damaged file that still renders |
+**Reference layouts.** `ToolbarProfiles.cs` holds complete `toolbar.json` examples (pickers in each group, `more` menus, spans,
+widths, outlined and filled bars, 24 custom buttons, empty and damaged files), tried at every panel width and drawn by the panel's
+self-test (steps P01-P47); use any as a starting point.
 
 **Custom buttons.** Each entry in `buttons` can be listed in any group by its id:
 
@@ -374,10 +351,9 @@ warning and the file is left as it is. To change the bar, write the version 2 fo
 the panel, under Settings › About › This PC and in the log. Saving from Settings writes the corrected file and keeps the one it replaces
 as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
 
-**Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json` (the previous file goes to
-`backups\reset-<time>\`); `.defaults\toolbar.json` is rewritten at every start. New installs get the owner's layout: effort, model and
-provider across the top row (the default spans 3, 4, 4); pin and the three captures on the bottom left, prompt and Continue in in the centre,
-recent, new chat and settings on the right.
+**Defaults.** Settings › Advanced › **Reset settings** restores `toolbar.json` too (see *Switching settings* above); `.defaults\toolbar.json` is
+rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 4); pin and
+the three captures on the bottom left, prompt and Continue in in the centre, recent, new chat and settings on the right.
 
 ## Backup (Settings > Backup)
 
