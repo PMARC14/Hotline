@@ -20,10 +20,12 @@ public sealed class CliSessionTests : IDisposable
         public BackendCapabilities Capabilities { get; } = new(Images: true, TextFiles: true);
         public CliSession? Resume { get; set; }
         public List<CliSession?> ResumeSeen { get; } = [];
+        public List<IReadOnlyList<ChatMessage>> Calls { get; } = [];
 
         public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
         {
             ResumeSeen.Add(Resume);
+            Calls.Add(conversation.ToList());
             await Task.Yield();
             yield return new ChatDelta("", Session: Resume ?? new CliSession($"session-{++_next:D4}", @"C:\work\Hotline"));
             yield return new ChatDelta("ok");
@@ -144,6 +146,41 @@ public sealed class CliSessionTests : IDisposable
         c.BackendId = "agy";
         await c.SendAsync("and you?", []);
         Assert.Null(other.ResumeSeen.Single());
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task Returning_from_an_api_replays_the_whole_chat_unless_only_a_record_was_reopened(bool partial)
+    {
+        var history = History();
+        var cli = new FakeCli();
+        var api = new FakeBackend(new ChatDelta("api answer"));
+        var c = Two(cli, "cli", api, "fake", history, id => id != "cli");
+        await c.SendAsync("first question", []);
+        if (partial)
+        {
+            var id = c.ConversationId;
+            c.NewChat();
+            Assert.True(c.Resume(id));
+        }
+        var original = c.CurrentSession;
+        c.BackendId = "fake";
+        await c.SendAsync("second question", []);
+        await c.SendAsync("third question", []);
+        if (partial) Assert.Equal(original, c.CurrentSession);
+        else Assert.Null(c.CurrentSession); // Continue in must not offer the stale session on the return trip either.
+        c.BackendId = "cli";
+        await c.SendAsync("fourth question", []);
+
+        if (partial) Assert.Equal(original!.Value.Session, cli.ResumeSeen.Last());
+        else
+        {
+            Assert.Null(cli.ResumeSeen.Last());
+            Assert.Equal(["first question", "ok", "second question", "api answer", "third question", "api answer", "fourth question"],
+                cli.Calls.Last().Select(m => m.Text));
+            Assert.Equal("session-0002", history.LoadMeta(c.ConversationId)!.SessionId);
+        }
     }
 
     [Theory]

@@ -66,6 +66,14 @@ public sealed class ChatWidthTests : IDisposable
         => PopupGeometry.ChatWidthPx(width, chatWidth, percent, workPx, min, max, start);
 
     [Fact]
+    public void A_width_set_by_hand_always_wins_over_the_chat_width()
+    {
+        Assert.Equal(700, PopupGeometry.ChatWidthPx(null, 700, 0, 1920, 460, 1000, 460, widthSetByHand: false));
+        Assert.Null(PopupGeometry.ChatWidthPx(null, 700, 0, 1920, 460, 1000, 460, widthSetByHand: true));
+        Assert.Null(PopupGeometry.ChatWidthPx(null, null, 50, 1920, 460, 1000, 460, widthSetByHand: true));
+    }
+
+    [Fact]
     public void No_chat_width_set_means_no_growth() => Assert.Null(Chat());
 
     [Theory]

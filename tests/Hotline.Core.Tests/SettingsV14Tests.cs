@@ -3,7 +3,7 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-/// <summary>Schema v14: the Right Ctrl mode is gone, the default width is 680, connections are never touched.</summary>
+/// <summary>Schema upgrades preserve connections and migrate the old scaled width units once.</summary>
 public sealed class SettingsV14Tests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
@@ -19,6 +19,75 @@ public sealed class SettingsV14Tests : IDisposable
 
     private static JsonObject Activation(string settingsText)
         => JsonNode.Parse(settingsText, documentOptions: new() { CommentHandling = System.Text.Json.JsonCommentHandling.Skip })!["activation"]!.AsObject();
+
+    [Theory]
+    [InlineData("13", "\"minWidth\":600,\"maxWidth\":1000", 400, 1200, null, null, "")]
+    [InlineData("13", "\"minWidth\":600", 400, 1200, null, null, "")]
+    [InlineData("13", "\"maxWidth\":1000", 400, 1200, null, null, "")]
+    [InlineData("13", "\"minWidth\":700", 700, 1200, null, null, "minWidth")]
+    [InlineData("13", "\"width\":700", 400, 1200, null, null, "width")]
+    [InlineData("13", "\"minWidth\":700,\"maxWidth\":1500", 700, 1500, null, null, "minWidth,maxWidth")]
+    [InlineData("13", "\"width\":700,\"chatWidth\":900", 400, 1200, null, null, "width,chatWidth")]
+    [InlineData("13", "\"minWidth\":1,\"maxWidth\":99999", 200, 16000, null, null, "minWidth,maxWidth")]
+    [InlineData("14", "\"minWidth\":600,\"maxWidth\":1000,\"width\":700,\"chatWidth\":900", 600, 1000, 700, 900, "")]
+    [InlineData(null, "\"minWidth\":600,\"maxWidth\":1000,\"width\":700,\"chatWidth\":900", 600, 1000, 700, 900, "")]
+    public void Width_units_migrate_only_explicit_pre_v14_files(string? schema, string window, int min, int max, int? width, int? chatWidth, string noticed)
+    {
+        var original = "{" + (schema is null ? "" : $"\"schemaVersion\":{schema},") + "\"window\":{" + window + "}}";
+        WriteSettings(original);
+        var liveStore = New();
+        var live = liveStore.TryRead()!;
+        Assert.Equal(original, File.ReadAllText(SettingsPath)); // live reads never write
+        Assert.Empty(Directory.GetFiles(_dir, "*.bak"));
+        var store = New();
+        var loaded = store.Load();
+        Assert.Equal((min, max, width, chatWidth), (loaded.Window.MinWidth, loaded.Window.MaxWidth, loaded.Window.Width, loaded.Window.ChatWidth));
+        Assert.Equal(SettingsStore.Serialize(loaded), SettingsStore.Serialize(live));
+        Assert.Equal(15, loaded.SchemaVersion);
+        foreach (var key in noticed.Split(',', StringSplitOptions.RemoveEmptyEntries))
+            Assert.Contains(store.SettingsProblems, p => p.Contains("now real pixels") && p.Contains(key));
+        if (noticed.Length == 0) Assert.Empty(store.SettingsProblems);
+        if (schema == "13" && !window.Contains("99999"))
+        {
+            Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
+            var again = New();
+            Assert.Equal(SettingsStore.Serialize(loaded), SettingsStore.Serialize(again.Load()));
+            Assert.Empty(again.SettingsProblems); // stamped file never migrates or warns again
+        }
+    }
+
+    [Fact]
+    public void Width_migration_does_not_write_when_the_backup_fails()
+    {
+        const string original = """{"schemaVersion":13,"window":{"width":700,"minWidth":600,"maxWidth":1000}}""";
+        WriteSettings(original);
+        var store = New();
+        store.BackupOverride = _ => throw new IOException("test backup failure");
+        Assert.Null(store.Load().Window.Width);
+        Assert.Equal(original, File.ReadAllText(SettingsPath));
+        Assert.NotEmpty(store.WriteProblems);
+        Assert.Empty(Directory.GetFiles(_dir, "*.bak"));
+    }
+
+    [Fact]
+    public void A_complete_v13_file_is_migrated_and_stamped_even_without_missing_options()
+    {
+        var old = new HotlineSettings { SchemaVersion = 13 };
+        old.Window.MinWidth = 600;
+        old.Window.MaxWidth = 1000;
+        old.Window.Width = 700;
+        var original = SettingsStore.Serialize(old);
+        WriteSettings(original);
+        var store = New();
+        store.Load();
+        var saved = JsonNode.Parse(File.ReadAllText(SettingsPath))!;
+        Assert.Equal(15, (int)saved["schemaVersion"]!);
+        Assert.Equal(400, (int)saved["window"]!["minWidth"]!);
+        Assert.Equal(1200, (int)saved["window"]!["maxWidth"]!);
+        Assert.Null(saved["window"]!["width"]);
+        Assert.Single(store.SettingsProblems);
+        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
+    }
 
     [Theory]
     [InlineData("1")]
@@ -42,7 +111,7 @@ public sealed class SettingsV14Tests : IDisposable
 
         var s = New().Load();
 
-        Assert.Equal(14, s.SchemaVersion);
+        Assert.Equal(15, s.SchemaVersion);
         Assert.Equal("Ctrl+Alt+K", s.Activation.FallbackHotkey); // the file was read, not replaced by defaults
         Assert.False(File.Exists(SettingsPath + ".bad"));
         Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
@@ -50,7 +119,7 @@ public sealed class SettingsV14Tests : IDisposable
         var rewritten = File.ReadAllText(SettingsPath);
         Assert.DoesNotContain("copilotKey", rewritten, StringComparison.OrdinalIgnoreCase);
         Assert.False(Activation(rewritten).ContainsKey("copilotKey"));
-        Assert.Equal(14, (int)JsonNode.Parse(rewritten)!["schemaVersion"]!);
+        Assert.Equal(15, (int)JsonNode.Parse(rewritten)!["schemaVersion"]!);
     }
 
     [Theory]

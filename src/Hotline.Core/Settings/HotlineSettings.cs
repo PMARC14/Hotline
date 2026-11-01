@@ -2,9 +2,43 @@ using Hotline.Core.Activation;
 
 namespace Hotline.Core.Settings;
 
+/// <summary>Limits shared by file validation, normalization and the numeric settings controls.</summary>
+public sealed record SettingRange(double Min, double Max, double? Default, bool ZeroToo = false)
+{
+    public double Clamp(double value) => ZeroToo && (!double.IsFinite(value) || value <= 0) ? 0 : Math.Clamp(value, Min, Max);
+    public double ClampFinite(double value) => double.IsFinite(value) ? Clamp(value) : Default ?? Min;
+    public int Clamp(int value) => (int)Clamp((double)value);
+}
+
+public static class SettingsRanges
+{
+    public static readonly IReadOnlyDictionary<string, SettingRange> All =
+        new System.Collections.ObjectModel.ReadOnlyDictionary<string, SettingRange>(new Dictionary<string, SettingRange>
+        {
+            ["ChatSettings.MaxImagePixels"] = new(256, 8192, 2048),
+            ["ChatSettings.HistoryRetentionDays"] = new(1, 3650, 30),
+            ["ChatSettings.HistoryListSize"] = new(10, 5000, 300),
+            ["ChatSettings.ThinkingDelayMs"] = new(0, 10_000, 700),
+            ["WindowSettings.FontSize"] = new(10, 32, null),
+            ["WindowSettings.Width"] = new(200, 16000, null),
+            ["WindowSettings.ChatHeight"] = new(60, 8000, null),
+            ["WindowSettings.ChatWidth"] = new(200, 16000, null),
+            ["WindowSettings.ChatWidthPercent"] = new(20, 90, 0, ZeroToo: true),
+            ["WindowSettings.TintOpacity"] = new(0, 1, 0.15),
+            ["WindowSettings.LuminosityOpacity"] = new(0, 1, 0.35),
+            ["WindowSettings.WidthPercent"] = new(20, 90, 40),
+            ["WindowSettings.MinWidth"] = new(200, 8000, 400),
+            ["WindowSettings.MaxWidth"] = new(200, 16000, 1200),
+            ["WindowSettings.Height"] = new(0, 4000, 0),
+            ["WindowSettings.MaxHeightPercent"] = new(30, 95, 60),
+            ["PanelAnchor.X"] = new(0, 1, 0.5),
+            ["PanelAnchor.Y"] = new(0, 1, 0.8),
+        });
+}
+
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 14;
+    public const int CurrentSchemaVersion = 15;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();

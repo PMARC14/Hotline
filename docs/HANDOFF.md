@@ -44,7 +44,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     brushes as its permanent Background / BorderBrush and as its state resources (**hover / press look UNVERIFIED by eye**).
   - **Width model** (owner, 2026-10-31/11-01): `window.widthPercent` default 40 of the work area's REAL pixels; `minWidth` 400 and
     `maxWidth` 1200 (pixels), `width` (hand resize) and `chatWidth` are real pixels too; Windows scaling is
-    ignored for widths, heights stay in scaled units (DIP). `chatWidthPercent` default 0 (no growth). Settings shows
+    ignored for widths, heights stay in scaled units (DIP). Schema 15 migrates explicit pre-v14 files once: old default
+    limits 600/1000 become 400/1200, custom limits keep their numbers with a notice, and saved `width`/`chatWidth` are cleared
+    with a notice so percentages apply again. The old file is backed up before rewriting; schema 14 and unversioned files keep
+    their pixel widths. `chatWidthPercent` default 0 (no growth). Settings shows
     one short line, `ScreenScale.Line` (screen pixels, scaling %, Windows' scaled interface size), above the button rows (no longer
     explanations in Settings: owner's call). Owner's screen: 2880 x 1800 at 200% (1440 x 900 scaled units). Open item: `PanelPlacement.Rescale` keeps a pinned
     panel's size in scaled units across monitors of different scale.
@@ -175,6 +178,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `Text/` `MarkdownModel` (Markdig → blocks; math, SVG, task lists), `LatexText`, `SvgSanitizer`, `Localization/`.
   - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`), `OdrDiscovery`. `Diagnostics/` `FileLog`, `LogText`,
     `ConfigProblems`. `Processes/` line processes, `ShellOpen`. `Platform/` `SafeDirectory`, `CommandResolver`.
+    MCP approvals: only failed "Always" saves are remembered; a file rule or a removed/disabled server clears that fallback.
   - `Windowing/` `PopupGeometry` (GrowUp/GrowDown), `PanelPlacement` (anchor, direction, clamp, resize, rescale), the toolbar files
     (`ToolbarModel`, `ToolbarFile`, `ToolbarEditor`, `ToolbarEditorView`, `ToolbarPlan`, `ToolbarLayout`, `ToolbarProfiles`,
     `CustomIcons`), `Sounds`.
@@ -232,6 +236,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   opens a console on purpose (its app targets too). Never wrap a child in `cmd /c`; kill whole process trees (job object).
 
 **The CLIs**
+- **CLI sessions:** a connection detour clears the session when the transcript is whole; record-only chats still resume, without detour turns in that CLI's context.
 - **CLI histories:** Claude Code `~/.claude/projects/<folder>/<session>.jsonl` (type user/assistant, `message.content` string or blocks;
   skip `isMeta`, `isSidechain`, `tool_result`); Codex `~/.codex/sessions/YYYY/MM/DD/rollout-*-<thread>.jsonl` (`response_item` ›
   `message`; skip `<environment_context>` turns); agy `~/.gemini/antigravity-cli/conversations/<id>.db`, SQLite table `steps`: type

@@ -259,6 +259,80 @@ public sealed class LenientSettingsTests : IDisposable
 
     // ---- live reload -----------------------------------------------------------------------------
 
+    public static IEnumerable<object[]> NumericLimits => SettingsRanges.All.Select(pair =>
+        new object[] { pair.Key, pair.Value.Min, pair.Value.Max });
+
+    [Theory]
+    [MemberData(nameof(NumericLimits))]
+    public void Numeric_limits_agree_for_reading_and_normalizing(string key, double min, double max)
+    {
+        var parts = key.Split('.');
+        var name = char.ToLowerInvariant(parts[1][0]) + parts[1][1..];
+        var path = parts[0] == "PanelAnchor" ? "window.anchor." + name
+            : (parts[0] == "WindowSettings" ? "window." : "chat.") + name;
+        foreach (var given in new[] { min, max, min - 1, max + 1 })
+        {
+            var root = new JsonObject { ["window"] = new JsonObject { ["minWidth"] = 200 } };
+            SetPath(root, path, JsonValue.Create(given));
+            Write(root.ToJsonString());
+            var store = new SettingsStore(_dir);
+            var loaded = store.TryRead()!;
+            var section = parts[0] == "PanelAnchor" ? (object)loaded.Window.Anchor
+                : parts[0] == "WindowSettings" ? loaded.Window : loaded.Chat;
+            var prop = section.GetType().GetProperty(parts[1])!;
+            Assert.Equal(Math.Clamp(given, min, max), Convert.ToDouble(prop.GetValue(section)));
+            prop.SetValue(section, Convert.ChangeType(given, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType));
+            SettingsStore.Normalize(loaded);
+            Assert.Equal(Math.Clamp(given, min, max), Convert.ToDouble(prop.GetValue(section)));
+            Assert.Equal(given < min || given > max ? 1 : 0, store.SettingsProblems.Count);
+        }
+    }
+
+    [Fact]
+    public void Numeric_controls_and_defaults_agree_with_the_shared_table()
+    {
+        var fresh = new HotlineSettings();
+        foreach (var (key, range) in SettingsRanges.All)
+        {
+            var changed = new HotlineSettings();
+            var parts = key.Split('.');
+            var section = parts[0] == "PanelAnchor" ? (object)changed.Window.Anchor
+                : parts[0] == "WindowSettings" ? changed.Window : changed.Chat;
+            var prop = section.GetType().GetProperty(parts[1])!;
+            Assert.Equal(range.Default, prop.GetValue(section) is { } value ? Convert.ToDouble(value) : (double?)null);
+            prop.SetValue(section, Convert.ChangeType(range.Max, Nullable.GetUnderlyingType(prop.PropertyType) ?? prop.PropertyType));
+            var controls = SettingsSchema.Items.OfType<NumberItem>().Where(i => i.Get(fresh) != i.Get(changed)).ToList();
+            if (key is "ChatSettings.HistoryListSize" or "ChatSettings.ThinkingDelayMs") Assert.Empty(controls); // file-only settings
+            else
+            {
+                var control = Assert.Single(controls);
+                var unset = key is "WindowSettings.Width" or "WindowSettings.ChatWidth" or "WindowSettings.ChatHeight";
+                Assert.Equal(unset || range.ZeroToo ? 0 : range.Min, control.Min);
+                Assert.Equal(range.Max, control.Max);
+            }
+        }
+    }
+
+    [Fact]
+    public void Numeric_normalization_preserves_the_existing_nonfinite_rules()
+    {
+        foreach (var (key, range) in SettingsRanges.All)
+        foreach (var given in new[] { double.NegativeInfinity, double.PositiveInfinity, double.NaN })
+        {
+            var settings = new HotlineSettings();
+            var parts = key.Split('.');
+            var section = parts[0] == "PanelAnchor" ? (object)settings.Window.Anchor
+                : parts[0] == "WindowSettings" ? settings.Window : settings.Chat;
+            var prop = section.GetType().GetProperty(parts[1])!;
+            if (prop.PropertyType != typeof(double)) continue;
+            prop.SetValue(section, given);
+            SettingsStore.Normalize(settings);
+            var expected = parts[0] == "PanelAnchor" || range.ZeroToo ? range.Default!.Value
+                : Math.Clamp(given, range.Min, range.Max);
+            Assert.Equal(expected, (double)prop.GetValue(section)!);
+        }
+    }
+
     [Fact]
     public void A_half_saved_file_keeps_the_settings_in_force_and_is_reported_once_per_state()
     {

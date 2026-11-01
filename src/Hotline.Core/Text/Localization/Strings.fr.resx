@@ -422,7 +422,7 @@ Refuser :
   <data name="Attach_Selection" xml:space="preserve"><value>Texte sélectionné</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>Texte sélectionné dans {0}</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>Vous pouvez joindre jusqu'à {0} fichiers.</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>Texte en {0}</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>Texte dans {0}</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} ne peut pas lire les images.</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} ne peut pas lire les fichiers.</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>Le backend « {0} » n'est pas encore disponible.</value></data>
@@ -499,6 +499,7 @@ Refuser :
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Le reste est appliqué. Paramètres › Avancé répertorie tout.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Impossible de lire un fichier de paramètres</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline conserve ses paramètres actuels jusqu'à ce que le problème soit résolu.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width sont désormais des pixels réels (auparavant : unités mises à l'échelle) : vos valeurs {0} ont été conservées telles quelles ; vérifiez Paramètres &amp;gt; Fenêtre</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problèmes dans vos fichiers de paramètres</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Les valeurs ignorées utilisent leurs valeurs par défaut. Corrigez le fichier et Hotline l'appliquera immédiatement.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Une partie de toolbar.json a été ignorée</value></data>
@@ -598,8 +599,8 @@ Refuser :
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Lignes de boutons</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Écran {0} × {1} px avec mise à l'échelle à {2}% : Windows affiche l'interface en {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Écran {0} × {1} px à une échelle de 100 %</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Largeur minimale du panneau, en pixels réels de l'écran (la mise à l'échelle Windows est ignorée). 384 = 20 % d'un écran 1920 × 1080.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Largeur maximale du panneau en pixels réels de l'écran (la mise à l'échelle de l'affichage Windows est ignorée). 2304 = 60 % d'un écran 4K (3840 px).</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Pixels réels de l'écran, mise à l'échelle Windows ignorée</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Pixels réels de l'écran, mise à l'échelle Windows ignorée</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Déplacer sous la zone de message</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Au-dessus de la zone de message</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Déplacer au-dessus de la zone de message</value></data>
@@ -694,6 +695,7 @@ Refuser :
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Ignoré : {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Ces connexions ont encore besoin d'une clé API : {0}. Ouvrez Connexions IA et saisissez-la.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Les paramètres et la barre de boutons s'appliquent immédiatement ; les sons, les lignes de boutons et les actions rapides seront actualisés lors de leur prochaine utilisation.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Impossible de supprimer {0} ; le fichier et sa clé API ont été conservés.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Largeur du chat (pourcentage)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Le panneau s'élargit à cette part de la largeur de l'écran lorsqu'un chat commence et se réduit lors d'un nouveau chat. 0 = conserve sa largeur. Une largeur fixe ci-dessous désactive cette option.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Largeur de la discussion</value></data>

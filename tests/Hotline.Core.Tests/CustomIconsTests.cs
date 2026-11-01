@@ -185,6 +185,54 @@ public sealed class CustomIconsTests : IDisposable
     }
 
     [Fact]
+    public void Import_leaves_the_picture_untouched_when_the_backup_destination_is_unwritable()
+    {
+        if (!OperatingSystem.IsWindows()) return;
+        var source = Write("source.png", Png(16, 16));
+        CustomIcons.Import(source, Icons, "b1");
+        CustomIcons.Commit(Icons, "b1");
+        File.WriteAllBytes(source, Png(32, 32));
+        var folder = new DirectoryInfo(Icons);
+        var permissions = System.IO.FileSystemAclExtensions.GetAccessControl(folder);
+        var deny = new System.Security.AccessControl.FileSystemAccessRule(
+            System.Security.Principal.WindowsIdentity.GetCurrent().User!,
+            System.Security.AccessControl.FileSystemRights.CreateFiles, System.Security.AccessControl.AccessControlType.Deny);
+        permissions.AddAccessRule(deny);
+        System.IO.FileSystemAclExtensions.SetAccessControl(folder, permissions);
+        try
+        {
+            Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "b1"));
+            Assert.Equal(Png(16, 16), File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
+            Assert.Equal(["b1.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
+            Assert.False(CustomIcons.Rollback(Icons, "b1")); // a failed import left no pending transaction
+        }
+        finally
+        {
+            permissions.RemoveAccessRule(deny);
+            System.IO.FileSystemAclExtensions.SetAccessControl(folder, permissions);
+        }
+    }
+
+    [Fact]
+    public void Replacing_a_picture_keeps_the_newest_ten_backups_after_commit()
+    {
+        var source = Write("source.png", Png(16, 16));
+        CustomIcons.Import(source, Icons, "b1");
+        CustomIcons.Commit(Icons, "b1");
+        for (uint side = 17; side <= 28; side++)
+        {
+            var previous = File.ReadAllBytes(Path.Combine(Icons, "b1.png"));
+            File.WriteAllBytes(source, Png(side, side));
+            Assert.Equal("b1.png", CustomIcons.Import(source, Icons, "b1").FileName);
+            CustomIcons.Commit(Icons, "b1");
+            var backups = Directory.GetFiles(Icons, "b1.png.*.bak");
+            Assert.Equal(Math.Min((int)side - 16, 10), backups.Length);
+            Assert.Contains(backups, file => File.ReadAllBytes(file).SequenceEqual(previous));
+        }
+        Assert.DoesNotContain(Directory.GetFiles(Icons, "b1.png.*.bak"), file => File.ReadAllBytes(file).SequenceEqual(Png(16, 16)));
+    }
+
+    [Fact]
     public void Import_replaces_the_buttons_own_icon_only()
     {
         Assert.Equal("b1.png", CustomIcons.Import(Write("a.png", Png(16, 16)), Icons, "b1").FileName);
@@ -195,7 +243,7 @@ public sealed class CustomIconsTests : IDisposable
         CustomIcons.Commit(Icons, "b2");
         Assert.Equal(newer, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
         Assert.Equal(Png(32, 32), File.ReadAllBytes(Path.Combine(Icons, "b2.png")));
-        Assert.Equal(["b1.png", "b2.png"], Directory.GetFiles(Icons).Select(Path.GetFileName).Order());
+        Assert.Equal(["b1.png", "b2.png"], Directory.GetFiles(Icons, "*.png").Select(Path.GetFileName).Order());
     }
 
     [Fact]
@@ -214,7 +262,7 @@ public sealed class CustomIconsTests : IDisposable
         CustomIcons.Commit(Icons, "b1");
         Assert.False(CustomIcons.Rollback(Icons, "b1")); // nothing left to restore
         Assert.Equal(second, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-        Assert.Equal(["b1.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
+        Assert.Equal(["b1.png"], Directory.GetFiles(Icons, "*.png").Select(Path.GetFileName));
     }
 
     [Fact]

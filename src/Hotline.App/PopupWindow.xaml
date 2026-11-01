@@ -4,7 +4,8 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:local="using:Hotline.App"
     Title="Hotline">
-    <!-- Padding 10 on every side: ToolbarPlan.PanelPadding (keep them equal; the bar's room is the width less 2 x this). -->
+    <!-- Padding: 10 on the sides (ToolbarPlan.PanelPadding, the fallback of the bar's room; App.BarRoom reads this live value), 4 above and below.
+         GripLayer's margin is set in code from the negated padding. -->
     <Grid x:Name="Root" x:FieldModifier="internal" Padding="10,4,10,4" RowSpacing="0"
           AllowDrop="True" KeyDown="Root_KeyDown">
         <Grid.Resources>
@@ -238,6 +239,6 @@
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" AutomationProperties.Name="{local:Loc Key=Bar_settings}" />
         </Grid>
         <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
-        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Margin="-10,-4,-10,-4" Visibility="Collapsed" />
+        <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Visibility="Collapsed" />
     </Grid>
 </Window>

@@ -177,7 +177,7 @@ Nega:
   <data name="Conn_Endpoint" xml:space="preserve"><value>Endpoint</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>URL di base dell'API.</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>Salvata; digita per sostituirla</value></data>
-  <data name="Conn_Optional" xml:space="preserve"><value>Facoltativo</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Opzionale</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>Obbligatoria</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Impossibile salvare la chiave</value></data>
   <data name="Conn_ApiKey" xml:space="preserve"><value>Chiave API</value></data>
@@ -499,6 +499,7 @@ Nega:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Il resto viene applicato. Impostazioni › Avanzate elenca tutto.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Impossibile leggere un file di impostazioni</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline mantiene le impostazioni correnti finché non viene risolto.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width sono ora pixel reali (prima: unità ridimensionate): i tuoi valori {0} sono stati mantenuti come scritti; controlla Impostazioni &amp;gt; Finestra</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemi nei file delle impostazioni</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>I valori ignorati utilizzano le impostazioni predefinite. Correggi il file e Hotline lo applicherà subito.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Una parte di toolbar.json è stata ignorata</value></data>
@@ -598,8 +599,8 @@ Nega:
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Righe di pulsanti</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Schermo {0} × {1} px con ridimensionamento al {2}%: Windows visualizza l'interfaccia a {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Schermo {0} × {1} px con ridimensionamento al 100%</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>La larghezza minima del pannello, in pixel reali dello schermo (il ridimensionamento dello schermo di Windows viene ignorato). 384 = 20% di uno schermo 1920 × 1080.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Larghezza massima del pannello in pixel effettivi dello schermo (il ridimensionamento dello schermo di Windows viene ignorato). 2304 = 60% di uno schermo 4K (3840 px).</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Pixel reali dello schermo, ridimensionamento di Windows ignorato</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Pixel reali dello schermo, ridimensionamento di Windows ignorato</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Sposta sotto la casella del messaggio</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Sopra la casella del messaggio</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Sposta sopra la casella del messaggio</value></data>
@@ -694,6 +695,7 @@ Nega:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Ignorato: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Queste connessioni richiedono ancora una chiave API: {0}. Apri Connessioni AI e inseriscila.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Le impostazioni e la barra dei pulsanti si applicano subito; suoni, righe di pulsanti e azioni rapide si aggiornano al prossimo utilizzo.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Impossibile rimuovere {0}; il file e la relativa chiave API sono stati mantenuti.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Larghezza chat (percentuale)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Il pannello si allarga a questa quota della larghezza dello schermo all'avvio di una chat e si restringe a una nuova chat. 0 = mantiene la larghezza. Una larghezza fissa sotto disattiva questa opzione.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Larghezza chat</value></data>

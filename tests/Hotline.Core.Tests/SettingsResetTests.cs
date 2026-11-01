@@ -26,6 +26,50 @@ public sealed class SettingsResetTests : IDisposable
     }
 
     [Fact]
+    public void Reset_does_not_replace_settings_or_connections_whose_backup_failed()
+    {
+        var (store, settings, local) = Customised();
+        var path = store.FilePath;
+        var connection = store.SourcePath(local)!;
+        var before = File.ReadAllBytes(path); // exactly what this process last wrote: Save would skip its own backup
+        var handEdited = """{ "id": "local-model", "type": "local", "name": "Hand edited", "extra": "keep" }""";
+        File.WriteAllText(connection, handEdited);
+        var result = SettingsReset.Reset(store, _dir, settings, everything: false, Now, (file, to) =>
+        {
+            if (file == path || file == connection) Directory.CreateDirectory(to); // a destination that cannot be written as a file
+            File.Copy(file, to);
+        });
+        Assert.Contains(SettingsStore.FileName, result.Failed);
+        Assert.Contains(Path.GetFileName(connection), result.Failed);
+        Assert.Equal(before, File.ReadAllBytes(path));
+        Assert.Equal(handEdited, File.ReadAllText(connection));
+        Assert.Empty(result.Removed);
+        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json"))); // other files still reset
+    }
+
+    [Theory]
+    [InlineData(false, "toolbar.json")]
+    [InlineData(true, "toolbar.json")]
+    [InlineData(true, "mcp.json")]
+    [InlineData(true, "settings.json")]
+    [InlineData(true, "connections")]
+    public void Reset_leaves_each_file_alone_when_its_backup_destination_is_unwritable(bool everything, string blocked)
+    {
+        var (store, settings, local) = Customised();
+        var path = blocked == "connections" ? store.SourcePath(local)! : Path.Combine(_dir, blocked);
+        var before = File.ReadAllBytes(path);
+        var result = SettingsReset.Reset(store, _dir, settings, everything, Now, (file, to) =>
+        {
+            if (file == path) Directory.CreateDirectory(to);
+            File.Copy(file, to);
+        });
+        Assert.Contains(Path.GetFileName(path), result.Failed);
+        Assert.Equal(before, File.ReadAllBytes(path));
+        if (blocked == "connections") Assert.DoesNotContain(local, result.Removed); // caller must keep its credential
+        else if (everything) Assert.Contains(local, result.Removed); // successful removals are still reported
+    }
+
+    [Fact]
     public void Reset_settings_keeps_connections_and_backs_up()
     {
         var (store, s, local) = Customised();

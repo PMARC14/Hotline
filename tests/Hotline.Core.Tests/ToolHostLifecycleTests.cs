@@ -39,6 +39,101 @@ public sealed class ToolHostLifecycleTests : IDisposable
     }
 
     [Fact]
+    public async Task A_saved_always_approval_can_be_removed_without_restarting()
+    {
+        const string config = """{ "mcpServers": { "a": { "command": "x" } } }""";
+        WriteConfig(config);
+        var asked = 0;
+        await using var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => Task.FromResult<IMcpSession>(new FakeSession(("write", false))),
+            (_, _) => { asked++; return Task.FromResult(ToolDecision.AllowAlways); }, Log, McpPath);
+        var tool = Assert.Single(await host.GetToolsAsync(TestContext.Current.CancellationToken));
+        using var args = JsonDocument.Parse("{}");
+        await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal(ToolApproval.Allow, McpConfig.Load(McpPath).Approvals["a/write"]);
+        await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal(1, asked);
+        WriteConfig(config);
+        await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal(2, asked);
+    }
+
+    [Theory]
+    [InlineData("a/write", "ask")]
+    [InlineData("a/write", "allow")]
+    [InlineData("a/write", "deny")]
+    [InlineData("a/*", "ask")]
+    [InlineData("a/*", "deny")]
+    [InlineData("removed", "")]
+    [InlineData("disabled", "")]
+    public async Task Failed_approval_saves_are_remembered_until_a_file_rule_or_server_removal(string key, string rule)
+    {
+        const string config = """{ "mcpServers": { "a": { "command": "x" } } }""";
+        WriteConfig(config);
+        var blocked = Path.Combine(_dir, "directory-not-file");
+        Directory.CreateDirectory(blocked);
+        var asked = 0;
+        await using var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => Task.FromResult<IMcpSession>(new FakeSession(("write", false))),
+            (_, _) => { asked++; return Task.FromResult(asked == 1 ? ToolDecision.AllowAlways : ToolDecision.AllowOnce); }, Log, blocked);
+        var tool = Assert.Single(await host.GetToolsAsync(TestContext.Current.CancellationToken));
+        using var args = JsonDocument.Parse("{}");
+        await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal(1, asked); // the failed save still allows for this process
+
+        if (key is "removed" or "disabled")
+        {
+            WriteConfig(key == "removed" ? "{}" : """{ "mcpServers": { "a": { "command": "x", "disabled": true } } }""");
+            Assert.Empty(await host.GetToolsAsync(TestContext.Current.CancellationToken));
+        }
+        else
+        {
+            WriteConfig($$"""{ "mcpServers": { "a": { "command": "x" } }, "approvals": { "{{key}}": "{{rule}}" } }""");
+            var result = await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+            Assert.Equal(rule == "deny", result.IsError);
+            Assert.Equal(rule == "ask" ? 2 : 1, asked);
+        }
+        WriteConfig(config);
+        tool = Assert.Single(await host.GetToolsAsync(TestContext.Current.CancellationToken));
+        var before = asked;
+        await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal(before + 1, asked); // a removed file rule cannot revive an old fallback
+    }
+
+    [Fact]
+    public void Stderr_is_hidden_by_default_and_reports_only_counts_and_skipped_lines()
+    {
+        var clock = new ManualTimeProvider();
+        var lines = new List<string>();
+        var throttle = new StderrThrottle("fs", lines.Add, clock, perMinute: 3);
+        for (var i = 0; i < 10; i++) throttle.Line("token=FAKE_SECRET_123456 user document text");
+        Assert.Equal(["fs: 1 stderr lines (hidden: turn on verbose logging to see them)"], lines);
+        clock.Advance(TimeSpan.FromMinutes(1));
+        throttle.Line("more user text");
+        Assert.Equal(["fs: 1 stderr lines (hidden: turn on verbose logging to see them)", "fs: (7 stderr lines skipped)",
+            "fs: 10 stderr lines (hidden: turn on verbose logging to see them)"], lines);
+    }
+
+    [Fact]
+    public void Verbose_stderr_is_cleaned_capped_and_changes_with_the_live_flag()
+    {
+        var lines = new List<string>();
+        var verbose = false;
+        var throttle = new StderrThrottle("fs", lines.Add, new ManualTimeProvider(), verbose: () => verbose);
+        const string content = "token=FAKE_SECRET_123456 user document\u001b text ";
+        throttle.Line(content);
+        Assert.DoesNotContain("user document", Assert.Single(lines));
+        verbose = true;
+        throttle.Line(content + new string('x', 200));
+        Assert.Equal("fs: stderr line 2: " + ("token=[redacted] user document? text " + new string('x', 200))[..120], lines[1]);
+        Assert.DoesNotContain("FAKE_SECRET_123456", lines[1]);
+        verbose = false;
+        throttle.Line(content);
+        Assert.Equal(2, lines.Count);
+    }
+
+    [Fact]
     public async Task Tool_lists_are_cached_and_only_a_changed_server_restarts()
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" }, "b": { "command": "y" } } }""");

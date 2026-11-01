@@ -140,6 +140,14 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
 
         _messages.Add(user);
         _lastFailed = null;
+        // A different connection's turns aren't in the old CLI session: replay the whole chat on returning.
+        // A record-only chat must keep resuming: its earlier turns live only in that CLI, but detour turns
+        // won't be in the CLI's context when it resumes.
+        if (HasWholeTranscript && _sessionBackendId != backend.Id)
+        {
+            _session = null;
+            _sessionBackendId = null;
+        }
         // Resume this chat's CLI conversation; null (new chat, other connection) starts a new one.
         if (backend is ICliSessionBackend cli) cli.Resume = _sessionBackendId == backend.Id ? _session : null;
         Emit(new AssistantStarted(assistantId, backend.DisplayName, BackendId));

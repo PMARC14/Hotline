@@ -39,7 +39,7 @@ public static class SettingsReset
     /// delete; always complete, whatever failed) and what failed. The caller reloads the settings afterwards.
     /// </summary>
     public static ResetResult Reset(SettingsStore store, string directory, HotlineSettings current,
-        bool everything, DateTimeOffset now)
+        bool everything, DateTimeOffset now, Action<string, string>? copyFile = null)
     {
         var stamp = $"reset-{now.ToLocalTime():yyyyMMdd-HHmmss}";
         var backup = Path.Combine(directory, BackupsFolder, stamp);
@@ -53,7 +53,8 @@ public static class SettingsReset
             try
             {
                 Directory.CreateDirectory(Path.GetDirectoryName(to)!);
-                File.Copy(file, to, overwrite: true);
+                if (copyFile is not null) copyFile(file, to);
+                else File.Copy(file, to, overwrite: true);
                 backedUp.Add(Path.GetFullPath(file));
                 return true;
             }
@@ -105,9 +106,24 @@ public static class SettingsReset
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(ToolbarFileName); }
             }
         }
-        try { store.Save(SettingsStore.Normalize(fresh), removed); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(SettingsStore.FileName); }
-        if (store.WriteProblems.Count > 0 && !failed.Contains(SettingsStore.FileName)) failed.Add(SettingsStore.FileName);
+        // Connection files have already been handled individually above. Save only settings.json: Save would also
+        // rewrite retained connections, including ones whose reset backup failed, and may skip backing up its own last write.
+        if (!File.Exists(store.FilePath) || backedUp.Contains(Path.GetFullPath(store.FilePath)))
+        {
+            var temp = store.FilePath + ".tmp";
+            try
+            {
+                fresh.Chat.Order = fresh.Chat.Backends.Select(b => b.Id).ToList();
+                File.WriteAllText(temp, SettingsStore.Serialize(SettingsStore.Normalize(fresh)));
+                File.Move(temp, store.FilePath, overwrite: true);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(SettingsStore.FileName); }
+            finally
+            {
+                try { File.Delete(temp); }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+            }
+        }
         return new ResetResult(backup, removed, failed.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
     }
 
