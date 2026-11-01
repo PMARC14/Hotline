@@ -26,6 +26,15 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   (real pixels, `ScreenScale.Line`); settings read field by field (`LenientReader`); safe file writes (`BackupFiles.CopyStamped`,
   "no backup, no write"); Backup export/import (`SettingsPackage`); Continue in targets (`ContinueIn.Targets()`,
   `ContinueTargets.FillCommand`, `OpenWebUiChat`; UI in `SettingsWindow.ContinueIn.cs`).
+- **Deep review (2026-11-01):** Astra, Argon and Opus reviewed the code; the confirmed findings are fixed (PR #36: stale CLI session
+  after a detour, width-unit migration, MCP "Always allow" revocation, backups before connection removal / Reset / agy settings,
+  drag minimum, async-handler guards, MCP stderr counts). The test suite was compacted in PR #38 (2777 -> 2374 tests, same coverage).
+  Maintainer briefs and review outputs are kept outside the repo, in `~/.claude/briefs/hotline/`.
+- **Review items still open (PLAUSIBLE, each needs a reproducing test first):** watcher reload versus unsaved edits in Settings;
+  horizontal Alt-resize; filled-dropdown theme / disabled brushes; "Move what doesn't fit" overrides with a stale width; hold leak;
+  Open WebUI keys left after Reset; llama.cpp default target needing an endpoint; Gemini tool calls on a truncated answer; a disabled
+  MCP server called mid-answer; reopening an API chat in a CLI; backup/replace race. Not yet done from the review of the tests:
+  helper merges (shared HTTP fake, stream collector, MCP fake) and items 2, 3, 7, 9, 15, 17 of the Argon list.
 - **Open items:** `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale; the
   dropdowns' hover / press look with outline or fill is **UNVERIFIED by eye**. `personal/gemini-web` still needs `main` merged in.
 - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)).
