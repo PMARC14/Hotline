@@ -20,20 +20,18 @@ public sealed partial class SettingsWindow
     /// the file at once). An unreadable file gets only the error and Reset, so nothing overwrites it by accident; the fixes
     /// Resolve made to a readable one are listed.
     /// </summary>
-    private string ScreenNoteText()
-    {
-        try { return _screenNote?.Invoke() ?? ""; }
-        catch (Exception ex) { _log.Error("working out the screen scaling note failed", ex); return ""; }
-    }
-
     private void BuildToolbarSection()
     {
         PageHost.Children.Add(new TextBlock
         {
             Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        if (ScreenNoteText() is { Length: > 0 } screen)
-            PageHost.Children.Add(new TextBlock { Text = screen, TextWrapping = TextWrapping.Wrap, Opacity = 0.7, Margin = new Thickness(0, 0, 0, 8) });
+        try
+        {
+            if (_screenLine?.Invoke() is { Length: > 0 } screen)
+                PageHost.Children.Add(new TextBlock { Text = screen, TextWrapping = TextWrapping.Wrap, Opacity = 0.7, Margin = new Thickness(0, 0, 0, 8) });
+        }
+        catch (Exception ex) { _log.Error("working out the screen line failed", ex); }
         var load = ToolbarFile.Load(ToolbarPath);
         if (load.Error is { } error)
         {

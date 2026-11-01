@@ -596,9 +596,8 @@ Zabroń:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Poniżej pola wiadomości</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Puste</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Wiersze przycisków</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Skalowanie ekranu w systemie Windows wynosi {0}%: ten ekran ma {1} × {2} rzeczywistych pikseli, ale system Windows wyświetla interfejs w rozdzielczości {3} × {4}, dzięki czemu wszystko jest {5}× ostrzejsze. Szerokość panelu (procenty i piksele) odnosi się do rzeczywistych {1} pikseli i ignoruje to skalowanie; przyciski i tekst dostosowują się do niego w jednostkach {3} × {4}.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Skalowanie ekranu Windows wynosi 100%: ten ekran ma {0} × {1} pikseli, a interfejs jest rysowany w tym rozmiarze.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Na tym ekranie ({0} px): {1}% = {2} px ({3} przeskalowanych jednostek); minimum {4} px, maksimum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Minimalna szerokość panelu, w rzeczywistych pikselach ekranu (skalowanie ekranu Windows jest ignorowane). 384 = 20% ekranu 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maksymalna szerokość panelu w rzeczywistych pikselach ekranu (skalowanie ekranu Windows jest ignorowane). 2304 = 60% ekranu 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Przenieś poniżej pola wiadomości</value></data>

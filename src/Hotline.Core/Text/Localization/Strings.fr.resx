@@ -596,9 +596,8 @@ Refuser :
   <data name="Bar_BottomRow" xml:space="preserve"><value>Sous la zone de message</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vide</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Lignes de boutons</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>La mise à l'échelle de l'affichage Windows est de {0} % : cet écran compte {1} × {2} pixels réels, mais Windows affiche l'interface en {3} × {4}, tout est donc {5}× plus net. La largeur du panneau (pourcentage et pixels) est calculée sur les {1} pixels réels et ignore cette mise à l'échelle ; les boutons et le texte la suivent, en {3} × {4} unités.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>La mise à l'échelle de l'affichage Windows est à 100 % : cet écran comporte {0} × {1} pixels et l'interface est dessinée à cette taille.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Sur cet écran ({0} px) : {1} % = {2} px ({3} unités mises à l'échelle) ; minimum {4} px, maximum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Largeur minimale du panneau, en pixels réels de l'écran (la mise à l'échelle Windows est ignorée). 384 = 20 % d'un écran 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Largeur maximale du panneau en pixels réels de l'écran (la mise à l'échelle de l'affichage Windows est ignorée). 2304 = 60 % d'un écran 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Déplacer sous la zone de message</value></data>

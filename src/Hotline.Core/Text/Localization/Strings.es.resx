@@ -596,9 +596,8 @@ Denegar:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Debajo del cuadro de mensaje</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vacío</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Filas de botones</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>La escala de pantalla de Windows es del {0}%: esta pantalla tiene {1} × {2} píxeles reales, pero Windows dibuja la interfaz a {3} × {4}, por lo que todo es {5}× más nítido. El ancho del panel (porcentaje y píxeles) se basa en los {1} píxeles reales e ignora esta escala; los botones y el texto la siguen, en {3} × {4} unidades.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>La escala de pantalla de Windows es del 100%: esta pantalla tiene {0} × {1} píxeles y la interfaz se dibuja a ese tamaño.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>En esta pantalla ({0} px): {1}% = {2} px ({3} unidades escaladas); mínimo {4} px, máximo {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>El ancho mínimo del panel, en píxeles reales de la pantalla (se ignora la escala de pantalla de Windows). 384 = 20% de una pantalla de 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ancho máximo del panel en píxeles reales de la pantalla (se ignora el escalado de pantalla de Windows). 2304 = 60% de una pantalla 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Mover debajo del cuadro de mensaje</value></data>

@@ -594,9 +594,8 @@ Deny:
   <data name="Bar_continueIn" xml:space="preserve"><value>Continue in</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Nothing to continue this chat in yet: no AI command-line tool is installed, or the chat has no messages.</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Above the message box</value></data>

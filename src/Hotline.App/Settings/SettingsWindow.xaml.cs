@@ -29,18 +29,14 @@ public sealed partial class SettingsWindow : Window
     private string? _odrPath;
     /// <summary>The width (DIP) the panel's button rows have, or would have when it opens (the button rows editor's "Move what doesn't fit"); null in tests.</summary>
     private readonly Func<double>? _barRoom;
-    /// <summary>The scaling note shown above the button rows (see <see cref="Hotline.Core.Windowing.ScreenScale"/>); null in tests.</summary>
-    private readonly Func<string>? _screenNote;
-    /// <summary>The muted line under the width controls (see <see cref="Hotline.Core.Windowing.ScreenScale.WidthLine"/>), from the live window settings; null in tests.</summary>
-    private readonly Func<Hotline.Core.Settings.WindowSettings, string>? _widthLine;
-    private TextBlock? _widthLineText;
+    /// <summary>The short screen/scaling line shown above the button rows (see <see cref="Hotline.Core.Windowing.ScreenScale"/>); null in tests.</summary>
+    private readonly Func<string>? _screenLine;
 
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
         PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
-        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null, Func<string>? screenNote = null,
-        Func<Hotline.Core.Settings.WindowSettings, string>? widthLine = null)
+        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null, Func<string>? screenLine = null)
     {
-        (_toolHost, _mcpPath, _odrPath, _barRoom, _screenNote, _widthLine) = (toolHost, mcpPath ?? "", odrPath, barRoom, screenNote, widthLine);
+        (_toolHost, _mcpPath, _odrPath, _barRoom, _screenLine) = (toolHost, mcpPath ?? "", odrPath, barRoom, screenLine);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
@@ -121,17 +117,8 @@ public sealed partial class SettingsWindow : Window
             case "Backup": BuildBackupPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
-                _widthLineText = null;
                 foreach (var item in SettingsSchema.Items.Where(i => i.Page == page))
-                {
                     PageHost.Children.Add(BuildItem(item));
-                    if (item.Header == nameof(Strings.Set_MaxWidth) && _widthLine is not null)
-                    {
-                        _widthLineText = new TextBlock { TextWrapping = TextWrapping.Wrap, Opacity = 0.7, Margin = new Thickness(0, 0, 0, 8) };
-                        RefreshWidthLine();
-                        PageHost.Children.Add(_widthLineText);
-                    }
-                }
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
                 if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildSoundsSection(); }
@@ -169,13 +156,6 @@ public sealed partial class SettingsWindow : Window
         return new Border { Child = grid, Style = (Style)Root.Resources["CardStyle"] };
     }
 
-    private void RefreshWidthLine()
-    {
-        if (_widthLineText is null || _widthLine is null) return;
-        try { _widthLineText.Text = _widthLine(_settings.Current.Window); }
-        catch (Exception ex) { _log.Error("working out the width line failed", ex); _widthLineText.Text = ""; }
-    }
-
     private Border BuildItem(SettingItem item)
     {
         // Schema text is resource keys (SettingsSchema); look them up now, in the interface language.
@@ -208,7 +188,6 @@ public sealed partial class SettingsWindow : Window
                     try
                     {
                         _settings.Update(x => n.Set(x, e.NewValue));
-                        RefreshWidthLine();
                         // Saving normalises (1% becomes the 20% minimum, a width of 100 becomes 320): show what was kept, not what was typed.
                         var kept = n.Get(_settings.Current);
                         if (!double.IsNaN(kept) && kept != box.Value) box.Value = kept;

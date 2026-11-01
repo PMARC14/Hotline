@@ -596,9 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>संदेश बॉक्स के नीचे</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>खाली</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows डिस्प्ले स्केलिंग {0}% है: इस स्क्रीन में {1} × {2} वास्तविक पिक्सेल हैं, लेकिन Windows इंटरफ़ेस को {3} × {4} पर दिखाता है, जिससे सब कुछ {5}× अधिक स्पष्ट है। पैनल की चौड़ाई (प्रतिशत और पिक्सेल) वास्तविक {1} पिक्सेल पर आधारित है और इस स्केलिंग को अनदेखा करती है; बटन और टेक्स्ट {3} × {4} इकाइयों में इसका पालन करते हैं।</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows डिस्प्ले स्केलिंग 100% है: इस स्क्रीन में {0} × {1} पिक्सेल हैं और इंटरफ़ेस उसी आकार में प्रदर्शित होता है।</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>इस स्क्रीन पर ({0} px): {1}% = {2} px ({3} स्केल की गई इकाइयाँ); न्यूनतम {4} px, अधिकतम {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>पैनल की न्यूनतम चौड़ाई, स्क्रीन के वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 384 = 1920 × 1080 स्क्रीन का 20%।</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>पैनल की अधिकतम चौड़ाई, स्क्रीन के वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 2304 = 4K (3840 px) स्क्रीन का 60%।</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>

@@ -596,9 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>Під полем повідомлення</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Порожньо</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Масштабування дисплея Windows становить {0}%: цей екран має {1} × {2} реальних пікселів, але Windows відмальовує інтерфейс у {3} × {4}, тому все в {5}× чіткіше. Ширина панелі (відсотки та пікселі) розраховується від реальних {1} пікселів та ігнорує це масштабування; кнопки й текст слідують йому в одиницях {3} × {4}.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Масштабування дисплея Windows становить 100%: цей екран має {0} × {1} пікселів, і інтерфейс відображається в цьому розмірі.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>На цьому екрані ({0} px): {1}% = {2} px ({3} масштабованих одиниць); мінімум {4} px, максимум {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Найменша ширина панелі, у реальних пікселях екрана (масштабування дисплея Windows ігнорується). 384 = 20% екрана 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Максимальна ширина панелі в реальних пікселях екрана (масштабування дисплея Windows ігнорується). 2304 = 60% екрана 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Перемістити під поле повідомлення</value></data>

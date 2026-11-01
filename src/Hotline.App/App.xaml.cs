@@ -226,7 +226,7 @@ public partial class App : Application
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath,
-            () => BarRoom(settings.Window), () => _popup?.ScreenNote() ?? "", w => _popup?.WidthLine(w) ?? ""), _log);
+            () => BarRoom(settings.Window), () => _popup?.ScreenLine() ?? ""), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
         ApplyToolbarFile(dataDir);

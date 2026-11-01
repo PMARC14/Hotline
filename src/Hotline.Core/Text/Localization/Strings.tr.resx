@@ -596,9 +596,8 @@ Reddet:
   <data name="Bar_BottomRow" xml:space="preserve"><value>İleti kutusunun altında</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Boş</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows ekran ölçeklendirmesi {0}%: Bu ekran {1} × {2} gerçek piksele sahip ancak Windows arayüzü {3} × {4} olarak çiziyor, bu yüzden her şey {5}× daha net. Panelin genişliği (yüzde ve piksel) gerçek {1} piksel üzerinden hesaplanır ve bu ölçeklendirmeyi yok sayar; düğmeler ve metinler ise {3} × {4} biriminde ölçeği takip eder.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows ekran ölçeklendirmesi %100: Bu ekran {0} × {1} piksele sahip ve arayüz bu boyutta çiziliyor.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Bu ekranda ({0} px): {1}% = {2} px ({3} ölçekli birim); minimum {4} px, maksimum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Panelin inebileceği en dar genişlik, ekranın gerçek pikseli cinsinden (Windows ekran ölçeklendirmesi yok sayılır). 384 = 1920 × 1080 ekranın %20'si.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ekranın gerçek pikselleri cinsinden panelin maksimum genişliği (Windows ekran ölçeklendirmesi yoksayılır). 2304 = 4K (3840 px) ekranın %60'ı.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>İleti kutusunun altına taşı</value></data>

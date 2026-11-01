@@ -804,20 +804,12 @@ public sealed partial class PopupWindow : Window
         return px / scale; // the width is in real pixels; the button cells are in scaled units
     }
 
-    /// <summary>Settings' line under the width controls: what they come to on this monitor, from the given (live) window settings.</summary>
-    public string WidthLine(Hotline.Core.Settings.WindowSettings w)
+    /// <summary>Settings' line above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>
+    public string ScreenLine()
     {
         var (area, monitor, _) = HomeMonitor();
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        return Hotline.Core.Windowing.ScreenScale.WidthLine(area.WorkArea.Width, scale, w.WidthPercent, w.MinWidth, w.MaxWidth);
-    }
-
-    /// <summary>Settings' note above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>
-    public string ScreenNote()
-    {
-        var (area, monitor, _) = HomeMonitor();
-        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        return Hotline.Core.Windowing.ScreenScale.Note(area.OuterBounds.Width, area.OuterBounds.Height, scale);
+        return Hotline.Core.Windowing.ScreenScale.Line(area.OuterBounds.Width, area.OuterBounds.Height, scale);
     }
 
     /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>

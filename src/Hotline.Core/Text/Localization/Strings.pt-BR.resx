@@ -596,9 +596,8 @@ Negar:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Abaixo da caixa de mensagem</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vazio</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Linhas de botões</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>A escala de exibição do Windows é {0}%: esta tela tem {1} × {2} pixels reais, mas o Windows renderiza a interface em {3} × {4}, de modo que tudo fica {5}× mais nítido. A largura do painel (porcentagem e pixels) é dos {1} pixels reais e ignora essa escala; botões e texto a seguem, em {3} × {4} unidades.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>A escala de exibição do Windows é de 100%: esta tela possui {0} × {1} pixels e a interface é renderizada nesse tamanho.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Nesta tela ({0} px): {1}% = {2} px ({3} unidades dimensionadas); mínimo {4} px, máximo {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>A largura mínima do painel, em pixels reais da tela (a escala de exibição do Windows é ignorada). 384 = 20% de uma tela de 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Largura máxima do painel em pixels reais da tela (a escala de exibição do Windows é ignorada). 2304 = 60% de uma tela 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Mover para baixo da caixa de mensagem</value></data>

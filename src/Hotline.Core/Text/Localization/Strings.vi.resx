@@ -596,9 +596,8 @@ Từ chối:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Bên dưới hộp tin nhắn</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Trống</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Các hàng nút</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Tỷ lệ hiển thị của Windows là {0}%: màn hình này có {1} × {2} pixel thực, nhưng Windows hiển thị giao diện ở mức {3} × {4}, nên mọi thứ sắc nét hơn {5}×. Chiều rộng của bảng điều khiển (phần trăm và pixel) dựa trên {1} pixel thực và bỏ qua tỷ lệ này; các nút và văn bản tuân theo tỷ lệ đó, theo đơn vị {3} × {4}.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Tỷ lệ thu phóng màn hình Windows là 100%: màn hình này có {0} × {1} pixel và giao diện được vẽ ở kích thước đó.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Trên màn hình này ({0} px): {1}% = {2} px ({3} đơn vị theo tỷ lệ); tối thiểu {4} px, tối đa {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Chiều rộng hẹp nhất của bảng điều khiển, tính bằng pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 384 = 20% của màn hình 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Chiều rộng tối đa của bảng điều khiển theo pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 2304 = 60% của màn hình 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Di chuyển xuống dưới hộp tin nhắn</value></data>

@@ -596,9 +596,8 @@ Weigeren:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>De Windows-schermschaling is {0}%: dit scherm heeft {1} × {2} fysieke pixels, maar Windows tekent de interface op {3} × {4}, waardoor alles {5}× zo scherp is. De breedte van het paneel (percentage en pixels) is gebaseerd op de werkelijke {1} pixels en negeert deze schaling; knoppen en tekst volgen deze in {3} × {4} eenheden.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows-weergaveschaling is 100%: dit scherm heeft {0} × {1} pixels en de interface wordt op die grootte weergegeven.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Op dit scherm ({0} px): {1}% = {2} px ({3} geschaalde eenheden); minimum {4} px, maximum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Minimale breedte van het paneel, in werkelijke schermpixels (Windows-schermschaling wordt genegeerd). 384 = 20% van een scherm van 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maximale breedte van het paneel in werkelijke schermpixels (Windows-schermschaling wordt genegeerd). 2304 = 60% van een 4K-scherm (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>

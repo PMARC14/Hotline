@@ -596,9 +596,8 @@ Nega:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Sotto la casella del messaggio</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vuoto</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Righe di pulsanti</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Il ridimensionamento dello schermo di Windows è al {0}%: questo schermo ha {1} × {2} pixel reali, ma Windows disegna l'interfaccia a {3} × {4}, quindi tutto è {5}× più nitido. La larghezza del pannello (percentuale e pixel) fa riferimento ai {1} pixel reali e ignora tale ridimensionamento; pulsanti e testo lo seguono, in {3} × {4} unità.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Il ridimensionamento dello schermo di Windows è al 100%: questo schermo ha {0} × {1} pixel e l'interfaccia viene disegnata a queste dimensioni.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Su questo schermo ({0} px): {1}% = {2} px ({3} unità ridimensionate); minimo {4} px, massimo {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>La larghezza minima del pannello, in pixel reali dello schermo (il ridimensionamento dello schermo di Windows viene ignorato). 384 = 20% di uno schermo 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Larghezza massima del pannello in pixel effettivi dello schermo (il ridimensionamento dello schermo di Windows viene ignorato). 2304 = 60% di uno schermo 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Sposta sotto la casella del messaggio</value></data>

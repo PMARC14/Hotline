@@ -596,9 +596,8 @@ Tolak:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Di bawah kotak pesan</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Kosong</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Penskalaan tampilan Windows adalah {0}%: layar ini memiliki {1} × {2} piksel nyata, tetapi Windows menampilkan antarmuka pada {3} × {4}, sehingga semuanya {5}× lebih tajam. Lebar panel (persentase dan piksel) mengacu pada {1} piksel nyata dan mengabaikan penskalaan ini; tombol dan teks mengikutinya, dalam {3} × {4} unit.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Penskalaan tampilan Windows adalah 100%: layar ini memiliki {0} × {1} piksel dan antarmuka digambar pada ukuran tersebut.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Pada layar ini ({0} px): {1}% = {2} px ({3} unit berskala); minimum {4} px, maksimum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Batas paling sempit panel, dalam piksel nyata layar (penskalaan tampilan Windows diabaikan). 384 = 20% dari layar 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Lebar maksimal panel, dalam piksel layar sebenarnya (penskalaan tampilan Windows diabaikan). 2304 = 60% dari layar 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Pindahkan ke bawah kotak pesan</value></data>

@@ -596,9 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>消息框下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按钮行</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows 显示缩放为 {0}%：此屏幕拥有 {1} × {2} 物理像素，但 Windows 以 {3} × {4} 渲染界面，因此所有内容清晰度为 {5}×。面板宽度（百分比和像素）基于物理 {1} 像素并忽略此缩放；按钮和文本则遵循该缩放，以 {3} × {4} 为单位。</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows 显示缩放比例为 100%：此屏幕分辨率为 {0} × {1} 像素，界面以此大小绘制。</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>在此屏幕上 ({0} px)：{1}% = {2} px ({3} 个缩放单位)；最小 {4} px，最大 {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>面板允许的最窄宽度，以屏幕的物理像素为单位（忽略 Windows 显示缩放）。384 = 1920 × 1080 屏幕的 20%。</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>面板的最大宽度，以屏幕的实际像素为单位（忽略 Windows 显示缩放）。2304 = 4K（3840 px）屏幕的 60%。</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至消息框下方</value></data>

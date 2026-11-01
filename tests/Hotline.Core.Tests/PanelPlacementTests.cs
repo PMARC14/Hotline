@@ -164,14 +164,4 @@ public class PanelPlacementTests
         Assert.Equal(bar.Width, PanelPlacement.Home(work, bar.Width, 60, scale, PanelPlacement.AnchorFor(bar, work)).Width);
         Assert.Equal(384, PopupGeometry.RelativeWidthPx(1000, 20, 384, 2304)); // clamped by min in pixels at any scale
     }
-
-    [Fact]
-    public void The_width_line_names_pixels_and_scaled_units()
-    {
-        var line = ScreenScale.WidthLine(2880, 2.0, 40, 384, 2304);
-        Assert.Contains("2880", line);
-        Assert.Contains("1152 px (576", line);
-        Assert.Contains("384 px", line);
-        Assert.Contains("2304 px", line);
-    }
 }

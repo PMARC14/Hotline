@@ -596,9 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows の表示スケールは {0}% です: この画面には {1} × {2} の実ピクセルがありますが、Windows はインターフェイスを {3} × {4} で描画するため、すべてが {5}× 鮮明になります。パネルの幅（パーセントとピクセル）は実 {1} ピクセルを基準とし、このスケーリングを無視します。ボタンとテキストは {3} × {4} 単位でそれに従います。</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windowsの表示スケールは100%です。この画面の解像度は {0} × {1} ピクセルで、インターフェースはそのサイズで描画されています。</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>この画面 ({0} px): {1}% = {2} px ({3} スケール単位); 最小 {4} px、最大 {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>パネルの最小幅（画面の物理ピクセル単位、Windows の表示スケールは無視）。384 = 1920 × 1080 画面の 20%。</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実ピクセル単位でのパネルの最大幅（Windows の表示スケーリングは無視されます）。2304 = 4K（3840 px）画面の 60%。</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>

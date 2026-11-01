@@ -596,9 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows 디스플레이 배율은 {0}%입니다. 이 화면에는 {1} × {2}개의 실제 픽셀이 있지만 Windows는 인터페이스를 {3} × {4}로 렌더링하므로 모든 항목이 {5}× 더 선명합니다. 패널 너비(백분율 및 픽셀)는 실제 {1} 픽셀 기준이며 이 배율을 무시합니다. 버튼과 텍스트는 {3} × {4} 단위로 배율을 따릅니다.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows 디스플레이 배율이 100%입니다. 이 화면은 {0} × {1} 픽셀이며 인터페이스는 해당 크기로 표시됩니다.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>이 화면 ({0} px): {1}% = {2} px ({3} 배율 단위); 최소 {4} px, 최대 {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>패널의 최소 너비(화면의 실제 픽셀 단위, Windows 디스플레이 배율 무시). 384 = 1920 × 1080 화면의 20%.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀 기준 패널 최대 너비(Windows 디스플레이 배율은 무시됨). 2304 = 4K(3840 px) 화면의 60%.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>

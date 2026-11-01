@@ -596,9 +596,8 @@ Verweigern:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Unter dem Nachrichtenfeld</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leer</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Schaltflächenzeilen</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Die Windows-Skalierung beträgt {0} %: Dieser Bildschirm verfügt über {1} × {2} echte Pixel, aber Windows stellt die Benutzeroberfläche mit {3} × {4} dar, sodass alles {5}× so scharf ist. Die Breite des Panels (Prozent und Pixel) bezieht sich auf die echten {1} Pixel und ignoriert diese Skalierung; Schaltflächen und Text folgen ihr in {3} × {4} Einheiten.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Die Windows-Skalierung beträgt 100%: Dieser Bildschirm hat {0} × {1} Pixel und die Benutzeroberfläche wird in dieser Größe dargestellt.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>Auf diesem Bildschirm ({0} px): {1} % = {2} px ({3} skalierte Einheiten); Minimum {4} px, Maximum {5} px</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Geringste Breite des Panels, in echten Bildschirmpixeln (Windows-Skalierung wird ignoriert). 384 = 20 % eines Bildschirms mit 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maximale Breite des Fensters in echten Bildschirmpixeln (die Windows-Skalierung wird ignoriert). 2304 = 60 % eines 4K-Bildschirms (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Unter das Nachrichtenfeld verschieben</value></data>
