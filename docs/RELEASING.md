@@ -2,11 +2,8 @@
 
 ## Why MSIX (and no Inno/WiX installer)
 
-Windows only lists **packaged** apps in the Copilot key picker, so Hotline needs package identity. The only ways to
-get it are a full MSIX (what we ship) or a *sparse* MSIX registered by a classic installer — and both must be signed
-with a certificate the PC trusts. A classic installer would add a wizard and a Program Files folder, not remove the
-signing requirement, so we ship the MSIX directly. Double-clicking a signed `.msix` opens Windows' App Installer
-(an Install button); an unpackaged build could only offer the fallback hotkey, not the Copilot key.
+Windows only lists **packaged** apps in the Copilot key picker, so Hotline needs package identity: a full MSIX (what we ship) or a
+sparse MSIX from a classic installer, both signed with a certificate the PC trusts. A classic installer would add a wizard and no relief.
 
 ## How a release is built (GitHub Actions)
 
@@ -37,24 +34,19 @@ checks `releases/latest/download/Hotline.appinstaller` once a day and updates in
 settings (`%USERPROFILE%\.hotline`) and the Copilot key choice. After installing: Settings → Personalization → Text
 input → Customize Copilot key → Custom → Hotline.
 
-Notes: release downloads of a **private** repository need a GitHub login, so the `.appinstaller` update check only
-works once the repository is public. Windows disabled the `ms-appinstaller:` web link by default, so link to the file
+Notes: Windows disabled the `ms-appinstaller:` web link by default, so link to the file
 itself and let users open it after downloading. Package version = `MAJOR.MINOR.PATCH.0` and must increase every
 release (the update check compares versions).
 
-## Before the first public release
+## Still open
 
-- [ ] **Protect `main`** right after making the repository public (rulesets on a private repo need GitHub Pro):
-      `scripts/apply-rulesets.sh` applies `.github/rulesets/main.json` — changes only through a
-      pull request whose CI check (`build-test`) passed, no force pushes, no deleting `main`; review threads must be
-      resolved; no approval needed (you're the only maintainer). Edit the JSON and re-run to change it.
-
-- [ ] **Trusted signing** (the one real blocker — today's self-signed build makes each user trust `Hotline.cer` in
-      Local Machine → Trusted People first, fine for a few testers only). Pick one:
-  - **Microsoft Store:** Microsoft signs it, Store installs and updates. Needs a Partner Center developer account and
-    certification (expect questions about full trust and the Copilot key extension).
-  - **Azure Artifact Signing** (formerly Trusted Signing; $9.99/month): automated in `release.yml`, see below.
-  - A regular code-signing certificate (.pfx): the two `HOTLINE_SIGNING_PFX_*` secrets.
+- [ ] **Protect `main`** (rulesets need a public repo or GitHub Pro): `scripts/apply-rulesets.sh` applies `.github/rulesets/main.json`
+      (changes only through a pull request whose CI check `build-test` passed, no force pushes, no deleting `main`, review threads
+      resolved, no approval needed). Edit the JSON and re-run to change it.
+- [ ] **Trusted signing** instead of the self-signed certificate (users trust `Hotline.cer` once today): the Store (done: Microsoft
+      signs it), Azure Artifact Signing (below) or a regular code-signing `.pfx` in the two `HOTLINE_SIGNING_PFX_*` secrets.
+- [ ] **Final icon** (the owner's SVG of an upside-down phone hanging by its cord) via `scripts\make-assets.ps1 -Source`.
+- [ ] **README:** fresh screenshots (`hotline://demo`, blur anything personal).
 
 ## Microsoft Store
 
@@ -125,9 +117,3 @@ with `Get-AuthenticodeSignature Hotline_*.msixbundle` (Status *Valid*, signer = 
 **Identity change:** the `Publisher` is part of the package identity, so the first trusted build installs *next to* a
 self-signed one rather than updating it. Uninstall the old Hotline first (settings in `%USERPROFILE%\.hotline` stay)
 and pick Hotline for the Copilot key again. Local dev builds keep the dev publisher (`CN=pmarc14 Hotline Dev`).
-- [x] **winget:** through the Store (`winget install 9PMW5CR6G3BC`). A winget-pkgs entry for the GitHub builds would
-      need trusted signing (`winget.yml`, `wingetcreate new`, `WINGET_TOKEN`).
-- [ ] **Final icon** (the user's SVG of an upside-down phone hanging by its cord) → `scripts\make-assets.ps1 -Source`.
-- [ ] **README:** fresh screenshots (`hotline://demo`, blur anything personal). Install steps from Releases are in.
-- [x] **License check:** Apache-2.0 for Hotline; third-party components listed in `THIRD-PARTY-NOTICES.md` (licenses
-      taken from the package metadata).

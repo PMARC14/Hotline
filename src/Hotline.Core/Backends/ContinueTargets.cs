@@ -8,7 +8,7 @@ namespace Hotline.Core.Backends;
 public enum ContinueKind { Web, OpenWebUi, App }
 
 /// <summary>
-/// One "Continue this chat in ▸" target (spec: docs/superpowers/specs/2026-10-15-continue-in-targets-design.md).
+/// One "Continue this chat in ▸" target.
 /// <paramref name="Url"/>: Web — the template; OpenWebUi — the Open WebUI address. <paramref name="Command"/>: App — the
 /// program and arguments, split like a command line. <paramref name="Model"/>: OpenWebUi — the new chat's model (null =
 /// the chat's own). <paramref name="CopyChat"/>: also copy the whole chat to the clipboard first.
