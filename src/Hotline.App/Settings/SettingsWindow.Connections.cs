@@ -132,7 +132,9 @@ public sealed partial class SettingsWindow
             if (list.SelectedItem is not ListViewItem { Tag: string id }) return;
             _selectedConnection = id;
             makeDefault.IsEnabled = id != chat.DefaultBackend;
+            // A connection removed by an external reload while this page was open: show no editor (never the previous one).
             if (chat.Backends.FirstOrDefault(b => b.Id == id) is { } picked) BuildEditor(editorHost, picked);
+            else { editorHost.Children.Clear(); makeDefault.IsEnabled = false; }
         };
         PageHost.Children.Add(list);
         PageHost.Children.Add(editorHost);
