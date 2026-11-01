@@ -81,7 +81,8 @@ public sealed class ToolbarModelTests
         Assert.Equal(["recent", "newChat", "settings"], d.Items(Quadrant.BottomRight));
         Assert.Equal(["provider"], d.Items(Quadrant.TopRight));
         Assert.Equal(new ButtonStyle(1, false, false), d.Style);
-        Assert.Empty(d.Overrides);
+        Assert.Equal(["newChat", "recent", "settings"], d.Overrides.Keys.Order());
+        Assert.Equal(5, d.EffectiveSpan("provider"));
         Assert.Empty(d.Buttons);
         Assert.Equal(2, ToolbarModel.CurrentVersion);
     }

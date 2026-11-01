@@ -269,6 +269,7 @@ public sealed class ToolbarMoreMenuTests
         // Nine normal buttons fill 360 exactly; a more button must not be added (it would push the last one out).
         var nine = ToolbarModel.Defaults with
         {
+            Overrides = new Dictionary<string, ButtonStyle>(), // the shipped look makes three buttons wide
             Placed = Enum.GetValues<Quadrant>().ToDictionary(q => q, q => (IReadOnlyList<string>)(q == Quadrant.BottomLeft
                 ? ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn", "newChat", "settings"] : [])),
         };

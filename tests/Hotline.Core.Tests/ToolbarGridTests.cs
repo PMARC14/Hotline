@@ -82,20 +82,21 @@ public sealed class ToolbarGridTests
     }
 
     [Fact]
-    public void The_default_pickers_fill_a_440_room_exactly()
+    public void The_default_pickers_fill_a_480_room_exactly()
     {
-        // effort 3 + model 4 + provider 4 = 11 cells of room, no gaps.
-        var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: true, 440, ToolbarPlan.CellGap);
-        Assert.Equal((120.0, 160.0, 160.0), (f.PickerWidths["effort"], f.PickerWidths["model"], f.PickerWidths["provider"]));
-        Assert.Equal(440, f.Used);
+        // effort 3 + model 4 + provider 5 = 12 cells of room, no gaps.
+        var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: true, 480, ToolbarPlan.CellGap);
+        Assert.Equal((120.0, 160.0, 200.0), (f.PickerWidths["effort"], f.PickerWidths["model"], f.PickerWidths["provider"]));
+        Assert.Equal(480, f.Used);
     }
 
     [Fact]
-    public void The_default_bottom_row_fits_a_440_room_with_nothing_in_the_menu()
+    public void The_default_bottom_row_fits_a_480_room_with_nothing_in_the_menu()
     {
-        var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: false, 440, ToolbarPlan.CellGap);
+        // pin, three captures, prompt and continue-in are 6 cells; recent, new chat and settings two cells each: 12.
+        var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: false, 480, ToolbarPlan.CellGap);
         Assert.Empty(f.Menu);
-        Assert.Equal(9 * 40, f.Used);
+        Assert.Equal(12 * 40, f.Used);
     }
 
     [Fact]

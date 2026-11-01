@@ -36,7 +36,8 @@ public static class ToolbarProfiles
     [
         new("default", Doc("The shipped layout (the owner's): effort, model and provider across the top row; capture, prompt and chat buttons below.",
             Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", "\"prompt\", \"continueIn\"", "\"recent\", \"newChat\", \"settings\""),
-            top: Group("\"effort\"", "\"model\"", "\"provider\""))),
+            top: Group("\"effort\"", "\"model\"", "\"provider\""),
+            overrides: "{ \"recent\": { \"width\": \"wide\" }, \"newChat\": { \"width\": \"wide\" }, \"settings\": { \"width\": \"wide\" }, \"provider\": { \"span\": 5 } }")),
 
         new("nine-buttons-pickers-top", Doc("The layout up to 0.4: the pickers in the top row, the nine buttons bottom left.",
             Group(Buttons), top: Group(Pickers))),

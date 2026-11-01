@@ -48,9 +48,9 @@ public sealed class WindowSettings
     /// <summary>Panel width as a percentage of the monitor's work area in real pixels (20–90; Windows' scaling is ignored), clamped to [MinWidth, MaxWidth].</summary>
     public double WidthPercent { get; set; } = 40;
     /// <summary>Narrowest panel, in real pixels: 384 = 20% of a 1920 × 1080 screen.</summary>
-    public int MinWidth { get; set; } = 384;
+    public int MinWidth { get; set; } = 400;
     /// <summary>Widest panel, in real pixels: 2304 = 60% of a 4K (3840) screen.</summary>
-    public int MaxWidth { get; set; } = 2304;
+    public int MaxWidth { get; set; } = 1200;
     /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
     public int Height { get; set; }
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>

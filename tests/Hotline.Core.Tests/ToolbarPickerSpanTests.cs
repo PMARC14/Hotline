@@ -16,15 +16,22 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void Every_picker_defaults_to_3_4_4_with_or_without_the_default_layout_and_the_shipped_file_has_no_span_entries()
     {
-        foreach (var m in new[] { ToolbarModel.Defaults, Read("{}"), ToolbarModel.Resolve("""{ "version": 2, "items": { "left": [] }, "top": { "left": [] } }""") })
-            Assert.Equal((3, 4, 4), (m.EffectiveSpan("effort"), m.EffectiveSpan("model"), m.EffectiveSpan("provider")));
-        // A file that omits a span in a defaulted layout gets 3 / 4 / 4 too.
+        // A file with its own layout and no spans: 3 / 4 / 4. A file that falls back to the shipped layout gets the shipped 3 / 4 / 5.
+        var own = Read("{}");
+        Assert.Equal((3, 4, 4), (own.EffectiveSpan("effort"), own.EffectiveSpan("model"), own.EffectiveSpan("provider")));
+        var fellBack = ToolbarModel.Resolve("""{ "version": 2, "items": { "left": [] }, "top": { "left": [] } }""");
+        Assert.Equal((3, 4, 5), (fellBack.EffectiveSpan("effort"), fellBack.EffectiveSpan("model"), fellBack.EffectiveSpan("provider")));
+        // The shipped layout is the owner's: the provider picker is 5 cells wide.
+        Assert.Equal((3, 4, 5), (ToolbarModel.Defaults.EffectiveSpan("effort"), ToolbarModel.Defaults.EffectiveSpan("model"), ToolbarModel.Defaults.EffectiveSpan("provider")));
+        // A file that falls back to the shipped layout gets its look too.
         var defaulted = ToolbarModel.Resolve("""{ "version": 2 }""");
         Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.TopLeft), defaulted.Items(Quadrant.TopLeft));
-        Assert.Empty(defaulted.PickerSpans);
-        Assert.Empty(ToolbarModel.Defaults.PickerSpans);
+        Assert.Equal(ToolbarModel.Defaults.PickerSpans, defaulted.PickerSpans);
         var json = ToolbarModel.Defaults.ToJson();
-        Assert.DoesNotContain("span", string.Concat(json.Split('\n').Where(l => !l.TrimStart().StartsWith("//"))));
+        var plain = string.Concat(json.Split('\n').Where(l => !l.TrimStart().StartsWith("//")));
+        Assert.Contains("\"provider\": { \"span\": 5 }", plain);
+        Assert.DoesNotContain("\"effort\": { \"span\"", plain);
+        Assert.DoesNotContain("\"model\": { \"span\"", plain);
         // A span equal to the default is not written, even when set in memory.
         var inMemory = ToolbarModel.Defaults with { PickerSpans = new Dictionary<string, int> { ["effort"] = 3, ["model"] = 5 } };
         var written = inMemory.ToJson();

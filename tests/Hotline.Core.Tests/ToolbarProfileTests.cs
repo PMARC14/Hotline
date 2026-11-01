@@ -255,9 +255,9 @@ public sealed class ToolbarProfileTests
 
     // The span times one standard button width is the width, whatever the bar size, and spare room never grows a picker past it.
     [Theory]
-    [InlineData("default", 0.5, true, 1000, 120, 160, 160)]
-    [InlineData("default", 1, true, 1000, 120, 160, 160)]
-    [InlineData("default", 2, true, 1000, 120, 160, 160)]
+    [InlineData("default", 0.5, true, 1000, 120, 160, 200)]
+    [InlineData("default", 1, true, 1000, 120, 160, 200)]
+    [InlineData("default", 2, true, 1000, 120, 160, 200)]
     [InlineData("spans-all-1", 1, false, 1600, 40, 40, 40)]
     [InlineData("spans-all-8", 1, true, 1800, 320, 320, 320)]
     [InlineData("spans-mixed", 1, false, 1800, 40, 160, 320)]

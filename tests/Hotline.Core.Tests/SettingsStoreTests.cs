@@ -30,7 +30,7 @@ public sealed class SettingsStoreTests : IDisposable
         var store = New();
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal((40.0, 384, 2304, 0, 60.0), (s.Window.WidthPercent, s.Window.MinWidth, s.Window.MaxWidth, s.Window.Height, s.Window.MaxHeightPercent));
+        Assert.Equal((40.0, 400, 1200, 0, 60.0), (s.Window.WidthPercent, s.Window.MinWidth, s.Window.MaxWidth, s.Window.Height, s.Window.MaxHeightPercent));
         Assert.Equal(BackdropKind.AcrylicThin, s.Window.Backdrop);
         Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
         Assert.False(s.Diagnostics.VerboseLogging);
@@ -155,7 +155,7 @@ public sealed class SettingsStoreTests : IDisposable
 
         var s = New().Load();
 
-        Assert.Equal(384, s.Window.MinWidth);
+        Assert.Equal(400, s.Window.MinWidth);
     }
 
     [Theory]

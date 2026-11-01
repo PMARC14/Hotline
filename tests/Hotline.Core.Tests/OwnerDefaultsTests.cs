@@ -17,8 +17,9 @@ public sealed class OwnerDefaultsTests
         Assert.Equal(["prompt", "continueIn"], d.Items(Quadrant.BottomCenter));
         Assert.Equal(["recent", "newChat", "settings"], d.Items(Quadrant.BottomRight));
         Assert.Equal(new ButtonStyle(1, false, false), d.Style);
-        Assert.Empty(d.Overrides);
-        Assert.Equal((3, 4, 4), (d.EffectiveSpan("effort"), d.EffectiveSpan("model"), d.EffectiveSpan("provider")));
+        Assert.Equal(["newChat", "recent", "settings"], d.Overrides.Keys.Order()); // two cells across each
+        Assert.All(d.Overrides.Values, o => Assert.Equal(new ButtonStyle(2), o));
+        Assert.Equal((3, 4, 5), (d.EffectiveSpan("effort"), d.EffectiveSpan("model"), d.EffectiveSpan("provider")));
     }
 
     [Fact]
@@ -29,7 +30,7 @@ public sealed class OwnerDefaultsTests
     public void Default_window_sizes_are_the_owners()
     {
         var w = new HotlineSettings().Window;
-        Assert.Equal((40.0, 60.0, 384, 2304), (w.WidthPercent, w.MaxHeightPercent, w.MinWidth, w.MaxWidth));
+        Assert.Equal((40.0, 60.0, 400, 1200), (w.WidthPercent, w.MaxHeightPercent, w.MinWidth, w.MaxWidth));
         Assert.Equal((0.5, 0.8), (w.Anchor.X, w.Anchor.Y));
     }
 }
