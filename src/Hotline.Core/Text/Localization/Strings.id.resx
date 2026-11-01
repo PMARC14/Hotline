@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Selalu</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Tidak pernah</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Lebar</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Porsi dari lebar layar.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Lebar minimum</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Lebar maksimum</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Tinggi minimum</value></data>
@@ -596,8 +596,11 @@ Tolak:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Di bawah kotak pesan</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Kosong</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
   <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Pindahkan ke bawah kotak pesan</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Di atas kotak pesan</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Pindahkan ke atas kotak pesan</value></data>
@@ -695,14 +698,14 @@ Tolak:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Lebar obrolan (persen)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel membesar hingga persentase lebar layar ini saat obrolan dimulai, dan mengecil kembali saat obrolan baru. 0 = mempertahankan lebarnya. Lebar tetap di bawah ini mematikan fitur ini.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Lebar obrolan</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Lebar panel saat obrolan dimulai, dalam DIP. 0 = gunakan persentase di atas.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Arah obrolan membesar</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatis</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatis: ke atas, kecuali tidak ada ruang di atas. Up atau Down mempertahankannya pada arah tersebut.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Bawah</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Atas</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Lebar</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = otomatis (persentase lebar di atas). Tahan Alt dan tarik tepi samping untuk mengubah ukuran.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (monitor yang sedang Anda gunakan), primary, atau nama monitor (disimpan melalui Simpan sebagai default pada pegangan)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Posisi horizontal</value></data>

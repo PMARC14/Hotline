@@ -30,7 +30,7 @@ public sealed class SettingsStoreTests : IDisposable
         var store = New();
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal((40.0, 460, 1000, 0, 60.0), (s.Window.WidthPercent, s.Window.MinWidth, s.Window.MaxWidth, s.Window.Height, s.Window.MaxHeightPercent));
+        Assert.Equal((40.0, 384, 2304, 0, 60.0), (s.Window.WidthPercent, s.Window.MinWidth, s.Window.MaxWidth, s.Window.Height, s.Window.MaxHeightPercent));
         Assert.Equal(BackdropKind.AcrylicThin, s.Window.Backdrop);
         Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
         Assert.False(s.Diagnostics.VerboseLogging);
@@ -115,8 +115,8 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Theory]
-    [InlineData(10, 320)]
-    [InlineData(99999, 4000)]
+    [InlineData(10, 200)]
+    [InlineData(99999, 8000)]
     public void Window_size_is_clamped(int width, int expected)
     {
         WriteSettings($$"""{ "window": { "minWidth": {{width}} } }""");
@@ -130,8 +130,8 @@ public sealed class SettingsStoreTests : IDisposable
         var w = New().Load().Window;
         Assert.Equal(90, w.WidthPercent);
         Assert.Equal(30, w.MaxHeightPercent);
-        Assert.Equal(320, w.MinWidth);
-        Assert.Equal(320, w.MaxWidth); // never below MinWidth
+        Assert.Equal(200, w.MinWidth);
+        Assert.Equal(200, w.MaxWidth); // never below MinWidth
     }
 
     [Fact]
@@ -155,7 +155,7 @@ public sealed class SettingsStoreTests : IDisposable
 
         var s = New().Load();
 
-        Assert.Equal(460, s.Window.MinWidth);
+        Assert.Equal(384, s.Window.MinWidth);
     }
 
     [Theory]

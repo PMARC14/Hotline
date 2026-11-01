@@ -42,21 +42,21 @@ public partial class App
     /// the other. That is the smaller of the width the panel opens with (the width setting, or its percentage of the work area of the
     /// monitor it would open on, see PopupWindow.OpeningWidthDip) and the live panel's width when it has been laid out, less the panel's side
     /// padding. Settings' "Move what doesn't fit into the menu" plans with it. Without a panel (or if the monitor can't be asked) the
-    /// width setting, else the default room of 11 buttons.
+    /// default room of 11 buttons.
     /// </summary>
     private double BarRoom(Hotline.Core.Settings.WindowSettings window)
     {
         var padding = 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding; // the panel's side padding (PopupWindow.xaml)
         try
         {
-            var width = _popup?.OpeningWidthDip() ?? window.Width ?? Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11);
+            var width = _popup?.OpeningWidthDip() ?? Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11);
             if (_popup is { } popup && popup.Root.ActualWidth is > 0 and var live) width = Math.Min(width, live);
             return Math.Max(0, width - padding);
         }
         catch (Exception ex)
         {
             _log?.Error("working out the panel width for the button rows failed", ex);
-            return Math.Max(0, (window.Width ?? Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11)) - padding);
+            return Math.Max(0, Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11) - padding);
         }
     }
 

@@ -74,19 +74,20 @@ public static class PopupGeometry
     }
 
     /// <summary>
-    /// The width (DIP) the panel grows to when a chat starts, or null for no growth: the explicit <paramref name="chatWidth"/>, else
-    /// <paramref name="chatWidthPercent"/> of the work area. Either way it is clamped to [min, max] (<c>window.minWidth</c> / <c>window.maxWidth</c>). Never when the panel's width was set (<paramref name="width"/>:
+    /// The width (real pixels) the panel grows to when a chat starts, or null for no growth: the explicit <paramref name="chatWidth"/>, else
+    /// <paramref name="chatWidthPercent"/> of the work area. Either way it is clamped to [min, max] (<c>window.minWidth</c> / <c>window.maxWidth</c>)
+    /// and never wider than the work area. Never when the panel's width was set (<paramref name="width"/>:
     /// a fixed width, which a manual resize saves), when neither is set (the default), or when the target is not wider than the
-    /// <paramref name="startDip"/> it opens at.
+    /// <paramref name="startPx"/> it opens at. Windows' display scaling plays no part.
     /// </summary>
-    public static int? ChatWidthDip(int? width, int? chatWidth, double chatWidthPercent, int workAreaWidthPx, double scale, int minDip, int maxDip, int startDip)
+    public static int? ChatWidthPx(int? width, int? chatWidth, double chatWidthPercent, int workAreaWidthPx, int minPx, int maxPx, int startPx)
     {
         if (width is not null) return null;
         int target;
-        if (chatWidth is { } explicitWidth) target = Math.Clamp(explicitWidth, minDip, Math.Max(minDip, maxDip));
-        else if (chatWidthPercent > 0) target = RelativeWidthDip(workAreaWidthPx, scale, chatWidthPercent, minDip, maxDip);
+        if (chatWidth is { } explicitWidth) target = Math.Min(workAreaWidthPx, Math.Clamp(explicitWidth, minPx, Math.Max(minPx, maxPx)));
+        else if (chatWidthPercent > 0) target = RelativeWidthPx(workAreaWidthPx, chatWidthPercent, minPx, maxPx);
         else return null;
-        return target > startDip ? target : null;
+        return target > startPx ? target : null;
     }
 
     /// <summary>
@@ -101,7 +102,10 @@ public static class PopupGeometry
         return rect with { X = x, Width = w };
     }
 
-    /// <summary>Panel width in DIPs: percent of the work area (converted from physical pixels), clamped to [min, max].</summary>
-    public static int RelativeWidthDip(int workAreaWidthPx, double scale, double percent, int minDip, int maxDip)
-        => Math.Clamp((int)Math.Round(workAreaWidthPx / scale * percent / 100.0), minDip, Math.Max(minDip, maxDip));
+    /// <summary>
+    /// Panel width in real pixels: <paramref name="percent"/> of the work area's pixels, clamped to [min, max], never wider than the work area.
+    /// Windows' display scaling is deliberately not an input: the same screen gives the same width at 100% and at 200%.
+    /// </summary>
+    public static int RelativeWidthPx(int workAreaWidthPx, double percent, int minPx, int maxPx)
+        => Math.Min(workAreaWidthPx, Math.Clamp((int)Math.Round(workAreaWidthPx * percent / 100.0), minPx, Math.Max(minPx, maxPx)));
 }

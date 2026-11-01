@@ -103,6 +103,10 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       height; New chat (Ctrl+N) shrinks it back; near a screen edge it slides back inside. With `window.width` set, or after resizing by
       hand, it never widens; the default (0) never widens. Moving the widened panel with Alt keeps its start width.
 - [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
+- [ ] Panel width is real pixels, scaling ignored: set `widthPercent` 20, then 40, at Windows scaling 150% and at 200% (sign out/in if asked). The panel
+      is the same share of the screen at both (2880 px wide: 40% = 1152 px, 20% = 576 px but never under `minWidth` 384); the line under the width
+      controls in Settings › Window reads the same numbers; buttons and text are bigger at 200%, and a narrow panel moves buttons into the "..." box.
+      Resize by hand with Alt, Save as default, reopen: same pixel width; `window.width` in settings.json holds pixels (about 1152, not 576).
 
 ### Chat basics
 - [ ] Ask something with each connection you use (Provider picker); answers stream; Esc hides, Ctrl+N new chat.

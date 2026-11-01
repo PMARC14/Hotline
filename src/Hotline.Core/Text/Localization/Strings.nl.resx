@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Altijd</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Nooit</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Breedte</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Deel van de schermbreedte.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Minimale breedte</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Maximale breedte</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Minimale hoogte</value></data>
@@ -596,8 +596,11 @@ Weigeren:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
   <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Boven het berichtvak</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Naar boven het berichtvak verplaatsen</value></data>
@@ -695,14 +698,14 @@ Weigeren:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chatbreedte (percentage)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Het venster groeit naar dit aandeel van de schermbreedte wanneer een chat start en krimpt terug bij een nieuwe chat. 0 = behoudt de breedte. Een vaste breedte hieronder schakelt dit uit.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Chatbreedte</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>De breedte waarnaar het deelvenster uitbreidt wanneer een chat start, in DIP. 0 = gebruik het bovenstaande percentage.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Chat breidt uit</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatisch</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatisch: omhoog, tenzij er bovenaan geen ruimte is. Up of Down houdt die richting aan.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Omlaag</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Omhoog</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Breedte</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatisch (het bovenstaande breedtepercentage). Houd Alt ingedrukt en versleep een zijkant om het formaat te wijzigen.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Beeldscherm</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (het beeldscherm waarop u werkt), primary of de naam van een beeldscherm (opgeslagen via Als standaard opslaan op de greep)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Horizontale positie</value></data>

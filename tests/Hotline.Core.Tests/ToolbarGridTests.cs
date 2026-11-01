@@ -104,6 +104,5 @@ public sealed class ToolbarGridTests
         Assert.Equal(10, ToolbarPlan.PanelPadding);
         Assert.Equal(460, ToolbarPlan.WidthForButtons(11));
         Assert.Equal(60, ToolbarPlan.WidthForButtons(1));
-        Assert.Equal(ToolbarPlan.WidthForButtons(11), new WindowSettings().MinWidth);
     }
 }

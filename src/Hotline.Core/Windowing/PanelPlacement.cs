@@ -17,9 +17,9 @@ public static class PanelPlacement
     /// anchor's fractions of the free space (0 = left/top edge, 1 = right/bottom edge). The default anchor (0.5, 0.8)
     /// is exactly <see cref="PopupGeometry.Place"/>.
     /// </summary>
-    public static RectI Home(RectI work, int widthDip, int barHeightDip, double scale, PanelAnchor anchor)
+    public static RectI Home(RectI work, int widthPx, int barHeightDip, double scale, PanelAnchor anchor)
     {
-        var w = Math.Min((int)Math.Round(widthDip * scale), work.Width);
+        var w = Math.Min(widthPx, work.Width);
         var h = Math.Min((int)Math.Round(barHeightDip * scale), work.Height);
         var x = Math.Clamp(anchor.X, 0.0, 1.0);
         var y = Math.Clamp(anchor.Y, 0.0, 1.0);

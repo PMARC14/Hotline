@@ -569,9 +569,8 @@ public sealed partial class PopupWindow : Window
     /// <summary>The width the panel grows to when a chat starts (physical pixels), or null: no growth is set, a width was fixed in the
     /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
     private int? ChatWidthPx => _fixedPx is not null ? null
-        : PopupGeometry.ChatWidthDip(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width, _scale,
-            _settings.MinWidth, _settings.MaxWidth, (int)Math.Round(_bar.Width / _scale)) is { } dip
-            ? (int)Math.Round(dip * _scale) : null;
+        : PopupGeometry.ChatWidthPx(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width,
+            _settings.MinWidth, _settings.MaxWidth, _bar.Width);
 
     private bool _animating;
     private double _animatedHeight;
@@ -727,8 +726,8 @@ public sealed partial class PopupWindow : Window
         PlaceOnActiveMonitor();
     }
 
-    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width and chat height in DIPs.</summary>
-    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthDip, int? ChatHeightDip) CurrentSpot()
+    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width in real pixels (what window.width holds), chat height in DIPs.</summary>
+    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthPx, int? ChatHeightDip) CurrentSpot()
     {
         var anchor = Hotline.Core.Windowing.PanelPlacement.AnchorFor(_bar, _work);
         var native = new Native.RECT { Left = _work.X, Top = _work.Y, Right = _work.X + _work.Width, Bottom = _work.Y + _work.Height };
@@ -737,7 +736,7 @@ public sealed partial class PopupWindow : Window
             : _settings.Anchor.Monitor;
         // Sized down to the bar alone: no chat height to save (60 would cap every future chat); keep the setting.
         int? chat = _fixedPx is { } f && (f - BarPx) / _scale >= 60 ? (int)Math.Round((f - BarPx) / _scale) : _settings.ChatHeight;
-        return (anchor, (int)Math.Round(_bar.Width / _scale), chat);
+        return (anchor, _bar.Width, chat);
     }
 
     /// <summary>The panel goes back to its saved default on the next open (unpinned, clicked into another app).</summary>
@@ -787,21 +786,30 @@ public sealed partial class PopupWindow : Window
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
-        var widthDip = _settings.Width ?? PopupGeometry.RelativeWidthDip(wa.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthDip, _settings.Height, scale, _settings.Anchor);
+        var widthPx = _settings.Width ?? PopupGeometry.RelativeWidthPx(wa.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
+        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.Height, scale, _settings.Anchor);
         (_bar, _work, _scale) = (r, work, scale);
         ChooseDirection();
         _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
         ApplyHeight(force: true);
     }
 
-    /// <summary>The width (DIP) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
+    /// <summary>The width (scaled units; the setting is in real pixels) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
     /// monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
     public double OpeningWidthDip()
     {
         var (area, monitor, _) = HomeMonitor();
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        return _settings.Width ?? PopupGeometry.RelativeWidthDip(area.WorkArea.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
+        var px = Math.Min(area.WorkArea.Width, _settings.Width ?? PopupGeometry.RelativeWidthPx(area.WorkArea.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth));
+        return px / scale; // the width is in real pixels; the button cells are in scaled units
+    }
+
+    /// <summary>Settings' line under the width controls: what they come to on this monitor, from the given (live) window settings.</summary>
+    public string WidthLine(Hotline.Core.Settings.WindowSettings w)
+    {
+        var (area, monitor, _) = HomeMonitor();
+        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        return Hotline.Core.Windowing.ScreenScale.WidthLine(area.WorkArea.Width, scale, w.WidthPercent, w.MinWidth, w.MaxWidth);
     }
 
     /// <summary>Settings' note above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>

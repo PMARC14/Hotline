@@ -13,7 +13,7 @@ public class PanelPlacementTests
     [InlineData(2.0)]
     public void Default_anchor_reproduces_todays_place(double scale)
     {
-        var bar = PanelPlacement.Home(Work, widthDip: 700, barHeightDip: 60, scale, new PanelAnchor());
+        var bar = PanelPlacement.Home(Work, widthPx: (int)(700 * scale), barHeightDip: 60, scale, new PanelAnchor());
         Assert.Equal(PopupGeometry.Place(Work, 700, 60, scale, 0.8), bar);
     }
 
@@ -139,13 +139,39 @@ public class PanelPlacementTests
     }
 
     [Theory]
-    [InlineData(2880, 2.0, 40, 600, 1000, 600)]   // 1440 DIP wide screen -> 576 -> clamped up to 600
-    [InlineData(3840, 1.0, 40, 600, 1000, 1000)]  // 3840 DIP -> 1536 -> clamped down to 1000
-    [InlineData(2560, 1.0, 30, 600, 1000, 768)]   // 30% of 2560
-    [InlineData(1920, 1.5, 50, 600, 1000, 640)]   // 1280 DIP * 50%
-    [InlineData(3840, 2.0, 40, 100, 5000, 768)]   // the same fraction of the same DIP width ...
-    [InlineData(1920, 1.0, 40, 100, 5000, 768)]   // ... at another scale
-    [InlineData(1000, 1.0, 10, 700, 500, 700)]    // max below min: min wins
-    public void Width_is_percent_of_work_area_in_dip_clamped(int workPx, double scale, double pct, int min, int max, int expected)
-        => Assert.Equal(expected, PopupGeometry.RelativeWidthDip(workPx, scale, pct, min, max));
+    [InlineData(2880, 40, 384, 2304, 1152)]  // the owner's 2880 x 1800 screen: 40% of the real pixels
+    [InlineData(1920, 40, 384, 2304, 768)]
+    [InlineData(1920, 10, 384, 2304, 384)]   // under the minimum: min wins
+    [InlineData(3840, 90, 384, 2304, 2304)]  // over the maximum: max wins
+    [InlineData(1000, 10, 700, 500, 700)]    // max below min: min wins
+    [InlineData(500, 50, 700, 900, 500)]     // never wider than the work area
+    public void Width_is_percent_of_work_area_pixels_clamped(int workPx, double pct, int min, int max, int expected)
+        => Assert.Equal(expected, PopupGeometry.RelativeWidthPx(workPx, pct, min, max));
+
+    [Theory]
+    [InlineData(1.0)]
+    [InlineData(1.25)]
+    [InlineData(1.5)]
+    [InlineData(2.0)]
+    public void Windows_scaling_changes_neither_the_panel_width_nor_the_saved_one(double scale)
+    {
+        // Same work-area pixels and percent: the same panel pixels at every scale; the saved width is what was applied.
+        var work = new RectI(0, 0, 2880, 1700);
+        var px = PopupGeometry.RelativeWidthPx(work.Width, 40, 384, 2304);
+        var bar = PanelPlacement.Home(work, px, 60, scale, new PanelAnchor());
+        Assert.Equal(1152, px);
+        Assert.Equal(px, bar.Width); // saved px (CurrentSpot saves _bar.Width) = applied px
+        Assert.Equal(bar.Width, PanelPlacement.Home(work, bar.Width, 60, scale, PanelPlacement.AnchorFor(bar, work)).Width);
+        Assert.Equal(384, PopupGeometry.RelativeWidthPx(1000, 20, 384, 2304)); // clamped by min in pixels at any scale
+    }
+
+    [Fact]
+    public void The_width_line_names_pixels_and_scaled_units()
+    {
+        var line = ScreenScale.WidthLine(2880, 2.0, 40, 384, 2304);
+        Assert.Contains("2880", line);
+        Assert.Contains("1152 px (576", line);
+        Assert.Contains("384 px", line);
+        Assert.Contains("2304 px", line);
+    }
 }

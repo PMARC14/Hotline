@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Always</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Never</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Width</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Minimum width</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Maximum width</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Minimum height</value></data>
@@ -594,8 +594,11 @@ Deny:
   <data name="Bar_continueIn" xml:space="preserve"><value>Continue in</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Nothing to continue this chat in yet: no AI command-line tool is installed, or the chat has no messages.</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width in % is of the real {1} pixels; button and panel sizes are in the {3} × {4} units.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
   <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Above the message box</value></data>
   <data name="Bar_BottomRow" xml:space="preserve"><value>Below the message box</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Empty</value></data>
@@ -610,7 +613,7 @@ Deny:
   <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (the monitor you're working on), primary, or a monitor's name (saved by the grip's Save as default)</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Width</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
   <data name="Set_ChatHeight" xml:space="preserve"><value>Chat height</value></data>
   <data name="Set_ChatHeight_Desc" xml:space="preserve"><value>The most the chat grows to. 0 = automatic (the maximum height percentage above).</value></data>
   <data name="Settings_ActionFailed" xml:space="preserve"><value>That didn't work: {0}</value></data>
@@ -701,7 +704,7 @@ Deny:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat width (percent)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>The panel grows to this share of the screen width when a chat starts, and shrinks back on a new chat. 0 = it keeps its width. A fixed width below turns this off.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Chat width</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in DIP. 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Chat grows</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatic: up, unless there's no room above. Up or Down keeps it that way.</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatically</value></data>

@@ -25,4 +25,17 @@ public static class ScreenScale
         var sharper = Math.Round(scale, 2).ToString("0.##", System.Globalization.CultureInfo.CurrentCulture);
         return L.F(Strings.Bar_ScaleNote, percent, widthPx, heightPx, w, h, sharper);
     }
+
+    /// <summary>
+    /// "On this screen (2880 px): 40% = 1152 px (576 scaled units); minimum 384 px, maximum 2304 px": what the width settings come to
+    /// on the work area of <paramref name="workWidthPx"/> real pixels (the width is in real pixels; the scaled units are what Windows' scaling makes of them).
+    /// </summary>
+    public static string WidthLine(int workWidthPx, double scale, double percent, int minPx, int maxPx)
+    {
+        scale = scale is > 0.5 and < 8 ? scale : 1;
+        var px = PopupGeometry.RelativeWidthPx(workWidthPx, percent, minPx, maxPx);
+        var scaled = (int)Math.Round(px / scale);
+        var share = Math.Round(percent, 2).ToString("0.##", System.Globalization.CultureInfo.CurrentCulture);
+        return L.F(Strings.Bar_WidthLine, workWidthPx, share, px, scaled, minPx, maxPx);
+    }
 }

@@ -45,24 +45,26 @@ public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 
 public sealed class WindowSettings
 {
-    /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
+    /// <summary>Panel width as a percentage of the monitor's work area in real pixels (20–90; Windows' scaling is ignored), clamped to [MinWidth, MaxWidth].</summary>
     public double WidthPercent { get; set; } = 40;
-    public int MinWidth { get; set; } = (int)Windowing.ToolbarPlan.WidthForButtons(11);
-    public int MaxWidth { get; set; } = 1000;
+    /// <summary>Narrowest panel, in real pixels: 384 = 20% of a 1920 × 1080 screen.</summary>
+    public int MinWidth { get; set; } = 384;
+    /// <summary>Widest panel, in real pixels: 2304 = 60% of a 4K (3840) screen.</summary>
+    public int MaxWidth { get; set; } = 2304;
     /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
     public int Height { get; set; }
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
     public double MaxHeightPercent { get; set; } = 60;
     /// <summary>Where the panel opens (its saved default spot): monitor and fractions of the free work area.</summary>
     public PanelAnchor Anchor { get; set; } = new();
-    /// <summary>Panel width in DIPs; null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
+    /// <summary>Panel width in real pixels (a manual resize saves one); null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
     public int? Width { get; set; }
     /// <summary>
     /// When a chat starts the panel grows to this share of the work area's width (0 = it doesn't; otherwise 20-90), clamped to
     /// [MinWidth, MaxWidth]; no wider than it opened means no growth. A fixed <see cref="Width"/> (a manual resize saves one) never grows.
     /// </summary>
     public double ChatWidthPercent { get; set; }
-    /// <summary>The width the panel grows to when a chat starts, in DIPs (kept within MinWidth..MaxWidth); null = <see cref="ChatWidthPercent"/>.</summary>
+    /// <summary>The width the panel grows to when a chat starts, in real pixels (kept within MinWidth..MaxWidth); null = <see cref="ChatWidthPercent"/>.</summary>
     public int? ChatWidth { get; set; }
     /// <summary>Most the chat grows to, in DIPs; null = MaxHeightPercent of the screen.</summary>
     public int? ChatHeight { get; set; }

@@ -39,8 +39,8 @@ public sealed class ChatWidthTests : IDisposable
     [Fact]
     public void An_explicit_chat_width_is_clamped_and_null_stays_null()
     {
-        Assert.Equal(320, LoadJson("""{ "window": { "chatWidth": 10 } }""").Window.ChatWidth);
-        Assert.Equal(8000, LoadJson("""{ "window": { "chatWidth": 99999 } }""").Window.ChatWidth);
+        Assert.Equal(200, LoadJson("""{ "window": { "chatWidth": 10 } }""").Window.ChatWidth);
+        Assert.Equal(16000, LoadJson("""{ "window": { "chatWidth": 99999 } }""").Window.ChatWidth);
         Assert.Equal(700, LoadJson("""{ "window": { "chatWidth": 700 } }""").Window.ChatWidth);
         Assert.Null(LoadJson("""{ "window": { "chatWidth": null } }""").Window.ChatWidth);
     }
@@ -61,9 +61,9 @@ public sealed class ChatWidthTests : IDisposable
 
     // ---- which width ----
 
-    // A 1920 px wide work area at 100%: the 25% start width is 480 DIP, clamped to the 460 minimum -> 480.
-    private static int? Chat(int? width = null, int? chatWidth = null, double percent = 0, int workPx = 1920, double scale = 1, int start = 460, int min = 460, int max = 1000)
-        => PopupGeometry.ChatWidthDip(width, chatWidth, percent, workPx, scale, min, max, start);
+    // A 1920 px wide work area, real pixels throughout (no scale), opening at 460 px; min 460, max 1000.
+    private static int? Chat(int? width = null, int? chatWidth = null, double percent = 0, int workPx = 1920, int start = 460, int min = 460, int max = 1000)
+        => PopupGeometry.ChatWidthPx(width, chatWidth, percent, workPx, min, max, start);
 
     [Fact]
     public void No_chat_width_set_means_no_growth() => Assert.Null(Chat());
@@ -81,7 +81,8 @@ public sealed class ChatWidthTests : IDisposable
     {
         Assert.Equal(768, Chat(percent: 40));
         Assert.Equal(1000, Chat(percent: 80)); // 1536 -> max
-        Assert.Equal(960, Chat(percent: 50, workPx: 3840, scale: 2)); // DIP, not pixels
+        Assert.Equal(1000, Chat(percent: 50, workPx: 3840)); // pixels of the work area: 1920 -> max
+        Assert.Equal(700, Chat(percent: 50, workPx: 1400)); // 700 px
     }
 
     [Fact]

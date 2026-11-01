@@ -63,7 +63,7 @@ public sealed class AppearanceSettingsTests : IDisposable
         var s = new HotlineSettings();
         width.Set(s, 10);
         chat.Set(s, 10);
-        Assert.Equal((320, 60), (s.Window.Width, s.Window.ChatHeight));
+        Assert.Equal((200, 60), (s.Window.Width, s.Window.ChatHeight));
         width.Set(s, 0);
         Assert.Null(s.Window.Width);
     }
