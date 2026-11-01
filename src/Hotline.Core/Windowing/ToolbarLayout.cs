@@ -54,22 +54,13 @@ public static class ToolbarLayout
     }
 
     /// <summary>
-    /// Decides what fits in <paramref name="room"/>: how many left-group buttons stay, then (only when not even none of them
-    /// fit) how many buttons the right group gives up. Left buttons are dropped from the end (behind an overflow button)
-    /// until everything fits; the right group is kept whole as long as it can be. Only when the right group alone (+ the
-    /// overflow button when anything is dropped, + reserved) is wider than the room does it drop buttons too, from its LEFT end,
-    /// so the rightmost ones (typically Settings) stay; at least one right button is always kept. Pure and idempotent.
-    /// Needed width = sum(shown right) + sum(shown left) + [overflowWidth if any button is dropped]
-    /// + <paramref name="spacing"/> * gaps + <paramref name="reservedWidth"/>.
-    /// Gaps: one between each pair of adjacent shown items in the flat row [shown left..., overflow button?, shown right...]
-    /// (items - 1), plus one more before <paramref name="reservedWidth"/> when it is above 0 and any item is shown.
-    /// The Grid's star spacer column is not counted. Takes the largest LeftShown that fits (so it never decreases as
-    /// <paramref name="room"/> grows), and then the fewest right buttons dropped. Negative or NaN inputs count as 0 (a
-    /// non-finite spacing too).
-    /// Overshoot contract: only when even ONE right button plus the overflow button (and its gap) and the reserved width
-    /// cannot fit (a panel narrower than about two buttons) the result is that one right button with the overflow button
-    /// anyway (so the hidden items stay reachable) and the total exceeds <paramref name="room"/>. The caller then drops the
-    /// pickers (calls again with reservedWidth = 0) and only accepts an overshoot that remains.
+    /// Decides what fits in <paramref name="room"/>: left-group buttons are dropped from the group's end (behind an overflow
+    /// button) until everything fits; only when the right group alone is too wide does it give up buttons from its LEFT end (at
+    /// least one stays). Needed width = shown buttons + overflow button + spacing * gaps (between adjacent shown items, one more
+    /// before <paramref name="reservedWidth"/>) + reserved; pure.
+    /// Overshoot contract: if even one right button + the overflow button + reserved cannot fit, that one button and the overflow
+    /// button are returned anyway (hidden items stay reachable) and the total exceeds <paramref name="room"/>; the caller then
+    /// drops the pickers (reservedWidth = 0) and accepts only an overshoot that remains.
     /// </summary>
     public static FitResult Fit(
         double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,

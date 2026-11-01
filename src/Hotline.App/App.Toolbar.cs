@@ -38,11 +38,8 @@ public partial class App
     }
 
     /// <summary>
-    /// The width (DIP) the button rows are planned at: the NARROWEST width the bar is shown at, so nothing planned to fit is cut off at
-    /// the other. That is the smaller of the width the panel opens with (the width setting, or its percentage of the work area of the
-    /// monitor it would open on, see PopupWindow.OpeningWidthDip) and the live panel's width when it has been laid out, less the panel's side
-    /// padding. Settings' "Move what doesn't fit into the menu" plans with it. Without a panel (or if the monitor can't be asked) the
-    /// default room of 11 buttons.
+    /// The width (DIP) the button rows are planned at: the narrower of the panel's opening width and its live width, less the side
+    /// padding (the default room of 11 buttons without a panel). Settings' "Move what doesn't fit into the menu" plans with it.
     /// </summary>
     private double BarRoom(Hotline.Core.Settings.WindowSettings window)
     {

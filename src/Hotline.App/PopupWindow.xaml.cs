@@ -193,9 +193,8 @@ public sealed partial class PopupWindow : Window
     private int _showCheck;
 
     /// <summary>
-    /// After waking from Modern Standby the panel once toggled "open" without appearing (2026-10-16). Half a second
-    /// after each open: if Windows says it's hidden or cloaked, or no frame was drawn, log what was seen and show it
-    /// once more.
+    /// After a Modern Standby wake the panel can toggle "open" without appearing. Half a second after each open: if Windows
+    /// says it's hidden or cloaked, or no frame was drawn, log what was seen and show it once more.
     /// </summary>
     private void CheckShown()
     {
@@ -215,8 +214,7 @@ public sealed partial class PopupWindow : Window
             var p = AppWindow.Position;
             var state = $"visible={visible} cloaked={cloaked} drawn={drawn} at {p.X},{p.Y} {AppWindow.Size.Width}x{AppWindow.Size.Height}";
             if (cloaked) _log.Info($"panel open but cloaked ({state})"); // e.g. another virtual desktop: leave it
-            // The content must fit the client area (2026-10-17: the window frame wasn't counted and the bottom of the
-            // panel, with the move grip, was cut off).
+            // The content must fit the client area (the window frame counts, or the bottom and the move grip are cut off).
             var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, MinContentDip) * _scale), MaxPx - FramePx);
             if (_fixedPx is null && !_animating && AppWindow.ClientSize.Height > 0 && AppWindow.ClientSize.Height + 1 < needPx)
                 _log.Error($"panel content cut off: client {AppWindow.ClientSize.Height} px < content {needPx} px");
@@ -242,8 +240,7 @@ public sealed partial class PopupWindow : Window
     public void ShowOffscreen()
     {
         _offscreen = true;
-        // A realistic panel size for the primary monitor's scale (700x700 physical pixels was a 350-DIP-wide panel at
-        // 200 %, narrower than the button row: the self-test then ran layouts no real panel ever does).
+        // A realistic panel size for the primary monitor's scale (a fixed pixel size can be narrower than the button row).
         // Windows gives a window at (-32000, -32000) the scale of the monitor nearest it (not always the primary one).
         AppWindow.Move(new PointInt32(-32000, -32000));
         var size = (int)Math.Round(720 * OffscreenScale);
@@ -396,7 +393,7 @@ public sealed partial class PopupWindow : Window
         }
         if (e.WindowActivationState == WindowActivationState.Deactivated && Pinned && _modal == 0 && _session is not null)
         {
-            // Clicking into another app while pinned forgets the moved spot (owner, 2026-10-17). Decided a moment later:
+            // Clicking into another app while pinned forgets the moved spot. Decided a moment later:
             // the Copilot key itself takes focus briefly (and then closes the panel), which is not clicking away.
             var timer = DispatcherQueue.CreateTimer();
             timer.Interval = TimeSpan.FromMilliseconds(600);
