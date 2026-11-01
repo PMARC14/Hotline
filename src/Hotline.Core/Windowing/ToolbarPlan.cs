@@ -56,7 +56,7 @@ public static class ToolbarPlan
     /// <summary>The visible size of an item in a cell of <paramref name="cell"/> DIPs.</summary>
     public static double Inner(double cell) => Math.Max(0, cell - 2 * CellInset);
 
-    /// <summary>The panel's padding on every side (DIP); PopupWindow.xaml's Root Padding is this value.</summary>
+    /// <summary>The panel's side padding (DIP; PopupWindow.xaml's Root Padding left/right). Top and bottom are slimmer (4) so the bar is not tall.</summary>
     public const double PanelPadding = 10;
 
     /// <summary>The panel width whose bar room is <paramref name="buttons"/> normal buttons across: the buttons plus the padding on both sides
