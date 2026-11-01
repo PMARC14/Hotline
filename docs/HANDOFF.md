@@ -11,7 +11,7 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 user picks: Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-10-22)
+## State (2026-11-01)
 
 - **Released:** GitHub **v0.3.0** (2026-10-17), before it v0.2.25 and v0.2.24. Releases are signed with Hotline's long-lived
   self-signed certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; repo secrets `HOTLINE_SIGNING_PFX_BASE64` /
@@ -25,52 +25,69 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   (`CliTranscripts`), Codex model list (`CodexModels`), no built-in agy connection, CLIs run in the home folder (scratch in
   `~/.hotline/scratch`), Continue in, Reset settings / everything (hidden copy in `.defaults`), movable and resizable panel
   (`window.anchor`, Alt grips, `PanelPlacement`), open/close sounds, thinking indicator, Settings › Guide in 17 languages.
-- **0.4 = PR #9 `windows-26h2` (not merged; `version.txt` says `0.4`).** Each item below is implemented:
-  - **Button rows v2** (`toolbar.json` version 2; format in [configuration.md](configuration.md)). Two rows (`top`, `items`),
-    each with left / center / right groups. `style` compact / normal / wide = ½ / 1× / 2× of a 40 × 36 **cell** that includes its
-    own 1 DIP inset (`ToolbarPlan.CellGap` 0, `CellInset` 1, `Inner(cell)`); outline colour; per-item overrides; up to 24 custom
-    buttons, optionally with a PNG `iconFile` (`CustomIcons`: 16-256 px, <= 256 KB, copied to `icons\<id>.png`). Pickers (effort,
-    model, provider) are three independent items with `span` 1-8 cells (floors 56 / 84 / 72 outer width; they shrink, then hide in
-    the order effort, provider, model). The right group overflows from its left end (F4). The `more` item and the `menu` key make a
-    user-filled "..." box; the row's automatic overflow merges into it (`ToolbarPlan.Stays`, `alwaysOverflow`,
-    `ToolbarEditor.FillMenuFromOverflow`; editor ids `quadrant-menu`, `bar-menu-<id>`, `bar-fill-menu`).
-  - Read through `ToolbarModel.Resolve` (never throws; per-field fallback; warnings go through `ConfigProblems` to a panel
-    notice), edited through `ToolbarEditor`/`ToolbarEditorView` (Core), loaded and saved by `ToolbarFile`, laid out by
-    `ToolbarPlan`/`ToolbarLayout`, drawn by `ToolbarRenderer` (App). The Settings editor (`ToolbarQuadrantEditor*.cs`) has
-    drag, arrows, hide, span and the custom-button dialog. A v1 file is **not** converted any more (defaults + warning;
-    `ToolbarMigration` is gone). Outline colour defaults to the panel theme's accent (Hotline purple unless Windows matching is on).
-  - **Reference layouts** in `ToolbarProfiles`, drawn by self-test steps P01..P33 (PNGs in `~/.hotline/logs/selftest/`).
-  - **Defaults:** the owner's layout is `ToolbarModel.Defaults`; `widthPercent` 25, `maxHeightPercent` 60, panel padding 10,
-    `minWidth` 460 = `ToolbarPlan.WidthForButtons(11)` (11 cells + 2 × 10); new `window.chatWidthPercent` (0 = no growth) and
-    `window.chatWidth`; a hand-set `window.width` overrides growth. Schema v14.
+- **0.4 = PR #9 `windows-26h2` (draft, not merged; `version.txt` says `0.4`; `main` has not moved, so it fast-forwards; ready after
+  the owner's hand test).** Everything below is implemented and merged on that branch. The road to 1.0 is in
+  [1.0-plan/README.md](1.0-plan/README.md).
+  - **Button rows v2** (`toolbar.json` version 2; format in [configuration.md](configuration.md)). Two rows (`top`, `items`), each
+    with left / center / right groups; up to 24 custom buttons, optionally with a PNG `iconFile` (`CustomIcons`, copied to
+    `icons\<id>.png`). Read through `ToolbarModel.Resolve` (never throws; per-field fallback; warnings go through `ConfigProblems` to a
+    panel notice), edited through `ToolbarEditor`/`ToolbarEditorView` (Core), loaded and saved by `ToolbarFile`, laid out by
+    `ToolbarPlan`/`ToolbarLayout`, drawn by `ToolbarRenderer` (App); the Settings editor is `ToolbarQuadrantEditor*.cs`. A v1 file is
+    not converted (defaults + warning). Outline colour defaults to the panel theme's accent.
+  - **Toolbar model.** ONE `width` key in cells (0.5 / 1 / 2 / 3 / 4, or `compact` / `normal` / `wide`); `size` and `cells` are
+    silent aliases, old DIP `width` / `height` values are ignored with a warning. `ButtonStyle(Width, Outline, Filled, OutlineColor)`
+    (there is no `ButtonSize` enum); `ToolbarEditorView.BarWidth` is the bar's width, `BarSizeChoice` only a display helper. Every
+    cell is one cell (36 DIP) high; glyph 13 for half cells, 16 otherwise; the automatic "..." is always one cell. The `more` item
+    plus `menu` make a user-filled "..." box that the row's overflow merges into (`ToolbarPlan.Stays`, `alwaysOverflow`,
+    `ToolbarEditor.FillMenuFromOverflow`). The three pickers (effort / model / provider) are independent items with `span` 1-8
+    (defaults 3 / 4 / 4; outer height one cell) and also take `outline`, `outlineColor`, `filled`: each ComboBox owns fill and outline
+    brushes as its permanent Background / BorderBrush and as its state resources (**hover / press look UNVERIFIED by eye**).
+  - **Width model** (owner, 2026-10-31/11-01): `window.widthPercent` default 40 of the work area's REAL pixels; `minWidth` 384 and
+    `maxWidth` 2304 (20% of 1920, 60% of 3840), `width` (hand resize) and `chatWidth` are real pixels too; Windows scaling is
+    ignored for widths, heights stay in scaled units (DIP). `chatWidthPercent` default 0 (no growth). Settings shows
+    `ScreenScale.Note` (pixels, scale, scaled interface size) above the button rows and `ScreenScale.WidthLine` under the width
+    controls. Owner's screen: 2880 x 1800 at 200% (1440 x 900 scaled units). Open item: `PanelPlacement.Rescale` keeps a pinned
+    panel's size in scaled units across monitors of different scale.
+  - **Reference layouts** `ToolbarProfiles`, drawn by self-test steps P01..P47 (PNGs in `~/.hotline/logs/selftest/`): P35-P45 repeat
+    the shipped-width profiles at 460 DIP (`ToolbarPlan.WidthForButtons(11)`), P46-P47 are the outlined-picker profiles. The
+    self-test checks row height 36, picker height 34 and border thickness, and logs ONE final line
+    `selftest complete: N checks, M failed` (M excludes the deliberate simulated failure); `tests/smoke/smoke.ps1` waits for it.
   - **Settings files are read field by field** (`LenientReader`; `SettingsStore.SettingsProblems` / `SettingsError`; notice tag
-    `settings-problems`; Advanced-page InfoBar). `Deserialize<HotlineSettings>` is gone from the read path. Old settings.json
-    versions are no longer migrated or archived (no `settings.json.old`; `FileArchive` remains for the Settings save buttons;
-    `.bak` copies remain; the inline `chat.backends` split into connection files is not version-gated). A syntax error gives a `.bad` copy.
+    `settings-problems`; Advanced-page InfoBar); old settings.json versions are not migrated; schema v14; `window.layout` is gone;
+    `window.theme` / `window.accent` are documented. A syntax error gives a `.bad` copy.
+  - **Files and safety (G3 / G4).** `BackupFiles.CopyStamped` makes a timestamped `.bak` (newest 10) before settings.json, a
+    connection file or toolbar.json is replaced when the file is not what Hotline last wrote; "no backup, no write". `SettingsStore`
+    remembers each connection's source path, saves back to it and rejects colliding destinations; only explicit removals delete files
+    (`Update` merges a fresh snapshot first). `SettingsService.Update` returns the problems and raises `SaveFailed`;
+    `SettingsService.Reset` returns a `ResetResult`; a locked settings.json at startup still loads the connections. Import validates
+    with the same lenient readers as loading; export writes a temp file then moves it, keeps ratio limits and reports enumeration
+    failures. The toolbar editor compares `ToolbarFile.Fingerprint` before saving and reloads with a notice if the file changed;
+    picture replace is transactional (`icons\.<id>.prev`, Commit / Rollback) and the watcher also sees `icons\*.png`. Toolbar
+    warnings are resx keys `BarW_*` (capped at 10 lines in Settings). Built-in controls have `AutomationProperties.Name`. The
+    `hotline://selftest` options `?tools` / `?selection` need the marker file `~/.hotline/.allow-selftest-extras`. `async void`
+    handlers in Settings / `ProviderBar` are guarded (`SettingsWindow.Fail`). Damaged history records are skipped one by one. A
+    custom button whose `text` starts `/resume ` no longer runs the command (literal-insertion flag in `Composer`). Full-height mode
+    applies only during a conversation.
   - **Export/import:** Settings › Backup; `SettingsPackage` (zip, manifest format 1; categories Settings / Toolbar / Mcp / Sounds /
-    Connections / Actions / Prompts; limits 400 entries, 8 MB per entry, 64 MB total; zip-slip rules; import never deletes and
-    backs replaced files up to `backups\import-<time>`; API keys never exported).
-  - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)).
-  - 26H2: agent connectors are still a Windows preview (This PC says "preview, not delivered" here: the `Mcp` registry key but
-    no `odr.exe`). Phi Silica / Windows AI APIs / `odr.exe` discovery: **deferred, maybe never** (Hotline's on-device route is a
-    local API connection).
+    Connections / Actions / Prompts; limits 400 entries, 8 MB per entry, 64 MB total; zip-slip rules; import never deletes and backs
+    replaced files up to `backups\import-<time>`; API keys never exported).
+  - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)). 26H2 agent
+    connectors are still a Windows preview (no `odr.exe` on this PC); Phi Silica / Windows AI APIs: deferred, maybe never.
   - **Security pass** (multi-model audit, verified, fixed with tests): UNC/device paths refused (`SafeDirectory`,
-    `AppActionRequest.IsSafeLocalImagePath`), history ids validated (`HistoryIds`), response-size caps, chat-only isolation
-    flags always applied and tool pre-approval flags dropped from launch flags, CLI output capped, `ShellOpen` limited to
-    Hotline's own files, MCP `.exe` started directly and `cmd.exe` refused for unsafe characters, SVG `style` allow-listed with
-    depth/size caps, `mcp.json` duplicate keys and `BackupFiles.Prune` (newest ten), `env:` in the release workflow, `LogText`
-    (secrets redacted, capped, link queries never logged).
-  - **Review fixes X1-X4 (merged; `git log --grep "Review"`):** `App.xaml.cs` and `SettingsWindow` split into partial files, big
-    Core classes split one concern per file (`ApiCommon`, `McpConfig`, `McpProcess`, `BoundedLineReader`, `CliTranscripts` readers),
-    SSE final event at EOF, odd JSON shapes in Gemini/OpenAI streams, Claude Code start-up pipe errors, locked files in history
-    prune and memory append, non-string `mcp.json` fields, prompt `Default` name case, clipboard memory, Continue in failures,
-    nesting guard and owned ids on settings reload, the xhigh/ultra effort mapping.
-  - **Tests:** ~2545 Core tests, `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it), `hotline://selftest` (builds every
-    settings page). The test suite was consolidated once (~10%: most reviewer-proposed deletions were rejected); [TESTING.md](TESTING.md)
-    has the hand-test list. The coverage tooling is not in the repo.
+    `AppActionRequest.IsSafeLocalImagePath`), history ids validated (`HistoryIds`), response-size caps, chat-only isolation flags
+    always applied and tool pre-approval flags dropped, CLI output capped, `ShellOpen` limited to Hotline's own files, MCP `.exe`
+    started directly and `cmd.exe` refused for unsafe characters, SVG `style` allow-listed, `LogText` (secrets redacted, link queries
+    never logged).
+  - **Reviews done:** X1-X4 (`git log --grep "Review"`) and, on 2026-10-31, Opus (core + app) and Codex Astra high (whole repo) plus
+    Gemini Flash; the verified findings are fixed and merged, what is left is under *Deferred* below. A fresh review after S1 and the
+    feature jobs is planned before 1.0.
+  - **Tests:** Core unit tests (count not rechecked here), `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it),
+    `hotline://selftest`. The suite was consolidated once (~10%: most proposed deletions were rejected); [TESTING.md](TESTING.md)
+    has the hand-test list.
   - **Not hand-tested yet (owner):** mouse drags (inside and between groups, to "Not shown", across monitors and DPI), the "..." menu
-    opening Prompt / Continue in and surviving a `toolbar.json` change, outline / filled / sizes in light, dark and contrast themes,
-    24 custom buttons at 320 DIP, Alt-drags across mixed-DPI monitors, and the Copilot key still arriving after the 26H2 upgrade.
+    (Prompt / Continue in, surviving a `toolbar.json` change), outlined pickers' hover / press, outline / filled / widths in light,
+    dark and contrast themes, 24 custom buttons at a narrow panel, the pixel width model at 150% and 200%, Alt-drags across
+    mixed-DPI monitors, and the Copilot key still arriving after the 26H2 upgrade.
 - **PR #29 `continue-in-targets` / `personal/gemini-web` (ships as 0.5):** Continue in to web pages, Open WebUI (a real chat) and
   apps, from a shared list or per connection (plan `2026-10-15-continue-in-targets.md`). Merge `main` into it first: it conflicts
   in the 17 `Strings*.resx` (keep both sides), `App.xaml.cs`, `SettingsWindow.xaml.cs` and this file. Hand tests:
@@ -103,7 +120,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Next work
 
-1. **Merge PR #9 (0.4)** once the owner has hand-tested the list above.
+1. **Merge PR #9 (0.4)** once the owner has hand-tested the list above (it fast-forwards `main`). Then S1 (schema freeze) and the other
+   1.0 jobs, in the order given in [1.0-plan/README.md](1.0-plan/README.md).
 2. **0.5 (owner's scope):** Continue in (PR #29, above); region capture on multi-monitor / mixed DPI; multi-monitor behaviour of the
    bar; moving the bar and how it acts when pinned; the desktop hand test (clone, dev certificate per README,
    `scripts/install.sh`); the shipped sound. Bump `version.txt` to 0.5 when it merges.
@@ -201,6 +219,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **OpenSSL on Windows writes `\r\n`:** strip `\r` too when making password files (`tr -d '\r\n'`), or signtool sees a different password.
 - **MCP SDK 2.2.0:** `StreamClientTransport(serverInput, serverOutput)`: the first stream is the one written to (the server's stdin).
 
+**Child processes (no console flashing)**
+- Only launches with `CreateNoWindow = true` avoid a visible console (`CliRunner`, `LineProcess`, `McpProcess` all do); `ContinueIn`
+  opens a console on purpose. Never wrap a child in `cmd /c`; kill whole process trees (job object).
+
 **The CLIs**
 - **CLI histories:** Claude Code `~/.claude/projects/<folder>/<session>.jsonl` (type user/assistant, `message.content` string or blocks;
   skip `isMeta`, `isSidechain`, `tool_result`); Codex `~/.codex/sessions/YYYY/MM/DD/rollout-*-<thread>.jsonl` (`response_item` ›
@@ -213,6 +235,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   `--no-session-persistence` keeps its resume list clean.
 
 **Working with the tools (this machine)**
+- The Agent tool's worktree isolation needs the cwd spelled `C:\Users\pmadd\Git\...` (capital G); otherwise create worktrees by hand
+  with `git worktree add`. The auto-mode classifier blocks copying files out of `~/.hotline` into the repo (build fixtures from code
+  defaults). Python run from bash cannot read `/tmp`. Translations: `agy --model gemini-3.8-flash-high -p "Do NOT use any tools ..."`
+  in batches, validated for `{n}` placeholders and file names. Use the `hold` skill for long runs.
 - A shell heredoc given to the Bash tool collapses backslashes (`\n` becomes a newline, `\b` a backspace), and a non-raw Python string
   turns `\r`, `\a`, `\n` in Windows paths into control characters: write C#, resx or script text that contains backslashes with the
   Write/Edit tools, or use raw strings / `chr(92)`. Python `/tmp` and bash `/tmp` are different folders here. `rm -f "$P"/*` is

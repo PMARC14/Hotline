@@ -60,7 +60,7 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       (`"model": { "outline": false }`) switches one off; an old `toolbar.json` with `"style": { "size": "normal" }` loads with no warning.
 - [ ] Add a custom button that runs a quick action and one that inserts text (with and without Send): both work; delete the quick
       action's file → a notice, not a crash. A button called "Spacer" gets another id. A custom button with a PNG picture shows it.
-- [ ] Narrow the panel to 320 DIP with many buttons: what doesn't fit moves into a "..." menu; widen it: they come back; Pin, Prompt and
+- [ ] Narrow the panel to its minimum (384 px) with many buttons: what doesn't fit moves into a "..." menu; widen it: they come back; Pin, Prompt and
       Continue in work from the menu; no flicker or blank panel.
 - [ ] The "..." button's box (card above "Not shown"): drag a button onto it and press "Move to the ... button's box" on another (with no
       `more` placed, one appears at the end of the bottom-right group); the bar loses those buttons and `more` opens them in order (Pin
@@ -89,8 +89,8 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 
 ### Panel size and cell grid
 - [ ] Padding is 10 DIPs on all four sides; the Alt grips still sit on the outer edge.
-- [ ] The default panel is about a quarter of the screen wide (460 DIP at 1920 px, 100%) and the default bar fits it: nothing in the
-      "..." menu, three pickers filling the top row.
+- [ ] The default panel is 40% of the screen's real pixels wide (768 px at 1920 px; never under 384 px) and the default bar fits it at
+      100% scaling: nothing in the "..." menu, three pickers filling the top row. At 200% scaling the same panel holds fewer cells and uses "...".
 - [ ] Every row is one cell (36 DIP) high whatever the widths (compact, wide, `width` 0.5-4, custom buttons, outlined or filled pickers); pickers are as tall as
       buttons and carry the bar's outline (the self-test checks all of it after every look step, P46 and P47 included, and logs `selftest FAILED` otherwise).
 - [ ] The Accent swatch (and "Like the bar") in Settings › Button rows matches the outline colour drawn on the bar (Hotline purple by default;
