@@ -112,6 +112,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         var userUp = popup.GrowsUp;
         Action? stopCounting = null;
         var errorsBefore = log.ErrorCount;
+        var expectedErrors = 0; // errors the self-test provokes on purpose (the simulated failed answer logs one)
         var checks = 0;
         try
         {
@@ -163,6 +164,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await CheckOcrAsync();
             apply(new AssistantStarted("st-b", "Self test"));
             apply(new AssistantFailed("st-b", BackendErrorKind.Failed, "simulated failure"));
+            expectedErrors++;
             await Step("failed answer");
             log.Info($"selftest ok: {transcript.ParagraphCount} paragraphs, {transcript.EmbeddedControlCount} embedded controls");
             rebuild(); // the full rebuild path (theme/font change)
@@ -319,7 +321,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             newChat();
             popup.EndOffscreen();
             // The one marker tests/smoke/smoke.ps1 waits for: always written last, whatever failed (every failure logged an error).
-            log.Info($"selftest complete: {checks} checks, {log.ErrorCount - errorsBefore} failed");
+            log.Info($"selftest complete: {checks} checks, {Math.Max(0, log.ErrorCount - errorsBefore - expectedErrors)} failed");
         }
     }
 
