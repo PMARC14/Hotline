@@ -28,6 +28,8 @@ same files). Comments and trailing commas are allowed.
 | `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json, kept when Settings replaces a file Hotline did not write itself (a hand edit, with its comments). `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
+**An old inline connection list** (a `chat.backends` array in `settings.json`, from before connections were files) is split into `connections\` files the first time such a file is read; `settings.json` is copied to a stamped `.bak` first and the connection files are never overwritten.
+
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current one and
 Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset settings** puts
 settings.json and toolbar.json back to the defaults (connections stay); **Reset everything** also removes the connections and their
