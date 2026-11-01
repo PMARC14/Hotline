@@ -43,6 +43,9 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         var resume = profile.KeepCliSessions && Resume is { } r && CliSession.IsValidId(r.Id) ? r : null;
         var fresh = false;
         var resuming = false;
+        // Inherit mode has no agent file: the prompt rides in the message, so a changed one (edited, memory added) is
+        // sent again even when the restarted process resumes the conversation.
+        var promptChanged = _startedPrompt is not null && currentPrompt != _startedPrompt;
         if (_process is null || _process.HasExited || currentPrompt != _startedPrompt // prompt file edited / switched: restart so it applies now
             || (resume is not null ? resume.Id != _sessionId : prior.Count != _knownCount || (prior.Count > 0 && prior[0].Id != _knownFirstId)))
         {
@@ -59,12 +62,13 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         IReadOnlyList<string> images = workspace.SaveImages(user.Id, user.Attachments.Where(a => a.Kind == AttachmentKind.Image).ToList());
         var texts = user.Attachments.Where(a => a.Kind == AttachmentKind.Text).Select(a => (a.Name, a.AsText())).ToList();
         var inheritMode = profile.Tools == ToolMode.Inherit;
-        if (inheritMode) images = images.Select(p => Path.Combine(workspace.Root, p.Replace('/', Path.DirectorySeparatorChar))).ToList();
+        // agy runs in the home folder (or the user's own), so the added workspace's files go by full path.
+        images = images.Select(p => Path.Combine(workspace.Root, p.Replace('/', Path.DirectorySeparatorChar))).ToList();
 
         for (var attempt = 0; ; attempt++)
         {
             var prompt = AgyProtocol.ComposePrompt(user.Text, images, texts, fresh ? prior : Array.Empty<ChatMessage>(),
-                fresh && inheritMode ? currentPrompt : null);
+                (fresh || promptChanged) && inheritMode ? currentPrompt : null);
             var process = _process!;
             // agy has no "cancel turn" message, so cancelling kills the process (the next turn resumes or replays).
             // Stop explicitly where cancellation is observed: a ct.Register callback can be unregistered before it
@@ -104,7 +108,9 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
                     yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
                 }
             }
-            if (!resumeFailed && resuming && parser.Error is not null && !answered) resumeFailed = true;
+            // Only a plain failure means the conversation couldn't be resumed; sign-in, quota… are said as they are.
+            if (!resumeFailed && resuming && parser.Error is { } resumeError && !answered
+                && AgyErrors.Map(resumeError) is { Kind: BackendErrorKind.Failed }) resumeFailed = true;
 
             if (resumeFailed)
             {
@@ -134,12 +140,14 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
         workspace.Ensure(prompt);
         _startedPrompt = prompt;
         var inherit = profile.Tools == ToolMode.Inherit;
-        var cwd = inherit ? WorkingDirectory() : workspace.Root;
-        if (resume is { WorkingDirectory: { Length: > 0 } was } && Directory.Exists(was)) cwd = was; // where it began
-        var args = AgyProtocol.BuildArgs(profile, inherit ? workspace.Root : null).ToList();
+        // Chat only runs in the home folder too (so `agy --conversation` from a home terminal finds it); the workspace
+        // (the hotline agent, attachments) is added to it.
+        var cwd = inherit ? WorkingDirectory() : homeDirectory;
+        if (resume is { WorkingDirectory: { Length: > 0 } was } && Hotline.Core.Platform.SafeDirectory.IsLocal(was) && Directory.Exists(was)) cwd = was; // where it began
+        var args = AgyProtocol.BuildArgs(profile, workspace.Root).ToList();
         if (resume is not null) args.AddRange(["--conversation", resume.Id]);
-        // Group new chat-only conversations in the "Hotline" project; leave the user's own folders (Inherit) alone.
-        else if (!inherit && projects is not null) args.AddRange(projects.ArgsFor(cwd));
+        // Group new chat-only conversations in the "Hotline" project when it exists; leave the user's own folders alone.
+        else if (!inherit && projects is not null) args.AddRange(projects.ArgsFor(workspace.Root));
         _process = processes.Start(exe, args, cwd);
         _cwd = cwd;
         _sessionId = null;

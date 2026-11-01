@@ -146,11 +146,9 @@ internal static class ClipboardCopy
         var h = ClipboardNative.GlobalAlloc(0x0002 /* GMEM_MOVEABLE */, (nuint)Math.Max(1, data.Length));
         if (h == 0) return;
         var p = ClipboardNative.GlobalLock(h);
-        if (p != 0)
-        {
-            Marshal.Copy(data, 0, p, data.Length);
-            ClipboardNative.GlobalUnlock(h);
-        }
+        if (p == 0) { ClipboardNative.GlobalFree(h); return; } // never hand the clipboard memory we couldn't fill
+        Marshal.Copy(data, 0, p, data.Length);
+        ClipboardNative.GlobalUnlock(h);
         if (ClipboardNative.SetClipboardData(format, h) == 0) ClipboardNative.GlobalFree(h); // on success the system owns it
     }
 

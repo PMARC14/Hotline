@@ -3,26 +3,23 @@ using System.Text.Json;
 namespace Hotline.Core.Backends.Agy;
 
 /// <summary>
-/// Groups Hotline's agy conversations in one agy project. agy names a project after the folder it was created in
-/// (Hotline's chat-only folder is called "Hotline") and keeps it in ~/.gemini/config/projects/&lt;id&gt;.json with that
-/// folder. Hotline only reads those files: a new conversation joins the project for its folder, or creates it with
-/// --new-project when there is none yet. Resumed conversations get no project flags, so one the user moved elsewhere
-/// stays there.
+/// Groups Hotline's agy conversations in one agy project ("Hotline", created by earlier versions, which ran agy in a
+/// folder of that name). agy keeps projects in ~/.gemini/config/projects/&lt;id&gt;.json. Hotline only reads those files.
+/// Resumed conversations get no project flags, so one the user moved elsewhere stays there.
 /// </summary>
-public sealed class AgyProjects(string projectsDirectory)
+public sealed class AgyProjects(string projectsDirectory, params IReadOnlyList<string> legacyFolders)
 {
-    private bool _created;
-
     public static string DirectoryFor(string homeDirectory) => Path.Combine(homeDirectory, ".gemini", "config", "projects");
 
-    /// <summary>Flags for a new conversation run in <paramref name="folder"/>.</summary>
-    public IReadOnlyList<string> ArgsFor(string folder)
-    {
-        if (Find(folder) is { } id && Chat.CliSession.IsValidId(id)) return ["--project", id];
-        if (_created) return []; // asked agy to create it once and still can't see it: don't make one per chat
-        _created = true;
-        return ["--new-project"];
-    }
+    /// <summary>
+    /// Flags for a new chat-only conversation: the project holding <paramref name="folder"/> (Hotline's workspace) or
+    /// one of the legacy folders (earlier versions' workspace, where agy made the "Hotline" project). None when there is
+    /// no such project: Hotline never creates one, since agy would name it after the home folder. Never matched by
+    /// name: the user may have a project of their own called Hotline.
+    /// </summary>
+    public IReadOnlyList<string> ArgsFor(string folder) =>
+        legacyFolders.Prepend(folder).Select(Find).FirstOrDefault(id => id is not null && Chat.CliSession.IsValidId(id)) is { } found
+            ? ["--project", found] : [];
 
     /// <summary>The ID of the agy project that holds <paramref name="folder"/>, if any.</summary>
     public string? Find(string folder)

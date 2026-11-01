@@ -27,50 +27,74 @@ public sealed partial class SettingsWindow
         var chat = _settings.Current.Chat;
         // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
         if (chat.Backends.All(b => b.Id != _selectedConnection))
-            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends[0].Id;
+            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends.FirstOrDefault()?.Id;
+        var any = _selectedConnection is not null; // every connection can be removed; then there's nothing to act on
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
         var addMenu = new MenuFlyout();
         foreach (var type in ConnectionTypes.All)
         {
             var item = new MenuFlyoutItem { Text = type.DisplayName };
-            item.Click += (_, _) => { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); };
+            item.Click += (_, _) =>
+            {
+                try { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); }
+                catch (Exception ex) { Fail("adding a connection failed", ex); }
+            };
             addMenu.Items.Add(item);
         }
         add.Flyout = addMenu;
-        var duplicate = new Button { Content = Strings.Conn_Duplicate };
+        var duplicate = new Button { Content = Strings.Conn_Duplicate, IsEnabled = any };
         duplicate.Click += (_, _) =>
         {
-            var source = _selectedConnection!;
-            string? copyId = null;
-            _settings.Update(s => copyId = ConnectionEditor.Duplicate(s.Chat, source).Id);
-            if (_secrets.Get(SecretKeys.ApiKey(source)) is { } key) _secrets.Set(SecretKeys.ApiKey(copyId!), key);
-            _selectedConnection = copyId;
-            ShowPage("Connections");
+            try
+            {
+                var source = _selectedConnection!;
+                string? copyId = null;
+                _settings.Update(s => copyId = ConnectionEditor.Duplicate(s.Chat, source).Id);
+                if (_secrets.Get(SecretKeys.ApiKey(source)) is { } key) _secrets.Set(SecretKeys.ApiKey(copyId!), key);
+                _selectedConnection = copyId;
+                ShowPage("Connections");
+            }
+            catch (Exception ex) { Fail("duplicating a connection failed", ex); }
         };
-        var remove = new Button { Content = Strings.Common_Remove, IsEnabled = chat.Backends.Count > 1 };
+        var remove = new Button { Content = Strings.Common_Remove, IsEnabled = any };
         remove.Click += async (_, _) =>
         {
             var id = _selectedConnection!;
             var dialog = new ContentDialog
             {
-                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle, Content = chat.Backends.First(b => b.Id == id).Name,
+                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
+                Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
+                    ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, chat.Backends[0].Name), TextWrapping = TextWrapping.Wrap }
+                    : chat.Backends.First(b => b.Id == id).Name,
                 PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
-            _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
-            _secrets.Set(SecretKeys.ApiKey(id), null);
-            await _invalidate(id);
-            _selectedConnection = null;
-            ShowPage("Connections");
+            try
+            {
+                _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
+                _secrets.Set(SecretKeys.ApiKey(id), null);
+                _selectedConnection = null;
+                ShowPage("Connections"); // before the wait: the old page's buttons still point at the removed connection
+                await _invalidate(id);
+            }
+            catch (Exception ex) { Fail("removing a connection failed", ex); }
         };
-        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = _selectedConnection != chat.DefaultBackend };
-        makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };
+        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
+        makeDefault.Click += (_, _) =>
+        {
+            try { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); }
+            catch (Exception ex) { Fail("choosing the default connection failed", ex); }
+        };
         Button MoveButton(string glyph, string tip, int delta)
         {
-            var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 } };
+            var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
-            b.Click += (_, _) => { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); };
+            b.Click += (_, _) =>
+            {
+                try { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); }
+                catch (Exception ex) { Fail("moving a connection failed", ex); }
+            };
             return b;
         }
         PageHost.Children.Add(new StackPanel
@@ -79,6 +103,8 @@ public sealed partial class SettingsWindow
             Children = { add, duplicate, remove, makeDefault, MoveButton("\uE74A", Strings.Conn_MoveUp, -1), MoveButton("\uE74B", Strings.Conn_MoveDown, +1) },
         });
 
+        if (!any)
+            PageHost.Children.Add(new TextBlock { Text = Strings.Conn_None, TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 8, 0, 0) });
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, Margin = new Thickness(0, 8, 0, 8) };
         foreach (var p in chat.Backends)
         {
@@ -147,8 +173,8 @@ public sealed partial class SettingsWindow
                 var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
                 var updated = Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
                     Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules);
-                // Keep the user's original file once (never overwritten by later presses), then replace atomically.
-                if (json is not null && !File.Exists(agySettings + ".hotline-original.bak")) File.Copy(agySettings, agySettings + ".hotline-original.bak");
+                // Keep the file as it was (.old, .old2, ...: hand edits made since an earlier press are never lost), then replace atomically.
+                if (json is not null && updated != json) FileArchive.KeepOld(agySettings);
                 File.WriteAllText(agySettings + ".tmp", updated);
                 File.Move(agySettings + ".tmp", agySettings, overwrite: true);
                 summary.Text = Summary();
@@ -191,15 +217,25 @@ public sealed partial class SettingsWindow
     }
 
     /// <summary>A number setting that can be left empty (= the model's default).</summary>
-    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set)
+    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set, Func<double?> kept)
     {
         var box = new NumberBox
         {
             Value = value ?? double.NaN, Minimum = min, Maximum = max, SmallChange = step, LargeChange = step * 10,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, PlaceholderText = placeholder, MinWidth = 160,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, PlaceholderText = placeholder, MinWidth = 160,
             ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
         };
-        box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+        box.ValueChanged += async (_, e) =>
+        {
+            try
+            {
+                await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+                // Saving normalises (a temperature of 5 is kept as 2): show what was kept, not what was typed.
+                var now = kept() ?? double.NaN;
+                if (!(double.IsNaN(now) && double.IsNaN(box.Value)) && now != box.Value) box.Value = now;
+            }
+            catch (Exception ex) { Fail("saving the connection failed", ex); }
+        };
         return box;
     }
 
@@ -211,8 +247,12 @@ public sealed partial class SettingsWindow
 
         async Task Save(Action<BackendProfile> change)
         {
-            _settings.Update(_ => change(p));
-            await _invalidate(p.Id);
+            try
+            {
+                _settings.Update(_ => change(p));
+                await _invalidate(p.Id);
+            }
+            catch (Exception ex) { Fail("saving the connection failed", ex); } // runs from async void handlers
         }
 
         TextBox Text(string? value, string placeholder, Action<string?> set)
@@ -244,7 +284,8 @@ public sealed partial class SettingsWindow
                 catch (Exception) { keyBox.Header = Strings.Conn_KeySaveFailed; return; }
                 keyBox.Password = "";
                 keyBox.PlaceholderText = Strings.Conn_KeySaved;
-                await _invalidate(p.Id);
+                try { await _invalidate(p.Id); }
+                catch (Exception ex) { Fail("refreshing the connection failed", ex); }
             };
             host.Children.Add(Card(Strings.Conn_ApiKey, Strings.Conn_ApiKey_Desc, keyBox));
         }
@@ -349,10 +390,10 @@ public sealed partial class SettingsWindow
         host.Children.Add(ConnectionContinueIn(p, Save));
         if (info.Has(ConnectionField.MaxTokens))
             host.Children.Add(Card(Strings.Conn_MaxTokens, Strings.Conn_MaxTokens_Desc,
-                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null))));
+                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null), () => p.MaxTokens)));
         if (info.Has(ConnectionField.Temperature))
             host.Children.Add(Card(Strings.Conn_Temperature, Strings.Conn_Temperature_Desc,
-                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null))));
+                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null), () => p.Temperature)));
 
         var def = Strings.Common_Default; // the "no override" entry (a typed "Default" in English means the same)
         bool IsDefault(string? v) => string.IsNullOrWhiteSpace(v) || v == def || v == "Default";
@@ -366,9 +407,11 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                filling = true;
                 var list = await _models.GetAsync(p, refresh, CancellationToken.None);
-                var current = model.SelectedItem as string ?? def;
+                // Only while refilling: a pick made during the (slow) load must still save. A typed model isn't an item,
+                // so its text is the current choice.
+                filling = true;
+                var current = model.SelectedItem as string ?? (string.IsNullOrWhiteSpace(model.Text) ? def : model.Text.Trim());
                 model.Items.Clear();
                 model.Items.Add(def);
                 foreach (var m in list) model.Items.Add(m.Id);

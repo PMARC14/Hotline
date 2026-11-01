@@ -29,19 +29,21 @@ public static class ConnectionEditor
         {
             Id = UniqueId(chat, source.Id), Type = source.Type, Name = UniqueName(chat, source.Name + " (copy)"),
             Model = source.Model, Effort = source.Effort, Endpoint = source.Endpoint, CliPath = source.CliPath,
-            Agent = source.Agent, ExtraArgs = source.ExtraArgs, Args = source.Args is null ? null : [.. source.Args], KeepCliSessions = source.KeepCliSessions, KeepInHotline = source.KeepInHotline, MaxTokens = source.MaxTokens, Temperature = source.Temperature, RefusalFallback = source.RefusalFallback, Tools = source.Tools, // ApproveAllTools is never copied: it needs its own confirmation
+            Agent = source.Agent, ExtraArgs = source.ExtraArgs, Args = source.Args is null ? null : [.. source.Args], KeepCliSessions = source.KeepCliSessions, KeepInHotline = source.KeepInHotline, MaxTokens = source.MaxTokens, Temperature = source.Temperature, Images = source.Images, RefusalFallback = source.RefusalFallback, Tools = source.Tools, // ApproveAllTools is never copied: it needs its own confirmation
             WorkingDirectory = source.WorkingDirectory, Prompt = source.Prompt,
         };
         chat.Backends.Insert(chat.Backends.IndexOf(source) + 1, copy);
         return copy;
     }
 
-    /// <summary>Removes a connection; the last one can't be removed. The default moves to the first remaining one.</summary>
+    /// <summary>
+    /// Removes a connection. The default moves to the first remaining one; removing the last leaves none chosen (the
+    /// panel then asks for one, as on first run).
+    /// </summary>
     public static bool Remove(ChatSettings chat, string id)
     {
-        if (chat.Backends.Count <= 1) return false;
         if (chat.Backends.RemoveAll(b => b.Id == id) == 0) return false;
-        if (chat.DefaultBackend == id) chat.DefaultBackend = chat.Backends[0].Id;
+        if (chat.DefaultBackend == id) chat.DefaultBackend = chat.Backends.FirstOrDefault()?.Id ?? "";
         return true;
     }
 

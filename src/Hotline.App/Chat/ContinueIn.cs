@@ -18,37 +18,46 @@ namespace Hotline.App.Chat;
 internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, string handoffDirectory, Func<string, ValueTask> stopBackend,
     FileLog log, ISecretStore secrets, HttpClient http, Action<string> notify)
 {
-    public sealed record Target(string Label, Func<Task> Run);
+    /// <summary>One menu entry; <paramref name="More"/>: listed under "More…".</summary>
+    public sealed record Target(string Label, Func<Task> Run, bool More = false);
 
     public IReadOnlyList<Target> Targets()
     {
-        var targets = new List<Target>();
-        BackendType? own = null;
-        if (chat.CurrentSession is { } current && Profile(current.BackendId) is { } profile && CliHandoff.CanResume(profile.Type)
-            && Locate(profile) is { } exe)
-        {
-            own = profile.Type;
-            var command = CliHandoff.Resume(profile.Type, exe, current.Session);
-            targets.Add(new(profile.Name, async () =>
-            {
-                await stopBackend(profile.Id); // one process per conversation: Hotline lets go before the terminal takes it
-                Launch(command);
-                chat.NewChat(); // the conversation now lives in the terminal; Hotline must not write into it as well
-            }));
-        }
-        // Another CLI reads the chat from a file: only when the panel has all of it (not a chat reopened from a record).
-        if (chat.Messages.Count == 0 || !chat.HasWholeTranscript) return targets;
+        // The chat's own CLI comes from its connection, with or without a conversation yet (CliHandoff.Choices). Its
+        // CLI conversation counts only while the chat is still on that connection: after a switch, later turns aren't in
+        // it, so the chat goes over as a handoff instead.
+        var own = chat.CurrentSession is { } s && s.BackendId == chat.BackendId ? s : ((CliSession Session, string BackendId)?)null;
+        var profile = Profile(chat.BackendId);
+        var exes = new Dictionary<BackendType, (BackendProfile Profile, string Exe)>();
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
         {
-            if (type == own) continue;
-            var other = settings.Chat.Backends.FirstOrDefault(b => b.Type == type) ?? new BackendProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
-            if (Locate(other) is not { } otherExe) continue;
-            targets.Add(new(other.Name, () =>
+            var p = profile?.Type == type ? profile
+                : settings.Chat.Backends.FirstOrDefault(b => b.Type == type) ?? new BackendProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
+            if (Locate(p) is { } exe) exes[type] = (p, exe);
+        }
+        var targets = new List<Target>();
+        var choices = CliHandoff.Choices(profile?.Type, own is not null,
+            chat.Messages.Count > 0 && chat.HasWholeTranscript, exes.Keys);
+        foreach (var choice in choices)
+        {
+            var (p, exe) = exes[choice.Type];
+            if (choice.Way == CliHandoff.Way.Resume)
             {
-                var file = WriteHandoff();
-                Launch(CliHandoff.Handoff(type, otherExe, file, Path.GetDirectoryName(file)!));
-                return Task.CompletedTask;
-            }));
+                var current = own!.Value;
+                var command = CliHandoff.Resume(choice.Type, exe, current.Session);
+                targets.Add(new(p.Name, async () =>
+                {
+                    await stopBackend(p.Id); // one process per conversation: Hotline lets go before the terminal takes it
+                    Launch(command);
+                    chat.NewChat(); // the conversation now lives in the terminal; Hotline must not write into it as well
+                }));
+            }
+            else
+                targets.Add(new(p.Name, () =>
+                {
+                    Launch(CliHandoff.Handoff(choice.Type, exe, WriteHandoff(), Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
+                    return Task.CompletedTask;
+                }, choice.More));
         }
         foreach (var target in ContinueTargets.For(Profile(chat.BackendId), settings))
             targets.Add(new(target.Name, () => RunAsync(target)));
@@ -81,7 +90,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
             case ContinueKind.OpenWebUi:
             {
                 var url = target.Url?.Trim() ?? "";
-                if (!Uri.TryCreate(url, UriKind.Absolute, out var baseUrl)) throw new InvalidOperationException(Strings.Continue_NotAWebAddress);
+                if (!Uri.TryCreate(url, UriKind.Absolute, out var baseUrl) || baseUrl.Scheme is not ("http" or "https")) throw new InvalidOperationException(Strings.Continue_NotAWebAddress);
                 var key = secrets.Get(ApiKeyName(url));
                 if (string.IsNullOrWhiteSpace(key)) throw new InvalidOperationException(Strings.Continue_NoKey);
                 if (target.CopyChat) CopyChat(title);
@@ -106,6 +115,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
                 var file = target.Command?.Contains("{file}", StringComparison.Ordinal) == true ? WriteHandoff() : null;
                 var (program, args) = ContinueTargets.FillCommand(target.Command ?? "", ContinueTargets.Values(title, chat.Messages, file, model));
                 if (program.Length == 0) throw new InvalidOperationException(Strings.Continue_NoCommand);
+                if (ContinueTargets.IsBatchFile(program)) throw new InvalidOperationException(Strings.Continue_NoBatch); // cmd.exe would read the chat as commands
                 if (target.CopyChat) CopyChat(title);
                 Launch(new CliCommand(program, args, Environment.GetFolderPath(Environment.SpecialFolder.UserProfile)));
                 break;
@@ -138,11 +148,12 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
     private string WriteHandoff()
     {
         Directory.CreateDirectory(handoffDirectory);
-        foreach (var old in Directory.EnumerateFiles(handoffDirectory, "*.md"))
+        foreach (var old in Directory.EnumerateFiles(handoffDirectory, "hotline-chat-*.md"))
             if (File.GetLastWriteTimeUtc(old) < DateTime.UtcNow.AddDays(-1))
                 try { File.Delete(old); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         var title = HistoryStore.TitleOf(chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User)?.Text ?? "");
-        var file = Path.Combine(handoffDirectory, $"hotline-chat-{chat.ConversationId}.md");
+        var id = HistoryIds.IsSafe(chat.ConversationId) ? chat.ConversationId : Ids.New(); // the id names a file
+        var file = Path.Combine(handoffDirectory, $"hotline-chat-{id}.md");
         File.WriteAllText(file, CliHandoff.Markdown(title, chat.Messages));
         return file;
     }
@@ -153,7 +164,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
         var psi = new ProcessStartInfo(command.Exe)
         {
             UseShellExecute = false, CreateNoWindow = false,
-            WorkingDirectory = Directory.Exists(command.WorkingDirectory) ? command.WorkingDirectory : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            WorkingDirectory = Hotline.Core.Platform.SafeDirectory.IsLocal(command.WorkingDirectory) && Directory.Exists(command.WorkingDirectory) ? command.WorkingDirectory : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         };
         foreach (var a in command.Args) psi.ArgumentList.Add(a);
         using var _ = Process.Start(psi);

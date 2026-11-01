@@ -1,13 +1,13 @@
+using System.Text.RegularExpressions;
 using Hotline.Core.Chat;
 
 namespace Hotline.Core.Backends.Agy;
 
 /// <summary>
-/// agy's working directory: holds the custom "hotline" agent and per-message image attachments.
-/// agy may read files inside its (trusted) workspace without prompting; reads elsewhere are denied
-/// in headless mode, which is the boundary we want.
+/// Added to agy's workspace (--add-dir; agy runs in the home folder): holds the custom "hotline" agent and per-message
+/// image attachments (pruned after a day).
 /// </summary>
-public sealed class AgyWorkspace(string root, TimeProvider clock)
+public sealed partial class AgyWorkspace(string root, TimeProvider clock)
 {
     public string Root { get; } = root;
 
@@ -23,7 +23,7 @@ public sealed class AgyWorkspace(string root, TimeProvider clock)
         ---
         {systemPrompt.Trim()}
 
-        When the user lists attached images under ./attachments, use view_file to look at them.
+        When the user lists attached images, use view_file to look at them.
         Do not run commands, browse the web or edit files in this mode.
         """;
 
@@ -67,7 +67,9 @@ public sealed class AgyWorkspace(string root, TimeProvider clock)
         foreach (var dir in Directory.EnumerateDirectories(AttachmentsDir))
         {
             if (Directory.GetLastWriteTimeUtc(dir) >= cutoff) continue;
-            Directory.Delete(dir, recursive: true);
+            // A folder agy still has open can't be deleted yet: leave it for the next prune.
+            try { Directory.Delete(dir, recursive: true); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { continue; }
             removed++;
         }
         return removed;
@@ -77,6 +79,11 @@ public sealed class AgyWorkspace(string root, TimeProvider clock)
     {
         var invalid = Path.GetInvalidFileNameChars();
         var cleaned = new string(name.Select(c => invalid.Contains(c) || c == ':' ? '_' : c).ToArray()).Trim('.', ' ');
-        return cleaned.Replace("..", "_");
+        cleaned = cleaned.Replace("..", "_");
+        // CON.png, NUL.jpg, COM1.png… are devices to Windows whatever the extension: writing one fails (or goes to the device).
+        return DeviceName().IsMatch(cleaned) ? "_" + cleaned : cleaned;
     }
+
+    [GeneratedRegex(@"^(con|prn|aux|nul|com[0-9]|lpt[0-9])(\..*)?$", RegexOptions.IgnoreCase)]
+    private static partial Regex DeviceName();
 }

@@ -27,14 +27,33 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     /// <summary>Gets the first look at every key (e.g. Esc cancels dictation); true when it handled the key.</summary>
     public Func<VirtualKey, bool>? KeyFilter { get; set; }
 
+    /// <summary>
+    /// The text the program put in the box (a custom button's text, an action): it is literal. While the box still holds exactly
+    /// this, typing-time commands ("/resume " opening the history list) are not interpreted; the first edit by the user ends that.
+    /// </summary>
+    private string? _literal;
+
     public string Text
     {
         get => popup.Input.Text;
         set
         {
+            _literal = value;
             popup.Input.Text = value;
             popup.Input.SelectionStart = value.Length;
         }
+    }
+
+    /// <summary>Puts text at the caret (replacing a selection), as plain text; the caret ends after it.</summary>
+    public void Insert(string text)
+    {
+        var input = popup.Input;
+        var start = Math.Min(input.SelectionStart, input.Text.Length);
+        var end = Math.Min(start + input.SelectionLength, input.Text.Length);
+        var combined = input.Text[..start] + text + input.Text[end..];
+        _literal = combined;
+        input.Text = combined;
+        input.SelectionStart = start + text.Length;
     }
 
     public bool IsReadOnly
@@ -49,7 +68,13 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
         popup.Input.TextChanged += (_, _) => tasks.Guard("quick action suggestions", UpdateSuggestions);
         popup.Input.TextChanged += (_, _) =>
         {
-            if (resumeWhileTyping() && ResumeCommand.TryTyping(popup.Input.Text, out var query)) ResumeTyped?.Invoke(query);
+            var now = popup.Input.Text;
+            if (_literal is not null)
+            {
+                if (now == _literal) return; // inserted by a button, not typed: never a command
+                _literal = null;
+            }
+            if (resumeWhileTyping() && ResumeCommand.TryTyping(now, out var query)) ResumeTyped?.Invoke(query);
         };
         // ListViewItems added directly: ItemClick reports their content (the row), which carries the action too.
         popup.SuggestionsList.ItemClick += (_, e) => { if (e.ClickedItem is FrameworkElement { Tag: QuickAction a }) Complete(a); };
@@ -135,7 +160,9 @@ internal sealed class Composer(PopupWindow popup, PanelTheme theme, QuickActions
     public void SetBusy(bool busy)
     {
         popup.SendButton.Content = busy ? Glyphs.Stop : Glyphs.Send;
-        ToolTipService.SetToolTip(popup.SendButton, busy ? Strings.Composer_Stop : Strings.Composer_Send);
+        var name = busy ? Strings.Composer_Stop : Strings.Composer_Send;
+        ToolTipService.SetToolTip(popup.SendButton, name);
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(popup.SendButton, name); // else the glyph is the name
     }
 
     private void OnPreviewKeyDown(object sender, KeyRoutedEventArgs e)

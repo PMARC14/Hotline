@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
 
@@ -12,7 +13,10 @@ public enum ContinueKind { Web, OpenWebUi, App }
 /// program and arguments, split like a command line. <paramref name="Model"/>: OpenWebUi — the new chat's model (null =
 /// the chat's own). <paramref name="CopyChat"/>: also copy the whole chat to the clipboard first.
 /// </summary>
-public sealed record ContinueTarget(ContinueKind Kind, string Name, string? Url = null, string? Command = null, string? Model = null,
+public sealed record ContinueTarget(ContinueKind Kind, string Name,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Url = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Command = null,
+    [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Model = null,
     bool CopyChat = false);
 
 /// <summary>The values a target's placeholders take: {chat}, {last}, {file}, {model}.</summary>
@@ -78,6 +82,10 @@ public static partial class ContinueTargets
         var parts = Split(Environment.ExpandEnvironmentVariables(command)).Select(p => Fill(p, values, v => v)).ToList();
         return parts.Count == 0 ? ("", []) : (parts[0], parts.Skip(1).ToList());
     }
+
+    /// <summary>.bat and .cmd run through cmd.exe, which would read chat text in their arguments as commands: never started.</summary>
+    public static bool IsBatchFile(string program) =>
+        Path.GetExtension(program.Trim().Trim('"')).Trim() is var ext && (ext.Equals(".bat", StringComparison.OrdinalIgnoreCase) || ext.Equals(".cmd", StringComparison.OrdinalIgnoreCase));
 
     /// <summary>One pass over the template: text put in for one placeholder is never scanned for another.</summary>
     private static string Fill(string template, ContinueValues v, Func<string, string> encode) =>

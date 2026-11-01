@@ -5,17 +5,12 @@ namespace Hotline.Core.Tests;
 
 public class KeyActionResolverTests
 {
-    [Fact]
-    public void Defaults_tap_toggles_and_hold_starts_new_chat()
-    {
-        var s = new ActivationSettings();
-        Assert.Equal(KeyAction.TogglePopup, KeyActionResolver.Resolve(KeyEvent.Tap, s));
-        Assert.Equal(KeyAction.NewChat, KeyActionResolver.Resolve(KeyEvent.HoldStart, s));
-    }
-
-    [Fact]
-    public void Hold_release_does_nothing_in_v1()
-        => Assert.Equal(KeyAction.None, KeyActionResolver.Resolve(KeyEvent.HoldStop, new ActivationSettings()));
+    [Theory]
+    [InlineData(KeyEvent.Tap, KeyAction.TogglePopup)]
+    [InlineData(KeyEvent.HoldStart, KeyAction.NewChat)]
+    [InlineData(KeyEvent.HoldStop, KeyAction.None)] // releasing a hold does nothing in v1
+    public void Defaults_tap_toggles_and_hold_starts_new_chat(KeyEvent e, KeyAction expected)
+        => Assert.Equal(expected, KeyActionResolver.Resolve(e, new ActivationSettings()));
 
     [Fact]
     public void Custom_mapping_is_respected()

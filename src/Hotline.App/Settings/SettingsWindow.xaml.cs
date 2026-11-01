@@ -27,12 +27,16 @@ public sealed partial class SettingsWindow : Window
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private string _mcpPath = "";
     private string? _odrPath;
+    /// <summary>The width (DIP) the panel's button rows have, or would have when it opens (the button rows editor's "Move what doesn't fit"); null in tests.</summary>
+    private readonly Func<double>? _barRoom;
+    /// <summary>The short screen/scaling line shown above the button rows (see <see cref="Hotline.Core.Windowing.ScreenScale"/>); null in tests.</summary>
+    private readonly Func<string>? _screenLine;
 
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
         PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
-        string? mcpPath = null, string? odrPath = null)
+        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null, Func<string>? screenLine = null)
     {
-        (_toolHost, _mcpPath, _odrPath) = (toolHost, mcpPath ?? "", odrPath);
+        (_toolHost, _mcpPath, _odrPath, _barRoom, _screenLine) = (toolHost, mcpPath ?? "", odrPath, barRoom, screenLine);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
@@ -46,8 +50,9 @@ public sealed partial class SettingsWindow : Window
         AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(740 * scale)));
         ApplyTheme();
         _settings.Changed += OnSettingsChanged;
+        _settings.SaveFailed += OnSaveFailed;
         SystemTheme.Changed += OnSettingsChanged;
-        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; SystemTheme.Changed -= OnSettingsChanged; };
+        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 
@@ -64,6 +69,14 @@ public sealed partial class SettingsWindow : Window
     }
 
     private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
+
+    /// <summary>A save left something undone (a file couldn't be backed up or written): said at the top of the page, not only in the log.</summary>
+    private void OnSaveFailed(IReadOnlyList<string> problems) => DispatcherQueue.TryEnqueue(() =>
+        PageHost.Children.Insert(0, new InfoBar
+        {
+            IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
+            Message = string.Join(" ", problems.Take(3)),
+        }));
 
     private void ApplyTheme()
     {
@@ -100,12 +113,16 @@ public sealed partial class SettingsWindow : Window
             case "Tools": BuildToolsPage(); break;
             case "Actions": BuildActionsPage(); break;
             case "About": BuildAboutPage(); break;
+            case "Guide": BuildGuidePage(); break;
+            case "Backup": BuildBackupPage(); break;
             default:
                 var page = Enum.Parse<SettingsPage>(tag);
-                foreach (var item in SettingsSchema.Items.Where(i => i.Page == page)) PageHost.Children.Add(BuildItem(item));
+                foreach (var item in SettingsSchema.Items.Where(i => i.Page == page))
+                    PageHost.Children.Add(BuildItem(item));
                 if (page == SettingsPage.Advanced) BuildAdvancedExtras();
                 if (page == SettingsPage.General) { BuildCopilotKeyCard(); BuildStartupCard(); }
-                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildToolbarSection(); }
+                if (page == SettingsPage.Appearance) { BuildWindowsOverrideNote(); BuildSoundsSection(); }
+                if (page == SettingsPage.Window) BuildToolbarSection();
                 if (page == SettingsPage.Chat) { BuildMemoryCard(); BuildContinueInSection(); }
                 break;
         }
@@ -163,9 +180,20 @@ public sealed partial class SettingsWindow : Window
                 var box = new NumberBox
                 {
                     Minimum = n.Min, Maximum = n.Max, SmallChange = n.Step, LargeChange = n.Step * 10, Value = n.Get(s), Width = 150,
-                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
+                    SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
                 };
-                box.ValueChanged += (_, e) => { if (!double.IsNaN(e.NewValue)) _settings.Update(x => n.Set(x, e.NewValue)); };
+                box.ValueChanged += (_, e) =>
+                {
+                    if (double.IsNaN(e.NewValue)) return;
+                    try
+                    {
+                        _settings.Update(x => n.Set(x, e.NewValue));
+                        // Saving normalises (1% becomes the 20% minimum, a width of 100 becomes 320): show what was kept, not what was typed.
+                        var kept = n.Get(_settings.Current);
+                        if (!double.IsNaN(kept) && kept != box.Value) box.Value = kept;
+                    }
+                    catch (Exception ex) { Fail("saving a setting failed", ex); }
+                };
                 var label = n.Unit is null ? (UIElement)box : new StackPanel
                 {
                     Orientation = Orientation.Horizontal, Spacing = 8,
@@ -256,6 +284,20 @@ public sealed partial class SettingsWindow : Window
             Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(key).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
     }
 
+    /// <summary>
+    /// A failure inside a click or value handler (they run as async void, where an exception would take the app down): logged, and
+    /// shown as a notice at the top of the page. The message is the exception's own text.
+    /// </summary>
+    private void Fail(string what, Exception ex)
+    {
+        _log.Error(what, ex);
+        PageHost.Children.Insert(0, new InfoBar
+        {
+            IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
+            Message = L.F(Strings.Settings_ActionFailed, ex.Message),
+        });
+    }
+
     /// <summary>Says when Windows' contrast theme or transparency switch overrides the colours or backdrop chosen here.</summary>
     private void BuildWindowsOverrideNote()
     {
@@ -297,7 +339,7 @@ public sealed partial class SettingsWindow : Window
                 if (state == Windows.ApplicationModel.StartupTaskState.DisabledByUser)
                     await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
             }
-            else StartupRegistration.Disable();
+            else await StartupRegistration.DisableAsync();
             Refresh();
         };
         PageHost.Children.Add(CardWithStatus(Strings.Settings_Startup, status, toggle));
@@ -368,6 +410,23 @@ public sealed partial class SettingsWindow : Window
             return b;
         }
         var folder = Path.GetDirectoryName(_settingsFile)!;
+        // What the last read of settings.json and the connection files ignored, at the top of the page (like the panel's notice).
+        var problems = _settings.Problems;
+        if (_settings.FileError is not null || problems.Count > 0)
+        {
+            var lines = new List<string>();
+            if (_settings.FileError is { } fileError) lines.Add(fileError + " " + Strings.Settings_NoticeKept);
+            lines.AddRange(problems.Take(15).Select(p => Hotline.Core.Diagnostics.LogText.Clean(p).Replace("\n    ", " ")));
+            if (problems.Count > 15) lines.Add(L.F(Strings.Settings_AndMore, problems.Count - 15));
+            PageHost.Children.Insert(0, new InfoBar
+            {
+                IsOpen = true, IsClosable = false,
+                Severity = _settings.FileError is not null ? InfoBarSeverity.Error : InfoBarSeverity.Warning,
+                Title = Strings.Advanced_ProblemsTitle,
+                Message = Strings.Advanced_ProblemsBody + "\n" + string.Join("\n", lines),
+                ActionButton = Link(Strings.Common_OpenFolder, () => CliRunner.OpenFolder(folder)),
+            });
+        }
         PageHost.Children.Add(Card(Strings.Advanced_SettingsFile, _settingsFile, new StackPanel
         {
             Orientation = Orientation.Horizontal, Spacing = 8,
@@ -377,6 +436,45 @@ public sealed partial class SettingsWindow : Window
         PageHost.Children.Add(Card(Strings.Nav_Connections, L.F(Strings.Advanced_Connections_Desc, connections),
             Link(Strings.Advanced_OpenConnections, () => CliRunner.OpenFolder(connections))));
         PageHost.Children.Add(Card(Strings.Advanced_Logs, _logsDir, Link(Strings.Advanced_OpenLogs, () => CliRunner.OpenFolder(_logsDir))));
+        // Reset, with a backup first; switching between sets of settings is just replacing the files (applied live).
+        async Task ResetAsync(bool everything)
+        {
+            var dialog = new ContentDialog
+            {
+                XamlRoot = Root.XamlRoot, Title = everything ? Strings.Advanced_ResetAllTitle : Strings.Advanced_ResetTitle,
+                Content = new TextBlock { Text = everything ? Strings.Advanced_ResetAllBody : Strings.Advanced_ResetBody, TextWrapping = TextWrapping.Wrap },
+                PrimaryButtonText = Strings.Advanced_ResetConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+            };
+            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
+            try
+            {
+                var result = _settings.Reset(everything);
+                foreach (var id in result.Removed) // every removed connection's key goes, whatever else failed
+                {
+                    try
+                    {
+                        _secrets.Set(SecretKeys.ApiKey(id), null);
+                        await _invalidate(id);
+                    }
+                    catch (Exception ex) { _log.Error("removing a connection's key failed", ex); }
+                }
+                ShowPage("Advanced");
+                PageHost.Children.Insert(0, result.Failed.Count == 0
+                    ? new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Success, Message = L.F(Strings.Advanced_ResetDone, result.Backup) }
+                    : new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Warning, Message = L.F(Strings.Advanced_ResetPartial, result.Backup, string.Join(", ", result.Failed)) });
+            }
+            catch (Exception ex) // also a credential-store failure; this runs fire-and-forget
+            {
+                _log.Error("settings reset failed", ex);
+                PageHost.Children.Insert(0, new InfoBar { IsOpen = true, Severity = InfoBarSeverity.Error, Message = ex.Message });
+            }
+        }
+        PageHost.Children.Add(Card(Strings.Advanced_Reset, L.F(Strings.Advanced_Reset_Desc, folder, Hotline.Core.Settings.SettingsReset.DefaultsPath(folder)),
+            new StackPanel
+            {
+                Orientation = Orientation.Horizontal, Spacing = 8,
+                Children = { Link(Strings.Advanced_ResetSettings, () => _ = ResetAsync(false)), Link(Strings.Advanced_ResetAll, () => _ = ResetAsync(true)) },
+            }));
     }
 
     // ---- prompts page ----------------------------------------------------------------------

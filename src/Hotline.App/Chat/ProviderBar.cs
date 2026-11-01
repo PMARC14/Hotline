@@ -81,8 +81,12 @@ internal sealed class ProviderBar(
         popup.ModelBox.DropDownOpened += (_, _) => _ = LoadModelsAsync();
         popup.EffortBox.SelectionChanged += (_, _) => { if (!_updating && popup.EffortBox.SelectedItem is string e) _ = SetEffortAsync(_effortByLabel.GetValueOrDefault(e, e)); };
         popup.PromptMenu.Opening += (_, _) => BuildPromptMenu();
-        popup.Toolbar.SizeChanged += (_, _) => Layout();
-        popup.ToolbarChanged += () => popup.DispatcherQueue.TryEnqueue(() => { popup.Toolbar.UpdateLayout(); Layout(); });
+        // Never inside a layout pass: sizing the pickers from a size event fed back into that size (a layout cycle, which
+        // stops WinUI drawing the window for good). Queued after layout, once per batch of events.
+        popup.Root.SizeChanged += (_, _) => QueueLayout();
+        popup.Toolbar.SizeChanged += (_, _) => QueueLayout();
+        popup.ToolbarChanged += QueueLayout;
+        popup.TopToolbar.SizeChanged += (_, _) => QueueLayout(); // the pickers may sit in the top row
         Refresh();
         _ = LoadModelsAsync(quiet: true); // preload so the dropdown is complete when first opened
     }
@@ -117,42 +121,63 @@ internal sealed class ProviderBar(
             FillModels(current);
             FillEffort(current);
             ToolTipService.SetToolTip(popup.EffortBox, Strings.Bar_EffortTip);
+            Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(popup.EffortBox, Strings.Bar_EffortTip);
             SetEnabled(_enabled);
         }
         finally { _updating = false; }
-        Layout();
+        QueueLayout();
     }
 
-    private static void NameTip(ComboBox box, string what) =>
+    private static void NameTip(ComboBox box, string what)
+    {
         ToolTipService.SetToolTip(box, box.SelectedItem is string s && s.Trim().Length > 0 ? $"{what}: {s.Trim()}" : what);
-
-    private static readonly string[] HideOrder =["effort", "provider", "model"];
+        Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box, what); // the value is read separately, so the name is the kind of picker
+    }
 
     /// <summary>
-    /// Gives the pickers explicit widths from the space the fixed buttons leave (see ToolbarLayout): the bar never
-    /// reflows when a picker's text changes and the buttons on the right never get pushed off the edge.
+    /// Fits the button rows to the panel (left buttons that don't fit go into the "⋯" menu) and gives the pickers explicit
+    /// widths from the space the buttons leave (see ToolbarPlan.PlanRow): the bar never reflows when a picker's text changes and
+    /// no button gets pushed off the edge.
     /// </summary>
+    private bool _layoutQueued;
+
+    private void QueueLayout()
+    {
+        if (_layoutQueued) return;
+        _layoutQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        {
+            _layoutQueued = false;
+            try
+            {
+                popup.Root.UpdateLayout(); // outside any layout pass: buttons just moved into a row have their widths
+                Layout();
+            }
+            catch (Exception ex) { log.Error("laying out the button rows failed", ex); } // escaping a queued callback ends the process
+        });
+    }
+
     private void Layout()
     {
-        var bar = popup.Toolbar;
-        if (bar.ActualWidth <= 0) return;
-        var fixedWidth = bar.Children.OfType<FrameworkElement>().Where(c => c != popup.PickersPanel && !"spacer".Equals(c.Tag)).Sum(c => c.ActualWidth + c.Margin.Left + c.Margin.Right)
-                         + bar.ColumnSpacing * (bar.ColumnDefinitions.Count - 1);
-        var effortAvailable = popup.EffortBox.Items.Count > 0;
-        var widths = ToolbarLayout.Compute(bar.ActualWidth, fixedWidth, popup.PickersPanel.Spacing,
-            [
-                new("effort", 72, 56, effortAvailable && popup.ToolbarItems.Contains("effort")),
-                new("model", 150, 84, popup.ToolbarItems.Contains("model")),
-                new("provider", 128, 72, popup.ToolbarItems.Contains("provider")),
-            ], HideOrder);
-        Apply(popup.EffortBox, widths["effort"]);
-        Apply(popup.ModelBox, widths["model"]);
-        Apply(popup.ProviderBox, widths["provider"]);
+        // The room is the rows' container width (the panel minus its padding), never a row's own width: that one grows
+        // with the pickers when the buttons don't fit, and sizing from it shrank them a little on every pass.
+        var room = popup.Root.ActualWidth - popup.Root.Padding.Left - popup.Root.Padding.Right;
+        if (room <= 0) return;
+        // Widths are whole button widths (toolbar.json "span"); the pickers on the bar and their minimum are the plan's business
+        // (ToolbarPlan.PlanRow, the same call the tests make): only the effort picker can have nothing to show.
+        List<string> available = ["model", "provider"];
+        if (popup.EffortBox.Items.Count > 0) available.Add("effort");
+        var widths = popup.FitToolbar(room, available);
+        Apply(popup.EffortBox, widths.GetValueOrDefault("effort"));
+        Apply(popup.ModelBox, widths.GetValueOrDefault("model"));
+        Apply(popup.ProviderBox, widths.GetValueOrDefault("provider"));
 
         static void Apply(ComboBox box, double width)
         {
-            box.Visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
-            if (width > 0) box.Width = width;
+            var visibility = width > 0 ? Visibility.Visible : Visibility.Collapsed;
+            if (box.Visibility != visibility) box.Visibility = visibility;
+            var height = ToolbarPlan.Inner(ToolbarPlan.BaseHeight); // as tall as a button (one cell less the inset)
+            if (box.Height != height) box.Height = height;
+            if (width > 0 && box.Width != ToolbarPlan.Inner(width)) box.Width = ToolbarPlan.Inner(width); // the cell's width less its inset (the renderer set the margin); unchanged values never start another layout
         }
     }
 
@@ -195,9 +220,23 @@ internal sealed class ProviderBar(
         }
         else model = text.Trim(); // a typed model id
         if (model == profile.Model && effort == profile.Effort) return;
-        settings.Update(_ => { profile.Model = model; profile.Effort = effort; });
-        await invalidate(profile.Id);
-        log.Info($"model for {profile.Id} = {model ?? "default"}");
+        var (previousModel, previousEffort) = (profile.Model, profile.Effort);
+        try
+        {
+            if (settings.Update(_ => { profile.Model = model; profile.Effort = effort; }) is { Count: > 0 } problems)
+                throw new IOException(string.Join(" ", problems)); // not saved: handled below like any failure
+            await invalidate(profile.Id);
+            log.Info($"model for {profile.Id} = {model ?? "default"}");
+        }
+        catch (Exception ex)
+        {
+            // Called without anyone awaiting it: a failure must not vanish, and the picker must not show a model that was not kept.
+            log.Error($"changing the model for {profile.Id} failed", ex);
+            try { settings.Update(_ => { profile.Model = previousModel; profile.Effort = previousEffort; }); }
+            catch (Exception undo) { log.Error("restoring the previous model failed", undo); }
+            notify(L.F(Strings.Bar_ModelNotSaved, ex.Message), InfoBarSeverity.Warning);
+            popup.DispatcherQueue.TryEnqueue(Refresh); // the picker shows the previous model again
+        }
     }
 
     private async Task SetEffortAsync(string level)
@@ -205,19 +244,31 @@ internal sealed class ProviderBar(
         var profile = Current;
         if (profile is null) return;
         if (level == Strings.Effort_NA) return; // the placeholder item for models without effort levels
-        if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
+        var (previousModel, previousEffort) = (profile.Model, profile.Effort);
+        try
         {
-            var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
-            if (model == profile.Model) return;
-            settings.Update(_ => profile.Model = model);
+            if (ConnectionTypes.Of(profile.Type).EffortInModelId && ModelFamilies.Locate(Families(profile), profile.Model) is { } hit)
+            {
+                var model = ModelFamilies.Resolve(hit.Family, level == DefaultLabel ? null : level);
+                if (model == profile.Model) return;
+                if (settings.Update(_ => profile.Model = model) is { Count: > 0 } saved) throw new IOException(string.Join(" ", saved));
+            }
+            else
+            {
+                var effort = level == DefaultLabel ? null : level;
+                if (effort == profile.Effort) return;
+                if (settings.Update(_ => profile.Effort = effort) is { Count: > 0 } saved) throw new IOException(string.Join(" ", saved));
+            }
+            await invalidate(profile.Id);
         }
-        else
+        catch (Exception ex)
         {
-            var effort = level == DefaultLabel ? null : level;
-            if (effort == profile.Effort) return;
-            settings.Update(_ => profile.Effort = effort);
+            log.Error($"changing the effort for {profile.Id} failed", ex);
+            try { settings.Update(_ => { profile.Model = previousModel; profile.Effort = previousEffort; }); }
+            catch (Exception undo) { log.Error("restoring the previous effort failed", undo); }
+            notify(L.F(Strings.Bar_ModelNotSaved, ex.Message), InfoBarSeverity.Warning);
+            popup.DispatcherQueue.TryEnqueue(Refresh);
         }
-        await invalidate(profile.Id);
     }
 
     /// <summary>Fills the model list (cached per connection). Quiet = background preload: problems are only logged.</summary>
@@ -238,9 +289,9 @@ internal sealed class ProviderBar(
             SetEnabled(_enabled); // levels just arrived: enable the effort picker
         }
         catch (ModelListException ex) { log.Info($"model list: {ex.Message}"); if (!quiet) notify(ex.Message, InfoBarSeverity.Warning); }
-        catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify($"Couldn't list models: {ex.Message}", InfoBarSeverity.Warning); }
+        catch (Exception ex) { log.Error("model list failed", ex); if (!quiet) notify(L.F(Strings.Bar_ModelListFailed, ex.Message), InfoBarSeverity.Warning); }
         finally { _updating = false; }
-        Layout();
+        QueueLayout();
     }
 
     private void BuildPromptMenu()
@@ -254,9 +305,18 @@ internal sealed class ProviderBar(
             item.Click += async (_, _) =>
             {
                 if (profile is null) return;
-                settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name);
-                await invalidate(profile.Id);
-                notify(L.F(Strings.Bar_PromptChosen, name), InfoBarSeverity.Informational);
+                try
+                {
+                    if (settings.Update(_ => profile.Prompt = name == settings.Current.Chat.DefaultPrompt ? null : name) is { Count: > 0 } saved)
+                        throw new IOException(string.Join(" ", saved));
+                    await invalidate(profile.Id);
+                    notify(L.F(Strings.Bar_PromptChosen, name), InfoBarSeverity.Informational);
+                }
+                catch (Exception ex) // an async void handler: nothing may escape
+                {
+                    log.Error("choosing the prompt failed", ex);
+                    notify(L.F(Strings.Bar_PromptFailed, ex.Message), InfoBarSeverity.Warning);
+                }
             };
             popup.PromptMenu.Items.Add(item);
         }

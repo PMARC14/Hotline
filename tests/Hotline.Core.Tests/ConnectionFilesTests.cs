@@ -11,14 +11,21 @@ public sealed class ConnectionFilesTests : IDisposable
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private string SettingsFile => Path.Combine(_dir, SettingsStore.FileName);
 
+    /// <summary>An install with the agy connection (new installs start with none).</summary>
+    private void WithAgy()
+    {
+        Directory.CreateDirectory(Path.Combine(_dir, "connections"));
+        File.WriteAllText(Conn("agy"), """{ "type": "antigravity", "name": "Gemini (Antigravity)", "agent": "hotline" }""");
+    }
+
     [Fact]
-    public void Fresh_install_writes_one_file_per_connection_and_no_backends_in_settings()
+    public void Fresh_install_writes_no_connection_and_no_backends_in_settings()
     {
         var s = new SettingsStore(_dir).Load();
-        Assert.True(File.Exists(Conn("agy")));
+        Assert.False(Directory.Exists(Path.Combine(_dir, "connections")) && Directory.EnumerateFiles(Path.Combine(_dir, "connections")).Any());
         Assert.DoesNotContain("\"backends\"", File.ReadAllText(SettingsFile));
         Assert.Contains("\"order\"", File.ReadAllText(SettingsFile));
-        Assert.Equal("agy", s.Chat.Backends[0].Id);
+        Assert.Empty(s.Chat.Backends);
     }
 
     [Fact]
@@ -37,6 +44,7 @@ public sealed class ConnectionFilesTests : IDisposable
     [Fact]
     public void Order_comes_from_settings_and_unlisted_files_follow_by_name()
     {
+        WithAgy();
         var store = new SettingsStore(_dir);
         store.Load();
         File.WriteAllText(Conn("zeta"), """{ "type": "local", "name": "Zeta" }""");
@@ -51,6 +59,7 @@ public sealed class ConnectionFilesTests : IDisposable
     [Fact]
     public void Removing_a_connection_deletes_its_file()
     {
+        WithAgy();
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Local);
@@ -76,6 +85,33 @@ public sealed class ConnectionFilesTests : IDisposable
     }
 
     [Fact]
+    public void A_file_broken_while_running_survives_a_live_read_and_the_next_save()
+    {
+        WithAgy();
+        var store = new SettingsStore(_dir);
+        store.Load(); // agy.json was fine at start
+        File.WriteAllText(Conn("agy"), "{ half-saved"); // the user's editor, mid-save
+        var live = store.TryRead()!; // a live reload drops the unreadable connection...
+        store.Save(live);            // ...and the next save must not delete its file
+        Assert.Equal("{ half-saved", File.ReadAllText(Conn("agy")));
+    }
+
+    [Fact]
+    public void A_broken_file_fixed_while_running_saves_normally_again()
+    {
+        var store = new SettingsStore(_dir);
+        store.Load();
+        File.WriteAllText(Conn("agy"), "{ broken");
+        var s = new SettingsStore(_dir); s.Load();
+        File.WriteAllText(Conn("agy"), """{ "type": "antigravity", "name": "Fixed" }""");
+        var live = s.TryRead()!;
+        Assert.Empty(s.BrokenConnectionFiles);
+        live.Chat.Backends.Single(b => b.Id == "agy").Name = "Renamed";
+        s.Save(live);
+        Assert.Contains("Renamed", File.ReadAllText(Conn("agy")));
+    }
+
+    [Fact]
     public void Live_read_sees_hand_added_files_without_writing_anything()
     {
         var store = new SettingsStore(_dir);
@@ -90,9 +126,31 @@ public sealed class ConnectionFilesTests : IDisposable
     [Fact]
     public void Connection_files_omit_unset_options()
     {
-        new SettingsStore(_dir).Load();
-        var json = File.ReadAllText(Conn("agy"));
+        var store = new SettingsStore(_dir);
+        var s = store.Load();
+        var agy = Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Antigravity);
+        store.Save(s);
+        var json = File.ReadAllText(Conn(agy.Id));
         Assert.DoesNotContain("\"endpoint\"", json);
         Assert.Contains("\"agent\": \"hotline\"", json);
+    }
+
+    // ---- a hand-edited settings.json with null list elements must not crash start-up or a live reload ----
+
+    [Theory]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "order": [null] } }""")]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "order": [null, "", "  ", "a"] } }""")]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "backends": [null] } }""")]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "backends": [null, { "id": null }, { "id": "x", "name": "X" }] } }""")]
+    public void Null_list_elements_do_not_crash_load_or_try_read(string json)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(SettingsFile, json);
+        var store = new SettingsStore(_dir);
+        var loaded = store.Load();
+        Assert.Equal(800, loaded.Window.MinWidth);
+        var again = store.TryRead();
+        Assert.NotNull(again);
+        Assert.Equal(800, again.Window.MinWidth);
     }
 }

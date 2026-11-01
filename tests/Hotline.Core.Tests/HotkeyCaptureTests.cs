@@ -26,26 +26,15 @@ public class HotkeyCaptureTests
     public void Modifiers_alone_keep_waiting(uint vk)
         => Assert.Equal(HotkeyCapture.Outcome.Waiting, HotkeyCapture.Press(HotkeyModifiers.Control, vk).Outcome);
 
-    [Fact]
-    public void Esc_cancels() => Assert.Equal(HotkeyCapture.Outcome.Cancel, HotkeyCapture.Press(HotkeyModifiers.None, Esc).Outcome);
-
     [Theory]
-    [InlineData(Backspace)]
-    [InlineData(Delete)]
-    public void Backspace_or_Delete_clears(uint vk)
-        => Assert.Equal(HotkeyCapture.Outcome.Clear, HotkeyCapture.Press(HotkeyModifiers.None, vk).Outcome);
-
-    [Fact]
-    public void A_plain_key_needs_a_modifier() // it would swallow normal typing in every app
-        => Assert.Equal(HotkeyCapture.Outcome.NeedsModifier, HotkeyCapture.Press(HotkeyModifiers.None, F5).Outcome);
-
-    [Fact]
-    public void With_a_modifier_held_an_unusable_key_is_unsupported_not_needs_modifier()
-        => Assert.Equal(HotkeyCapture.Outcome.Unsupported, HotkeyCapture.Press(HotkeyModifiers.Shift, Delete).Outcome);
-
-    [Fact]
-    public void A_key_settings_json_cannot_name_is_refused() // the file must be able to hold it
-        => Assert.Equal(HotkeyCapture.Outcome.Unsupported, HotkeyCapture.Press(HotkeyModifiers.Control, Delete).Outcome);
+    [InlineData(HotkeyModifiers.None, Esc, HotkeyCapture.Outcome.Cancel)]
+    [InlineData(HotkeyModifiers.None, Backspace, HotkeyCapture.Outcome.Clear)]
+    [InlineData(HotkeyModifiers.None, Delete, HotkeyCapture.Outcome.Clear)]
+    [InlineData(HotkeyModifiers.None, F5, HotkeyCapture.Outcome.NeedsModifier)] // a plain key would swallow normal typing in every app
+    [InlineData(HotkeyModifiers.Shift, Delete, HotkeyCapture.Outcome.Unsupported)] // an unusable key is unsupported, not "needs a modifier"; settings.json must be able to hold the key
+    [InlineData(HotkeyModifiers.Control, Delete, HotkeyCapture.Outcome.Unsupported)]
+    public void Special_and_plain_keys_have_their_own_outcome(HotkeyModifiers modifiers, uint vk, HotkeyCapture.Outcome expected)
+        => Assert.Equal(expected, HotkeyCapture.Press(modifiers, vk).Outcome);
 
     [Fact]
     public void A_bound_shortcut_round_trips_through_the_setting()

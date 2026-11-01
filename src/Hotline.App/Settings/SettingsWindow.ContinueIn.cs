@@ -3,6 +3,7 @@ using System.Text.Json.Nodes;
 using Hotline.Core.Backends;
 using Hotline.Core.Settings;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 
 namespace Hotline.App.Settings;
@@ -44,18 +45,23 @@ public sealed partial class SettingsWindow
             if (p.ContinueIn is { Count: > 0 })
                 BuildTargetList(own, () => p.ContinueIn ?? [], list => _ = save(x => x.ContinueIn = list));
         }
+        AutomationProperties.SetName(choice, Strings.ContinueSet_Title);
         choice.SelectionChanged += async (_, _) =>
         {
-            if (choice.SelectedItem is not ComboBoxItem { Tag: string tag } || tag == Current()) return;
-            // Own list: starts as a copy of the shared one (or the llama.cpp entry when that is empty).
-            List<ContinueTarget> shared = [.. ContinueTargets.Shared(_settings.Current)];
-            await save(x => x.ContinueIn = tag switch
+            try
             {
-                "shared" => null,
-                "none" => [],
-                _ => shared.Count > 0 ? shared : [ContinueTargets.ReadyMade[0].Target],
-            });
-            ShowOwn();
+                if (choice.SelectedItem is not ComboBoxItem { Tag: string tag } || tag == Current()) return;
+                // Own list: starts as a copy of the shared one (or the llama.cpp entry when that is empty).
+                List<ContinueTarget> shared = [.. ContinueTargets.Shared(_settings.Current)];
+                await save(x => x.ContinueIn = tag switch
+                {
+                    "shared" => null,
+                    "none" => [],
+                    _ => shared.Count > 0 ? shared : [ContinueTargets.ReadyMade[0].Target],
+                });
+                ShowOwn();
+            }
+            catch (Exception ex) { Fail("changing the Continue in list failed", ex); }
         };
         ShowOwn();
         panel.Children.Add(Card(Strings.ContinueSet_Title, Strings.ContinueSet_ConnectionDesc, choice));
@@ -76,21 +82,31 @@ public sealed partial class SettingsWindow
                 var index = i;
                 var t = targets[i];
                 var edit = new Button { Content = Strings.Common_Edit };
+                AutomationProperties.SetName(edit, $"{Strings.Common_Edit} {t.Name}");
                 edit.Click += async (_, _) =>
                 {
-                    if (await EditTargetAsync(t) is not { } changed) return;
-                    var list = get().ToList();
-                    list[index] = changed;
-                    set(list);
-                    Rebuild();
+                    try
+                    {
+                        if (await EditTargetAsync(t) is not { } changed) return;
+                        var list = get().ToList();
+                        list[index] = changed;
+                        set(list);
+                        Rebuild();
+                    }
+                    catch (Exception ex) { Fail("editing a Continue in target failed", ex); }
                 };
                 var remove = new Button { Content = Strings.Common_Remove };
+                AutomationProperties.SetName(remove, $"{Strings.Common_Remove} {t.Name}");
                 remove.Click += (_, _) =>
                 {
-                    var list = get().ToList();
-                    list.RemoveAt(index);
-                    set(list);
-                    Rebuild();
+                    try
+                    {
+                        var list = get().ToList();
+                        list.RemoveAt(index);
+                        set(list);
+                        Rebuild();
+                    }
+                    catch (Exception ex) { Fail("removing a Continue in target failed", ex); }
                 };
                 var where = t.Kind == ContinueKind.App ? t.Command : t.Url;
                 host.Children.Add(Card(t.Name, $"{KindName(t.Kind)} · {where}", new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { edit, remove } }));
@@ -101,16 +117,22 @@ public sealed partial class SettingsWindow
             AddItem(Strings.ContinueSet_Web, new ContinueTarget(ContinueKind.Web, Strings.ContinueSet_Web, Url: "https://"));
             AddItem(Strings.ContinueSet_OpenWebUi, new ContinueTarget(ContinueKind.OpenWebUi, "Open WebUI", Url: "http://localhost:3000"));
             AddItem(Strings.ContinueSet_App, new ContinueTarget(ContinueKind.App, Strings.ContinueSet_App, Command: ""));
-            host.Children.Add(new DropDownButton { Content = Strings.ContinueSet_Add, Flyout = add, Margin = new Thickness(0, 4, 0, 0) });
+            var addButton = new DropDownButton { Content = Strings.ContinueSet_Add, Flyout = add, Margin = new Thickness(0, 4, 0, 0) };
+            AutomationProperties.SetName(addButton, Strings.ContinueSet_Add);
+            host.Children.Add(addButton);
 
             void AddItem(string label, ContinueTarget template)
             {
                 var item = new MenuFlyoutItem { Text = label };
                 item.Click += async (_, _) =>
                 {
-                    if (await EditTargetAsync(template) is not { } created) return;
-                    set([.. get(), created]);
-                    Rebuild();
+                    try
+                    {
+                        if (await EditTargetAsync(template) is not { } created) return;
+                        set([.. get(), created]);
+                        Rebuild();
+                    }
+                    catch (Exception ex) { Fail("adding a Continue in target failed", ex); }
                 };
                 add.Items.Add(item);
             }
@@ -149,7 +171,11 @@ public sealed partial class SettingsWindow
         {
             if (_secrets.Get(Chat.ContinueIn.ApiKeyName(t.Url ?? "")) is not null) key.PlaceholderText = Strings.ContinueSet_KeySaved;
             var test = new Button { Content = Strings.ContinueSet_Test };
-            test.Click += async (_, _) => status.Text = await TestOpenWebUiAsync(where.Text, key.Password);
+            test.Click += async (_, _) =>
+            {
+                try { status.Text = await TestOpenWebUiAsync(where.Text, key.Password); }
+                catch (Exception ex) { _log.Error("testing Open WebUI failed", ex); status.Text = L.F(Strings.ContinueSet_TestFailed, ex.Message); }
+            };
             form.Children.Add(model);
             form.Children.Add(key);
             form.Children.Add(test);
@@ -191,13 +217,13 @@ public sealed partial class SettingsWindow
     /// <summary>Open WebUI's Test: lists its models with the key (typed, or the saved one); https or this PC only.</summary>
     private async Task<string> TestOpenWebUiAsync(string address, string typedKey)
     {
-        if (!Uri.TryCreate(address.Trim(), UriKind.Absolute, out var url)) return Strings.Continue_NotAWebAddress;
+        if (!Uri.TryCreate(address.Trim(), UriKind.Absolute, out var url) || url.Scheme is not ("http" or "https")) return Strings.Continue_NotAWebAddress;
         if (url.Scheme != Uri.UriSchemeHttps && !url.IsLoopback) return Strings.Continue_InsecureKey;
         var key = typedKey.Trim().Length > 0 ? typedKey.Trim() : _secrets.Get(Chat.ContinueIn.ApiKeyName(address));
         if (string.IsNullOrWhiteSpace(key)) return Strings.Continue_NoKey;
         try
         {
-            using var http = new HttpClient { Timeout = TimeSpan.FromSeconds(10) };
+            using var http = new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(10) };
             using var request = new HttpRequestMessage(HttpMethod.Get, url.GetLeftPart(UriPartial.Path).TrimEnd('/') + "/api/models");
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", key);
             using var response = await http.SendAsync(request);

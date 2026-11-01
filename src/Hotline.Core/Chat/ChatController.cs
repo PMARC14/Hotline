@@ -65,17 +65,17 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     }
 
     /// <summary>
-    /// Continues a saved conversation: its messages come back (attachments as "[attached: name]" — their bytes are
-    /// never saved) and new turns are appended to the same history. A chat kept in a CLI's history switches back to
-    /// that connection and resumes its CLI conversation; others are replayed as context. A chat with only a record
-    /// (no transcript) starts empty in the panel and continues in the CLI's conversation.
-    /// </summary>
-    /// <summary>
     /// (connection id, CLI session id) → that conversation's messages from the CLI's own history, or null (set by the
     /// app; see CliTranscripts and chat.cliTranscripts). Used when reopening a chat Hotline kept only a record of.
     /// </summary>
     public Func<string, string, IReadOnlyList<HistoryStore.Entry>?>? CliTranscript { get; set; }
 
+    /// <summary>
+    /// Continues a saved conversation: its messages come back (attachments as "[attached: name]" — their bytes are
+    /// never saved) and new turns are appended to the same history. A chat kept in a CLI's history switches back to
+    /// that connection and resumes its CLI conversation; others are replayed as context. A chat with only a record
+    /// (no transcript) starts empty in the panel and continues in the CLI's conversation.
+    /// </summary>
     public bool Resume(string conversationId)
     {
         if (IsBusy || conversationId == ConversationId) return false; // never while answering, never into itself
@@ -115,7 +115,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             _messages.Add(message);
             Emit(new MessageRestored(message));
         }
-        var title = meta?.Title ?? HistoryStore.TitleOf(entries.FirstOrDefault(e => e.Role == ChatRole.User)?.Text ?? "");
+        var title = meta is { Title.Length: > 0 } ? meta.Title : HistoryStore.TitleOf(entries.FirstOrDefault(e => e.Role == ChatRole.User)?.Text ?? "");
         Emit(new ConversationResumed(conversationId, title, BackendId, entries.Count > 0));
         log.Info($"resumed conversation {conversationId} ({entries.Count} messages{(session is null ? "" : $", {_sessionBackendId} session")})");
         return true;
@@ -144,6 +144,9 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         if (backend is ICliSessionBackend cli) cli.Resume = _sessionBackendId == backend.Id ? _session : null;
         Emit(new AssistantStarted(assistantId, backend.DisplayName, BackendId));
         var cts = _cts = new CancellationTokenSource();
+        // After New chat the old turn unwinds on its own: none of its events may reach the new chat (a late
+        // "cancelled" would turn the new chat's Stop button back into Send while it answers).
+        void Current(ChatEvent e) { if (conversationId == ConversationId) Emit(e); }
         var reply = new StringBuilder();
         try
         {
@@ -151,7 +154,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             {
                 if (d.Status is { } status)
                 {
-                    Emit(new AssistantStatus(assistantId, status));
+                    Current(new AssistantStatus(assistantId, status));
                     continue;
                 }
                 if (d.Session is { } session)
@@ -165,16 +168,16 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
                 }
                 if (d.ResetBefore) reply.Clear();
                 reply.Append(d.Text);
-                Emit(new AssistantDelta(assistantId, d.Text, d.ResetBefore));
+                Current(new AssistantDelta(assistantId, d.Text, d.ResetBefore));
             }
             Keep(conversationId, user, assistantId, backend, reply.ToString());
-            Emit(new AssistantCompleted(assistantId));
+            Current(new AssistantCompleted(assistantId));
         }
         catch (OperationCanceledException) when (cts.IsCancellationRequested)
         {
             // Keep the question in context even with no reply, so a follow-up ("shorter please") still makes sense.
             Keep(conversationId, user, assistantId, backend, reply.ToString(), keepEmptyReply: reply.Length > 0);
-            Emit(new AssistantCancelled(assistantId));
+            Current(new AssistantCancelled(assistantId));
         }
         catch (Exception ex) when (conversationId != ConversationId)
         {
@@ -202,6 +205,10 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
     {
         if (conversationId != ConversationId) return; // a new chat started meanwhile: drop the old turn
         var transcript = keepTranscript?.Invoke(backend.Id) ?? true;
+        // The chat moved here from a connection Hotline kept only the record for: save the earlier turns first, or the
+        // reopened chat would start at this one.
+        if (transcript && !_partial && history is not null && !File.Exists(history.PathFor(conversationId)))
+            foreach (var earlier in _messages.TakeWhile(m => !ReferenceEquals(m, user))) TryHistory(conversationId, earlier);
         if (transcript) TryHistory(conversationId, user);
         if (keepEmptyReply)
         {

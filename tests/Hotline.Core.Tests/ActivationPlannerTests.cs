@@ -4,55 +4,23 @@ namespace Hotline.Core.Tests;
 
 public class ActivationPlannerTests
 {
-    [Fact]
-    public void Protocol_key_uri_becomes_a_key_event()
-        => Assert.Equal(new ActivationPlan(KeyEvent.Tap, ShowPopup: false),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://key?state=Tap"), IsFirstLaunch: false)));
-
-    [Fact]
-    public void Cold_start_key_press_arrives_as_protocol_for_results_and_is_parsed()
-        => Assert.Equal(new ActivationPlan(KeyEvent.HoldStart, ShowPopup: false),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.ProtocolForResults, new Uri("hotline://key?state=Down"), IsFirstLaunch: true)));
-
-    [Fact]
-    public void Protocol_without_key_state_just_shows_popup()
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: true),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://open"), IsFirstLaunch: false)));
-
-    [Fact]
-    public void Protocol_with_missing_uri_shows_popup()
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: true),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, null, IsFirstLaunch: false)));
-
-    [Fact]
-    public void Sign_in_startup_stays_in_tray()
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: false),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.StartupTask, null, IsFirstLaunch: true)));
-
+    // uri null = no URI at all. A cold-start key press arrives as ProtocolForResults and is parsed the same way.
     [Theory]
-    [InlineData(ActivationKind.Launch, true)]
-    [InlineData(ActivationKind.Launch, false)]
-    [InlineData(ActivationKind.Other, false)]
-    [InlineData(ActivationKind.StartupTask, false)]
-    public void Other_activations_show_popup(ActivationKind kind, bool first)
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: true),
-            ActivationPlanner.Plan(new ActivationRequest(kind, null, first)));
-
-    [Theory]
-    [InlineData(ActivationKind.Protocol, false)]
-    [InlineData(ActivationKind.ProtocolForResults, true)]
-    public void Tray_uri_starts_quietly_without_popup(ActivationKind kind, bool first)
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: false),
-            ActivationPlanner.Plan(new ActivationRequest(kind, new Uri("hotline://tray"), first)));
-
-
-    [Fact]
-    public void Settings_uri_opens_settings_without_popup()
-        => Assert.Equal(new ActivationPlan(null, ShowPopup: false, OpenSettings: true),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://settings"), false)));
-
-    [Fact]
-    public void Answer_notification_click_shows_the_panel_without_reading_a_selection() =>
-        Assert.Equal(new ActivationPlan(null, true, ReadSelection: false),
-            ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://answer"), IsFirstLaunch: false)));
+    [InlineData(ActivationKind.Protocol, "hotline://key?state=Tap", false, KeyEvent.Tap, false, false, true)]
+    [InlineData(ActivationKind.ProtocolForResults, "hotline://key?state=Down", true, KeyEvent.HoldStart, false, false, true)]
+    // any web page can launch hotline://open: show the popup, never read the selection
+    [InlineData(ActivationKind.Protocol, "hotline://open", false, null, true, false, false)]
+    [InlineData(ActivationKind.Protocol, null, false, null, true, false, false)]
+    [InlineData(ActivationKind.Protocol, "hotline://answer", false, null, true, false, false)] // answer notification click
+    [InlineData(ActivationKind.Protocol, "hotline://settings", false, null, false, true, true)]
+    [InlineData(ActivationKind.Protocol, "hotline://tray", false, null, false, false, true)]
+    [InlineData(ActivationKind.ProtocolForResults, "hotline://tray", true, null, false, false, true)]
+    [InlineData(ActivationKind.StartupTask, null, true, null, false, false, true)] // sign-in startup stays in the tray
+    [InlineData(ActivationKind.Launch, null, true, null, true, false, true)]
+    [InlineData(ActivationKind.Launch, null, false, null, true, false, true)]
+    [InlineData(ActivationKind.Other, null, false, null, true, false, true)]
+    [InlineData(ActivationKind.StartupTask, null, false, null, true, false, true)]
+    public void Activation_requests_map_to_plans(ActivationKind kind, string? uri, bool first, KeyEvent? key, bool showPopup, bool openSettings, bool readSelection)
+        => Assert.Equal(new ActivationPlan(key, showPopup, openSettings, ReadSelection: readSelection),
+            ActivationPlanner.Plan(new ActivationRequest(kind, uri is null ? null : new Uri(uri), first)));
 }

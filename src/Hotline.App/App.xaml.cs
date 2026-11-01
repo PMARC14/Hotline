@@ -31,18 +31,25 @@ public partial class App : Application
     private ISecretStore? _secrets;
     private readonly HashSet<string> _pendingInvalidations = [];
     private SettingsHost? _settingsHost;
-    private CopilotKeyHook? _keyHook;
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
     private string? _odrPath;
     private FileSystemWatcher? _settingsWatcher;
+    /// <summary>Layout cycles since start (each one can leave the window undrawable).</summary>
+    internal static int LayoutCycles;
 
     public App(AppActivationArguments initialActivation)
     {
         _initialActivation = initialActivation;
         InitializeComponent();
         // Log and keep running: an exception in one button handler must not take the whole app down.
-        UnhandledException += (_, e) => { _log?.Error("unhandled UI exception (kept running)", e.Exception); e.Handled = true; };
+        UnhandledException += (_, e) =>
+        {
+            // A layout cycle can stop WinUI drawing the window for good: count it so the self-test fails loudly.
+            if (e.Exception is LayoutCycleException || e.Exception?.HResult == unchecked((int)0x802B0014)) Interlocked.Increment(ref LayoutCycles); // E_LAYOUTCYCLE
+            _log?.Error("unhandled UI exception (kept running)", e.Exception);
+            e.Handled = true;
+        };
         // Last chance: record anything that is about to terminate the process.
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
@@ -99,10 +106,14 @@ public partial class App : Application
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
         var store = new SettingsStore(dataDir);
         var settings = store.Load();
+        try { SettingsReset.WriteDefaults(dataDir); } // the hidden copy of the defaults (Settings › Advanced › Reset)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Debug.WriteLine(ex); }
         ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
         if (migrated) _log.Info($"migrated settings and history from {privateDir} to {dataDir}");
+        foreach (var broken in store.BrokenConnectionFiles) // left exactly as it is; never dropped or rewritten
+            _log.Error($"connection file {broken} could not be read; it is left as it is (fix it and Hotline picks it up)");
         _ = LogStartupStateAsync();
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
@@ -121,7 +132,11 @@ public partial class App : Application
         foreach (var old in new[] { "agy-workspace", "claude-workspace" })
             try { if (Directory.Exists(Path.Combine(privateDir, old))) Directory.Delete(Path.Combine(privateDir, old), recursive: true); }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error($"could not remove the old {old} folder", ex); }
-        var agyWorkspace = new AgyWorkspace(Path.Combine(privateDir, "agy", "Hotline"), TimeProvider.System);
+        // CLI chats run in the home folder; their scratch files (agy's agent and attachments, Codex images, handoff
+        // files) live in ~/.hotline/scratch. Earlier versions' folders under the package's LocalState stay: chats begun
+        // there still resume there.
+        var scratchDir = Path.Combine(dataDir, "scratch");
+        var agyWorkspace = new AgyWorkspace(Path.Combine(scratchDir, "agy", "Hotline"), TimeProvider.System);
         try { agyWorkspace.PruneAttachments(TimeSpan.FromDays(1)); } catch (IOException ex) { _log.Error("attachment prune failed", ex); }
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
@@ -129,15 +144,15 @@ public partial class App : Application
         var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
             () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            () => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow),
+            () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow)), // Update may Reload: UI thread
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
                 _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
             Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"),
             p => MemoryStore.Compose(prompts.Read(p.Prompt ?? settings.Chat.DefaultPrompt), settings.Chat.Memory ? memory.Read() : ""),
-            home, Path.Combine(privateDir, "claude", "Hotline"), _secrets, BackendFactory.CreateApiHttpClient(), tools,
-            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home)),
-            Path.Combine(privateDir, "codex", "Hotline"));
+            home, _secrets, BackendFactory.CreateApiHttpClient(), tools,
+            new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home), Path.Combine(privateDir, "agy", "Hotline")),
+            Path.Combine(scratchDir, "codex", "Hotline"));
         _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
@@ -165,8 +180,8 @@ public partial class App : Application
                 _presenter.AttachSelection(selection.Text, selection.App);
         };
         if (history is not null) _presenter.RecentChats = count => history.Recent(count);
-        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(privateDir, "handoff"), InvalidateBackend, _log, _secrets,
-            new HttpClient { Timeout = TimeSpan.FromSeconds(20) }, m => _presenter.Notice(m, Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational));
+        _presenter.ContinueIn = new Chat.ContinueIn(chat, settings, Path.Combine(scratchDir, "handoff"), InvalidateBackend, _log, _secrets,
+            new HttpClient(new SocketsHttpHandler { AllowAutoRedirect = false }) { Timeout = TimeSpan.FromSeconds(20) }, m => _presenter.Notice(m, Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational));
         try { _presenter.Initialize(); }
         catch (Exception ex) { _log.Error("chat panel failed to initialize", ex); }
 
@@ -175,7 +190,14 @@ public partial class App : Application
             var exe = AgyLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("LOCALAPPDATA"), Environment.GetEnvironmentVariable("PATH"))
                       ?? throw new ModelListException(Strings.Agy_NotInstalled);
             return CliRunner.RunAsync(exe, ["models"], TimeSpan.FromSeconds(30), ct, job.Add);
-        }, TimeProvider.System);
+        }, TimeProvider.System, new Hotline.Core.Backends.Codex.CodexModelLister(new SystemLineProcessFactory(job.Add),
+            p => Hotline.Core.Backends.Codex.CodexLocator.Find(p.CliPath, File.Exists, Environment.GetEnvironmentVariable("PATH"),
+                System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64"),
+            () =>
+            {
+                var cache = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".codex", "models_cache.json");
+                return File.Exists(cache) ? File.ReadAllText(cache) : null;
+            }, typeof(App).Assembly.GetName().Version?.ToString(3) ?? "0.0.0").ListAsync);
         _providerBar = new ProviderBar(_popup, _settingsService, chat, InvalidateBackend, _models, _prompts, _presenter.Notice, _log);
         chat.Event += e => { if (e is ConversationResumed) _providerBar.Refresh(); }; // a CLI chat brings its connection back
         try { _providerBar.Initialize(); } catch (Exception ex) { _log.Error("provider bar failed to initialize", ex); }
@@ -197,16 +219,19 @@ public partial class App : Application
             _providerBar.SetEnabled(!busy);
             if (!busy) _ = FlushInvalidationsAsync();
         };
-        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, _log);
+        var selfTests = new SelfTestLinks(_presenter, () => _settingsHost, () => _toolHost, () => _odrPath, DataDirectory, _log);
         _router.SelfTestRequested += selfTests.Run;
         _router.DemoRequested += scene => _presenter.Demo(scene);
+        _router.GripsRequested += show => _presenter.ShowGrips(show);
         _router.VoiceRequested += command => _presenter.Voice(command);
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
-            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath), _log);
+            _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath,
+            () => BarRoom(settings.Window), () => _popup?.ScreenLine() ?? ""), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += () => _settingsHost.Show();
         ApplyToolbarFile(dataDir);
+        ReportSettingsProblems(store);
         WatchSettingsFile(store);
         _settingsService.ConnectionsChanged += ids =>
         {
@@ -218,15 +243,14 @@ public partial class App : Application
             try { _popup.ApplyAppearance(); _presenter.ApplyAppearance(); } // Windows switched light/dark
             catch (Exception ex) { _log.Error("applying the Windows theme failed", ex); }
         });
-        _keyHook = new CopilotKeyHook(_log);
-        _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
         _settingsService.Changed += () =>
         {
             try
             {
-                _keyHook.Enabled = settings.Activation.CopilotKey == Hotline.Core.Activation.CopilotKeyMode.RightCtrl;
-                // First run: a default chosen in Settings › Connections or settings.json connects the panel too.
-                if (string.IsNullOrEmpty(chat.BackendId) && settings.Chat.Backends.Any(b => b.Id == settings.Chat.DefaultBackend))
+                // First run: a default chosen in Settings › Connections or settings.json connects the panel too. The
+                // panel's connection removed (Settings or its file): move to the default, not a blank picker.
+                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Backends.All(b => b.Id != chat.BackendId))
+                    && settings.Chat.Backends.Any(b => b.Id == settings.Chat.DefaultBackend))
                     chat.BackendId = settings.Chat.DefaultBackend;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
                 _popup.GrowMode = settings.Chat.GrowMode;
@@ -251,18 +275,27 @@ public partial class App : Application
             });
         };
 
+        // Open/close sounds (off by default); Hotline's own sound is put in ~/.hotline/sounds for the pickers.
+        var soundsDir = Interop.SoundPlayer.Directory(DataDirectory);
+        try { Hotline.Core.Windowing.Sounds.EnsureShipped(soundsDir, File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "Assets", "Sounds", Hotline.Core.Windowing.Sounds.ShippedFile))); }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("could not set up the sounds folder", ex); }
+        _popup.PlayOpenClose = open => Interop.SoundPlayer.Play(open ? _settingsService!.Current.Window.OpenSound : _settingsService!.Current.Window.CloseSound, soundsDir, _log);
+        void PreloadSounds() => Interop.SoundPlayer.Preload([_settingsService!.Current.Window.OpenSound, _settingsService.Current.Window.CloseSound], soundsDir, _log);
+        PreloadSounds();
+        _settingsService!.Changed += () => _popup.DispatcherQueue.TryEnqueue(PreloadSounds);
         var hook = new WindowMessageHook(_popup.Hwnd, _log);
+        // Alt alone would open the (hidden) window menu and swallow the next keys, or beep: Alt is for the panel's grips.
+        hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
         HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
             () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
-            onRestart: () => { _tray?.Dispose(); _keyHook?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
+            onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
             onQuit: () =>
             {
                 _tray?.Dispose();
-                _keyHook?.Dispose(); // lets go of Right Ctrl if it's held
                 // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
                 try
                 {
@@ -289,113 +322,24 @@ public partial class App : Application
     /// </summary>
     private ValueTask InvalidateBackend(string id)
     {
-        if (_presenter?.IsBusy == true) { _pendingInvalidations.Add(id); return ValueTask.CompletedTask; }
+        if (_presenter?.IsBusy == true) { lock (_pendingInvalidations) _pendingInvalidations.Add(id); return ValueTask.CompletedTask; }
         return _backends?.InvalidateAsync(id) ?? ValueTask.CompletedTask;
     }
 
     private async Task FlushInvalidationsAsync()
     {
-        foreach (var id in _pendingInvalidations.ToList())
+        string[] ids;
+        lock (_pendingInvalidations) { ids = [.. _pendingInvalidations]; _pendingInvalidations.Clear(); }
+        foreach (var id in ids)
         {
-            _pendingInvalidations.Remove(id);
             try { if (_backends is not null) await _backends.InvalidateAsync(id); }
             catch (Exception ex) { _log?.Error($"restarting backend {id} failed", ex); }
         }
-    }
-
-    /// <summary>settings.json is the configuration: hand edits apply live (debounced; Hotline's own saves are no-ops).</summary>
-    private void WatchSettingsFile(SettingsStore store)
-    {
-        var dir = Path.GetDirectoryName(store.FilePath)!;
-        var timer = _popup!.DispatcherQueue.CreateTimer();
-        timer.Interval = TimeSpan.FromMilliseconds(400);
-        timer.IsRepeating = false;
-        timer.Tick += (_, _) =>
-        {
-            try
-            {
-                ApplyToolbarFile(dir);
-                if (store.TryRead() is not { } fromDisk) { _log?.Info("settings.json not readable yet (being edited?); keeping current settings"); return; }
-                if (_settingsService!.Reload(fromDisk)) _log?.Info("settings.json changed on disk; applied");
-            }
-            catch (Exception ex) { _log?.Error("reloading settings failed", ex); }
-        };
-        try
-        {
-            // settings.json and connections\*.json (one file per connection): edits, new and deleted files apply live.
-            _settingsWatcher = new FileSystemWatcher(dir, "*.json") { NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName, IncludeSubdirectories = true };
-            var toolbarPath = Path.Combine(dir, "toolbar.json");
-            bool Relevant(string? path) => path is not null && (string.Equals(path, store.FilePath, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(path, toolbarPath, StringComparison.OrdinalIgnoreCase)
-                || string.Equals(Path.GetDirectoryName(path), store.ConnectionsDirectory, StringComparison.OrdinalIgnoreCase));
-            void Kick(string? path) { if (Relevant(path)) _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); }); }
-            _settingsWatcher.Changed += (_, e) => Kick(e.FullPath);
-            _settingsWatcher.Created += (_, e) => Kick(e.FullPath);
-            _settingsWatcher.Deleted += (_, e) => Kick(e.FullPath);
-            _settingsWatcher.Renamed += (_, e) => { Kick(e.FullPath); Kick(e.OldFullPath); };
-            _settingsWatcher.EnableRaisingEvents = true;
-        }
-        catch (Exception ex) when (ex is IOException or ArgumentException) { _log?.Error("can't watch settings.json", ex); }
     }
 
     private async Task LogStartupStateAsync()
     {
         var state = await StartupRegistration.GetStateAsync();
         _log?.Info($"start with Windows: {state?.ToString() ?? "n/a"}");
-    }
-
-    /// <summary>
-    /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
-    /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
-    /// </summary>
-    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job)
-    {
-        var mcpPath = Path.Combine(dataDir, "mcp.json");
-        _ = Hotline.Core.Tools.McpConfig.Load(mcpPath); // creates mcp.json with a commented example on first run
-        _odrPath = Hotline.Core.Tools.OdrDiscovery.FindOdr(File.Exists, Environment.GetEnvironmentVariable("WINDIR"), Environment.GetEnvironmentVariable("LOCALAPPDATA"));
-        _log?.Info(_odrPath is null ? "Windows agent registry: not available on this Windows" : $"Windows agent registry: {_odrPath}");
-        if (_odrPath is { } odr)
-            _ = Task.Run(async () =>
-            {
-                foreach (var args in new[] { new[] { "mcp", "list" }, new[] { "list" } })
-                {
-                    try
-                    {
-                        var json = await CliRunner.RunAsync(odr, args, TimeSpan.FromSeconds(20), CancellationToken.None);
-                        var servers = Hotline.Core.Tools.OdrDiscovery.Parse(json);
-                        if (servers.Count == 0) continue;
-                        _odrServers = servers;
-                        _log?.Info($"Windows agent registry: {servers.Count} connector(s)");
-                        return;
-                    }
-                    catch (Exception ex) { _log?.Error($"odr {string.Join(' ', args)} failed", ex); }
-                }
-            });
-        _toolHost = new Hotline.Core.Tools.McpToolHost(
-            () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers,
-            Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}")),
-            (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            _log!, mcpPath);
-        return _toolHost;
-    }
-
-    /// <summary>~/.hotline/toolbar.json → the bottom bar (written with the defaults on first run; applies live).</summary>
-    private void ApplyToolbarFile(string dataDir)
-    {
-        var config = Hotline.Core.Windowing.ToolbarConfig.Load(Path.Combine(dataDir, "toolbar.json"));
-        if (config.Error is { } error) { _log?.Error(error); if (_toolbarApplied) return; } // keep the current bar
-        if (_popup is null || _popup.ToolbarItems.SequenceEqual(config.Items) && _toolbarApplied) return;
-        _toolbarApplied = true;
-        try { _popup.ApplyToolbar(config.Items); }
-        catch (Exception ex) { _log?.Error("applying toolbar.json failed", ex); }
-    }
-
-    private bool _toolbarApplied;
-
-    /// <summary>MCP servers are started by the MCP SDK (not in the kill-on-close job): stop them before a restart.</summary>
-    private void StopToolServers()
-    {
-        try { if (_toolHost is { } host) Task.Run(async () => await host.DisposeAsync()).Wait(TimeSpan.FromSeconds(3)); }
-        catch (Exception ex) { _log?.Error("stopping MCP servers failed", ex); }
     }
 }

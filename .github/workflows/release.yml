@@ -52,9 +52,14 @@ jobs:
 
       - name: Resolve version
         id: ver
+        env:
+          # Passed as environment variables, never pasted into the script: a crafted tag or input can't inject shell.
+          REF_TYPE: ${{ github.ref_type }}
+          REF_NAME: ${{ github.ref_name }}
+          INPUT_VERSION: ${{ inputs.version }}
         run: |
-          if [ "${{ github.ref_type }}" = tag ]; then v="${{ github.ref_name }}"; v=${v#v}
-          elif [ -n "${{ inputs.version }}" ]; then v="${{ inputs.version }}"
+          if [ "$REF_TYPE" = tag ]; then v="$REF_NAME"; v=${v#v}
+          elif [ -n "$INPUT_VERSION" ]; then v="$INPUT_VERSION"
           else
             # The next patch in version.txt's line, from the existing tags (v0.2.25 → v0.2.26; 0.3 → v0.3.0).
             # Releases run one at a time (concurrency group), so two runs can't pick the same number.
@@ -67,15 +72,21 @@ jobs:
 
       - name: Signing mode
         id: mode
+        env:
+          SIGNING_ACCOUNT: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
+          PUBLISHER: ${{ vars.HOTLINE_PUBLISHER }}
         run: |
-          if [ -n "${{ vars.ARTIFACT_SIGNING_ACCOUNT }}" ] && [ -n "${{ vars.HOTLINE_PUBLISHER }}" ]; then echo "artifact=true" >> "$GITHUB_OUTPUT"
+          if [ -n "$SIGNING_ACCOUNT" ] && [ -n "$PUBLISHER" ]; then echo "artifact=true" >> "$GITHUB_OUTPUT"
           else echo "artifact=false" >> "$GITHUB_OUTPUT"; fi
 
       # ---- 1. Azure Artifact Signing --------------------------------------------------------------------
       - name: Build unsigned MSIX (Artifact Signing signs it)
         if: steps.mode.outputs.artifact == 'true'
+        env:
+          PACKAGE_VERSION: ${{ steps.ver.outputs.package }}
+          PUBLISHER: ${{ vars.HOTLINE_PUBLISHER }}
         run: |
-          msix=$(scripts/build-msix.sh --arch all --version '${{ steps.ver.outputs.package }}' --unsigned --publisher '${{ vars.HOTLINE_PUBLISHER }}' | tail -1)
+          msix=$(scripts/build-msix.sh --arch all --version "$PACKAGE_VERSION" --unsigned --publisher "$PUBLISHER" | tail -1)
           mkdir -p artifacts/to-sign
           mv "$msix" artifacts/to-sign/
 
@@ -102,12 +113,16 @@ jobs:
 
       - name: Release files (Artifact Signing)
         if: steps.mode.outputs.artifact == 'true'
+        env:
+          PACKAGE_VERSION: ${{ steps.ver.outputs.package }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          PUBLISHER: ${{ vars.HOTLINE_PUBLISHER }}
         run: |
           mv artifacts/to-sign/Hotline_*.msixbundle artifacts/
           # Trusted signing: users need no Hotline.cer, and updates through the .appinstaller just work.
-          scripts/make-appinstaller.sh --version '${{ steps.ver.outputs.package }}' --tag '${{ steps.ver.outputs.tag }}' \
-            --msix-name 'Hotline_${{ steps.ver.outputs.package }}.msixbundle' --out artifacts/Hotline.appinstaller \
-            --publisher '${{ vars.HOTLINE_PUBLISHER }}' >/dev/null
+          scripts/make-appinstaller.sh --version "$PACKAGE_VERSION" --tag "$TAG" \
+            --msix-name "Hotline_$PACKAGE_VERSION.msixbundle" --out artifacts/Hotline.appinstaller \
+            --publisher "$PUBLISHER" >/dev/null
 
       # ---- 2./3. .pfx or throwaway certificate ------------------------------------------------------------
       - name: Signing certificate
@@ -134,17 +149,20 @@ jobs:
 
       - name: Build signed MSIX
         if: steps.mode.outputs.artifact != 'true'
+        env:
+          PACKAGE_VERSION: ${{ steps.ver.outputs.package }}
+          TAG: ${{ steps.ver.outputs.tag }}
         run: |
           # x64 + ARM64 in one .msixbundle (artifacts/Hotline_<version>.msixbundle); Windows installs the right one.
-          scripts/build-msix.sh --arch all --version '${{ steps.ver.outputs.package }}' --certificate certs/release.pfx >/dev/null
+          scripts/build-msix.sh --arch all --version "$PACKAGE_VERSION" --certificate certs/release.pfx >/dev/null
           # Public certificate so users of a self-signed build can trust it before installing
           # (-legacy reads .pfx files exported by older Windows tools).
           { openssl pkcs12 -in certs/release.pfx -nokeys -clcerts -passin env:HOTLINE_CERT_PASSWORD 2>/dev/null ||
             openssl pkcs12 -legacy -in certs/release.pfx -nokeys -clcerts -passin env:HOTLINE_CERT_PASSWORD; } |
             openssl x509 -outform der -out artifacts/Hotline.cer
           # Install + automatic updates: Windows re-reads the "latest" copy of this file from the releases.
-          scripts/make-appinstaller.sh --version '${{ steps.ver.outputs.package }}' --tag '${{ steps.ver.outputs.tag }}' \
-            --msix-name 'Hotline_${{ steps.ver.outputs.package }}.msixbundle' --out artifacts/Hotline.appinstaller >/dev/null
+          scripts/make-appinstaller.sh --version "$PACKAGE_VERSION" --tag "$TAG" \
+            --msix-name "Hotline_$PACKAGE_VERSION.msixbundle" --out artifacts/Hotline.appinstaller >/dev/null
 
       - uses: actions/upload-artifact@v4
         with:
@@ -159,12 +177,15 @@ jobs:
         if: github.event_name != 'workflow_dispatch' || inputs.publish
         env:
           GH_TOKEN: ${{ github.token }}
+          TAG: ${{ steps.ver.outputs.tag }}
+          SHA: ${{ github.sha }}
+          PRERELEASE: ${{ steps.cert.outputs.prerelease }}
         run: |
           # Every release is a normal ("latest") release; a self-signed one says how to trust it.
-          flags=(--target '${{ github.sha }}' --title 'Hotline ${{ steps.ver.outputs.tag }}' --generate-notes --latest)
-          if [ '${{ steps.cert.outputs.prerelease }}' = true ]; then
+          flags=(--target "$SHA" --title "Hotline $TAG" --generate-notes --latest)
+          if [ "$PRERELEASE" = true ]; then
             flags+=(--notes "Signed with a self-signed certificate: install Hotline.cer into Local Machine > Trusted People first (README › Install), then open the .msixbundle (x64 and ARM64). The Microsoft Store version (Hotline AI) needs none of this.")
           else flags+=(--notes ""); fi
           files=(artifacts/Hotline_*.msixbundle artifacts/Hotline.appinstaller)
           [ -f artifacts/Hotline.cer ] && files+=(artifacts/Hotline.cer) # only self-signed/.pfx builds need it
-          gh release create '${{ steps.ver.outputs.tag }}' "${files[@]}" "${flags[@]}"
+          gh release create "$TAG" "${files[@]}" "${flags[@]}"

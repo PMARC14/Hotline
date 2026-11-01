@@ -12,23 +12,22 @@ public class NotificationTextTests
     }
 
     [Fact]
-    public void Snippet_is_cut_at_the_limit_with_an_ellipsis()
-    {
-        Assert.Equal("aaaa…", NotificationText.Snippet(new string('a', 10), max: 4));
-        Assert.Equal("short", NotificationText.Snippet("short", max: 4 + 1));
-        Assert.Equal("", NotificationText.Snippet(""));
-    }
-
-    [Fact]
     public void Snippet_keeps_underscores_inside_words_but_drops_emphasis()
     {
         Assert.Equal("set notify_when_done in config_file.json, it matters", NotificationText.Snippet("set `notify_when_done` in config_file.json, _it matters_"));
     }
 
+    [Theory]
+    [InlineData("aaaaaaaaaa", 4, "aaaa…")]                 // cut at the limit with an ellipsis
+    [InlineData("short", 5, "short")]
+    [InlineData("ab\U0001F600cd", 3, "ab…")]              // never cuts an emoji in half
+    public void Snippet_is_cut_at_the_limit(string text, int max, string expected)
+        => Assert.Equal(expected, NotificationText.Snippet(text, max: max));
+
     [Fact]
-    public void Snippet_never_cuts_an_emoji_in_half_or_keeps_control_characters()
+    public void Snippet_of_nothing_is_empty_and_drops_control_characters()
     {
-        Assert.Equal("ab…", NotificationText.Snippet("ab\U0001F600cd", max: 3));
+        Assert.Equal("", NotificationText.Snippet(""));
         Assert.Equal("a b", NotificationText.Snippet("a\u001b[0m b\u0000"));
     }
 }

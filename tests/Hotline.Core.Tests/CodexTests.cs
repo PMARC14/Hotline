@@ -118,14 +118,6 @@ public sealed class CodexTests : IDisposable
     }
 
     [Fact]
-    public void System_prompt_is_a_valid_toml_string_even_with_quotes_and_newlines()
-    {
-        var args = CodexProtocol.BuildArgs(new BackendProfile(), "Say \"hi\"\nthen \\stop", null, []);
-        var arg = args.Single(a => a.StartsWith("developer_instructions=", StringComparison.Ordinal));
-        Assert.Equal("developer_instructions=\"Say \\\"hi\\\"\\nthen \\\\stop\"", arg);
-    }
-
-    [Fact]
     public void Attached_short_flags_and_folder_flags_are_dropped_too()
     {
         var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = "-sworkspace-write -csandbox_mode=\"workspace-write\" -C C:\\ --cd=D:\\ --add-dir C:\\Windows -cmodel=\"o3\"" }, "x", null, []);
@@ -140,6 +132,7 @@ public sealed class CodexTests : IDisposable
     [InlineData("emoji 😀 é", "\"emoji 😀 é\"")]
     [InlineData("a\u007Fb\u0001", "\"a\\u007Fb\\u0001\"")]
     [InlineData("tab\there", "\"tab\\there\"")]
+    [InlineData("Say \"hi\"\nthen \\stop", "\"Say \\\"hi\\\"\\nthen \\\\stop\"")] // quotes, newline, backslash
     public void Toml_strings(string value, string expected) => Assert.Equal(expected, CodexProtocol.Toml(value));
 
     [Theory]
@@ -185,7 +178,7 @@ public sealed class CodexTests : IDisposable
     }
 
     [Fact]
-    public void Parser_streams_updates_of_one_message_without_repeating_text()
+    public void Parser_streams_updates_of_one_message_without_repeating_text_and_resets_when_it_is_rewritten()
     {
         var p = new CodexTurnParser();
         var deltas = new[]
@@ -196,15 +189,11 @@ public sealed class CodexTests : IDisposable
         }.SelectMany(p.Feed).ToList();
         Assert.Equal(["Hel", "lo wor", "ld"], deltas.Select(d => d.Text));
         Assert.All(deltas, d => Assert.False(d.ResetBefore));
-    }
 
-    [Fact]
-    public void Parser_resets_when_a_message_is_rewritten()
-    {
-        var p = new CodexTurnParser();
-        var deltas = new[] { Item("updated", "m", "agent_message", "Draft"), Item("completed", "m", "agent_message", "Final") }.SelectMany(p.Feed).ToList();
-        Assert.True(deltas[^1].ResetBefore);
-        Assert.Equal("Final", deltas[^1].Text);
+        p = new CodexTurnParser();
+        var rewritten = new[] { Item("updated", "n", "agent_message", "Draft"), Item("completed", "n", "agent_message", "Final") }.SelectMany(p.Feed).ToList();
+        Assert.True(rewritten[^1].ResetBefore);
+        Assert.Equal("Final", rewritten[^1].Text);
     }
 
     [Fact]
@@ -240,7 +229,7 @@ public sealed class CodexTests : IDisposable
         Assert.Equal("Hi there.", text);
         var (exe, args, cwd, process) = Assert.Single(_factory.Started);
         Assert.Equal(@"C:\codex.exe", exe);
-        Assert.Equal(Path.Combine(_dir, "ws"), cwd); // chat only: an empty folder, nothing of the user's to read
+        Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only: the home folder (read-only sandbox), where `codex resume` finds it
         Assert.Equal("hello", Assert.Single(process.Written));
         Assert.True(process.InputCompleted);
         Assert.True(process.Disposed);
@@ -298,7 +287,6 @@ public sealed class CodexTests : IDisposable
         Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
         Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
         Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
-        Assert.False(ConnectionTypes.Of(BackendType.Codex).ListsModels);
     }
 
     [Fact]
@@ -322,6 +310,19 @@ public sealed class CodexTests : IDisposable
         Assert.Contains("resume", _factory.Started[1].Args);
         Assert.DoesNotContain("resume", _factory.Started[2].Args);
         Assert.Contains("<previous_conversation>", Assert.Single(_factory.Started[2].Process.Written));
+    }
+
+    [Fact]
+    public async Task Signed_out_on_a_resumed_chat_says_so_instead_of_replaying()
+    {
+        _factory.Create = () => _factory.Started.Count == 1 // the resume dies at once: signed out
+            ? new FakeLineProcess { ExitWhenInputCompletes = true, StandardErrorTail = "Error: Not logged in. Run codex login." }
+            : new FakeLineProcess { ExitWhenInputCompletes = true, Respond = _ => Answer("ok") };
+        var b = New(profile: new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
+        b.Resume = await SessionOf(b.StreamAsync([U("u1", "first")], default));
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("u1", "first"), A("a1", "ok"), U("u2", "second")], default)));
+        Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
+        Assert.Equal(2, _factory.Started.Count); // the thread is kept: no new session started
     }
 
     [Fact]
@@ -403,6 +404,6 @@ public sealed class CodexTests : IDisposable
         var info = ConnectionTypes.Of(BackendType.Codex);
         Assert.True(info.Has(ConnectionField.CliPath) && info.Has(ConnectionField.Tools));
         Assert.False(info.Has(ConnectionField.ApiKey));
-        Assert.Equal(["low", "medium", "high", "xhigh"], info.EffortLevels);
+        Assert.Equal(["low", "medium", "high", "xhigh", "max", "ultra"], info.EffortLevels);
     }
 }

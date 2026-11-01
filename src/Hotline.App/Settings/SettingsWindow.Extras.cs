@@ -6,61 +6,124 @@ using Microsoft.UI.Xaml.Controls;
 
 namespace Hotline.App.Settings;
 
-/// <summary>Settings pages for the files next to settings.json: the bottom bar (toolbar.json) and quick actions (actions\).</summary>
+/// <summary>Settings pages for the files next to settings.json: the button rows (toolbar.json), sounds, guide, about and memory.</summary>
 public sealed partial class SettingsWindow
 {
-    /// <summary>A bar item's name ("captureWindow" → Bar_captureWindow); unknown ids show as they are.</summary>
-    private static string ToolbarName(string id) => Strings.ResourceManager.GetString("Bar_" + id, System.Globalization.CultureInfo.CurrentUICulture) ?? id;
-
     private string DataDirectory => Path.GetDirectoryName(_settingsFile)!;
+    /// <summary>At most this many of toolbar.json's problems are listed in the page's InfoBar (then "(and N more)").</summary>
+    private const int MaxToolbarProblemLines = 10;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
-    /// <summary>Appearance › Bottom bar: show, hide and order the bar's buttons (saved to toolbar.json, applied at once).</summary>
+    /// <summary>
+    /// Window › Button rows: the quadrant editor (<see cref="ToolbarQuadrantEditor"/>) on toolbar.json, read anew each time
+    /// the page is shown (an edit made in the file while the page is open shows on the next visit; the bar itself follows
+    /// the file at once). An unreadable file gets only the error and Reset, so nothing overwrites it by accident; the fixes
+    /// Resolve made to a readable one are listed.
+    /// </summary>
     private void BuildToolbarSection()
     {
         PageHost.Children.Add(new TextBlock
         {
-            Text = Strings.Bar_Title, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
+            Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        var config = ToolbarConfig.Load(ToolbarPath);
-        if (config.Error is { } error)
+        try
+        {
+            if (_screenLine?.Invoke() is { Length: > 0 } screen)
+                PageHost.Children.Add(new TextBlock { Text = screen, TextWrapping = TextWrapping.Wrap, Opacity = 0.7, Margin = new Thickness(0, 0, 0, 8) });
+        }
+        catch (Exception ex) { _log.Error("working out the screen line failed", ex); }
+        var load = ToolbarFile.Load(ToolbarPath);
+        if (load.Error is { } error)
         {
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        var items = config.Items;
-        void Save(IReadOnlyList<string> next)
+        if (load.Model.Warnings.Count > 0)
+            PageHost.Children.Add(new InfoBar
+            {
+                IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
+                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", load.Model.Warnings.Take(MaxToolbarProblemLines))
+                    + (load.Model.Warnings.Count > MaxToolbarProblemLines
+                        ? "\n" + L.F(Strings.Settings_AndMore, load.Model.Warnings.Count - MaxToolbarProblemLines) : ""),
+            });
+        var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
+        // The file as this page read or last saved it: an edit made while the page is open is never overwritten.
+        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
+        void Save(ToolbarModel model)
         {
-            try { ToolbarConfig.Save(ToolbarPath, next); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
-            ShowPage(_currentPage);
+            if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
+            ToolbarFile.Save(ToolbarPath, model);
+            stamp = ToolbarFile.Fingerprint(ToolbarPath);
         }
-        var list = new StackPanel { Spacing = 4 };
-        for (var i = 0; i < items.Count; i++)
+        ToolbarModel? Reload()
         {
-            var index = i;
-            var row = new Grid { ColumnSpacing = 4 };
-            row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
-            for (var c = 0; c < 3; c++) row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
-            row.Children.Add(new TextBlock { Text = ToolbarName(items[i]), VerticalAlignment = VerticalAlignment.Center });
-            AddIconButton(row, 1, "\uE76B", Strings.Bar_MoveLeft, index > 0, () => Save(ToolbarConfig.Move(items, index, -1)));
-            AddIconButton(row, 2, "\uE76C", Strings.Bar_MoveRight, index < items.Count - 1, () => Save(ToolbarConfig.Move(items, index, +1)));
-            AddIconButton(row, 3, "\uE711", Strings.Bar_Remove, items.Count > 1, () =>
-                Save(items.Where((_, j) => j != index).ToList()));
-            list.Children.Add(row);
+            stamp = ToolbarFile.Fingerprint(ToolbarPath);
+            var again = ToolbarFile.Load(ToolbarPath);
+            if (again.Error is null) return again.Model;
+            ShowPage(_currentPage); // unreadable now: the page shows the error and Reset
+            return null;
         }
-        PageHost.Children.Add(new Border { Child = list, Style = (Style)Root.Resources["CardStyle"] });
+        PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, Save,
+            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload));
+        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
+    }
 
-        var add = new DropDownButton { Content = Strings.Bar_Add };
-        var menu = new MenuFlyout();
-        foreach (var item in ToolbarConfig.Available.Where(a => a == "spacer" || !items.Contains(a)))
+    /// <summary>
+    /// Appearance › Sounds: what plays when the panel opens and closes. Off, a Windows sound (the current sound scheme)
+    /// or a .wav from ~/.hotline/sounds; ▶ plays it; the folder button opens the sounds folder.
+    /// </summary>
+    private void BuildSoundsSection()
+    {
+        PageHost.Children.Add(new TextBlock
         {
-            var entry = new MenuFlyoutItem { Text = ToolbarName(item) };
-            entry.Click += (_, _) => Save(ToolbarConfig.Show(items, item));
-            menu.Items.Add(entry);
+            Text = Strings.Sound_Title, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
+        });
+        var folder = Interop.SoundPlayer.Directory(DataDirectory);
+        var choices = new List<(string Label, string Value)> { (Strings.Sound_Off, Hotline.Core.Windowing.Sounds.Off) };
+        choices.AddRange(Interop.SoundPlayer.Files(folder).Select(f => (L.F(Strings.Sound_File, f), f)));
+        choices.AddRange(Interop.SoundPlayer.WindowsEvents().Select(e => (L.F(Strings.Sound_Windows, e), Hotline.Core.Windowing.Sounds.WindowsPrefix + e)));
+        UIElement Picker(Func<string> get, Action<string> set)
+        {
+            var box = new ComboBox { MinWidth = 260 };
+            foreach (var (label, _) in choices) box.Items.Add(label);
+            var initial = get();
+            var current = choices.FindIndex(c => string.Equals(c.Value, initial, StringComparison.OrdinalIgnoreCase));
+            if (current < 0) { box.Items.Add(initial); current = box.Items.Count - 1; } // a value typed into settings.json
+            box.SelectedIndex = current;
+            box.SelectionChanged += (_, _) =>
+            {
+                if (box.SelectedIndex >= 0 && box.SelectedIndex < choices.Count) set(choices[box.SelectedIndex].Value);
+                else if (box.SelectedIndex == choices.Count) set(initial);
+            };
+            var play = new Button { Content = new FontIcon { Glyph = "\uE768", FontSize = 12 }, Padding = new Thickness(8, 4, 8, 4) };
+            ToolTipService.SetToolTip(play, Strings.Sound_Play);
+            play.Click += (_, _) => Interop.SoundPlayer.Play(get(), folder, _log);
+            return new StackPanel { Orientation = Orientation.Horizontal, Spacing = 6, Children = { box, play } };
         }
-        add.Flyout = menu;
-        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Children = { add, ResetToolbarButton() } });
+        PageHost.Children.Add(Card(Strings.Sound_Open, null, Picker(() => _settings.Current.Window.OpenSound, v => _settings.Update(s => s.Window.OpenSound = v))));
+        PageHost.Children.Add(Card(Strings.Sound_Close, null, Picker(() => _settings.Current.Window.CloseSound, v => _settings.Update(s => s.Window.CloseSound = v))));
+        var open = new Button { Content = Strings.Sound_OpenFolder };
+        open.Click += (_, _) => { System.IO.Directory.CreateDirectory(folder); CliRunner.OpenFolder(folder); };
+        PageHost.Children.Add(Card(Strings.Sound_Folder, L.F(Strings.Sound_Folder_Desc, folder), open));
+    }
+
+    /// <summary>Settings › Guide: every feature in short (Core Settings.Guide lists the sections; texts in every language).</summary>
+    private void BuildGuidePage()
+    {
+        PageHost.Children.Add(new TextBlock { Text = Strings.Guide_Intro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8) });
+        string Text(string key) => Strings.ResourceManager.GetString(key, System.Globalization.CultureInfo.CurrentUICulture) ?? key;
+        foreach (var section in Hotline.Core.Settings.Guide.Sections)
+        {
+            var body = new StackPanel { Spacing = 6 };
+            body.Children.Add(new TextBlock
+            {
+                Text = Text(Hotline.Core.Settings.Guide.TitleKey(section)),
+                Style = (Style)Application.Current.Resources["BodyStrongTextBlockStyle"],
+            });
+            foreach (var paragraph in Text(Hotline.Core.Settings.Guide.BodyKey(section)).Split('\n', StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries))
+                body.Children.Add(new TextBlock { Text = paragraph, TextWrapping = TextWrapping.Wrap, IsTextSelectionEnabled = true });
+            PageHost.Children.Add(new Border { Child = body, Style = (Style)Root.Resources["CardStyle"] });
+        }
     }
 
     private Button ResetToolbarButton()
@@ -68,20 +131,15 @@ public sealed partial class SettingsWindow
         var reset = new Button { Content = Strings.Bar_Reset };
         reset.Click += (_, _) =>
         {
-            try { ToolbarConfig.Save(ToolbarPath, ToolbarConfig.Defaults); }
+            try
+            {
+                Hotline.Core.Settings.FileArchive.KeepOld(ToolbarPath); // the user's file stays as toolbar.json.old (or .old2…)
+                ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+            }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
             ShowPage(_currentPage);
         };
         return reset;
-    }
-
-    private static void AddIconButton(Grid row, int column, string glyph, string tip, bool enabled, Action click)
-    {
-        var button = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 12 }, IsEnabled = enabled, Padding = new Thickness(8, 4, 8, 4) };
-        ToolTipService.SetToolTip(button, tip);
-        button.Click += (_, _) => click();
-        Grid.SetColumn(button, column);
-        row.Children.Add(button);
     }
 
     /// <summary>About: version, license, where Hotline lives, and how to support it.</summary>
@@ -178,95 +236,16 @@ public sealed partial class SettingsWindow
         PageHost.Children.Add(Card("memory.md", lines == 0 ? Strings.Memory_Empty : L.F(Strings.Memory_Lines, lines), edit));
     }
 
-    /// <summary>Quick actions: "/name" in the message box applies the file's instruction (actions\&lt;name&gt;.md).</summary>
-    /// <summary>
-    /// Quick actions: each one's command, description and full instruction, with Edit (the .md file in your editor),
-    /// Rename and Delete; New action, Restore default actions and the folder below. The files hold everything.
-    /// </summary>
-    private void BuildActionsPage()
+    /// <summary>An action's instruction under its card: two lines, the whole text in the tooltip and in Edit (a page of full
+    /// instructions is a wall of text).</summary>
+    private static TextBlock InstructionPreview(string instruction)
     {
-        var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
-        PageHost.Children.Add(new TextBlock
+        var text = new TextBlock
         {
-            Text = Strings.Actions_Intro,
-            TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 0, 0, 8),
-        });
-        foreach (var action in actions.List())
-        {
-            var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-            var edit = new Button { Content = Strings.Common_Edit };
-            edit.Click += (_, _) => CliRunner.OpenInEditor(actions.PathFor(action.Name));
-            var rename = new Button { Content = Strings.Actions_Rename };
-            rename.Click += async (_, _) => await RenameActionAsync(actions, action.Name);
-            var delete = new Button { Content = Strings.Common_Delete };
-            delete.Click += async (_, _) =>
-            {
-                var confirm = new ContentDialog
-                {
-                    XamlRoot = Root.XamlRoot, Title = L.F(Strings.Actions_DeleteConfirm, action.Name),
-                    PrimaryButtonText = Strings.Common_Delete, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
-                };
-                if (await ShowDialogAsync(confirm) != ContentDialogResult.Primary) return;
-                actions.Delete(action.Name);
-                ShowPage("Actions");
-            };
-            buttons.Children.Add(edit);
-            buttons.Children.Add(rename);
-            buttons.Children.Add(delete);
-            var description = new TextBlock { Text = action.Description };
-            var card = CardWithStatus("/" + action.Name, description, buttons);
-            // The whole instruction under the card, when it says more than the description.
-            if (action.Instruction != action.Description)
-                PageHost.Children.Add(new StackPanel
-                {
-                    Spacing = 0,
-                    Children =
-                    {
-                        card,
-                        new TextBlock
-                        {
-                            Text = action.Instruction, TextWrapping = TextWrapping.Wrap, FontSize = 12, Opacity = 0.65, IsTextSelectionEnabled = true,
-                            Margin = new Thickness(16, -6, 16, 8), MaxLines = 6, TextTrimming = TextTrimming.CharacterEllipsis,
-                        },
-                    },
-                });
-            else PageHost.Children.Add(card);
-        }
-        var create = new Button { Content = Strings.Actions_New, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
-        create.Click += (_, _) => { CliRunner.OpenInEditor(actions.PathFor(actions.Create())); ShowPage("Actions"); };
-        var restore = new Button { Content = Strings.Actions_Restore };
-        restore.Click += (_, _) =>
-        {
-            var written = actions.RestoreDefaults();
-            ShowPage("Actions");
-            PageHost.Children.Insert(1, new InfoBar
-            {
-                IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Success,
-                Message = L.F(Strings.Actions_Restored, written), Margin = new Thickness(0, 0, 0, 8),
-            });
+            Text = instruction, TextWrapping = TextWrapping.Wrap, FontSize = 12, Opacity = 0.65, IsTextSelectionEnabled = true,
+            Margin = new Thickness(16, -6, 16, 8), MaxLines = 2, TextTrimming = TextTrimming.CharacterEllipsis,
         };
-        var open = new Button { Content = Strings.Actions_OpenFolder };
-        open.Click += (_, _) => { Directory.CreateDirectory(actions.Directory); CliRunner.OpenFolder(actions.Directory); };
-        PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 8, 0, 0), Children = { create, restore, open } });
-    }
-
-    /// <summary>Asks for a new name (letters, digits, - and _, not taken) and renames the action's file.</summary>
-    private async Task RenameActionAsync(QuickActions actions, string name)
-    {
-        var box = new TextBox { Text = name, Header = Strings.Actions_NewName };
-        var dialog = new ContentDialog
-        {
-            XamlRoot = Root.XamlRoot, Title = Strings.Actions_Rename, Content = box,
-            PrimaryButtonText = Strings.Actions_Rename, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Primary,
-        };
-        dialog.PrimaryButtonClick += (_, e) =>
-        {
-            var to = box.Text.Trim();
-            if (to == name) return;
-            if (actions.Rename(name, to)) return;
-            box.Header = Strings.Actions_RenameInvalid; // keep the dialog open
-            e.Cancel = true;
-        };
-        if (await ShowDialogAsync(dialog) == ContentDialogResult.Primary) ShowPage("Actions");
+        ToolTipService.SetToolTip(text, instruction);
+        return text;
     }
 }

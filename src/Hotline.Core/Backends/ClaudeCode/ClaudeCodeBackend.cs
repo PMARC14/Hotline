@@ -14,7 +14,7 @@ namespace Hotline.Core.Backends.ClaudeCode;
 /// unknown ID, prompt change without kept sessions) the next turn starts a fresh process and replays the
 /// conversation as text. Images go inline as base64 content blocks.
 /// </summary>
-public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> locateExe, string workspace, ILineProcessFactory processes,
+public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> locateExe, ILineProcessFactory processes,
     FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
@@ -62,6 +62,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
             var process = _process!;
             try { await process.WriteLineAsync(line, ct); }
             catch (OperationCanceledException) { await StopAsync(); throw; }
+            catch (IOException) { /* claude already exited (bad flag, not signed in): its stderr explains, below */ }
 
             var parser = new ClaudeTurnParser();
             var answered = false;
@@ -89,7 +90,8 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
                 if (parser.SessionId is { } sid && sid != _sessionId && CliSession.IsValidId(sid))
                 {
                     _sessionId = sid;
-                    yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
+                    // Without kept sessions claude stores nothing (--no-session-persistence): there is nothing to resume.
+                    if (profile.KeepCliSessions) yield return new ChatDelta("", Session: new CliSession(sid, _cwd));
                 }
             }
             if (!resumeFailed && resuming && parser.Error is { } resumeError && !answered
@@ -121,8 +123,8 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     {
         await StopAsync();
         var inherit = profile.Tools == ToolMode.Inherit;
-        var cwd = inherit ? WorkingDirectory() : workspace;
-        if (resume is { WorkingDirectory: { Length: > 0 } was } && Path.IsPathFullyQualified(was)) cwd = was; // Claude Code finds sessions by folder (recreated below if gone)
+        var cwd = inherit ? WorkingDirectory() : homeDirectory; // chat only has no tools; home: `claude --resume` there finds it
+        if (resume is { WorkingDirectory: { Length: > 0 } was } && Hotline.Core.Platform.SafeDirectory.IsLocal(was)) cwd = was; // Claude Code finds sessions by folder (recreated below if gone)
         Directory.CreateDirectory(cwd);
         var args = ClaudeCodeProtocol.BuildArgs(profile, prompt).ToList();
         if (resume is not null) args.AddRange(["--resume", resume.Id]);

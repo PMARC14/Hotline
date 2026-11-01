@@ -53,6 +53,11 @@ public static class SettingsSchema
         => new(page, header, description, options.Select(o => new ChoiceOption(o.Value.ToString(), o.Label)).ToList(),
             s => get(s).ToString(), (s, v) => set(s, Enum.Parse<T>(v)), restart);
 
+    /// <summary>The picker entry for a stored language: "EN-us" shows as "en-US"; an unknown tag as "system".</summary>
+    private static string CanonicalLanguage(string? stored) =>
+        Languages.Resolve(stored) is null ? Languages.System
+            : Languages.Supported.FirstOrDefault(t => t.Equals(stored!.Trim(), StringComparison.OrdinalIgnoreCase)) ?? stored!.Trim();
+
     private static string? Blank(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
 
     /// <summary>The accent picker's "Custom" entry (settings.json stores the colour itself).</summary>
@@ -78,11 +83,8 @@ public static class SettingsSchema
     public static IReadOnlyList<SettingItem> Items { get; } =
     [
         new ChoiceItem(SettingsPage.General, nameof(Strings.Set_Language), nameof(Strings.Set_Language_Desc), LanguageOptions(),
-            s => Languages.Resolve(s.General.Language) is null ? Languages.System : s.General.Language.Trim(),
+            s => CanonicalLanguage(s.General.Language),
             (s, v) => s.General.Language = v, RequiresRestart: true),
-        Choice(SettingsPage.General, nameof(Strings.Set_CopilotKey), nameof(Strings.Set_CopilotKey_Desc),
-            [(Activation.CopilotKeyMode.Hotline, nameof(Strings.Set_CopilotKey_Hotline)), (Activation.CopilotKeyMode.RightCtrl, nameof(Strings.Set_CopilotKey_RightCtrl))],
-            s => s.Activation.CopilotKey, (s, v) => s.Activation.CopilotKey = v),
         Choice(SettingsPage.General, nameof(Strings.Set_Tap), null, KeyActions, s => s.Activation.Tap, (s, v) => s.Activation.Tap = v),
         Choice(SettingsPage.General, nameof(Strings.Set_Hold), null, KeyActions, s => s.Activation.Hold, (s, v) => s.Activation.Hold = v),
         new ToggleItem(SettingsPage.General, nameof(Strings.Set_Voice), nameof(Strings.Set_Voice_Desc),
@@ -136,18 +138,35 @@ public static class SettingsSchema
             s => s.Window.Scrollbar, (s, v) => s.Window.Scrollbar = v),
 
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_Width), nameof(Strings.Set_Width_Desc), 20, 90, 1, "%", s => s.Window.WidthPercent, (s, v) => s.Window.WidthPercent = v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinWidth), null, 320, 4000, 10, "DIP", s => s.Window.MinWidth, (s, v) => s.Window.MinWidth = (int)v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxWidth), null, 320, 4000, 10, "DIP", s => s.Window.MaxWidth, (s, v) => s.Window.MaxWidth = (int)v),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinWidth), nameof(Strings.Set_MinWidth_Desc), 200, 8000, 10, "px", s => s.Window.MinWidth, (s, v) => s.Window.MinWidth = (int)v),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxWidth), nameof(Strings.Set_MaxWidth_Desc), 200, 16000, 10, "px", s => s.Window.MaxWidth, (s, v) => s.Window.MaxWidth = (int)v),
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinHeight), nameof(Strings.Set_MinHeight_Desc), 0, 4000, 10, "DIP",
             s => s.Window.Height, (s, v) => s.Window.Height = (int)v),
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxHeight), nameof(Strings.Set_MaxHeight_Desc), 30, 95, 1, "%",
             s => s.Window.MaxHeightPercent, (s, v) => s.Window.MaxHeightPercent = v),
         new NumberItem(SettingsPage.Window, nameof(Strings.Set_Position), nameof(Strings.Set_Position_Desc), 0, 1, 0.05, null,
-            s => s.Window.VerticalPosition, (s, v) => s.Window.VerticalPosition = v),
+            s => s.Window.Anchor.Y, (s, v) => s.Window.Anchor.Y = v),
         Choice(SettingsPage.Window, nameof(Strings.Set_Growth), null, [(GrowMode.Grow, nameof(Strings.Set_Growth_Fit)), (GrowMode.Full, nameof(Strings.Set_Growth_Full))],
             s => s.Chat.GrowMode, (s, v) => s.Chat.GrowMode = v),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_PositionX), nameof(Strings.Set_PositionX_Desc), 0, 1, 0.05, null,
+            s => s.Window.Anchor.X, (s, v) => s.Window.Anchor.X = v),
+        new TextItem(SettingsPage.Window, nameof(Strings.Set_Monitor), nameof(Strings.Set_Monitor_Desc), PanelAnchor.Active,
+            s => s.Window.Anchor.Monitor, (s, v) => s.Window.Anchor.Monitor = string.IsNullOrWhiteSpace(v) ? PanelAnchor.Active : v.Trim()),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_FixedWidth), nameof(Strings.Set_FixedWidth_Desc), 0, 16000, 10, "px",
+            s => s.Window.Width ?? 0, (s, v) => s.Window.Width = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 200, 16000)),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatWidthPercent), nameof(Strings.Set_ChatWidthPercent_Desc), 0, 90, 1, "%",
+            s => s.Window.ChatWidthPercent, (s, v) => s.Window.ChatWidthPercent = v <= 0 ? 0 : Math.Clamp(v, 20, 90)),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatWidth), nameof(Strings.Set_ChatWidth_Desc), 0, 16000, 10, "px",
+            s => s.Window.ChatWidth ?? 0, (s, v) => s.Window.ChatWidth = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 200, 16000)),
+        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatHeight), nameof(Strings.Set_ChatHeight_Desc), 0, 8000, 10, "DIP",
+            s => s.Window.ChatHeight ?? 0, (s, v) => s.Window.ChatHeight = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 60, 8000)),
+        Choice(SettingsPage.Window, nameof(Strings.Set_Direction), nameof(Strings.Set_Direction_Desc),
+            [(GrowDirection.Auto, nameof(Strings.Set_Direction_Auto)), (GrowDirection.Up, nameof(Strings.Set_Direction_Up)), (GrowDirection.Down, nameof(Strings.Set_Direction_Down))],
+            s => s.Window.GrowDirection, (s, v) => s.Window.GrowDirection = v),
 
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_NotifyDone), nameof(Strings.Set_NotifyDone_Desc), s => s.Chat.NotifyWhenDone, (s, v) => s.Chat.NotifyWhenDone = v),
+        new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Thinking), nameof(Strings.Set_Thinking_Desc),
+            s => s.Chat.ThinkingIndicator, (s, v) => s.Chat.ThinkingIndicator = v),
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_History), nameof(Strings.Set_History_Desc), s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
         new NumberItem(SettingsPage.Chat, nameof(Strings.Set_Retention), null, 1, 3650, 1, nameof(Strings.Set_Unit_Days), s => s.Chat.HistoryRetentionDays,
             (s, v) => s.Chat.HistoryRetentionDays = (int)v, RequiresRestart: true),

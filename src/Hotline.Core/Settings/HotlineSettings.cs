@@ -4,7 +4,7 @@ namespace Hotline.Core.Settings;
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 11;
+    public const int CurrentSchemaVersion = 14;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -35,11 +35,7 @@ public sealed class ActivationSettings
     public KeyAction Hold { get; set; } = KeyAction.NewChat;
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
     public string? FallbackHotkey { get; set; }
-    /// <summary>Hotline = the key opens Hotline (tap/hold actions above); RightCtrl = it's a plain Right Ctrl key.</summary>
-    public Activation.CopilotKeyMode CopilotKey { get; set; } = Activation.CopilotKeyMode.Hotline;
 }
-
-public enum PopupLayout { QuickView, CommandBar, SidePanel }
 
 /// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
 public enum ThemeChoice { System, Light, Dark, HighContrast }
@@ -49,17 +45,38 @@ public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 
 public sealed class WindowSettings
 {
-    public PopupLayout Layout { get; set; } = PopupLayout.QuickView;
-    /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
+    /// <summary>Panel width as a percentage of the monitor's work area in real pixels (20–90; Windows' scaling is ignored), clamped to [MinWidth, MaxWidth].</summary>
     public double WidthPercent { get; set; } = 40;
-    public int MinWidth { get; set; } = 600;
-    public int MaxWidth { get; set; } = 1000;
+    /// <summary>Narrowest panel, in real pixels: 384 = 20% of a 1920 × 1080 screen.</summary>
+    public int MinWidth { get; set; } = 400;
+    /// <summary>Widest panel, in real pixels: 2304 = 60% of a 4K (3840) screen.</summary>
+    public int MaxWidth { get; set; } = 1200;
     /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
     public int Height { get; set; }
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
-    public double MaxHeightPercent { get; set; } = 70;
-    /// <summary>Where the popup sits vertically: 0 = top, 0.5 = centered, 1 = bottom of the free space.</summary>
-    public double VerticalPosition { get; set; } = 0.8;
+    public double MaxHeightPercent { get; set; } = 60;
+    /// <summary>Where the panel opens (its saved default spot): monitor and fractions of the free work area.</summary>
+    public PanelAnchor Anchor { get; set; } = new();
+    /// <summary>Panel width in real pixels (a manual resize saves one); null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
+    public int? Width { get; set; }
+    /// <summary>
+    /// When a chat starts the panel grows to this share of the work area's width (0 = it doesn't; otherwise 20-90), clamped to
+    /// [MinWidth, MaxWidth]; no wider than it opened means no growth. A fixed <see cref="Width"/> (a manual resize saves one) never grows.
+    /// </summary>
+    public double ChatWidthPercent { get; set; }
+    /// <summary>The width the panel grows to when a chat starts, in real pixels (kept within MinWidth..MaxWidth); null = <see cref="ChatWidthPercent"/>.</summary>
+    public int? ChatWidth { get; set; }
+    /// <summary>Most the chat grows to, in DIPs; null = MaxHeightPercent of the screen.</summary>
+    public int? ChatHeight { get; set; }
+    /// <summary>Which way the chat grows from the bar: Auto (up unless there's no room above), or locked Up/Down.</summary>
+    public GrowDirection GrowDirection { get; set; } = GrowDirection.Auto;
+    /// <summary>Sound when the panel opens: "off", "windows:&lt;event&gt;" (the Windows sound scheme) or a .wav in ~/.hotline/sounds.</summary>
+    public string OpenSound { get; set; } = "off";
+    /// <summary>Sound when the panel closes (same values as OpenSound).</summary>
+    public string CloseSound { get; set; } = "off";
+    /// <summary>Before v13: the vertical position, now Anchor.Y (read once, then dropped from the file).</summary>
+    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
+    public double? VerticalPosition { get; set; }
     public bool HideOnBlur { get; set; } = true;
     public bool AlwaysOnTop { get; set; } = true;
     public ThemeChoice Theme { get; set; } = ThemeChoice.System;
@@ -70,7 +87,7 @@ public sealed class WindowSettings
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
     public string? FontFamily { get; set; }
     public ScrollbarStyle Scrollbar { get; set; } = ScrollbarStyle.Auto;
-    public BackdropKind Backdrop { get; set; } = BackdropKind.Acrylic;
+    public BackdropKind Backdrop { get; set; } = BackdropKind.AcrylicThin;
     /// <summary>Acrylic tint strength, 0 (clear) to 1 (opaque tint).</summary>
     public double TintOpacity { get; set; } = 0.15;
     /// <summary>Acrylic luminosity layer, 0 (most see-through) to 1.</summary>
@@ -101,9 +118,10 @@ public sealed class BackendProfile
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
     /// <summary>
-    /// Replaces Hotline's built-in launch flags for this connection's mode (e.g. agy's --agent, Claude Code's chat-only
-    /// isolation). The flags Hotline needs to talk to the CLI (print mode, stream-json, no permission prompts) are
-    /// always added; dangerous flags only come from ApproveAllTools. Null = Hotline's defaults.
+    /// Replaces Hotline's usual extra launch flags for this connection's mode. The flags Hotline needs to talk to the CLI
+    /// (print mode, stream-json) and, in chat-only mode, the isolation flags that keep it from using its own tools are always
+    /// added; flags that approve tools or skip permission checks are dropped from this list: only ApproveAllTools turns them
+    /// on. Null = Hotline's defaults.
     /// </summary>
     public List<string>? Args { get; set; }
     /// <summary>
@@ -152,7 +170,7 @@ public sealed class ChatSettings
     /// settings.json; an old settings.json "backends" list is moved there once).
     /// </summary>
     [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public List<BackendProfile> Backends { get; set; } = DefaultBackends();
+    public List<BackendProfile> Backends { get; set; } = [];
     /// <summary>Dropdown order: connection ids. Connections not listed follow, by name.</summary>
     public List<string> Order { get; set; } = [];
     /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
@@ -162,6 +180,10 @@ public sealed class ChatSettings
     public bool NotifyWhenDone { get; set; } = true;
     /// <summary>How many saved chats the history list reads (each is opened for its title). settings.json only.</summary>
     public int HistoryListSize { get; set; } = 300;
+    /// <summary>While an answer streams and no text has come for <see cref="ThinkingDelayMs"/>, the cursor spins.</summary>
+    public bool ThinkingIndicator { get; set; } = true;
+    /// <summary>How long without new text before the thinking indicator shows (ms, 0–10000). settings.json only.</summary>
+    public int ThinkingDelayMs { get; set; } = 700;
     /// <summary>"/resume" and a space opens the history list right away, searching as you type. settings.json only.</summary>
     public bool ResumeWhileTyping { get; set; } = true;
     /// <summary>
@@ -184,17 +206,27 @@ public sealed class ChatSettings
     public bool Memory { get; set; } = true;
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
     public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
-
-    public static List<BackendProfile> DefaultBackends() =>
-    [
-        new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" },
-    ];
 }
 
 /// <summary>Auto = thin and transparent until hovered; Visible = always shown; Hidden = never shown (still scrolls).</summary>
 public enum ScrollbarStyle { Auto, Visible, Hidden }
 
 public enum GrowMode { Grow, Full }
+
+/// <summary>Auto = up unless the chat has no room above (then down); Up/Down lock the direction.</summary>
+public enum GrowDirection { Auto, Up, Down }
+
+/// <summary>
+/// The panel's home spot. Monitor: "active" (where you're working), "primary", or a monitor's device name (falls back
+/// to active when it isn't connected). X/Y: fractions of the monitor's free work area (0 = left/top, 1 = right/bottom).
+/// </summary>
+public sealed class PanelAnchor
+{
+    public const string Active = "active", Primary = "primary";
+    public string Monitor { get; set; } = Active;
+    public double X { get; set; } = 0.5;
+    public double Y { get; set; } = 0.8;
+}
 
 /// <summary>
 /// Auto = read the selection through UI Automation (no keystrokes, clipboard untouched; some apps don't expose it);

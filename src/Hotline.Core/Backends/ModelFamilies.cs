@@ -15,7 +15,8 @@ public sealed record ModelFamily(string Name, IReadOnlyList<(string Level, strin
 /// </summary>
 public static partial class ModelFamilies
 {
-    private static readonly string[] LevelOrder = ["low", "medium", "high", "max"];
+    // Claude Code and Codex also offer xhigh and ultra: above high / max, so a model with fewer levels gets its top one.
+    private static readonly string[] LevelOrder = ["low", "medium", "high", "xhigh", "max", "ultra"];
 
     public static IReadOnlyList<ModelFamily> Group(IReadOnlyList<ModelInfo> models)
     {
@@ -47,9 +48,10 @@ public static partial class ModelFamilies
     /// </summary>
     public static string Resolve(ModelFamily family, string? level)
     {
+        level = level?.Trim().ToLowerInvariant();
         if (level is not null && family.Variants.FirstOrDefault(v => v.Level == level) is { Id: not null } exact) return exact.Id;
-        if (level is null || !family.HasLevels) return family.Variants[family.Variants.Count / 2].Id;
-        var want = Array.IndexOf(LevelOrder, level);
+        var want = level is null ? -1 : Array.IndexOf(LevelOrder, level);
+        if (want < 0 || !family.HasLevels) return family.Variants[family.Variants.Count / 2].Id; // none chosen, or one we don't know
         return family.Variants.OrderBy(v => Math.Abs(Array.IndexOf(LevelOrder, v.Level) - want)).ThenByDescending(v => Array.IndexOf(LevelOrder, v.Level)).First().Id;
     }
 

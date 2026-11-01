@@ -49,6 +49,26 @@ public sealed class AppActionTests
     }
 
     [Theory]
+    [InlineData("//attacker.com/share/a.png")]
+    [InlineData(@"\/attacker.com/share/a.png")]
+    [InlineData(@"\\?\UNC\attacker.com\share\a.png")]
+    [InlineData(@"\\.\pipe\x")]
+    public void Network_and_device_image_paths_are_refused(string path) =>
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(("image", path)), Windows));
+
+    [Fact]
+    public void An_image_in_the_link_itself_is_never_opened() // any web page can write a link; only Windows' own inputs carry images
+    {
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask?image=C%3A%5CUsers%5Cme%5Csecret.png"), null, Windows));
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask?image=C%3A%5Cx.png"), null, null));
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask?image=C%3A%5Cx.png"), Inputs(), Windows));
+    }
+
+    [Fact]
+    public void An_image_input_from_another_app_is_ignored() =>
+        Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(("image", @"C:\Users\me\shot.png")), "Contoso.App_abc123"));
+
+    [Theory]
     [InlineData("hotline-action://run/..%2Fevil")]
     [InlineData("hotline-action://run/")]
     [InlineData("hotline-action://unknown")]
@@ -58,6 +78,30 @@ public sealed class AppActionTests
 
     [Fact]
     public void Nothing_to_work_on_is_ignored() => Assert.Null(AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(), Windows));
+
+    [Fact]
+    public void App_action_inputs_with_keys_that_differ_only_by_case_do_not_throw()
+    {
+        var inputs = new Dictionary<string, string> { ["text"] = "one", ["Text"] = "two" };
+        var request = AppActionRequest.Parse(new Uri("hotline-action://ask"), inputs, null);
+        Assert.NotNull(request);
+        Assert.NotNull(request.Text);
+    }
+
+    [Fact]
+    public void Image_path_check_never_throws_for_a_drive_that_is_not_there()
+    {
+        var unused = Enumerable.Range('A', 26).Select(c => (char)c).First(c => !Directory.Exists(c + @":\"));
+        _ = AppActionRequest.IsSafeLocalImagePath(unused + @":\pic.png"); // an unmounted drive: not a crash
+    }
+
+    [Fact]
+    public void Both_link_parsers_read_plus_as_a_space_and_percent_escapes()
+    {
+        var request = AppActionRequest.Parse(new Uri("hotline-action://ask?text=a+b%20c"), null, null);
+        Assert.Equal("a b c", request!.Text);
+        Assert.Equal(KeyEvent.Tap, ActivationParser.ParseUri(new Uri("hotline://key?x=1&state=ta%70")));
+    }
 
     [Fact]
     public void Very_long_text_is_cut() =>

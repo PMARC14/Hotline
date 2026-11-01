@@ -27,7 +27,8 @@ public sealed class BackendCatalogTests : IDisposable
     [InlineData(BackendType.OpenAiCompatible, typeof(Hotline.Core.Backends.Api.OpenAiBackend))]
     [InlineData(BackendType.Local, typeof(Hotline.Core.Backends.Api.OpenAiBackend))]
     [InlineData(BackendType.Anthropic, typeof(Hotline.Core.Backends.Api.AnthropicBackend))]
-    public void Api_backends_are_available(BackendType type, Type expected)
+    [InlineData(BackendType.ClaudeCode, typeof(Hotline.Core.Backends.ClaudeCode.ClaudeCodeBackend))]
+    public void Api_and_cli_backends_are_available(BackendType type, Type expected)
     {
         Assert.IsType(expected, BackendFactory.Create(new BackendProfile { Id = "x", Type = type }, Deps()));
         Assert.True(BackendFactory.IsAvailable(type));
@@ -60,12 +61,5 @@ public sealed class BackendCatalogTests : IDisposable
         cache.Get("a");
         Assert.Equal(2, created);
         await cache.InvalidateAsync("missing"); // no-op
-    }
-
-    [Fact]
-    public void Claude_code_is_available()
-    {
-        Assert.True(BackendFactory.IsAvailable(BackendType.ClaudeCode));
-        Assert.IsType<Hotline.Core.Backends.ClaudeCode.ClaudeCodeBackend>(BackendFactory.Create(new BackendProfile { Id = "cc", Type = BackendType.ClaudeCode }, Deps()));
     }
 }

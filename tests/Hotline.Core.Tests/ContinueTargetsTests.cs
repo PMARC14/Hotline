@@ -174,4 +174,22 @@ public sealed class ContinueTargetsTests : IDisposable
         Assert.Equal((ContinueKind.Web, "Gemini", "https://gemini.google.com/app", true),
             (r["gemini"].Kind, r["gemini"].Name, r["gemini"].Url, r["gemini"].CopyChat));
     }
+
+    [Theory]
+    [InlineData("tool.bat", true)]
+    [InlineData(@"C:\x\Run.CMD", true)]
+    [InlineData(@"""C:\a b\x.cmd""", true)]
+    [InlineData("tool.exe", false)]
+    [InlineData("tool", false)]
+    [InlineData("", false)]
+    public void Batch_files_are_never_started(string program, bool batch) => Assert.Equal(batch, ContinueTargets.IsBatchFile(program));
+
+    [Fact]
+    public void Targets_are_written_without_empty_fields()
+    {
+        var json = SettingsStore.Serialize(new HotlineSettings { Chat = { ContinueIn = [new ContinueTarget(ContinueKind.OpenWebUi, "W", Url: "http://x")] } });
+        Assert.DoesNotContain("command", json);
+        Assert.DoesNotContain("model", json);
+        Assert.Contains("\"kind\": \"openWebUi\"", json);
+    }
 }

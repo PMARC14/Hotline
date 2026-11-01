@@ -9,7 +9,7 @@ namespace Hotline.Core.Backends;
 public sealed record BackendDeps(
     ILineProcessFactory Processes, AgyWorkspace AgyWorkspace, FileLog Log,
     Func<string, bool> FileExists, string? LocalAppData, string? PathEnv,
-    Func<BackendProfile, string> SystemPrompt, string HomeDirectory, string? ClaudeWorkspace = null,
+    Func<BackendProfile, string> SystemPrompt, string HomeDirectory,
     ISecretStore? Secrets = null, HttpClient? Http = null, Tools.IToolHost? ToolHost = null, AgyProjects? AgyProjects = null,
     string? CodexWorkspace = null);
 
@@ -36,7 +36,7 @@ public static class BackendFactory
             deps.AgyWorkspace, deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory, deps.AgyProjects),
         BackendType.ClaudeCode => new ClaudeCode.ClaudeCodeBackend(p,
             () => ClaudeCode.ClaudeLocator.Find(p.CliPath, deps.FileExists, deps.HomeDirectory, deps.PathEnv),
-            deps.ClaudeWorkspace ?? Path.Combine(Path.GetTempPath(), "hotline-claude"), deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
+            deps.Processes, deps.Log, deps.SystemPrompt, deps.HomeDirectory),
         BackendType.Codex => new Codex.CodexBackend(p,
             () => Codex.CodexLocator.Find(p.CliPath, deps.FileExists, deps.PathEnv,
                 System.Runtime.InteropServices.RuntimeInformation.OSArchitecture == System.Runtime.InteropServices.Architecture.Arm64 ? "arm64" : "x64"),
@@ -51,27 +51,37 @@ public static class BackendFactory
 /// <summary>One live backend instance per profile id (backends like agy hold a running process).</summary>
 public sealed class BackendCache(Func<IReadOnlyList<BackendProfile>> profiles, Func<BackendProfile, IChatBackend?> create)
 {
+    private readonly Lock _gate = new();
     private readonly Dictionary<string, IChatBackend?> _instances = [];
 
     public IChatBackend? Get(string id)
     {
-        if (_instances.TryGetValue(id, out var existing)) return existing;
-        var profile = profiles().FirstOrDefault(p => p.Id == id);
-        if (profile is null) return null;
-        return _instances[id] = create(profile);
+        lock (_gate)
+        {
+            if (_instances.TryGetValue(id, out var existing)) return existing;
+            var profile = profiles().FirstOrDefault(p => p.Id == id);
+            if (profile is null) return null;
+            return _instances[id] = create(profile);
+        }
     }
 
     /// <summary>Drops the live instance for a connection (after its settings change); the next Get recreates it.</summary>
     public async ValueTask InvalidateAsync(string id)
     {
-        if (!_instances.Remove(id, out var backend) || backend is null) return;
+        IChatBackend? backend;
+        lock (_gate)
+            if (!_instances.Remove(id, out backend) || backend is null) return;
         await backend.DisposeAsync();
     }
 
     public async ValueTask DisposeAllAsync()
     {
-        foreach (var b in _instances.Values)
-            if (b is not null) await b.DisposeAsync();
-        _instances.Clear();
+        List<IChatBackend> live;
+        lock (_gate)
+        {
+            live = _instances.Values.OfType<IChatBackend>().ToList();
+            _instances.Clear();
+        }
+        foreach (var b in live) await b.DisposeAsync();
     }
 }

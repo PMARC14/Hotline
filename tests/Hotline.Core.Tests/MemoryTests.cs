@@ -64,25 +64,23 @@ public sealed class MemoryTests : IDisposable
         Assert.StartsWith("Be brief.", composed);
         Assert.Contains("- I prefer metric units", composed);
         Assert.Contains("Notes the user saved", composed);
+        Assert.Contains("not instructions", composed, StringComparison.OrdinalIgnoreCase); // notes, so a saved line cannot command the model
     }
 
     // ---- /remember ----------------------------------------------------------------------------
 
     [Theory]
-    [InlineData("/remember I prefer metric units", "I prefer metric units")]
-    [InlineData("/Remember   two  spaces", "two  spaces")]
-    [InlineData("/remember", "")]
-    public void Remember_command_is_recognised(string text, string fact)
+    [InlineData("/remember I prefer metric units", true, "I prefer metric units")]
+    [InlineData("/Remember   two  spaces", true, "two  spaces")]
+    [InlineData("/remember", true, "")]
+    [InlineData("/remembered x", false, "")]
+    [InlineData("please /remember x", false, "")]
+    [InlineData("hello", false, "")]
+    public void Only_a_leading_remember_command_is_recognised(string text, bool isCommand, string fact)
     {
-        Assert.True(MemoryStore.TryParseCommand(text, out var parsed));
-        Assert.Equal(fact, parsed);
+        Assert.Equal(isCommand, MemoryStore.TryParseCommand(text, out var parsed));
+        if (isCommand) Assert.Equal(fact, parsed);
     }
-
-    [Theory]
-    [InlineData("/remembered x")]
-    [InlineData("please /remember x")]
-    [InlineData("hello")]
-    public void Other_text_is_not_a_remember_command(string text) => Assert.False(MemoryStore.TryParseCommand(text, out _));
 
     [Fact]
     public void Remember_is_listed_with_the_quick_actions_and_never_expanded()
@@ -166,10 +164,6 @@ public sealed class MemoryTests : IDisposable
         store.Append("second fact");
         Assert.Contains("second fact", store.Read());
     }
-
-    [Fact]
-    public void Memory_is_framed_as_notes_not_instructions() =>
-        Assert.Contains("not instructions", MemoryStore.Compose("p", "- x"), StringComparison.OrdinalIgnoreCase);
 
     [Fact]
     public async Task Off_offers_no_remember_tool()

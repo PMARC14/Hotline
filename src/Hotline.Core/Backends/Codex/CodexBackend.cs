@@ -38,8 +38,8 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         var resume = profile.KeepCliSessions && Resume is { } r && CliSession.IsValidId(r.Id) ? r.Id : null;
 
         var inherit = profile.Tools == ToolMode.Inherit;
-        var cwd = inherit ? WorkingDirectory() : workspace;
-        if (resume is not null && Resume!.WorkingDirectory is { Length: > 0 } was && Path.IsPathFullyQualified(was)) cwd = was; // where it began
+        var cwd = inherit ? WorkingDirectory() : homeDirectory;
+        if (resume is not null && Resume!.WorkingDirectory is { Length: > 0 } was && Hotline.Core.Platform.SafeDirectory.IsLocal(was) && Directory.Exists(was)) cwd = was; // where it began (never recreate a deleted folder)
         Directory.CreateDirectory(cwd);
         string? reported = null;
         var images = new List<string>();
@@ -85,6 +85,9 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
                     await process.WaitForExitAsync(TimeSpan.FromSeconds(2));
                     var tail = process.StandardErrorTail;
                     await StopAsync();
+                    var reason = parser.LastError ?? (tail.Length > 0 ? tail : null);
+                    // Signed out, rate-limited…: say so, resuming or not (not "couldn't resume", and no replay).
+                    if (reason is not null && CodexErrors.Map(reason) is { Kind: not BackendErrorKind.Failed } mapped) throw mapped;
                     if (resume is not null && !parser.SawEvent)
                     {
                         // The saved session is gone (deleted, or codex can't read it): start over with the chat as text.
@@ -92,12 +95,10 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
                         if (prior.Count == 0) // Hotline kept only the record: nothing to replay
                             throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_ResumeFailed, profile.Name));
                         resume = null;
-                        cwd = inherit ? WorkingDirectory() : workspace;
+                        cwd = inherit ? WorkingDirectory() : homeDirectory;
                         Directory.CreateDirectory(cwd);
                         goto attempt;
                     }
-                    var reason = parser.LastError ?? (tail.Length > 0 ? tail : null);
-                    if (reason is not null && CodexErrors.Map(reason) is { Kind: not BackendErrorKind.Failed } mapped) throw mapped;
                     throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_Stopped, "Codex") + (reason is null ? "" : " " + reason));
                 }
                 foreach (var delta in parser.Feed(output)) yield return delta;
@@ -121,7 +122,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         {
             await StopAsync(); // also when the caller stops reading early: no codex left running, images released
             foreach (var path in images)
-                try { File.Delete(path); } catch (IOException) { /* still open; the temp folder is cleaned by Windows */ }
+                try { File.Delete(path); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* still open: never replace the turn's own error */ }
         }
     }
 

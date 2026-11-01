@@ -5,16 +5,13 @@ namespace Hotline.Core.Tests;
 public class RegionMathTests
 {
     [Theory]
-    [InlineData(10, 20, 110, 70, 10, 20, 100, 50)]   // drag down-right
-    [InlineData(110, 70, 10, 20, 10, 20, 100, 50)]   // drag up-left: same rectangle
-    [InlineData(-30, -30, 50, 40, 0, 0, 50, 40)]     // clamped to the screen
-    [InlineData(150, 90, 400, 400, 150, 90, 50, 30)] // clamped at the far edges (200x120 screen)
-    public void Selection_is_normalized_and_clamped(double x1, double y1, double x2, double y2, int x, int y, int w, int h)
-        => Assert.Equal(new RectI(x, y, w, h), RegionMath.Selection(x1, y1, x2, y2, scale: 1, screenWidth: 200, screenHeight: 120));
-
-    [Fact]
-    public void Selection_converts_dips_to_pixels()
-        => Assert.Equal(new RectI(15, 30, 150, 75), RegionMath.Selection(10, 20, 110, 70, scale: 1.5, screenWidth: 1000, screenHeight: 1000));
+    [InlineData(10, 20, 110, 70, 1, 200, 120, 10, 20, 100, 50)]   // drag down-right
+    [InlineData(110, 70, 10, 20, 1, 200, 120, 10, 20, 100, 50)]   // drag up-left: same rectangle
+    [InlineData(-30, -30, 50, 40, 1, 200, 120, 0, 0, 50, 40)]     // clamped to the screen
+    [InlineData(150, 90, 400, 400, 1, 200, 120, 150, 90, 50, 30)] // clamped at the far edges (200x120 screen)
+    [InlineData(10, 20, 110, 70, 1.5, 1000, 1000, 15, 30, 150, 75)] // DIPs convert to pixels
+    public void Selection_is_normalized_clamped_and_scaled(double x1, double y1, double x2, double y2, double scale, int screenWidth, int screenHeight, int x, int y, int w, int h)
+        => Assert.Equal(new RectI(x, y, w, h), RegionMath.Selection(x1, y1, x2, y2, scale, screenWidth, screenHeight));
 
     [Fact]
     public void Tiny_selections_are_not_a_capture()
