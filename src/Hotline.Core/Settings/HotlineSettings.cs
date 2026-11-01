@@ -2,9 +2,43 @@ using Hotline.Core.Activation;
 
 namespace Hotline.Core.Settings;
 
+/// <summary>Limits shared by file validation, normalization and the numeric settings controls.</summary>
+public sealed record SettingRange(double Min, double Max, double? Default, bool ZeroToo = false)
+{
+    public double Clamp(double value) => ZeroToo && (!double.IsFinite(value) || value <= 0) ? 0 : Math.Clamp(value, Min, Max);
+    public double ClampFinite(double value) => double.IsFinite(value) ? Clamp(value) : Default ?? Min;
+    public int Clamp(int value) => (int)Clamp((double)value);
+}
+
+public static class SettingsRanges
+{
+    public static readonly IReadOnlyDictionary<string, SettingRange> All =
+        new System.Collections.ObjectModel.ReadOnlyDictionary<string, SettingRange>(new Dictionary<string, SettingRange>
+        {
+            ["ChatSettings.MaxImagePixels"] = new(256, 8192, 2048),
+            ["ChatSettings.HistoryRetentionDays"] = new(1, 3650, 30),
+            ["ChatSettings.HistoryListSize"] = new(10, 5000, 300),
+            ["ChatSettings.ThinkingDelayMs"] = new(0, 10_000, 700),
+            ["WindowSettings.FontSize"] = new(10, 32, null),
+            ["WindowSettings.Width"] = new(200, 16000, null),
+            ["WindowSettings.ChatHeight"] = new(60, 8000, null),
+            ["WindowSettings.ChatWidth"] = new(200, 16000, null),
+            ["WindowSettings.ChatWidthPercent"] = new(20, 90, 0, ZeroToo: true),
+            ["WindowSettings.TintOpacity"] = new(0, 1, 0.15),
+            ["WindowSettings.LuminosityOpacity"] = new(0, 1, 0.35),
+            ["WindowSettings.WidthPercent"] = new(20, 90, 40),
+            ["WindowSettings.MinWidth"] = new(200, 8000, 400),
+            ["WindowSettings.MaxWidth"] = new(200, 16000, 1200),
+            ["WindowSettings.Height"] = new(0, 4000, 0),
+            ["WindowSettings.MaxHeightPercent"] = new(30, 95, 60),
+            ["PanelAnchor.X"] = new(0, 1, 0.5),
+            ["PanelAnchor.Y"] = new(0, 1, 0.8),
+        });
+}
+
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 13;
+    public const int CurrentSchemaVersion = 15;
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
@@ -35,11 +69,7 @@ public sealed class ActivationSettings
     public KeyAction Hold { get; set; } = KeyAction.NewChat;
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
     public string? FallbackHotkey { get; set; }
-    /// <summary>Hotline = the key opens Hotline (tap/hold actions above); RightCtrl = it's a plain Right Ctrl key.</summary>
-    public Activation.CopilotKeyMode CopilotKey { get; set; } = Activation.CopilotKeyMode.Hotline;
 }
-
-public enum PopupLayout { QuickView, CommandBar, SidePanel }
 
 /// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
 public enum ThemeChoice { System, Light, Dark, HighContrast }
@@ -49,19 +79,27 @@ public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 
 public sealed class WindowSettings
 {
-    public PopupLayout Layout { get; set; } = PopupLayout.QuickView;
-    /// <summary>Panel width as a percentage of the monitor's work area (20–90), clamped to [MinWidth, MaxWidth] DIPs.</summary>
+    /// <summary>Panel width as a percentage of the monitor's work area in real pixels (20–90; Windows' scaling is ignored), clamped to [MinWidth, MaxWidth].</summary>
     public double WidthPercent { get; set; } = 40;
-    public int MinWidth { get; set; } = 600;
-    public int MaxWidth { get; set; } = 1000;
+    /// <summary>Narrowest panel, in real pixels: 384 = 20% of a 1920 × 1080 screen.</summary>
+    public int MinWidth { get; set; } = 400;
+    /// <summary>Widest panel, in real pixels: 2304 = 60% of a 4K (3840) screen.</summary>
+    public int MaxWidth { get; set; } = 1200;
     /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
     public int Height { get; set; }
     /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
-    public double MaxHeightPercent { get; set; } = 70;
+    public double MaxHeightPercent { get; set; } = 60;
     /// <summary>Where the panel opens (its saved default spot): monitor and fractions of the free work area.</summary>
     public PanelAnchor Anchor { get; set; } = new();
-    /// <summary>Panel width in DIPs; null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
+    /// <summary>Panel width in real pixels (a manual resize saves one); null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
     public int? Width { get; set; }
+    /// <summary>
+    /// When a chat starts the panel grows to this share of the work area's width (0 = it doesn't; otherwise 20-90), clamped to
+    /// [MinWidth, MaxWidth]; no wider than it opened means no growth. A fixed <see cref="Width"/> (a manual resize saves one) never grows.
+    /// </summary>
+    public double ChatWidthPercent { get; set; }
+    /// <summary>The width the panel grows to when a chat starts, in real pixels (kept within MinWidth..MaxWidth); null = <see cref="ChatWidthPercent"/>.</summary>
+    public int? ChatWidth { get; set; }
     /// <summary>Most the chat grows to, in DIPs; null = MaxHeightPercent of the screen.</summary>
     public int? ChatHeight { get; set; }
     /// <summary>Which way the chat grows from the bar: Auto (up unless there's no room above), or locked Up/Down.</summary>
@@ -109,12 +147,13 @@ public sealed class BackendProfile
     public string? CliPath { get; set; }
     /// <summary>agy custom agent name (default "hotline").</summary>
     public string? Agent { get; set; }
+    /// <summary>This connection's own "Continue this chat in" targets: null = the shared list (chat.continueIn), [] = none.</summary>
+    public List<Backends.ContinueTarget>? ContinueIn { get; set; }
     /// <summary>Extra CLI arguments, space separated.</summary>
     public string? ExtraArgs { get; set; }
     /// <summary>
-    /// Replaces Hotline's built-in launch flags for this connection's mode (e.g. agy's --agent, Claude Code's chat-only
-    /// isolation). The flags Hotline needs to talk to the CLI (print mode, stream-json, no permission prompts) are
-    /// always added; dangerous flags only come from ApproveAllTools. Null = Hotline's defaults.
+    /// Replaces Hotline's usual extra launch flags for this mode (null = defaults). Required and chat-only isolation flags are
+    /// always added; flags that approve tools or skip permission checks are dropped: only ApproveAllTools turns them on.
     /// </summary>
     public List<string>? Args { get; set; }
     /// <summary>
@@ -129,10 +168,8 @@ public sealed class BackendProfile
     /// <summary>Tool use: CLI connections (agy, Claude Code, Codex) use their own tools; API connections Hotline's MCP tools.</summary>
     public ToolMode Tools { get; set; } = ToolMode.ChatOnly;
     /// <summary>
-    /// DANGEROUS. Inherit mode only: auto-approve every tool request (agy/Claude Code --dangerously-skip-permissions, Codex
-    /// --dangerously-bypass-approvals-and-sandbox), including
-    /// shell commands and file edits, with no prompt. Off: the CLI's own permission rules apply (in the background,
-    /// anything that would ask is denied).
+    /// DANGEROUS. Inherit mode only: auto-approve every tool request, shell commands and file edits included, with no prompt
+    /// (--dangerously-skip-permissions / --dangerously-bypass-approvals-and-sandbox). Off: the CLI's own permission rules apply.
     /// </summary>
     public bool ApproveAllTools { get; set; }
     /// <summary>Folder the CLI works in when Tools = Inherit. Null or missing = your user folder.</summary>
@@ -156,6 +193,8 @@ public sealed class ChatSettings
     public string DefaultBackend { get; set; } = "";
     /// <summary>System prompt used by connections that don't pick their own.</summary>
     public string DefaultPrompt { get; set; } = "default";
+    /// <summary>The shared "Continue this chat in" targets; null = the default (the llama.cpp web UI of a Local connection).</summary>
+    public List<Backends.ContinueTarget>? ContinueIn { get; set; }
     /// <summary>
     /// The connections, in dropdown order. Stored one file each in ~/.hotline/connections/&lt;id&gt;.json (not in
     /// settings.json; an old settings.json "backends" list is moved there once).
@@ -197,15 +236,6 @@ public sealed class ChatSettings
     public bool Memory { get; set; } = true;
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
     public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
-
-    /// <summary>
-    /// The agy connection settings files before v12 got when they had none of their own (no connection files). New
-    /// installs start with no connection and ask; only those older files keep it.
-    /// </summary>
-    public static List<BackendProfile> LegacyDefaultBackends() =>
-    [
-        new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" },
-    ];
 }
 
 /// <summary>Auto = thin and transparent until hovered; Visible = always shown; Hidden = never shown (still scrolls).</summary>

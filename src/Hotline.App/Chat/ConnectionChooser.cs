@@ -39,11 +39,14 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
         catch (Exception ex) { log.Error("looking for installed CLIs failed", ex); installed = []; }
         if (Chosen(settings.Current)) return; // picked meanwhile
         var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8 };
-        foreach (var type in installed)
+        var missing = new List<string>();
+        foreach (var (type, isInstalled) in ConnectionChoices.Plan(installed))
         {
-            var button = new Button { Content = L.F(Strings.Choose_Use, ConnectionTypes.Of(type).DisplayName) };
-            if (buttons.Children.Count == 0 && Application.Current.Resources.TryGetValue("AccentButtonStyle", out var style) && style is Style s)
-                button.Style = s;
+            var name = ConnectionTypes.Of(type).DisplayName;
+            var button = new Button { Content = L.F(Strings.Choose_Use, name), IsEnabled = isInstalled };
+            if (!isInstalled) missing.Add(name);
+            else if (buttons.Children.All(b => b is Button { IsEnabled: false }) && Application.Current.Resources.TryGetValue("AccentButtonStyle", out var style) && style is Style s)
+                button.Style = s; // the first one that can be picked
             button.Click += (_, _) => Pick(type);
             buttons.Children.Add(button);
         }
@@ -52,20 +55,17 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
         buttons.Children.Add(apiKey);
         var copilotKey = new HyperlinkButton { Content = Strings.Choose_CopilotKey, Padding = new Thickness(0, 2, 0, 2) };
         copilotKey.Click += (_, _) => _ = CopilotKeySettings.OpenAsync(log);
+        var panel = new StackPanel { Spacing = 4, Margin = new Thickness(0, 0, 0, 12) };
+        panel.Children.Add(new ScrollViewer
+        {
+            Content = buttons, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+            VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, VerticalScrollMode = ScrollMode.Disabled,
+        });
+        if (missing.Count > 0 && installed.Count > 0) // with none installed, Choose_NoneFound already says so
+            panel.Children.Add(new TextBlock { Text = L.F(Strings.Choose_NotInstalled, string.Join(", ", missing)), TextWrapping = TextWrapping.Wrap, Opacity = 0.7 });
+        panel.Children.Add(copilotKey);
         notices.ShowTagged(Tag, Strings.Choose_Title, installed.Count > 0 ? Strings.Choose_Body : Strings.Choose_NoneFound,
-            InfoBarSeverity.Informational, new StackPanel
-            {
-                Spacing = 4, Margin = new Thickness(0, 0, 0, 12),
-                Children =
-                {
-                    new ScrollViewer
-                    {
-                        Content = buttons, HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
-                        VerticalScrollBarVisibility = ScrollBarVisibility.Disabled, VerticalScrollMode = ScrollMode.Disabled,
-                    },
-                    copilotKey,
-                },
-            });
+            InfoBarSeverity.Informational, panel);
     }
 
     private static List<BackendType> Installed()

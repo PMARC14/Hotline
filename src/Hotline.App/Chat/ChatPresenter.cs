@@ -37,6 +37,7 @@ internal sealed class ChatPresenter
     private readonly FirstRunNote _firstRun;
     private readonly SupportNote _support;
     private readonly AnswerNotifier _notifier;
+    private readonly ToolbarCustomActions _customButtons;
     private readonly Dictionary<string, string> _answerBackends = [];
     private string? _lastLook;
     private bool _preparingSend;
@@ -83,6 +84,7 @@ internal sealed class ChatPresenter
         _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
         _support = new SupportNote(popup, _notices, settings, dataDirectory);
         _notifier = new AnswerNotifier(popup, settings, log);
+        _customButtons = new ToolbarCustomActions(_composer, actions, () => _attachments.Items.Count > 0, _notices, () => _tasks.Run("send", () => SendAsync(plain: true)), log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
             (text, app) => _attachments.AttachSelection(text, app), () => _attachments.TakeAll())
         {
@@ -126,6 +128,7 @@ internal sealed class ChatPresenter
         _grips.Initialize();
         _selfTest.ShowGrips = _grips.SetVisible;
         _popup.NewChatButton.Click += (_, _) => NewChat();
+        _popup.CustomButtonClicked += _customButtons.Run;
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
         _popup.NoticesPanel.SizeChanged += (_, _) => ReportHeight();
@@ -141,6 +144,7 @@ internal sealed class ChatPresenter
         _theme.Update();
         if (_theme.Backdrop == BackdropKind.Solid)
             _popup.Root.Background = PanelTheme.Brush(_theme.Tokens.SolidBackground); // follows the chosen theme, not the OS theme
+        _popup.SetToolbarAccent(_theme.Tokens.Accent);
         _composer.ApplyAppearance();
         if (_lastLook is not null && _theme.Look != _lastLook) _transcript.Rebuild();
         _lastLook = _theme.Look;
@@ -226,14 +230,18 @@ internal sealed class ChatPresenter
         return held;
     }
 
-    private async Task SendAsync()
+    private Task SendAsync() => SendAsync(plain: false);
+
+    /// <param name="plain">Send the box as text, never as a command (a custom button's text from toolbar.json).</param>
+    private async Task SendAsync(bool plain)
     {
         if (_chat.IsBusy) return; // stopping is the Stop button's or the stop shortcut's job, never a send's
         if (_preparingSend) return; // a second Enter/click while OCR runs
         if (_voice.Active) { await _voice.FinishAndSendAsync(); return; } // it sends once the dictation is final
         if (string.IsNullOrEmpty(_chat.BackendId)) { ConnectionMissing?.Invoke(); return; } // the text stays in the box
         var typed = _composer.Text;
-        switch (_router.Route(typed, _attachments.Items.Count > 0))
+        var hasAttachments = _attachments.Items.Count > 0;
+        switch (plain ? SendRouter.Plain(typed, hasAttachments) : _router.Route(typed, hasAttachments))
         {
             case SendRoute.Nothing:
                 return;
@@ -364,7 +372,7 @@ internal sealed class ChatPresenter
         BusyChanged?.Invoke(busy);
     }
 
-    /// <summary>The panel's natural height: messages + notices + message box + toolbar + spacing (3×8) + padding (20).</summary>
+    /// <summary>The panel's natural height: messages + notices + message box + toolbar + spacing (3×8) + the panel's top and bottom padding.</summary>
     private void ReportHeight()
     {
         var messages = _transcript.IsEmpty ? 0 : _popup.MessagesPanel.ActualHeight;
@@ -373,11 +381,13 @@ internal sealed class ChatPresenter
         if (_popup.NoticesPanel.Margin.Top + _popup.NoticesPanel.Margin.Bottom != noticesGap
             || _popup.MessagesScroll.Margin.Top + _popup.MessagesScroll.Margin.Bottom != chatGap)
             _popup.DispatcherQueue.TryEnqueue(() => PanelLayout.UpdateSpacing(_popup, _popup.GrowsUp, !_transcript.IsEmpty));
-        // Padding 20 (10 + 10); the bottom button row's 8 is its own margin (none when that row is empty and collapsed).
+        // The panel's own top and bottom padding (read from the layout, never a copy of it); the bottom button row's gap is its own margin
+        // (none when that row is empty and collapsed).
+        var padding = _popup.Root.Padding.Top + _popup.Root.Padding.Bottom;
         var toolbarGap = _popup.Toolbar.Visibility == Microsoft.UI.Xaml.Visibility.Visible ? _popup.Toolbar.Margin.Top : 0;
-        var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + toolbarGap + 20; // BarStack: the top row (if any) and the message box
+        var bar = _popup.BarStack.ActualHeight + _popup.Toolbar.ActualHeight + toolbarGap + padding; // BarStack: the top row (if any) and the message box
         _popup.SetContentHeight(messages + chatGap + _popup.NoticesPanel.ActualHeight + noticesGap + _popup.BarStack.ActualHeight
-            + _popup.Toolbar.ActualHeight + toolbarGap + 20, conversation: !_transcript.IsEmpty, barDip: bar);
+            + _popup.Toolbar.ActualHeight + toolbarGap + padding, conversation: !_transcript.IsEmpty, barDip: bar);
     }
 
     /// <summary>Without a settings window (tests): open ~/.hotline so settings.json is one click away.</summary>

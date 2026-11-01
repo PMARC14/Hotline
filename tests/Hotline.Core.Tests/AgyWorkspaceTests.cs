@@ -3,11 +3,9 @@ using Hotline.Core.Chat;
 
 namespace Hotline.Core.Tests;
 
-public sealed class AgyWorkspaceTests : IDisposable
+public sealed class AgyWorkspaceTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly ManualTimeProvider _clock = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void Agent_file_keeps_default_components()

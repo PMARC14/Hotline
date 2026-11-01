@@ -6,10 +6,8 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-public sealed class BackendCatalogTests : IDisposable
+public sealed class BackendCatalogTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private BackendDeps Deps() => new(new FakeLineProcessFactory(), new AgyWorkspace(_dir, new ManualTimeProvider()),
         new FileLog(Path.Combine(_dir, "h.log")), _ => false, null, null, _ => "prompt", _dir);
@@ -27,7 +25,8 @@ public sealed class BackendCatalogTests : IDisposable
     [InlineData(BackendType.OpenAiCompatible, typeof(Hotline.Core.Backends.Api.OpenAiBackend))]
     [InlineData(BackendType.Local, typeof(Hotline.Core.Backends.Api.OpenAiBackend))]
     [InlineData(BackendType.Anthropic, typeof(Hotline.Core.Backends.Api.AnthropicBackend))]
-    public void Api_backends_are_available(BackendType type, Type expected)
+    [InlineData(BackendType.ClaudeCode, typeof(Hotline.Core.Backends.ClaudeCode.ClaudeCodeBackend))]
+    public void Api_and_cli_backends_are_available(BackendType type, Type expected)
     {
         Assert.IsType(expected, BackendFactory.Create(new BackendProfile { Id = "x", Type = type }, Deps()));
         Assert.True(BackendFactory.IsAvailable(type));
@@ -60,12 +59,5 @@ public sealed class BackendCatalogTests : IDisposable
         cache.Get("a");
         Assert.Equal(2, created);
         await cache.InvalidateAsync("missing"); // no-op
-    }
-
-    [Fact]
-    public void Claude_code_is_available()
-    {
-        Assert.True(BackendFactory.IsAvailable(BackendType.ClaudeCode));
-        Assert.IsType<Hotline.Core.Backends.ClaudeCode.ClaudeCodeBackend>(BackendFactory.Create(new BackendProfile { Id = "cc", Type = BackendType.ClaudeCode }, Deps()));
     }
 }

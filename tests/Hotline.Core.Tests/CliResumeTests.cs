@@ -9,13 +9,11 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Claude Code and Antigravity resume a chat's own CLI conversation (Plan 9).</summary>
-public sealed class CliResumeTests : IDisposable
+public sealed class CliResumeTests : TempDirTest
 {
     private const string SessionA = "6a8b2362-20cc-4208-bd05-cf9b25fe01c9";
     private const string SessionB = "e0673a6a-7fb2-44fb-8274-3dc847e1a2ce";
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly FakeLineProcessFactory _factory = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
     private static ChatMessage U(string id, string text) => new(id, ChatRole.User, text, [], Now);
@@ -182,17 +180,6 @@ public sealed class CliResumeTests : IDisposable
     }
 
     [Fact]
-    public async Task Agy_images_are_passed_by_full_path()
-    {
-        _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "ok") };
-        var user = U("1", "look") with { Attachments = [new Attachment("a1", "shot.png", AttachmentKind.Image, "image/png", [1, 2, 3])] };
-        await Collect(Agy().StreamAsync([user], default));
-        var line = _factory.Started[0].Process.Written.Single();
-        var prompt = System.Text.Json.JsonDocument.Parse(line).RootElement.GetProperty("message").GetProperty("content").GetString()!;
-        Assert.Contains(Path.Combine(_dir, "agy", "Hotline", "attachments"), prompt);
-    }
-
-    [Fact]
     public async Task Agy_resume_gets_no_project_flags()
     {
         _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "pelican") };
@@ -276,32 +263,24 @@ public sealed class CliResumeTests : IDisposable
 
     // ---- Continue in…
 
-    [Fact]
-    public void Continue_in_offers_the_chats_own_cli_and_the_others_under_more()
+    private static readonly BackendType[] AllClis = [BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex];
+
+    public static TheoryData<string, BackendType?, bool, bool, BackendType[], CliHandoff.Choice[]> ContinueInCases => new()
     {
-        BackendType[] all = [BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex];
-        Assert.Equal(
-            [new(BackendType.Codex, CliHandoff.Way.Resume, false), new(BackendType.ClaudeCode, CliHandoff.Way.Handoff, true),
-             new(BackendType.Antigravity, CliHandoff.Way.Handoff, true)],
-            CliHandoff.Choices(BackendType.Codex, hasSession: true, wholeChat: true, all));
-    }
+        { "own CLI on top, the others under more", BackendType.Codex, true, true, AllClis,
+            [new(BackendType.Codex, CliHandoff.Way.Resume, false), new(BackendType.ClaudeCode, CliHandoff.Way.Handoff, true), new(BackendType.Antigravity, CliHandoff.Way.Handoff, true)] },
+        { "no session yet: still only the own CLI on top", BackendType.Codex, false, true, [BackendType.Codex, BackendType.Antigravity],
+            [new(BackendType.Codex, CliHandoff.Way.Handoff, false), new(BackendType.Antigravity, CliHandoff.Way.Handoff, true)] },
+        { "record-only chat can only resume", BackendType.ClaudeCode, true, false, [BackendType.ClaudeCode, BackendType.Codex],
+            [new(BackendType.ClaudeCode, CliHandoff.Way.Resume, false)] },
+        { "API chat lists the CLIs directly", BackendType.Gemini, false, true, [BackendType.Codex, BackendType.ClaudeCode],
+            [new(BackendType.ClaudeCode, CliHandoff.Way.Handoff, false), new(BackendType.Codex, CliHandoff.Way.Handoff, false)] },
+    };
 
-    [Fact]
-    public void Continue_in_without_a_session_yet_still_offers_only_the_own_cli_on_top()
-    {
-        var choices = CliHandoff.Choices(BackendType.Codex, hasSession: false, wholeChat: true, [BackendType.Codex, BackendType.Antigravity]);
-        Assert.Equal([new(BackendType.Codex, CliHandoff.Way.Handoff, false), new(BackendType.Antigravity, CliHandoff.Way.Handoff, true)], choices);
-    }
-
-    [Fact]
-    public void Continue_in_a_record_only_chat_can_only_resume()
-        => Assert.Equal([new(BackendType.ClaudeCode, CliHandoff.Way.Resume, false)],
-            CliHandoff.Choices(BackendType.ClaudeCode, hasSession: true, wholeChat: false, [BackendType.ClaudeCode, BackendType.Codex]));
-
-    [Fact]
-    public void Continue_in_an_api_chat_lists_the_clis_directly()
-        => Assert.Equal([new(BackendType.ClaudeCode, CliHandoff.Way.Handoff, false), new(BackendType.Codex, CliHandoff.Way.Handoff, false)],
-            CliHandoff.Choices(BackendType.Gemini, hasSession: false, wholeChat: true, [BackendType.Codex, BackendType.ClaudeCode]));
+    [Theory]
+    [MemberData(nameof(ContinueInCases))]
+    public void Continue_in_offers(string why, BackendType? own, bool hasSession, bool wholeChat, BackendType[] installed, CliHandoff.Choice[] expected)
+        => Assert.Equal(expected, CliHandoff.Choices(own, hasSession, wholeChat, installed));
 
     [Fact]
     public void Continue_in_resumes_the_chats_own_conversation()
@@ -344,13 +323,4 @@ public sealed class CliResumeTests : IDisposable
         Assert.False(p.KeepInHotline);
     }
 
-    [Fact]
-    public void Schema_10_cli_connections_switch_to_cli_history()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
-            """{ "schemaVersion": 10, "chat": { "defaultBackend": "cc", "backends": [ { "id": "cc", "type": "claudeCode", "name": "Claude", "keepCliSessions": false } ] } }""");
-        var s = new SettingsStore(_dir).Load();
-        Assert.True(Assert.Single(s.Chat.Backends, b => b.Id == "cc").KeepCliSessions);
-    }
 }

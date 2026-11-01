@@ -35,46 +35,75 @@ public sealed partial class SettingsWindow
         foreach (var type in ConnectionTypes.All)
         {
             var item = new MenuFlyoutItem { Text = type.DisplayName };
-            item.Click += (_, _) => { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); };
+            item.Click += (_, _) =>
+            {
+                try { _settings.Update(s => _selectedConnection = ConnectionEditor.Add(s.Chat, type.Type).Id); ShowPage("Connections"); }
+                catch (Exception ex) { Fail("adding a connection failed", ex); }
+            };
             addMenu.Items.Add(item);
         }
         add.Flyout = addMenu;
         var duplicate = new Button { Content = Strings.Conn_Duplicate, IsEnabled = any };
         duplicate.Click += (_, _) =>
         {
-            var source = _selectedConnection!;
-            string? copyId = null;
-            _settings.Update(s => copyId = ConnectionEditor.Duplicate(s.Chat, source).Id);
-            if (_secrets.Get(SecretKeys.ApiKey(source)) is { } key) _secrets.Set(SecretKeys.ApiKey(copyId!), key);
-            _selectedConnection = copyId;
-            ShowPage("Connections");
+            try
+            {
+                var source = _selectedConnection!;
+                string? copyId = null;
+                _settings.Update(s => copyId = ConnectionEditor.Duplicate(s.Chat, source).Id);
+                if (_secrets.Get(SecretKeys.ApiKey(source)) is { } key) _secrets.Set(SecretKeys.ApiKey(copyId!), key);
+                _selectedConnection = copyId;
+                ShowPage("Connections");
+            }
+            catch (Exception ex) { Fail("duplicating a connection failed", ex); }
         };
         var remove = new Button { Content = Strings.Common_Remove, IsEnabled = any };
         remove.Click += async (_, _) =>
         {
-            var id = _selectedConnection!;
-            var dialog = new ContentDialog
+            var id = _selectedConnection;
+            if (id is null) return;
+            ContentDialogResult answer;
+            try
             {
-                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
-                Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
-                    ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, chat.Backends[0].Name), TextWrapping = TextWrapping.Wrap }
-                    : chat.Backends.First(b => b.Id == id).Name,
-                PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
-            };
-            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
-            _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
-            _secrets.Set(SecretKeys.ApiKey(id), null);
-            _selectedConnection = null;
-            ShowPage("Connections"); // before the wait: the old page's buttons still point at the removed connection
-            await _invalidate(id);
+                // The list can have changed under this page (an external reload): a connection that vanished is simply not removed.
+                if (chat.Backends.FirstOrDefault(b => b.Id == id) is not { } target) return;
+                var dialog = new ContentDialog
+                {
+                    XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
+                    Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
+                        ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, target.Name), TextWrapping = TextWrapping.Wrap }
+                        : target.Name,
+                    PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+                };
+                answer = await ShowDialogAsync(dialog);
+            }
+            catch (Exception ex) { Fail("removing a connection failed", ex); return; }
+            if (answer != ContentDialogResult.Primary) return;
+            try
+            {
+                var problems = _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
+                if (problems.Count == 0) _secrets.Set(SecretKeys.ApiKey(id), null); // a failed backup/delete keeps the credential
+                _selectedConnection = null;
+                ShowPage("Connections"); // before the wait: the old page's buttons still point at the removed connection
+                await _invalidate(id);
+            }
+            catch (Exception ex) { Fail("removing a connection failed", ex); }
         };
         var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
-        makeDefault.Click += (_, _) => { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); };
+        makeDefault.Click += (_, _) =>
+        {
+            try { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); }
+            catch (Exception ex) { Fail("choosing the default connection failed", ex); }
+        };
         Button MoveButton(string glyph, string tip, int delta)
         {
             var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
-            b.Click += (_, _) => { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); };
+            b.Click += (_, _) =>
+            {
+                try { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); }
+                catch (Exception ex) { Fail("moving a connection failed", ex); }
+            };
             return b;
         }
         PageHost.Children.Add(new StackPanel
@@ -102,7 +131,10 @@ public sealed partial class SettingsWindow
         {
             if (list.SelectedItem is not ListViewItem { Tag: string id }) return;
             _selectedConnection = id;
-            BuildEditor(editorHost, chat.Backends.First(b => b.Id == id));
+            makeDefault.IsEnabled = id != chat.DefaultBackend;
+            // A connection removed by an external reload while this page was open: show no editor (never the previous one).
+            if (chat.Backends.FirstOrDefault(b => b.Id == id) is { } picked) BuildEditor(editorHost, picked);
+            else { editorHost.Children.Clear(); makeDefault.IsEnabled = false; }
         };
         PageHost.Children.Add(list);
         PageHost.Children.Add(editorHost);
@@ -130,37 +162,38 @@ public sealed partial class SettingsWindow
         ToolTipService.SetToolTip(addReadOnly, Strings.Agy_AllowReadOnly_Tip);
         addReadOnly.Click += async (_, _) =>
         {
-            var dialog = new ContentDialog
-            {
-                XamlRoot = Root.XamlRoot, Title = Strings.Agy_AllowTitle,
-                Content = new ScrollViewer
-                {
-                    MaxHeight = 320,
-                    Content = new TextBlock
-                    {
-                        TextWrapping = TextWrapping.Wrap,
-                        Text = L.F(Strings.Agy_AllowBody, agySettings,
-                            string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules),
-                            string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.DenyRules)),
-                    },
-                },
-                PrimaryButtonText = Strings.Agy_AddRules, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
-            };
-            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
             try
             {
+                var dialog = new ContentDialog
+                {
+                    XamlRoot = Root.XamlRoot, Title = Strings.Agy_AllowTitle,
+                    Content = new ScrollViewer
+                    {
+                        MaxHeight = 320,
+                        Content = new TextBlock
+                        {
+                            TextWrapping = TextWrapping.Wrap,
+                            Text = L.F(Strings.Agy_AllowBody, agySettings,
+                                string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules),
+                                string.Join("\n", Hotline.Core.Backends.Agy.AgyPermissions.DenyRules)),
+                        },
+                    },
+                    PrimaryButtonText = Strings.Agy_AddRules, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+                };
+                if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
                 Directory.CreateDirectory(Path.GetDirectoryName(agySettings)!);
                 var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
                 var updated = Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
                     Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules);
-                // Keep the user's original file once (never overwritten by later presses), then replace atomically.
-                if (json is not null && !File.Exists(agySettings + ".hotline-original.bak")) File.Copy(agySettings, agySettings + ".hotline-original.bak");
+                // Keep the file as it was (.old, .old2, ...: hand edits made since an earlier press are never lost), then replace atomically.
+                if (json is not null && updated != json && FileArchive.KeepOld(agySettings) is null)
+                    throw new IOException(L.F(Strings.Settings_ProblemBackupFailed, Path.GetFileName(agySettings), nameof(IOException)));
                 File.WriteAllText(agySettings + ".tmp", updated);
                 File.Move(agySettings + ".tmp", agySettings, overwrite: true);
                 summary.Text = Summary();
                 await _invalidate(p.Id);
             }
-            catch (Exception ex) { _log.Error("editing agy permissions failed", ex); summary.Text = L.F(Strings.Agy_EditFailed, ex.Message); }
+            catch (Exception ex) { Fail("editing agy permissions failed", ex); summary.Text = L.F(Strings.Agy_EditFailed, ex.Message); }
         };
         var open = new Button { Content = Strings.Agy_EditRules };
         open.Click += (_, _) => { if (File.Exists(agySettings)) CliRunner.OpenInEditor(agySettings); else CliRunner.OpenFolder(Path.GetDirectoryName(agySettings)!); };
@@ -181,31 +214,45 @@ public sealed partial class SettingsWindow
         approveAll.Toggled += async (_, _) =>
         {
             if (reverting) { reverting = false; return; }
-            if (approveAll.IsOn)
+            try
             {
-                var dialog = new ContentDialog
+                if (approveAll.IsOn)
                 {
-                    XamlRoot = Root.XamlRoot, Title = Strings.Agy_ApproveAllTitle,
-                    Content = new TextBlock { Text = L.F(Strings.Conn_ApproveAllBody, cliName), TextWrapping = TextWrapping.Wrap },
-                    PrimaryButtonText = Strings.Agy_ApproveAllConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
-                };
-                if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
+                    var dialog = new ContentDialog
+                    {
+                        XamlRoot = Root.XamlRoot, Title = Strings.Agy_ApproveAllTitle,
+                        Content = new TextBlock { Text = L.F(Strings.Conn_ApproveAllBody, cliName), TextWrapping = TextWrapping.Wrap },
+                        PrimaryButtonText = Strings.Agy_ApproveAllConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+                    };
+                    if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
+                }
+                await save(x => x.ApproveAllTools = approveAll.IsOn);
             }
-            await save(x => x.ApproveAllTools = approveAll.IsOn);
+            catch (Exception ex) { Fail("changing approve-everything failed", ex); }
         };
         host.Children.Add(Card(Strings.Agy_ApproveAll, L.F(Strings.Conn_ApproveAll_Desc, cliName), approveAll));
     }
 
     /// <summary>A number setting that can be left empty (= the model's default).</summary>
-    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set)
+    private NumberBox OptionalNumber(double? value, double min, double max, double step, string placeholder, Func<double?, Task> set, Func<double?> kept)
     {
         var box = new NumberBox
         {
             Value = value ?? double.NaN, Minimum = min, Maximum = max, SmallChange = step, LargeChange = step * 10,
-            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Compact, PlaceholderText = placeholder, MinWidth = 160,
+            SpinButtonPlacementMode = NumberBoxSpinButtonPlacementMode.Hidden, PlaceholderText = placeholder, MinWidth = 160,
             ValidationMode = NumberBoxValidationMode.InvalidInputOverwritten,
         };
-        box.ValueChanged += async (_, e) => await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+        box.ValueChanged += async (_, e) =>
+        {
+            try
+            {
+                await set(double.IsNaN(e.NewValue) ? null : e.NewValue);
+                // Saving normalises (a temperature of 5 is kept as 2): show what was kept, not what was typed.
+                var now = kept() ?? double.NaN;
+                if (!(double.IsNaN(now) && double.IsNaN(box.Value)) && now != box.Value) box.Value = now;
+            }
+            catch (Exception ex) { Fail("saving the connection failed", ex); }
+        };
         return box;
     }
 
@@ -217,8 +264,12 @@ public sealed partial class SettingsWindow
 
         async Task Save(Action<BackendProfile> change)
         {
-            _settings.Update(_ => change(p));
-            await _invalidate(p.Id);
+            try
+            {
+                _settings.Update(_ => change(p));
+                await _invalidate(p.Id);
+            }
+            catch (Exception ex) { Fail("saving the connection failed", ex); } // runs from async void handlers
         }
 
         TextBox Text(string? value, string placeholder, Action<string?> set)
@@ -250,7 +301,8 @@ public sealed partial class SettingsWindow
                 catch (Exception) { keyBox.Header = Strings.Conn_KeySaveFailed; return; }
                 keyBox.Password = "";
                 keyBox.PlaceholderText = Strings.Conn_KeySaved;
-                await _invalidate(p.Id);
+                try { await _invalidate(p.Id); }
+                catch (Exception ex) { Fail("refreshing the connection failed", ex); }
             };
             host.Children.Add(Card(Strings.Conn_ApiKey, Strings.Conn_ApiKey_Desc, keyBox));
         }
@@ -309,10 +361,14 @@ public sealed partial class SettingsWindow
             var browse = new Button { Content = Strings.Common_Browse, IsEnabled = folder.IsEnabled };
             browse.Click += async (_, _) =>
             {
-                var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
-                picker.FileTypeFilter.Add("*");
-                WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
-                if (await picker.PickSingleFolderAsync() is { } chosen) { folder.Text = chosen.Path; await Save(x => x.WorkingDirectory = chosen.Path); }
+                try
+                {
+                    var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
+                    picker.FileTypeFilter.Add("*");
+                    WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+                    if (await picker.PickSingleFolderAsync() is { } chosen) { folder.Text = chosen.Path; await Save(x => x.WorkingDirectory = chosen.Path); }
+                }
+                catch (Exception ex) { Fail("choosing the working folder failed", ex); }
             };
             mode.SelectionChanged += async (_, _) =>
             {
@@ -352,12 +408,13 @@ public sealed partial class SettingsWindow
             if (prompt.SelectedItem is ComboBoxItem { Tag: string name }) await Save(x => x.Prompt = name.Length == 0 ? null : name);
         };
         host.Children.Add(Card(Strings.Conn_SystemPrompt, null, prompt));
+        host.Children.Add(ConnectionContinueIn(p, Save));
         if (info.Has(ConnectionField.MaxTokens))
             host.Children.Add(Card(Strings.Conn_MaxTokens, Strings.Conn_MaxTokens_Desc,
-                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null))));
+                OptionalNumber(p.MaxTokens, 1, 1_000_000, 1024, Strings.Conn_ModelDefault, v => Save(x => x.MaxTokens = v is { } n ? (int)Math.Round(n) : null), () => p.MaxTokens)));
         if (info.Has(ConnectionField.Temperature))
             host.Children.Add(Card(Strings.Conn_Temperature, Strings.Conn_Temperature_Desc,
-                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null))));
+                OptionalNumber(p.Temperature, 0, 2, 0.1, Strings.Conn_ModelDefault, v => Save(x => x.Temperature = v is { } t ? Math.Round(t, 2) : null), () => p.Temperature)));
 
         var def = Strings.Common_Default; // the "no override" entry (a typed "Default" in English means the same)
         bool IsDefault(string? v) => string.IsNullOrWhiteSpace(v) || v == def || v == "Default";

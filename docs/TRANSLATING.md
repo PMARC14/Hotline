@@ -3,25 +3,7 @@
 Hotline's interface ships in 17 languages. English is the source; the other 16 are **model-drafted and not yet
 reviewed by native speakers**, so corrections are very welcome.
 
-| Language | Tag | Status |
-|---|---|---|
-| English | `en-US` | source |
-| Deutsch | `de` | needs native review |
-| Español | `es` | needs native review |
-| Français | `fr` | needs native review |
-| Italiano | `it` | needs native review |
-| Português (Brasil) | `pt-BR` | needs native review |
-| Nederlands | `nl` | needs native review |
-| Polski | `pl` | needs native review |
-| Українська | `uk` | needs native review |
-| Türkçe | `tr` | needs native review |
-| 日本語 | `ja` | needs native review |
-| 한국어 | `ko` | needs native review |
-| 简体中文 | `zh-Hans` | needs native review |
-| 繁體中文 | `zh-Hant` | needs native review |
-| हिन्दी | `hi` | needs native review |
-| Bahasa Indonesia | `id` | needs native review |
-| Tiếng Việt | `vi` | needs native review |
+The language names and tags are in the README and in `Languages.Supported` (`src/Hotline.Core/Text/Localization/Languages.cs`).
 
 Right-to-left languages (Arabic, Hebrew) aren't shipped yet: the panel's layout needs a mirrored check first.
 
@@ -51,7 +33,7 @@ the same placeholders, and formats.
 
 1. Copy `Strings.resx` to `Strings.<tag>.resx` and translate every `<value>`.
 2. Add `src/Hotline.App/Strings/<tag>/Resources.resw` with `AppDescription`.
-3. Add the tag to `Languages.Supported` (`src/Hotline.Core/Text/Localization/Languages.cs`) and to the table above.
+3. Add the tag to `Languages.Supported` and, if the README lists languages, there too.
 4. Optionally add `store/listings/<tag>.md`.
 
 ## Checking the layout

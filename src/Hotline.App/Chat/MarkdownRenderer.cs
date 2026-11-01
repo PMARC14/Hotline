@@ -288,7 +288,7 @@ internal static class MarkdownRenderer
         return button;
     }
 
-    private static void SetClipboardText(string text)
+    internal static void SetClipboardText(string text)
     {
         try
         {

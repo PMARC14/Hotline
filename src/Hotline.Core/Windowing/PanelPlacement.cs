@@ -7,7 +7,7 @@ namespace Hotline.Core.Windowing;
 public enum ResizeEdge { None = 0, Left = 1, Top = 2, Right = 4, Bottom = 8 }
 
 /// <summary>
-/// Where the panel's bar sits and which way its chat grows (spec: docs/superpowers/specs/2026-10-16-panel-placement-design.md).
+/// Where the panel's bar sits and which way its chat grows.
 /// All rectangles are physical pixels in virtual-screen coordinates; sizes in settings are DIPs.
 /// </summary>
 public static class PanelPlacement
@@ -15,11 +15,11 @@ public static class PanelPlacement
     /// <summary>
     /// The bar's home rectangle: DIP size scaled for the monitor (and never larger than its work area), placed at the
     /// anchor's fractions of the free space (0 = left/top edge, 1 = right/bottom edge). The default anchor (0.5, 0.8)
-    /// is exactly <see cref="PopupGeometry.Place"/>.
+    /// centers the bar horizontally in the lower part of the work area.
     /// </summary>
-    public static RectI Home(RectI work, int widthDip, int barHeightDip, double scale, PanelAnchor anchor)
+    public static RectI Home(RectI work, int widthPx, int barHeightDip, double scale, PanelAnchor anchor)
     {
-        var w = Math.Min((int)Math.Round(widthDip * scale), work.Width);
+        var w = Math.Min(widthPx, work.Width);
         var h = Math.Min((int)Math.Round(barHeightDip * scale), work.Height);
         var x = Math.Clamp(anchor.X, 0.0, 1.0);
         var y = Math.Clamp(anchor.Y, 0.0, 1.0);

@@ -1,5 +1,6 @@
 using System.Text;
 using Hotline.Core.Chat;
+using Hotline.Core.Platform;
 using Hotline.Core.Settings;
 
 namespace Hotline.Core.Backends;
@@ -45,11 +46,13 @@ public static class CliHandoff
     public static CliCommand Resume(BackendType type, string exe, CliSession session)
     {
         if (!CliSession.IsValidId(session.Id)) throw new ArgumentException("Not a session ID.", nameof(session));
+        // The folder comes from a file that can be edited: only a local one is used (a share would get the user's NTLM hash).
+        var folder = SafeDirectory.IsLocal(session.WorkingDirectory) ? session.WorkingDirectory : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         return type switch
         {
-            BackendType.Antigravity => new(exe, ["--conversation", session.Id], session.WorkingDirectory),
-            BackendType.ClaudeCode => new(exe, ["--resume", session.Id], session.WorkingDirectory),
-            BackendType.Codex => new(exe, ["resume", session.Id], session.WorkingDirectory),
+            BackendType.Antigravity => new(exe, ["--conversation", session.Id], folder),
+            BackendType.ClaudeCode => new(exe, ["--resume", session.Id], folder),
+            BackendType.Codex => new(exe, ["resume", session.Id], folder),
             _ => throw new ArgumentOutOfRangeException(nameof(type), type, "No resume for this connection type."),
         };
     }

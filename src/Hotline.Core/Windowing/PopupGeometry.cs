@@ -6,27 +6,19 @@ public readonly record struct RectI(int X, int Y, int Width, int Height);
 public static class PopupGeometry
 {
     /// <summary>
-    /// Places a DIP-sized popup in a monitor work area: scaled by that monitor's DPI, clamped to fit,
-    /// centered horizontally, and at <paramref name="verticalPosition"/> of the free vertical space
-    /// (0 = top, 0.5 = centered, 1 = bottom; clamped to that range).
-    /// </summary>
-    public static RectI Place(RectI workArea, int width, int height, double scale, double verticalPosition)
-    {
-        var w = Math.Min((int)Math.Round(width * scale), workArea.Width);
-        var h = Math.Min((int)Math.Round(height * scale), workArea.Height);
-        var v = Math.Clamp(verticalPosition, 0.0, 1.0);
-        return new RectI(
-            workArea.X + (workArea.Width - w) / 2,
-            workArea.Y + (int)Math.Round((workArea.Height - h) * v),
-            w, h);
-    }
-
-    /// <summary>
     /// Grows the popup upward from its bar: keeps the bar's bottom edge, height = content clamped to
     /// [bar height, maxPx], and never above the work area's top.
     /// </summary>
-    public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode)
-        => GrowUp(bar, mode == Settings.GrowMode.Full && contentPx > bar.Height ? maxPx : contentPx, maxPx, workArea);
+    public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode, bool conversation = true, bool manualSize = false)
+        => GrowUp(bar, FullHeight(mode, contentPx, bar.Height, maxPx, conversation, manualSize), maxPx, workArea);
+
+    /// <summary>
+    /// The height to grow to: <see cref="Settings.GrowMode.Full"/> means the maximum, but only while a conversation is active and no
+    /// size was set by hand (a held manual height wins); before the first message, or in a new chat, the panel is a bar that fits
+    /// its content whatever the mode says. Anything else is the content's own height.
+    /// </summary>
+    public static int FullHeight(Settings.GrowMode mode, int contentPx, int barPx, int maxPx, bool conversation, bool manualSize)
+        => mode == Settings.GrowMode.Full && conversation && !manualSize && contentPx > barPx ? maxPx : contentPx;
 
     public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea)
     {
@@ -40,8 +32,8 @@ public static class PopupGeometry
     /// Grows the popup downward from its bar: keeps the bar's top edge, height = content clamped to
     /// [bar height, maxPx], and never below the work area's bottom.
     /// </summary>
-    public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode)
-        => GrowDown(bar, mode == Settings.GrowMode.Full && contentPx > bar.Height ? maxPx : contentPx, maxPx, workArea);
+    public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea, Settings.GrowMode mode, bool conversation = true, bool manualSize = false)
+        => GrowDown(bar, FullHeight(mode, contentPx, bar.Height, maxPx, conversation, manualSize), maxPx, workArea);
 
     public static RectI GrowDown(RectI bar, int contentPx, int maxPx, RectI workArea)
     {
@@ -65,7 +57,39 @@ public static class PopupGeometry
         return Math.Min(maxPx, Math.Max(size, previousPx));
     }
 
-    /// <summary>Panel width in DIPs: percent of the work area (converted from physical pixels), clamped to [min, max].</summary>
-    public static int RelativeWidthDip(int workAreaWidthPx, double scale, double percent, int minDip, int maxDip)
-        => Math.Clamp((int)Math.Round(workAreaWidthPx / scale * percent / 100.0), minDip, Math.Max(minDip, maxDip));
+    /// <summary>
+    /// The width (real pixels) the panel grows to when a chat starts, or null for no growth: the explicit <paramref name="chatWidth"/>, else
+    /// <paramref name="chatWidthPercent"/> of the work area. Either way it is clamped to [min, max] (<c>window.minWidth</c> / <c>window.maxWidth</c>)
+    /// and never wider than the work area. Never when the panel's width was set (<paramref name="width"/>:
+    /// a fixed width, which a manual resize saves), when neither is set (the default), or when the target is not wider than the
+    /// <paramref name="startPx"/> it opens at, or when the width was resized by hand this opening (<paramref name="widthSetByHand"/>: a hand resize always wins). Windows' display scaling plays no part.
+    /// </summary>
+    public static int? ChatWidthPx(int? width, int? chatWidth, double chatWidthPercent, int workAreaWidthPx, int minPx, int maxPx, int startPx, bool widthSetByHand = false)
+    {
+        if (width is not null || widthSetByHand) return null;
+        int target;
+        if (chatWidth is { } explicitWidth) target = Math.Min(workAreaWidthPx, Math.Clamp(explicitWidth, minPx, Math.Max(minPx, maxPx)));
+        else if (chatWidthPercent > 0) target = RelativeWidthPx(workAreaWidthPx, chatWidthPercent, minPx, maxPx);
+        else return null;
+        return target > startPx ? target : null;
+    }
+
+    /// <summary>
+    /// The rectangle widened to <paramref name="targetPx"/> around its horizontal centre, then slid back inside the work area (and no
+    /// wider than it). A target that is not wider leaves it as it is.
+    /// </summary>
+    public static RectI GrowWidth(RectI rect, int targetPx, RectI work)
+    {
+        if (targetPx <= rect.Width) return rect;
+        var w = Math.Min(targetPx, work.Width);
+        var x = Math.Clamp(rect.X + (rect.Width - w) / 2, work.X, work.X + work.Width - w);
+        return rect with { X = x, Width = w };
+    }
+
+    /// <summary>
+    /// Panel width in real pixels: <paramref name="percent"/> of the work area's pixels, clamped to [min, max], never wider than the work area.
+    /// Windows' display scaling is deliberately not an input: the same screen gives the same width at 100% and at 200%.
+    /// </summary>
+    public static int RelativeWidthPx(int workAreaWidthPx, double percent, int minPx, int maxPx)
+        => Math.Min(workAreaWidthPx, Math.Clamp((int)Math.Round(workAreaWidthPx * percent / 100.0), minPx, Math.Max(minPx, maxPx)));
 }

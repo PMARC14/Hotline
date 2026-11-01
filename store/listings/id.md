@@ -41,7 +41,6 @@ NATIVE, RINGAN, DAN MILIK ANDA
 • Jawaban yang kaya: judul, daftar, tabel, kode dengan tombol Salin, rumus matematika, dan gambar sederhana.
 • Semuanya berupa file yang bisa Anda edit: pengaturan, koneksi, prompt, dan tombol di bilah.
 • Alat, dengan hati-hati: koneksi API dapat memakai alat dari server MCP Anda; apa pun yang mengubah sesuatu akan bertanya dulu.
-• Tombol Copilot juga bisa berfungsi sebagai Ctrl Kanan, jika Anda lebih suka.
 
 PRIVASI SEJAK AWAL
 Hotline AI tidak punya server dan tidak mengumpulkan apa pun: tanpa akun, tanpa analitik, tanpa iklan. Pesan Anda hanya
@@ -77,8 +76,7 @@ Pilih warna aksen Anda (ungu Hotline, aksen Windows, atau warna apa pun) dan tem
 16. Alat opsional dari server MCP Anda, dengan persetujuan sebelum setiap perubahan
 17. Tanpa akun, analitik, atau iklan; kunci tetap di Manajer Kredensial Windows
 18. Gratis dan sumber terbuka
-19. Tombol Copilot bisa berfungsi sebagai Ctrl Kanan
-20. Native di PC x64 dan ARM64
+19. Native di PC x64 dan ARM64
 
 ## Keterangan tangkapan layar
 

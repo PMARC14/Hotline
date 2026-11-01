@@ -24,17 +24,13 @@ public class LatexTextTests
     [InlineData(@"A \to B \Rightarrow C", "A → B ⇒ C")]
     [InlineData(@"\mathbf{v} \in \mathbb{R}", "v ∈ ℝ")]
     [InlineData(@"x^{(n)}", "x⁽ⁿ⁾")]
-    public void Converts_common_latex_to_unicode(string latex, string expected)
+    // unknown or malformed input keeps its text and never throws
+    [InlineData(@"\weird{x}", "weirdx")]
+    [InlineData("", "")]
+    [InlineData("x^", "x^")]
+    [InlineData(@"\frac{1}", "1⁄")]
+    public void Converts_latex_to_unicode_and_never_throws(string latex, string expected)
         => Assert.Equal(expected, LatexText.ToUnicode(latex));
-
-    [Fact]
-    public void Unknown_commands_keep_their_name_and_never_throw()
-    {
-        Assert.Equal("weirdx", LatexText.ToUnicode(@"\weird{x}"));
-        Assert.Equal("", LatexText.ToUnicode(""));
-        Assert.Equal("x^", LatexText.ToUnicode("x^"));
-        Assert.Equal("1⁄", LatexText.ToUnicode(@"\frac{1}"));
-    }
 
     [Fact]
     public void Markdown_math_becomes_math_text()

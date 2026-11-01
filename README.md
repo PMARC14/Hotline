@@ -17,46 +17,26 @@ configurable in plain files.
 
 ## Features
 
-- **The Copilot key** — short press opens/closes, long press starts a new chat (both configurable), plus an
-  optional extra hotkey. Opens on the monitor you're working on, focused and ready to type.
-- **Your choice of AI** — pick *Effort → Model → Provider* in the bar:
-  - **Claude Code** (your Claude plan, no API key), **OpenAI Codex CLI** (your ChatGPT plan) and **Antigravity CLI / agy**
-    (Gemini with your Google sign-in)
-  - **Anthropic API**, **Gemini API**, **OpenAI-compatible** APIs (OpenAI, OpenRouter, …)
-  - **Local models** through any OpenAI-style server (llama.cpp's `llama-server`, LM Studio, vLLM)
-- **Native and light** — WinUI 3 with acrylic, no embedded webview2.
-- **In your language** — follows Windows, or pick one in Settings › General: English, Español, Français, Deutsch,
-  Italiano, Português (Brasil), Nederlands, Polski, Українська, Türkçe, 日本語, 한국어, 简体中文, 繁體中文, हिन्दी,
-  Bahasa Indonesia, Tiếng Việt. The translations are machine-drafted; fixes are welcome ([TRANSLATING.md](docs/TRANSLATING.md)).
-- **Rich answers** — Markdown with headings, lists, tables, code (with Copy), math (LaTeX → readable symbols), inline
-  SVG drawings, and the whole conversation selectable in one drag.
-- **Screens and files** — capture the window you were in, the whole screen, or a region you drag out; paste or drop
-  images and files. Models that can't see images get the **text in the screenshot** instead (Windows' offline OCR).
-- **Selected text comes along** — text you had selected in the app you came from is attached automatically (through
-  UI Automation: no keystrokes, your clipboard untouched).
-- **Quick actions** — type `/` for `/translate`, `/summarize`, `/fix`, `/explain`, or your own: each is a Markdown file
-  in `actions\`.
-- **Memory** — `/remember I prefer metric units` (or "remember that…" to an API model, which asks you first) saves a
-  note to `memory.md`; every chat sees it, whichever AI you use.
-- **Voice** — set the long press to *Voice input*, hold the key and talk; let go to stop.
-- **Chat history** — the 🕘 button, Ctrl+↑ or `/resume` open a searchable list of your chats. A chat with Claude
-  Code, Codex or Antigravity lives in that tool's own history (grouped under *Hotline*), shows its earlier messages
-  when you reopen it, and picks up where it left off, even after
-  a restart, and **Continue this chat in ▸** opens it in a terminal window.
-- **Answers in the background** — ask something long, switch away, and a Windows notification says when it's ready.
-- **Effort control** for every AI that has it (Claude, Gemini's thinking level, OpenAI reasoning effort); rate limits
-  are retried for you, and Settings › AI connections › *Test connection* checks a key and model.
-- **Tools, carefully** — API connections can use tools from your **MCP servers** (`mcp.json`, the same format other
-  MCP apps use) and, when your Windows has it, the built-in **Windows agent connectors**. Read-only tools run; anything
-  else asks you in the panel (*Allow once / Always / Deny*). CLI connections can use their own tools under their own
-  permission rules.
+- **The Copilot key**: short press opens/closes, long press starts a new chat (both configurable), plus an optional extra hotkey.
+- **Your choice of AI**: Claude Code, OpenAI Codex CLI and Antigravity CLI (agy) with their own sign-ins; Anthropic, Gemini and
+  OpenAI-compatible APIs; local models through any OpenAI-style server (llama.cpp, LM Studio, vLLM). Pick Effort, Model and Provider in the bar.
+- **Native and light**: WinUI 3 with acrylic, no embedded webview.
+- **In your language**: follows Windows or Settings › General: English, Español, Français, Deutsch, Italiano, Português (Brasil),
+  Nederlands, Polski, Українська, Türkçe, 日本語, 한국어, 简体中文, 繁體中文, हिन्दी, Bahasa Indonesia, Tiếng Việt. Machine-drafted,
+  fixes welcome ([TRANSLATING.md](docs/TRANSLATING.md)).
+- **Rich answers**: Markdown, tables, code with Copy, math, inline SVG, and the whole conversation selectable in one drag.
+- **Screens and files**: capture a window, the screen or a region; paste or drop files; models that can't see images get the text (offline OCR).
+- **Selected text comes along** through UI Automation, without keystrokes or touching your clipboard.
+- **Quick actions** (`/translate`, `/summarize`, `/fix`, `/explain`, or your own Markdown files in `actions\`) and **memory** (`/remember`).
+- **Voice**: set the long press to *Voice input*, hold the key and talk.
+- **Chat history**: searchable (🕘, Ctrl+↑, `/resume`); CLI chats live in that tool's own history and resume after a restart.
+  **Continue this chat in ▸** opens a chat in a terminal, Open WebUI, the llama.cpp web UI, LM Studio or any web page.
+- **Notifications** when a long answer is ready while you are elsewhere.
+- **Tools, carefully**: MCP servers (`mcp.json`) and Windows agent connectors for API connections; read-only tools run, the rest ask first.
 - **System prompts** as Markdown files you can switch from the bar.
-- **Your panel, your way** — hold Alt to move or resize it, save its spot as the default, pin it where you work; the
-  chat grows up or down from the message bar. `toolbar.json` puts the buttons above or below the message box, in the
-  order you like. Optional open/close sounds (a Windows sound or your own .wav).
-- **Built-in guide** — Settings › Guide explains every feature; Settings › Advanced › Reset starts over (with a backup).
-- **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly. API keys live in
-  Windows Credential Locker.
+- **Your panel, your way**: Alt to move or resize, pin, grow up or down, button rows you arrange and add to (Settings › Window), open/close sounds.
+- **Built-in guide** (Settings › Guide), Reset with a backup, and Backup export/import (never API keys).
+- **Everything is a file**: edits apply instantly, a mistake costs only the wrong value, API keys live in Windows Credential Locker.
 
 <p align="center">
   <img src="docs/images/settings.png" width="640" alt="The Hotline settings window">
@@ -106,13 +86,11 @@ Then assign the key as above.
 
 ## Using it
 
-- **Copilot key** — open/close. **Long press** — new chat (or *Voice input*: talk while you hold it). **Esc** hides,
-  **Ctrl+N** new chat.
+- **Copilot key** — open/close. **Long press** — new chat (or *Voice input*). **Esc** hides, **Ctrl+N** new chat.
 - **/** at the start of a message — quick actions (`/translate some text`, or `/summarize` with an attachment).
-- **Selected text** in the app you came from shows up as a chip; remove it with its ✕ if you don't want it.
-- **+** / bar buttons — attach files, capture the window you were in, the whole screen, or a region. Ctrl+V pastes images.
-- **📌 Pin** keeps the panel open while you drag files in.
-- **⚙ Settings** — AI connections, prompts, appearance, window size, history, folders.
+- **Bar buttons** — attach files, capture the window you were in, the whole screen, or a region (Ctrl+V pastes images).
+  **📌 Pin** keeps the panel open while you drag files in. Selected text appears as a chip (✕ removes it).
+- **⚙ Settings** — AI connections, prompts, appearance, window, history, backup.
 
 ### Connecting an AI
 
@@ -132,49 +110,22 @@ All options, the file layout and the agy permission setup: **[docs/configuration
 
 ## What leaves your PC
 
-Hotline has no server of its own and collects nothing. When you send a message, it goes to **the AI connection you
-picked** (Anthropic, Google, OpenAI-style service, a local server, or your Claude Code / Codex / agy sign-in), together with:
-
-- **attachments** in the message box — files, screenshots, and the **text you had selected** in the app you came from
-  (it appears as a chip; remove it with ✕, or turn it off: Settings › Chat and history › Attach selected text);
-- the **system prompt** and your **memory.md** notes (Settings › Chat and history › Memory);
-- the **earlier messages** of the conversation, for context;
-- **tool results**, when an API connection uses tools you allowed.
-
-Nothing is sent until you press Enter (an App Action from Click to Do or a quick action from Windows sends at once, as
-you asked it to). Voice uses Windows' own speech recognition (Microsoft's online service). OCR runs on your PC.
-Chat history, settings and memory stay in `%USERPROFILE%\.hotline`; API keys stay in Windows Credential Locker and
-only travel over https (plain http only to this PC). What each AI provider does with your data is set by its terms.
-Full details: [PRIVACY.md](PRIVACY.md).
+Hotline has no server of its own and collects nothing. A message goes only to **the AI connection you picked**, with your
+attachments (including selected text, shown as a removable chip), the system prompt and `memory.md`, the earlier messages and any
+tool results. Nothing is sent until you press Enter. History, settings and memory stay in `%USERPROFILE%\.hotline`; API keys stay in
+Windows Credential Locker and travel only over https (plain http only to this PC). OCR runs on your PC; voice uses Windows' speech
+recognition (Microsoft's online service). Full details: [PRIVACY.md](PRIVACY.md).
 
 ## Development
 
-```powershell
-dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj   # unit tests (Core)
-powershell -File tests\smoke\smoke.ps1 [-Install]                         # end-to-end against the installed app
-```
-
-The smoke test drives the same inputs Windows uses (protocol links, Copilot key messages, the hotkey), renders a
-scripted conversation off-screen and builds every settings page, then checks the log. It restores your settings.
-Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status line). Crash dumps (opt-in, admin):
-`scripts/enable-crash-dumps.sh`.
-
-- **Layout:** `src/Hotline.Core` (UI-free logic: backends, settings, markdown, tools — fully unit-tested),
-  `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/` (design spec, plans, handoff notes).
-- **Contributors / new sessions:** start with [docs/HANDOFF.md](docs/HANDOFF.md).
-- **Testing everything by hand:** [docs/TESTING.md](docs/TESTING.md).
+Requires the .NET SDK 10.0.401+. Tests and the smoke test: `dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj`,
+`powershell -File tests\smoke\smoke.ps1 [-Install]` (commands and the hand-test list: [docs/TESTING.md](docs/TESTING.md)).
+`src/Hotline.Core` is UI-free and unit-tested, `src/Hotline.App` is the WinUI 3 app. New contributors and sessions start at
+[docs/HANDOFF.md](docs/HANDOFF.md).
 
 ### CI and releases
 
-Every pull request and push to `main` is built and unit-tested (`.github/workflows/ci.yml`). Every code change merged
-to `main` publishes a release `v<version.txt>.<next patch>` with the `.msixbundle` (x64 + ARM64), `Hotline.cer` and `Hotline.appinstaller`
-(`.github/workflows/release.yml`), signed with Hotline's long-lived self-signed certificate (trust `Hotline.cer` once).
-Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
-
-## Roadmap
-
-Windows 11 26H2 follow-ups, continuing a chat in a local web page
-(llama.cpp), and native-speaker reviews of the translations. See [docs/HANDOFF.md](docs/HANDOFF.md).
+Every pull request and push to `main` is built and tested; every code change merged to `main` publishes a release. Details, signing and the Store: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Support Hotline
 

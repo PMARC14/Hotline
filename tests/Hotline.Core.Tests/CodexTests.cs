@@ -11,11 +11,9 @@ namespace Hotline.Core.Tests;
 /// OpenAI Codex CLI backend. Event shapes from codex-rs/exec/src/exec_events.rs (codex exec --json): thread.started,
 /// turn.started, item.started/updated/completed, turn.completed, turn.failed, error.
 /// </summary>
-public sealed class CodexTests : IDisposable
+public sealed class CodexTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly FakeLineProcessFactory _factory = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
     private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
@@ -118,14 +116,6 @@ public sealed class CodexTests : IDisposable
     }
 
     [Fact]
-    public void System_prompt_is_a_valid_toml_string_even_with_quotes_and_newlines()
-    {
-        var args = CodexProtocol.BuildArgs(new BackendProfile(), "Say \"hi\"\nthen \\stop", null, []);
-        var arg = args.Single(a => a.StartsWith("developer_instructions=", StringComparison.Ordinal));
-        Assert.Equal("developer_instructions=\"Say \\\"hi\\\"\\nthen \\\\stop\"", arg);
-    }
-
-    [Fact]
     public void Attached_short_flags_and_folder_flags_are_dropped_too()
     {
         var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = "-sworkspace-write -csandbox_mode=\"workspace-write\" -C C:\\ --cd=D:\\ --add-dir C:\\Windows -cmodel=\"o3\"" }, "x", null, []);
@@ -140,6 +130,7 @@ public sealed class CodexTests : IDisposable
     [InlineData("emoji 😀 é", "\"emoji 😀 é\"")]
     [InlineData("a\u007Fb\u0001", "\"a\\u007Fb\\u0001\"")]
     [InlineData("tab\there", "\"tab\\there\"")]
+    [InlineData("Say \"hi\"\nthen \\stop", "\"Say \\\"hi\\\"\\nthen \\\\stop\"")] // quotes, newline, backslash
     public void Toml_strings(string value, string expected) => Assert.Equal(expected, CodexProtocol.Toml(value));
 
     [Theory]
@@ -185,7 +176,7 @@ public sealed class CodexTests : IDisposable
     }
 
     [Fact]
-    public void Parser_streams_updates_of_one_message_without_repeating_text()
+    public void Parser_streams_updates_of_one_message_without_repeating_text_and_resets_when_it_is_rewritten()
     {
         var p = new CodexTurnParser();
         var deltas = new[]
@@ -196,15 +187,11 @@ public sealed class CodexTests : IDisposable
         }.SelectMany(p.Feed).ToList();
         Assert.Equal(["Hel", "lo wor", "ld"], deltas.Select(d => d.Text));
         Assert.All(deltas, d => Assert.False(d.ResetBefore));
-    }
 
-    [Fact]
-    public void Parser_resets_when_a_message_is_rewritten()
-    {
-        var p = new CodexTurnParser();
-        var deltas = new[] { Item("updated", "m", "agent_message", "Draft"), Item("completed", "m", "agent_message", "Final") }.SelectMany(p.Feed).ToList();
-        Assert.True(deltas[^1].ResetBefore);
-        Assert.Equal("Final", deltas[^1].Text);
+        p = new CodexTurnParser();
+        var rewritten = new[] { Item("updated", "n", "agent_message", "Draft"), Item("completed", "n", "agent_message", "Final") }.SelectMany(p.Feed).ToList();
+        Assert.True(rewritten[^1].ResetBefore);
+        Assert.Equal("Final", rewritten[^1].Text);
     }
 
     [Fact]

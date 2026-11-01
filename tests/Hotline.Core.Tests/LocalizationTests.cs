@@ -22,7 +22,7 @@ internal static class EnglishTestCulture
     }
 }
 
-public sealed partial class LocalizationTests
+public sealed partial class LocalizationTests : TempDirTest
 {
     private static Dictionary<string, string> Set(CultureInfo culture) =>
         Strings.ResourceManager.GetResourceSet(culture, createIfNotExists: true, tryParents: false)?
@@ -69,7 +69,7 @@ public sealed partial class LocalizationTests
     [MemberData(nameof(Translations))]
     public void Every_message_formats(string tag)
     {
-        var args = Enumerable.Range(0, 5).Select(i => (object)$"<{i}>").ToArray();
+        var args = Enumerable.Range(0, 7).Select(i => (object)$"<{i}>").ToArray();
         foreach (var (key, text) in Set(CultureInfo.GetCultureInfo(tag)))
             if (Placeholders(text).Length > 0)
             {
@@ -152,23 +152,18 @@ public sealed partial class LocalizationTests
     [Fact]
     public void Language_defaults_to_windows_and_round_trips()
     {
-        var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-        try
-        {
-            Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, SettingsStore.FileName), """{ "schemaVersion": 8 }""");
-            var store = new SettingsStore(dir);
-            var s = store.Load();
-            Assert.Equal(Languages.System, s.General.Language);
-            Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
-            s.General.Language = "ja";
-            store.Save(s);
-            Assert.Contains("\"language\": \"ja\"", File.ReadAllText(store.FilePath));
-            Assert.Equal("ja", new SettingsStore(dir).Load().General.Language);
-            var item = Assert.IsType<ChoiceItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Language)));
-            s.General.Language = "unknown";
-            Assert.Equal(Languages.System, item.Get(s)); // an unknown tag shows (and works) as "Use Windows language"
-        }
-        finally { if (Directory.Exists(dir)) Directory.Delete(dir, recursive: true); }
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 8 }""");
+        var store = new SettingsStore(_dir);
+        var s = store.Load();
+        Assert.Equal(Languages.System, s.General.Language);
+        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
+        s.General.Language = "ja";
+        store.Save(s);
+        Assert.Contains("\"language\": \"ja\"", File.ReadAllText(store.FilePath));
+        Assert.Equal("ja", new SettingsStore(_dir).Load().General.Language);
+        var item = Assert.IsType<ChoiceItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Language)));
+        s.General.Language = "unknown";
+        Assert.Equal(Languages.System, item.Get(s)); // an unknown tag shows (and works) as "Use Windows language"
     }
 }

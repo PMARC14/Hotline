@@ -51,27 +51,37 @@ public static class BackendFactory
 /// <summary>One live backend instance per profile id (backends like agy hold a running process).</summary>
 public sealed class BackendCache(Func<IReadOnlyList<BackendProfile>> profiles, Func<BackendProfile, IChatBackend?> create)
 {
+    private readonly Lock _gate = new();
     private readonly Dictionary<string, IChatBackend?> _instances = [];
 
     public IChatBackend? Get(string id)
     {
-        if (_instances.TryGetValue(id, out var existing)) return existing;
-        var profile = profiles().FirstOrDefault(p => p.Id == id);
-        if (profile is null) return null;
-        return _instances[id] = create(profile);
+        lock (_gate)
+        {
+            if (_instances.TryGetValue(id, out var existing)) return existing;
+            var profile = profiles().FirstOrDefault(p => p.Id == id);
+            if (profile is null) return null;
+            return _instances[id] = create(profile);
+        }
     }
 
     /// <summary>Drops the live instance for a connection (after its settings change); the next Get recreates it.</summary>
     public async ValueTask InvalidateAsync(string id)
     {
-        if (!_instances.Remove(id, out var backend) || backend is null) return;
+        IChatBackend? backend;
+        lock (_gate)
+            if (!_instances.Remove(id, out backend) || backend is null) return;
         await backend.DisposeAsync();
     }
 
     public async ValueTask DisposeAllAsync()
     {
-        foreach (var b in _instances.Values)
-            if (b is not null) await b.DisposeAsync();
-        _instances.Clear();
+        List<IChatBackend> live;
+        lock (_gate)
+        {
+            live = _instances.Values.OfType<IChatBackend>().ToList();
+            _instances.Clear();
+        }
+        foreach (var b in live) await b.DisposeAsync();
     }
 }

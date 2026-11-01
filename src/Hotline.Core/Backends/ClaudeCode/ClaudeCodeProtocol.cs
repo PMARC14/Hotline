@@ -24,30 +24,48 @@ public static class ClaudeCodeProtocol
         };
         if (!p.KeepCliSessions) args.Add("--no-session-persistence"); // Hotline keeps its own history
         if (p.Tools == ToolMode.Inherit && p.ApproveAllTools) args.Add("--dangerously-skip-permissions");
-        if (p.Args is not null) AddSafe(args, p.Args); // the user's own launch flags replace the mode defaults
-        else if (p.Tools == ToolMode.ChatOnly)
-        {
-            // Chat only: no tools, and none of the user's settings/plugins/hooks/MCP servers. (Not --bare: it never
-            // reads the user's Claude login.)
-            args.AddRange(["--tools", "", "--setting-sources", "", "--strict-mcp-config"]);
-        }
+        var chatOnly = p.Tools == ToolMode.ChatOnly;
+        if (p.Args is not null) AddSafe(args, p.Args, chatOnly); // the user's own launch flags (chat only's isolation still applies)
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort)) args.AddRange(["--effort", effort]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["--append-system-prompt", systemPrompt.Trim()]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries));
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries), chatOnly);
+        if (chatOnly)
+        {
+            // Chat only: no tools, and none of the user's settings/plugins/hooks/MCP servers. (Not --bare: it never
+            // reads the user's Claude login.) Last and whatever "args" say: a copied connection file can't widen it.
+            args.AddRange(["--tools", "", "--setting-sources", "", "--strict-mcp-config"]);
+        }
         return args;
     }
 
-    /// <summary>User-supplied flags, minus anything that would bypass permissions (only ApproveAllTools may).</summary>
-    private static void AddSafe(List<string> args, IReadOnlyList<string> extra)
+    /// <summary>
+    /// Flags that let tools run without asking, or run commands outright (hooks in settings, agents and plugins). Only
+    /// ApproveAllTools may loosen permissions.
+    /// </summary>
+    private static readonly string[] Blocked =
+    [
+        "--allowedTools", "--allowed-tools", "--permission-mode", "--permission-prompts", "--permission-prompt-tool",
+        "--settings", "--agents", "--plugin-dir", "--plugin-url", "--yolo", "--trust",
+    ];
+
+    /// <summary>Chat only's own isolation flags; the user's copies would replace (or, being lists, add to) them.</summary>
+    private static readonly string[] ChatOnlyOwned = ["--tools", "--setting-sources", "--mcp-config", "--strict-mcp-config", "--agent"];
+
+    /// <summary>User-supplied flags, minus anything that would bypass permissions or, in chat only, the isolation.</summary>
+    private static void AddSafe(List<string> args, IReadOnlyList<string> extra, bool chatOnly)
     {
         for (var i = 0; i < extra.Count; i++)
         {
             var a = extra[i];
             if (a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a.Contains("skip-permission", StringComparison.OrdinalIgnoreCase)) continue;
-            if (a.StartsWith("--permission-mode", StringComparison.OrdinalIgnoreCase) || a.StartsWith("--permission-prompts", StringComparison.OrdinalIgnoreCase))
+            var name = a.Split('=', 2)[0];
+            if (Blocked.Contains(name, StringComparer.OrdinalIgnoreCase) || chatOnly && ChatOnlyOwned.Contains(name, StringComparer.OrdinalIgnoreCase))
             {
-                if (!a.Contains('=')) i++; // and its separate value
+                // And its separate values: several of these take lists ("--allowedTools Bash Edit"), and a stray value
+                // would be read as the prompt.
+                if (!a.Contains('='))
+                    while (i + 1 < extra.Count && !extra[i + 1].StartsWith('-')) i++;
                 continue;
             }
             args.Add(a);

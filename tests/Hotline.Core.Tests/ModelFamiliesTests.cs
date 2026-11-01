@@ -19,13 +19,10 @@ public class ModelFamiliesTests
     private static IReadOnlyList<ModelFamily> F => ModelFamilies.Group(Agy);
 
     [Fact]
-    public void Groups_effort_variants_under_clean_names_in_list_order()
-        => Assert.Equal(["Gemini 3.8 Flash", "Gemini 3.1 Pro", "Claude Sonnet 4.6 (Thinking)", "GPT-OSS 120B"], F.Select(f => f.Name));
-
-    [Fact]
-    public void Levels_are_only_those_the_model_has_in_low_to_high_order()
+    public void Groups_effort_variants_under_clean_names_with_only_the_levels_the_model_has()
     {
-        Assert.Equal(["low", "medium", "high"], F[0].Levels);
+        Assert.Equal(["Gemini 3.8 Flash", "Gemini 3.1 Pro", "Claude Sonnet 4.6 (Thinking)", "GPT-OSS 120B"], F.Select(f => f.Name)); // list order
+        Assert.Equal(["low", "medium", "high"], F[0].Levels); // low to high
         Assert.Equal(["low", "high"], F[1].Levels);
         Assert.False(F[2].HasLevels);
         Assert.Equal(["medium"], F[3].Levels);
