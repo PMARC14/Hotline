@@ -1,4 +1,3 @@
-using System.Globalization;
 using System.Text.RegularExpressions;
 using Hotline.Core.Settings;
 
@@ -42,6 +41,7 @@ public sealed partial record ThemeTokens(
         var tokens = baseTokens with { Font = font, FontSizePx = window.FontSize ?? DefaultFontSize };
         if (tokens.HighContrast) return tokens; // the contrast theme's colours win over the user's accent
         var accent = AccentChoice.Resolve(window.Accent, dark, windows);
+        if (accent is not null && !ThemeColor.TryParse(accent, out _)) accent = null; // a colour Windows reported that we can't read
         return accent is null ? tokens : tokens with { Accent = accent, UserBubble = ThemeColor.WithAlpha(accent, dark ? (byte)0x38 : (byte)0x24) };
     }
 
@@ -76,56 +76,3 @@ public sealed record WindowsColors(string AccentLight2, string AccentDark1, Cont
 /// <summary>A contrast theme's system colours (#AARRGGBB).</summary>
 public sealed record ContrastColors(string Window, string WindowText, string Highlight, string HighlightText, string Hotlight,
     string GrayText, string ButtonFace, string ButtonText);
-
-/// <summary>The <c>window.accent</c> setting: "hotline" (the built-in purple), "windows" (the Windows accent) or "#RRGGBB".</summary>
-public static partial class AccentChoice
-{
-    public const string Hotline = "hotline";
-    public const string Windows = "windows";
-
-    public static bool IsCustomColor(string? value) => value is not null && Hex().IsMatch(value.Trim());
-
-    /// <summary>The accent colour to draw, or null for the built-in one.</summary>
-    public static string? Resolve(string? value, bool dark, WindowsColors? windows)
-    {
-        if (string.Equals(value?.Trim(), Windows, StringComparison.OrdinalIgnoreCase))
-            return windows is null ? null : dark ? windows.AccentLight2 : windows.AccentDark1;
-        return IsCustomColor(value) ? "#FF" + value!.Trim()[1..].ToUpperInvariant() : null;
-    }
-
-    [GeneratedRegex("^#[0-9A-Fa-f]{6}$")]
-    private static partial Regex Hex();
-}
-
-public static class ThemeColor
-{
-    /// <summary>The same colour with another alpha.</summary>
-    public static string WithAlpha(string hex, byte alpha)
-    {
-        var (_, r, g, b) = Parse(hex);
-        return $"#{alpha:X2}{r:X2}{g:X2}{b:X2}";
-    }
-
-    /// <summary>Black or white, whichever has more contrast on <paramref name="hex"/> (WCAG relative luminance).</summary>
-    public static string OnColor(string hex)
-    {
-        var (_, r, g, b) = Parse(hex);
-        static double Lin(byte v) { var c = v / 255.0; return c <= 0.03928 ? c / 12.92 : Math.Pow((c + 0.055) / 1.055, 2.4); }
-        var l = 0.2126 * Lin(r) + 0.7152 * Lin(g) + 0.0722 * Lin(b);
-        return (l + 0.05) / 0.05 >= 1.05 / (l + 0.05) ? "#FF000000" : "#FFFFFFFF";
-    }
-
-    public static bool TryParse(string hex, out (byte A, byte R, byte G, byte B) color)
-    {
-        try { color = Parse(hex); return true; }
-        catch (FormatException) { color = default; return false; }
-    }
-
-    public static (byte A, byte R, byte G, byte B) Parse(string hex)
-    {
-        if (hex.Length is not (7 or 9) || hex[0] != '#' || !uint.TryParse(hex.AsSpan(1), NumberStyles.HexNumber, CultureInfo.InvariantCulture, out var v))
-            throw new FormatException($"Not a #RRGGBB/#AARRGGBB color: {hex}");
-        if (hex.Length == 7) v |= 0xFF000000;
-        return ((byte)(v >> 24), (byte)(v >> 16), (byte)(v >> 8), (byte)v);
-    }
-}

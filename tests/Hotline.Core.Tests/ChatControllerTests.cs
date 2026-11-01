@@ -157,32 +157,22 @@ public sealed class ChatControllerTests : IDisposable
         Assert.Equal(2, backend.Calls.Count);
     }
 
-    [Fact]
-    public async Task Old_turn_unwinding_after_new_chat_sends_no_events_into_it()
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)] // the old turn's teardown throws late
+    public async Task Old_turn_unwinding_after_new_chat_sends_nothing_into_it(bool lateFailure)
     {
         // The presenter turns Stop back into Send on Cancelled/Completed: an old turn's must not reach the new chat.
         var gate = new TaskCompletionSource();
-        var c = New(new FakeBackend(new ChatDelta("old")) { Gate = gate, SlowCancel = true });
-        var send = c.SendAsync("q", []);
-        c.NewChat();
-        var afterReset = _events.Count;
-        gate.TrySetResult();
-        await send;
-        Assert.DoesNotContain(_events.Skip(afterReset), e => e is AssistantCancelled or AssistantCompleted or AssistantDelta or AssistantStatus);
-    }
-
-    [Fact]
-    public async Task Late_failure_of_old_turn_does_not_reach_new_chat()
-    {
-        var gate = new TaskCompletionSource();
         var c = New(new FakeBackend(new ChatDelta("old")) { Gate = gate, SlowCancel = true,
-            Throw = new BackendException(BackendErrorKind.Failed, "teardown blew up") });
+            Throw = lateFailure ? new BackendException(BackendErrorKind.Failed, "teardown blew up") : null });
         var send = c.SendAsync("q", []);
         c.NewChat();
         var afterReset = _events.Count;
         gate.TrySetResult();
         await send;
-        Assert.DoesNotContain(_events.Skip(afterReset), e => e is AssistantFailed);
+        Assert.DoesNotContain(_events.Skip(afterReset), e => e is AssistantCancelled or AssistantCompleted or AssistantDelta or AssistantStatus or AssistantFailed);
+        if (!lateFailure) return;
         _events.Clear();
         await c.RetryAsync();
         Assert.Empty(_events); // nothing to retry in the new chat

@@ -83,11 +83,12 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
     private string WriteHandoff()
     {
         Directory.CreateDirectory(handoffDirectory);
-        foreach (var old in Directory.EnumerateFiles(handoffDirectory, "*.md"))
+        foreach (var old in Directory.EnumerateFiles(handoffDirectory, "hotline-chat-*.md"))
             if (File.GetLastWriteTimeUtc(old) < DateTime.UtcNow.AddDays(-1))
                 try { File.Delete(old); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
         var title = HistoryStore.TitleOf(chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User)?.Text ?? "");
-        var file = Path.Combine(handoffDirectory, $"hotline-chat-{chat.ConversationId}.md");
+        var id = HistoryIds.IsSafe(chat.ConversationId) ? chat.ConversationId : Ids.New(); // the id names a file
+        var file = Path.Combine(handoffDirectory, $"hotline-chat-{id}.md");
         File.WriteAllText(file, CliHandoff.Markdown(title, chat.Messages));
         return file;
     }
@@ -98,7 +99,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
         var psi = new ProcessStartInfo(command.Exe)
         {
             UseShellExecute = false, CreateNoWindow = false,
-            WorkingDirectory = Directory.Exists(command.WorkingDirectory) ? command.WorkingDirectory : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
+            WorkingDirectory = Hotline.Core.Platform.SafeDirectory.IsLocal(command.WorkingDirectory) && Directory.Exists(command.WorkingDirectory) ? command.WorkingDirectory : Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
         };
         foreach (var a in command.Args) psi.ArgumentList.Add(a);
         using var _ = Process.Start(psi);

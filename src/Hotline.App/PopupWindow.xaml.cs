@@ -48,6 +48,7 @@ public sealed partial class PopupWindow : Window
         _log = log;
         InitializeComponent();
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
+        _rows = new ToolbarRenderer(this, b => CustomButtonClicked?.Invoke(b), log);
 
         ExtendsContentIntoTitleBar = true;
 
@@ -113,64 +114,36 @@ public sealed partial class PopupWindow : Window
         _scrollbarHide.Start();
     }
 
-    /// <summary>The bar's items in order (from toolbar.json); the provider bar reads which pickers are shown.</summary>
-    public IReadOnlyList<string> ToolbarItems { get; private set; } = Hotline.Core.Windowing.ToolbarConfig.Defaults;
+    private readonly ToolbarRenderer _rows;
 
-    /// <summary>The top row's items (toolbar.json "top").</summary>
-    public IReadOnlyList<string> TopToolbarItems { get; private set; } = [];
+    /// <summary>The button rows in force (toolbar.json, resolved); the provider bar reads which pickers are shown.</summary>
+    public ToolbarModel ToolbarModel => _rows.Model;
 
-    /// <summary>
-    /// Rebuilds both button rows: one column per item in order, a flexible column for each "spacer". The pickers sit
-    /// together in the row of the first one listed.
-    /// </summary>
-    public void ApplyToolbar(IReadOnlyList<string> items, IReadOnlyList<string> top)
+    /// <summary>The theme's accent colour for the bar's outlines (see <see cref="ToolbarRenderer.SetAccent"/>).</summary>
+    public void SetToolbarAccent(string? hex) => _rows.SetAccent(hex);
+
+    /// <summary>The theme accent the bar's outlines use (#RRGGBB), null before a theme set one; Settings shows its swatch from it
+    /// (see <see cref="ToolbarAccent"/>).</summary>
+    public string? ToolbarAccentHex => ToolbarAccent.Theme;
+
+    /// <summary>Rebuilds both button rows from the model (see <see cref="ToolbarRenderer"/>); the fit to the panel's width
+    /// follows after layout (ProviderBar, through <see cref="ToolbarChanged"/>).</summary>
+    public void ApplyToolbar(ToolbarModel model)
     {
-        // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
-        // focused pin button and turned pinning off.
-        foreach (var b in new Microsoft.UI.Xaml.Controls.Control[] { PinButton, CaptureWindowButton, CaptureScreenButton, CaptureRegionButton,
-                     PromptButton, RecentButton, ContinueInButton, NewChatButton, SettingsButton })
-            b.AllowFocusOnInteraction = false;
-        (ToolbarItems, TopToolbarItems) = (items, top);
-        var elements = new Dictionary<string, FrameworkElement>
-        {
-            ["pin"] = PinButton, ["captureWindow"] = CaptureWindowButton, ["captureScreen"] = CaptureScreenButton,
-            ["captureRegion"] = CaptureRegionButton, ["prompt"] = PromptButton, ["recent"] = RecentButton, ["continueIn"] = ContinueInButton,
-            ["newChat"] = NewChatButton, ["settings"] = SettingsButton,
-        };
-        foreach (var row in new[] { Toolbar, TopToolbar }) { row.Children.Clear(); row.ColumnDefinitions.Clear(); }
-        foreach (var e in elements.Values.Append(PickersPanel)) e.Visibility = Visibility.Collapsed; // shown again where listed
-        var pickersPlaced = false;
-        var all = top.Concat(items).ToList();
-        void Fill(Microsoft.UI.Xaml.Controls.Grid row, IReadOnlyList<string> list)
-        {
-            foreach (var item in list)
-            {
-                FrameworkElement? element;
-                var star = false;
-                if (item == "spacer") { element = new Microsoft.UI.Xaml.Controls.Border { Tag = "spacer" }; star = true; }
-                else if (item is "effort" or "model" or "provider")
-                {
-                    if (pickersPlaced) continue; // the pickers sit together, in the order listed
-                    pickersPlaced = true;
-                    element = PickersPanel;
-                    var order = all.Where(i => i is "effort" or "model" or "provider").ToList();
-                    var boxes = new Dictionary<string, Microsoft.UI.Xaml.Controls.ComboBox> { ["effort"] = EffortBox, ["model"] = ModelBox, ["provider"] = ProviderBox };
-                    PickersPanel.Children.Clear();
-                    foreach (var name in order) PickersPanel.Children.Add(boxes[name]);
-                }
-                else if (!elements.TryGetValue(item, out element)) continue;
-                row.ColumnDefinitions.Add(new Microsoft.UI.Xaml.Controls.ColumnDefinition { Width = star ? new GridLength(1, GridUnitType.Star) : GridLength.Auto });
-                Microsoft.UI.Xaml.Controls.Grid.SetColumn(element, row.ColumnDefinitions.Count - 1);
-                element.Visibility = Visibility.Visible;
-                row.Children.Add(element);
-            }
-        }
-        Fill(TopToolbar, top);
-        Fill(Toolbar, items);
-        TopToolbar.Visibility = TopToolbar.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
-        Toolbar.Visibility = Toolbar.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        _rows.Apply(model);
         ToolbarChanged?.Invoke();
     }
+
+    /// <summary>After layout only (ProviderBar.Layout): moves what doesn't fit into the "⋯" menus; returns each picker's width
+    /// (0 = hidden), see <see cref="ToolbarPlan.PlanRow"/>.</summary>
+    public IReadOnlyDictionary<string, double> FitToolbar(double room, IReadOnlyCollection<string> availablePickers) =>
+        _rows.Fit(room, availablePickers);
+
+    /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
+    public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);
+
+    /// <summary>A custom button (toolbar.json "buttons") or its "⋯" entry was clicked.</summary>
+    public event Action<CustomButton>? CustomButtonClicked;
 
     public event Action? ToolbarChanged;
 
@@ -565,7 +538,14 @@ public sealed partial class PopupWindow : Window
             var previous = _targetRect.Height > 0 ? _targetRect.Height : bar.Height;
             contentPx = PopupGeometry.TwoStep(previous, contentPx, bar.Height, Math.Max(bar.Height, maxPx), _conversation);
         }
-        _targetRect = _growUp ? PopupGeometry.GrowUp(bar, contentPx, maxPx, _work, GrowMode) : PopupGeometry.GrowDown(bar, contentPx, maxPx, _work, GrowMode);
+        // Full height only during a conversation and not over a size set by hand (see PopupGeometry.FullHeight).
+        var manual = _fixedPx is not null;
+        _targetRect = _growUp ? PopupGeometry.GrowUp(bar, contentPx, maxPx, _work, GrowMode, _conversation, manual)
+            : PopupGeometry.GrowDown(bar, contentPx, maxPx, _work, GrowMode, _conversation, manual);
+        // Once a chat has started the panel may also widen (window.chatWidth*), around its centre: the same resize as the height's,
+        // never a separate one. Shrinking back is the same call without a conversation.
+        if (_conversation && ChatWidthPx is { } widePx) _targetRect = PopupGeometry.GrowWidth(_targetRect, widePx, _work);
+        _widthGrown = _targetRect.Width > bar.Width;
         // During a chat the panel slides to its new height; anything else (no message yet, a new chat, placing) moves at once.
         // The bar's edge stays put: the bottom when growing up, the top when growing down.
         if (!force && _conversation && GrowMode == GrowMode.Grow && AppWindow.IsVisible && _currentRect is { } current
@@ -582,6 +562,15 @@ public sealed partial class PopupWindow : Window
         StopAnimation();
         if (force || _currentRect != _targetRect) MoveTo(_targetRect); // force: placing it anew (the window may have been moved)
     }
+
+    /// <summary>The panel is wider than the bar it opened at (the chat width): a move then keeps the start width as the bar's.</summary>
+    private bool _widthGrown;
+
+    /// <summary>The width the panel grows to when a chat starts (physical pixels), or null: no growth is set, a width was fixed in the
+    /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
+    private int? ChatWidthPx => _fixedPx is not null ? null
+        : PopupGeometry.ChatWidthPx(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width,
+            _settings.MinWidth, _settings.MaxWidth, _bar.Width);
 
     private bool _animating;
     private double _animatedHeight;
@@ -698,12 +687,14 @@ public sealed partial class PopupWindow : Window
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
         var h = (int)Math.Round(_settings.Height * _scale);
-        _bar = new RectI(rect.X, rect.Y, rect.Width, h); // BarPx below reads this monitor's bar height
+        // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
+        var (barX, barW) = !resized && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
+        _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
         // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
         void BarAt(bool up)
         {
             var line = up ? rect.Y + rect.Height : rect.Y + Math.Min(BarPx, rect.Height);
-            _bar = new RectI(rect.X, line - h, rect.Width, h);
+            _bar = new RectI(barX, line - h, barW, h);
         }
         BarAt(_growUp);
         var wasUp = _growUp;
@@ -735,8 +726,8 @@ public sealed partial class PopupWindow : Window
         PlaceOnActiveMonitor();
     }
 
-    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width and chat height in DIPs.</summary>
-    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthDip, int? ChatHeightDip) CurrentSpot()
+    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width in real pixels (what window.width holds), chat height in DIPs.</summary>
+    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthPx, int? ChatHeightDip) CurrentSpot()
     {
         var anchor = Hotline.Core.Windowing.PanelPlacement.AnchorFor(_bar, _work);
         var native = new Native.RECT { Left = _work.X, Top = _work.Y, Right = _work.X + _work.Width, Bottom = _work.Y + _work.Height };
@@ -745,7 +736,7 @@ public sealed partial class PopupWindow : Window
             : _settings.Anchor.Monitor;
         // Sized down to the bar alone: no chat height to save (60 would cap every future chat); keep the setting.
         int? chat = _fixedPx is { } f && (f - BarPx) / _scale >= 60 ? (int)Math.Round((f - BarPx) / _scale) : _settings.ChatHeight;
-        return (anchor, (int)Math.Round(_bar.Width / _scale), chat);
+        return (anchor, _bar.Width, chat);
     }
 
     /// <summary>The panel goes back to its saved default on the next open (unpinned, clicked into another app).</summary>
@@ -795,12 +786,30 @@ public sealed partial class PopupWindow : Window
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
-        var widthDip = _settings.Width ?? PopupGeometry.RelativeWidthDip(wa.Width, scale, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthDip, _settings.Height, scale, _settings.Anchor);
+        var widthPx = _settings.Width ?? PopupGeometry.RelativeWidthPx(wa.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
+        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.Height, scale, _settings.Anchor);
         (_bar, _work, _scale) = (r, work, scale);
         ChooseDirection();
         _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
         ApplyHeight(force: true);
+    }
+
+    /// <summary>The width (scaled units; the setting is in real pixels) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
+    /// monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
+    public double OpeningWidthDip()
+    {
+        var (area, monitor, _) = HomeMonitor();
+        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        var px = Math.Min(area.WorkArea.Width, _settings.Width ?? PopupGeometry.RelativeWidthPx(area.WorkArea.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth));
+        return px / scale; // the width is in real pixels; the button cells are in scaled units
+    }
+
+    /// <summary>Settings' line above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>
+    public string ScreenLine()
+    {
+        var (area, monitor, _) = HomeMonitor();
+        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
+        return Hotline.Core.Windowing.ScreenScale.Line(area.OuterBounds.Width, area.OuterBounds.Height, scale);
     }
 
     /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>

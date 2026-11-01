@@ -8,21 +8,26 @@ public sealed class FileLogTests : IDisposable
     public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
-    public void Writes_level_and_message_creating_directories()
+    public void Writes_level_and_message_creating_directories_and_errors_include_the_exception()
     {
         var path = Path.Combine(_dir, "logs", "hotline.log");
-        new FileLog(path).Info("key Tap via FastPath");
-        Assert.Contains("INFO key Tap via FastPath", File.ReadAllText(path));
+        var log = new FileLog(path);
+        log.Info("key Tap via FastPath");
+        log.Error("boom", new InvalidOperationException("bad state"));
+        var text = File.ReadAllText(path);
+        Assert.Contains("INFO key Tap via FastPath", text);
+        Assert.Contains("ERROR boom", text);
+        Assert.Contains("bad state", text);
     }
 
     [Fact]
-    public void Error_includes_exception()
+    public void ErrorCount_counts_the_errors_written_even_when_the_file_cannot_be_written()
     {
-        var path = Path.Combine(_dir, "hotline.log");
-        new FileLog(path).Error("boom", new InvalidOperationException("bad state"));
-        var text = File.ReadAllText(path);
-        Assert.Contains("ERROR boom", text);
-        Assert.Contains("bad state", text);
+        var log = new FileLog(Path.Combine(_dir, "hotline.log"));
+        log.Info("fine");
+        log.Error("one");
+        log.Error("two", new InvalidOperationException());
+        Assert.Equal(2, log.ErrorCount);
     }
 
     [Fact]

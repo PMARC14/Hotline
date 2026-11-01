@@ -52,11 +52,13 @@ configurable in plain files.
   permission rules.
 - **System prompts** as Markdown files you can switch from the bar.
 - **Your panel, your way** — hold Alt to move or resize it, save its spot as the default, pin it where you work; the
-  chat grows up or down from the message bar. `toolbar.json` puts the buttons above or below the message box, in the
-  order you like. Optional open/close sounds (a Windows sound or your own .wav).
-- **Built-in guide** — Settings › Guide explains every feature; Settings › Advanced › Reset starts over (with a backup).
-- **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly. API keys live in
-  Windows Credential Locker.
+  chat grows up or down from the message bar. The buttons sit in two rows of left / center / right groups (above and
+  below the message box): arrange, resize and outline them in Settings › Window › Button rows, add buttons of your own
+  (a quick action or saved text, optionally with your own picture), or edit `toolbar.json`. Optional open/close sounds.
+- **Built-in guide** — Settings › Guide explains every feature; Settings › Advanced › Reset starts over (with a backup);
+  Settings › Backup exports and imports your settings (never API keys).
+- **Everything is a file** — settings, one file per AI connection, prompts; edits apply instantly, and a mistake in a
+  file costs only the wrong value. API keys live in Windows Credential Locker.
 
 <p align="center">
   <img src="docs/images/settings.png" width="640" alt="The Hotline settings window">
@@ -106,13 +108,11 @@ Then assign the key as above.
 
 ## Using it
 
-- **Copilot key** — open/close. **Long press** — new chat (or *Voice input*: talk while you hold it). **Esc** hides,
-  **Ctrl+N** new chat.
+- **Copilot key** — open/close. **Long press** — new chat (or *Voice input*). **Esc** hides, **Ctrl+N** new chat.
 - **/** at the start of a message — quick actions (`/translate some text`, or `/summarize` with an attachment).
-- **Selected text** in the app you came from shows up as a chip; remove it with its ✕ if you don't want it.
-- **+** / bar buttons — attach files, capture the window you were in, the whole screen, or a region. Ctrl+V pastes images.
-- **📌 Pin** keeps the panel open while you drag files in.
-- **⚙ Settings** — AI connections, prompts, appearance, window size, history, folders.
+- **Bar buttons** — attach files, capture the window you were in, the whole screen, or a region (Ctrl+V pastes images).
+  **📌 Pin** keeps the panel open while you drag files in. Selected text appears as a chip (✕ removes it).
+- **⚙ Settings** — AI connections, prompts, appearance, window, history, backup.
 
 ### Connecting an AI
 
@@ -160,9 +160,8 @@ Debug build: `scripts/install.sh --configuration Debug` (verbose log, key-status
 `scripts/enable-crash-dumps.sh`.
 
 - **Layout:** `src/Hotline.Core` (UI-free logic: backends, settings, markdown, tools — fully unit-tested),
-  `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/` (design spec, plans, handoff notes).
-- **Contributors / new sessions:** start with [docs/HANDOFF.md](docs/HANDOFF.md).
-- **Testing everything by hand:** [docs/TESTING.md](docs/TESTING.md).
+  `src/Hotline.App` (WinUI 3 app), `tests/`, `scripts/`, `docs/`.
+- **Contributors / new sessions:** [docs/HANDOFF.md](docs/HANDOFF.md). **Hand tests:** [docs/TESTING.md](docs/TESTING.md).
 
 ### CI and releases
 
@@ -173,8 +172,7 @@ Details, signing and winget: [docs/RELEASING.md](docs/RELEASING.md).
 
 ## Roadmap
 
-Windows 11 26H2 follow-ups, continuing a chat in a local web page
-(llama.cpp), and native-speaker reviews of the translations. See [docs/HANDOFF.md](docs/HANDOFF.md).
+Continue in to web pages and apps, multi-monitor capture and bar behaviour, then 1.0. See [docs/HANDOFF.md](docs/HANDOFF.md).
 
 ## Support Hotline
 

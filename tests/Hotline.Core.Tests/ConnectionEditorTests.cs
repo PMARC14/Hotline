@@ -40,24 +40,17 @@ public class ConnectionEditorTests
         Assert.False(copy.ApproveAllTools);
     }
 
-    [Fact]
-    public void Can_remove_the_last_one()
+    [Theory]
+    [InlineData(false)] // the last connection can be removed; the default becomes empty
+    [InlineData(true)]  // removing the default hands it to a remaining connection
+    public void Removing_the_default_reassigns_or_empties_it(bool another)
     {
         var chat = Chat();
+        var local = another ? ConnectionEditor.Add(chat, BackendType.Local) : null;
         ConnectionEditor.SetDefault(chat, "agy");
         Assert.True(ConnectionEditor.Remove(chat, "agy"));
-        Assert.Empty(chat.Backends);
-        Assert.Equal("", chat.DefaultBackend);
-    }
-
-    [Fact]
-    public void Remove_default_reassigns()
-    {
-        var chat = Chat();
-        var local = ConnectionEditor.Add(chat, BackendType.Local);
-        ConnectionEditor.SetDefault(chat, "agy");
-        Assert.True(ConnectionEditor.Remove(chat, "agy"));
-        Assert.Equal(local.Id, chat.DefaultBackend);
+        Assert.Equal(local?.Id ?? "", chat.DefaultBackend);
+        Assert.Equal(another ? 1 : 0, chat.Backends.Count);
     }
 
     [Fact]

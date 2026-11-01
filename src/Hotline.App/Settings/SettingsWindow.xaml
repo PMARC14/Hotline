@@ -35,6 +35,7 @@
                 <NavigationViewItem Content="{local:Loc Key=Nav_Chat}" Tag="Chat"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8F2;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="{local:Loc Key=Nav_Tools}" Tag="Tools"><NavigationViewItem.Icon><FontIcon Glyph="&#xE90F;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="{local:Loc Key=Nav_Advanced}" Tag="Advanced"><NavigationViewItem.Icon><FontIcon Glyph="&#xE9F5;" /></NavigationViewItem.Icon></NavigationViewItem>
+                <NavigationViewItem Content="{local:Loc Key=Nav_Backup}" Tag="Backup"><NavigationViewItem.Icon><FontIcon Glyph="&#xE8F1;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="{local:Loc Key=Nav_Guide}" Tag="Guide"><NavigationViewItem.Icon><FontIcon Glyph="&#xE897;" /></NavigationViewItem.Icon></NavigationViewItem>
                 <NavigationViewItem Content="{local:Loc Key=Nav_About}" Tag="About"><NavigationViewItem.Icon><FontIcon Glyph="&#xE946;" /></NavigationViewItem.Icon></NavigationViewItem>
             </NavigationView.MenuItems>

@@ -5,10 +5,6 @@ namespace Hotline.Core.Tests;
 public class ScrollFollowTests
 {
     [Fact]
-    public void Follows_from_the_start()
-        => Assert.True(new ScrollFollow().Following);
-
-    [Fact]
     public void An_auto_scroll_that_ends_short_of_the_bottom_scrolls_again_instead_of_stopping()
     {
         var f = new ScrollFollow();

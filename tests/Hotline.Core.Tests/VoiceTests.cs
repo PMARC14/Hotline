@@ -11,17 +11,12 @@ public sealed class VoiceTests : IDisposable
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
-    [Fact]
-    public void Hold_set_to_voice_starts_on_press_and_stops_on_release()
-    {
-        var s = new ActivationSettings { Hold = KeyAction.Voice };
-        Assert.Equal(KeyAction.Voice, KeyActionResolver.Resolve(KeyEvent.HoldStart, s));
-        Assert.Equal(KeyAction.Voice, KeyActionResolver.Resolve(KeyEvent.HoldStop, s));
-    }
-
-    [Fact]
-    public void Release_still_does_nothing_for_other_hold_actions() =>
-        Assert.Equal(KeyAction.None, KeyActionResolver.Resolve(KeyEvent.HoldStop, new ActivationSettings { Hold = KeyAction.NewChat }));
+    [Theory]
+    [InlineData(KeyAction.Voice, KeyEvent.HoldStart, KeyAction.Voice)]
+    [InlineData(KeyAction.Voice, KeyEvent.HoldStop, KeyAction.Voice)]
+    [InlineData(KeyAction.NewChat, KeyEvent.HoldStop, KeyAction.None)] // release still does nothing for other hold actions
+    public void Hold_set_to_voice_starts_on_press_and_stops_on_release(KeyAction hold, KeyEvent evt, KeyAction expected) =>
+        Assert.Equal(expected, KeyActionResolver.Resolve(evt, new ActivationSettings { Hold = hold }));
 
     [Theory]
     [InlineData("", "Hello there.", "Hello there.")]

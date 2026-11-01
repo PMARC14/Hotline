@@ -134,4 +134,23 @@ public sealed class ConnectionFilesTests : IDisposable
         Assert.DoesNotContain("\"endpoint\"", json);
         Assert.Contains("\"agent\": \"hotline\"", json);
     }
+
+    // ---- a hand-edited settings.json with null list elements must not crash start-up or a live reload ----
+
+    [Theory]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "order": [null] } }""")]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "order": [null, "", "  ", "a"] } }""")]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "backends": [null] } }""")]
+    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "backends": [null, { "id": null }, { "id": "x", "name": "X" }] } }""")]
+    public void Null_list_elements_do_not_crash_load_or_try_read(string json)
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(SettingsFile, json);
+        var store = new SettingsStore(_dir);
+        var loaded = store.Load();
+        Assert.Equal(800, loaded.Window.MinWidth);
+        var again = store.TryRead();
+        Assert.NotNull(again);
+        Assert.Equal(800, again.Window.MinWidth);
+    }
 }

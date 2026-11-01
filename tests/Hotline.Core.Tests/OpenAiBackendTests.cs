@@ -53,7 +53,7 @@ public sealed class OpenAiBackendTests : IDisposable
     [Fact]
     public async Task Streams_chat_completions_with_system_prompt_history_and_key()
     {
-        var (b, handler, secrets) = New(new BackendProfile { Id = "oa", Name = "OpenRouter", Type = BackendType.OpenAiCompatible, Endpoint = "https://openrouter.ai/api/v1/", Model = "x/model" },
+        var (b, handler, secrets) = New(new BackendProfile { Id = "oa", Name = "OpenRouter", Type = BackendType.OpenAiCompatible, Endpoint = "https://openrouter.ai/api/v1/", Model = "x/model", Effort = "high" },
             (_, _) => Sse(Chunk("Hel"), Chunk("lo"), """{"choices":[{"delta":{},"finish_reason":"stop"}]}""", "[DONE]"));
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
         var text = await Collect(b.StreamAsync([U("1", "hi"), A("2", "hey"), U("3", "again")], default));
@@ -64,6 +64,7 @@ public sealed class OpenAiBackendTests : IDisposable
         var json = JsonDocument.Parse(body).RootElement;
         Assert.True(json.GetProperty("stream").GetBoolean());
         Assert.Equal("x/model", json.GetProperty("model").GetString());
+        Assert.Equal("high", json.GetProperty("reasoning_effort").GetString());
         var messages = json.GetProperty("messages").EnumerateArray().ToList();
         Assert.Equal(["system", "user", "assistant", "user"], messages.Select(m => m.GetProperty("role").GetString()));
         Assert.Equal("Be brief.", messages[0].GetProperty("content").GetString());
@@ -142,15 +143,6 @@ public sealed class OpenAiBackendTests : IDisposable
         var (b, _, _) = New(new BackendProfile { Id = "l", Type = BackendType.Local }, (_, _) => Sse(Chunk("par"), """{"error":{"message":"context length exceeded"}}"""));
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
         Assert.Contains("context length", ex.Message);
-    }
-
-    [Fact]
-    public async Task Reasoning_effort_is_sent_when_set()
-    {
-        var (b, handler, s) = New(new BackendProfile { Id = "oa", Type = BackendType.OpenAiCompatible, Model = "m", Effort = "high" }, (_, _) => Sse(Chunk("ok"), "[DONE]"));
-        s.Set(SecretKeys.ApiKey("oa"), "k");
-        await Collect(b.StreamAsync([U("1", "hi")], default));
-        Assert.Equal("high", JsonDocument.Parse(handler.Seen[0].Body).RootElement.GetProperty("reasoning_effort").GetString());
     }
 
     [Fact]

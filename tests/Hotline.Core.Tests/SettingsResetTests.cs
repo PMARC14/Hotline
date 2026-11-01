@@ -1,5 +1,6 @@
 using Hotline.Core.Backends;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
@@ -20,6 +21,7 @@ public sealed class SettingsResetTests : IDisposable
         store.Save(s);
         File.WriteAllText(Path.Combine(_dir, "toolbar.json"), "{}");
         File.WriteAllText(Path.Combine(_dir, "memory.md"), "keep me");
+        File.WriteAllText(Path.Combine(_dir, "mcp.json"), "{\"mcp\":1}");
         return (store, s, local.Id);
     }
 
@@ -36,6 +38,7 @@ public sealed class SettingsResetTests : IDisposable
         Assert.Empty(removed);
         Assert.Contains("\"fontSize\": 20", File.ReadAllText(Path.Combine(backup, SettingsStore.FileName)));
         Assert.True(File.Exists(Path.Combine(_dir, "toolbar.json")));
+        Assert.Equal("{\"mcp\":1}", File.ReadAllText(Path.Combine(_dir, "mcp.json"))); // MCP servers are not settings
     }
 
     [Fact]
@@ -48,7 +51,9 @@ public sealed class SettingsResetTests : IDisposable
         Assert.Equal("", back.Chat.DefaultBackend);
         Assert.Equal([local], removed);
         Assert.False(File.Exists(Path.Combine(_dir, "toolbar.json")));
-        Assert.True(File.Exists(Path.Combine(backup, "toolbar.json")));
+        Assert.False(File.Exists(Path.Combine(_dir, "mcp.json")));
+        Assert.Equal("{}", File.ReadAllText(Path.Combine(backup, "toolbar.json")));
+        Assert.Equal("{\"mcp\":1}", File.ReadAllText(Path.Combine(backup, "mcp.json")));
         Assert.True(File.Exists(Path.Combine(backup, SettingsStore.ConnectionsFolder, local + ".json")));
         Assert.Equal("keep me", File.ReadAllText(Path.Combine(_dir, "memory.md")));
     }
@@ -65,6 +70,50 @@ public sealed class SettingsResetTests : IDisposable
         var loaded = new SettingsStore(other).Load();
         Assert.Equal(new HotlineSettings().Chat.HistoryListSize, loaded.Chat.HistoryListSize);
         Assert.Empty(loaded.Chat.Backends);
+    }
+
+    private static string DefaultsToolbar(string dir) => Path.Combine(dir, SettingsReset.DefaultsFolder, "toolbar.json");
+
+    [Fact]
+    public void WriteDefaults_writes_a_hidden_toolbar_copy_and_keeps_it_current()
+    {
+        SettingsReset.WriteDefaults(_dir);
+        var path = DefaultsToolbar(_dir);
+        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(path));
+        Assert.True(new DirectoryInfo(Path.GetDirectoryName(path)!).Attributes.HasFlag(FileAttributes.Hidden));
+
+        File.WriteAllText(path, "stale");
+        SettingsReset.WriteDefaults(_dir);
+        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(path));
+
+        var stamp = new DateTime(2020, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        File.SetLastWriteTimeUtc(path, stamp);
+        SettingsReset.WriteDefaults(_dir);
+        Assert.Equal(stamp, File.GetLastWriteTimeUtc(path)); // current: left alone
+    }
+
+
+    [Fact]
+    public void Reset_settings_writes_the_default_toolbar_when_there_was_none()
+    {
+        var store = new SettingsStore(_dir);
+        var s = store.Load();
+        var (backup, _) = SettingsReset.Reset(store, _dir, s, everything: false, Now);
+        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json")));
+        Assert.False(File.Exists(Path.Combine(backup, "toolbar.json")));
+    }
+
+    [Theory]
+    [InlineData("7B2276657273696F6E223A322C22637573746F6D223A747275657D")] // a customised toolbar
+    [InlineData("7B2262FF007B")]                                           // broken: the backup must be byte for byte
+    public void Reset_settings_restores_the_toolbar_after_backing_it_up(string toolbarHex)
+    {
+        var (store, s, _) = Customised();
+        var before = Convert.FromHexString(toolbarHex);
+        File.WriteAllBytes(Path.Combine(_dir, "toolbar.json"), before);
+        var (backup, _) = SettingsReset.Reset(store, _dir, s, everything: false, Now);
+        Assert.Equal(before, File.ReadAllBytes(Path.Combine(backup, "toolbar.json")));
+        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json")));
     }
 }
 

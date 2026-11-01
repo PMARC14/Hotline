@@ -145,7 +145,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             else if (e.DataView.Contains(StandardDataFormats.Bitmap)) // an image dragged from a browser or viewer, no file
                 await AddBytesAsync($"dropped-{DateTime.Now:HHmmss}.png", "image/png", await BitmapBytesAsync(e.DataView));
         }
-        catch (Exception ex) { log.Error("drop failed", ex); notices.Show($"Couldn't attach dropped items: {ex.Message}", InfoBarSeverity.Error); }
+        catch (Exception ex) { log.Error("drop failed", ex); notices.Show(L.F(Strings.Attach_DropFailed, ex.Message), InfoBarSeverity.Error); }
         finally { deferral.Complete(); }
     }
 

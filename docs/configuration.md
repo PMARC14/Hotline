@@ -11,20 +11,27 @@ same files). Comments and trailing commas are allowed.
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
-| `toolbar.json` | The button rows around the message box: which items, in what order |
+| `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
+| `icons\<id>.png` | Pictures of custom buttons |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
-| `.defaults\settings.json` | (hidden) The default settings.json of this version, rewritten at every start |
+| `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
+| `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept whenever Hotline is about to replace a file it did not write itself: a hand edit it rewrites (to add newly available options or to move an old inline `chat.backends` list into `connections\`), a damaged file, or an older run's file. Never overwritten; the newest 10 are kept |
+| `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
+| `connections\<id>.json.<time>.bak` | The previous connection file, kept the same way when Settings rewrites a file you edited by hand (newest 10 per file) |
+| `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it (newest 10) |
+| `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json (`yyyyMMdd-HHmmss`), kept when Settings is about to replace a file Hotline did not write itself (a hand edit, with its comments and ignored entries); never overwritten, the newest 10 are kept, and nothing is replaced if the copy can't be made. Hotline's own earlier saves are not copied again. `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
+| `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
-**Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current
-one and Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset
-settings** puts settings.json back to the defaults (connections stay); **Reset everything** also removes the
-connections and their API keys, `toolbar.json` and `mcp.json`. Prompts, quick actions, memory and history are never
-reset, and the previous files are kept in `backups\`.
+**Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current one and
+Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset settings** puts
+settings.json and toolbar.json back to the defaults (connections stay); **Reset everything** also removes the connections and their
+API keys, `mcp.json`. Prompts, quick actions, memory and history are never reset; replaced files go to `backups\reset-<time>\`.
+Settings › **Backup** exports and imports these files (see *Backup*).
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
 
@@ -34,21 +41,24 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 |---|---|---|
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `600` / `1000` | Panel width: % of the screen, clamped (DIPs) |
-| `window.height` / `maxHeightPercent` | `0` / `70` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
+| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `400` / `1200` | Panel width at opening: % of the screen's **real pixels**, clamped to `minWidth`/`maxWidth` (also **real pixels**: the owner's defaults, 400 and 1200). Windows' display scaling is ignored: the same screen gives the same pixel width at 100% and at 200%. Scaling still decides how big buttons and text are (a cell stays 40 scaled units), so a narrow panel simply moves buttons into the "..." box. Settings > Window shows a line under the width controls with what they come to on this screen, and a note above the button rows with this screen's pixels, the scaling and the scaled interface size. Heights (`height`, `chatHeight`) stay in scaled units |
+| `window.height` / `maxHeightPercent` | `0` / `60` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
-| `window.width` | `null` | Panel width in DIPs; `null` = the `widthPercent` rule |
+| `window.width` | `null` | Panel width in real pixels (a resize by hand saves it as pixels); `null` = the `widthPercent` rule. A width you saved yourself is kept |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
+| `window.chatWidthPercent` | `0` | The panel grows this wide (% of the screen, 20-90, clamped to `minWidth`..`maxWidth`) when a chat starts and shrinks back on a new chat, around its centre. `0` = it keeps its width; a value no wider than the opening width does the same |
+| `window.chatWidth` | `null` | The chat width in real pixels (kept within `minWidth`..`maxWidth`, as the percentage is); `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
 | `window.backdrop` | `acrylicThin` | `acrylic`, `acrylicThin`, `mica`, `solid` |
+| `window.theme` | `system` | The panel's colours: `system` (follows Windows), `light`, `dark`, `highContrast` (Hotline's own white-on-black; a Windows contrast theme is followed whatever this says) |
+| `window.accent` | `hotline` | The accent colour of the panel (send button, focus line, links) and of the button outline (`toolbar.json` `outline`, when it has no `outlineColor` of its own): `hotline` (Hotline's purple), `windows` (your Windows accent colour) or `#RRGGBB` |
 | `window.tintOpacity` / `luminosityOpacity` | `0.15` / `0.35` | Acrylic translucency (0–1; lower = clearer) |
 | `window.hideOnBlur` / `alwaysOnTop` | `true` / `true` | Hide when you click elsewhere; keep on top |
 | `window.fontSize` / `fontFamily` | Windows default / Segoe UI Variable | Text size (10–32; empty follows Windows' text size) and font |
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
-| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice` as the long press: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Uses Windows speech recognition: allow the microphone and turn on Settings › Privacy & security › Speech › Online speech recognition. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
+| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice`: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Needs the microphone allowed and Settings › Privacy & security › Speech › Online speech recognition on. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
-| `activation.copilotKey` | `hotline` | `hotline`: the key opens Hotline (tap/hold above). `rightCtrl`: the key is a plain Right Ctrl (Copilot+C = Ctrl+C) and no longer opens Hotline — use the extra hotkey or the tray. Works on keyboards whose Copilot key sends Win+Shift+F23 (most do) |
 | `chat.defaultBackend` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
 | `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
@@ -63,14 +73,46 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
-| `chat.memoryTool` | `ask` | Whether API models may save a fact to `memory.md` with Hotline's remember tool (Anthropic and Gemini get it even in chat-only mode; OpenAI-style connections once their Tool use is on; never while `chat.memory` is off; every save shows a notice): `ask` (approve each one in the panel; "Always" switches to `allow`), `allow`, `off` |
+| `chat.memoryTool` | `ask` | Whether API models may save to `memory.md` with Hotline's remember tool (Anthropic and Gemini even in chat-only mode; OpenAI-style connections once Tool use is on; never while `chat.memory` is off; every save shows a notice): `ask` (approve each; "Always" switches to `allow`), `allow`, `off` |
 | `chat.voiceAutoSend` | `false` | With `voice`: send the message when you let go of the key (off: check it first, then press Enter) |
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
-| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: in apps that don't share text through UI Automation, also send Ctrl+C and put your clipboard back afterwards (never in terminals or password fields; Visual Studio/VS Code whole-line copies are ignored; the app's copy can show up in clipboard history, the restore doesn't; opening can take up to about half a second). `off`. Password fields are never read |
+| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
 
-A half-saved or broken `settings.json` is ignored while Hotline runs (your file is never overwritten without a
-timestamped backup); at startup a broken file is copied to `settings.json.bad` and defaults are used in memory.
+settings.json is schema version 14. Hotline is pre-1.0 and does not convert older files: a lower or missing `schemaVersion`
+is read as it is (every value checked and clamped) and gets the current version in memory at once. The file itself is rewritten at
+startup when it lacks an option this version has (a missing `schemaVersion` is one) and has no ignored values, and otherwise when
+Settings next saves it; the previous file is first kept as `settings.json.<time>.bak`, and nothing is written if that copy can't be made.
+An old `activation.copilotKey` entry and an old `window.layout` (nothing ever read it) are dropped then ([copilot-key.md](copilot-key.md)).
+Connection files and API keys are untouched; the one remaining conversion splits an inline `chat.backends` list into
+`connections\` files.
+
+**Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and
+that is not exactly what Hotline itself last wrote, it copies it to `<file>.<time>.bak` (never over an older copy; the newest 10 per
+file are kept). If the copy can't be made (disk full, locked) that file is left as it is and the panel and Settings › Advanced list
+the problem. Hotline's own output replacing Hotline's own output makes no copies.
+
+**A connection keeps its file.** A connection is saved back to the file it was read from, whatever that file is called or whatever
+`id` it holds (`mine.json` with `"id": "local"` stays `mine.json`); only a new connection gets `<id>.json` (characters other than
+letters, digits, `-`, `_` and `.` become `-`). Two connections that would share one file (`work a` and `work-a`) are not allowed:
+the second is not saved and a problem is listed. Removing a connection in Settings deletes its own file; a file you drop in
+while Hotline runs is picked up before the next save and is never deleted unless you remove that connection.
+
+### Broken files
+
+A bad hand edit costs only what is wrong, never the whole file, and nothing is deleted or silently overwritten. What is ignored is
+listed in the panel (a notice, at most five lines then "and N more"), at the top of Settings › Advanced (with an Open folder button)
+and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the file and the notice goes away by itself.
+
+| File | What happens |
+|---|---|
+| `settings.json`, one value wrong (a mistyped word for an option, text where a number belongs, `null`, a number too large, an object where a value belongs) | That one setting keeps its default; every other setting applies. The file is not rewritten. A value outside the allowed range is reported too and pulled in to the nearest allowed value. A key given twice uses the last one |
+| `settings.json`, not a JSON object, empty, or a syntax error (also a half-saved file) | At startup: defaults run in memory and the file is copied to `settings.json.bad` (not copied again while it has the same text). While Hotline runs: the settings in force stay and the problem is reported once. The file itself is left as it is until you change something in Settings; that writes a valid file and first keeps the damaged one as `settings.json.<time>.bak` |
+| `connections\<id>.json`, one value wrong | That value keeps its default (a wrong `approveAllTools` is off, a wrong `tools` is chat-only); the connection loads |
+| `connections\<id>.json`, unreadable, not an object, an unknown `type`, or an id already used by another file | The file is not used and not touched (never overwritten or deleted); the notice names it. A file with an ignored value is copied to `<id>.json.<time>.bak` before Settings rewrites it |
+| `mcp.json` | A server entry or approval of the wrong kind is skipped alone (an unknown approval word counts as "deny", with a warning). A syntax error or a key given twice makes the whole file unreadable: no servers run and the file is left as it is |
+| `prompts\*.md`, `actions\*.md` | A file that is locked, too large (actions), unreadable or badly named is skipped; the rest are listed. A prompt that can't be read falls back to `default.md` |
+| `toolbar.json` | See *toolbar.json* below |
 
 ## connections\<id>.json
 
@@ -86,7 +128,7 @@ timestamped backup); at startup a broken file is copied to `settings.json.bad` a
 | `tools` | all | `chatOnly` (default) or `inherit`: CLIs use their own tools and permission rules in `workingDirectory`; API connections use Hotline's MCP tools (`mcp.json`) |
 | `workingDirectory` | agy, Claude Code, Codex | Folder for `inherit` mode (empty = your user folder) |
 | `approveAllTools` | agy, Claude Code, Codex | ⚠ Dangerous: auto-approve every tool request (inherit mode only; agy/Claude Code `--dangerously-skip-permissions`, Codex `--dangerously-bypass-approvals-and-sandbox`). Settings › AI connections asks before turning it on |
-| `args` | agy, Claude Code, Codex | Settings: *Launch flags (advanced)*. Replaces Hotline's launch flags for the mode (the stream/print flags Hotline needs are always added; dangerous flags only via `approveAllTools`) |
+| `args` | agy, Claude Code, Codex | Settings: *Launch flags (advanced)*. Replaces Hotline's usual extra launch flags for the mode. The stream/print flags Hotline needs, and in chat-only mode the flags that keep the program from using its own tools, are always added; flags that approve tools or skip permission checks (`--allowedTools`, `--yolo`, `--trust`, …) are dropped from this list: only `approveAllTools` turns them on |
 | `extraArgs` | agy, Claude Code, Codex | Added on top, e.g. Claude Code `--mcp-config C:\mcp\servers.json`, Codex `--search` or `-c model_verbosity="low"` (Codex: sandbox, approval and folder flags are dropped) |
 | `keepCliSessions` | agy, Claude Code, Codex | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
 | `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\`. Reopened, a record-only chat still shows its messages: they're read from the CLI's own history (`chat.cliTranscripts`) |
@@ -103,27 +145,21 @@ chosen one exists.
 
 ## Chats with a CLI (agy, Claude Code, Codex)
 
-- **One conversation per chat.** Hotline records the CLI's session ID and resumes it (`agy --conversation`,
-  `claude --resume`, `codex exec resume`) when the session has to start again: after a restart, a prompt change, or from Recent chats. If
-  the CLI can't find it any more, Hotline starts a new conversation and replays the messages it has.
-- **New chat** (the toolbar button, or a long press of the Copilot key) always starts a new conversation.
-- **They run in your user folder.** In chat-only mode too, the CLIs start in `%USERPROFILE%`, so `claude --resume`,
-  Claude Code's `/resume` and `codex resume` in a terminal there list Hotline's chats. agy gets Hotline's working folder
-  (`scratch\agy\Hotline`: the `hotline` agent and attached images) with `--add-dir`, and joins the agy project named
-  **Hotline** when it exists (made by Hotline before 0.3); a conversation you move to another agy project stays there.
-  Chats begun in an older version's folder keep resuming there. `inherit` mode runs in `workingDirectory`.
-- **Reopened chats show their messages.** When Hotline kept only a record, it reads the conversation from the CLI's
-  own history (read-only): Claude Code's `~\.claude\projects\*\<session>.jsonl`, Codex's
-  `~\.codex\sessions\…\rollout-…-<thread>.jsonl`, and agy's `~\.gemini\antigravity-cli\conversations\<id>.db`
-  (SQLite). Hotline's own wrapping of what it sent (earlier turns, instructions, attached files) is removed. If a file
-  is missing or in a format Hotline doesn't recognise, the chat opens empty as before and still resumes.
-- **The history list** (the 🕘 button, Ctrl+↑ in an empty message box, or `/resume`): chats run oldest at the top to
-  newest at the bottom, centered over the message bar; type to filter by title, ↑/↓ and Enter (or click) to open.
-  `/resume words` opens it filtered.
-- **Continue this chat in ▸** (top of the history list) opens the chat's own CLI in your default terminal (Windows
-  Terminal unless you chose another in Windows Settings › System › For developers › Terminal) on the same conversation.
-  The other installed CLIs are under **More…**: a new session that reads the chat from a Markdown file (only when
-  Hotline has the messages). A chat on an API connection lists the CLIs directly.
+- **One conversation per chat.** Hotline records the CLI's session ID and resumes it (`agy --conversation`, `claude --resume`,
+  `codex exec resume`) after a restart, a prompt change, or from Recent chats. If the CLI can't find it, Hotline starts a new
+  conversation and replays its messages. **New chat** (toolbar button, or a long press of the Copilot key) always starts a new one.
+- **They run in your user folder** (chat-only mode too), so `claude --resume`, Claude Code's `/resume` and `codex resume` in a terminal
+  there list Hotline's chats. agy gets Hotline's working folder (`scratch\agy\Hotline`: the `hotline` agent and attached images) with
+  `--add-dir`, and joins the agy project named **Hotline** when it exists (made before 0.3). Chats begun in an older version's folder keep
+  resuming there. `inherit` mode runs in `workingDirectory`.
+- **Reopened chats show their messages.** When Hotline kept only a record, it reads the conversation read-only from the CLI's own
+  history (Claude Code's `~\.claude\projects`, Codex's `~\.codex\sessions`, agy's `~\.gemini\antigravity-cli\conversations`) and removes
+  its own wrapping (earlier turns, instructions, attached files). A missing or unrecognised file opens the chat empty; it still resumes.
+- **The history list** (🕘 button, Ctrl+↑ in an empty message box, or `/resume`): oldest at the top, newest at the bottom, centered over
+  the message bar; type to filter by title, ↑/↓ and Enter (or click) to open. `/resume words` opens it filtered.
+- **Continue this chat in ▸** (top of the history list, and the `continueIn` button) opens the chat's own CLI in your default terminal
+  on the same conversation. The other installed CLIs are under **More…**: a new session that reads the chat from a Markdown file (only
+  when Hotline has the messages). A chat on an API connection lists the CLIs directly.
 
 ## mcp.json (tools for API connections)
 
@@ -165,12 +201,167 @@ you unpin it, click into another app, or Hotline restarts.
 
 ## toolbar.json
 
-`{ "top": [], "items": ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings"] }`
-— `top` is the row above the message box, `items` the row below it; left to right; an item sits in one row only; remove an item to hide it; `spacer` takes the free space (repeatable). `continueIn` opens the
-"Continue this chat in" menu (the chat's own CLI, others under More…). The pickers (effort, model,
-provider) sit together in the order listed. Settings › Appearance › **Button rows** edits this file (the previous version
-is kept as `toolbar.json.bak`). An existing toolbar.json keeps its own list, so add new
-items (`captureRegion` since Plan 6, `continueIn` since 0.3) there if you want them.
+The button rows around the message box. There are two rows, **top** (above the message box) and **items** (below it), each with
+three groups: **left**, **center** (the free space between the other two) and **right**. Items run left to right within a group.
+Settings › **Window** › **Button rows** edits this file; you can also edit it by hand.
+
+```jsonc
+{
+  "version": 2,
+  "top":   { "left": ["effort"], "center": ["model"], "right": ["provider"] },
+  "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+             "center": ["prompt", "continueIn"],
+             "right": ["recent", "newChat", "settings"] },
+  "menu": [],
+  "style": { "width": "normal", "outline": false, "filled": false },
+  "overrides": { "pin": { "outline": true } },
+  "buttons": {
+    "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize" },
+    "thanks":    { "label": "Say thanks", "icon": "E8BD", "text": "Thanks!", "send": false }
+  }
+}
+```
+
+| Key | Meaning |
+|---|---|
+| `top`, `items` | Objects with `left`, `center` (optional) and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
+| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below) |
+| `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order |
+| `style` | The look of the whole bar: `width` (the button width in cells: 0.5, 1, 2, 3 or 4, or the words `compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour) |
+| `overrides` | Per item id: the same `width`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. A picker takes `span` (its width), `outline`, `outlineColor` and `filled`, never `width`. The placed `more` button takes overrides like any item |
+| `buttons` | Your own buttons, by id (below) |
+
+**Width.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs (icon 16). Every button is **one cell high**, always,
+built-in or custom, so every row is 36 DIPs high. One key, `width`, says how many cells across a button is: 0.5, 1, 2, 3 or 4 (20 to 160 DIPs;
+the icon is 13 for half a cell and 16 otherwise). The words `compact`, `normal` and `wide` are shortcuts for 0.5, 1 and 2 (Hotline writes the
+word for those three and a number for 3 and 4). An item's own `width` beats the bar's, which beats the default of 1 cell. Any other value
+(a word that is none of the three, a number outside the five, or the DIP numbers of older files such as 80) is ignored with a warning and the
+default width applies. Files from before this key was one still load: `size` (the three words) and `cells` (the numbers) are read as
+old names of `width`, silently; if an entry has both `width` and one of them, `width` wins and one warning says so. Saving from Settings writes `width`
+only. A `height` key is not used (ignored with one warning per file). The width is the cell's whole size, padding included: cells touch with no gap, and the
+visible button is the cell less 1 DIP on each side (a normal button shows 38 × 34, so neighbours are 2 DIPs apart). So two normal buttons are as wide as one
+wide or four compact ones, and a row is the sum of its cells. The automatic "..." button is always one cell (40 × 36), whatever the bar's width. In
+Settings the bar's **Width** list and each button's flyout offer Compact, Normal, Wide, 3 cells and 4 cells (a button's also "Like the whole bar");
+the bar's list shows **Custom** while some button's width differs from the bar's, and picking a width there clears every button's own width.
+The bar's room is the panel's width less its padding (10 DIPs on every side).
+
+**Outline.** `"outline": true` draws a 1.5-DIP border in the accent colour (a contrast theme: the system highlight colour) or in
+`outlineColor` (`#` and six hex digits; anything else is ignored with a warning). With `filled` a button keeps both its background and outline.
+The pickers take the same three keys (`outline`, `outlineColor`, `filled`) from the bar's `style` and from their own `overrides` entry, per key
+(own entry, then the bar, then false), so an outlined bar outlines the drop-downs too, in the same colour and 1.5 DIPs thick, drawn inside their
+height; `filled` gives a drop-down the background a filled button has. A picker's width is not part of this: it stays its `span`.
+
+**Pickers.** `effort`, `model` and `provider` are three independent items: each can sit in any group of either row, between any
+buttons, and be moved, hidden or sized on its own. An id listed twice is shown at its first place (bottom left, bottom center, bottom
+right, top left, top center, top right). Pickers take the bar's look (`outline`, `outlineColor`, `filled`) but not its `width`. A picker is one cell high like a button (its drop-down is 34 DIPs high with the 1 DIP inset). Their width is `span` cells of 40 DIPs (1-8, whatever the bar's width);
+`span` and the three look keys are the only `overrides` keys a picker takes (anything else, such as `width`, is dropped with a warning):
+
+```jsonc
+"overrides": { "model": { "span": 6 }, "effort": { "span": 1, "outline": true, "outlineColor": "#E81123" } }
+```
+
+| Picker | Default `span` | Width (DIPs) | Narrowest before it hides (outer width) |
+|---|---|---|---|
+| `effort` | 3 | 120 | 56 |
+| `model` | 4 | 160 | 84 |
+| `provider` | 4 | 160 | 72 |
+
+A span equal to the default is not written to the file (the shipped file has no picker entries in `overrides`). A picker's look is kept for a hidden picker too, like its span.
+
+A span is a maximum as well as the preferred width (the drop-down itself is 1 DIP narrower on each side). In a short row the pickers
+shrink evenly down to the narrowest width (never past their own width); when that is not enough they hide one at a time: `effort`,
+then `provider`, then `model`. A span for a hidden picker is kept. Pickers never go into an overflow menu: the row first moves
+buttons there (left group, then center, from their ends, then the right group's first buttons) so the pickers keep their narrowest
+widths, and only when not even one right button, the "..." button and those widths fit do the pickers shrink and hide. Pickers of one
+row share what is left evenly; the other row is fitted on its own.
+
+**Overflow and the `more` button.** A row too narrow for its buttons moves them into an automatic "..." menu: the center group's
+and left group's last buttons first; if the right group alone is too wide it gives up its first buttons (from its left end), so the
+rightmost (typically Settings) stay, and at least one right button always stays. The menu lists buttons in bar order. Only a panel
+narrower than about two buttons can make a row stick out.
+List `more` in any group to place that "..." button yourself, with a menu you fill: the ids in `menu` are not drawn on the bar and
+appear in that menu (a toggle such as Pin stays a toggle). If a row holds `more`, that row's automatic overflow joins the same menu
+after your entries and a separator, with no second "..." button; a row without `more` keeps its own. `more` is the last button to
+leave a short row; with nothing in the menu it still opens a disabled "Nothing here". A `menu` id that is also in a group stays in the
+group (warning); unknown ids, pickers, `more` and repeats are dropped (warning); `menu` without a `more` button is ignored (one
+warning). Settings › Button rows has a card for this box (drag items in and out, **Move to the ... button's box** on each item) and a
+button **Move what doesn't fit into the menu**, which plans the bar at the narrowest width it is shown at (the smaller of the opening width on the
+monitor the panel would open on and the live width) and moves what would overflow into the box. It adds `more` (at the end of the bottom-right group) only
+when something really overflows; a bar that fits is left as it is.
+
+**Reference layouts.** `ToolbarProfiles` holds complete `toolbar.json` examples, tried automatically at every panel width and bar size
+and drawn by the panel's self-test (steps P01-P47); use any as a starting point:
+
+| Name | What it shows |
+|---|---|
+| `default` | the shipped layout: pickers across the top row, nine buttons in three groups below |
+| `pickers-bottom-left-before` / `-after` / `-between` | the pickers in the bottom-left group before, after, or in the middle of the buttons |
+| `pickers-bottom-centre` / `-crowded` | the pickers in the bottom-centre group, with few or many buttons on their left |
+| `pickers-bottom-right` / `-after-buttons` | the pickers in the bottom-right group, alone or after some buttons |
+| `pickers-top-right`, `pickers-top-centre-both-rows` | the pickers in the top row's right or centre group (centre: with buttons in both rows) |
+| `pickers-apart-corners`, `picker-between-buttons`, `pickers-one-per-row-right` | pickers placed one by one: effort top left, model top right, provider bottom centre; one picker between buttons; one in each row's right group |
+| `more-menu-bottom-right-with-5-items`, `more-menu-top-centre-with-overflow`, `more-in-both-rows` | `more` last in the bottom-right group with five buttons in its menu; `more` in the top-centre group with its row's overflow merging in; one row with `more` beside a crowded row that keeps its automatic "..." |
+| `spans-all-1`, `spans-all-8`, `spans-mixed` | every picker 1 or 8 cells wide; spans 1, 4 and 8 |
+| `all-compact`, `all-wide`, `mixed-button-sizes` | the whole bar compact (half a cell) or wide (two cells), every button one cell high; a different `width` on several buttons |
+| `outlined-pickers`, `filled-outlined-bar` | the bar's outline on, so the drop-downs are outlined too (one in its own colour and filled, one switched off); a filled, blue-outlined bar with filled drop-downs (one not filled) |
+| `custom-24-pickers-bottom`, `custom-24-wide-pickers-bottom-centre` | 24 custom buttons around the pickers in the bottom row |
+| `only-pickers`, `only-right-group`, `all-items-in-one-group` | a row of pickers only; a right group only; every possible item (36) in one group |
+| `empty-bar`, `damaged-file` | an explicitly empty bar; a damaged file that still renders |
+
+**Custom buttons.** Each entry in `buttons` can be listed in any group by its id:
+
+- The id is 1-32 characters from `a-z`, `0-9` and `-`, and not a built-in id (built-in ids in the groups are case-insensitive).
+- `label` is the name (at most 40 characters; default the id). `icon` is a Segoe Fluent Icons code in hex (four to six digits,
+  E000-F8FF); anything else gives a default star.
+- `iconFile` (optional) shows a picture instead: always `"<id>.png"` in `%USERPROFILE%\.hotline\icons\` (any other name is ignored with
+  a warning). It must be a PNG of at most 256 KB, 16-256 pixels per side (no SVG, ICO or animation); it is drawn at about 60% of the
+  button's smaller side. If it is missing, damaged or outside those limits, the button shows its `icon` and the log says why (by file
+  name). Settings (add or edit a custom button) › **Choose a picture…** copies your PNG to that name when you save (the original is never
+  changed); **Use a built-in icon instead** removes it; deleting the button deletes its picture. Replacing a picture under the same name redraws the bar at once (Hotline also watches `icons\*.png`), and if toolbar.json can't be saved with it, the previous picture is put back.
+- Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarize"` for `actions\summarize.md`;
+  at most 64 characters, never a path); it runs on the current message and attachments, and a missing file shows a notice. `text` (up to
+  2000 characters) is put in the message box, and `"send": true` also sends it.
+- Nothing else can be run from a button: no URLs, files, programs or shell commands.
+
+**Limits.** At most 24 custom buttons and 40 items per group. An invalid `width` is ignored (one cell); labels lose control characters.
+
+**A hand-edited file.** Comments and trailing commas are allowed. A bad value is replaced by its default alone, a key written twice
+uses the last, and the rest of the file still applies. An unknown id, an id that isn't text, or an item in two places is ignored (the
+first place wins, in the order above); a `spacer` item (it no longer exists) is ignored; an invalid custom button is skipped; an override
+for an item that isn't shown is ignored. A file that shows nothing by mistake gets the default layout; an empty bar is kept only when
+the `left` and `right` groups of both rows are present and empty. A file that isn't valid JSON or an object is left untouched and the
+defaults run (a half-written file keeps the bar it had). A `version` above 2 is read as far as it makes sense and never rewritten, and
+so is a version 2 file with warnings; Hotline never rewrites a version 2 file by itself. A missing file is created with the defaults.
+**A version 1 file** (`top` and `items` as plain arrays, with a `spacer`; before 0.4) is not converted: the defaults run with a
+warning and the file is left as it is. To change the bar, write the version 2 format or delete the file. What was ignored is listed in
+the panel, under Settings › About › This PC and in the log. Saving from Settings writes the corrected file and keeps the one it replaces
+as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
+
+**Reset and defaults.** Settings › Advanced › **Reset settings** also restores `toolbar.json` (the previous file goes to
+`backups\reset-<time>\`); `.defaults\toolbar.json` is rewritten at every start. New installs get the owner's layout: effort, model and
+provider across the top row (the default spans 3, 4, 4); pin and the three captures on the bottom left, prompt and Continue in in the centre,
+recent, new chat and settings on the right.
+
+## Backup (Settings > Backup)
+
+Settings > Backup exports the parts you tick to one `hotline-settings-<yyyyMMdd-HHmm>.zip` and imports such a file on
+another PC. A package holds `hotline-export.json` (format, app version, date, and every file's size and SHA-256) plus,
+per tick: Settings (`settings.json`), Button rows (`toolbar.json` and `icons\*.png`), Tools (`mcp.json`), Sounds
+(`sounds\*.wav`), AI connections (`connections\*.json`), Quick actions (`actions\*.md`) and Prompts (`prompts\*.md`).
+
+Never included: logs, chat history, `memory.md`, `backups\`, `.defaults`, `.bak`/`.old` files, and **API keys** (they stay in
+the Windows Credential Locker; enter them again on the new PC, the import lists the connections that have none yet).
+`mcp.json` is exported exactly as written, and its `env` values can hold secrets: keep such a package private.
+
+An import only accepts the file names above (anything else, `..` paths and oversized or damaged files refuse the package),
+checks every file's content, adds and replaces files and never deletes. Each file it replaces is first copied to
+`backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. The content check is the one
+loading uses: a file with a wrong value or a word from a newer version is accepted (the app warns and goes on, as with a hand edit),
+a connection file whose `id` differs from its file name is accepted; only a file that is not a JSON object (or a connection with an
+unknown `type`) is skipped. A folder that can't be listed is reported as left out, not silently empty. The export keeps every file it
+writes importable: a very repetitive text file (which would pass the import's compression-ratio check) is stored uncompressed.
+Settings, connections and the bar (`toolbar.json`) apply live (the file watchers pick the files up); sounds and quick actions are
+read on their next use.
 
 ## Codex
 

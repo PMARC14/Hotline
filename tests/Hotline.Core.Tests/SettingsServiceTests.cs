@@ -22,33 +22,12 @@ public sealed class SettingsServiceTests : IDisposable
         var service = New(out var store);
         var raised = 0;
         service.Changed += () => raised++;
+        var window = service.Current.Window;
         service.Update(s => s.Window.FontSize = 99);
         Assert.Equal(1, raised);
+        Assert.Same(window, service.Current.Window); // other components keep the same live object
         Assert.Equal(32, service.Current.Window.FontSize);
         Assert.Equal(32, store.Load().Window.FontSize);
-    }
-
-    [Fact]
-    public void Current_is_the_same_instance_other_components_hold()
-    {
-        var service = New(out _);
-        var window = service.Current.Window;
-        service.Update(s => s.Window.HideOnBlur = false);
-        Assert.False(window.HideOnBlur);
-    }
-
-
-    [Fact]
-    public void Reload_takes_in_hand_edits_to_the_general_section()
-    {
-        var service = New(out var store);
-        var general = service.Current.General;
-        Assert.True(general.SupportReminder); // on for new installs: the donation note shows once
-        Assert.True(service.Reload(store.Load().Also(s => { s.General.SupportReminder = false; s.General.Language = "ja"; })));
-        Assert.False(general.SupportReminder);
-        Assert.Equal("ja", general.Language);
-        service.Update(s => s.General.SupportReminder = true);
-        Assert.True(store.Load().General.SupportReminder);
     }
 
     [Fact]
@@ -56,20 +35,30 @@ public sealed class SettingsServiceTests : IDisposable
     {
         var service = New(out var store);
         var window = service.Current.Window;
+        var general = service.Current.General;
         var backends = service.Current.Chat.Backends;
+        Assert.True(general.SupportReminder); // on for new installs: the donation note shows once
         var raised = 0;
         service.Changed += () => raised++;
 
-        var edited = store.Load();
-        edited.Window.FontSize = 18;
-        edited.Chat.Backends[0].Model = "gemini-3.1-pro-high";
-        Assert.True(service.Reload(edited));
+        void Edit(HotlineSettings s)
+        {
+            s.Window.FontSize = 18;
+            s.General.SupportReminder = false;
+            s.General.Language = "ja";
+            s.Chat.Backends[0].Model = "gemini-3.1-pro-high";
+        }
+        Assert.True(service.Reload(store.Load().Also(Edit)));
         Assert.Equal(18, window.FontSize);                       // same object other components hold
+        Assert.False(general.SupportReminder);
+        Assert.Equal("ja", general.Language);
         Assert.Equal("gemini-3.1-pro-high", backends[0].Model);  // same list instance
         Assert.Equal(1, raised);
 
-        Assert.False(service.Reload(store.Load().Also(s => { s.Window.FontSize = 18; s.Chat.Backends[0].Model = "gemini-3.1-pro-high"; })));
+        Assert.False(service.Reload(store.Load().Also(Edit)));
         Assert.Equal(1, raised);
+        service.Update(s => s.General.SupportReminder = true);
+        Assert.True(store.Load().General.SupportReminder);
     }
 
     [Fact]

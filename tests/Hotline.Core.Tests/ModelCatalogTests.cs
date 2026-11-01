@@ -77,23 +77,16 @@ public class ModelCatalogTests
         Assert.Null(http.Requests[0].Headers.Authorization);
     }
 
-    [Fact]
-    public async Task Unauthorized_is_reported()
+    [Theory]
+    [InlineData(HttpStatusCode.Unauthorized, "rejected")]
+    [InlineData(null, "reach")] // the server can't be reached at all
+    public async Task Unauthorized_and_unreachable_servers_are_reported(HttpStatusCode? status, string expected)
     {
-        var (catalog, _, secrets, _) = New(_ => Json("""{"error":"bad key"}""", HttpStatusCode.Unauthorized));
+        var (catalog, _, secrets, _) = New(_ => status is { } code ? Json("""{"error":"bad key"}""", code) : throw new HttpRequestException("connection refused"));
         secrets.Set(SecretKeys.ApiKey("oa"), "bad");
         var ex = await Assert.ThrowsAsync<ModelListException>(() =>
-            catalog.GetAsync(new BackendProfile { Id = "oa", Type = BackendType.OpenAiCompatible }, false, default));
-        Assert.Contains("rejected", ex.Message);
-    }
-
-    [Fact]
-    public async Task Unreachable_server_is_reported()
-    {
-        var (catalog, _, _, _) = New(_ => throw new HttpRequestException("connection refused"));
-        var ex = await Assert.ThrowsAsync<ModelListException>(() =>
-            catalog.GetAsync(new BackendProfile { Id = "l", Type = BackendType.Local }, false, default));
-        Assert.Contains("reach", ex.Message);
+            catalog.GetAsync(new BackendProfile { Id = "oa", Type = status is null ? BackendType.Local : BackendType.OpenAiCompatible }, false, default));
+        Assert.Contains(expected, ex.Message);
     }
 
     [Fact]

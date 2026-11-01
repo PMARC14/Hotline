@@ -18,12 +18,22 @@ public sealed class AgyTurnParser
     /// <summary>The agy conversation this turn ran in (from the init event), when reported.</summary>
     public string? SessionId { get; private set; }
 
+    /// <summary>The deltas in one output line. A line that isn't what agy is expected to print (any JSON shape) is skipped.</summary>
     public IEnumerable<ChatDelta> Feed(string line)
     {
-        JsonElement root;
-        try { root = JsonDocument.Parse(line).RootElement; }
-        catch (JsonException) { yield break; }
-        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("event", out var ev)) yield break;
+        var deltas = new List<ChatDelta>();
+        try
+        {
+            using var doc = JsonDocument.Parse(line); // disposed: its buffers come from a shared pool
+            Read(doc.RootElement, deltas);
+        }
+        catch (JsonException) { /* not JSON: noise on stdout */ }
+        return deltas;
+    }
+
+    private void Read(JsonElement root, List<ChatDelta> deltas)
+    {
+        if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("event", out var ev) || ev.ValueKind != JsonValueKind.String) return;
 
         switch (ev.GetString())
         {
@@ -31,37 +41,39 @@ public sealed class AgyTurnParser
                 SessionId = Str(root, "conversation_id");
                 break;
 
-            case "step_update" when root.TryGetProperty("step_update", out var su):
-                if (Str(su, "step_type") != "agent_response" || !su.TryGetProperty("text_delta", out var deltaEl)) yield break;
-                var delta = deltaEl.GetString() ?? "";
-                var step = su.TryGetProperty("step_index", out var si) ? si.GetInt32() : 0;
+            case "step_update" when Obj(root, "step_update") is { } su:
+                if (Str(su, "step_type") != "agent_response" || Str(su, "text_delta") is not { } delta) return;
+                var step = su.TryGetProperty("step_index", out var si) && si.ValueKind == JsonValueKind.Number && si.TryGetInt32(out var n) ? n : 0;
                 var reset = _responseStep is { } current && current != step;
                 _responseStep = step;
                 if (reset) _shown.Clear();
                 _shown.Append(delta);
-                if (delta.Length > 0 || reset) yield return new ChatDelta(delta, reset);
+                if (delta.Length > 0 || reset) deltas.Add(new ChatDelta(delta, reset));
                 break;
 
-            case "result" when root.TryGetProperty("result", out var r):
+            case "result" when Obj(root, "result") is { } r:
                 Completed = true;
                 var status = Str(r, "status");
                 var response = Str(r, "response") ?? "";
                 if (status != "SUCCESS")
                 {
                     Error = Str(r, "error") ?? $"agy ended with status {status}";
-                    yield break;
+                    return;
                 }
-                if (response.Length == 0 && r.TryGetProperty("denied_actions", out var denied) && denied.GetArrayLength() > 0)
+                if (response.Length == 0 && r.TryGetProperty("denied_actions", out var denied) && denied.ValueKind == JsonValueKind.Array && denied.GetArrayLength() > 0)
                 {
                     Error = "agy wasn't allowed to: " + string.Join(", ", denied.EnumerateArray().Select(d => Str(d, "action")));
-                    yield break;
+                    return;
                 }
                 if (response.Length > 0 && response.TrimEnd() != _shown.ToString().TrimEnd())
-                    yield return new ChatDelta(response, ResetBefore: _shown.Length > 0);
+                    deltas.Add(new ChatDelta(response, ResetBefore: _shown.Length > 0));
                 break;
         }
     }
 
+    private static JsonElement? Obj(JsonElement e, string name) =>
+        e.ValueKind == JsonValueKind.Object && e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.Object ? v : null;
+
     private static string? Str(JsonElement e, string name) =>
-        e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
+        e.ValueKind == JsonValueKind.Object && e.TryGetProperty(name, out var v) && v.ValueKind == JsonValueKind.String ? v.GetString() : null;
 }

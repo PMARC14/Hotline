@@ -113,10 +113,12 @@ try {
     # 4b. Transcript rendering self-test (hidden panel; no typing)
     $n = Get-LogCount
     Start-Process 'hotline://selftest'
-    for ($i = 0; $i -lt 20 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest (rebuild ok|FAILED)'); $i++) { Start-Sleep -Milliseconds 500 }
+    # The self-test logs 'selftest complete: <n> checks, <m> failed' as its very last line (after the size scenarios and profiles).
+    for ($i = 0; $i -lt 480 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest complete:'); $i++) { Start-Sleep -Milliseconds 500 }
+    Check 'self-test ran to the end' ([bool](Get-NewLog $n | Select-String -Pattern 'selftest complete:')) '(no "selftest complete" line within 240 s)'
+    Check 'self-test reports no failures' ([bool](Get-NewLog $n | Select-String -Pattern 'selftest complete: \d+ checks, 0 failed') -and -not (Get-NewLog $n | Select-String -CaseSensitive -Pattern 'selftest.*FAILED')) '(see selftest FAILED lines in the log)'
     Expect-Log 'transcript self-test renders' $n 'selftest rebuild ok'
     Expect-Log 'settings window pages build' $n 'selftest settings ok'
-    for ($i = 0; $i -lt 10 -and -not (Get-NewLog $n | Select-String -Pattern 'selftest quick actions'); $i++) { Start-Sleep -Milliseconds 500 }
     Check 'screenshot text (OCR)' ([bool](Get-NewLog $n | Select-String -Pattern 'selftest ocr: (ok|no OCR language)')) '(OCR of the rendered transcript failed)'
     Check 'quick action suggestions list' ([bool](Get-NewLog $n | Select-String -Pattern 'selftest quick actions: [1-9]')) '(no suggestions for "/")'
 

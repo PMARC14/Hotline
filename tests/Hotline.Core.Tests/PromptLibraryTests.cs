@@ -7,6 +7,13 @@ public sealed class PromptLibraryTests : IDisposable
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"), "prompts");
     public void Dispose() { var root = Path.GetDirectoryName(_dir)!; if (Directory.Exists(root)) Directory.Delete(root, recursive: true); }
 
+    private PromptLibrary NewLib()
+    {
+        var lib = new PromptLibrary(_dir);
+        lib.EnsureDefault();
+        return lib;
+    }
+
     [Fact]
     public void Ensure_default_creates_file_once_without_overwriting_edits()
     {
@@ -21,8 +28,7 @@ public sealed class PromptLibraryTests : IDisposable
     [Fact]
     public void List_puts_default_first_then_alphabetical()
     {
-        var lib = new PromptLibrary(_dir);
-        lib.EnsureDefault();
+        var lib = NewLib();
         File.WriteAllText(lib.PathFor("zeta"), "z");
         File.WriteAllText(lib.PathFor("alpha"), "a");
         Assert.Equal(["default", "alpha", "zeta"], lib.List());
@@ -32,27 +38,18 @@ public sealed class PromptLibraryTests : IDisposable
     [InlineData(null)]
     [InlineData("missing")]
     [InlineData("../evil")]
+    [InlineData("blank")] // exists, but only whitespace
     public void Missing_or_unsafe_names_fall_back_to_default(string? name)
     {
-        var lib = new PromptLibrary(_dir);
-        lib.EnsureDefault();
-        Assert.Equal(PromptLibrary.DefaultText, lib.Read(name));
-    }
-
-    [Fact]
-    public void Empty_file_falls_back_to_default_text()
-    {
-        var lib = new PromptLibrary(_dir);
-        lib.EnsureDefault();
+        var lib = NewLib();
         File.WriteAllText(lib.PathFor("blank"), "   ");
-        Assert.Equal(PromptLibrary.DefaultText, lib.Read("blank"));
+        Assert.Equal(PromptLibrary.DefaultText, lib.Read(name));
     }
 
     [Fact]
     public void Create_copies_default_with_unique_name_and_delete_protects_default()
     {
-        var lib = new PromptLibrary(_dir);
-        lib.EnsureDefault();
+        var lib = NewLib();
         var a = lib.Create();
         var b = lib.Create();
         Assert.Equal(("prompt", "prompt-2"), (a, b));

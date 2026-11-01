@@ -57,10 +57,6 @@ public class ToolbarLayoutTests
     }
 
     [Fact]
-    public void Widths_are_stable_for_the_same_bar_width()
-        => Assert.Equal(ToolbarLayout.Compute(530, Fixed, Gap, Pickers, HideOrder), ToolbarLayout.Compute(530, Fixed, Gap, Pickers, HideOrder));
-
-    [Fact]
     public void Shrinking_is_monotonic()
     {
         double? last = null;

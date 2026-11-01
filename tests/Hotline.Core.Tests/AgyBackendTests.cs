@@ -58,7 +58,7 @@ public sealed class AgyBackendTests : IDisposable
         Assert.Contains("stream-json", args);
         Assert.Equal(Path.Combine(_dir, "home"), cwd); // chat only runs in the home folder, the workspace added to it
         Assert.Equal("hi", PromptOf(Assert.Single(proc.Written)));
-        Assert.True(File.Exists(Path.Combine(_dir, "ws", ".agents", "agents", "hotline.md")));
+        Assert.Contains("SYSTEM PROMPT", File.ReadAllText(Path.Combine(_dir, "ws", ".agents", "agents", "hotline.md")));
     }
 
     [Fact]
@@ -104,18 +104,20 @@ public sealed class AgyBackendTests : IDisposable
         Assert.Equal("fresh chat", PromptOf(_factory.Started[1].Process.Written[0]));
     }
 
-    [Fact]
-    public async Task Process_exit_mid_turn_fails_with_stderr_tail()
+    [Theory]
+    [InlineData("panic: boom", BackendErrorKind.Failed)]
+    [InlineData("error: UNAUTHENTICATED: sign in required", BackendErrorKind.NotLoggedIn)]
+    public async Task Process_exit_mid_turn_fails_with_stderr_tail_mapped_to_an_error(string stderr, BackendErrorKind kind)
     {
         _factory.Create = () =>
         {
-            var p = new FakeLineProcess { StandardErrorTail = "panic: boom" };
-            p.Respond = _ => { p.Exit(); return []; };
+            var p = new FakeLineProcess();
+            p.Respond = _ => { p.StandardErrorTail = stderr; p.Exit(); return []; };
             return p;
         };
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(New().StreamAsync([U("1", "hi")], default)));
-        Assert.Equal(BackendErrorKind.Failed, ex.Kind);
-        Assert.Contains("panic: boom", ex.Message);
+        Assert.Equal(kind, ex.Kind);
+        if (kind == BackendErrorKind.Failed) Assert.Contains(stderr, ex.Message); // other kinds get their own text
     }
 
     [Fact]
@@ -167,27 +169,6 @@ public sealed class AgyBackendTests : IDisposable
         await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "secret question")], default)));
         await Collect(b.StreamAsync([U("9", "fresh chat")], default));
         Assert.Equal(2, _factory.Started.Count); // fresh process: the failed prompt isn't in its memory
-    }
-
-    [Fact]
-    public async Task Crash_stderr_is_mapped_to_specific_error()
-    {
-        _factory.Create = () =>
-        {
-            var p = new FakeLineProcess();
-            p.Respond = _ => { p.StandardErrorTail = "error: UNAUTHENTICATED: sign in required"; p.Exit(); return []; };
-            return p;
-        };
-        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(New().StreamAsync([U("1", "hi")], default)));
-        Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
-    }
-
-    [Fact]
-    public async Task Chat_only_writes_prompt_into_agent_file()
-    {
-        _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
-        await Collect(New().StreamAsync([U("1", "hi")], default));
-        Assert.Contains("SYSTEM PROMPT", File.ReadAllText(Path.Combine(_dir, "ws", ".agents", "agents", "hotline.md")));
     }
 
     [Fact]

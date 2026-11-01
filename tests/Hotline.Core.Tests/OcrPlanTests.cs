@@ -27,19 +27,15 @@ public sealed class OcrPlanTests : IDisposable
         Assert.Equal(keep, plan.KeepImages);
     }
 
-    [Fact]
-    public void Recognized_text_becomes_a_text_attachment()
+    [Theory]
+    [InlineData("screenshot.png", "Hello\nWorld", "Text in screenshot:\nHello\nWorld")]
+    [InlineData("x.png", "  ", "Text in screenshot:\n(no text found)")] // an image without text says so
+    public void Recognized_text_becomes_a_text_attachment(string file, string recognized, string expected)
     {
-        var a = OcrPlan.TextAttachment("screenshot.png", "Hello\nWorld");
+        var a = OcrPlan.TextAttachment(file, recognized);
         Assert.Equal(AttachmentKind.Text, a.Kind);
-        Assert.Equal("Text in screenshot.png", a.Name);
-        Assert.Equal("Text in screenshot:\nHello\nWorld", a.AsText());
-    }
-
-    [Fact]
-    public void An_image_without_text_says_so()
-    {
-        Assert.Equal("Text in screenshot:\n(no text found)", OcrPlan.TextAttachment("x.png", "  ").AsText());
+        Assert.Equal($"Text in {file}", a.Name);
+        Assert.Equal(expected, a.AsText());
     }
 
     [Fact]

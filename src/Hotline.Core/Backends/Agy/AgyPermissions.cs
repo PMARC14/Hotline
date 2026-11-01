@@ -56,7 +56,7 @@ public static class AgyPermissions
             return JsonNode.Parse(json ?? "{}", documentOptions: new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true })
                 ?["permissions"]?[list] is JsonArray a ? a.Select(n => n is JsonValue v && v.TryGetValue<string>(out var t) ? t : null).OfType<string>().ToList() : [];
         }
-        catch (Exception ex) when (ex is JsonException or InvalidOperationException) { return []; }
+        catch (Exception ex) when (ex is JsonException or InvalidOperationException or ArgumentException) { return []; } // ArgumentException: duplicate keys
     }
 
     private static void Merge(JsonObject permissions, string name, IEnumerable<string> rules)

@@ -13,7 +13,7 @@ public class PanelPlacementTests
     [InlineData(2.0)]
     public void Default_anchor_reproduces_todays_place(double scale)
     {
-        var bar = PanelPlacement.Home(Work, widthDip: 700, barHeightDip: 60, scale, new PanelAnchor());
+        var bar = PanelPlacement.Home(Work, widthPx: (int)(700 * scale), barHeightDip: 60, scale, new PanelAnchor());
         Assert.Equal(PopupGeometry.Place(Work, 700, 60, scale, 0.8), bar);
     }
 
@@ -77,6 +77,11 @@ public class PanelPlacementTests
         Assert.Equal(new RectI(500, 250, 700, 450), PanelPlacement.Resize(start, ResizeEdge.Top, 0, -50, 600, 100, Work));
         Assert.Equal(new RectI(500, 300, 750, 450), PanelPlacement.Resize(start, ResizeEdge.Bottom | ResizeEdge.Right, 50, 50, 600, 100, Work));
         Assert.Equal(new RectI(500, 0, 700, 700), PanelPlacement.Resize(start, ResizeEdge.Top, 0, -900, 600, 100, Work)); // stops at the work area
+
+        // a rect partly off the work area still keeps the minimum size
+        var off = PanelPlacement.Resize(new RectI(-100, 300, 350, 400), ResizeEdge.Left, -1, 0, 320, 100, Work);
+        Assert.True(off.Width >= 320 && off.Height == 400, off.ToString());
+        Assert.True(off.X >= Work.X);
     }
 
     [Fact]
@@ -116,5 +121,47 @@ public class PanelPlacementTests
         var r = PanelPlacement.Resize(tall, ResizeEdge.Top, 0, 5000, 720, PanelPlacement.MinResizeHeight(bar), Work);
         Assert.Equal(bar, r.Height);
         Assert.Equal(tall.Y + tall.Height, r.Y + r.Height); // the bar's edge stays put
+    }
+
+    [Fact]
+    public void Full_grow_mode_jumps_to_max_once_there_is_content()
+    {
+        var bar = new RectI(680, 736, 560, 120);
+        Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full).Height);
+        Assert.Equal(120, PopupGeometry.GrowUp(bar, 120, 560, Work, GrowMode.Full).Height); // bar only: stays a bar
+        // Full height is for a conversation: an empty composer taller than the bar (a longer draft) just fits its content...
+        Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full, conversation: false).Height);
+        Assert.Equal(200, PopupGeometry.GrowDown(bar, 200, 560, Work, GrowMode.Full, conversation: false).Height);
+        // ...and a height set by hand is kept, not replaced by the maximum.
+        Assert.Equal(300, PopupGeometry.GrowUp(bar, 300, 560, Work, GrowMode.Full, conversation: true, manualSize: true).Height);
+        Assert.Equal(560, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Full, conversation: true, manualSize: false).Height);
+        Assert.Equal(200, PopupGeometry.GrowUp(bar, 200, 560, Work, GrowMode.Grow).Height);
+    }
+
+    [Theory]
+    [InlineData(2880, 40, 384, 2304, 1152)]  // the owner's 2880 x 1800 screen: 40% of the real pixels
+    [InlineData(1920, 40, 384, 2304, 768)]
+    [InlineData(1920, 10, 384, 2304, 384)]   // under the minimum: min wins
+    [InlineData(3840, 90, 384, 2304, 2304)]  // over the maximum: max wins
+    [InlineData(1000, 10, 700, 500, 700)]    // max below min: min wins
+    [InlineData(500, 50, 700, 900, 500)]     // never wider than the work area
+    public void Width_is_percent_of_work_area_pixels_clamped(int workPx, double pct, int min, int max, int expected)
+        => Assert.Equal(expected, PopupGeometry.RelativeWidthPx(workPx, pct, min, max));
+
+    [Theory]
+    [InlineData(1.0)]
+    [InlineData(1.25)]
+    [InlineData(1.5)]
+    [InlineData(2.0)]
+    public void Windows_scaling_changes_neither_the_panel_width_nor_the_saved_one(double scale)
+    {
+        // Same work-area pixels and percent: the same panel pixels at every scale; the saved width is what was applied.
+        var work = new RectI(0, 0, 2880, 1700);
+        var px = PopupGeometry.RelativeWidthPx(work.Width, 40, 384, 2304);
+        var bar = PanelPlacement.Home(work, px, 60, scale, new PanelAnchor());
+        Assert.Equal(1152, px);
+        Assert.Equal(px, bar.Width); // saved px (CurrentSpot saves _bar.Width) = applied px
+        Assert.Equal(bar.Width, PanelPlacement.Home(work, bar.Width, 60, scale, PanelPlacement.AnchorFor(bar, work)).Width);
+        Assert.Equal(384, PopupGeometry.RelativeWidthPx(1000, 20, 384, 2304)); // clamped by min in pixels at any scale
     }
 }

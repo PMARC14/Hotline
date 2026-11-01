@@ -13,17 +13,22 @@ public sealed class ToolHostLifecycleTests : IDisposable
     private string McpPath => Path.Combine(_dir, "mcp.json");
     private FileLog Log => new(Path.Combine(_dir, "h.log"));
 
-    private sealed class CountingSession(string tool, TimeSpan listDelay = default) : IMcpSession
+    /// <summary>One scripted MCP server: the tools it lists, a slow or failing connection, a read-only flag that can flip.</summary>
+    private sealed class FakeSession(params (string Name, bool ReadOnly)[] tools) : IMcpSession
     {
         public int Lists;
         public bool Disposed;
+        public bool Throw;
+        public TimeSpan ListDelay;
+        public Func<bool>? ReadOnlyNow;
         public async Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct)
         {
             Lists++;
-            if (listDelay > TimeSpan.Zero) await Task.Delay(listDelay, ct);
-            return [new McpToolInfo(tool, "", JsonDocument.Parse("""{"type":"object"}""").RootElement, true)];
+            if (ListDelay > TimeSpan.Zero) await Task.Delay(ListDelay, ct);
+            return tools.Select(t => new McpToolInfo(t.Name, "", JsonDocument.Parse("""{"type":"object"}""").RootElement, ReadOnlyNow?.Invoke() ?? t.ReadOnly)).ToList();
         }
-        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) => Task.FromResult(new ToolResult("ok", false));
+        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) =>
+            Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult("ok", false));
         public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
     }
 
@@ -37,9 +42,9 @@ public sealed class ToolHostLifecycleTests : IDisposable
     public async Task Tool_lists_are_cached_and_only_a_changed_server_restarts()
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" }, "b": { "command": "y" } } }""");
-        var sessions = new List<(string Server, CountingSession Session)>();
+        var sessions = new List<(string Server, FakeSession Session)>();
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
-            (server, _) => { var s = new CountingSession(server.Name + "_tool"); sessions.Add((server.Name, s)); return Task.FromResult<IMcpSession>(s); },
+            (server, _) => { var s = new FakeSession((server.Name + "_tool", true)); sessions.Add((server.Name, s)); return Task.FromResult<IMcpSession>(s); },
             (_, _) => Task.FromResult(ToolDecision.Deny), Log);
 
         await host.GetToolsAsync(default);
@@ -60,9 +65,9 @@ public sealed class ToolHostLifecycleTests : IDisposable
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
         IReadOnlyList<McpServerConfig> extra = [];
-        var sessions = new List<CountingSession>();
+        var sessions = new List<FakeSession>();
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => extra,
-            (server, _) => { var s = new CountingSession(server.Name); sessions.Add(s); return Task.FromResult<IMcpSession>(s); },
+            (server, _) => { var s = new FakeSession((server.Name, true)); sessions.Add(s); return Task.FromResult<IMcpSession>(s); },
             (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         await host.GetToolsAsync(default);
         extra = [new McpServerConfig("windows-x", "odr", [], new Dictionary<string, string>())];
@@ -75,9 +80,9 @@ public sealed class ToolHostLifecycleTests : IDisposable
     public async Task A_server_that_never_lists_times_out_instead_of_hanging()
     {
         WriteConfig("""{ "mcpServers": { "slow": { "command": "x" }, "ok": { "command": "y" } } }""");
-        var slow = new CountingSession("s", TimeSpan.FromMinutes(5));
+        var slow = new FakeSession(("s", true)) { ListDelay = TimeSpan.FromMinutes(5) };
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
-            (server, _) => Task.FromResult<IMcpSession>(server.Name == "slow" ? slow : new CountingSession("fast")),
+            (server, _) => Task.FromResult<IMcpSession>(server.Name == "slow" ? slow : new FakeSession(("fast", true))),
             (_, _) => Task.FromResult(ToolDecision.Deny), Log) { StartTimeout = TimeSpan.FromMilliseconds(200) };
 
         var tools = await host.GetToolsAsync(default).WaitAsync(TimeSpan.FromSeconds(10));
@@ -108,14 +113,12 @@ public sealed class ToolHostLifecycleTests : IDisposable
         Assert.Equal(3, attempts);
     }
 
-    [Fact]
-    public void Api_names_start_with_a_letter_or_underscore()
-    {
-        var used = new HashSet<string>();
-        Assert.Equal("_1password__get_item", ToolNames.ForApi("1password", "get_item", used));
-        Assert.Equal("_-tools__x", ToolNames.ForApi("-tools", "x", used));
-        Assert.Equal("files__read", ToolNames.ForApi("files", "read", used));
-    }
+    [Theory]
+    [InlineData("1password", "get_item", "_1password__get_item")]
+    [InlineData("-tools", "x", "_-tools__x")]
+    [InlineData("files", "read", "files__read")]
+    public void Api_names_start_with_a_letter_or_underscore(string server, string tool, string expected)
+        => Assert.Equal(expected, ToolNames.ForApi(server, tool, new HashSet<string>()));
 
     [Fact]
     public void Saving_an_approval_backs_up_the_hand_written_file_first()
@@ -185,7 +188,7 @@ public sealed class ToolHostLifecycleTests : IDisposable
     public async Task An_unreadable_mcp_json_keeps_the_last_good_rules_and_servers()
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" } }, "approvals": { "a/secret": "deny" } }""");
-        var session = new MultiSession(("open", true), ("secret", true));
+        var session = new FakeSession(("open", true), ("secret", true));
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(session),
             (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         Assert.Equal(["open"], (await host.GetToolsAsync(default)).Select(t => t.Tool));
@@ -202,7 +205,7 @@ public sealed class ToolHostLifecycleTests : IDisposable
         WriteConfig("{ broken");
         var connects = 0;
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [new McpServerConfig("windows-x", "odr", [], new Dictionary<string, string>())],
-            (_, _) => { connects++; return Task.FromResult<IMcpSession>(new CountingSession("t")); }, (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+            (_, _) => { connects++; return Task.FromResult<IMcpSession>(new FakeSession(("t", true))); }, (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         Assert.Empty(await host.GetToolsAsync(default));
         Assert.Equal(0, connects);
     }
@@ -212,7 +215,7 @@ public sealed class ToolHostLifecycleTests : IDisposable
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" }, "b/c": { "command": "y" } } }""");
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
-            (_, _) => Task.FromResult<IMcpSession>(new MultiSession(("*", true), ("x/y", true), ("fine", true))), (_, _) => Task.FromResult(ToolDecision.Deny), Log);
+            (_, _) => Task.FromResult<IMcpSession>(new FakeSession(("*", true), ("x/y", true), ("fine", true))), (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         var tools = await host.GetToolsAsync(default);
         Assert.Equal([("a", "fine")], tools.Select(t => (t.Server, t.Tool)));
         Assert.Contains(host.Status, s => s.Name == "b/c" && s.State == McpServerState.Failed);
@@ -222,9 +225,9 @@ public sealed class ToolHostLifecycleTests : IDisposable
     public async Task A_dead_server_is_restarted_on_the_next_answer()
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
-        var sessions = new List<MultiSession>();
+        var sessions = new List<FakeSession>();
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
-            (_, _) => { var s = new MultiSession(("read", true)) { Throw = sessions.Count == 0 }; sessions.Add(s); return Task.FromResult<IMcpSession>(s); },
+            (_, _) => { var s = new FakeSession(("read", true)) { Throw = sessions.Count == 0 }; sessions.Add(s); return Task.FromResult<IMcpSession>(s); },
             (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         var tools = await host.GetToolsAsync(default);
         Assert.True((await host.CallAsync(tools[0], JsonDocument.Parse("{}").RootElement, default)).IsError);
@@ -238,7 +241,7 @@ public sealed class ToolHostLifecycleTests : IDisposable
     public async Task After_dispose_no_servers_start_again()
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
-        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(new CountingSession("t")),
+        var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(new FakeSession(("t", true))),
             (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         await host.DisposeAsync();
         await Assert.ThrowsAsync<ObjectDisposedException>(() => host.GetToolsAsync(default));
@@ -260,17 +263,6 @@ public sealed class ToolHostLifecycleTests : IDisposable
         Assert.Empty(Directory.GetFiles(_dir, "*.tmp"));
     }
 
-    private sealed class MultiSession(params (string Name, bool ReadOnly)[] tools) : IMcpSession
-    {
-        public bool Disposed;
-        public bool Throw;
-        public Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<McpToolInfo>>(
-            tools.Select(t => new McpToolInfo(t.Name, "", JsonDocument.Parse("""{"type":"object"}""").RootElement, t.ReadOnly)).ToList());
-        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) =>
-            Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult("ok", false));
-        public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
-    }
-
     [Fact]
     public async Task A_tool_that_stopped_being_read_only_asks_even_with_an_old_spec()
     {
@@ -278,7 +270,7 @@ public sealed class ToolHostLifecycleTests : IDisposable
         var readOnly = true;
         var asked = 0;
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
-            (_, _) => Task.FromResult<IMcpSession>(new FlagSession(() => readOnly)),
+            (_, _) => Task.FromResult<IMcpSession>(new FakeSession(("t", true)) { ReadOnlyNow = () => readOnly }),
             (_, _) => { asked++; return Task.FromResult(ToolDecision.Deny); }, Log);
         var old = (await host.GetToolsAsync(default))[0];
         readOnly = false;
@@ -295,13 +287,5 @@ public sealed class ToolHostLifecycleTests : IDisposable
         WriteConfig("""[ { "mcpServers": {} } ]""");
         Assert.Throws<JsonException>(() => McpConfig.SaveApproval(McpPath, "a/x", ToolApproval.Allow));
         Assert.Equal("""[ { "mcpServers": {} } ]""", File.ReadAllText(McpPath));
-    }
-
-    private sealed class FlagSession(Func<bool> readOnly) : IMcpSession
-    {
-        public Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct) => Task.FromResult<IReadOnlyList<McpToolInfo>>(
-            [new McpToolInfo("t", "", JsonDocument.Parse("""{"type":"object"}""").RootElement, readOnly())]);
-        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) => Task.FromResult(new ToolResult("ran", false));
-        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 }

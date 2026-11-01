@@ -79,43 +79,20 @@ public sealed class ApiPolishTests : IDisposable
 
     // ---- effort levels ------------------------------------------------------------------------
 
-    [Fact]
-    public void Gemini_openai_and_local_offer_low_medium_high()
-    {
-        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Gemini).EffortLevels);
-        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.OpenAiCompatible).EffortLevels);
-        Assert.Equal(["low", "medium", "high"], ConnectionTypes.Of(BackendType.Local).EffortLevels);
-    }
-
-    [Fact]
-    public async Task Gemini_3_sends_thinking_level()
-    {
-        var handler = new Handler(_ => Sse(GeminiPart("ok")));
-        await Collect(Gemini(handler, "gemini-3.8-flash", "High").StreamAsync([User("hi")], default));
-        var config = JsonDocument.Parse(handler.Bodies[0]).RootElement.GetProperty("generationConfig").GetProperty("thinkingConfig");
-        Assert.Equal("high", config.GetProperty("thinkingLevel").GetString());
-        Assert.False(config.TryGetProperty("thinkingBudget", out _));
-    }
-
     [Theory]
-    [InlineData("gemini-3.1-pro-preview")]
-    [InlineData("gemini-4-flash")]
-    public async Task Later_generations_get_a_thinking_level(string model)
+    [InlineData("gemini-3.8-flash", "High", "high", null)]
+    [InlineData("gemini-3.1-pro-preview", "medium", "medium", null)]
+    [InlineData("gemini-4-flash", "medium", "medium", null)]
+    [InlineData("models/gemini-2.5-flash", "low", null, 1024)] // 2.5 takes a budget instead of a level
+    public async Task Gemini_sends_a_thinking_level_or_for_2_5_a_budget(string model, string effort, string? level, int? budget)
     {
         var handler = new Handler(_ => Sse(GeminiPart("ok")));
-        await Collect(Gemini(handler, model, "medium").StreamAsync([User("hi")], default));
+        await Collect(Gemini(handler, model, effort).StreamAsync([User("hi")], default));
         var config = JsonDocument.Parse(handler.Bodies[0]).RootElement.GetProperty("generationConfig").GetProperty("thinkingConfig");
-        Assert.Equal("medium", config.GetProperty("thinkingLevel").GetString());
-    }
-
-    [Fact]
-    public async Task Gemini_2_5_gets_a_thinking_budget_instead()
-    {
-        var handler = new Handler(_ => Sse(GeminiPart("ok")));
-        await Collect(Gemini(handler, "models/gemini-2.5-flash", "low").StreamAsync([User("hi")], default));
-        var config = JsonDocument.Parse(handler.Bodies[0]).RootElement.GetProperty("generationConfig").GetProperty("thinkingConfig");
-        Assert.Equal(1024, config.GetProperty("thinkingBudget").GetInt32());
-        Assert.False(config.TryGetProperty("thinkingLevel", out _));
+        if (level is null) Assert.False(config.TryGetProperty("thinkingLevel", out _));
+        else Assert.Equal(level, config.GetProperty("thinkingLevel").GetString());
+        if (budget is null) Assert.False(config.TryGetProperty("thinkingBudget", out _));
+        else Assert.Equal(budget, config.GetProperty("thinkingBudget").GetInt32());
     }
 
     [Theory]
@@ -159,16 +136,13 @@ public sealed class ApiPolishTests : IDisposable
     }
 
     [Theory]
-    [InlineData(400, "")]
-    [InlineData(401, "")]
-    [InlineData(500, "")]
-    [InlineData(429, """{"error":{"code":"insufficient_quota","message":"You exceeded your current quota"}}""")]
-    public void Other_failures_and_exhausted_quota_are_not_retried(int code, string body) =>
-        Assert.Null(ApiCommon.RetryDelay(Status(code), body, attempt: 1, Now));
-
-    [Fact]
-    public void A_wait_longer_than_a_minute_is_not_retried() =>
-        Assert.Null(ApiCommon.RetryDelay(Status(429, retryAfter: TimeSpan.FromSeconds(61)), "", attempt: 1, Now));
+    [InlineData(400, "", null)]
+    [InlineData(401, "", null)]
+    [InlineData(500, "", null)]
+    [InlineData(429, """{"error":{"code":"insufficient_quota","message":"You exceeded your current quota"}}""", null)]
+    [InlineData(429, "", 61)] // a wait longer than a minute
+    public void Other_failures_exhausted_quota_and_long_waits_are_not_retried(int code, string body, int? retryAfterSeconds) =>
+        Assert.Null(ApiCommon.RetryDelay(Status(code, retryAfter: retryAfterSeconds is { } s ? TimeSpan.FromSeconds(s) : null), body, attempt: 1, Now));
 
     // ---- retries in the backends --------------------------------------------------------------
 

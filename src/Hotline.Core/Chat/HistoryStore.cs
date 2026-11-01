@@ -56,7 +56,7 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
                 else if (meta is not null)
                     result.Add(new Summary(id, meta.Title.Length > 0 ? meta.Title : "(attachments)", meta.LastAt, meta.MessageCount, false, meta.BackendId));
             }
-            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { }
+            catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or NotSupportedException or InvalidOperationException) { } // this chat only
         }
         return result;
     }
@@ -68,17 +68,25 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         return title.Length > 60 ? title[..60].TrimEnd() + "…" : title;
     }
 
-    public string PathFor(string conversationId) => Path.Combine(directory, $"{conversationId}.jsonl");
+    /// <exception cref="ArgumentException">The id is not a plain id (<see cref="HistoryIds.IsSafe"/>).</exception>
+    public string PathFor(string conversationId) => Path.Combine(directory, $"{Checked(conversationId)}.jsonl");
 
-    private string MetaPathFor(string conversationId) => Path.Combine(directory, conversationId + MetaSuffix);
+    private string MetaPathFor(string conversationId) => Path.Combine(directory, Checked(conversationId) + MetaSuffix);
 
-    private static string? IdOf(string fileName) =>
-        fileName.EndsWith(MetaSuffix, StringComparison.OrdinalIgnoreCase) ? fileName[..^MetaSuffix.Length]
-        : fileName.EndsWith(".jsonl", StringComparison.OrdinalIgnoreCase) ? fileName[..^".jsonl".Length]
-        : null;
+    private static string Checked(string id) => HistoryIds.IsSafe(id) ? id : throw new ArgumentException("Not a conversation id.", nameof(id));
+
+    // Ids come back from file names and links: only plain ones count, so a stray file can't name a path.
+    private static string? IdOf(string fileName)
+    {
+        var id = fileName.EndsWith(MetaSuffix, StringComparison.OrdinalIgnoreCase) ? fileName[..^MetaSuffix.Length]
+            : fileName.EndsWith(".jsonl", StringComparison.OrdinalIgnoreCase) ? fileName[..^".jsonl".Length]
+            : null;
+        return HistoryIds.IsSafe(id) ? id : null;
+    }
 
     public void Append(string conversationId, ChatMessage m)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return;
         Directory.CreateDirectory(directory);
         var entry = new Entry(m.Id, m.Role, m.Text, m.At, m.BackendId,
             m.Attachments.Select(a => new AttachmentInfo(a.Name, a.Kind, a.MimeType)).ToList());
@@ -87,20 +95,30 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
 
     public IReadOnlyList<Entry> Load(string conversationId)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return [];
         var path = PathFor(conversationId);
         if (!File.Exists(path)) return [];
         // One damaged line (a crash mid-append, a hand edit) skips only that line, never the whole chat.
         return File.ReadLines(path).Where(l => !string.IsNullOrWhiteSpace(l)).Select(TryEntry).OfType<Entry>().ToList();
     }
 
+    /// <summary>
+    /// One transcript line, checked at the read boundary: a record that is valid JSON but lacks what the program relies on (no id or
+    /// text, a role that doesn't exist) is skipped on its own; missing optional parts (attachments) are normalised to empty.
+    /// </summary>
     private static Entry? TryEntry(string line)
     {
-        try { return JsonSerializer.Deserialize<Entry>(line, Json) is { Id: not null, Text: not null } e ? e : null; }
-        catch (JsonException) { return null; }
+        try
+        {
+            if (JsonSerializer.Deserialize<Entry>(line, Json) is not { Id: not null, Text: not null } e || !Enum.IsDefined(e.Role)) return null;
+            return e with { Attachments = (e.Attachments ?? []).Where(a => a is { Name: not null, MimeType: not null } && Enum.IsDefined(a.Kind)).ToList() };
+        }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException) { return null; }
     }
 
     public void SaveMeta(string conversationId, Meta meta)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return;
         Directory.CreateDirectory(directory);
         var path = MetaPathFor(conversationId);
         var temp = path + ".tmp";
@@ -110,11 +128,16 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
 
     public Meta? LoadMeta(string conversationId)
     {
+        if (!HistoryIds.IsSafe(conversationId)) return null;
         var path = MetaPathFor(conversationId);
         if (!File.Exists(path)) return null;
-        var meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(path), Json);
+        Meta? meta;
+        try { meta = JsonSerializer.Deserialize<Meta>(File.ReadAllText(path), Json); }
+        catch (Exception ex) when (ex is JsonException or NotSupportedException or InvalidOperationException) { return null; } // a damaged record is no record
+        if (meta is null) return null;
+        meta = meta with { Title = meta.Title ?? "", MessageCount = Math.Max(0, meta.MessageCount) }; // required parts the file may lack
         // The session ID goes back on a command line: drop anything that isn't a plain ID.
-        return meta is null ? null : CliSession.IsValidId(meta.SessionId) ? meta : meta with { SessionId = null };
+        return CliSession.IsValidId(meta.SessionId) ? meta : meta with { SessionId = null };
     }
 
     public int Prune(int retentionDays)
@@ -126,7 +149,11 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         foreach (var chat in Directory.EnumerateFiles(directory).Where(f => IdOf(Path.GetFileName(f)) is not null).GroupBy(f => IdOf(Path.GetFileName(f))))
         {
             if (chat.Max(File.GetLastWriteTimeUtc) >= cutoff) continue;
-            foreach (var file in chat) { File.Delete(file); deleted++; }
+            foreach (var file in chat)
+            {
+                try { File.Delete(file); deleted++; }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { } // in use: the next start tries again
+            }
         }
         return deleted;
     }
