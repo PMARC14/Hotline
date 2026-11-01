@@ -56,6 +56,21 @@ public sealed class ToolHostLifecycleTests : TempDirTest
         Assert.Equal(2, asked);
     }
 
+    [Fact]
+    public async Task A_server_switched_off_mid_answer_is_not_called()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
+        var session = new FakeSession(("read", true));
+        await using var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => Task.FromResult<IMcpSession>(session),
+            (_, _) => Task.FromResult(ToolDecision.Deny), Log, McpPath);
+        var tool = Assert.Single(await host.GetToolsAsync(TestContext.Current.CancellationToken));
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x", "disabled": true } } }""");
+        using var args = JsonDocument.Parse("{}");
+        var result = await host.CallAsync(tool, args.RootElement, TestContext.Current.CancellationToken);
+        Assert.True(result.IsError);
+    }
+
     [Theory]
     [InlineData("a/write", "ask")]
     [InlineData("a/write", "allow")]
