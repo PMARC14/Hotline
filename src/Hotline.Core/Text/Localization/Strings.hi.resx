@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} बाकी लागू होता है। सेटिंग्स › उन्नत सब कुछ सूचीबद्ध करता है।</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>सेटिंग्स फ़ाइल पढ़ी नहीं जा सकती</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline अपनी सेटिंग्स तब तक बनाए रखता है जब तक इसे ठीक नहीं किया जाता।</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width are now real pixels (before: scaled units): your values {0} were kept as written; check Settings &gt; Window</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width अब वास्तविक पिक्सेल हैं (पहले: स्केल की गई इकाइयाँ): आपके मान {0} जैसे लिखे थे वैसे ही रखे गए; सेटिंग्स &amp;gt; विंडो देखें</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>आपकी सेटिंग्स फ़ाइलों में समस्याएँ हैं</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>अनदेखे मान अपने डिफ़ॉल्ट का उपयोग करते हैं। फ़ाइल को ठीक करें और Hotline इसे तुरंत लागू कर देगा।</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json के एक भाग को अनदेखा किया गया</value></data>
@@ -599,8 +599,8 @@
   <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>स्क्रीन {0} × {1} px, {2}% स्केलिंग पर: Windows इंटरफ़ेस को {3} × {4} पर प्रदर्शित करता है</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>स्क्रीन {0} × {1} px 100% स्केलिंग पर</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>स्क्रीन के वास्तविक पिक्सेल, Windows स्केलिंग अनदेखी</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>स्क्रीन के वास्तविक पिक्सेल, Windows स्केलिंग अनदेखी की गई</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>संदेश बॉक्स के ऊपर</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>संदेश बॉक्स के ऊपर ले जाएँ</value></data>
@@ -664,7 +664,7 @@
   <data name="Backup_Intro" xml:space="preserve"><value>अपने Hotline सेटअप को दूसरे PC पर ले जाएँ, या एक प्रति सुरक्षित रखें। बैकअप एक .zip फ़ाइल होती है जिसमें आपके द्वारा चुने गए भाग होते हैं; इसके अलावा कुछ भी (चैट इतिहास, मेमोरी, लॉग) शामिल नहीं है।</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>सेटिंग्स</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियाँ और कस्टम बटन छवियां</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>उपकरण (mcp.json)</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>टूल्स (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>त्वरित कार्रवाइयां</value></data>
@@ -695,7 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>छोड़ा गया: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>इन कनेक्शनों को अभी भी एक API कुंजी की आवश्यकता है: {0}। AI कनेक्शन खोलें और इसे दर्ज करें।</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>सेटिंग्स और बटन बार तुरंत लागू होते हैं; ध्वनियाँ, बटन पंक्तियाँ और त्वरित कार्रवाइयां अगली बार उपयोग किए जाने पर रीफ़्रेश होंगी।</value></data>
-  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>{0} को हटाया नहीं जा सका; फ़ाइल और इसकी API कुंजी को सुरक्षित रखा गया।</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>चैट चौड़ाई (प्रतिशत)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>चैट शुरू होने पर पैनल स्क्रीन की चौड़ाई के इस हिस्से तक फैल जाता है, और नई चैट पर वापस सिकुड़ जाता है। 0 = यह अपनी चौड़ाई बनाए रखता है। नीचे दी गई निश्चित चौड़ाई इसे बंद कर देती है।</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>चैट की चौड़ाई</value></data>

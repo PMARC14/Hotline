@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Решта застосовується. У розділі Налаштування › Додатково наведено повний список.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Не вдалося прочитати файл налаштувань</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline зберігає поточні налаштування, доки це не буде виправлено.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width are now real pixels (before: scaled units): your values {0} were kept as written; check Settings &gt; Window</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width тепер є реальними пікселями (раніше: масштабовані одиниці): ваші значення {0} збережено без змін; перевірте Налаштування &amp;gt; Вікно</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Проблеми у файлах налаштувань</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Проігноровані значення використовують значення за замовчуванням. Виправте файл, і Hotline відразу застосує зміни.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Частину toolbar.json проігноровано</value></data>
@@ -599,8 +599,8 @@
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Рядки кнопок</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Екран {0} × {1} px при масштабуванні {2}%: Windows відображає інтерфейс у {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Екран {0} × {1} px при масштабуванні 100%</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Реальні пікселі екрана, масштабування Windows ігнорується</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Фактичні пікселі екрана, масштабування Windows ігнорується</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Перемістити під поле повідомлення</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Над полем повідомлення</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Перемістити над полем повідомлення</value></data>
@@ -695,7 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Пропущено: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Для цих підключень усе ще потрібен ключ API: {0}. Відкрийте «Підключення ШІ» та введіть його.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Налаштування та панель кнопок застосовуються одразу; звуки, рядки кнопок і швидкі дії оновляться під час наступного використання.</value></data>
-  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Не вдалося вилучити {0}; файл і його ключ API збережено.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Ширина чату (відсотки)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Панель збільшується до цієї частки ширини екрана на початку чату та знову зменшується під час нового чату. 0 = зберігає поточну ширину. Фіксована ширина нижче вимикає це.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Ширина чату</value></data>
