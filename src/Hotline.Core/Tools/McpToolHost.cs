@@ -192,6 +192,8 @@ public sealed class McpToolHost(
         // The policy is checked against the file as it is now (a deny added mid-answer applies to the next call).
         var config = EffectiveConfig();
         if (config is null) return new ToolResult("mcp.json can't be read, so no tools run until it's fixed.", true);
+        if (config.Servers.Concat(extraServers()).FirstOrDefault(s => Same(s.Name, tool.Server)) is { Disabled: true })
+            return new ToolResult($"{tool.Server} is switched off in mcp.json.", true);
         var decision = ToolPolicy.Decide(Approvals(config), tool.Server, tool.Tool, tool.ReadOnly);
         if (decision == ToolApproval.Deny) return new ToolResult($"The user doesn't allow {tool.Server}/{tool.Tool}.", true);
         if (decision == ToolApproval.Ask)
