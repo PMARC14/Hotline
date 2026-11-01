@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Her zaman</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Hiçbir zaman</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Genişlik</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Gerçek piksel cinsinden ekran genişliği payı. Windows ekran ölçeklendirmesi yok sayılır.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>En küçük genişlik</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>En büyük genişlik</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>En küçük yükseklik</value></data>
@@ -596,11 +596,11 @@ Reddet:
   <data name="Bar_BottomRow" xml:space="preserve"><value>İleti kutusunun altında</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Boş</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows ekran ölçeklendirmesi {0}%: Bu ekran {1} × {2} gerçek piksele sahip ancak Windows arayüzü {3} × {4} olarak çiziyor, bu yüzden her şey {5}× daha net. Panelin genişliği (yüzde ve piksel) gerçek {1} piksel üzerinden hesaplanır ve bu ölçeklendirmeyi yok sayar; düğmeler ve metinler ise {3} × {4} biriminde ölçeği takip eder.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows ekran ölçeklendirmesi %100: Bu ekran {0} × {1} piksele sahip ve arayüz bu boyutta çiziliyor.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>Bu ekranda ({0} px): {1}% = {2} px ({3} ölçekli birim); minimum {4} px, maksimum {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Panelin inebileceği en dar genişlik, ekranın gerçek pikseli cinsinden (Windows ekran ölçeklendirmesi yok sayılır). 384 = 1920 × 1080 ekranın %20'si.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ekranın gerçek pikselleri cinsinden panelin maksimum genişliği (Windows ekran ölçeklendirmesi yoksayılır). 2304 = 4K (3840 px) ekranın %60'ı.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>İleti kutusunun altına taşı</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>İleti kutusunun üstünde</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>İleti kutusunun üstüne taşı</value></data>
@@ -698,14 +698,14 @@ Reddet:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Sohbet genişliği (yüzde)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel, bir sohbet başladığında ekran genişliğinin bu payına kadar genişler ve yeni bir sohbette tekrar küçülür. 0 = genişliğini korur. Aşağıda sabit bir genişlik belirlemek bunu kapatır.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Sohbet genişliği</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Bir sohbet başladığında panelin genişleyeceği boyut, gerçek piksel cinsinden (Windows ekran ölçeklendirmesi yok sayılır). 0 = yukarıdaki yüzdeyi kullan.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Sohbet genişleme yönü</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Otomatik olarak</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Otomatik: yukarıda yer kalmadığı durumlar dışında yukarı doğru. Up veya Down bu yönü korur.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Aşağı</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Yukarı</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Genişlik</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = otomatik (yukarıdaki genişlik yüzdesi). Gerçek piksel cinsinden; Windows ekran ölçeklendirmesi yok sayılır. Yeniden boyutlandırmak için Alt tuşunu basılı tutup yan kenarı sürükleyin.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Monitör</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (üzerinde çalıştığınız monitör), primary veya bir monitörün adı (tutamağın Varsayılan olarak kaydet seçeneğiyle kaydedilir)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Yatay konum</value></data>

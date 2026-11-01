@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Sempre</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Nunca</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Largura</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Fração da largura da tela, em pixels reais. A escala de exibição do Windows é ignorada.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Largura mínima</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Largura máxima</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Altura mínima</value></data>
@@ -596,11 +596,11 @@ Negar:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Abaixo da caixa de mensagem</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vazio</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Linhas de botões</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>A escala de exibição do Windows é {0}%: esta tela tem {1} × {2} pixels reais, mas o Windows renderiza a interface em {3} × {4}, de modo que tudo fica {5}× mais nítido. A largura do painel (porcentagem e pixels) é dos {1} pixels reais e ignora essa escala; botões e texto a seguem, em {3} × {4} unidades.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>A escala de exibição do Windows é de 100%: esta tela possui {0} × {1} pixels e a interface é renderizada nesse tamanho.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>Nesta tela ({0} px): {1}% = {2} px ({3} unidades dimensionadas); mínimo {4} px, máximo {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>A largura mínima do painel, em pixels reais da tela (a escala de exibição do Windows é ignorada). 384 = 20% de uma tela de 1920 × 1080.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Largura máxima do painel em pixels reais da tela (a escala de exibição do Windows é ignorada). 2304 = 60% de uma tela 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Mover para baixo da caixa de mensagem</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Acima da caixa de mensagem</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Mover para cima da caixa de mensagem</value></data>
@@ -698,14 +698,14 @@ Negar:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Largura do chat (porcentagem)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>O painel se expande para esta proporção da largura da tela quando um chat começa e encolhe de volta em um novo chat. 0 = mantém sua largura. Uma largura fixa abaixo desativa isso.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Largura do chat</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>A largura para a qual o painel se expande quando um chat é iniciado, em pixels reais (a escala de exibição do Windows é ignorada). 0 = usar a porcentagem acima.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Expansão do chat</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automaticamente</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automático: para cima, a menos que falte espaço. Up ou Down mantém nessa direção.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Para baixo</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Para cima</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Largura</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automático (a porcentagem de largura acima). Em pixels reais; a escala de exibição do Windows é ignorada. Segure Alt e arraste uma borda lateral para redimensionar.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Monitor</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (o monitor em que você está trabalhando), primary ou o nome de um monitor (salvo por Salvar como padrão da alça)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Posição horizontal</value></data>

@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>常に表示</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>表示しない</value></data>
   <data name="Set_Width" xml:space="preserve"><value>幅</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>画面幅の割合 (実ピクセル単位)。Windowsの表示スケールは無視されます。</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>最小幅</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>最大幅</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>最小の高さ</value></data>
@@ -422,7 +422,7 @@
   <data name="Attach_Selection" xml:space="preserve"><value>選択したテキスト</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} で選択したテキスト</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>添付できるファイルは {0} 個までです。</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>{0} 内のテキスト</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} のテキスト</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} は画像を読めません。</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} はファイルを読めません。</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>バックエンド「{0}」はまだ利用できません。</value></data>
@@ -596,11 +596,11 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows の表示スケールは {0}% です: この画面には {1} × {2} の実ピクセルがありますが、Windows はインターフェイスを {3} × {4} で描画するため、すべてが {5}× 鮮明になります。パネルの幅（パーセントとピクセル）は実 {1} ピクセルを基準とし、このスケーリングを無視します。ボタンとテキストは {3} × {4} 単位でそれに従います。</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windowsの表示スケールは100%です。この画面の解像度は {0} × {1} ピクセルで、インターフェースはそのサイズで描画されています。</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>この画面 ({0} px): {1}% = {2} px ({3} スケール単位); 最小 {4} px、最大 {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>パネルの最小幅（画面の物理ピクセル単位、Windows の表示スケールは無視）。384 = 1920 × 1080 画面の 20%。</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実ピクセル単位でのパネルの最大幅（Windows の表示スケーリングは無視されます）。2304 = 4K（3840 px）画面の 60%。</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>メッセージ ボックスの上</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>メッセージ ボックスの上に移動</value></data>
@@ -698,14 +698,14 @@
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>チャットの幅 (パーセント)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>チャットの開始時にパネルが画面幅のこの割合まで拡大し、新しいチャットで元に戻ります。0 = 幅を維持します。下で固定幅を設定するとこの機能は無効になります。</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>チャットの幅</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>チャット開始時にパネルが拡大する幅（物理ピクセル単位、Windows の表示スケールは無視）。0 = 上記のパーセンテージを使用。</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>チャットの展開方向</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>自動</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>自動: 上に十分なスペースがない場合を除き上向き。Up または Down でその方向に固定されます。</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>下</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>上</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>幅</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 自動 (上記の幅の割合)。実ピクセル単位。Windowsの表示スケールは無視されます。Altキーを押しながら端をドラッグしてサイズを変更します。</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>モニター</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (作業中のモニター)、primary、またはモニター名 (グリップの [既定として保存] で保存)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>水平位置</value></data>

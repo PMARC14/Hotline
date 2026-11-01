@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Luôn hiện</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Không bao giờ</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Chiều rộng</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Tỷ lệ chiều rộng màn hình, tính bằng pixel thực tế. Bỏ qua tỷ lệ thu phóng màn hình Windows.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Chiều rộng tối thiểu</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Chiều rộng tối đa</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Chiều cao tối thiểu</value></data>
@@ -596,11 +596,11 @@ Từ chối:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Bên dưới hộp tin nhắn</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Trống</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Các hàng nút</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Tỷ lệ hiển thị của Windows là {0}%: màn hình này có {1} × {2} pixel thực, nhưng Windows hiển thị giao diện ở mức {3} × {4}, nên mọi thứ sắc nét hơn {5}×. Chiều rộng của bảng điều khiển (phần trăm và pixel) dựa trên {1} pixel thực và bỏ qua tỷ lệ này; các nút và văn bản tuân theo tỷ lệ đó, theo đơn vị {3} × {4}.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Tỷ lệ thu phóng màn hình Windows là 100%: màn hình này có {0} × {1} pixel và giao diện được vẽ ở kích thước đó.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>Trên màn hình này ({0} px): {1}% = {2} px ({3} đơn vị theo tỷ lệ); tối thiểu {4} px, tối đa {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Chiều rộng hẹp nhất của bảng điều khiển, tính bằng pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 384 = 20% của màn hình 1920 × 1080.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Chiều rộng tối đa của bảng điều khiển theo pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 2304 = 60% của màn hình 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Di chuyển xuống dưới hộp tin nhắn</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Bên trên hộp tin nhắn</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Di chuyển lên trên hộp tin nhắn</value></data>
@@ -698,14 +698,14 @@ Từ chối:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Độ rộng trò chuyện (phần trăm)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Bảng điều khiển sẽ mở rộng đến tỷ lệ này của chiều rộng màn hình khi cuộc trò chuyện bắt đầu và thu nhỏ lại khi có cuộc trò chuyện mới. 0 = giữ nguyên chiều rộng. Chiều rộng cố định bên dưới sẽ tắt tính năng này.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Độ rộng trò chuyện</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Chiều rộng bảng điều khiển mở rộng khi bắt đầu trò chuyện, tính bằng pixel thực (bỏ qua tỷ lệ hiển thị của Windows). 0 = sử dụng tỷ lệ phần trăm ở trên.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Chiều mở rộng của đoạn chat</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Tự động</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Tự động: hướng lên trên, trừ khi không còn chỗ ở phía trên. Up hoặc Down sẽ giữ nguyên hướng đó.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Xuống dưới</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Lên trên</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Chiều rộng</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = tự động (phần trăm chiều rộng ở trên). Theo pixel thực tế; bỏ qua tỷ lệ thu phóng màn hình Windows. Giữ Alt và kéo cạnh bên để đổi kích thước.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Màn hình</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (màn hình bạn đang làm việc), primary hoặc tên của màn hình (được lưu bởi Lưu làm mặc định của chốt kéo)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Vị trí nằm ngang</value></data>

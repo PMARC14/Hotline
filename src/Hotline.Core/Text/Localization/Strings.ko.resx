@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>항상</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>안 함</value></data>
   <data name="Set_Width" xml:space="preserve"><value>너비</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>화면 너비 비율(실제 픽셀 단위). Windows 디스플레이 배율은 무시됩니다.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>최소 너비</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>최대 너비</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>최소 높이</value></data>
@@ -596,11 +596,11 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows 디스플레이 배율은 {0}%입니다. 이 화면에는 {1} × {2}개의 실제 픽셀이 있지만 Windows는 인터페이스를 {3} × {4}로 렌더링하므로 모든 항목이 {5}× 더 선명합니다. 패널 너비(백분율 및 픽셀)는 실제 {1} 픽셀 기준이며 이 배율을 무시합니다. 버튼과 텍스트는 {3} × {4} 단위로 배율을 따릅니다.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows 디스플레이 배율이 100%입니다. 이 화면은 {0} × {1} 픽셀이며 인터페이스는 해당 크기로 표시됩니다.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>이 화면 ({0} px): {1}% = {2} px ({3} 배율 단위); 최소 {4} px, 최대 {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>패널의 최소 너비(화면의 실제 픽셀 단위, Windows 디스플레이 배율 무시). 384 = 1920 × 1080 화면의 20%.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀 기준 패널 최대 너비(Windows 디스플레이 배율은 무시됨). 2304 = 4K(3840 px) 화면의 60%.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>메시지 상자 위</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>메시지 상자 위로 이동</value></data>
@@ -698,14 +698,14 @@
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>채팅 너비(백분율)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>채팅이 시작되면 패널이 화면 너비의 이 비율로 커지고 새 채팅 시 원래대로 줄어듭니다. 0 = 기존 너비 유지. 아래에서 고정 너비를 설정하면 이 기능이 꺼집니다.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>채팅 너비</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>채팅이 시작될 때 패널이 확장되는 너비(실제 픽셀 단위, Windows 디스플레이 배율 무시). 0 = 위의 백분율 사용.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>채팅 확장 방향</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>자동</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>자동: 위쪽에 공간이 부족하지 않은 한 위로 확장됩니다. Up 또는 Down으로 설정하면 해당 방향으로 고정됩니다.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>아래로</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>위로</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>너비</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = 자동(위의 너비 백분율). 실제 픽셀 단위이며 Windows 디스플레이 배율은 무시됩니다. Alt 키를 누른 상태에서 가장자리를 드래그하여 크기를 조절하세요.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>모니터</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active(작업 중인 모니터), primary 또는 모니터 이름(그립의 '기본값으로 저장'으로 저장됨)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>가로 위치</value></data>
@@ -765,7 +765,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_OutlineColor" xml:space="preserve"><value>윤곽선 색</value></data>
   <data name="Bar_ColorAccent" xml:space="preserve"><value>강조 색</value></data>
   <data name="Bar_ColorRed" xml:space="preserve"><value>빨강</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황색</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황</value></data>
   <data name="Bar_ColorYellow" xml:space="preserve"><value>노랑</value></data>
   <data name="Bar_ColorGreen" xml:space="preserve"><value>초록</value></data>
   <data name="Bar_ColorTeal" xml:space="preserve"><value>청록</value></data>

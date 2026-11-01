@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Завжди</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Ніколи</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Ширина</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Частка ширини екрана в реальних пікселях. Масштабування дисплея Windows ігнорується.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Мінімальна ширина</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Максимальна ширина</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Мінімальна висота</value></data>
@@ -173,7 +173,7 @@
   <data name="Agy_ApproveAllConfirm" xml:space="preserve"><value>Зрозуміло, увімкнути</value></data>
   <data name="Agy_ApproveAll" xml:space="preserve"><value>⚠ Схвалювати все (небезпечно)</value></data>
   <data name="Conn_ApproveAll_Desc" xml:space="preserve"><value>Пропускає всі перевірки дозволів {0}. Лише в режимі «власні інструменти програми».</value></data>
-  <data name="Conn_Name" xml:space="preserve"><value>Ім'я</value></data>
+  <data name="Conn_Name" xml:space="preserve"><value>Назва</value></data>
   <data name="Conn_Endpoint" xml:space="preserve"><value>Кінцева точка</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Базова URL-адреса API.</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>Збережено; введіть, щоб замінити</value></data>
@@ -596,11 +596,11 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>Під полем повідомлення</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Порожньо</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Рядки кнопок</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Масштабування дисплея Windows становить {0}%: цей екран має {1} × {2} реальних пікселів, але Windows відмальовує інтерфейс у {3} × {4}, тому все в {5}× чіткіше. Ширина панелі (відсотки та пікселі) розраховується від реальних {1} пікселів та ігнорує це масштабування; кнопки й текст слідують йому в одиницях {3} × {4}.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Масштабування дисплея Windows становить 100%: цей екран має {0} × {1} пікселів, і інтерфейс відображається в цьому розмірі.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>На цьому екрані ({0} px): {1}% = {2} px ({3} масштабованих одиниць); мінімум {4} px, максимум {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Найменша ширина панелі, у реальних пікселях екрана (масштабування дисплея Windows ігнорується). 384 = 20% екрана 1920 × 1080.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Максимальна ширина панелі в реальних пікселях екрана (масштабування дисплея Windows ігнорується). 2304 = 60% екрана 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Перемістити під поле повідомлення</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Над полем повідомлення</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Перемістити над полем повідомлення</value></data>
@@ -698,14 +698,14 @@
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Ширина чату (відсотки)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Панель збільшується до цієї частки ширини екрана на початку чату та знову зменшується під час нового чату. 0 = зберігає поточну ширину. Фіксована ширина нижче вимикає це.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Ширина чату</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Ширина, до якої розширюється панель на початку чату, у реальних пікселях (масштабування дисплея Windows ігнорується). 0 = використовувати відсоток вище.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Напрямок розгортання чату</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Автоматично</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Автоматично: вгору, якщо вистачає місця над панеллю. Up або Down фіксує напрямок.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Униз</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Угору</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Ширина</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = автоматично (відсоток ширини вище). У реальних пікселях; масштабування дисплея Windows ігнорується. Утримуйте Alt і потягніть за бічний край, щоб змінити розмір.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Монітор</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (монітор, на якому ви працюєте), primary або назва монітора (зберігається за допомогою команди «Зберегти як стандартні» маркера)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Горизонтальне положення</value></data>

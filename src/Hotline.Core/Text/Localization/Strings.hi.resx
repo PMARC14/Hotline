@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>हमेशा</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>कभी नहीं</value></data>
   <data name="Set_Width" xml:space="preserve"><value>चौड़ाई</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>स्क्रीन की चौड़ाई का हिस्सा, वास्तविक पिक्सेल में। Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है।</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>न्यूनतम चौड़ाई</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>अधिकतम चौड़ाई</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>न्यूनतम ऊँचाई</value></data>
@@ -106,12 +106,12 @@
   <data name="Settings_Title" xml:space="preserve"><value>Hotline सेटिंग्स</value></data>
   <data name="Nav_General" xml:space="preserve"><value>सामान्य</value></data>
   <data name="Nav_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
-  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट्स</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
   <data name="Nav_Actions" xml:space="preserve"><value>त्वरित क्रियाएँ</value></data>
   <data name="Nav_Appearance" xml:space="preserve"><value>रूप</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>विंडो</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>चैट और इतिहास</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>उपकरण</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>टूल्स</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>उन्नत</value></data>
   <data name="Nav_About" xml:space="preserve"><value>के बारे में</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline को फिर से शुरू करने के बाद लागू होता है।)</value></data>
@@ -596,11 +596,11 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>संदेश बॉक्स के नीचे</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>खाली</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows डिस्प्ले स्केलिंग {0}% है: इस स्क्रीन में {1} × {2} वास्तविक पिक्सेल हैं, लेकिन Windows इंटरफ़ेस को {3} × {4} पर दिखाता है, जिससे सब कुछ {5}× अधिक स्पष्ट है। पैनल की चौड़ाई (प्रतिशत और पिक्सेल) वास्तविक {1} पिक्सेल पर आधारित है और इस स्केलिंग को अनदेखा करती है; बटन और टेक्स्ट {3} × {4} इकाइयों में इसका पालन करते हैं।</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows डिस्प्ले स्केलिंग 100% है: इस स्क्रीन में {0} × {1} पिक्सेल हैं और इंटरफ़ेस उसी आकार में प्रदर्शित होता है।</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>इस स्क्रीन पर ({0} px): {1}% = {2} px ({3} स्केल की गई इकाइयाँ); न्यूनतम {4} px, अधिकतम {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>पैनल की न्यूनतम चौड़ाई, स्क्रीन के वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 384 = 1920 × 1080 स्क्रीन का 20%।</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>पैनल की अधिकतम चौड़ाई, स्क्रीन के वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 2304 = 4K (3840 px) स्क्रीन का 60%।</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>संदेश बॉक्स के ऊपर</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>संदेश बॉक्स के ऊपर ले जाएँ</value></data>
@@ -668,7 +668,7 @@
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>त्वरित कार्रवाइयां</value></data>
-  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>प्रॉम्प्ट्स</value></data>
+  <data name="Backup_Cat_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
   <data name="Backup_McpWarn" xml:space="preserve"><value>mcp.json जैसा लिखा है वैसा ही निर्यात किया जाता है। इसके env मानों में टोकन जैसे रहस्य हो सकते हैं: फ़ाइल को सुरक्षित रखें, या इसे अनचेक रहने दें।</value></data>
   <data name="Backup_ConnNote" xml:space="preserve"><value>API कुंजियाँ शामिल नहीं हैं: वे Windows क्रेडेंशियल लॉकर में रहती हैं। नए PC पर उन्हें फिर से दर्ज करें।</value></data>
   <data name="Backup_Export_Title" xml:space="preserve"><value>निर्यात</value></data>
@@ -698,14 +698,14 @@
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>चैट चौड़ाई (प्रतिशत)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>चैट शुरू होने पर पैनल स्क्रीन की चौड़ाई के इस हिस्से तक फैल जाता है, और नई चैट पर वापस सिकुड़ जाता है। 0 = यह अपनी चौड़ाई बनाए रखता है। नीचे दी गई निश्चित चौड़ाई इसे बंद कर देती है।</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>चैट की चौड़ाई</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>चैट शुरू होने पर पैनल जितनी चौड़ाई तक फैलता है, वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 0 = ऊपर दिए गए प्रतिशत का उपयोग करें।</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>चैट का विस्तार</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>स्वचालित रूप से</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>स्वचालित: ऊपर की ओर, जब तक कि ऊपर जगह न हो। Up या Down इसे उसी दिशा में रखता है।</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>नीचे</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>ऊपर</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>चौड़ाई</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = स्वचालित (ऊपर दिया गया चौड़ाई प्रतिशत)। वास्तविक पिक्सेल में; Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है। आकार बदलने के लिए Alt दबाकर रखें और साइड किनारे को खींचें।</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>मॉनिटर</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (जिस मॉनिटर पर आप काम कर रहे हैं), primary या किसी मॉनिटर का नाम (ग्रिप के डिफ़ॉल्ट के रूप में सहेजें द्वारा सहेजा गया)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>क्षैतिज स्थिति</value></data>

@@ -57,7 +57,7 @@
   <data name="Set_Scrollbar_Always" xml:space="preserve"><value>Immer</value></data>
   <data name="Set_Scrollbar_Never" xml:space="preserve"><value>Nie</value></data>
   <data name="Set_Width" xml:space="preserve"><value>Breite</value></data>
-  <data name="Set_Width_Desc" xml:space="preserve"><value>Share of the screen width, in real pixels. Windows display scaling is ignored.</value></data>
+  <data name="Set_Width_Desc" xml:space="preserve"><value>Anteil der Bildschirmbreite in echten Pixeln. Windows-Skalierung wird ignoriert.</value></data>
   <data name="Set_MinWidth" xml:space="preserve"><value>Mindestbreite</value></data>
   <data name="Set_MaxWidth" xml:space="preserve"><value>Maximale Breite</value></data>
   <data name="Set_MinHeight" xml:space="preserve"><value>Mindesthöhe</value></data>
@@ -596,11 +596,11 @@ Verweigern:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Unter dem Nachrichtenfeld</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leer</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Schaltflächenzeilen</value></data>
-  <data name="Bar_ScaleNote" xml:space="preserve"><value>Windows display scaling is {0}%: this screen has {1} × {2} real pixels, but Windows draws the interface at {3} × {4}, so everything is {5}× as sharp. The panel's width (percent and pixels) is of the real {1} pixels and ignores this scaling; buttons and text follow it, in {3} × {4} units.</value></data>
-  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Windows display scaling is 100%: this screen has {0} × {1} pixels and the interface is drawn at that size.</value></data>
-  <data name="Bar_WidthLine" xml:space="preserve"><value>On this screen ({0} px): {1}% = {2} px ({3} scaled units); minimum {4} px, maximum {5} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Narrowest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 384 = 20% of a 1920 × 1080 screen.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Widest the panel gets, in real pixels of the screen (Windows display scaling is ignored). 2304 = 60% of a 4K (3840 px) screen.</value></data>
+  <data name="Bar_ScaleNote" xml:space="preserve"><value>Die Windows-Skalierung beträgt {0} %: Dieser Bildschirm verfügt über {1} × {2} echte Pixel, aber Windows stellt die Benutzeroberfläche mit {3} × {4} dar, sodass alles {5}× so scharf ist. Die Breite des Panels (Prozent und Pixel) bezieht sich auf die echten {1} Pixel und ignoriert diese Skalierung; Schaltflächen und Text folgen ihr in {3} × {4} Einheiten.</value></data>
+  <data name="Bar_ScaleNote100" xml:space="preserve"><value>Die Windows-Skalierung beträgt 100%: Dieser Bildschirm hat {0} × {1} Pixel und die Benutzeroberfläche wird in dieser Größe dargestellt.</value></data>
+  <data name="Bar_WidthLine" xml:space="preserve"><value>Auf diesem Bildschirm ({0} px): {1} % = {2} px ({3} skalierte Einheiten); Minimum {4} px, Maximum {5} px</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Geringste Breite des Panels, in echten Bildschirmpixeln (Windows-Skalierung wird ignoriert). 384 = 20 % eines Bildschirms mit 1920 × 1080.</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maximale Breite des Fensters in echten Bildschirmpixeln (die Windows-Skalierung wird ignoriert). 2304 = 60 % eines 4K-Bildschirms (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Unter das Nachrichtenfeld verschieben</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Über dem Nachrichtenfeld</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Über das Nachrichtenfeld verschieben</value></data>
@@ -698,14 +698,14 @@ Verweigern:
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat-Breite (Prozent)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Der Bereich vergrößert sich auf diesen Anteil der Bildschirmbreite, wenn ein Chat beginnt, und verkleinert sich bei einem neuen Chat wieder. 0 = Breite bleibt unverändert. Eine feste Breite unten schaltet dies aus.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Chatbreite</value></data>
-  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>The width the panel grows to when a chat starts, in real pixels (Windows display scaling is ignored). 0 = use the percentage above.</value></data>
+  <data name="Set_ChatWidth_Desc" xml:space="preserve"><value>Die Breite, auf die das Panel beim Starten eines Chats anwächst, in echten Pixeln (Windows-Skalierung wird ignoriert). 0 = oben angegebenen Prozentsatz verwenden.</value></data>
   <data name="Set_Direction" xml:space="preserve"><value>Chat vergrößert sich</value></data>
   <data name="Set_Direction_Auto" xml:space="preserve"><value>Automatisch</value></data>
   <data name="Set_Direction_Desc" xml:space="preserve"><value>Automatisch: nach oben, sofern darüber Platz ist. Oben oder Unten legt die Richtung fest.</value></data>
   <data name="Set_Direction_Down" xml:space="preserve"><value>Nach unten</value></data>
   <data name="Set_Direction_Up" xml:space="preserve"><value>Nach oben</value></data>
   <data name="Set_FixedWidth" xml:space="preserve"><value>Breite</value></data>
-  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatic (the width percentage above). In real pixels; Windows display scaling is ignored. Hold Alt and drag a side edge to resize.</value></data>
+  <data name="Set_FixedWidth_Desc" xml:space="preserve"><value>0 = automatisch (der obige Prozentsatz der Breite). In echten Pixeln; Windows-Skalierung wird ignoriert. Alt gedrückt halten und an einem Seitenrand ziehen, um die Größe zu ändern.</value></data>
   <data name="Set_Monitor" xml:space="preserve"><value>Bildschirm</value></data>
   <data name="Set_Monitor_Desc" xml:space="preserve"><value>active (der aktuell verwendete Monitor), primary oder der Monitorname (gespeichert über „Als Standard speichern“ am Ziehpunkt)</value></data>
   <data name="Set_PositionX" xml:space="preserve"><value>Horizontale Position</value></data>
