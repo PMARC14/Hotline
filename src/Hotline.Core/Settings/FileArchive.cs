@@ -6,7 +6,7 @@ public static class FileArchive
     /// <summary>
     /// Copies <paramref name="path"/> to <c>path.old</c>, or the first free <c>.old2</c>, <c>.old3</c>… so an earlier
     /// archive is never overwritten. The original is left in place. Returns the archive path, or null when the file
-    /// doesn't exist or the copy fails (the caller carries on without an archive).
+    /// doesn't exist or the copy fails. When an existing file would change, a null result means the caller must not write it.
     /// </summary>
     public static string? KeepOld(string path)
     {

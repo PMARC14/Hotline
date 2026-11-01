@@ -695,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>छोड़ा गया: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>इन कनेक्शनों को अभी भी एक API कुंजी की आवश्यकता है: {0}। AI कनेक्शन खोलें और इसे दर्ज करें।</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>सेटिंग्स और बटन बार तुरंत लागू होते हैं; ध्वनियाँ, बटन पंक्तियाँ और त्वरित कार्रवाइयां अगली बार उपयोग किए जाने पर रीफ़्रेश होंगी।</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>चैट चौड़ाई (प्रतिशत)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>चैट शुरू होने पर पैनल स्क्रीन की चौड़ाई के इस हिस्से तक फैल जाता है, और नई चैट पर वापस सिकुड़ जाता है। 0 = यह अपनी चौड़ाई बनाए रखता है। नीचे दी गई निश्चित चौड़ाई इसे बंद कर देती है।</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>चैट की चौड़ाई</value></data>

@@ -9,9 +9,17 @@ namespace Hotline.App.Settings;
 internal sealed partial class ToolbarQuadrantEditor
 {
     private readonly StackPanel _custom = new() { Spacing = 6 };
+    private ToolbarModel? _pictureModel;
+    private string? _pictureToolbarStamp;
+    private static string PictureToolbarPath => Path.Combine(Path.GetDirectoryName(CustomButtonPicture.Folder)!, "toolbar.json");
 
     private void BuildCustomList()
     {
+        if (!ReferenceEquals(_pictureModel, _model))
+        {
+            _pictureModel = _model;
+            _pictureToolbarStamp = ToolbarFile.Fingerprint(PictureToolbarPath);
+        }
         _custom.Children.Clear();
         if (_model.Buttons.Count == 0) _custom.Children.Add(new TextBlock { Text = Strings.Bar_CustomNone, Opacity = 0.7 });
         foreach (var b in _model.Buttons)
@@ -81,9 +89,10 @@ internal sealed partial class ToolbarQuadrantEditor
             var focus = existing is null ? "bar-custom-add" : "bar-custom-edit-" + existing.Id;
             // The new picture is already in icons\ (the dialog stored it): kept only once toolbar.json is saved with it.
             var pictureId = existing?.Id ?? next?.Buttons.LastOrDefault()?.Id;
+            var saved = false;
             if (next is not null)
             {
-                var saved = Edit(_ => next, existing?.Id, (focus, "bar-custom-add"));
+                saved = Edit(_ => next, existing?.Id, (focus, "bar-custom-add"));
                 if (pictureReplaced && pictureId is not null)
                 {
                     if (saved) CustomIcons.Commit(CustomButtonPicture.Folder, pictureId);
@@ -96,12 +105,23 @@ internal sealed partial class ToolbarQuadrantEditor
             }
             else if (pictureReplaced)
             {
-                // Same model, new picture: toolbar.json is untouched, so the icons folder's watcher (App) redraws the bar.
-                if (existing is not null) CustomIcons.Commit(CustomButtonPicture.Folder, existing.Id);
+                // A picture-only edit must respect the same on-disk conflict rule as a model edit.
+                if (_pictureToolbarStamp is null || ToolbarFile.Fingerprint(PictureToolbarPath) != _pictureToolbarStamp)
+                {
+                    if (existing is not null) CustomIcons.Rollback(CustomButtonPicture.Folder, existing.Id);
+                    _log.Info("button rows: toolbar.json changed on disk; picture rolled back");
+                    if (_reload() is { } fresh) { _model = fresh; _stash.Clear(); }
+                    Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
+                }
+                else if (existing is not null)
+                {
+                    CustomIcons.Commit(CustomButtonPicture.Folder, existing.Id);
+                    saved = true;
+                }
                 _focus = (focus, "bar-custom-add");
                 QueueRebuild(); // redraw the list
             }
-            if (existing?.IconFile is not null) ForgetPicture(existing.Id);
+            if (saved && existing?.IconFile is not null) ForgetPicture(existing.Id);
         }
         catch (Exception ex) { _log.Error("button rows: custom button dialog failed", ex); }
     }
@@ -116,9 +136,11 @@ internal sealed partial class ToolbarQuadrantEditor
                 PrimaryButtonText = Strings.Common_Delete, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await _showDialog(confirm) != ContentDialogResult.Primary) return;
-            Edit(m => ToolbarEditor.RemoveCustom(m, b.Id), null, ("bar-custom-add", "bar-custom-add"));
-            _stash.Remove(b.Id);
-            if (!_model.Buttons.Any(x => x.Id == b.Id)) ForgetPicture(b.Id); // only once the deletion is saved
+            if (Edit(m => ToolbarEditor.RemoveCustom(m, b.Id), null, ("bar-custom-add", "bar-custom-add")))
+            {
+                _stash.Remove(b.Id);
+                if (!_model.Buttons.Any(x => x.Id == b.Id)) ForgetPicture(b.Id);
+            }
         }
         catch (Exception ex) { _log.Error("button rows: deleting a custom button failed", ex); }
     }

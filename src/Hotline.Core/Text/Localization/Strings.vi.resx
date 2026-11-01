@@ -695,6 +695,7 @@ Từ chối:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Đã bỏ qua: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Các kết nối này vẫn cần khóa API: {0}. Hãy mở Kết nối AI và nhập khóa.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Cài đặt và thanh nút được áp dụng ngay lập tức; âm thanh, các hàng nút và thao tác nhanh sẽ được làm mới trong lần sử dụng tiếp theo.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Độ rộng trò chuyện (phần trăm)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Bảng điều khiển sẽ mở rộng đến tỷ lệ này của chiều rộng màn hình khi cuộc trò chuyện bắt đầu và thu nhỏ lại khi có cuộc trò chuyện mới. 0 = giữ nguyên chiều rộng. Chiều rộng cố định bên dưới sẽ tắt tính năng này.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Độ rộng trò chuyện</value></data>

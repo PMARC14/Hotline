@@ -695,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>スキップ済み: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>これらの接続にはまだ API キーが必要です: {0}。[AI 接続] を開いて入力してください。</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>設定とボタン バーはすぐに適用されます。サウンド、ボタン行、クイック アクションは次回使用時に更新されます。</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>チャットの幅 (パーセント)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>チャットの開始時にパネルが画面幅のこの割合まで拡大し、新しいチャットで元に戻ります。0 = 幅を維持します。下で固定幅を設定するとこの機能は無効になります。</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>チャットの幅</value></data>

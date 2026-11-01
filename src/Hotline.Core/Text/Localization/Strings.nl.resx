@@ -695,6 +695,7 @@ Weigeren:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Overgeslagen: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Deze verbindingen hebben nog een API-sleutel nodig: {0}. Open AI-verbindingen en voer deze in.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Instellingen en de knoppenbalk worden direct toegepast; geluiden, knoppenrijen en snelle acties worden bij het volgende gebruik vernieuwd.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chatbreedte (percentage)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Het venster groeit naar dit aandeel van de schermbreedte wanneer een chat start en krimpt terug bij een nieuwe chat. 0 = behoudt de breedte. Een vaste breedte hieronder schakelt dit uit.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Chatbreedte</value></data>

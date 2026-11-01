@@ -695,6 +695,7 @@ Zabroń:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Pominięto: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Te połączenia nadal wymagają klucza API: {0}. Otwórz Połączenia AI i wprowadź go.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Ustawienia i pasek przycisków są stosowane natychmiast; dźwięki, rzędy przycisków i szybkie akcje zostaną odświeżone przy następnym użyciu.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Szerokość czatu (procent)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel rozszerza się do tej części szerokości ekranu po rozpoczęciu czatu i zmniejsza się przy nowym czacie. 0 = zachowuje swoją szerokość. Stała szerokość poniżej wyłącza tę opcję.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Szerokość czatu</value></data>

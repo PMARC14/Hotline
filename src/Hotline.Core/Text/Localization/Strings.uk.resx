@@ -695,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Пропущено: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Для цих підключень усе ще потрібен ключ API: {0}. Відкрийте «Підключення ШІ» та введіть його.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Налаштування та панель кнопок застосовуються одразу; звуки, рядки кнопок і швидкі дії оновляться під час наступного використання.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Ширина чату (відсотки)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Панель збільшується до цієї частки ширини екрана на початку чату та знову зменшується під час нового чату. 0 = зберігає поточну ширину. Фіксована ширина нижче вимикає це.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Ширина чату</value></data>

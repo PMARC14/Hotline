@@ -695,6 +695,7 @@ Verweigern:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Übersprungen: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Diese Verbindungen benötigen noch einen API-Schlüssel: {0}. Öffnen Sie „KI-Verbindungen“ und geben Sie ihn ein.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Einstellungen und die Schaltflächenleiste werden sofort angewendet; Töne, Schaltflächenzeilen und Schnellaktionen werden bei der nächsten Verwendung aktualisiert.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chat-Breite (Prozent)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Der Bereich vergrößert sich auf diesen Anteil der Bildschirmbreite, wenn ein Chat beginnt, und verkleinert sich bei einem neuen Chat wieder. 0 = Breite bleibt unverändert. Eine feste Breite unten schaltet dies aus.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Chatbreite</value></data>

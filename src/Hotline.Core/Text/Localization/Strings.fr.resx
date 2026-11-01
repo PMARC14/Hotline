@@ -695,6 +695,7 @@ Refuser :
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Ignoré : {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Ces connexions ont encore besoin d'une clé API : {0}. Ouvrez Connexions IA et saisissez-la.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Les paramètres et la barre de boutons s'appliquent immédiatement ; les sons, les lignes de boutons et les actions rapides seront actualisés lors de leur prochaine utilisation.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Largeur du chat (pourcentage)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Le panneau s'élargit à cette part de la largeur de l'écran lorsqu'un chat commence et se réduit lors d'un nouveau chat. 0 = conserve sa largeur. Une largeur fixe ci-dessous désactive cette option.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Largeur de la discussion</value></data>

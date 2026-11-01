@@ -13,6 +13,7 @@ same files). Comments and trailing commas are allowed.
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
+| `icons\<id>.png.<time>.bak` | The previous picture, copied before a replacement (newest 10 per file). No replacement if the backup fails; these copies remain after the button rows are saved |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
@@ -22,7 +23,7 @@ same files). Comments and trailing commas are allowed.
 | `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
 | `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept whenever Hotline is about to replace a file it did not write itself: a hand edit it rewrites (to add newly available options or to move an old inline `chat.backends` list into `connections\`), a damaged file, or an older run's file. Never overwritten; the newest 10 are kept |
 | `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
-| `connections\<id>.json.<time>.bak` | The previous connection file, kept the same way when Settings rewrites a file you edited by hand (newest 10 per file) |
+| `connections\<id>.json.<time>.bak` | The previous connection file, kept when Settings rewrites a file you edited by hand or removes a connection (newest 10 per file). A failed backup or deletion keeps the file and its API key |
 | `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it (newest 10) |
 | `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json (`yyyyMMdd-HHmmss`), kept when Settings is about to replace a file Hotline did not write itself (a hand edit, with its comments and ignored entries); never overwritten, the newest 10 are kept, and nothing is replaced if the copy can't be made. Hotline's own earlier saves are not copied again. `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |

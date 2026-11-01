@@ -695,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>건너뜀: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>이 연결에는 여전히 API 키가 필요합니다: {0}. AI 연결을 열고 입력하세요.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>설정과 버튼 모음은 즉시 적용되며 소리, 버튼 행, 빠른 작업은 다음에 사용할 때 새로고침됩니다.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>채팅 너비(백분율)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>채팅이 시작되면 패널이 화면 너비의 이 비율로 커지고 새 채팅 시 원래대로 줄어듭니다. 0 = 기존 너비 유지. 아래에서 고정 너비를 설정하면 이 기능이 꺼집니다.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>채팅 너비</value></data>

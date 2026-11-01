@@ -473,10 +473,26 @@ public sealed class SettingsStore(string directory)
         foreach (var id in gone)
         {
             if (!_sources.TryGetValue(id, out var path)) continue;
-            if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
-                continue; // unreadable right now (an editor mid-save): its connection only looks removed; keep owning it
-            if (!claimed.ContainsKey(path)) // never delete a file a remaining connection uses
-                try { File.Delete(path); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+            if (claimed.ContainsKey(path) || BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
+            {
+                _writeProblems.Add(L.F(Strings.Settings_ProblemDeleteFailed, Path.GetFileName(path)));
+                continue; // a remaining connection uses it, or it is unreadable right now: keep owning it and keep its key
+            }
+            try
+            {
+                if (File.Exists(path)) MakeBackup(path); // even our own last save must survive an explicit removal
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _writeProblems.Add(L.F(Strings.Settings_ProblemBackupFailed, Path.GetFileName(path), ex.GetType().Name));
+                continue;
+            }
+            try { File.Delete(path); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _writeProblems.Add(L.F(Strings.Settings_ProblemDeleteFailed, Path.GetFileName(path)));
+                continue;
+            }
             _sources.Remove(id);
             _safeToReplace.Remove(path);
         }

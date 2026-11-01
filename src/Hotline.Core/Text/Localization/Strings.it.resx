@@ -695,6 +695,7 @@ Nega:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Ignorato: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Queste connessioni richiedono ancora una chiave API: {0}. Apri Connessioni AI e inseriscila.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Le impostazioni e la barra dei pulsanti si applicano subito; suoni, righe di pulsanti e azioni rapide si aggiornano al prossimo utilizzo.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Larghezza chat (percentuale)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Il pannello si allarga a questa quota della larghezza dello schermo all'avvio di una chat e si restringe a una nuova chat. 0 = mantiene la larghezza. Una larghezza fissa sotto disattiva questa opzione.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Larghezza chat</value></data>

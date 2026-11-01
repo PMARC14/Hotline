@@ -695,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>已跳过：{0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>以下连接仍需要 API 密钥: {0}。请打开“AI 连接”并输入。</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>设置和按钮栏会立即生效；提示音、按钮行和快捷操作将在下次使用时刷新。</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>聊天窗口宽度（百分比）</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>聊天开始时面板将扩大至屏幕宽度的此比例，并在新聊天时恢复。0 = 保持原有宽度。在下方设置固定宽度可关闭此功能。</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>聊天宽度</value></data>

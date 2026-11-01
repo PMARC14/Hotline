@@ -695,6 +695,7 @@ Tolak:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Dilewati: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Koneksi ini masih memerlukan kunci API: {0}. Buka Koneksi AI dan masukkan.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Pengaturan dan bilah tombol langsung diterapkan; suara, baris tombol, dan tindakan cepat akan dimuat ulang saat digunakan berikutnya.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Lebar obrolan (persen)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel membesar hingga persentase lebar layar ini saat obrolan dimulai, dan mengecil kembali saat obrolan baru. 0 = mempertahankan lebarnya. Lebar tetap di bawah ini mematikan fitur ini.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Lebar obrolan</value></data>

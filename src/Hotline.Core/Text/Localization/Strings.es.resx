@@ -695,6 +695,7 @@ Denegar:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Omitido: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Estas conexiones aún necesitan una clave de API: {0}. Abre Conexiones de IA e ingrésala.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>La configuración y la barra de botones se aplican de inmediato; los sonidos, filas de botones y acciones rápidas se actualizarán la próxima vez que se usen.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Ancho del chat (porcentaje)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>El panel se amplía a esta proporción del ancho de la pantalla cuando se inicia un chat y se reduce al iniciar uno nuevo. 0 = mantiene su ancho. Un ancho fijo a continuación desactiva esto.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Ancho del chat</value></data>

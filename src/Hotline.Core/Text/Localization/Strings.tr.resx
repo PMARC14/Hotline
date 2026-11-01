@@ -695,6 +695,7 @@ Reddet:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Atlandı: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Bu bağlantılar için hâlâ bir API anahtarı gerekiyor: {0}. Yapay Zeka bağlantılarını açın ve anahtarı girin.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Ayarlar ve düğme çubuğu hemen uygulanır; sesler, düğme satırları ve hızlı eylemler bir sonraki kullanımda yenilenir.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Couldn't remove {0}; the file and its API key were kept.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Sohbet genişliği (yüzde)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel, bir sohbet başladığında ekran genişliğinin bu payına kadar genişler ve yeni bir sohbette tekrar küçülür. 0 = genişliğini korur. Aşağıda sabit bir genişlik belirlemek bunu kapatır.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Sohbet genişliği</value></data>
