@@ -35,7 +35,7 @@ public partial class App
             });
         _toolHost = new Hotline.Core.Tools.McpToolHost(
             () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers,
-            Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}")),
+            Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}"), verbose: () => _log?.Verbose == true),
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             _log!, mcpPath);
         return _toolHost;

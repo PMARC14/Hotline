@@ -1,4 +1,5 @@
 using System.Buffers.Binary;
+using Hotline.Core.Settings;
 
 namespace Hotline.Core.Windowing;
 
@@ -104,10 +105,11 @@ public static class CustomIcons
         try
         {
             Directory.CreateDirectory(iconsFolder);
-            File.WriteAllBytes(temp, bytes);
             // The picture being replaced is kept (not as a .png, so nothing lists it) until Commit or Rollback.
             var target = Path.Combine(iconsFolder, name);
             var previous = PreviousPath(iconsFolder, buttonId);
+            if (File.Exists(target)) BackupFiles.CopyStamped(target); // durable history survives Commit's .prev cleanup
+            File.WriteAllBytes(temp, bytes);
             File.Delete(previous);
             if (File.Exists(target)) File.Copy(target, previous, overwrite: true);
             lock (FirstPictures) { if (File.Exists(previous)) FirstPictures.Remove(previous); else FirstPictures.Add(previous); }
@@ -130,7 +132,7 @@ public static class CustomIcons
 
     private static string PreviousPath(string iconsFolder, string buttonId) => Path.Combine(iconsFolder, $".{buttonId}.prev");
 
-    /// <summary>The toolbar change that went with an <see cref="Import"/> was saved: the replaced picture is not needed any more.</summary>
+    /// <summary>The toolbar change that went with an <see cref="Import"/> was saved: discard the rollback copy, keeping the stamped backup.</summary>
     public static void Commit(string iconsFolder, string buttonId)
     {
         if (!ToolbarModel.IsCustomId(buttonId)) return;

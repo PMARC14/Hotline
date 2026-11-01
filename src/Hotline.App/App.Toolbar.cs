@@ -46,7 +46,8 @@ public partial class App
     /// </summary>
     private double BarRoom(Hotline.Core.Settings.WindowSettings window)
     {
-        var padding = 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding; // the panel's side padding (PopupWindow.xaml)
+        // The panel's side padding: the live Root.Padding when a panel exists (as ProviderBar reads it), else the constant it is declared from.
+        var padding = _popup is { } panel ? panel.Root.Padding.Left + panel.Root.Padding.Right : 2 * Hotline.Core.Windowing.ToolbarPlan.PanelPadding;
         try
         {
             var width = _popup?.OpeningWidthDip() ?? Hotline.Core.Windowing.ToolbarPlan.WidthForButtons(11);

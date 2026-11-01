@@ -44,7 +44,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         if (ContinueMenu() is not { } menu) { notices.Show(Strings.Recent_ContinueNothing, InfoBarSeverity.Informational); return; }
         var hold = popup.HoldResize(); // a resize would close the menu (see PopupWindow.HoldResize)
         menu.Closed += (_, _) => hold.Dispose();
-        menu.ShowAt(at);
+        try { menu.ShowAt(at); }
+        catch { hold.Dispose(); throw; } // a menu that never opened must not leave the panel's auto-sizing frozen
     }
 
     /// <summary>"Continue this chat in ▸": the chat's own CLI, other CLIs under More…; null when there's nowhere to go.</summary>

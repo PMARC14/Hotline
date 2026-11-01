@@ -21,7 +21,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     private readonly List<(FrameworkElement Element, ResizeEdge Up, ResizeEdge Down)> _handles = [];
     private FrameworkElement _grip = null!;
     private Microsoft.UI.Dispatching.DispatcherQueueTimer? _timer;
-    private bool _dragging, _menuOpen, _resized, _forced;
+    private bool _dragging, _menuOpen, _resized, _widthChanged, _forced;
 
     /// <summary>Shows the grips without Alt until turned off (hotline://grips, for tests and screenshots).</summary>
     public void Force(bool show)
@@ -160,6 +160,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             _edges = edges();
             _dragging = true;
             _resized = false;
+            _widthChanged = false;
             Native.GetCursorPos(out _start);
             _startRect = popup.WindowRect;
             popup.BeginUserDrag();
@@ -182,6 +183,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             else
             {
                 if ((_edges & (ResizeEdge.Top | ResizeEdge.Bottom)) != 0 && dy != 0) _resized = true; // a height chosen by hand
+                if ((_edges & (ResizeEdge.Left | ResizeEdge.Right)) != 0 && dx != 0) _widthChanged = true; // a width chosen by hand
                 popup.DragResizeTo(PanelPlacement.Resize(_startRect, _edges, dx, dy, popup.MinDragWidthPx, popup.MinDragHeightPx, popup.WorkArea));
             }
             e.Handled = true;
@@ -190,7 +192,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         {
             if (!_dragging) return;
             _dragging = false;
-            popup.EndUserDrag(_resized);
+            popup.EndUserDrag(_resized, _widthChanged);
             log.Info($"panel {(_resized ? "resized" : "moved")} to {popup.WindowRect}");
         }
         element.PointerReleased += (_, e) => { element.ReleasePointerCapture(e.Pointer); End(); e.Handled = true; };

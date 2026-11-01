@@ -499,6 +499,7 @@ Weigeren:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} De rest wordt toegepast. Instellingen › Geavanceerd toont alles.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Een instellingenbestand kan niet worden gelezen</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline behoudt de huidige instellingen totdat het is opgelost.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width zijn nu werkelijke pixels (voorheen: geschaalde eenheden): uw waarden {0} zijn ongewijzigd behouden; controleer Instellingen &amp;gt; Venster</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemen in uw instellingenbestanden</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Genegeerde waarden gebruiken de standaardwaarden. Corrigeer het bestand en Hotline past het direct toe.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Een deel van toolbar.json is genegeerd</value></data>
@@ -598,8 +599,8 @@ Weigeren:
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Scherm {0} × {1} px bij {2}% schaling: Windows tekent de interface op {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Scherm {0} × {1} px bij 100% schaling</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Minimale breedte van het paneel, in werkelijke schermpixels (Windows-schermschaling wordt genegeerd). 384 = 20% van een scherm van 1920 × 1080.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maximale breedte van het paneel in werkelijke schermpixels (Windows-schermschaling wordt genegeerd). 2304 = 60% van een 4K-scherm (3840 px).</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Werkelijke schermpixels, Windows-schaling genegeerd</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Werkelijke schermpixels, Windows-schaling genegeerd</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Boven het berichtvak</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Naar boven het berichtvak verplaatsen</value></data>
@@ -694,6 +695,7 @@ Weigeren:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Overgeslagen: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Deze verbindingen hebben nog een API-sleutel nodig: {0}. Open AI-verbindingen en voer deze in.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Instellingen en de knoppenbalk worden direct toegepast; geluiden, knoppenrijen en snelle acties worden bij het volgende gebruik vernieuwd.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Kan {0} niet verwijderen; het bestand en de bijbehorende API-sleutel zijn behouden.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Chatbreedte (percentage)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Het venster groeit naar dit aandeel van de schermbreedte wanneer een chat start en krimpt terug bij een nieuwe chat. 0 = behoudt de breedte. Een vaste breedte hieronder schakelt dit uit.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Chatbreedte</value></data>

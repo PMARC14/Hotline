@@ -209,7 +209,7 @@
   <data name="Conn_DefaultModel" xml:space="preserve"><value>預設模型</value></data>
   <data name="Conn_DefaultEffort" xml:space="preserve"><value>預設推理強度</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>測試連線</value></data>
-  <data name="Effort_minimal" xml:space="preserve"><value>最低</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>最小</value></data>
   <data name="Effort_low" xml:space="preserve"><value>低</value></data>
   <data name="Effort_medium" xml:space="preserve"><value>中</value></data>
   <data name="Effort_high" xml:space="preserve"><value>高</value></data>
@@ -499,6 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 其餘項目仍會套用。「設定 › 進階」中列出了所有項目。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>無法讀取設定檔</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline 將保留現有設定，直到問題修正。</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 現為實際像素（先前為縮放單位）：您的數值 {0} 已按原樣保留；請查看 設定 &amp;gt; 視窗</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定檔發生問題</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>忽略的值將使用預設值。修正檔案後，Hotline 會立即載入。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
@@ -598,8 +599,8 @@
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>螢幕 {0} × {1} px，縮放比例 {2}%：Windows 繪製介面大小為 {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>螢幕 {0} × {1} px（100% 縮放）</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>面板可縮至的最窄寬度，以螢幕的實體像素為單位（忽略 Windows 顯示縮放）。384 = 1920 × 1080 螢幕的 20%。</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>面板的最大寬度，以螢幕的真實像素為單位（忽略 Windows 顯示縮放）。2304 = 4K（3840 px）螢幕的 60%。</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>螢幕實際像素，忽略 Windows 縮放</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>螢幕的實際像素，忽略 Windows 縮放</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>訊息方塊上方</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>移至訊息方塊上方</value></data>
@@ -694,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>已略過：{0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>這些連線仍需要 API 金鑰：{0}。請開啟「AI 連線」並輸入。</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>設定與按鈕列會立即套用；音效、按鈕列與快速動作將在下次使用時重新整理。</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>無法刪除 {0}；檔案及其 API 金鑰已保留。</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>聊天寬度 (百分比)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>聊天開始時面板會展開至螢幕寬度的此比例，並在新聊天時縮回。0 = 保持寬度。在下方設定固定寬度會關閉此功能。</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>聊天寬度</value></data>

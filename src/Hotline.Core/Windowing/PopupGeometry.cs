@@ -78,11 +78,11 @@ public static class PopupGeometry
     /// <paramref name="chatWidthPercent"/> of the work area. Either way it is clamped to [min, max] (<c>window.minWidth</c> / <c>window.maxWidth</c>)
     /// and never wider than the work area. Never when the panel's width was set (<paramref name="width"/>:
     /// a fixed width, which a manual resize saves), when neither is set (the default), or when the target is not wider than the
-    /// <paramref name="startPx"/> it opens at. Windows' display scaling plays no part.
+    /// <paramref name="startPx"/> it opens at, or when the width was resized by hand this opening (<paramref name="widthSetByHand"/>: a hand resize always wins). Windows' display scaling plays no part.
     /// </summary>
-    public static int? ChatWidthPx(int? width, int? chatWidth, double chatWidthPercent, int workAreaWidthPx, int minPx, int maxPx, int startPx)
+    public static int? ChatWidthPx(int? width, int? chatWidth, double chatWidthPercent, int workAreaWidthPx, int minPx, int maxPx, int startPx, bool widthSetByHand = false)
     {
-        if (width is not null) return null;
+        if (width is not null || widthSetByHand) return null;
         int target;
         if (chatWidth is { } explicitWidth) target = Math.Min(workAreaWidthPx, Math.Clamp(explicitWidth, minPx, Math.Max(minPx, maxPx)));
         else if (chatWidthPercent > 0) target = RelativeWidthPx(workAreaWidthPx, chatWidthPercent, minPx, maxPx);

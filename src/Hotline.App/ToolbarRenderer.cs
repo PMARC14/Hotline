@@ -181,6 +181,9 @@ internal sealed class ToolbarRenderer
             Gap();
         }
         foreach (var id in rightShown.Where(Visible)) Add(Element(id));
+        // A row whose items are all hidden pickers has no children: collapse it, or its margin stays as a blank gap.
+        var rowVisibility = grid.Children.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
+        if (grid.Visibility != rowVisibility) grid.Visibility = rowVisibility;
 
         bool Visible(string id) => !hiddenPickers.Contains(id);
     }

@@ -209,7 +209,7 @@ Reddet:
   <data name="Conn_DefaultModel" xml:space="preserve"><value>Varsayılan model</value></data>
   <data name="Conn_DefaultEffort" xml:space="preserve"><value>Varsayılan efor</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>Bağlantıyı test et</value></data>
-  <data name="Effort_minimal" xml:space="preserve"><value>Minimal</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>Minimum</value></data>
   <data name="Effort_low" xml:space="preserve"><value>Düşük</value></data>
   <data name="Effort_medium" xml:space="preserve"><value>Orta</value></data>
   <data name="Effort_high" xml:space="preserve"><value>Yüksek</value></data>
@@ -499,6 +499,7 @@ Reddet:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Geri kalanı geçerlidir. Ayarlar › Gelişmiş her şeyi listeler.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Bir ayar dosyası okunamıyor</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline, düzeltilene kadar mevcut ayarlarını korur.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width artık gerçek piksellerdir (önceki: ölçekli birimler): {0} değerleriniz olduğu gibi korundu; Ayarlar &amp;gt; Pencere bölümünü kontrol edin</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Ayar dosyalarınızdaki sorunlar</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Yoksayılan değerler varsayılanlarını kullanır. Dosyayı düzeltin; Hotline bunu hemen algılar.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json dosyasının bir kısmı yoksayıldı</value></data>
@@ -598,8 +599,8 @@ Reddet:
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Düğme satırları</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Ekran {0} × {1} px, %{2} ölçekte: Windows arayüzü {3} × {4} olarak çizer</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>%100 ölçeklendirmede ekran {0} × {1} px</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Panelin inebileceği en dar genişlik, ekranın gerçek pikseli cinsinden (Windows ekran ölçeklendirmesi yok sayılır). 384 = 1920 × 1080 ekranın %20'si.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ekranın gerçek pikselleri cinsinden panelin maksimum genişliği (Windows ekran ölçeklendirmesi yoksayılır). 2304 = 4K (3840 px) ekranın %60'ı.</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Ekranın gerçek pikselleri, Windows ölçeklendirmesi yoksayılır</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ekranın gerçek pikselleri, Windows ölçeklendirmesi yoksayılır</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>İleti kutusunun altına taşı</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>İleti kutusunun üstünde</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>İleti kutusunun üstüne taşı</value></data>
@@ -694,6 +695,7 @@ Reddet:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Atlandı: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Bu bağlantılar için hâlâ bir API anahtarı gerekiyor: {0}. Yapay Zeka bağlantılarını açın ve anahtarı girin.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>Ayarlar ve düğme çubuğu hemen uygulanır; sesler, düğme satırları ve hızlı eylemler bir sonraki kullanımda yenilenir.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>{0} kaldırılamadı; dosya ve API anahtarı korundu.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Sohbet genişliği (yüzde)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>Panel, bir sohbet başladığında ekran genişliğinin bu payına kadar genişler ve yeni bir sohbette tekrar küçülür. 0 = genişliğini korur. Aşağıda sabit bir genişlik belirlemek bunu kapatır.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Sohbet genişliği</value></data>

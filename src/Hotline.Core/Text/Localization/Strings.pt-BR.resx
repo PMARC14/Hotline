@@ -499,6 +499,7 @@ Negar:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} O restante é aplicado. Configurações › Avançado lista tudo.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Não é possível ler um arquivo de configurações</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>O Hotline mantém as configurações atuais até que seja corrigido.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width agora são pixels reais (antes: unidades dimensionadas): seus valores {0} foram mantidos como estavam; verifique Configurações &amp;gt; Janela</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemas nos seus arquivos de configurações</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Valores ignorados usam seus padrões. Corrija o arquivo e o Hotline o aplicará imediatamente.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Parte de toolbar.json foi ignorada</value></data>
@@ -598,8 +599,8 @@ Negar:
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Linhas de botões</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Tela {0} × {1} px com escala de {2}%: o Windows renderiza a interface em {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Tela {0} × {1} px em escala de 100%</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>A largura mínima do painel, em pixels reais da tela (a escala de exibição do Windows é ignorada). 384 = 20% de uma tela de 1920 × 1080.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Largura máxima do painel em pixels reais da tela (a escala de exibição do Windows é ignorada). 2304 = 60% de uma tela 4K (3840 px).</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Pixels reais da tela, dimensionamento do Windows ignorado</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Pixels reais da tela, dimensionamento do Windows ignorado</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Mover para baixo da caixa de mensagem</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Acima da caixa de mensagem</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Mover para cima da caixa de mensagem</value></data>
@@ -694,6 +695,7 @@ Negar:
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>Ignorado: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>Estas conexões ainda precisam de uma chave de API: {0}. Abra Conexões de IA e insira-a.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>As configurações e a barra de botões são aplicadas imediatamente; sons, linhas de botões e ações rápidas serão atualizados na próxima vez que forem usados.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>Não foi possível remover {0}; o arquivo e sua chave de API foram mantidos.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>Largura do chat (porcentagem)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>O painel se expande para esta proporção da largura da tela quando um chat começa e encolhe de volta em um novo chat. 0 = mantém sua largura. Uma largura fixa abaixo desativa isso.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>Largura do chat</value></data>

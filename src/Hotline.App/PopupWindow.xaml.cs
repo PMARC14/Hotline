@@ -47,6 +47,9 @@ public sealed partial class PopupWindow : Window
         _guard = guard;
         _log = log;
         InitializeComponent();
+        // The grips reach the window's edge: the negated padding of Root (one source of truth, XAML has no way to bind it).
+        var pad = Root.Padding;
+        GripLayer.Margin = new Thickness(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
         Hwnd = WinRT.Interop.WindowNative.GetWindowHandle(this);
         _rows = new ToolbarRenderer(this, b => CustomButtonClicked?.Invoke(b), log);
 
@@ -214,7 +217,7 @@ public sealed partial class PopupWindow : Window
             if (cloaked) _log.Info($"panel open but cloaked ({state})"); // e.g. another virtual desktop: leave it
             // The content must fit the client area (2026-10-17: the window frame wasn't counted and the bottom of the
             // panel, with the move grip, was cut off).
-            var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale), MaxPx - FramePx);
+            var needPx = Math.Min((int)Math.Ceiling(Math.Max(_contentDip, MinContentDip) * _scale), MaxPx - FramePx);
             if (_fixedPx is null && !_animating && AppWindow.ClientSize.Height > 0 && AppWindow.ClientSize.Height + 1 < needPx)
                 _log.Error($"panel content cut off: client {AppWindow.ClientSize.Height} px < content {needPx} px");
             if (visible && drawn) return;
@@ -531,7 +534,7 @@ public sealed partial class PopupWindow : Window
         var maxPx = MaxPx;
         var bar = _growUp ? _bar : DownBar;
         // Before the first layout pass there is no measured content yet: keep a sane minimum instead of 0 px.
-        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, 56) * _scale) + FramePx;
+        var contentPx = (int)Math.Ceiling(Math.Max(_contentDip, MinContentDip) * _scale) + FramePx;
         if (_fixedPx is { } fixedPx) contentPx = fixedPx; // resized by hand: that height until the next open
         else if (GrowMode == GrowMode.Grow)
         {
@@ -570,7 +573,7 @@ public sealed partial class PopupWindow : Window
     /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
     private int? ChatWidthPx => _fixedPx is not null ? null
         : PopupGeometry.ChatWidthPx(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width,
-            _settings.MinWidth, _settings.MaxWidth, _bar.Width);
+            _settings.MinWidth, _settings.MaxWidth, _bar.Width, _fixedWidth);
 
     private bool _animating;
     private double _animatedHeight;
@@ -612,6 +615,9 @@ public sealed partial class PopupWindow : Window
         AppWindow.MoveAndResize(new RectInt32(r.X, r.Y, r.Width, r.Height));
     }
 
+    /// <summary>The least content height (DIPs) assumed before the first layout pass: the panel's own top and bottom padding plus one control row.</summary>
+    private double MinContentDip => Root.Padding.Top + Root.Padding.Bottom + 48;
+
     private double _barDip;
     private bool _growUp = true;
 
@@ -622,7 +628,7 @@ public sealed partial class PopupWindow : Window
     private int FramePx => Math.Max(0, AppWindow.Size.Height - AppWindow.ClientSize.Height);
 
     /// <summary>The bar alone as a window height, in pixels (measured; a sane minimum before the first layout).</summary>
-    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, 56) * _scale) + FramePx);
+    private int BarPx => Math.Max(_bar.Height, (int)Math.Ceiling(Math.Max(_barDip, MinContentDip) * _scale) + FramePx);
 
     /// <summary>
     /// The bar's rectangle: its bottom edge is the placement line in both directions, kept inside the work area (a line
@@ -639,10 +645,12 @@ public sealed partial class PopupWindow : Window
         : (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0));
 
     /// <summary>The spot the panel was moved/resized to this session; reused only while pinned (never saved).</summary>
-    private sealed record SessionSpot(RectI Bar, RectI Work, double Scale, int? FixedPx);
+    private sealed record SessionSpot(RectI Bar, RectI Work, double Scale, int? FixedPx, bool FixedWidth);
     private SessionSpot? _session;
     /// <summary>A resize fixes the panel's height for this opening (content no longer resizes it).</summary>
     private int? _fixedPx;
+    /// <summary>A resize by hand changed the panel's width this opening: it then keeps that width (no chat width over it), like a hand height.</summary>
+    private bool _fixedWidth;
 
     // ---- user drags (Chat/PanelGrips) ---------------------------------------------------------
 
@@ -650,7 +658,8 @@ public sealed partial class PopupWindow : Window
     public RectI WindowRect => new(AppWindow.Position.X, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
     public RectI WorkArea => _work;
     public bool IsResizeHeld => _resizeHolds > 0;
-    public int MinDragWidthPx => (int)Math.Round(360 * _scale);
+    /// <summary>Real pixels, the same floor Normalize gives window.minWidth (the width setting is not in scaled units).</summary>
+    public int MinDragWidthPx => Math.Max(200, _settings.MinWidth);
     /// <summary>A resize may go down to the bar alone (the panel as it first opens).</summary>
     public int MinDragHeightPx => Hotline.Core.Windowing.PanelPlacement.MinResizeHeight(BarPx);
     private bool _dragging;
@@ -673,7 +682,7 @@ public sealed partial class PopupWindow : Window
     /// The drag ended: the window is pulled inside the monitor it's on, the bar line follows it (the bar's bottom edge),
     /// the direction is chosen again, and the spot is kept for this session (used while pinned).
     /// </summary>
-    public void EndUserDrag(bool resized)
+    public void EndUserDrag(bool resized, bool widthChanged = false)
     {
         _dragging = false;
         if (_offscreen) return;
@@ -686,9 +695,10 @@ public sealed partial class PopupWindow : Window
         if (_fixedPx is { } kept && !resized && Math.Abs(m.Scale - oldScale) > 0.001) _fixedPx = (int)Math.Round(kept * m.Scale / oldScale);
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
+        if (widthChanged) _fixedWidth = true;
         var h = (int)Math.Round(_settings.Height * _scale);
         // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
-        var (barX, barW) = !resized && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
+        var (barX, barW) = !resized && !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
         _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
         // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
         void BarAt(bool up)
@@ -705,7 +715,7 @@ public sealed partial class PopupWindow : Window
             BarAt(_growUp);
             _downTop = _growUp ? null : rect.Y;
         }
-        _session = new SessionSpot(_bar, _work, _scale, _fixedPx);
+        _session = new SessionSpot(_bar, _work, _scale, _fixedPx, _fixedWidth);
         _forgetOnHide = false; // moved again: this is the spot now
         ApplyHeight(force: true);
     }
@@ -723,6 +733,7 @@ public sealed partial class PopupWindow : Window
     {
         _session = null;
         _fixedPx = null;
+        _fixedWidth = false;
         PlaceOnActiveMonitor();
     }
 
@@ -775,6 +786,7 @@ public sealed partial class PopupWindow : Window
             // The same spot (pulled inside its monitor again, in case its work area changed).
             (_work, _scale) = (still.Work, still.Scale);
             _fixedPx = spot.FixedPx is { } f ? (int)Math.Round(f * still.Scale / spot.Scale) : null;
+            _fixedWidth = spot.FixedWidth;
             _bar = Hotline.Core.Windowing.PanelPlacement.Clamp(Hotline.Core.Windowing.PanelPlacement.Rescale(spot.Bar, spot.Scale, still.Scale), still.Work);
             ChooseDirection();
             _log.Info($"place: pinned spot {_bar} on {still.Device} scale={still.Scale} up={_growUp}");
@@ -782,6 +794,7 @@ public sealed partial class PopupWindow : Window
             return;
         }
         _fixedPx = null;
+        _fixedWidth = false;
         var (area, monitor, how) = HomeMonitor();
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;

@@ -6,7 +6,12 @@ namespace Hotline.Core.Tests;
 public sealed class ConnectionFilesTests : IDisposable
 {
     private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
+    public void Dispose()
+    {
+        if (!Directory.Exists(_dir)) return;
+        foreach (var file in Directory.EnumerateFiles(_dir, "*", SearchOption.AllDirectories)) File.SetAttributes(file, FileAttributes.Normal);
+        Directory.Delete(_dir, recursive: true);
+    }
 
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private string SettingsFile => Path.Combine(_dir, SettingsStore.FileName);
@@ -54,6 +59,50 @@ public sealed class ConnectionFilesTests : IDisposable
         File.WriteAllText(SettingsFile, root.ToJsonString());
         var s = new SettingsStore(_dir).Load();
         Assert.Equal(["zeta", "agy", "alpha"], s.Chat.Backends.Select(b => b.Id)); // id from the file name
+    }
+
+    [Fact]
+    public void Removing_a_hand_written_connection_keeps_its_exact_bytes_in_a_backup()
+    {
+        WithAgy();
+        var store = new SettingsStore(_dir);
+        var settings = store.Load();
+        var original = File.ReadAllBytes(Conn("agy"));
+        settings.Chat.Backends.Clear();
+        store.Save(settings, ["agy"]);
+        Assert.False(File.Exists(Conn("agy")));
+        Assert.Equal(original, File.ReadAllBytes(Assert.Single(Directory.GetFiles(store.ConnectionsDirectory, "agy.json.*.bak"))));
+        Assert.DoesNotContain("agy", store.KnownConnectionIds);
+        Assert.Empty(store.WriteProblems);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Failed_removal_keeps_the_connection_file_and_ownership(bool backupFails)
+    {
+        WithAgy();
+        var store = new SettingsStore(_dir);
+        var settings = store.Load();
+        var path = Conn("agy");
+        var original = File.ReadAllBytes(path);
+        var blocked = Path.Combine(_dir, "blocked");
+        File.WriteAllText(blocked, "not a directory");
+        if (backupFails) store.BackupOverride = file => File.Copy(file, Path.Combine(blocked, "backup"));
+        else File.SetAttributes(path, FileAttributes.ReadOnly);
+        try
+        {
+            settings.Chat.Backends.Clear();
+            store.Save(settings, ["agy"]);
+            Assert.NotEmpty(store.WriteProblems);
+            Assert.Equal(original, File.ReadAllBytes(path));
+            Assert.Equal(Path.GetFullPath(path), store.SourcePath("agy"));
+            Assert.Contains("agy", store.KnownConnectionIds);
+        }
+        finally { if (File.Exists(path)) File.SetAttributes(path, FileAttributes.Normal); }
+        store.BackupOverride = null;
+        store.Save(settings, ["agy"]); // ownership survived: a retry can finish removing it
+        Assert.False(File.Exists(path));
     }
 
     [Fact]

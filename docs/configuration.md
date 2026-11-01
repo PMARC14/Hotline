@@ -13,6 +13,7 @@ same files). Comments and trailing commas are allowed.
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
+| `icons\<id>.png.<time>.bak` | The previous picture, copied before a replacement (newest 10 per file). No replacement if the backup fails; these copies remain after the button rows are saved |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
@@ -22,7 +23,7 @@ same files). Comments and trailing commas are allowed.
 | `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
 | `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept whenever Hotline is about to replace a file it did not write itself: a hand edit it rewrites (to add newly available options or to move an old inline `chat.backends` list into `connections\`), a damaged file, or an older run's file. Never overwritten; the newest 10 are kept |
 | `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
-| `connections\<id>.json.<time>.bak` | The previous connection file, kept the same way when Settings rewrites a file you edited by hand (newest 10 per file) |
+| `connections\<id>.json.<time>.bak` | The previous connection file, kept when Settings rewrites a file you edited by hand or removes a connection (newest 10 per file). A failed backup or deletion keeps the file and its API key |
 | `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it (newest 10) |
 | `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json (`yyyyMMdd-HHmmss`), kept when Settings is about to replace a file Hotline did not write itself (a hand edit, with its comments and ignored entries); never overwritten, the newest 10 are kept, and nothing is replaced if the copy can't be made. Hotline's own earlier saves are not copied again. `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
@@ -41,13 +42,13 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 |---|---|---|
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `400` / `1200` | Panel width at opening: % of the screen's **real pixels**, clamped to `minWidth`/`maxWidth` (also **real pixels**: the owner's defaults, 400 and 1200). Windows' display scaling is ignored: the same screen gives the same pixel width at 100% and at 200%. Scaling still decides how big buttons and text are (a cell stays 40 scaled units), so a narrow panel simply moves buttons into the "..." box. Settings > Window shows a line under the width controls with what they come to on this screen, and a note above the button rows with this screen's pixels, the scaling and the scaled interface size. Heights (`height`, `chatHeight`) stay in scaled units |
+| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `400` / `1200` | Panel width at opening: % of the screen's **real pixels**, clamped to `minWidth`/`maxWidth` (also **real pixels**: the owner's defaults, 400 and 1200). Windows' display scaling is ignored: the same screen gives the same pixel width at 100% and at 200%. Scaling still decides how big buttons and text are (a cell stays 40 scaled units), so a narrow panel simply moves buttons into the "..." box. Settings > Window shows a note above the button rows with this screen's pixels, the scaling and the scaled interface size. Heights (`height`, `chatHeight`) stay in scaled units |
 | `window.height` / `maxHeightPercent` | `0` / `60` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
-| `window.width` | `null` | Panel width in real pixels (a resize by hand saves it as pixels); `null` = the `widthPercent` rule. A width you saved yourself is kept |
+| `window.width` | `null` | Panel width in real pixels (200-16000; a resize by hand saves it as pixels); `null` = the `widthPercent` rule. A width you saved yourself is kept |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
 | `window.chatWidthPercent` | `0` | The panel grows this wide (% of the screen, 20-90, clamped to `minWidth`..`maxWidth`) when a chat starts and shrinks back on a new chat, around its centre. `0` = it keeps its width; a value no wider than the opening width does the same |
-| `window.chatWidth` | `null` | The chat width in real pixels (kept within `minWidth`..`maxWidth`, as the percentage is); `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
+| `window.chatWidth` | `null` | The chat width in real pixels (200-16000, kept within `minWidth`..`maxWidth`, as the percentage is); `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
 | `window.backdrop` | `acrylicThin` | `acrylic`, `acrylicThin`, `mica`, `solid` |
@@ -78,14 +79,19 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.voiceAutoSend` | `false` | With `voice`: send the message when you let go of the key (off: check it first, then press Enter) |
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
-| `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
+| `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
 
-settings.json is schema version 14. Hotline is pre-1.0 and does not convert older files: a lower or missing `schemaVersion`
-is read as it is (every value checked and clamped) and gets the current version in memory at once. The file itself is rewritten at
-startup when it lacks an option this version has (a missing `schemaVersion` is one) and has no ignored values, and otherwise when
-Settings next saves it; the previous file is first kept as `settings.json.<time>.bak`, and nothing is written if that copy can't be made.
+settings.json is schema version 15. On upgrading a file with `schemaVersion` below 14, widths change from scaled units (DIPs)
+to real pixels: old default `minWidth` 600 and `maxWidth` 1000 become 400 and 1200 (each independently). Other explicit minimum
+and maximum widths keep their numbers, with a notice to check Settings > Window. Saved `width` and `chatWidth` values are
+cleared to `null`, with the same notice, so the percentage rules apply again. Values are still checked and clamped.
+Schema 14 files already use pixels and keep their widths. A file without `schemaVersion` counts as current and keeps its widths too.
+The migrated file is stamped 15 and rewritten at startup if it has no other reading problems; the notice appears once.
+Otherwise, a lower schema version alone does not rewrite the file. Files are also rewritten at startup when they lack an option
+this version has (a missing `schemaVersion` is one) and have no ignored values, or when Settings next saves them.
+Before any rewrite the previous file is kept as `settings.json.<time>.bak`; if that copy fails, nothing is written.
 An old `activation.copilotKey` entry and an old `window.layout` (nothing ever read it) are dropped then ([copilot-key.md](copilot-key.md)).
-Connection files and API keys are untouched; the one remaining conversion splits an inline `chat.backends` list into
+Connection files and API keys are untouched; an older conversion also splits an inline `chat.backends` list into
 `connections\` files.
 
 **Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and

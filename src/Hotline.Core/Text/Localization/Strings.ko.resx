@@ -499,6 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 나머지는 적용됩니다. 설정 › 고급에서 전체 목록을 확인할 수 있습니다.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>설정 파일을 읽을 수 없습니다</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>문제가 해결될 때까지 Hotline은 현재 설정을 유지합니다.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width가 이제 실제 픽셀 단위입니다(이전: 배율 단위): {0} 값은 그대로 유지되었습니다. 설정 &amp;gt; 창에서 확인하세요</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>설정 파일 문제</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>무시된 값에는 기본값이 사용됩니다. 파일을 수정하면 Hotline에 즉시 반영됩니다.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json의 일부가 무시되었습니다</value></data>
@@ -598,8 +599,8 @@
   <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>화면 {0} × {1} px ({2}% 배율): Windows에서 인터페이스를 {3} × {4} 크기로 렌더링합니다</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>화면 {0} × {1} px (100% 배율)</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>패널의 최소 너비(화면의 실제 픽셀 단위, Windows 디스플레이 배율 무시). 384 = 1920 × 1080 화면의 20%.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀 기준 패널 최대 너비(Windows 디스플레이 배율은 무시됨). 2304 = 4K(3840 px) 화면의 60%.</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀, Windows 배율 무시</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀, Windows 배율 무시</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>메시지 상자 위</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>메시지 상자 위로 이동</value></data>
@@ -694,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>건너뜀: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>이 연결에는 여전히 API 키가 필요합니다: {0}. AI 연결을 열고 입력하세요.</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>설정과 버튼 모음은 즉시 적용되며 소리, 버튼 행, 빠른 작업은 다음에 사용할 때 새로고침됩니다.</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>{0}을(를) 제거할 수 없습니다. 파일과 API 키는 유지되었습니다.</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>채팅 너비(백분율)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>채팅이 시작되면 패널이 화면 너비의 이 비율로 커지고 새 채팅 시 원래대로 줄어듭니다. 0 = 기존 너비 유지. 아래에서 고정 너비를 설정하면 이 기능이 꺼집니다.</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>채팅 너비</value></data>
@@ -764,7 +766,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_OutlineColor" xml:space="preserve"><value>윤곽선 색</value></data>
   <data name="Bar_ColorAccent" xml:space="preserve"><value>강조 색</value></data>
   <data name="Bar_ColorRed" xml:space="preserve"><value>빨강</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황색</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황</value></data>
   <data name="Bar_ColorYellow" xml:space="preserve"><value>노랑</value></data>
   <data name="Bar_ColorGreen" xml:space="preserve"><value>초록</value></data>
   <data name="Bar_ColorTeal" xml:space="preserve"><value>청록</value></data>

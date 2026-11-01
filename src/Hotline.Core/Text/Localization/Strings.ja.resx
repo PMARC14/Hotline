@@ -209,7 +209,7 @@
   <data name="Conn_DefaultModel" xml:space="preserve"><value>既定のモデル</value></data>
   <data name="Conn_DefaultEffort" xml:space="preserve"><value>既定の思考量</value></data>
   <data name="Conn_Test" xml:space="preserve"><value>接続をテスト</value></data>
-  <data name="Effort_minimal" xml:space="preserve"><value>最小</value></data>
+  <data name="Effort_minimal" xml:space="preserve"><value>最小限</value></data>
   <data name="Effort_low" xml:space="preserve"><value>低</value></data>
   <data name="Effort_medium" xml:space="preserve"><value>中</value></data>
   <data name="Effort_high" xml:space="preserve"><value>高</value></data>
@@ -422,7 +422,7 @@
   <data name="Attach_Selection" xml:space="preserve"><value>選択したテキスト</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} で選択したテキスト</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>添付できるファイルは {0} 個までです。</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>{0} のテキスト</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} 内のテキスト</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} は画像を読めません。</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} はファイルを読めません。</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>バックエンド「{0}」はまだ利用できません。</value></data>
@@ -499,6 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 残りの設定は適用されます。[設定] › [詳細設定] にすべて表示されます。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>設定ファイルを読み取れません</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>修正されるまで、Hotline は現在の設定を維持します。</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width は実際のピクセルになりました (以前: スケール単位): 設定値 {0} はそのまま保持されました。設定 &amp;gt; ウィンドウ を確認してください</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定ファイルの問題</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>無視された値にはデフォルトが使用されます。ファイルを修正すると、Hotline にすぐに反映されます。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json の一部が無視されました</value></data>
@@ -598,8 +599,8 @@
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>画面 {0} × {1} px ({2}% スケーリング): Windows はインターフェイスを {3} × {4} で描画します</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>画面 {0} × {1} px (100% スケーリング)</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>パネルの最小幅（画面の物理ピクセル単位、Windows の表示スケールは無視）。384 = 1920 × 1080 画面の 20%。</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実ピクセル単位でのパネルの最大幅（Windows の表示スケーリングは無視されます）。2304 = 4K（3840 px）画面の 60%。</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>画面の実ピクセル、Windowsのスケーリングを無視</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実際のピクセル、Windows のスケーリングを無視</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>メッセージ ボックスの上</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>メッセージ ボックスの上に移動</value></data>
@@ -694,6 +695,7 @@
   <data name="Backup_ImportSkipped" xml:space="preserve"><value>スキップ済み: {0}</value></data>
   <data name="Backup_NeedKeys" xml:space="preserve"><value>これらの接続にはまだ API キーが必要です: {0}。[AI 接続] を開いて入力してください。</value></data>
   <data name="Backup_LiveNote" xml:space="preserve"><value>設定とボタン バーはすぐに適用されます。サウンド、ボタン行、クイック アクションは次回使用時に更新されます。</value></data>
+  <data name="Settings_ProblemDeleteFailed" xml:space="preserve"><value>{0} を削除できませんでした。ファイルと API キーは保持されました。</value></data>
   <data name="Set_ChatWidthPercent" xml:space="preserve"><value>チャットの幅 (パーセント)</value></data>
   <data name="Set_ChatWidthPercent_Desc" xml:space="preserve"><value>チャットの開始時にパネルが画面幅のこの割合まで拡大し、新しいチャットで元に戻ります。0 = 幅を維持します。下で固定幅を設定するとこの機能は無効になります。</value></data>
   <data name="Set_ChatWidth" xml:space="preserve"><value>チャットの幅</value></data>
