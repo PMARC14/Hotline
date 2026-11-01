@@ -79,133 +79,68 @@ public sealed class ToolbarProfileTests
 
     // ---- every profile at every width and size ----
 
-    [Theory]
-    [MemberData(nameof(NamesAndSizes))]
-    public void Every_row_is_planned_without_losing_anything(string name, double size)
+    // The fixed widths for every legal left-prefix / right-suffix fit, plus each picker's hide thresholds.
+    // Visit each threshold exactly and one DIP either side; the regular grid also exercises shrinking between them.
+    private static IEnumerable<double> Rooms(ToolbarModel m, bool top, string[] available)
     {
-        var m = Sized(name, size);
-        foreach (var top in new[] { true, false })
+        var row = ToolbarPlan.Row(m, top);
+        var left = row.Droppable.Where(id => !ToolbarPlan.Stays(id)).Select(id => ToolbarPlan.Metrics(m, id).Width).ToArray();
+        var right = row.Right.Where(id => !ToolbarPlan.Stays(id)).Select(id => ToolbarPlan.Metrics(m, id).Width).ToArray();
+        var onBar = row.Droppable.Concat(row.Right).Where(ToolbarPlan.IsPicker).ToArray();
+        var visible = ToolbarPlan.PickerSpecs(m, available).Where(p => onBar.Contains(p.Name) && p.Available).ToList();
+        var reserves = new List<double> { 0 };
+        foreach (var drop in ToolbarPlan.PickerHideOrder)
         {
-            var row = ToolbarPlan.Row(m, top);
-            foreach (var room in Widths.Concat(Sweep()))
-            {
-                var where = $"{name} {size} top {top} room {room}";
-                var f = Plan(m, top, room);
-                // Shown and dropped are the row's droppable ids, each once, each side in order.
-                Assert.Equal(row.Droppable.OrderBy(id => id), f.Shown.Concat(f.Dropped).OrderBy(id => id));
-                Assert.Equal(row.Droppable.Where(f.Shown.Contains), f.Shown);
-                Assert.Equal(row.Droppable.Where(f.Dropped.Contains), f.Dropped);
-                Assert.DoesNotContain(f.Dropped, ToolbarPlan.IsPicker);
-                // The dropped ones are the end of the non-picker buttons, as many as the fit says.
-                var buttons = row.Droppable.Where(id => !ToolbarPlan.Stays(id)).ToList(); // pickers and the more button never move into the menu
-                Assert.Equal(buttons.Skip(f.Fit.LeftShown), f.Dropped);
-                Assert.Equal(f.Dropped.Count > 0 || f.RightDropped.Count > 0 || row.HasMore, f.Fit.Overflow); // a placed more button is always drawn
-                // The right group gives up its first buttons only once no left button is left, never its last, and its ids split cleanly.
-                var rightButtons = row.Right.Where(id => !ToolbarPlan.Stays(id)).ToList();
-                Assert.Equal(rightButtons.Take(f.Fit.RightDropped), f.RightDropped);
-                Assert.True(f.RightDropped.Count == 0 || f.Fit.LeftShown == 0, where);
-                Assert.True(rightButtons.Count == 0 || f.RightDropped.Count < rightButtons.Count, where);
-                Assert.Equal(row.Right.OrderBy(id => id), f.RightShown.Concat(f.RightDropped).OrderBy(id => id));
-                Assert.Equal(row.Right.Where(f.RightShown.Contains), f.RightShown);
-                // The menu is in bar order: left, centre, then the right group.
-                Assert.Equal(f.UserMenu.Concat(f.Dropped).Concat(f.RightDropped), f.Menu);
-                Assert.Equal(row.HasMore ? ToolbarPlan.MenuItems(m) : [], f.UserMenu); // only the row with the more button lists the user's menu
-                // The row's kept buttons have a width each.
-                Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(rightButtons.Skip(f.Fit.RightDropped)).Concat(row.HasMore ? [ToolbarModel.MoreId] : []).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
-                foreach (var (id, width) in f.ButtonWidths)
-                {
-                    Assert.Equal(ToolbarPlan.Metrics(m, id).Width, width);
-                    Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height); // every button is one cell high
-                    Assert.InRange(width, 0.5 * ToolbarPlan.BaseWidth, 4 * ToolbarPlan.BaseWidth);
-                }
-                Assert.True(double.IsFinite(f.Used) && f.Used >= 0, where);
-            }
+            reserves.Add(visible.Sum(p => p.Min));
+            reserves.Add(visible.Sum(p => p.Preferred));
+            visible.RemoveAll(p => p.Name == drop);
         }
+        var rooms = new SortedSet<double>(Widths.Concat(Sweep(from: 0, to: 2000, step: 20)));
+        for (var shown = 0; shown <= left.Length; shown++)
+            for (var dropped = 0; dropped <= (shown == 0 ? Math.Max(0, right.Length - 1) : 0); dropped++)
+            {
+                var overflow = row.HasMore || shown < left.Length || dropped > 0;
+                var fixedWidth = left.Take(shown).Sum() + right.Skip(dropped).Sum()
+                    + (overflow ? (row.HasMore ? ToolbarPlan.Metrics(m, ToolbarModel.MoreId).Width : ToolbarPlan.BaseWidth) : 0);
+                foreach (var reserve in reserves)
+                    foreach (var delta in new[] { -1, 0, 1 })
+                        if (fixedWidth + reserve + delta is >= 0 and <= 2000)
+                            rooms.Add(fixedWidth + reserve + delta);
+            }
+        return rooms;
     }
 
     [Theory]
     [MemberData(nameof(NamesAndSizes))]
-    public void Picker_widths_stay_within_their_spans_and_hide_in_order(string name, double size)
+    public void Rows_preserve_every_item_fit_the_room_and_grow_monotonically(string name, double size)
     {
         var m = Sized(name, size);
+        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
+        Assert.Equal(m.ToJson(), ToolbarModel.Resolve(m.ToJson()).ToJson());
         var specs = ToolbarPlan.PickerSpecs(m, AllPickers).ToDictionary(s => s.Name);
         foreach (var top in new[] { true, false })
         {
-            // Each row plans its own pickers (they can sit in either row, in any group).
             var row = ToolbarPlan.Row(m, top);
             var onBar = row.Left.Concat(row.Center).Concat(row.Right).Where(ToolbarPlan.IsPicker).ToList();
-            foreach (var room in Widths.Concat(Sweep()))
-            {
-                var where = $"{name} {size} top {top} room {room}";
-                var f = Plan(m, top, room);
-                if (onBar.Count == 0) { Assert.Empty(f.PickerWidths); continue; }
-                Assert.Equal(onBar.OrderBy(p => p), f.PickerWidths.Keys.OrderBy(p => p));
-                foreach (var (id, width) in f.PickerWidths)
-                {
-                    // The span times the unit is the preferred width and the maximum too; the floor and one unit the minimum.
-                    Assert.True(width == 0 || (width >= specs[id].Min - Eps && width <= specs[id].Preferred + Eps), $"{where}: {id} {width}");
-                    Assert.True(width == 0 || width >= Math.Min(ToolbarPlan.PickerFloor(id), specs[id].Preferred), $"{where}: {id} {width}");
-                }
-                // While buttons move into the menu to keep the pickers' room, every picker on the bar has at least its readable minimum.
-                if (f.Fit.PickersKept)
-                    Assert.All(onBar, id => Assert.True(f.PickerWidths[id] >= specs[id].Min, $"{where}: {id} {f.PickerWidths[id]} under {specs[id].Min}"));
-                // Hidden only in order: effort, then provider, then model (among the pickers on the bar). Unchanged by the new
-                // minimums (56, 84, 72): the order is the hide order, whatever the minimums are.
-                var order = ToolbarPlan.PickerHideOrder.Where(onBar.Contains).ToList();
-                var hidden = order.Where(id => f.PickerWidths[id] == 0).ToList();
-                Assert.Equal(order.Take(hidden.Count), hidden);
-            }
-        }
-    }
-
-    [Theory]
-    [MemberData(nameof(NamesAndSizes))]
-    public void The_row_stays_in_the_room_except_for_the_documented_overshoot(string name, double size)
-    {
-        var m = Sized(name, size);
-        foreach (var top in new[] { true, false })
-        {
-            var row = ToolbarPlan.Row(m, top);
-            var hasPickers = row.Droppable.Concat(row.Right).Any(ToolbarPlan.IsPicker);
+            var hasPickers = onBar.Count > 0;
             var rightIds = row.Right.Where(id => !ToolbarPlan.Stays(id)).ToList();
             var overflow = row.HasMore ? ToolbarPlan.Metrics(m, ToolbarModel.MoreId).Width : ToolbarPlan.BaseWidth;
-            foreach (var room in Widths.Concat(Sweep(to: 2000, step: 7)))
-            {
-                var where = $"{name} {size} top {top} room {room}";
-                var f = Plan(m, top, room);
-                if (f.Used <= room + Eps) continue;
-                // The only overshoot: not even the last right button and the "⋯" button fit (a panel under about two buttons), so
-                // nothing else shows. (Changed: a right group wider than the room used to overshoot too; now it gives up buttons.)
-                var lastRight = rightIds.Count == 0 ? 0 : ToolbarPlan.Metrics(m, rightIds[^1]).Width;
-                var smallest = lastRight + (row.HasMore || rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.Stays(id)) ? overflow : 0)
-                    + Spacing * (1 + (row.HasMore || rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.Stays(id)) ? 1 : 0)
-                        + (hasPickers ? 1 : 0) + (row.Center.Count > 0 ? 1 : 0));
-                Assert.True(smallest > room - Eps, $"{where}: overshoot {f.Used - room} with {f.Fit}, smallest {smallest}");
-                Assert.True(f.Fit.LeftShown == 0 && f.Fit.RightDropped == Math.Max(0, rightIds.Count - 1) && !f.Fit.PickersKept, $"{where}: {f.Fit}");
-                Assert.All(f.PickerWidths.Values, w => Assert.Equal(0, w));
-            }
-        }
-    }
-
-    [Theory]
-    [MemberData(nameof(NamesAndSizes))]
-    public void Planning_is_repeatable_and_more_room_never_hides_what_was_shown(string name, double size)
-    {
-        var m = Sized(name, size);
-        foreach (var top in new[] { true, false })
             foreach (var available in new[] { AllPickers, ["model", "provider"], Array.Empty<string>() })
             {
                 ToolbarPlan.RowLayout? previous = null;
-                foreach (var room in Sweep(to: 2000, step: 3))
+                foreach (var room in Rooms(m, top, available))
                 {
                     var where = $"{name} {size} top {top} room {room} pickers {available.Length}";
                     var f = Plan(m, top, room, available);
-                    var again = Plan(m, top, room, available);
-                    Assert.Equal(f.Shown, again.Shown);
-                    Assert.Equal(f.Dropped, again.Dropped);
-                    Assert.Equal((f.Fit, f.Used), (again.Fit, again.Used));
-                    Assert.Equal(f.PickerWidths.OrderBy(p => p.Key), again.PickerWidths.OrderBy(p => p.Key));
-                    Assert.Equal(f.ButtonWidths.OrderBy(p => p.Key), again.ButtonWidths.OrderBy(p => p.Key));
+                    if (Widths.Contains(room))
+                    {
+                        var again = Plan(m, top, room, available);
+                        Assert.Equal(f.Shown, again.Shown);
+                        Assert.Equal(f.Dropped, again.Dropped);
+                        Assert.Equal((f.Fit, f.Used), (again.Fit, again.Used));
+                        Assert.Equal(f.PickerWidths.OrderBy(p => p.Key), again.PickerWidths.OrderBy(p => p.Key));
+                        Assert.Equal(f.ButtonWidths.OrderBy(p => p.Key), again.ButtonWidths.OrderBy(p => p.Key));
+                    }
                     if (previous is { } p)
                     {
                         // As the robustness tests define it: the pickers keep their room once they have it, and while that stays the
@@ -219,17 +154,69 @@ public sealed class ToolbarProfileTests
                             Assert.True(f.PickerWidths.Values.Count(w => w > 0) >= p.PickerWidths.Values.Count(w => w > 0), $"{where}: a picker went away");
                     }
                     previous = f;
+                    if (available != AllPickers) continue;
+                    // Shown and dropped are the row's droppable ids, each once, each side in order.
+                    Assert.Equal(row.Droppable.OrderBy(id => id), f.Shown.Concat(f.Dropped).OrderBy(id => id));
+                    Assert.Equal(row.Droppable.Where(f.Shown.Contains), f.Shown);
+                    Assert.Equal(row.Droppable.Where(f.Dropped.Contains), f.Dropped);
+                    Assert.DoesNotContain(f.Dropped, ToolbarPlan.IsPicker);
+                    // The dropped ones are the end of the non-picker buttons, as many as the fit says.
+                    var buttons = row.Droppable.Where(id => !ToolbarPlan.Stays(id)).ToList(); // pickers and the more button never move into the menu
+                    Assert.Equal(buttons.Skip(f.Fit.LeftShown), f.Dropped);
+                    Assert.Equal(f.Dropped.Count > 0 || f.RightDropped.Count > 0 || row.HasMore, f.Fit.Overflow); // a placed more button is always drawn
+                    // The right group gives up its first buttons only once no left button is left, never its last, and its ids split cleanly.
+                    var rightButtons = row.Right.Where(id => !ToolbarPlan.Stays(id)).ToList();
+                    Assert.Equal(rightButtons.Take(f.Fit.RightDropped), f.RightDropped);
+                    Assert.True(f.RightDropped.Count == 0 || f.Fit.LeftShown == 0, where);
+                    Assert.True(rightButtons.Count == 0 || f.RightDropped.Count < rightButtons.Count, where);
+                    Assert.Equal(row.Right.OrderBy(id => id), f.RightShown.Concat(f.RightDropped).OrderBy(id => id));
+                    Assert.Equal(row.Right.Where(f.RightShown.Contains), f.RightShown);
+                    // The menu is in bar order: left, centre, then the right group.
+                    Assert.Equal(f.UserMenu.Concat(f.Dropped).Concat(f.RightDropped), f.Menu);
+                    Assert.Equal(row.HasMore ? ToolbarPlan.MenuItems(m) : [], f.UserMenu); // only the row with the more button lists the user's menu
+                    // The row's kept buttons have a width each.
+                    Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(rightButtons.Skip(f.Fit.RightDropped)).Concat(row.HasMore ? [ToolbarModel.MoreId] : []).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
+                    foreach (var (id, width) in f.ButtonWidths)
+                    {
+                        Assert.Equal(ToolbarPlan.Metrics(m, id).Width, width);
+                        Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height); // every button is one cell high
+                        Assert.InRange(width, 0.5 * ToolbarPlan.BaseWidth, 4 * ToolbarPlan.BaseWidth);
+                    }
+                    Assert.True(double.IsFinite(f.Used) && f.Used >= 0, where);
+                    if (onBar.Count == 0) Assert.Empty(f.PickerWidths);
+                    else
+                    {
+                        Assert.Equal(onBar.OrderBy(p => p), f.PickerWidths.Keys.OrderBy(p => p));
+                        foreach (var (id, width) in f.PickerWidths)
+                        {
+                            // The span times the unit is the preferred width and the maximum too; the floor and one unit the minimum.
+                            Assert.True(width == 0 || (width >= specs[id].Min - Eps && width <= specs[id].Preferred + Eps), $"{where}: {id} {width}");
+                            Assert.True(width == 0 || width >= Math.Min(ToolbarPlan.PickerFloor(id), specs[id].Preferred), $"{where}: {id} {width}");
+                        }
+                        // While buttons move into the menu to keep the pickers' room, every picker on the bar has at least its readable minimum.
+                        if (f.Fit.PickersKept)
+                            Assert.All(onBar, id => Assert.True(f.PickerWidths[id] >= specs[id].Min, $"{where}: {id} {f.PickerWidths[id]} under {specs[id].Min}"));
+                        // Hidden only in order: effort, then provider, then model (among the pickers on the bar). Unchanged by the new
+                        // minimums (56, 84, 72): the order is the hide order, whatever the minimums are.
+                        var order = ToolbarPlan.PickerHideOrder.Where(onBar.Contains).ToList();
+                        var hidden = order.Where(id => f.PickerWidths[id] == 0).ToList();
+                        Assert.Equal(order.Take(hidden.Count), hidden);
+                    }
+                    if (f.Used > room + Eps)
+                    {
+                        // The only overshoot: not even the last right button and the "⋯" button fit (a panel under about two buttons), so
+                        // nothing else shows. (Changed: a right group wider than the room used to overshoot too; now it gives up buttons.)
+                        var lastRight = rightIds.Count == 0 ? 0 : ToolbarPlan.Metrics(m, rightIds[^1]).Width;
+                        var smallest = lastRight + (row.HasMore || rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.Stays(id)) ? overflow : 0)
+                            + Spacing * (1 + (row.HasMore || rightIds.Count > 1 || row.Droppable.Any(id => !ToolbarPlan.Stays(id)) ? 1 : 0)
+                                + (hasPickers ? 1 : 0) + (row.Center.Count > 0 ? 1 : 0));
+                        Assert.True(smallest > room - Eps, $"{where}: overshoot {f.Used - room} with {f.Fit}, smallest {smallest}");
+                        Assert.True(f.Fit.LeftShown == 0 && f.Fit.RightDropped == Math.Max(0, rightIds.Count - 1) && !f.Fit.PickersKept, $"{where}: {f.Fit}");
+                        Assert.All(f.PickerWidths.Values, w => Assert.Equal(0, w));
+                    }
                 }
             }
-    }
-
-    [Theory]
-    [MemberData(nameof(NamesAndSizes))]
-    public void Resolve_of_the_sized_bar_is_stable(string name, double size)
-    {
-        var m = Sized(name, size);
-        Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
-        Assert.Equal(m.ToJson(), ToolbarModel.Resolve(m.ToJson()).ToJson());
+        }
     }
 
     // ---- what the interesting layouts promise ----

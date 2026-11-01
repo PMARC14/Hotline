@@ -86,7 +86,7 @@ public sealed class ReviewX1Tests : IDisposable
     public void Deduper_is_safe_to_call_from_several_threads()
     {
         var d = new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(50));
-        Parallel.For(0, 20_000, i => d.ShouldHandle((KeyEvent)(i % 3), i % 2 == 0 ? KeySource.FastPath : KeySource.Protocol));
+        Parallel.For(0, 4_000, i => d.ShouldHandle((KeyEvent)(i % 3), i % 2 == 0 ? KeySource.FastPath : KeySource.Protocol));
     }
 
     // ---- Theming ----

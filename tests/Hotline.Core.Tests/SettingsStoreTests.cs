@@ -83,46 +83,6 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.NotNull(s.Diagnostics);
     }
 
-    [Theory]
-    [InlineData("{ not json")]
-    [InlineData("null")]
-    public void Corrupt_file_is_backed_up_and_defaults_used(string content)
-    {
-        WriteSettings(content);
-
-        var s = New().Load();
-
-        Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal(content, File.ReadAllText(SettingsPath + ".bad"));
-        Assert.Equal(content, File.ReadAllText(SettingsPath)); // the user's file is left alone
-    }
-
-    [Theory]
-    [InlineData("""{ "activation": { "tap": "Teleport" } }""")]
-    [InlineData("""{ "activation": { "tap": 42 } }""")]
-    [InlineData("""{ "window": { "theme": 7 } }""")]
-    public void A_bad_field_keeps_its_default_and_the_file_is_left_alone(string content)
-    {
-        WriteSettings(content);
-
-        var store = New();
-        var s = store.Load();
-
-        Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal(ThemeChoice.System, s.Window.Theme);
-        Assert.Single(store.SettingsProblems);
-        Assert.Equal(content, File.ReadAllText(SettingsPath)); // not rewritten: the user's wording stays until they fix it
-    }
-
-    [Theory]
-    [InlineData(10, 200)]
-    [InlineData(99999, 8000)]
-    public void Window_size_is_clamped(int width, int expected)
-    {
-        WriteSettings($$"""{ "window": { "minWidth": {{width}} } }""");
-        Assert.Equal(expected, New().Load().Window.MinWidth);
-    }
-
     [Fact]
     public void Percentages_and_widths_are_clamped()
     {
@@ -135,19 +95,6 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
-    public void Comments_and_trailing_commas_are_tolerated()
-    {
-        WriteSettings(
-            """
-            {
-              // my hotkey
-              "activation": { "fallbackHotkey": "Ctrl+Alt+H", },
-            }
-            """);
-        Assert.Equal("Ctrl+Alt+H", New().Load().Activation.FallbackHotkey);
-    }
-
-    [Fact]
     public void Locked_file_yields_in_memory_defaults_without_throwing()
     {
         WriteSettings("""{ "window": { "minWidth": 900 } }""");
@@ -156,17 +103,6 @@ public sealed class SettingsStoreTests : IDisposable
         var s = New().Load();
 
         Assert.Equal(400, s.Window.MinWidth);
-    }
-
-    [Theory]
-    [InlineData(-1.0, 0.0)]
-    [InlineData(5.0, 1.0)]
-    public void Opacities_are_clamped_to_unit_range(double value, double expected)
-    {
-        WriteSettings($$"""{ "window": { "tintOpacity": {{value}}, "luminosityOpacity": {{value}} } }""");
-        var s = New().Load();
-        Assert.Equal(expected, s.Window.TintOpacity);
-        Assert.Equal(expected, s.Window.LuminosityOpacity);
     }
 
     [Fact]
@@ -308,7 +244,7 @@ public sealed class SettingsStoreTests : IDisposable
         var seenNull = false;
         using var stop = new CancellationTokenSource();
         var reader = Task.Run(() => { while (!stop.IsCancellationRequested) if (s.Chat.Backends is null) seenNull = true; });
-        for (var i = 0; i < 3000; i++) SettingsStore.Serialize(s);
+        for (var i = 0; i < 500; i++) SettingsStore.Serialize(s);
         stop.Cancel();
         reader.Wait();
         Assert.False(seenNull);

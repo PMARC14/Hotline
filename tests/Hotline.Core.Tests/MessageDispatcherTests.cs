@@ -3,10 +3,9 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class MessageDispatcherTests : IDisposable
+public sealed class MessageDispatcherTests : TempDirTest
 {
-    private readonly string _log = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"), "h.log");
-    public void Dispose() { var d = Path.GetDirectoryName(_log)!; if (Directory.Exists(d)) Directory.Delete(d, recursive: true); }
+    private string _log => Path.Combine(_dir, "h.log");
 
     [Fact]
     public void Registered_handler_receives_params_and_result_is_returned_and_others_are_not_handled()

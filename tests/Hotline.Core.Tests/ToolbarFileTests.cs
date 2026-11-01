@@ -4,14 +4,12 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class ToolbarFileTests : IDisposable
+public sealed class ToolbarFileTests : TempDirTest
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
+    private string _root => _dir;
     private string File_ => Path.Combine(_root, "toolbar.json");
 
     public ToolbarFileTests() => Directory.CreateDirectory(_root);
-
-    public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, recursive: true); }
 
     private const string V1Text = "{\n  // rows\n  \"top\": [\"effort\", \"model\", \"provider\"],\n  \"items\": [\"pin\", \"spacer\", \"settings\"]\n}";
 

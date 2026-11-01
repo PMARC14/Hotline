@@ -2,14 +2,13 @@ using Hotline.Core.Chat;
 
 namespace Hotline.Core.Tests;
 
-public sealed class PromptLibraryTests : IDisposable
+public sealed class PromptLibraryTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"), "prompts");
-    public void Dispose() { var root = Path.GetDirectoryName(_dir)!; if (Directory.Exists(root)) Directory.Delete(root, recursive: true); }
+    private string Prompts => Path.Combine(_dir, "prompts");
 
     private PromptLibrary NewLib()
     {
-        var lib = new PromptLibrary(_dir);
+        var lib = new PromptLibrary(Prompts);
         lib.EnsureDefault();
         return lib;
     }
@@ -17,7 +16,7 @@ public sealed class PromptLibraryTests : IDisposable
     [Fact]
     public void Ensure_default_creates_file_once_without_overwriting_edits()
     {
-        var lib = new PromptLibrary(_dir);
+        var lib = new PromptLibrary(Prompts);
         lib.EnsureDefault();
         Assert.Equal(PromptLibrary.DefaultText, lib.Read("default"));
         File.WriteAllText(lib.PathFor("default"), "my edits");

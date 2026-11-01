@@ -3,18 +3,18 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public class PanelPlacementTests
+public class PanelPlacementTests : TempDirTest
 {
     private static readonly RectI Work = new(0, 0, 1920, 1040); // 1080p minus a bottom taskbar
 
     [Theory]
-    [InlineData(1.0)]
-    [InlineData(1.5)]
-    [InlineData(2.0)]
-    public void Default_anchor_reproduces_todays_place(double scale)
+    [InlineData(1.0, 610, 784, 700, 60)]
+    [InlineData(1.5, 435, 760, 1050, 90)]
+    [InlineData(2.0, 260, 736, 1400, 120)]
+    public void Default_anchor_scales_the_bar_and_places_it_in_the_lower_work_area(double scale, int x, int y, int width, int height)
     {
         var bar = PanelPlacement.Home(Work, widthPx: (int)(700 * scale), barHeightDip: 60, scale, new PanelAnchor());
-        Assert.Equal(PopupGeometry.Place(Work, 700, 60, scale, 0.8), bar);
+        Assert.Equal(new RectI(x, y, width, height), bar);
     }
 
     [Fact]
@@ -26,6 +26,7 @@ public class PanelPlacementTests
         Assert.Equal(Work.Width - 700, right.X);
         var top = PanelPlacement.Home(Work, 700, 60, 1.0, new PanelAnchor { Y = 0 });
         Assert.Equal(0, top.Y);
+        Assert.Equal(736, PanelPlacement.Home(Work, 560, 120, 1.0, new PanelAnchor()).Y);
     }
 
     [Fact]
@@ -91,17 +92,12 @@ public class PanelPlacementTests
     [Fact]
     public void Old_vertical_position_moves_into_the_anchor()
     {
-        var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-        try
-        {
-            Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, SettingsStore.FileName), """{ "schemaVersion": 12, "window": { "verticalPosition": 0.3 } }""");
-            var s = new SettingsStore(dir).Load();
-            Assert.Equal(0.3, s.Window.Anchor.Y);
-            Assert.DoesNotContain("verticalPosition", File.ReadAllText(Path.Combine(dir, SettingsStore.FileName)));
-            Assert.Equal((GrowDirection.Auto, (int?)null, (int?)null, "active"), (s.Window.GrowDirection, s.Window.Width, s.Window.ChatHeight, s.Window.Anchor.Monitor));
-        }
-        finally { Directory.Delete(dir, recursive: true); }
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 12, "window": { "verticalPosition": 0.3 } }""");
+        var s = new SettingsStore(_dir).Load();
+        Assert.Equal(0.3, s.Window.Anchor.Y);
+        Assert.DoesNotContain("verticalPosition", File.ReadAllText(Path.Combine(_dir, SettingsStore.FileName)));
+        Assert.Equal((GrowDirection.Auto, (int?)null, (int?)null, "active"), (s.Window.GrowDirection, s.Window.Width, s.Window.ChatHeight, s.Window.Anchor.Monitor));
     }
 
     [Fact]

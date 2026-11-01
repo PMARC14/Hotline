@@ -15,7 +15,7 @@ public static class PanelPlacement
     /// <summary>
     /// The bar's home rectangle: DIP size scaled for the monitor (and never larger than its work area), placed at the
     /// anchor's fractions of the free space (0 = left/top edge, 1 = right/bottom edge). The default anchor (0.5, 0.8)
-    /// is exactly <see cref="PopupGeometry.Place"/>.
+    /// centers the bar horizontally in the lower part of the work area.
     /// </summary>
     public static RectI Home(RectI work, int widthPx, int barHeightDip, double scale, PanelAnchor anchor)
     {

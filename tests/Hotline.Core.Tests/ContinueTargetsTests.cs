@@ -5,10 +5,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Continue in targets: which list a chat gets, the defaults and the ready-made entries.</summary>
-public sealed class ContinueTargetsTests : IDisposable
+public sealed class ContinueTargetsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private static HotlineSettings With(params BackendProfile[] profiles)
     {
@@ -122,42 +120,24 @@ public sealed class ContinueTargetsTests : IDisposable
         Assert.EndsWith(Uri.EscapeDataString("the last one"), filled.Uri.AbsoluteUri);
     }
 
-    [Fact]
-    public void Commands_split_like_a_command_line()
-    {
-        var (program, args) = ContinueTargets.FillCommand("\"C:\\Program Files\\X\\x.exe\" --open \"{file}\"", Values(Msg(ChatRole.User, "hi")));
-        Assert.Equal(@"C:\Program Files\X\x.exe", program);
-        Assert.Equal(["--open", @"C:\Temp\chat.md"], args);
-    }
+    public static TheoryData<string, string, string?, string?, string[]?> Commands =>
+    [
+        ("\"C:\\Program Files\\X\\x.exe\" --open \"{file}\"", "hi", @"C:\Program Files\X\x.exe", null, ["--open", @"C:\Temp\chat.md"]),
+        (@"%LOCALAPPDATA%\x.exe", "hi", Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA")!, "x.exe"), null, null),
+        ("app.exe --prompt {last}", "say \"hi\" & run calc", null, null, ["--prompt", "say \"hi\" & run calc"]),
+        (ContinueTargets.ReadyMade.Single(e => e.Key == "lmstudio").Target.Command!, "hi", null, @"\Programs\LM Studio\LM Studio.exe", []),
+        ("app.exe {last}", "use {file} and {model} in the template", null, null, ["use {file} and {model} in the template"]),
+    ];
 
-    [Fact]
-    public void Environment_variables_expand_in_the_command()
+    [Theory]
+    [MemberData(nameof(Commands))]
+    public void Commands_preserve_program_paths_arguments_and_placeholders(
+        string command, string last, string? expectedProgram, string? programSuffix, string[]? expectedArgs)
     {
-        var (program, _) = ContinueTargets.FillCommand(@"%LOCALAPPDATA%\x.exe", Values(Msg(ChatRole.User, "hi")));
-        Assert.Equal(Path.Combine(Environment.GetEnvironmentVariable("LOCALAPPDATA")!, "x.exe"), program);
-    }
-
-    [Fact]
-    public void Chat_text_stays_one_argument()
-    {
-        var (_, args) = ContinueTargets.FillCommand("app.exe --prompt {last}", Values(Msg(ChatRole.User, "say \"hi\" & run calc")));
-        Assert.Equal(["--prompt", "say \"hi\" & run calc"], args);
-    }
-
-    [Fact]
-    public void The_lm_studio_entry_starts_one_program_whose_path_has_spaces()
-    {
-        var lm = ContinueTargets.ReadyMade.Single(e => e.Key == "lmstudio").Target;
-        var (program, args) = ContinueTargets.FillCommand(lm.Command!, Values(Msg(ChatRole.User, "hi")));
-        Assert.EndsWith(@"\Programs\LM Studio\LM Studio.exe", program);
-        Assert.Empty(args);
-    }
-
-    [Fact]
-    public void Placeholder_text_inside_the_chat_is_left_alone()
-    {
-        var (_, args) = ContinueTargets.FillCommand("app.exe {last}", Values(Msg(ChatRole.User, "use {file} and {model} in the template")));
-        Assert.Equal(["use {file} and {model} in the template"], args);
+        var (program, args) = ContinueTargets.FillCommand(command, Values(Msg(ChatRole.User, last)));
+        if (expectedProgram is not null) Assert.Equal(expectedProgram, program);
+        if (programSuffix is not null) Assert.EndsWith(programSuffix, program);
+        if (expectedArgs is not null) Assert.Equal(expectedArgs, args);
     }
 
     [Fact]

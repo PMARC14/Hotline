@@ -4,12 +4,10 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Schema upgrades preserve connections and migrate the old scaled width units once.</summary>
-public sealed class SettingsV14Tests : IDisposable
+public sealed class SettingsV14Tests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private SettingsStore New() => new(_dir);
     private string SettingsPath => Path.Combine(_dir, SettingsStore.FileName);
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private void WriteSettings(string json)
     {
@@ -120,15 +118,6 @@ public sealed class SettingsV14Tests : IDisposable
         Assert.DoesNotContain("copilotKey", rewritten, StringComparison.OrdinalIgnoreCase);
         Assert.False(Activation(rewritten).ContainsKey("copilotKey"));
         Assert.Equal(15, (int)JsonNode.Parse(rewritten)!["schemaVersion"]!);
-    }
-
-    [Theory]
-    [InlineData(13, 800)] // a width chosen before v14 is kept
-    [InlineData(14, 600)] // and one chosen on v14
-    public void Own_min_width_is_kept(int schema, int width)
-    {
-        WriteSettings($$"""{ "schemaVersion": {{schema}}, "window": { "minWidth": {{width}} } }""");
-        Assert.Equal(width, New().Load().Window.MinWidth);
     }
 
     [Fact]

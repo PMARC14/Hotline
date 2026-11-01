@@ -5,11 +5,9 @@ using Hotline.Core.Diagnostics;
 namespace Hotline.Core.Tests;
 
 /// <summary>Chats kept in a CLI's own history: the controller records the session, resumes it and drops it on New chat.</summary>
-public sealed class CliSessionTests : IDisposable
+public sealed class CliSessionTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly List<ChatEvent> _events = [];
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     /// <summary>Answers "ok" and reports a session: the one it was asked to resume, else a new one.</summary>
     private sealed class FakeCli(string id = "cli") : IChatBackend, ICliSessionBackend

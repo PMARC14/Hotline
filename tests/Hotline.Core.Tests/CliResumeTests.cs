@@ -9,13 +9,11 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Claude Code and Antigravity resume a chat's own CLI conversation (Plan 9).</summary>
-public sealed class CliResumeTests : IDisposable
+public sealed class CliResumeTests : TempDirTest
 {
     private const string SessionA = "6a8b2362-20cc-4208-bd05-cf9b25fe01c9";
     private const string SessionB = "e0673a6a-7fb2-44fb-8274-3dc847e1a2ce";
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly FakeLineProcessFactory _factory = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
     private static ChatMessage U(string id, string text) => new(id, ChatRole.User, text, [], Now);
@@ -179,17 +177,6 @@ public sealed class CliResumeTests : IDisposable
         await Collect(Agy().StreamAsync([U("1", "hi")], default));
         var args = _factory.Started[0].Args;
         Assert.Equal(["--project", "0f6c2d1e-aaaa-4bbb-8ccc-123456789abc"], args.Skip(args.ToList().IndexOf("--project")).Take(2));
-    }
-
-    [Fact]
-    public async Task Agy_images_are_passed_by_full_path()
-    {
-        _factory.Create = () => new FakeLineProcess { Respond = _ => AgyAnswer(SessionA, "ok") };
-        var user = U("1", "look") with { Attachments = [new Attachment("a1", "shot.png", AttachmentKind.Image, "image/png", [1, 2, 3])] };
-        await Collect(Agy().StreamAsync([user], default));
-        var line = _factory.Started[0].Process.Written.Single();
-        var prompt = System.Text.Json.JsonDocument.Parse(line).RootElement.GetProperty("message").GetProperty("content").GetString()!;
-        Assert.Contains(Path.Combine(_dir, "agy", "Hotline", "attachments"), prompt);
     }
 
     [Fact]

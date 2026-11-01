@@ -4,10 +4,8 @@ using Hotline.Core.Tools;
 
 namespace Hotline.Core.Tests;
 
-public sealed class ToolsTests : IDisposable
+public sealed class ToolsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private string McpPath => Path.Combine(_dir, "mcp.json");
 
     private void WriteMcp(string json)

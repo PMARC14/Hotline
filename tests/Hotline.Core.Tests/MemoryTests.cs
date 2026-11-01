@@ -8,10 +8,8 @@ using Hotline.Core.Text.Localization;
 namespace Hotline.Core.Tests;
 
 /// <summary>memory.md: notes every chat sees, written by /remember or (with approval) by the model.</summary>
-public sealed class MemoryTests : IDisposable
+public sealed class MemoryTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private MemoryStore Store() => new(Path.Combine(_dir, "memory.md"));
 
     private static JsonElement Args(string json) => JsonDocument.Parse(json).RootElement;

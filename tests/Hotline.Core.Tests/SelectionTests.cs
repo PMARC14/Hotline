@@ -6,10 +6,8 @@ using Hotline.Core.Text.Localization;
 namespace Hotline.Core.Tests;
 
 /// <summary>Plan 6 task 4: the selected text in the app you came from becomes a removable text attachment.</summary>
-public sealed class SelectionTests : IDisposable
+public sealed class SelectionTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Theory]
     [InlineData("Notepad", "Selected text from Notepad")]

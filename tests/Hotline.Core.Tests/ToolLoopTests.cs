@@ -11,10 +11,8 @@ using Hotline.Core.Tools;
 namespace Hotline.Core.Tests;
 
 /// <summary>Tool calling in the API backends (OpenAI-compatible, Gemini, Anthropic) with a fake tool host.</summary>
-public sealed class ToolLoopTests : IDisposable
+public sealed class ToolLoopTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     internal sealed class FakeToolHost : IToolHost
     {

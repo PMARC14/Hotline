@@ -6,10 +6,8 @@ using Hotline.Core.Tools;
 namespace Hotline.Core.Tests;
 
 /// <summary>McpToolHost lifetime: cached tool lists, per-server restarts, start timeouts, failure backoff; tool helpers.</summary>
-public sealed class ToolHostLifecycleTests : IDisposable
+public sealed class ToolHostLifecycleTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private string McpPath => Path.Combine(_dir, "mcp.json");
     private FileLog Log => new(Path.Combine(_dir, "h.log"));
 
