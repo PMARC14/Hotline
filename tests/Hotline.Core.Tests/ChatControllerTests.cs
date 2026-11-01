@@ -3,11 +3,9 @@ using Hotline.Core.Diagnostics;
 
 namespace Hotline.Core.Tests;
 
-public sealed class ChatControllerTests : IDisposable
+public sealed class ChatControllerTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly List<ChatEvent> _events = [];
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private ChatController New(IChatBackend? backend, HistoryStore? history = null)
     {

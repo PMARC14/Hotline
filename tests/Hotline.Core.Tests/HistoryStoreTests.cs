@@ -2,11 +2,9 @@ using Hotline.Core.Chat;
 
 namespace Hotline.Core.Tests;
 
-public sealed class HistoryStoreTests : IDisposable
+public sealed class HistoryStoreTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly ManualTimeProvider _clock = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void Round_trips_messages_with_attachment_metadata_but_no_bytes()

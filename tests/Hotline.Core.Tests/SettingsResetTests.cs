@@ -4,10 +4,8 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class SettingsResetTests : IDisposable
+public sealed class SettingsResetTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private static readonly DateTimeOffset Now = new(2026, 10, 16, 20, 0, 0, TimeSpan.Zero);
 
     private (SettingsStore Store, HotlineSettings Settings, string LocalId) Customised()

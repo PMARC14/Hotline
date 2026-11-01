@@ -3,10 +3,8 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class SoundsTests : IDisposable
+public sealed class SoundsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private string SoundsDir => Path.Combine(_dir, "sounds");
 
     [Theory]

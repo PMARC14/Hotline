@@ -2,10 +2,8 @@ using Hotline.Core.Diagnostics;
 
 namespace Hotline.Core.Tests;
 
-public sealed class FileLogTests : IDisposable
+public sealed class FileLogTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void Writes_level_and_message_creating_directories_and_errors_include_the_exception()

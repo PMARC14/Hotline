@@ -5,10 +5,8 @@ using Hotline.Core.Windowing;
 namespace Hotline.Core.Tests;
 
 /// <summary>The panel opens narrow and grows wider when a chat starts (window.chatWidthPercent / chatWidth), like the height.</summary>
-public sealed class ChatWidthTests : IDisposable
+public sealed class ChatWidthTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private HotlineSettings LoadJson(string json)
     {
@@ -61,91 +59,44 @@ public sealed class ChatWidthTests : IDisposable
 
     // ---- which width ----
 
-    // A 1920 px wide work area, real pixels throughout (no scale), opening at 460 px; min 460, max 1000.
-    private static int? Chat(int? width = null, int? chatWidth = null, double percent = 0, int workPx = 1920, int start = 460, int min = 460, int max = 1000)
-        => PopupGeometry.ChatWidthPx(width, chatWidth, percent, workPx, min, max, start);
-
-    [Fact]
-    public void A_width_set_by_hand_always_wins_over_the_chat_width()
-    {
-        Assert.Equal(700, PopupGeometry.ChatWidthPx(null, 700, 0, 1920, 460, 1000, 460, widthSetByHand: false));
-        Assert.Null(PopupGeometry.ChatWidthPx(null, 700, 0, 1920, 460, 1000, 460, widthSetByHand: true));
-        Assert.Null(PopupGeometry.ChatWidthPx(null, null, 50, 1920, 460, 1000, 460, widthSetByHand: true));
-    }
-
-    [Fact]
-    public void No_chat_width_set_means_no_growth() => Assert.Null(Chat());
-
+    // Real pixels throughout; the opening minimum is 460 and the maximum is 1000.
     [Theory]
-    [InlineData(5000, 1000)] // wider than window.maxWidth: held to it (as the percentage is)
-    [InlineData(700, 700)]
-    public void An_explicit_chat_width_is_clamped_to_the_maximum(int chatWidth, int expected) => Assert.Equal(expected, Chat(chatWidth: chatWidth));
-
-    [Fact]
-    public void An_explicit_chat_width_below_the_minimum_grows_nothing() => Assert.Null(Chat(chatWidth: 100)); // clamped up to the 460 it opens at
-
-    [Fact]
-    public void A_percentage_is_taken_of_the_work_area_and_clamped_to_min_and_max()
-    {
-        Assert.Equal(768, Chat(percent: 40));
-        Assert.Equal(1000, Chat(percent: 80)); // 1536 -> max
-        Assert.Equal(1000, Chat(percent: 50, workPx: 3840)); // pixels of the work area: 1920 -> max
-        Assert.Equal(700, Chat(percent: 50, workPx: 1400)); // 700 px
-    }
-
-    [Fact]
-    public void An_explicit_chat_width_beats_the_percentage()
-        => Assert.Equal(700, Chat(chatWidth: 700, percent: 80));
-
-    [Fact]
-    public void A_target_not_wider_than_the_start_width_means_no_growth()
-    {
-        Assert.Null(Chat(percent: 20, start: 480)); // 384 -> clamped to 460, under the start
-        Assert.Null(Chat(chatWidth: 480, start: 480));
-        Assert.Null(Chat(chatWidth: 300, start: 480));
-        Assert.Equal(481, Chat(chatWidth: 481, start: 480));
-    }
-
-    [Fact]
-    public void A_width_set_by_hand_or_in_the_file_means_no_growth()
-        => Assert.Null(Chat(width: 600, chatWidth: 900, percent: 60));
+    [InlineData(null, 700, 0, 1920, 460, false, 700)]
+    [InlineData(null, 700, 0, 1920, 460, true, null)]
+    [InlineData(null, null, 50, 1920, 460, true, null)]
+    [InlineData(null, null, 0, 1920, 460, false, null)]
+    [InlineData(null, 5000, 0, 1920, 460, false, 1000)]
+    [InlineData(null, 100, 0, 1920, 460, false, null)]
+    [InlineData(null, null, 40, 1920, 460, false, 768)]
+    [InlineData(null, null, 80, 1920, 460, false, 1000)]
+    [InlineData(null, null, 50, 3840, 460, false, 1000)]
+    [InlineData(null, null, 50, 1400, 460, false, 700)]
+    [InlineData(null, 700, 80, 1920, 460, false, 700)]
+    [InlineData(null, null, 20, 1920, 480, false, null)]
+    [InlineData(null, 480, 0, 1920, 480, false, null)]
+    [InlineData(null, 300, 0, 1920, 480, false, null)]
+    [InlineData(null, 481, 0, 1920, 480, false, 481)]
+    [InlineData(600, 900, 60, 1920, 460, false, null)]
+    public void Chat_width_respects_manual_sizes_limits_and_the_opening_width(
+        int? width, int? chatWidth, double percent, int workPx, int start, bool byHand, int? expected)
+        => Assert.Equal(expected, PopupGeometry.ChatWidthPx(width, chatWidth, percent, workPx, 460, 1000, start, byHand));
 
     // ---- the rectangle ----
 
-    private static readonly RectI Work = new(0, 0, 1920, 1080);
-
-    [Fact]
-    public void Growing_keeps_the_horizontal_centre()
+    [Theory]
+    [InlineData(0, 730, 800, 460, 100, 700, 610, 700, true)]
+    [InlineData(0, 0, 0, 460, 100, 700, 0, 700, false)]
+    [InlineData(0, 1460, 0, 460, 100, 700, 1220, 700, false)]
+    [InlineData(0, 100, 5, 460, 10, 5000, 0, 1920, false)]
+    [InlineData(0, 730, 800, 460, 100, 460, 730, 460, true)]
+    [InlineData(0, 730, 800, 460, 100, 100, 730, 460, true)]
+    [InlineData(-1920, -1900, 0, 460, 100, 700, -1920, 700, false)]
+    public void Growing_respects_the_centre_work_area_and_current_width(
+        int workX, int barX, int barY, int barW, int barH, int targetPx, int expectedX, int expectedW, bool keepsCentre)
     {
-        var bar = new RectI(730, 800, 460, 100);
-        var grown = PopupGeometry.GrowWidth(bar, 700, Work);
-        Assert.Equal(new RectI(610, 800, 700, 100), grown);
-        Assert.Equal(bar.X + bar.Width / 2, grown.X + grown.Width / 2);
-    }
-
-    [Fact]
-    public void Growing_at_the_work_area_edge_slides_the_panel_back_inside()
-    {
-        Assert.Equal(new RectI(0, 0, 700, 100), PopupGeometry.GrowWidth(new RectI(0, 0, 460, 100), 700, Work));
-        Assert.Equal(new RectI(1220, 0, 700, 100), PopupGeometry.GrowWidth(new RectI(1460, 0, 460, 100), 700, Work));
-    }
-
-    [Fact]
-    public void Growing_never_exceeds_the_work_area()
-        => Assert.Equal(new RectI(0, 5, 1920, 10), PopupGeometry.GrowWidth(new RectI(100, 5, 460, 10), 5000, Work));
-
-    [Fact]
-    public void A_target_at_or_under_the_current_width_changes_nothing()
-    {
-        var bar = new RectI(730, 800, 460, 100);
-        Assert.Equal(bar, PopupGeometry.GrowWidth(bar, 460, Work));
-        Assert.Equal(bar, PopupGeometry.GrowWidth(bar, 100, Work));
-    }
-
-    [Fact]
-    public void A_work_area_on_a_second_monitor_with_a_negative_origin_is_respected()
-    {
-        var work = new RectI(-1920, 0, 1920, 1080);
-        Assert.Equal(new RectI(-1920, 0, 700, 100), PopupGeometry.GrowWidth(new RectI(-1900, 0, 460, 100), 700, work));
+        var bar = new RectI(barX, barY, barW, barH);
+        var grown = PopupGeometry.GrowWidth(bar, targetPx, new RectI(workX, 0, 1920, 1080));
+        Assert.Equal(new RectI(expectedX, barY, expectedW, barH), grown);
+        if (keepsCentre) Assert.Equal(bar.X + bar.Width / 2, grown.X + grown.Width / 2);
     }
 }

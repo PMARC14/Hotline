@@ -11,11 +11,9 @@ namespace Hotline.Core.Tests;
 /// OpenAI Codex CLI backend. Event shapes from codex-rs/exec/src/exec_events.rs (codex exec --json): thread.started,
 /// turn.started, item.started/updated/completed, turn.completed, turn.failed, error.
 /// </summary>
-public sealed class CodexTests : IDisposable
+public sealed class CodexTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly FakeLineProcessFactory _factory = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
     private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);

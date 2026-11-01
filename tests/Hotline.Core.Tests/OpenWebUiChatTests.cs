@@ -64,48 +64,21 @@ public class OpenWebUiChatTests
     }
 
     [Theory]
-    [InlineData(HttpStatusCode.Unauthorized)]
-    [InlineData(HttpStatusCode.Forbidden)]
-    public async Task A_refused_key_says_so(HttpStatusCode status)
+    [InlineData("http://localhost:3000", 401, "", OpenWebUiError.KeyRefused, 1)]
+    [InlineData("http://localhost:3000", 403, "", OpenWebUiError.KeyRefused, 1)]
+    [InlineData("http://localhost:3000", null, null, OpenWebUiError.Unreachable, 1)]
+    [InlineData("http://192.168.1.5:3000", 200, "", OpenWebUiError.InsecureKey, 0)]
+    [InlineData("http://localhost:3000", 200, "true", OpenWebUiError.BadReply, 1)]
+    [InlineData("http://localhost:3000", 200, "{}", OpenWebUiError.BadReply, 1)]
+    public async Task Creation_reports_errors_and_never_sends_a_key_to_an_insecure_remote(
+        string url, int? status, string? body, OpenWebUiError expected, int expectedCalls)
     {
+        var handler = new Handler(_ => status is { } code
+            ? new HttpResponseMessage((HttpStatusCode)code) { Content = new StringContent(body!) }
+            : throw new HttpRequestException("refused"));
         var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(
-            new HttpClient(new Handler(_ => new HttpResponseMessage(status))), new Uri("http://localhost:3000"), "k", Body(), CancellationToken.None));
-        Assert.Equal(OpenWebUiError.KeyRefused, e.Error);
-    }
-
-    [Fact]
-    public async Task Not_running_says_so()
-    {
-        var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(
-            new HttpClient(new Handler(_ => throw new HttpRequestException("refused"))), new Uri("http://localhost:3000"), "k", Body(), CancellationToken.None));
-        Assert.Equal(OpenWebUiError.Unreachable, e.Error);
-    }
-
-    [Fact]
-    public async Task The_key_never_goes_over_plain_http_to_another_pc()
-    {
-        var handler = new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK));
-        var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(
-            new HttpClient(handler), new Uri("http://192.168.1.5:3000"), "k", Body(), CancellationToken.None));
-        Assert.Equal(OpenWebUiError.InsecureKey, e.Error);
-        Assert.Equal(0, handler.Calls);
-    }
-
-    [Fact]
-    public async Task A_reply_that_is_not_an_object_is_an_error()
-    {
-        var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(
-            new HttpClient(new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("true") })),
-            new Uri("http://localhost:3000"), "k", Body(), CancellationToken.None));
-        Assert.Equal(OpenWebUiError.BadReply, e.Error);
-    }
-
-    [Fact]
-    public async Task A_reply_without_an_id_is_an_error()
-    {
-        var e = await Assert.ThrowsAsync<OpenWebUiException>(() => OpenWebUiChat.CreateAsync(
-            new HttpClient(new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") })),
-            new Uri("http://localhost:3000"), "k", Body(), CancellationToken.None));
-        Assert.Equal(OpenWebUiError.BadReply, e.Error);
+            new HttpClient(handler), new Uri(url), "k", Body(), CancellationToken.None));
+        Assert.Equal(expected, e.Error);
+        Assert.Equal(expectedCalls, handler.Calls);
     }
 }

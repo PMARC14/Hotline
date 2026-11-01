@@ -2,10 +2,8 @@ using Hotline.Core.Diagnostics;
 
 namespace Hotline.Core.Tests;
 
-public sealed class LogTextTests : IDisposable
+public sealed class LogTextTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void Line_breaks_are_indented_so_a_message_cannot_forge_a_log_line()

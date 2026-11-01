@@ -7,11 +7,9 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Claude Code CLI backend. Event shapes recorded from claude 2.1.287 (-p, stream-json, partial messages).</summary>
-public sealed class ClaudeCodeTests : IDisposable
+public sealed class ClaudeCodeTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly FakeLineProcessFactory _factory = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
     private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);

@@ -7,10 +7,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>A broken settings file costs only the broken field: the rest of the file applies and one warning says what.</summary>
-public sealed class LenientSettingsTests : IDisposable
+public sealed class LenientSettingsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private string SettingsPath => Path.Combine(_dir, SettingsStore.FileName);
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
@@ -56,7 +54,7 @@ public sealed class LenientSettingsTests : IDisposable
         // unknown enum words, and numbers where an enum belongs
         { "window.theme", "\"mauve\"" }, { "window.theme", "7" }, { "window.theme", "null" },
         { "window.backdrop", "\"glass\"" }, { "window.scrollbar", "{\"a\":1}" },
-        { "window.growDirection", "true" }, { "activation.tap", "\"Teleport\"" }, { "activation.hold", "42" },
+        { "window.growDirection", "true" }, { "activation.tap", "\"Teleport\"" }, { "activation.tap", "42" }, { "activation.hold", "42" },
         { "chat.growMode", "\"huge\"" }, { "chat.ocr", "1" }, { "chat.memoryTool", "\"sometimes\"" },
         // a number given as a string, a string given as a number, null where it isn't allowed
         { "window.widthPercent", "\"25\"" }, { "window.tintOpacity", "\"0.5\"" }, { "window.fontSize", "\"big\"" },
@@ -168,10 +166,11 @@ public sealed class LenientSettingsTests : IDisposable
     public void Comments_trailing_commas_and_a_byte_order_mark_are_fine_and_silent()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(SettingsPath, "// my settings\n{ /* c */ \"window\": { \"theme\": \"dark\", }, }", new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+        File.WriteAllText(SettingsPath, "// my settings\n{ /* c */ \"window\": { \"theme\": \"dark\", }, \"activation\": { \"fallbackHotkey\": \"Ctrl+Alt+H\", }, }", new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.Equal(ThemeChoice.Dark, s.Window.Theme);
+        Assert.Equal("Ctrl+Alt+H", s.Activation.FallbackHotkey);
         Assert.Empty(store.SettingsProblems);
         Assert.Null(store.SettingsError);
     }
@@ -183,6 +182,7 @@ public sealed class LenientSettingsTests : IDisposable
     [InlineData("null")]
     [InlineData("\"text\"")]
     [InlineData("42")]
+    [InlineData("{ not json")]
     [InlineData("{ \"window\": { \"theme\": \"dark\"")]
     public void A_file_that_is_not_a_json_object_is_kept_as_it_is_and_reported(string content)
     {
@@ -190,6 +190,7 @@ public sealed class LenientSettingsTests : IDisposable
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.Equal(ThemeChoice.System, s.Window.Theme);
+        Assert.Equal(Hotline.Core.Activation.KeyAction.TogglePopup, s.Activation.Tap);
         Assert.NotNull(store.SettingsError);
         Assert.True(store.SettingsFileDamaged);
         Assert.Equal(content, File.ReadAllText(SettingsPath));
@@ -207,9 +208,9 @@ public sealed class LenientSettingsTests : IDisposable
     }
 
     [Fact]
-    public void A_five_megabyte_file_with_one_bad_field_is_read()
+    public void A_large_file_with_one_bad_field_is_read()
     {
-        var padding = new string('p', 5 * 1024 * 1024);
+        var padding = new string('p', 64 * 1024);
         Write($$"""{ "note": "{{padding}}", "window": { "theme": "mauve", "hideOnBlur": false } }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
@@ -218,9 +219,9 @@ public sealed class LenientSettingsTests : IDisposable
     }
 
     [Fact]
-    public void A_five_megabyte_value_in_a_known_field_stays_short_in_the_warning()
+    public void A_large_value_in_a_known_field_stays_short_in_the_warning()
     {
-        Write($$"""{ "window": { "backdrop": "{{new string('z', 5 * 1024 * 1024)}}" } }""");
+        Write($$"""{ "window": { "backdrop": "{{new string('z', 64 * 1024)}}" } }""");
         var store = new SettingsStore(_dir);
         store.Load();
         Assert.True(Assert.Single(store.SettingsProblems).Length < 300);

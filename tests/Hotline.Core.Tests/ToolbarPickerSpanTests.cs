@@ -8,13 +8,13 @@ public sealed class ToolbarPickerSpanTests
     private static ToolbarModel Read(string overrides, string pickers = "\"effort\", \"model\", \"provider\"") => ToolbarModel.Resolve(
         $$"""{ "version": 2, "items": { "left": ["pin", {{pickers}}] }, "overrides": {{overrides}} }""");
 
-    /// <summary>The shipped layout: every picker at the default 3 / 4 / 4 button widths.</summary>
+    /// <summary>The shipped layout with its explicit spans cleared: every picker at the default 3 / 4 / 4 button widths.</summary>
     private static readonly ToolbarModel Plain = ToolbarModel.Defaults with { PickerSpans = new Dictionary<string, int>() };
 
     // ---- the file ----
 
     [Fact]
-    public void Every_picker_defaults_to_3_4_4_with_or_without_the_default_layout_and_the_shipped_file_has_no_span_entries()
+    public void Custom_layouts_default_to_3_4_4_while_the_shipped_layout_sets_provider_to_5_and_omits_default_spans()
     {
         // A file with its own layout and no spans: 3 / 4 / 4. A file that falls back to the shipped layout gets the shipped 3 / 4 / 5.
         var own = Read("{}");
@@ -198,18 +198,6 @@ public sealed class ToolbarPickerSpanTests
 
     // ---- the layout ----
 
-    [Theory]
-    [InlineData(0.5)]
-    [InlineData(1)]
-    [InlineData(2)]
-    public void The_unit_is_one_standard_button_width_whatever_the_bar_size(double size)
-    {
-        Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
-        var specs = ToolbarPlan.PickerSpecs(Plain with { Style = new ButtonStyle(size) }, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
-        Assert.Equal((120.0, 160.0, 160.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
-        Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
-    }
-
     [Fact]
     public void The_unit_ignores_one_buttons_own_size()
     {
@@ -220,8 +208,11 @@ public sealed class ToolbarPickerSpanTests
     [Fact]
     public void Specs_are_span_times_unit_with_a_readable_floor_capped_at_the_pickers_own_width()
     {
+        Assert.Equal(ToolbarPlan.BaseWidth, ToolbarPlan.PickerUnit);
         var m = Plain;
         var specs = ToolbarPlan.PickerSpecs(m, ["effort", "model", "provider"]).ToDictionary(s => s.Name);
+        foreach (var size in new[] { 0.5, 1, 2 })
+            Assert.Equal(specs.Values, ToolbarPlan.PickerSpecs(m with { Style = new(size) }, ["effort", "model", "provider"]));
         Assert.Equal((120.0, 160.0, 160.0), (specs["effort"].Preferred, specs["model"].Preferred, specs["provider"].Preferred));
         Assert.Equal((56.0, 84.0, 72.0), (specs["effort"].Min, specs["model"].Min, specs["provider"].Min));
         Assert.All(specs.Values, s => Assert.Equal(s.Preferred, s.Max));

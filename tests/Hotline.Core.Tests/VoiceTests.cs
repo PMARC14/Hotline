@@ -6,10 +6,8 @@ using Hotline.Core.Text.Localization;
 namespace Hotline.Core.Tests;
 
 /// <summary>Plan 6 task 6: push-to-talk voice input.</summary>
-public sealed class VoiceTests : IDisposable
+public sealed class VoiceTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Theory]
     [InlineData(KeyAction.Voice, KeyEvent.HoldStart, KeyAction.Voice)]

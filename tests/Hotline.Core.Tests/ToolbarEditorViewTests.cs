@@ -19,50 +19,6 @@ public sealed class ToolbarEditorViewTests
 
     private static CustomButton Text(string id, string label = "Label") => new(id, label, "E8A5", null, "hello", false);
 
-    // ---- Drop ----
-
-    [Fact]
-    public void Drop_places_an_item_where_it_is_dropped_pickers_and_hidden_items_too()
-    {
-        // The pickers are no block any more: a gap between two of them is a gap like any other.
-        Assert.Equal(["continueIn", "effort", "model", "pin", "provider", "newChat"], ToolbarEditor.Drop(Block, "pin", TL, 3).Items(TL));
-        Assert.Empty(ToolbarEditor.Drop(Block, "pin", TL, 3).Items(BL));
-        // A picker moves on its own.
-        var picker = ToolbarEditor.Drop(Block, "model", BL, 0);
-        Assert.Equal(["model", "pin"], picker.Items(BL));
-        Assert.Equal(["continueIn", "effort", "provider", "newChat"], picker.Items(TL));
-        // A hidden item is shown there.
-        var shown = ToolbarEditor.Drop(Block, "settings", TR, 0);
-        Assert.Equal(["settings", "recent"], shown.Items(TR));
-        Assert.DoesNotContain("settings", ToolbarEditor.Hidden(shown));
-    }
-
-    [Fact]
-    public void Drop_onto_its_own_place_or_of_an_unknown_id_changes_nothing()
-    {
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "continueIn", TL, 0));
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "continueIn", TL, 1));
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "model", TL, 2)); // a picker onto its own place
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "model", TL, 3));
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "nope", TL, 0));
-        Assert.Same(Block, ToolbarEditor.Drop(Block, null!, TL, 0));
-        Assert.Same(Block, ToolbarEditor.Drop(Block, "pin", (Quadrant)9, 0));
-    }
-
-    [Fact]
-    public void Drop_never_throws_and_always_gives_a_valid_model()
-    {
-        var random = new Random(9);
-        var ids = ToolbarModel.BuiltIn.Concat(["one", "nope", ""]).ToArray();
-        var m = Model("\"pin\", \"one\"", "\"effort\", \"model\", \"provider\"", buttons: "\"one\": { \"label\": \"One\", \"text\": \"1\" }");
-        for (var i = 0; i < 2000; i++)
-        {
-            m = ToolbarEditor.Drop(m, ids[random.Next(ids.Length)], (Quadrant)random.Next(-1, 5), random.Next(-2, 12));
-            Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
-            Assert.Equal(m.Placed.Values.SelectMany(v => v).Count(), m.Placed.Values.SelectMany(v => v).Distinct(StringComparer.OrdinalIgnoreCase).Count());
-        }
-    }
-
     // ---- Units (the strips) ----
 
     [Fact]

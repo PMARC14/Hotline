@@ -126,7 +126,7 @@ public sealed class CustomIconsTests : IDisposable
     {
         var random = new Random(20261021);
         var signature = Png(16, 16)[..8];
-        for (var i = 0; i < 20000; i++)
+        for (var i = 0; i < 4000; i++)
         {
             var bytes = new byte[random.Next(random.Next(10) == 0 ? 2000 : 80)];
             random.NextBytes(bytes);

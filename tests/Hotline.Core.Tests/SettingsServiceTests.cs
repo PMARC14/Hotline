@@ -3,10 +3,8 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-public sealed class SettingsServiceTests : IDisposable
+public sealed class SettingsServiceTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private SettingsService New(out SettingsStore store)
     {
