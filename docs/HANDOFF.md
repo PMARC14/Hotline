@@ -45,8 +45,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - **Width model** (owner, 2026-10-31/11-01): `window.widthPercent` default 40 of the work area's REAL pixels; `minWidth` 384 and
     `maxWidth` 2304 (20% of 1920, 60% of 3840), `width` (hand resize) and `chatWidth` are real pixels too; Windows scaling is
     ignored for widths, heights stay in scaled units (DIP). `chatWidthPercent` default 0 (no growth). Settings shows
-    `ScreenScale.Note` (pixels, scale, scaled interface size) above the button rows and `ScreenScale.WidthLine` under the width
-    controls. Owner's screen: 2880 x 1800 at 200% (1440 x 900 scaled units). Open item: `PanelPlacement.Rescale` keeps a pinned
+    one short line, `ScreenScale.Line` (screen pixels, scaling %, Windows' scaled interface size), above the button rows (no longer
+    explanations in Settings: owner's call). Owner's screen: 2880 x 1800 at 200% (1440 x 900 scaled units). Open item: `PanelPlacement.Rescale` keeps a pinned
     panel's size in scaled units across monitors of different scale.
   - **Reference layouts** `ToolbarProfiles`, drawn by self-test steps P01..P47 (PNGs in `~/.hotline/logs/selftest/`): P35-P45 repeat
     the shipped-width profiles at 460 DIP (`ToolbarPlan.WidthForButtons(11)`), P46-P47 are the outlined-picker profiles. The
