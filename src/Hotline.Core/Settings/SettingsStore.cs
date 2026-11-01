@@ -105,7 +105,7 @@ public sealed class SettingsStore(string directory)
         {
             if (!File.Exists(FilePath)) return null;
             var text = File.ReadAllText(FilePath);
-            var (s, legacy, failure) = Parse(text);
+            var (s, legacy, failure, _) = Parse(text);
             if (s is null) { SettingsError = failure; return null; } // keep what is running; the problem is reported
             var (files, broken) = ReadConnectionFiles();
             BrokenConnectionFiles = broken; // a file broken (or fixed) since start: the next save must leave it alone
@@ -134,7 +134,7 @@ public sealed class SettingsStore(string directory)
         try
         {
             var text = File.ReadAllText(FilePath);
-            var (s, legacy, failure) = Parse(text);
+            var (s, legacy, failure, canRewrite) = Parse(text);
             if (s is null)
             {
                 // Keep the user's file as it is (they can fix it; a fix applies live) plus a copy, and run on defaults
@@ -155,13 +155,14 @@ public sealed class SettingsStore(string directory)
                 return Normalize(fallback);
             }
             s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
+            var migrateWidths = s.SchemaVersion < 14;
             Normalize(s);
             // The old inline "backends" list (moved into connection files) or newly added options rewrite the file:
             // every setting stays visible and editable there. The previous file (it may hold comments) is first copied to
             // settings.json.<time>.bak; if that copy can't be made the file is left as it is and a problem is reported. An older
-            // schemaVersion alone changes nothing: it is stamped on the next save. A file with ignored values is not rewritten
+            // schemaVersion alone changes nothing, except for the pre-v14 width migration. A file with ignored values is not rewritten
             // for new options: the user's wording stays visible until they fix it.
-            if (legacy is not null || (_mainProblems.Count == 0 && HasMissingOptions(text, s)))
+            if (legacy is not null || (canRewrite && (migrateWidths || HasMissingOptions(text, s))))
             {
                 // Connection files are written only when the old "backends" list moves into them; otherwise they
                 // stay exactly as they are, byte for byte.
@@ -185,14 +186,14 @@ public sealed class SettingsStore(string directory)
     /// settings.json text → settings, field by field (see <see cref="LenientReader"/>), plus the old inline connection list
     /// when there is one. Settings is null (and the failure given) when the text isn't a JSON object. Updates the problem list.
     /// </summary>
-    private (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) Parse(string text)
+    private (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure, bool CanRewrite) Parse(string text)
     {
         var problems = new ReadProblems();
-        var result = ParseSettings(text, problems);
-        if (result.Settings is null) return result;
+        var result = ParseSettings(text, problems, out var canRewrite);
+        if (result.Settings is null) return (null, result.Legacy, result.Failure, false);
         _mainProblems = problems.All.ToList();
         SettingsError = null;
-        return result;
+        return (result.Settings, result.Legacy, result.Failure, canRewrite);
     }
 
     /// <summary>
@@ -200,7 +201,11 @@ public sealed class SettingsStore(string directory)
     /// check, so what an import accepts is exactly what loading would accept. Nothing is stored.
     /// </summary>
     internal static (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) ParseSettings(string text, ReadProblems problems)
+        => ParseSettings(text, problems, out _);
+
+    private static (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) ParseSettings(string text, ReadProblems problems, out bool canRewrite)
     {
+        canRewrite = false;
         if (!LenientReader.TryParse(text, FileName, out var doc, out var failure)) return (null, null, failure);
         using (doc)
         {
@@ -224,8 +229,29 @@ public sealed class SettingsStore(string directory)
                 }
             }
             s.Chat.Backends = legacy ?? [];
+            canRewrite = problems.All.Count == 0;
+            if (s.SchemaVersion < 14 && LastMember(doc.RootElement, "window") is { ValueKind: JsonValueKind.Object } window)
+                MigrateWidthUnits(s.Window, window, problems);
             return (s, legacy, null);
         }
+    }
+
+    private static void MigrateWidthUnits(WindowSettings settings, JsonElement window, ReadProblems problems)
+    {
+        var kept = new List<string>();
+        foreach (var (key, oldDefault, currentDefault) in new[] { ("minWidth", 600, 400), ("maxWidth", 1000, 1200) })
+        {
+            if (LastMember(window, key) is not { ValueKind: JsonValueKind.Number } value || !value.TryGetInt32(out var number)) continue;
+            if (number == oldDefault)
+            {
+                if (key == "minWidth") settings.MinWidth = currentDefault;
+                else settings.MaxWidth = currentDefault;
+            }
+            else kept.Add(key);
+        }
+        if (settings.Width is not null) { settings.Width = null; kept.Add("width"); }
+        if (settings.ChatWidth is not null) { settings.ChatWidth = null; kept.Add("chatWidth"); }
+        if (kept.Count > 0) problems.Add(L.F(Strings.Settings_WidthUnitsMigrated, string.Join(", ", kept)));
     }
 
     /// <summary>
@@ -520,30 +546,31 @@ public sealed class SettingsStore(string directory)
             s.Chat.DefaultBackend = (s.Chat.Backends.FirstOrDefault(b => b.Id == s.Chat.DefaultBackend)
                                      ?? s.Chat.Backends.FirstOrDefault(b => b.Id.Equals(s.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))
                                      ?? s.Chat.Backends.FirstOrDefault())?.Id ?? "";
-        s.Chat.MaxImagePixels = Math.Clamp(s.Chat.MaxImagePixels, 256, 8192);
-        s.Chat.HistoryRetentionDays = Math.Clamp(s.Chat.HistoryRetentionDays, 1, 3650);
-        s.Chat.ThinkingDelayMs = Math.Clamp(s.Chat.ThinkingDelayMs, 0, 10_000);
+        s.Chat.MaxImagePixels = SettingsRanges.All["ChatSettings.MaxImagePixels"].Clamp(s.Chat.MaxImagePixels);
+        s.Chat.HistoryRetentionDays = SettingsRanges.All["ChatSettings.HistoryRetentionDays"].Clamp(s.Chat.HistoryRetentionDays);
+        s.Chat.HistoryListSize = SettingsRanges.All["ChatSettings.HistoryListSize"].Clamp(s.Chat.HistoryListSize);
+        s.Chat.ThinkingDelayMs = SettingsRanges.All["ChatSettings.ThinkingDelayMs"].Clamp(s.Chat.ThinkingDelayMs);
         if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";
-        if (s.Window.FontSize is { } fontSize) s.Window.FontSize = Math.Clamp(fontSize, 10, 32);
+        if (s.Window.FontSize is { } fontSize) s.Window.FontSize = SettingsRanges.All["WindowSettings.FontSize"].Clamp(fontSize);
         s.Window.Anchor ??= new PanelAnchor();
         // → v13: the vertical position became the anchor's Y.
         if (s.Window.VerticalPosition is { } vertical) { s.Window.Anchor.Y = vertical; s.Window.VerticalPosition = null; }
         if (string.IsNullOrWhiteSpace(s.Window.Anchor.Monitor)) s.Window.Anchor.Monitor = PanelAnchor.Active;
-        s.Window.Anchor.X = double.IsFinite(s.Window.Anchor.X) ? Math.Clamp(s.Window.Anchor.X, 0.0, 1.0) : 0.5;
-        s.Window.Anchor.Y = double.IsFinite(s.Window.Anchor.Y) ? Math.Clamp(s.Window.Anchor.Y, 0.0, 1.0) : 0.8;
-        if (s.Window.Width is { } width) s.Window.Width = Math.Clamp(width, 200, 16000);
-        if (s.Window.ChatHeight is { } chat) s.Window.ChatHeight = Math.Clamp(chat, 60, 8000);
-        if (s.Window.ChatWidth is { } chatWidth) s.Window.ChatWidth = Math.Clamp(chatWidth, 200, 16000);
-        s.Window.ChatWidthPercent = !double.IsFinite(s.Window.ChatWidthPercent) || s.Window.ChatWidthPercent <= 0 ? 0 : Math.Clamp(s.Window.ChatWidthPercent, 20, 90);
+        s.Window.Anchor.X = SettingsRanges.All["PanelAnchor.X"].ClampFinite(s.Window.Anchor.X);
+        s.Window.Anchor.Y = SettingsRanges.All["PanelAnchor.Y"].ClampFinite(s.Window.Anchor.Y);
+        if (s.Window.Width is { } width) s.Window.Width = SettingsRanges.All["WindowSettings.Width"].Clamp(width);
+        if (s.Window.ChatHeight is { } chat) s.Window.ChatHeight = SettingsRanges.All["WindowSettings.ChatHeight"].Clamp(chat);
+        if (s.Window.ChatWidth is { } chatWidth) s.Window.ChatWidth = SettingsRanges.All["WindowSettings.ChatWidth"].Clamp(chatWidth);
+        s.Window.ChatWidthPercent = SettingsRanges.All["WindowSettings.ChatWidthPercent"].Clamp(s.Window.ChatWidthPercent);
         s.Window.OpenSound = string.IsNullOrWhiteSpace(s.Window.OpenSound) ? Windowing.Sounds.Off : s.Window.OpenSound.Trim();
         s.Window.CloseSound = string.IsNullOrWhiteSpace(s.Window.CloseSound) ? Windowing.Sounds.Off : s.Window.CloseSound.Trim();
-        s.Window.TintOpacity = Math.Clamp(s.Window.TintOpacity, 0.0, 1.0);
-        s.Window.LuminosityOpacity = Math.Clamp(s.Window.LuminosityOpacity, 0.0, 1.0);
-        s.Window.WidthPercent = Math.Clamp(s.Window.WidthPercent, 20, 90);
-        s.Window.MinWidth = Math.Clamp(s.Window.MinWidth, 200, 8000);
-        s.Window.MaxWidth = Math.Clamp(s.Window.MaxWidth, s.Window.MinWidth, 16000);
-        s.Window.Height = Math.Clamp(s.Window.Height, 0, 4000);
-        s.Window.MaxHeightPercent = Math.Clamp(s.Window.MaxHeightPercent, 30, 95);
+        s.Window.TintOpacity = SettingsRanges.All["WindowSettings.TintOpacity"].Clamp(s.Window.TintOpacity);
+        s.Window.LuminosityOpacity = SettingsRanges.All["WindowSettings.LuminosityOpacity"].Clamp(s.Window.LuminosityOpacity);
+        s.Window.WidthPercent = SettingsRanges.All["WindowSettings.WidthPercent"].Clamp(s.Window.WidthPercent);
+        s.Window.MinWidth = SettingsRanges.All["WindowSettings.MinWidth"].Clamp(s.Window.MinWidth);
+        s.Window.MaxWidth = Math.Max(s.Window.MinWidth, SettingsRanges.All["WindowSettings.MaxWidth"].Clamp(s.Window.MaxWidth));
+        s.Window.Height = SettingsRanges.All["WindowSettings.Height"].Clamp(s.Window.Height);
+        s.Window.MaxHeightPercent = SettingsRanges.All["WindowSettings.MaxHeightPercent"].Clamp(s.Window.MaxHeightPercent);
         s.SchemaVersion = HotlineSettings.CurrentSchemaVersion;
         return s;
     }

@@ -499,6 +499,7 @@ Từ chối:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Phần còn lại vẫn được áp dụng. Cài đặt › Nâng cao liệt kê mọi thứ.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Không thể đọc tệp cài đặt</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline giữ nguyên các cài đặt hiện tại cho đến khi sự cố được khắc phục.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width are now real pixels (before: scaled units): your values {0} were kept as written; check Settings &gt; Window</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Sự cố trong tệp cài đặt của bạn</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Các giá trị bị bỏ qua sẽ dùng giá trị mặc định. Hãy sửa tệp và Hotline sẽ áp dụng ngay.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Một phần của toolbar.json đã bị bỏ qua</value></data>
@@ -598,8 +599,8 @@ Từ chối:
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Các hàng nút</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Màn hình {0} × {1} px ở tỷ lệ {2}%: Windows hiển thị giao diện ở {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Màn hình {0} × {1} px ở tỷ lệ 100%</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Chiều rộng hẹp nhất của bảng điều khiển, tính bằng pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 384 = 20% của màn hình 1920 × 1080.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Chiều rộng tối đa của bảng điều khiển theo pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 2304 = 60% của màn hình 4K (3840 px).</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Di chuyển xuống dưới hộp tin nhắn</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Bên trên hộp tin nhắn</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Di chuyển lên trên hộp tin nhắn</value></data>

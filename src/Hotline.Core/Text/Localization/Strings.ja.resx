@@ -499,6 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 残りの設定は適用されます。[設定] › [詳細設定] にすべて表示されます。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>設定ファイルを読み取れません</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>修正されるまで、Hotline は現在の設定を維持します。</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width are now real pixels (before: scaled units): your values {0} were kept as written; check Settings &gt; Window</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定ファイルの問題</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>無視された値にはデフォルトが使用されます。ファイルを修正すると、Hotline にすぐに反映されます。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json の一部が無視されました</value></data>
@@ -598,8 +599,8 @@
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>画面 {0} × {1} px ({2}% スケーリング): Windows はインターフェイスを {3} × {4} で描画します</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>画面 {0} × {1} px (100% スケーリング)</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>パネルの最小幅（画面の物理ピクセル単位、Windows の表示スケールは無視）。384 = 1920 × 1080 画面の 20%。</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実ピクセル単位でのパネルの最大幅（Windows の表示スケーリングは無視されます）。2304 = 4K（3840 px）画面の 60%。</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>メッセージ ボックスの上</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>メッセージ ボックスの上に移動</value></data>

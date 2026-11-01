@@ -499,6 +499,7 @@ Zabroń:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Reszta ma zastosowanie. Ustawienia › Zaawansowane zawiera pełną listę.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Nie można odczytać pliku ustawień</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline zachowuje obecne ustawienia, dopóki problem nie zostanie naprawiony.</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width are now real pixels (before: scaled units): your values {0} were kept as written; check Settings &gt; Window</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemy w plikach ustawień</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Ignorowane wartości używają swoich wartości domyślnych. Napraw plik, a Hotline natychmiast go uwzględni.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Część pliku toolbar.json została zignorowana</value></data>
@@ -598,8 +599,8 @@ Zabroń:
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Wiersze przycisków</value></data>
   <data name="Bar_ScreenLine" xml:space="preserve"><value>Ekran {0} × {1} px przy skalowaniu {2}%: system Windows renderuje interfejs w {3} × {4}</value></data>
   <data name="Bar_ScreenLine100" xml:space="preserve"><value>Ekran {0} × {1} px przy skalowaniu 100%</value></data>
-  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Minimalna szerokość panelu, w rzeczywistych pikselach ekranu (skalowanie ekranu Windows jest ignorowane). 384 = 20% ekranu 1920 × 1080.</value></data>
-  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maksymalna szerokość panelu w rzeczywistych pikselach ekranu (skalowanie ekranu Windows jest ignorowane). 2304 = 60% ekranu 4K (3840 px).</value></data>
+  <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
+  <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Przenieś poniżej pola wiadomości</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Powyżej pola wiadomości</value></data>
   <data name="Bar_ToTop" xml:space="preserve"><value>Przenieś powyżej pola wiadomości</value></data>

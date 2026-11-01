@@ -58,6 +58,14 @@ public static class SettingsSchema
         Languages.Resolve(stored) is null ? Languages.System
             : Languages.Supported.FirstOrDefault(t => t.Equals(stored!.Trim(), StringComparison.OrdinalIgnoreCase)) ?? stored!.Trim();
 
+    private static NumberItem Number(string key, SettingsPage page, string header, string? description,
+        double step, string? unit, Func<HotlineSettings, double> get, Action<HotlineSettings, double> set,
+        bool RequiresRestart = false, bool allowUnset = false)
+    {
+        var range = SettingsRanges.All[key];
+        return new(page, header, description, allowUnset || range.ZeroToo ? 0 : range.Min, range.Max, step, unit, get, set, RequiresRestart);
+    }
+
     private static string? Blank(string? v) => string.IsNullOrWhiteSpace(v) ? null : v.Trim();
 
     /// <summary>The accent picker's "Custom" entry (settings.json stores the colour itself).</summary>
@@ -125,11 +133,11 @@ public static class SettingsSchema
             [(BackdropKind.Acrylic, nameof(Strings.Set_Backdrop_Acrylic)), (BackdropKind.AcrylicThin, nameof(Strings.Set_Backdrop_AcrylicThin)),
              (BackdropKind.Mica, nameof(Strings.Set_Backdrop_Mica)), (BackdropKind.Solid, nameof(Strings.Set_Backdrop_Solid))],
             s => s.Window.Backdrop, (s, v) => s.Window.Backdrop = v),
-        new NumberItem(SettingsPage.Appearance, nameof(Strings.Set_Tint), nameof(Strings.Set_Tint_Desc), 0, 1, 0.05, null,
+        Number("WindowSettings.TintOpacity", SettingsPage.Appearance, nameof(Strings.Set_Tint), nameof(Strings.Set_Tint_Desc), 0.05, null,
             s => s.Window.TintOpacity, (s, v) => s.Window.TintOpacity = v),
-        new NumberItem(SettingsPage.Appearance, nameof(Strings.Set_Luminosity), nameof(Strings.Set_Luminosity_Desc), 0, 1, 0.05, null,
+        Number("WindowSettings.LuminosityOpacity", SettingsPage.Appearance, nameof(Strings.Set_Luminosity), nameof(Strings.Set_Luminosity_Desc), 0.05, null,
             s => s.Window.LuminosityOpacity, (s, v) => s.Window.LuminosityOpacity = v),
-        new NumberItem(SettingsPage.Appearance, nameof(Strings.Set_TextSize), nameof(Strings.Set_TextSize_Desc), 10, 32, 1, "px",
+        Number("WindowSettings.FontSize", SettingsPage.Appearance, nameof(Strings.Set_TextSize), nameof(Strings.Set_TextSize_Desc), 1, "px",
             s => s.Window.FontSize ?? Theming.ThemeTokens.DefaultFontSize, (s, v) => s.Window.FontSize = (int)v == Theming.ThemeTokens.DefaultFontSize ? null : (int)v),
         new TextItem(SettingsPage.Appearance, nameof(Strings.Set_Font), nameof(Strings.Set_Font_Desc), "Segoe UI Variable",
             s => s.Window.FontFamily, (s, v) => s.Window.FontFamily = Blank(v)),
@@ -137,29 +145,29 @@ public static class SettingsSchema
             [(ScrollbarStyle.Auto, nameof(Strings.Set_Scrollbar_Auto)), (ScrollbarStyle.Visible, nameof(Strings.Set_Scrollbar_Always)), (ScrollbarStyle.Hidden, nameof(Strings.Set_Scrollbar_Never))],
             s => s.Window.Scrollbar, (s, v) => s.Window.Scrollbar = v),
 
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_Width), nameof(Strings.Set_Width_Desc), 20, 90, 1, "%", s => s.Window.WidthPercent, (s, v) => s.Window.WidthPercent = v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinWidth), nameof(Strings.Set_MinWidth_Desc), 200, 8000, 10, "px", s => s.Window.MinWidth, (s, v) => s.Window.MinWidth = (int)v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxWidth), nameof(Strings.Set_MaxWidth_Desc), 200, 16000, 10, "px", s => s.Window.MaxWidth, (s, v) => s.Window.MaxWidth = (int)v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MinHeight), nameof(Strings.Set_MinHeight_Desc), 0, 4000, 10, "DIP",
+        Number("WindowSettings.WidthPercent", SettingsPage.Window, nameof(Strings.Set_Width), nameof(Strings.Set_Width_Desc), 1, "%", s => s.Window.WidthPercent, (s, v) => s.Window.WidthPercent = v),
+        Number("WindowSettings.MinWidth", SettingsPage.Window, nameof(Strings.Set_MinWidth), nameof(Strings.Set_MinWidth_Desc), 10, "px", s => s.Window.MinWidth, (s, v) => s.Window.MinWidth = (int)v),
+        Number("WindowSettings.MaxWidth", SettingsPage.Window, nameof(Strings.Set_MaxWidth), nameof(Strings.Set_MaxWidth_Desc), 10, "px", s => s.Window.MaxWidth, (s, v) => s.Window.MaxWidth = (int)v),
+        Number("WindowSettings.Height", SettingsPage.Window, nameof(Strings.Set_MinHeight), nameof(Strings.Set_MinHeight_Desc), 10, "DIP",
             s => s.Window.Height, (s, v) => s.Window.Height = (int)v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_MaxHeight), nameof(Strings.Set_MaxHeight_Desc), 30, 95, 1, "%",
+        Number("WindowSettings.MaxHeightPercent", SettingsPage.Window, nameof(Strings.Set_MaxHeight), nameof(Strings.Set_MaxHeight_Desc), 1, "%",
             s => s.Window.MaxHeightPercent, (s, v) => s.Window.MaxHeightPercent = v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_Position), nameof(Strings.Set_Position_Desc), 0, 1, 0.05, null,
+        Number("PanelAnchor.Y", SettingsPage.Window, nameof(Strings.Set_Position), nameof(Strings.Set_Position_Desc), 0.05, null,
             s => s.Window.Anchor.Y, (s, v) => s.Window.Anchor.Y = v),
         Choice(SettingsPage.Window, nameof(Strings.Set_Growth), null, [(GrowMode.Grow, nameof(Strings.Set_Growth_Fit)), (GrowMode.Full, nameof(Strings.Set_Growth_Full))],
             s => s.Chat.GrowMode, (s, v) => s.Chat.GrowMode = v),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_PositionX), nameof(Strings.Set_PositionX_Desc), 0, 1, 0.05, null,
+        Number("PanelAnchor.X", SettingsPage.Window, nameof(Strings.Set_PositionX), nameof(Strings.Set_PositionX_Desc), 0.05, null,
             s => s.Window.Anchor.X, (s, v) => s.Window.Anchor.X = v),
         new TextItem(SettingsPage.Window, nameof(Strings.Set_Monitor), nameof(Strings.Set_Monitor_Desc), PanelAnchor.Active,
             s => s.Window.Anchor.Monitor, (s, v) => s.Window.Anchor.Monitor = string.IsNullOrWhiteSpace(v) ? PanelAnchor.Active : v.Trim()),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_FixedWidth), nameof(Strings.Set_FixedWidth_Desc), 0, 16000, 10, "px",
-            s => s.Window.Width ?? 0, (s, v) => s.Window.Width = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 200, 16000)),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatWidthPercent), nameof(Strings.Set_ChatWidthPercent_Desc), 0, 90, 1, "%",
-            s => s.Window.ChatWidthPercent, (s, v) => s.Window.ChatWidthPercent = v <= 0 ? 0 : Math.Clamp(v, 20, 90)),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatWidth), nameof(Strings.Set_ChatWidth_Desc), 0, 16000, 10, "px",
-            s => s.Window.ChatWidth ?? 0, (s, v) => s.Window.ChatWidth = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 200, 16000)),
-        new NumberItem(SettingsPage.Window, nameof(Strings.Set_ChatHeight), nameof(Strings.Set_ChatHeight_Desc), 0, 8000, 10, "DIP",
-            s => s.Window.ChatHeight ?? 0, (s, v) => s.Window.ChatHeight = v <= 0 ? null : Math.Clamp((int)Math.Round(v), 60, 8000)),
+        Number("WindowSettings.Width", SettingsPage.Window, nameof(Strings.Set_FixedWidth), nameof(Strings.Set_FixedWidth_Desc), 10, "px",
+            s => s.Window.Width ?? 0, (s, v) => s.Window.Width = v <= 0 ? null : SettingsRanges.All["WindowSettings.Width"].Clamp((int)Math.Round(v)), allowUnset: true),
+        Number("WindowSettings.ChatWidthPercent", SettingsPage.Window, nameof(Strings.Set_ChatWidthPercent), nameof(Strings.Set_ChatWidthPercent_Desc), 1, "%",
+            s => s.Window.ChatWidthPercent, (s, v) => s.Window.ChatWidthPercent = SettingsRanges.All["WindowSettings.ChatWidthPercent"].Clamp(v)),
+        Number("WindowSettings.ChatWidth", SettingsPage.Window, nameof(Strings.Set_ChatWidth), nameof(Strings.Set_ChatWidth_Desc), 10, "px",
+            s => s.Window.ChatWidth ?? 0, (s, v) => s.Window.ChatWidth = v <= 0 ? null : SettingsRanges.All["WindowSettings.ChatWidth"].Clamp((int)Math.Round(v)), allowUnset: true),
+        Number("WindowSettings.ChatHeight", SettingsPage.Window, nameof(Strings.Set_ChatHeight), nameof(Strings.Set_ChatHeight_Desc), 10, "DIP",
+            s => s.Window.ChatHeight ?? 0, (s, v) => s.Window.ChatHeight = v <= 0 ? null : SettingsRanges.All["WindowSettings.ChatHeight"].Clamp((int)Math.Round(v)), allowUnset: true),
         Choice(SettingsPage.Window, nameof(Strings.Set_Direction), nameof(Strings.Set_Direction_Desc),
             [(GrowDirection.Auto, nameof(Strings.Set_Direction_Auto)), (GrowDirection.Up, nameof(Strings.Set_Direction_Up)), (GrowDirection.Down, nameof(Strings.Set_Direction_Down))],
             s => s.Window.GrowDirection, (s, v) => s.Window.GrowDirection = v),
@@ -168,7 +176,7 @@ public static class SettingsSchema
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Thinking), nameof(Strings.Set_Thinking_Desc),
             s => s.Chat.ThinkingIndicator, (s, v) => s.Chat.ThinkingIndicator = v),
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_History), nameof(Strings.Set_History_Desc), s => s.Chat.SaveHistory, (s, v) => s.Chat.SaveHistory = v, RequiresRestart: true),
-        new NumberItem(SettingsPage.Chat, nameof(Strings.Set_Retention), null, 1, 3650, 1, nameof(Strings.Set_Unit_Days), s => s.Chat.HistoryRetentionDays,
+        Number("ChatSettings.HistoryRetentionDays", SettingsPage.Chat, nameof(Strings.Set_Retention), null, 1, nameof(Strings.Set_Unit_Days), s => s.Chat.HistoryRetentionDays,
             (s, v) => s.Chat.HistoryRetentionDays = (int)v, RequiresRestart: true),
         Choice(SettingsPage.Chat, nameof(Strings.Set_Selection), nameof(Strings.Set_Selection_Desc),
             [(AttachSelectionMode.Auto, nameof(Strings.Set_Selection_Auto)), (AttachSelectionMode.Clipboard, nameof(Strings.Set_Selection_Clipboard)), (AttachSelectionMode.Off, nameof(Strings.Set_Selection_Off))],
@@ -186,7 +194,7 @@ public static class SettingsSchema
         Choice(SettingsPage.Chat, nameof(Strings.Set_Ocr), nameof(Strings.Set_Ocr_Desc),
             [(OcrMode.Auto, nameof(Strings.Set_Ocr_Auto)), (OcrMode.Always, nameof(Strings.Set_Ocr_Always)), (OcrMode.Off, nameof(Strings.Set_Ocr_Off))],
             s => s.Chat.Ocr, (s, v) => s.Chat.Ocr = v),
-        new NumberItem(SettingsPage.Chat, nameof(Strings.Set_ImageSize), nameof(Strings.Set_ImageSize_Desc), 256, 8192, 128, "px",
+        Number("ChatSettings.MaxImagePixels", SettingsPage.Chat, nameof(Strings.Set_ImageSize), nameof(Strings.Set_ImageSize_Desc), 128, "px",
             s => s.Chat.MaxImagePixels, (s, v) => s.Chat.MaxImagePixels = (int)v),
 
         new ToggleItem(SettingsPage.Advanced, nameof(Strings.Set_Logging), nameof(Strings.Set_Logging_Desc), s => s.Diagnostics.VerboseLogging,

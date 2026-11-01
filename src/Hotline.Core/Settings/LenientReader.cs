@@ -28,29 +28,10 @@ internal static class LenientReader
     private static readonly JsonDocumentOptions DocumentOptions = new() { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true };
 
     /// <summary>The file's limits that Normalize would otherwise clamp silently: a value outside them is reported.</summary>
-    private sealed record Range(double Min, double Max, bool ZeroToo = false);
-
-    private static readonly Dictionary<string, Range> Ranges = new()
+    private static readonly Dictionary<string, SettingRange> Ranges = new(SettingsRanges.All)
     {
-        ["ChatSettings.MaxImagePixels"] = new(256, 8192),
-        ["ChatSettings.HistoryRetentionDays"] = new(1, 3650),
-        ["ChatSettings.ThinkingDelayMs"] = new(0, 10_000),
-        ["WindowSettings.FontSize"] = new(10, 32),
-        ["WindowSettings.Width"] = new(320, 8000),
-        ["WindowSettings.ChatHeight"] = new(60, 8000),
-        ["WindowSettings.ChatWidth"] = new(200, 16000),
-        ["WindowSettings.ChatWidthPercent"] = new(20, 90, ZeroToo: true),
-        ["WindowSettings.TintOpacity"] = new(0, 1),
-        ["WindowSettings.LuminosityOpacity"] = new(0, 1),
-        ["WindowSettings.WidthPercent"] = new(20, 90),
-        ["WindowSettings.MinWidth"] = new(200, 8000),
-        ["WindowSettings.MaxWidth"] = new(200, 16000),
-        ["WindowSettings.Height"] = new(0, 4000),
-        ["WindowSettings.MaxHeightPercent"] = new(30, 95),
-        ["PanelAnchor.X"] = new(0, 1),
-        ["PanelAnchor.Y"] = new(0, 1),
-        ["BackendProfile.MaxTokens"] = new(1, 1_000_000),
-        ["BackendProfile.Temperature"] = new(0, 2),
+        ["BackendProfile.MaxTokens"] = new(1, 1_000_000, null),
+        ["BackendProfile.Temperature"] = new(0, 2, null),
     };
 
     private static readonly HashSet<string> Skipped = ["ChatSettings.Backends"]; // the connections have their own files

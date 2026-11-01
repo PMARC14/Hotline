@@ -104,8 +104,8 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       hand, it never widens; the default (0) never widens. Moving the widened panel with Alt keeps its start width.
 - [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings.
 - [ ] Panel width is real pixels, scaling ignored: set `widthPercent` 20, then 40, at Windows scaling 150% and at 200% (sign out/in if asked). The panel
-      is the same share of the screen at both (2880 px wide: 40% = 1152 px, 20% = 576 px but never under `minWidth` 400); the line under the width
-      controls in Settings › Window reads the same numbers; buttons and text are bigger at 200%, and a narrow panel moves buttons into the "..." box.
+      is the same share of the screen at both (2880 px wide: 40% = 1152 px, 20% = 576 px but never under `minWidth` 400);
+      buttons and text are bigger at 200%, and a narrow panel moves buttons into the "..." box.
       Resize by hand with Alt, Save as default, reopen: same pixel width; `window.width` in settings.json holds pixels (about 1152, not 576).
 
 ### Chat basics
@@ -165,7 +165,7 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       the panel and the settings window follow (Appearance › Theme = System).
 - [ ] Every page opens; changes apply at once and show up in `settings.json`.
 - [ ] Settings › Window shows Chat width (percent) and Chat width beside the width settings. Type 1 in Chat width (percent): the
-      box shows 20 once saved; type 100 in a fixed width: it shows 320. `chatWidth` 5000 grows to `maxWidth`, not beyond.
+      box shows 20 once saved; type 100 in a fixed width: it shows 200. `chatWidth` 5000 grows to `maxWidth`, not beyond.
 - [ ] Settings › Window › Growth = Full: an empty panel stays a bar (a long draft only fits its text); the first message jumps to the
       maximum height; after dragging the panel to a height by hand, a new message keeps that height.
 - [ ] AI connections: move a connection up/down → the Provider picker order follows.

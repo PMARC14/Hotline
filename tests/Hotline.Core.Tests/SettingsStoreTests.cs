@@ -35,8 +35,8 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
         Assert.False(s.Diagnostics.VerboseLogging);
         Assert.Equal(0.8, s.Window.Anchor.Y);
-        Assert.Equal(14, s.SchemaVersion);
-        Assert.Equal(14, HotlineSettings.CurrentSchemaVersion);
+        Assert.Equal(15, s.SchemaVersion);
+        Assert.Equal(15, HotlineSettings.CurrentSchemaVersion);
         Assert.True(File.Exists(store.FilePath));
         Assert.False(File.Exists(store.FilePath + ".old"));
     }
@@ -206,7 +206,7 @@ public sealed class SettingsStoreTests : IDisposable
     }
 
     [Fact]
-    public void An_old_schema_file_is_read_as_it_is_without_an_archive_and_connections_stay_untouched()
+    public void An_old_schema_file_migrates_width_defaults_and_connections_stay_untouched()
     {
         Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
         var conn = Path.Combine(_dir, SettingsStore.ConnectionsFolder, "a.json");
@@ -225,7 +225,7 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(KeyAction.ShowPopup, s.Activation.Hold);
         Assert.Equal(14, s.Window.FontSize);
         Assert.Equal(520, s.Window.Height);
-        Assert.Equal(600, s.Window.MinWidth);
+        Assert.Equal(400, s.Window.MinWidth);
         Assert.Equal("", s.Chat.DefaultBackend);
         Assert.Equal("a", Assert.Single(s.Chat.Backends).Id); // no built-in connection added for an old file
         Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion); // stamped in memory, written with the next save
