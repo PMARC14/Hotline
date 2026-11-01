@@ -177,7 +177,7 @@ Zabroń:
   <data name="Conn_Endpoint" xml:space="preserve"><value>Punkt końcowy</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>Podstawowy adres URL interfejsu API.</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>Zapisany; wpisz, aby zastąpić</value></data>
-  <data name="Conn_Optional" xml:space="preserve"><value>Opcjonalne</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>Opcjonalnie</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>Wymagany</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>Nie można zapisać klucza</value></data>
   <data name="Conn_ApiKey" xml:space="preserve"><value>Klucz API</value></data>
@@ -596,8 +596,8 @@ Zabroń:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Poniżej pola wiadomości</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Puste</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Wiersze przycisków</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Ekran {0} × {1} px przy skalowaniu {2}%: system Windows renderuje interfejs w {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Ekran {0} × {1} px przy skalowaniu 100%</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Minimalna szerokość panelu, w rzeczywistych pikselach ekranu (skalowanie ekranu Windows jest ignorowane). 384 = 20% ekranu 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maksymalna szerokość panelu w rzeczywistych pikselach ekranu (skalowanie ekranu Windows jest ignorowane). 2304 = 60% ekranu 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Przenieś poniżej pola wiadomości</value></data>

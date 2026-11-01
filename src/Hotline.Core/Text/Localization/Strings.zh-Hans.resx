@@ -596,8 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>消息框下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按钮行</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>屏幕 {0} × {1} px，缩放比例 {2}%：Windows 渲染界面的大小为 {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>屏幕 {0} × {1} px（100% 缩放）</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>面板允许的最窄宽度，以屏幕的物理像素为单位（忽略 Windows 显示缩放）。384 = 1920 × 1080 屏幕的 20%。</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>面板的最大宽度，以屏幕的实际像素为单位（忽略 Windows 显示缩放）。2304 = 4K（3840 px）屏幕的 60%。</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至消息框下方</value></data>

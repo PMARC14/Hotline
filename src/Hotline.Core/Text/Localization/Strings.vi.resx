@@ -596,8 +596,8 @@ Từ chối:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Bên dưới hộp tin nhắn</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Trống</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Các hàng nút</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Màn hình {0} × {1} px ở tỷ lệ {2}%: Windows hiển thị giao diện ở {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Màn hình {0} × {1} px ở tỷ lệ 100%</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Chiều rộng hẹp nhất của bảng điều khiển, tính bằng pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 384 = 20% của màn hình 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Chiều rộng tối đa của bảng điều khiển theo pixel thực của màn hình (bỏ qua tỷ lệ hiển thị của Windows). 2304 = 60% của màn hình 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Di chuyển xuống dưới hộp tin nhắn</value></data>

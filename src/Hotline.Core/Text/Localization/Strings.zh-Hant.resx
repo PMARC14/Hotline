@@ -596,8 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>螢幕 {0} × {1} px，縮放比例 {2}%：Windows 繪製介面大小為 {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>螢幕 {0} × {1} px（100% 縮放）</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>面板可縮至的最窄寬度，以螢幕的實體像素為單位（忽略 Windows 顯示縮放）。384 = 1920 × 1080 螢幕的 20%。</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>面板的最大寬度，以螢幕的真實像素為單位（忽略 Windows 顯示縮放）。2304 = 4K（3840 px）螢幕的 60%。</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>

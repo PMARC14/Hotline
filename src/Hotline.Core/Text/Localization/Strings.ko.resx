@@ -596,8 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>화면 {0} × {1} px ({2}% 배율): Windows에서 인터페이스를 {3} × {4} 크기로 렌더링합니다</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>화면 {0} × {1} px (100% 배율)</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>패널의 최소 너비(화면의 실제 픽셀 단위, Windows 디스플레이 배율 무시). 384 = 1920 × 1080 화면의 20%.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀 기준 패널 최대 너비(Windows 디스플레이 배율은 무시됨). 2304 = 4K(3840 px) 화면의 60%.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
@@ -764,7 +764,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_OutlineColor" xml:space="preserve"><value>윤곽선 색</value></data>
   <data name="Bar_ColorAccent" xml:space="preserve"><value>강조 색</value></data>
   <data name="Bar_ColorRed" xml:space="preserve"><value>빨강</value></data>
-  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황</value></data>
+  <data name="Bar_ColorOrange" xml:space="preserve"><value>주황색</value></data>
   <data name="Bar_ColorYellow" xml:space="preserve"><value>노랑</value></data>
   <data name="Bar_ColorGreen" xml:space="preserve"><value>초록</value></data>
   <data name="Bar_ColorTeal" xml:space="preserve"><value>청록</value></data>

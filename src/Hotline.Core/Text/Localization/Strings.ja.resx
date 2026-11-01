@@ -177,7 +177,7 @@
   <data name="Conn_Endpoint" xml:space="preserve"><value>エンドポイント</value></data>
   <data name="Conn_Endpoint_Desc" xml:space="preserve"><value>API のベース URL。</value></data>
   <data name="Conn_KeySaved" xml:space="preserve"><value>保存済み。入力すると上書きされます</value></data>
-  <data name="Conn_Optional" xml:space="preserve"><value>省略可能</value></data>
+  <data name="Conn_Optional" xml:space="preserve"><value>任意</value></data>
   <data name="Conn_Required" xml:space="preserve"><value>必須</value></data>
   <data name="Conn_KeySaveFailed" xml:space="preserve"><value>キーを保存できませんでした</value></data>
   <data name="Conn_ApiKey" xml:space="preserve"><value>API キー</value></data>
@@ -422,7 +422,7 @@
   <data name="Attach_Selection" xml:space="preserve"><value>選択したテキスト</value></data>
   <data name="Attach_SelectionFrom" xml:space="preserve"><value>{0} で選択したテキスト</value></data>
   <data name="Attach_TooMany" xml:space="preserve"><value>添付できるファイルは {0} 個までです。</value></data>
-  <data name="Attach_TextIn" xml:space="preserve"><value>{0} のテキスト</value></data>
+  <data name="Attach_TextIn" xml:space="preserve"><value>{0} 内のテキスト</value></data>
   <data name="Chat_NoImages" xml:space="preserve"><value>{0} は画像を読めません。</value></data>
   <data name="Chat_NoFiles" xml:space="preserve"><value>{0} はファイルを読めません。</value></data>
   <data name="Chat_NoBackend" xml:space="preserve"><value>バックエンド「{0}」はまだ利用できません。</value></data>
@@ -596,8 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>画面 {0} × {1} px ({2}% スケーリング): Windows はインターフェイスを {3} × {4} で描画します</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>画面 {0} × {1} px (100% スケーリング)</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>パネルの最小幅（画面の物理ピクセル単位、Windows の表示スケールは無視）。384 = 1920 × 1080 画面の 20%。</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実ピクセル単位でのパネルの最大幅（Windows の表示スケーリングは無視されます）。2304 = 4K（3840 px）画面の 60%。</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>

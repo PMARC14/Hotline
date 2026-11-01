@@ -106,12 +106,12 @@
   <data name="Settings_Title" xml:space="preserve"><value>Hotline सेटिंग्स</value></data>
   <data name="Nav_General" xml:space="preserve"><value>सामान्य</value></data>
   <data name="Nav_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
-  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट</value></data>
+  <data name="Nav_Prompts" xml:space="preserve"><value>प्रॉम्प्ट्स</value></data>
   <data name="Nav_Actions" xml:space="preserve"><value>त्वरित क्रियाएँ</value></data>
   <data name="Nav_Appearance" xml:space="preserve"><value>रूप</value></data>
   <data name="Nav_Window" xml:space="preserve"><value>विंडो</value></data>
   <data name="Nav_Chat" xml:space="preserve"><value>चैट और इतिहास</value></data>
-  <data name="Nav_Tools" xml:space="preserve"><value>टूल्स</value></data>
+  <data name="Nav_Tools" xml:space="preserve"><value>उपकरण</value></data>
   <data name="Nav_Advanced" xml:space="preserve"><value>उन्नत</value></data>
   <data name="Nav_About" xml:space="preserve"><value>के बारे में</value></data>
   <data name="Settings_AppliesAfterRestart" xml:space="preserve"><value>(Hotline को फिर से शुरू करने के बाद लागू होता है।)</value></data>
@@ -596,8 +596,8 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>संदेश बॉक्स के नीचे</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>खाली</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>स्क्रीन {0} × {1} px, {2}% स्केलिंग पर: Windows इंटरफ़ेस को {3} × {4} पर प्रदर्शित करता है</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>स्क्रीन {0} × {1} px 100% स्केलिंग पर</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>पैनल की न्यूनतम चौड़ाई, स्क्रीन के वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 384 = 1920 × 1080 स्क्रीन का 20%।</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>पैनल की अधिकतम चौड़ाई, स्क्रीन के वास्तविक पिक्सेल में (Windows डिस्प्ले स्केलिंग को अनदेखा किया जाता है)। 2304 = 4K (3840 px) स्क्रीन का 60%।</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>

@@ -596,8 +596,8 @@ Denegar:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Debajo del cuadro de mensaje</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vacío</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Filas de botones</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Pantalla {0} × {1} px al {2}% de escala: Windows dibuja la interfaz en {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Pantalla {0} × {1} px a escala del 100 %</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>El ancho mínimo del panel, en píxeles reales de la pantalla (se ignora la escala de pantalla de Windows). 384 = 20% de una pantalla de 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ancho máximo del panel en píxeles reales de la pantalla (se ignora el escalado de pantalla de Windows). 2304 = 60% de una pantalla 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Mover debajo del cuadro de mensaje</value></data>

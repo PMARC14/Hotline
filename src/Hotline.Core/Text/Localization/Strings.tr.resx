@@ -596,8 +596,8 @@ Reddet:
   <data name="Bar_BottomRow" xml:space="preserve"><value>İleti kutusunun altında</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Boş</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Düğme satırları</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Ekran {0} × {1} px, %{2} ölçekte: Windows arayüzü {3} × {4} olarak çizer</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>%100 ölçeklendirmede ekran {0} × {1} px</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Panelin inebileceği en dar genişlik, ekranın gerçek pikseli cinsinden (Windows ekran ölçeklendirmesi yok sayılır). 384 = 1920 × 1080 ekranın %20'si.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Ekranın gerçek pikselleri cinsinden panelin maksimum genişliği (Windows ekran ölçeklendirmesi yoksayılır). 2304 = 4K (3840 px) ekranın %60'ı.</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>İleti kutusunun altına taşı</value></data>

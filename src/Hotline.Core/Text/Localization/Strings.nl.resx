@@ -596,8 +596,8 @@ Weigeren:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Scherm {0} × {1} px bij {2}% schaling: Windows tekent de interface op {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Scherm {0} × {1} px bij 100% schaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Minimale breedte van het paneel, in werkelijke schermpixels (Windows-schermschaling wordt genegeerd). 384 = 20% van een scherm van 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Maximale breedte van het paneel in werkelijke schermpixels (Windows-schermschaling wordt genegeerd). 2304 = 60% van een 4K-scherm (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
@@ -663,7 +663,7 @@ Weigeren:
   <data name="Backup_Intro" xml:space="preserve"><value>Verplaats uw Hotline-configuratie naar een andere pc of bewaar een kopie. Een back-up is één .zip-bestand met de onderdelen die u aanvinkt; niets anders (chatgeschiedenis, geheugen, logboeken) wordt meegenomen.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Instellingen</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en aangepaste knopafbeeldingen</value></data>
-  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Hulpmiddelen (mcp.json)</value></data>
+  <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>
   <data name="Backup_Cat_Actions" xml:space="preserve"><value>Snelle acties</value></data>

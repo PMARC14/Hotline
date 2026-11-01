@@ -596,8 +596,8 @@ Nega:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Sotto la casella del messaggio</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vuoto</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Righe di pulsanti</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
+  <data name="Bar_ScreenLine" xml:space="preserve"><value>Schermo {0} × {1} px con ridimensionamento al {2}%: Windows visualizza l'interfaccia a {3} × {4}</value></data>
+  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Schermo {0} × {1} px con ridimensionamento al 100%</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>La larghezza minima del pannello, in pixel reali dello schermo (il ridimensionamento dello schermo di Windows viene ignorato). 384 = 20% di uno schermo 1920 × 1080.</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Larghezza massima del pannello in pixel effettivi dello schermo (il ridimensionamento dello schermo di Windows viene ignorato). 2304 = 60% di uno schermo 4K (3840 px).</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Sposta sotto la casella del messaggio</value></data>
