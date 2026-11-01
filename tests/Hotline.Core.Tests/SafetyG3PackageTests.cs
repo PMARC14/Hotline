@@ -114,6 +114,8 @@ public sealed class SafetyG3PackageTests : IDisposable
         folder.SetAccessControl(acl);
         try
         {
+            // An elevated account (the release runner) lists the folder despite the deny rule: then there is nothing to test.
+            Assert.SkipUnless(ListingIsDenied(folder.FullName), "this account can list the folder despite the deny rule");
             var result = SettingsPackage.Export(Data, [SettingsCategory.Prompts], new MemoryStream(), Now, "1.0");
             Assert.Equal(0, result.FileCount);
             var skipped = Assert.Single(result.Skipped);
@@ -125,6 +127,12 @@ public sealed class SafetyG3PackageTests : IDisposable
             acl.RemoveAccessRule(deny);
             folder.SetAccessControl(acl);
         }
+    }
+
+    private static bool ListingIsDenied(string path)
+    {
+        try { _ = Directory.EnumerateFileSystemEntries(path).Any(); return false; }
+        catch (UnauthorizedAccessException) { return true; }
     }
 
     [Fact]
