@@ -178,6 +178,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - `Text/` `MarkdownModel` (Markdig → blocks; math, SVG, task lists), `LatexText`, `SvgSanitizer`, `Localization/`.
   - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`), `OdrDiscovery`. `Diagnostics/` `FileLog`, `LogText`,
     `ConfigProblems`. `Processes/` line processes, `ShellOpen`. `Platform/` `SafeDirectory`, `CommandResolver`.
+    MCP approvals: only failed "Always" saves are remembered; a file rule or a removed/disabled server clears that fallback.
   - `Windowing/` `PopupGeometry` (GrowUp/GrowDown), `PanelPlacement` (anchor, direction, clamp, resize, rescale), the toolbar files
     (`ToolbarModel`, `ToolbarFile`, `ToolbarEditor`, `ToolbarEditorView`, `ToolbarPlan`, `ToolbarLayout`, `ToolbarProfiles`,
     `CustomIcons`), `Sounds`.
@@ -235,6 +236,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   opens a console on purpose (its app targets too). Never wrap a child in `cmd /c`; kill whole process trees (job object).
 
 **The CLIs**
+- **CLI sessions:** a connection detour clears the session when the transcript is whole; record-only chats still resume, without detour turns in that CLI's context.
 - **CLI histories:** Claude Code `~/.claude/projects/<folder>/<session>.jsonl` (type user/assistant, `message.content` string or blocks;
   skip `isMeta`, `isSidechain`, `tool_result`); Codex `~/.codex/sessions/YYYY/MM/DD/rollout-*-<thread>.jsonl` (`response_item` ›
   `message`; skip `<environment_context>` turns); agy `~/.gemini/antigravity-cli/conversations/<id>.db`, SQLite table `steps`: type

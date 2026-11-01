@@ -97,12 +97,12 @@ public class McpProcessTests
     {
         var clock = new ManualTimeProvider();
         var lines = new List<string>();
-        var throttle = new StderrThrottle("fs", lines.Add, clock, perMinute: 3);
+        var throttle = new StderrThrottle("fs", lines.Add, clock, perMinute: 3, verbose: () => true);
         for (var i = 0; i < 10; i++) throttle.Line($"l{i}");
-        Assert.Equal(["fs: l0", "fs: l1", "fs: l2"], lines);
+        Assert.Equal(["fs: stderr line 1: l0", "fs: stderr line 2: l1", "fs: stderr line 3: l2"], lines);
         clock.Advance(TimeSpan.FromMinutes(1));
         throttle.Line("later");
-        Assert.Equal(["fs: l0", "fs: l1", "fs: l2", "fs: (7 stderr lines skipped)", "fs: later"], lines);
+        Assert.Equal(["fs: stderr line 1: l0", "fs: stderr line 2: l1", "fs: stderr line 3: l2", "fs: (7 stderr lines skipped)", "fs: stderr line 1: later"], lines);
     }
 
     [Fact]

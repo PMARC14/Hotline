@@ -20,12 +20,12 @@ public sealed class StdioMcpSession : IMcpSession
 
     /// <summary>The connect function for <see cref="McpToolHost"/>. <paramref name="onStarted"/> runs right after the
     /// process starts (the app adds it to its kill-on-close job); <paramref name="log"/> receives throttled stderr.</summary>
-    public static Func<McpServerConfig, CancellationToken, Task<IMcpSession>> Connector(Action<Process>? onStarted, Action<string> log, TimeProvider? clock = null) =>
-        (server, ct) => ConnectAsync(server, onStarted, log, clock ?? TimeProvider.System, ct);
+    public static Func<McpServerConfig, CancellationToken, Task<IMcpSession>> Connector(Action<Process>? onStarted, Action<string> log, TimeProvider? clock = null, Func<bool>? verbose = null) =>
+        (server, ct) => ConnectAsync(server, onStarted, log, clock ?? TimeProvider.System, verbose, ct);
 
-    private static async Task<IMcpSession> ConnectAsync(McpServerConfig server, Action<Process>? onStarted, Action<string> log, TimeProvider clock, CancellationToken ct)
+    private static async Task<IMcpSession> ConnectAsync(McpServerConfig server, Action<Process>? onStarted, Action<string> log, TimeProvider clock, Func<bool>? verbose, CancellationToken ct)
     {
-        var stderr = new StderrThrottle(server.Name, log, clock);
+        var stderr = new StderrThrottle(server.Name, log, clock, verbose: verbose);
         var startInfo = McpProcess.CreateStartInfo(server, OperatingSystem.IsWindows());
         // Not on this PC (no Node.js for npx, …): say what to install, rather than start cmd for "is not recognized".
         if (OperatingSystem.IsWindows() && !string.Equals(Path.GetFileName(server.Command), "cmd.exe", StringComparison.OrdinalIgnoreCase)

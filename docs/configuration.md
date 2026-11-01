@@ -79,7 +79,7 @@ API keys are **not** in these files: they are stored in Windows Credential Locke
 | `chat.voiceAutoSend` | `false` | With `voice`: send the message when you let go of the key (off: check it first, then press Enter) |
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
-| `diagnostics.verboseLogging` | `false` | Detailed log + key-status line in the panel |
+| `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
 
 settings.json is schema version 15. On upgrading a file with `schemaVersion` below 14, widths change from scaled units (DIPs)
 to real pixels: old default `minWidth` 600 and `maxWidth` 1000 become 400 and 1200 (each independently). Other explicit minimum

@@ -222,6 +222,14 @@ public sealed class McpToolHost(
         var loaded = loadConfig();
         if (loaded.Error is null)
         {
+            var enabled = loaded.Servers.Concat(extraServers()).DistinctBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
+                .Where(s => !s.Disabled).Select(s => s.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
+            foreach (var key in _remembered.Keys)
+            {
+                var server = key[..key.IndexOf('/')];
+                if (!enabled.Contains(server) || loaded.Approvals.ContainsKey(key) || loaded.Approvals.ContainsKey($"{server}/*"))
+                    _remembered.TryRemove(key, out _);
+            }
             Volatile.Write(ref _lastGood, loaded);
             Volatile.Write(ref _configError, loaded.Warnings.Count > 0 ? string.Join(" ", loaded.Warnings) : null);
             return loaded;
@@ -243,10 +251,17 @@ public sealed class McpToolHost(
     private void Remember(ToolSpec spec)
     {
         var key = $"{spec.Server}/{spec.Tool}";
+        if (configPath is not null)
+        {
+            try
+            {
+                McpConfig.SaveApproval(configPath, key, ToolApproval.Allow);
+                _remembered.TryRemove(key, out _);
+                return;
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { log.Error("saving the tool approval failed", ex); }
+        }
         _remembered[key] = 0;
-        if (configPath is null) return;
-        try { McpConfig.SaveApproval(configPath, key, ToolApproval.Allow); }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { log.Error("saving the tool approval failed", ex); }
     }
 
     private void Publish(IReadOnlyList<ToolSpec> tools)
