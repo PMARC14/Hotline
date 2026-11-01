@@ -323,23 +323,31 @@ public sealed partial class SettingsWindow : Window
         var updating = true;
         async void Refresh()
         {
-            var state = await StartupRegistration.GetStateAsync();
-            updating = true;
-            toggle.IsOn = state is Windows.ApplicationModel.StartupTaskState.Enabled or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
-            toggle.IsEnabled = state is not (null or Windows.ApplicationModel.StartupTaskState.DisabledByPolicy or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy);
-            status.Text = StartupRegistration.Describe(state);
-            updating = false;
+            try
+            {
+                var state = await StartupRegistration.GetStateAsync();
+                updating = true;
+                toggle.IsOn = state is Windows.ApplicationModel.StartupTaskState.Enabled or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy;
+                toggle.IsEnabled = state is not (null or Windows.ApplicationModel.StartupTaskState.DisabledByPolicy or Windows.ApplicationModel.StartupTaskState.EnabledByPolicy);
+                status.Text = StartupRegistration.Describe(state);
+            }
+            catch (Exception ex) { _log.Error("reading the startup state failed", ex); }
+            finally { updating = false; }
         }
         toggle.Toggled += async (_, _) =>
         {
             if (updating) return;
-            if (toggle.IsOn)
+            try
             {
-                var state = await StartupRegistration.EnableAsync();
-                if (state == Windows.ApplicationModel.StartupTaskState.DisabledByUser)
-                    await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
+                if (toggle.IsOn)
+                {
+                    var state = await StartupRegistration.EnableAsync();
+                    if (state == Windows.ApplicationModel.StartupTaskState.DisabledByUser)
+                        await Windows.System.Launcher.LaunchUriAsync(new Uri("ms-settings:startupapps"));
+                }
+                else await StartupRegistration.DisableAsync();
             }
-            else await StartupRegistration.DisableAsync();
+            catch (Exception ex) { Fail("changing start with Windows failed", ex); }
             Refresh();
         };
         PageHost.Children.Add(CardWithStatus(Strings.Settings_Startup, status, toggle));

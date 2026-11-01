@@ -60,16 +60,25 @@ public sealed partial class SettingsWindow
         var remove = new Button { Content = Strings.Common_Remove, IsEnabled = any };
         remove.Click += async (_, _) =>
         {
-            var id = _selectedConnection!;
-            var dialog = new ContentDialog
+            var id = _selectedConnection;
+            if (id is null) return;
+            ContentDialogResult answer;
+            try
             {
-                XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
-                Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
-                    ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, chat.Backends[0].Name), TextWrapping = TextWrapping.Wrap }
-                    : chat.Backends.First(b => b.Id == id).Name,
-                PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
-            };
-            if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) return;
+                // The list can have changed under this page (an external reload): a connection that vanished is simply not removed.
+                if (chat.Backends.FirstOrDefault(b => b.Id == id) is not { } target) return;
+                var dialog = new ContentDialog
+                {
+                    XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
+                    Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
+                        ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, target.Name), TextWrapping = TextWrapping.Wrap }
+                        : target.Name,
+                    PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+                };
+                answer = await ShowDialogAsync(dialog);
+            }
+            catch (Exception ex) { Fail("removing a connection failed", ex); return; }
+            if (answer != ContentDialogResult.Primary) return;
             try
             {
                 var problems = _settings.Update(s => ConnectionEditor.Remove(s.Chat, id));
@@ -122,7 +131,8 @@ public sealed partial class SettingsWindow
         {
             if (list.SelectedItem is not ListViewItem { Tag: string id }) return;
             _selectedConnection = id;
-            BuildEditor(editorHost, chat.Backends.First(b => b.Id == id));
+            makeDefault.IsEnabled = id != chat.DefaultBackend;
+            if (chat.Backends.FirstOrDefault(b => b.Id == id) is { } picked) BuildEditor(editorHost, picked);
         };
         PageHost.Children.Add(list);
         PageHost.Children.Add(editorHost);
@@ -202,17 +212,21 @@ public sealed partial class SettingsWindow
         approveAll.Toggled += async (_, _) =>
         {
             if (reverting) { reverting = false; return; }
-            if (approveAll.IsOn)
+            try
             {
-                var dialog = new ContentDialog
+                if (approveAll.IsOn)
                 {
-                    XamlRoot = Root.XamlRoot, Title = Strings.Agy_ApproveAllTitle,
-                    Content = new TextBlock { Text = L.F(Strings.Conn_ApproveAllBody, cliName), TextWrapping = TextWrapping.Wrap },
-                    PrimaryButtonText = Strings.Agy_ApproveAllConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
-                };
-                if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
+                    var dialog = new ContentDialog
+                    {
+                        XamlRoot = Root.XamlRoot, Title = Strings.Agy_ApproveAllTitle,
+                        Content = new TextBlock { Text = L.F(Strings.Conn_ApproveAllBody, cliName), TextWrapping = TextWrapping.Wrap },
+                        PrimaryButtonText = Strings.Agy_ApproveAllConfirm, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+                    };
+                    if (await ShowDialogAsync(dialog) != ContentDialogResult.Primary) { reverting = true; approveAll.IsOn = false; return; }
+                }
+                await save(x => x.ApproveAllTools = approveAll.IsOn);
             }
-            await save(x => x.ApproveAllTools = approveAll.IsOn);
+            catch (Exception ex) { Fail("changing approve-everything failed", ex); }
         };
         host.Children.Add(Card(Strings.Agy_ApproveAll, L.F(Strings.Conn_ApproveAll_Desc, cliName), approveAll));
     }
@@ -345,10 +359,14 @@ public sealed partial class SettingsWindow
             var browse = new Button { Content = Strings.Common_Browse, IsEnabled = folder.IsEnabled };
             browse.Click += async (_, _) =>
             {
-                var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
-                picker.FileTypeFilter.Add("*");
-                WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
-                if (await picker.PickSingleFolderAsync() is { } chosen) { folder.Text = chosen.Path; await Save(x => x.WorkingDirectory = chosen.Path); }
+                try
+                {
+                    var picker = new FolderPicker { SuggestedStartLocation = PickerLocationId.DocumentsLibrary };
+                    picker.FileTypeFilter.Add("*");
+                    WinRT.Interop.InitializeWithWindow.Initialize(picker, WinRT.Interop.WindowNative.GetWindowHandle(this));
+                    if (await picker.PickSingleFolderAsync() is { } chosen) { folder.Text = chosen.Path; await Save(x => x.WorkingDirectory = chosen.Path); }
+                }
+                catch (Exception ex) { Fail("choosing the working folder failed", ex); }
             };
             mode.SelectionChanged += async (_, _) =>
             {
