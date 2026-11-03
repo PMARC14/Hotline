@@ -135,7 +135,10 @@ including the three pickers while an answer streams. Hidden buttons still work b
 (aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
 their shortcut is disabled. Omitted defaults are filled last, under the same rule. Bad values fall back to that command's default
 with a warning; duplicate button ids keep the first entry with a warning; unknown ids are ignored with a warning. An empty string
-explicitly disables a shortcut. Custom buttons are not supported by this map. User-defined bindings can override editing or system
+explicitly disables a shortcut. Custom buttons use their own optional `shortcut` field in `toolbar.json` (see *Custom buttons*
+below). Stop wins first, then all effective built-in `chat.shortcuts` (including defaults), then custom buttons in `buttons` JSON
+order. A custom button with a bad or conflicting shortcut keeps its action but loses the shortcut, with a warning; it has no default.
+Omit `shortcut` or set it to `""` for none. User-defined bindings can override editing or system
 keys, so choose them carefully; Windows may intercept system combinations. Bare `Esc` is available when Stop uses another combo;
 otherwise Stop owns it and idle Esc hides the panel.
 
@@ -289,7 +292,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
   "style": { "width": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
   "buttons": {
-    "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize" },
+    "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize", "shortcut": "Ctrl+Alt+1" },
     "thanks":    { "label": "Say thanks", "icon": "E8BD", "text": "Thanks!", "send": false }
   }
 }
@@ -363,6 +366,10 @@ widths, outlined and filled bars, 24 custom buttons, empty and damaged files), t
 self-test (steps P01-P47); use any as a starting point.
 
 **Custom buttons.** Each entry in `buttons` can be listed in any group by its id:
+
+| Optional field | Format | Effect |
+|---|---|---|
+| `shortcut` | String, e.g. `"Ctrl+Alt+1"`; omitted or `""` for none | Runs the same quick action or text/send action while the panel has focus, even when hidden or in More/overflow. Uses the [panel shortcut](#panel-shortcuts) parser and conflict order; Enter is reserved. Settings › Window › custom button › Shortcut accepts typed keys or key capture; Esc cancels capture and Backspace clears it. The tooltip shows the effective combo. |
 
 - The id is 1-32 characters from `a-z`, `0-9` and `-`, and not a built-in id (built-in ids in the groups are case-insensitive).
 - `label` is the name (at most 40 characters; default the id). `icon` is a Segoe Fluent Icons code in hex (four to six digits,

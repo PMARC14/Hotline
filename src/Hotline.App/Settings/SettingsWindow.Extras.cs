@@ -38,13 +38,14 @@ public sealed partial class SettingsWindow
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        if (load.Model.Warnings.Count > 0)
+        var warnings = load.Model.ResolveShortcuts(_settings.Current.Chat).Warnings;
+        if (warnings.Count > 0)
             PageHost.Children.Add(new InfoBar
             {
                 IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
-                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", load.Model.Warnings.Take(MaxToolbarProblemLines))
-                    + (load.Model.Warnings.Count > MaxToolbarProblemLines
-                        ? "\n" + L.F(Strings.Settings_AndMore, load.Model.Warnings.Count - MaxToolbarProblemLines) : ""),
+                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", warnings.Take(MaxToolbarProblemLines))
+                    + (warnings.Count > MaxToolbarProblemLines
+                        ? "\n" + L.F(Strings.Settings_AndMore, warnings.Count - MaxToolbarProblemLines) : ""),
             });
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
         // The file as this page read or last saved it: an edit made while the page is open is never overwritten.

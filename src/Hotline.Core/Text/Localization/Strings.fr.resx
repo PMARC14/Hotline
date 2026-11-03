@@ -871,4 +871,7 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0} : entrée en double ; la première est conservée.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Raccourcis du panneau</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Quand le panneau a le focus, Ctrl+N démarre une discussion, Ctrl+H ouvre l’historique et Ctrl+Shift+C copie la dernière réponse terminée. Survolez les boutons pour voir leurs raccourcis. Les touches d’effort, de modèle et de fournisseur parcourent leurs listes. Modifiez les touches dans Paramètres &gt; Discussion et historique ou dans chat.shortcuts dans settings.json. Arrêter est prioritaire ; sinon, la première combinaison est conservée. Une chaîne vide dans le fichier désactive une commande.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Raccourci</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut : raccourci non valide ; désactivé.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut : combinaison déjà utilisée ; désactivée.</value></data>
 </root>

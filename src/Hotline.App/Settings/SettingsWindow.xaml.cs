@@ -240,49 +240,11 @@ public sealed partial class SettingsWindow : Window
     /// A key binder: click, then press the shortcut (Esc cancels, Backspace clears). It saves the same text settings.json
     /// holds, and refuses a combination another app already holds.
     /// </summary>
-    private Button HotkeyBinder(HotkeyItem item)
-    {
-        var button = new Button { MinWidth = 200, HorizontalContentAlignment = HorizontalAlignment.Center };
-        var capturing = false;
-        void ShowValue() { capturing = false; button.Content = item.Get(_settings.Current) is { Length: > 0 } v ? v : Strings.Hotkey_NotSet; }
-        void Save(string? value) { _settings.Update(x => item.Set(x, value)); ShowValue(); }
-        ShowValue();
-        button.Click += (_, _) => { capturing = true; button.Content = Strings.Hotkey_Press; };
-        button.LostFocus += (_, _) => { if (capturing) ShowValue(); };
-        button.PreviewKeyDown += (_, e) =>
-        {
-            if (!capturing) return;
-            e.Handled = true; // while binding, every key belongs to the binder (Space/Enter don't click it again)
-            var held = HotkeyModifiers.None;
-            if (Down(Windows.System.VirtualKey.Control)) held |= HotkeyModifiers.Control;
-            if (Down(Windows.System.VirtualKey.Menu)) held |= HotkeyModifiers.Alt;
-            if (Down(Windows.System.VirtualKey.Shift)) held |= HotkeyModifiers.Shift;
-            if (Down(Windows.System.VirtualKey.LeftWindows) || Down(Windows.System.VirtualKey.RightWindows)) held |= HotkeyModifiers.Win;
-            var key = e.Key != Windows.System.VirtualKey.None ? e.Key : e.OriginalKey; // some Alt combinations report Key as None
-            var result = HotkeyCapture.Press(held, (uint)key);
-            switch (result.Outcome)
-            {
-                case HotkeyCapture.Outcome.Waiting: return;
-                case HotkeyCapture.Outcome.Cancel: ShowValue(); return;
-                case HotkeyCapture.Outcome.Clear: Save(null); return;
-                case HotkeyCapture.Outcome.NeedsModifier: button.Content = Strings.Hotkey_NeedsModifier; return;
-                case HotkeyCapture.Outcome.Unsupported: button.Content = Strings.Hotkey_Unsupported; return;
-            }
-            // Hotline's own current hotkey is "taken" by Hotline itself; anything else must be free.
-            var isCurrent = string.Equals(result.Text, item.Get(_settings.Current), StringComparison.OrdinalIgnoreCase);
-            if (!isCurrent && Hotkey.TryParse(result.Text, out var hotkey)
-                && !HotkeyRegistration.IsFree(WinRT.Interop.WindowNative.GetWindowHandle(this), hotkey))
-            {
-                button.Content = Strings.Hotkey_InUse;
-                return;
-            }
-            Save(result.Text);
-        };
-        return button;
-
-        static bool Down(Windows.System.VirtualKey key) =>
-            Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(key).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-    }
+    private Button HotkeyBinder(HotkeyItem item) => ShortcutBinder.Create(() => item.Get(_settings.Current),
+        value => _settings.Update(x => item.Set(x, value)), value =>
+            string.Equals(value, item.Get(_settings.Current), StringComparison.OrdinalIgnoreCase)
+            || !Hotkey.TryParse(value, out var hotkey)
+            || HotkeyRegistration.IsFree(WinRT.Interop.WindowNative.GetWindowHandle(this), hotkey));
 
     /// <summary>
     /// A failure inside a click or value handler (they run as async void, where an exception would take the app down): logged, and

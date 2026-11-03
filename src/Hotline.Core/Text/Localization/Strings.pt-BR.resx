@@ -871,4 +871,7 @@ As chaves de API são mantidas no Windows Credential Locker, nunca em um arquivo
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: entrada duplicada; a primeira prevalece.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Atalhos do painel</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Com o painel em foco, Ctrl+N inicia um chat, Ctrl+H abre o histórico e Ctrl+Shift+C copia a última resposta concluída. Passe o mouse sobre os botões para ver as teclas. As teclas de esforço, modelo e provedor percorrem suas listas. Altere as teclas em Configurações &gt; Chat e histórico ou em chat.shortcuts em settings.json. Parar tem prioridade; nos demais conflitos, vale a primeira combinação. Strings vazias no arquivo desativam comandos.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Atalho</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: atalho inválido; desativado.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combinação já em uso; desativada.</value></data>
 </root>

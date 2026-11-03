@@ -871,4 +871,7 @@
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: повторний запис; діє перший.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Сполучення клавіш панелі</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Коли панель у фокусі, Ctrl+N починає чат, Ctrl+H відкриває історію, а Ctrl+Shift+C копіює останню завершену відповідь. Наведіть вказівник на кнопки, щоб побачити клавіші. Клавіші зусиль, моделі та постачальника перемикають пункти списків. Змінюйте їх у Налаштування &gt; Чат та історія або в chat.shortcuts у settings.json. Зупинка має пріоритет, далі діє перше сполучення. Порожні рядки у файлі вимикають команди.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Сполучення клавіш</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: недійсне сполучення клавіш; вимкнено.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: сполучення вже використовується; вимкнено.</value></data>
 </root>

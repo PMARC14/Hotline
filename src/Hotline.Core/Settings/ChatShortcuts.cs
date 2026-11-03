@@ -1,6 +1,7 @@
 using System.Collections.ObjectModel;
 using Hotline.Core.Activation;
 using Hotline.Core.Text.Localization;
+using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Settings;
 
@@ -34,9 +35,8 @@ public static class ChatShortcuts
                 warn?.Invoke(L.F(Strings.Shortcuts_Invalid, id));
                 Hotkey.TryParseShortcut(Defaults[id], out key);
             }
-            if (!used.Add(key))
+            if (!Claim(used, key, id, warn))
             {
-                warn?.Invoke(L.F(Strings.Shortcuts_Conflict, id));
                 Hotkey.TryParseShortcut(Defaults[id], out key);
                 if (!used.Add(key)) { result[id] = ""; return; }
             }
@@ -52,5 +52,36 @@ public static class ChatShortcuts
         foreach (var (id, value) in Defaults)
             if (seen.Add(id)) Add(id, value);
         return result;
+    }
+
+    /// <summary>Custom bindings have no fallback. Stop and the effective built-in bindings reserve their combos first;
+    /// custom buttons then claim them in file order. Without chat settings, only custom conflicts are resolved.</summary>
+    public static IReadOnlyList<CustomButton> NormalizeCustom(IReadOnlyList<CustomButton> buttons, ChatSettings? chat = null,
+        Action<string>? warn = null)
+    {
+        var used = new HashSet<Hotkey>();
+        if (chat is not null)
+        {
+            if (Hotkey.TryParseShortcut(chat.StopShortcut, out var stop)) used.Add(stop);
+            foreach (var text in Normalize(chat.Shortcuts, chat.StopShortcut).Values)
+                if (Hotkey.TryParseShortcut(text, out var key)) used.Add(key);
+        }
+        return buttons.Select(button =>
+        {
+            if (button.Shortcut is null or "") return button with { Shortcut = null };
+            if (!Hotkey.TryParseShortcut(button.Shortcut, out var key))
+            {
+                warn?.Invoke(L.F(Strings.BarW_ShortcutInvalid, button.Id));
+                return button with { Shortcut = null };
+            }
+            return button with { Shortcut = Claim(used, key, button.Id, warn, custom: true) ? key.ToString() : null };
+        }).ToList();
+    }
+
+    private static bool Claim(HashSet<Hotkey> used, Hotkey key, string id, Action<string>? warn, bool custom = false)
+    {
+        if (used.Add(key)) return true;
+        warn?.Invoke(L.F(custom ? Strings.BarW_ShortcutConflict : Strings.Shortcuts_Conflict, id));
+        return false;
     }
 }

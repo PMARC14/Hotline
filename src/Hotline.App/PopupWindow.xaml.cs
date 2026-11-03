@@ -145,7 +145,8 @@ public sealed partial class PopupWindow : Window
     /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
     public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);
 
-    public void SetToolbarShortcuts(ChatSettings settings) => _rows.SetShortcuts(settings.Shortcuts);
+    public void SetToolbarShortcuts(ChatSettings settings) => _rows.SetShortcuts(settings);
+    public IReadOnlyDictionary<string, string> ToolbarShortcuts => _rows.Shortcuts;
     public string ShortcutTip(string id, string text) => _rows.ShortcutTip(id, text);
     public void InvokeToolbarShortcut(string id) => _rows.InvokeShortcut(id);
 

@@ -93,13 +93,27 @@ internal sealed class ToolbarRenderer
         return more;
     }
 
+    private Hotline.Core.Settings.ChatSettings _chatSettings = new();
+    private IReadOnlyList<string> _shortcutWarnings = [];
     private IReadOnlyDictionary<string, string> _shortcuts = Hotline.Core.Settings.ChatShortcuts.Defaults;
+    public IReadOnlyDictionary<string, string> Shortcuts => _shortcuts;
 
     public string ShortcutTip(string id, string text) => _shortcuts.TryGetValue(id, out var combo) && combo.Length > 0
         ? text + "\n" + L.F(Strings.Shortcuts_Tooltip, combo) : text;
 
-    public void SetShortcuts(IReadOnlyDictionary<string, string> shortcuts)
+    public void SetShortcuts(Hotline.Core.Settings.ChatSettings settings)
     {
+        _chatSettings = settings;
+        var resolved = Model.ResolveShortcuts(settings);
+        var warnings = resolved.Warnings.Except(Model.Warnings).ToList();
+        if (!warnings.SequenceEqual(_shortcutWarnings))
+        {
+            _shortcutWarnings = warnings;
+            foreach (var warning in warnings) _log.Info("toolbar.json: " + warning);
+        }
+        var shortcuts = Hotline.Core.Settings.ChatShortcuts.Normalize(settings.Shortcuts, settings.StopShortcut);
+        foreach (var b in resolved.Buttons)
+            if (b.Shortcut is { } combo) shortcuts[b.Id] = combo;
         _shortcuts = shortcuts;
         foreach (var (id, button) in _builtIn)
             ToolTipService.SetToolTip(button, ShortcutTip(id, AutomationProperties.GetName(button)));
@@ -111,11 +125,18 @@ internal sealed class ToolbarRenderer
         }
         foreach (var row in new[] { _top, _bottom })
             ToolTipService.SetToolTip(row.More, ShortcutTip("more", Strings.Transcript_More));
+        foreach (var (id, custom) in _customButtons)
+            ToolTipService.SetToolTip(custom.Button, ShortcutTip(id, custom.Definition.Label));
     }
 
     /// <summary>Uses the same Click/toggle/flyout path as the bar and overflow. Pickers cycle through their items.</summary>
     public void InvokeShortcut(string id)
     {
+        if (_customButtons.TryGetValue(id, out var custom))
+        {
+            if (custom.Button.IsEnabled) Invoke(custom.Button, Anchor(custom.Button));
+            return;
+        }
         if (_pickers.TryGetValue(id, out var picker))
         {
             if (picker.IsEnabled && picker.Items.Count > 0)
@@ -172,6 +193,7 @@ internal sealed class ToolbarRenderer
         // Sizes come from the same Metrics as Fit's widths (every button one cell high), so what is drawn is what was fitted.
         Restyle(model);
         Model = model;
+        SetShortcuts(_chatSettings);
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
         if (_lastFit is { } last) Fit(last.Room, last.Available);
     }
@@ -392,6 +414,7 @@ internal sealed class ToolbarRenderer
         if (_customButtons.TryGetValue(id, out var custom))
         {
             var item = new MenuFlyoutItem { Text = custom.Definition.Label, Icon = new FontIcon { Glyph = Glyph(custom.Definition.Icon) } };
+            ToolTipService.SetToolTip(item, ShortcutTip(id, custom.Definition.Label));
             if (CustomButtonPicture.Read(custom.Definition, _log.Info) is { } picture)
             {
                 var image = new ImageIcon();

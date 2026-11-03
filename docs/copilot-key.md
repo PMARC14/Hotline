@@ -2,6 +2,8 @@
 
 Windows decides what the Copilot key does. Hotline registers itself as a Copilot key app when installed; you choose it once in Windows.
 
+For shortcuts inside the panel, including custom toolbar buttons, see [Panel shortcuts](configuration.md#panel-shortcuts).
+
 ## Set it up
 
 1. Install Hotline and start it once (it then lives in the notification area).

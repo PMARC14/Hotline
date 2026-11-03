@@ -871,4 +871,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: 중복 항목입니다. 첫 번째 항목이 적용됩니다.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>패널 바로 가기</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>패널에 포커스가 있으면 Ctrl+N으로 채팅을 시작하고, Ctrl+H로 기록을 열고, Ctrl+Shift+C로 마지막 완료된 답변을 복사합니다. 버튼에 마우스를 올리면 키를 볼 수 있습니다. 추론 수준, 모델, 공급자 키는 목록을 순환합니다. 설정 &gt; 채팅 및 기록 또는 settings.json의 chat.shortcuts에서 변경하세요. 중지가 우선하고, 다른 충돌에서는 첫 번째 조합이 적용됩니다. 파일의 빈 문자열은 명령을 비활성화합니다.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>바로 가기</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: 잘못된 바로 가기이므로 비활성화했습니다.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: 이미 사용 중인 조합이므로 비활성화했습니다.</value></data>
 </root>

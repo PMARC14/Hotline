@@ -3,6 +3,7 @@ using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 using Hotline.Core.Text.Localization;
+using Hotline.Core.Settings;
 
 namespace Hotline.Core.Windowing;
 
@@ -18,8 +19,10 @@ public sealed record ButtonStyle(double? Width = null, bool? Outline = null, boo
 /// <summary>A user-defined button: runs the quick action of that name (a file in actions\) or inserts <see cref="Text"/>
 /// in the message box (and sends it when <see cref="Send"/>). Exactly one of the two is set. <see cref="IconFile"/> is
 /// its picture in icons\ (always "&lt;id&gt;.png", see <see cref="CustomIcons"/>), shown instead of the <see cref="Icon"/>
-/// glyph when it can be read; the glyph stays as the fallback.</summary>
-public sealed record CustomButton(string Id, string Label, string Icon, string? QuickAction, string? Text, bool Send, string? IconFile = null);
+/// glyph when it can be read; the glyph stays as the fallback. <see cref="Shortcut"/> optionally runs the same action
+/// while the panel has focus.</summary>
+public sealed record CustomButton(string Id, string Label, string Icon, string? QuickAction, string? Text, bool Send, string? IconFile = null,
+    string? Shortcut = null);
 
 /// <summary>
 /// ~/.hotline/toolbar.json v2, resolved: what each quadrant shows, the bar's look, per-item overrides and the custom buttons.
@@ -152,19 +155,29 @@ public sealed record ToolbarModel(
     private static readonly JsonDocumentOptions RepeatedKeys = ParseOptions with { AllowDuplicateProperties = true };
 
     /// <summary>Reads toolbar.json text. Never throws: unparsable text or a root that isn't an object gives
-    /// <see cref="Defaults"/>; anything else is fixed per field.</summary>
-    public static ToolbarModel Resolve(string json)
+    /// <see cref="Defaults"/>; anything else is fixed per field. With chat settings, Stop and built-in shortcut conflicts
+    /// are checked too; file editors omit them to preserve combos freed by remapping built-ins.</summary>
+    public static ToolbarModel Resolve(string json, ChatSettings? chat = null)
     {
         try
         {
             var warnings = new List<string>();
             var root = Parse(json, warnings);
-            return root is JsonObject o ? Read(o, warnings) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
+            return root is JsonObject o ? Read(o, warnings).ResolveShortcuts(chat) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
         }
         catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {
             return Defaults with { Warnings = [W(Strings.BarW_CantRead, Clean(ex.Message, 200, false))] };
         }
+    }
+
+    /// <summary>Resolves custom shortcut conflicts against the current chat settings without changing the source model.
+    /// Readers/editors without chat settings check custom bindings only, so remapped built-in combos remain available.</summary>
+    public ToolbarModel ResolveShortcuts(ChatSettings? chat)
+    {
+        var warnings = Warnings.ToList();
+        var buttons = ChatShortcuts.NormalizeCustom(Buttons, chat, warnings.Add);
+        return this with { Buttons = buttons, Warnings = warnings };
     }
 
     /// <summary>The tolerant read shared by <see cref="Resolve"/> and <see cref="ToolbarFile.Load"/>: strips a BOM, accepts comments and
@@ -322,7 +335,9 @@ public sealed record ToolbarModel(
                 iconFile = null;
             }
             buttons.Add(new CustomButton(id, label.Length > 0 ? label : id, Icon(b["icon"], id, warnings), quickAction, text,
-                text is not null && (Bool(b["send"], $"buttons.{id}.send", warnings) ?? false), iconFile));
+                text is not null && (Bool(b["send"], $"buttons.{id}.send", warnings) ?? false), iconFile,
+                String(b, "shortcut", id, warnings)));
+            if (b.ContainsKey("shortcut") && b["shortcut"] is null) warnings.Add(W(Strings.BarW_ShortcutInvalid, id));
         }
         return buttons;
     }
@@ -503,6 +518,7 @@ public sealed record ToolbarModel(
 
     private static string ButtonText(CustomButton b) =>
         $"{{ \"label\": {Str(b.Label)}, \"icon\": {Str(b.Icon)}, " + (b.IconFile is { } file ? $"\"iconFile\": {Str(file)}, " : "")
+        + (b.Shortcut is { Length: > 0 } shortcut ? $"\"shortcut\": {Str(shortcut)}, " : "")
         + (b.QuickAction is { } qa ? $"\"quickAction\": {Str(qa)} }}" : $"\"text\": {Str(b.Text!)}, \"send\": {(b.Send ? "true" : "false")} }}");
 
     private static string Entries<T>(IEnumerable<(string Key, T Value)> entries, Func<T, string> text) =>
@@ -542,6 +558,8 @@ public sealed record ToolbarModel(
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from
               // icons\ instead of the icon (PNG, at most 256 KB, 16-256 px a side; Settings copies it there).
+              // Optional "shortcut": "Ctrl+Alt+1" runs the button while the panel has focus (Enter is reserved).
+              // Stop wins, then chat.shortcuts, then custom buttons in this file's order; a conflicting shortcut is dropped.
               // "menu": ids of buttons (built-in or custom, no pickers) listed in the "more" item's menu instead of on the bar. A row with a
               // "more" item sends the buttons that don't fit into that menu too (after these), and then has no separate "…" button.
               // Needs "more" placed in one of the groups; it is ignored otherwise.
