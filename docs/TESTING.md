@@ -47,6 +47,15 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       Right Ctrl and doesn't open Hotline.
 
 ### Panel shortcuts (Settings › Chat and history)
+- [ ] Add custom quick-action, text-only and text/send buttons in Settings › Window. Type or capture `Ctrl+Alt+1` in Shortcut;
+      check Esc cancels capture, Backspace clears it, Enter (also Ctrl+Enter) is refused, and a blank field saves no shortcut.
+      Compare each shortcut with clicking the button, including slash-prefixed text (sent as plain text) and a missing quick action.
+- [ ] Edit a custom button's label/action/picture and move it between groups, More/overflow and Not shown: its shortcut survives.
+      Focus the composer, transcript and pickers; check shortcuts and translated tooltips, and that other apps are unaffected.
+- [ ] Hand-edit custom shortcuts to invalid types/keys, Enter, duplicate aliases, built-in combos and the Stop combo. Check warnings:
+      Stop wins even idle, then built-ins (including defaults), then customs in JSON order; losing shortcuts disappear, actions survive.
+      Remap/disable a built-in or change Stop live: a freed custom combo works again; the old combo and tooltip update immediately.
+      Save/reload and export/import the toolbar: shortcuts survive; the toolbar version stays 2.
 - [ ] With the message box focused, try each default in configuration.md's Panel shortcuts table; compare with clicking its button.
       Picker keys cycle, stop while an answer streams, and resume afterwards. Copy with no completed answer does nothing.
 - [ ] Focus the transcript or a picker: shortcuts still work. Check prompts, history, Continue in and More open without closing on resize.

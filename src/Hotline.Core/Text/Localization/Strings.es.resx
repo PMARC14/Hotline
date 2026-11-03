@@ -871,4 +871,7 @@ Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.<
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: entrada duplicada; prevalece la primera.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Atajos del panel</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Con el panel enfocado, Ctrl+N inicia un chat, Ctrl+H abre el historial y Ctrl+Shift+C copia la última respuesta terminada. Pasa el puntero por los botones para ver sus atajos. Las teclas de esfuerzo, modelo y proveedor recorren sus listas. Cambia las teclas en Ajustes &gt; Chat e historial o en chat.shortcuts en settings.json. Detener tiene prioridad; en otros conflictos gana la primera combinación. Las cadenas vacías en el archivo desactivan comandos.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Atajo</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: atajo no válido; desactivado.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combinación ya en uso; desactivada.</value></data>
 </root>

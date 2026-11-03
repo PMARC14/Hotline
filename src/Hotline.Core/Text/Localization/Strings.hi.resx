@@ -871,4 +871,7 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: दोहराई गई प्रविष्टि; पहली लागू होगी।</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>पैनल के शॉर्टकट</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>पैनल पर फ़ोकस होने पर Ctrl+N चैट शुरू करता है, Ctrl+H इतिहास खोलता है और Ctrl+Shift+C पिछला पूरा उत्तर कॉपी करता है। कुंजियाँ देखने के लिए बटन पर माउस रखें। प्रयास, मॉडल और प्रदाता की कुंजियाँ उनकी सूचियों में आगे बढ़ती हैं। सेटिंग &gt; चैट और इतिहास में या settings.json के chat.shortcuts में कुंजियाँ बदलें। रोकने वाली कुंजी को प्राथमिकता है; अन्य टकरावों में पहला संयोजन लागू होता है। फ़ाइल में खाली स्ट्रिंग कमांड बंद करती है।</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>शॉर्टकट</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: अमान्य शॉर्टकट; अक्षम किया गया।</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: यह संयोजन पहले से उपयोग में है; अक्षम किया गया।</value></data>
 </root>

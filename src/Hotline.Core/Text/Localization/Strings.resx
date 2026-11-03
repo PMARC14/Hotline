@@ -871,4 +871,7 @@ API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: listed twice; the first entry wins.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Panel shortcuts</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>With the panel focused, Ctrl+N starts a chat, Ctrl+H opens history, and Ctrl+Shift+C copies the last completed answer. Hover over toolbar buttons to see their keys. Effort, model and provider keys cycle their lists. Change keys in Settings &gt; Chat and history, or edit chat.shortcuts in settings.json. Stop has priority; other conflicts keep the first combination. Empty strings in the file disable commands.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Shortcut</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: invalid shortcut; disabled.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combo already in use; disabled.</value></data>
 </root>

@@ -871,4 +871,7 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: doppelt aufgeführt; der erste Eintrag gilt.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Tastenkombinationen im Panel</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Wenn das Panel den Fokus hat, startet Ctrl+N einen Chat, Ctrl+H öffnet den Verlauf und Ctrl+Shift+C kopiert die letzte fertige Antwort. Die Tastenkombinationen stehen in den Schaltflächenhinweisen. Die Tasten für Aufwand, Modell und Anbieter wechseln durch die Listen. Ändern Sie die Tasten in Einstellungen &gt; Chat und Verlauf oder unter chat.shortcuts in settings.json. Stopp hat Vorrang, sonst gilt die erste Kombination. Leere Zeichenfolgen in der Datei deaktivieren Befehle.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Tastenkombination</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: ungültige Tastenkombination; deaktiviert.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: Tastenkombination bereits belegt; deaktiviert.</value></data>
 </root>

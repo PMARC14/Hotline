@@ -35,6 +35,7 @@ configurable in plain files.
 - **Tools, carefully**: MCP servers (`mcp.json`) and Windows agent connectors for API connections; read-only tools run, the rest ask first.
 - **System prompts** as Markdown files you can switch from the bar.
 - **Your panel, your way**: Alt to move or resize, pin, grow up or down, button rows you arrange and add to (Settings › Window), open/close sounds.
+- **Panel shortcuts** for built-in and custom toolbar buttons; set `chat.shortcuts` or a custom button's `shortcut` ([configuration](docs/configuration.md#panel-shortcuts)).
 - **Built-in guide** (Settings › Guide), Reset with a backup, and Backup export/import (never API keys).
 - **Everything is a file**: edits apply instantly, a mistake costs only the wrong value, API keys live in Windows Credential Locker.
 

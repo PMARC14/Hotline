@@ -223,7 +223,7 @@ internal sealed class ChatPresenter
             e.Handled = true; // e.g. Esc stops instead of hiding the panel
             return;
         }
-        foreach (var (id, text) in _settings.Chat.Shortcuts)
+        foreach (var (id, text) in _popup.ToolbarShortcuts)
         {
             if (!Hotline.Core.Activation.Hotkey.TryParseShortcut(text, out var shortcut) || !shortcut.Matches((uint)e.Key, held)) continue;
             e.Handled = true;

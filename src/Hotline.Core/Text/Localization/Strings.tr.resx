@@ -871,4 +871,7 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: yinelenen kayıt; ilk kayıt geçerlidir.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Panel kısayolları</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Panel odaktayken Ctrl+N sohbet başlatır, Ctrl+H geçmişi açar ve Ctrl+Shift+C son tamamlanan yanıtı kopyalar. Tuşları görmek için düğmelerin üzerine gelin. Çaba, model ve sağlayıcı tuşları listelerde sırayla ilerler. Tuşları Ayarlar &gt; Sohbet ve geçmiş bölümünden veya settings.json içindeki chat.shortcuts alanından değiştirin. Durdur önceliklidir; diğer çakışmalarda ilk birleşim geçerlidir. Dosyadaki boş dizeler komutları devre dışı bırakır.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Kısayol</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: geçersiz kısayol; devre dışı bırakıldı.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: tuş birleşimi zaten kullanımda; devre dışı bırakıldı.</value></data>
 </root>

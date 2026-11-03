@@ -871,4 +871,7 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: 重複しています。最初の項目を使用します。</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>パネル内のショートカット</value></data>
   <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>パネルにフォーカスがあるとき、Ctrl+N でチャットを開始し、Ctrl+H で履歴を開き、Ctrl+Shift+C で最後の完了した回答をコピーします。ボタンにマウスを重ねるとキーを確認できます。推論量、モデル、プロバイダーのキーはリストを順番に切り替えます。設定のチャットと履歴、または settings.json の chat.shortcuts で変更できます。停止が優先され、ほかの競合では最初の組み合わせが有効です。ファイル内の空の文字列はコマンドを無効にします。</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>ショートカット</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: 無効なショートカットのため無効にしました。</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: 組み合わせが既に使用されているため無効にしました。</value></data>
 </root>
