@@ -62,6 +62,7 @@ internal sealed class ToolbarRenderer
             ["captureRegion"] = popup.CaptureRegionButton, ["prompt"] = popup.PromptButton, ["recent"] = popup.RecentButton,
             ["continueIn"] = popup.ContinueInButton, ["newChat"] = popup.NewChatButton, ["settings"] = popup.SettingsButton,
             [ToolbarModel.MoreId] = _moreItem,
+            ["copyLastAnswer"] = popup.CopyLastAnswerButton,
         };
         // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
         // focused pin button and turned pinning off.
@@ -90,6 +91,46 @@ internal sealed class ToolbarRenderer
         ToolTipService.SetToolTip(more, Strings.Transcript_More);
         AutomationProperties.SetName(more, Strings.Transcript_More);
         return more;
+    }
+
+    private IReadOnlyDictionary<string, string> _shortcuts = Hotline.Core.Settings.ChatShortcuts.Defaults;
+
+    public string ShortcutTip(string id, string text) => _shortcuts.TryGetValue(id, out var combo) && combo.Length > 0
+        ? text + "\n" + L.F(Strings.Shortcuts_Tooltip, combo) : text;
+
+    public void SetShortcuts(IReadOnlyDictionary<string, string> shortcuts)
+    {
+        _shortcuts = shortcuts;
+        foreach (var (id, button) in _builtIn)
+            ToolTipService.SetToolTip(button, ShortcutTip(id, AutomationProperties.GetName(button)));
+        foreach (var (id, picker) in _pickers)
+        {
+            var text = AutomationProperties.GetName(picker);
+            if (id != "effort" && picker.SelectedItem is string name && name.Trim().Length > 0) text += ": " + name.Trim();
+            ToolTipService.SetToolTip(picker, ShortcutTip(id, text));
+        }
+        foreach (var row in new[] { _top, _bottom })
+            ToolTipService.SetToolTip(row.More, ShortcutTip("more", Strings.Transcript_More));
+    }
+
+    /// <summary>Uses the same Click/toggle/flyout path as the bar and overflow. Pickers cycle through their items.</summary>
+    public void InvokeShortcut(string id)
+    {
+        if (_pickers.TryGetValue(id, out var picker))
+        {
+            if (picker.IsEnabled && picker.Items.Count > 0)
+                picker.SelectedIndex = (picker.SelectedIndex + 1) % picker.Items.Count;
+            return;
+        }
+        if (id == "more")
+        {
+            var row = new[] { _top, _bottom }.FirstOrDefault(r => r.Plan.HasMore || r.Dropped.Count > 0);
+            if (row is not null) Invoke(MenuButton(row), MenuButton(row));
+            return;
+        }
+        if (!_builtIn.TryGetValue(id, out var button) || !button.IsEnabled) return;
+        if (button is ToggleButton toggle) toggle.IsChecked = toggle.IsChecked != true;
+        else Invoke((Button)button, Anchor(button));
     }
 
     /// <summary>Rebuilds both rows from the model and fits them to the last known width (the queued layout follows).</summary>
@@ -220,7 +261,7 @@ internal sealed class ToolbarRenderer
     {
         foreach (var row in new[] { _top, _bottom })
             if (row.Dropped.Concat(row.UserMenu).Any(id => ReferenceEquals(_builtIn.GetValueOrDefault(id), button))) return MenuButton(row);
-        return button;
+        return button.Parent is not null && button.ActualWidth > 0 ? button : _popup.Input;
     }
 
     // ---- style ----
@@ -375,13 +416,13 @@ internal sealed class ToolbarRenderer
         entry.Click += (_, _) => _popup.DispatcherQueue.TryEnqueue(() =>
         {
             // An exception escaping a DispatcherQueue callback ends the process.
-            try { Invoke((Button)button, row); }
+            try { Invoke((Button)button, MenuButton(row)); }
             catch (Exception ex) { _log.Error($"bar item {id} from the overflow menu failed", ex); }
         });
         return entry;
     }
 
-    private void Invoke(Button button, Row row)
+    private void Invoke(Button button, FrameworkElement anchor)
     {
         if (button.Flyout is { } flyout)
         {
@@ -389,7 +430,7 @@ internal sealed class ToolbarRenderer
             var hold = _popup.HoldResize();
             void Closed(object? s, object e) { flyout.Closed -= Closed; hold.Dispose(); }
             flyout.Closed += Closed;
-            try { flyout.ShowAt(MenuButton(row)); }
+            try { flyout.ShowAt(anchor); }
             catch
             {
                 Closed(null, EventArgs.Empty); // it never opened: release the hold now

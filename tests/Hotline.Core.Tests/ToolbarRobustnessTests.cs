@@ -117,7 +117,8 @@ public sealed class ToolbarRobustnessTests
         Assert.Equal(f.Width(fit.LeftShown, fit.RightDropped), fit.FixedWidth, 6);
         // The narrowest the row can be: no left button, all but the last right button in the menu (the "⋯" button if anything is).
         var smallest = f.Width(0, Math.Max(0, f.Right.Length - 1));
-        if (smallest <= room)
+        // Two compact right buttons can fit where replacing one with the wider menu button would not.
+        if (Math.Min(f.Width(0, 0), smallest) <= room)
         {
             Assert.True(f.Used <= room + 1e-9, $"{where}: uses {f.Used} of {room} ({fit})");
             // The right group gave up no more than it had to: one more button back would not fit (with the pickers' room if kept).

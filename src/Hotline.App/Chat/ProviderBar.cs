@@ -120,7 +120,7 @@ internal sealed class ProviderBar(
             var current = Current;
             FillModels(current);
             FillEffort(current);
-            ToolTipService.SetToolTip(popup.EffortBox, Strings.Bar_EffortTip);
+            ToolTipService.SetToolTip(popup.EffortBox, popup.ShortcutTip("effort", Strings.Bar_EffortTip));
             Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(popup.EffortBox, Strings.Bar_EffortTip);
             SetEnabled(_enabled);
         }
@@ -128,9 +128,10 @@ internal sealed class ProviderBar(
         QueueLayout();
     }
 
-    private static void NameTip(ComboBox box, string what)
+    private void NameTip(ComboBox box, string what)
     {
-        ToolTipService.SetToolTip(box, box.SelectedItem is string s && s.Trim().Length > 0 ? $"{what}: {s.Trim()}" : what);
+        var text = box.SelectedItem is string s && s.Trim().Length > 0 ? $"{what}: {s.Trim()}" : what;
+        ToolTipService.SetToolTip(box, popup.ShortcutTip(box == popup.ModelBox ? "model" : "provider", text));
         Microsoft.UI.Xaml.Automation.AutomationProperties.SetName(box, what); // the value is read separately, so the name is the kind of picker
     }
 

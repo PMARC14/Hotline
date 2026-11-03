@@ -168,8 +168,10 @@ public sealed class ContinueTargetsTests : TempDirTest
     public void Targets_are_written_without_empty_fields()
     {
         var json = SettingsStore.Serialize(new HotlineSettings { Chat = { ContinueIn = [new ContinueTarget(ContinueKind.OpenWebUi, "W", Url: "http://x")] } });
-        Assert.DoesNotContain("command", json);
-        Assert.DoesNotContain("model", json);
+        using var document = System.Text.Json.JsonDocument.Parse(json);
+        var target = document.RootElement.GetProperty("chat").GetProperty("continueIn")[0];
+        Assert.False(target.TryGetProperty("command", out _));
+        Assert.False(target.TryGetProperty("model", out _));
         Assert.Contains("\"kind\": \"openWebUi\"", json);
     }
 }

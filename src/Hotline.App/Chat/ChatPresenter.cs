@@ -128,6 +128,7 @@ internal sealed class ChatPresenter
         _grips.Initialize();
         _selfTest.ShowGrips = _grips.SetVisible;
         _popup.NewChatButton.Click += (_, _) => NewChat();
+        _popup.CopyLastAnswerButton.Click += (_, _) => _transcript.CopyLastAnswer();
         _popup.CustomButtonClicked += _customButtons.Run;
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
@@ -141,6 +142,7 @@ internal sealed class ChatPresenter
     /// <summary>Recomputes the look from the live settings and re-renders what's shown when it changed.</summary>
     public void ApplyAppearance()
     {
+        _popup.SetToolbarShortcuts(_settings.Chat);
         _theme.Update();
         if (_theme.Backdrop == BackdropKind.Solid)
             _popup.Root.Background = PanelTheme.Brush(_theme.Tokens.SolidBackground); // follows the chosen theme, not the OS theme
@@ -209,14 +211,25 @@ internal sealed class ChatPresenter
         _tasks.Run("send", SendAsync);
     }
 
-    /// <summary>chat.stopShortcut stops the answer being written, wherever the focus is in the panel.</summary>
+    /// <summary>Panel shortcuts run before text editing; Stop has priority while an answer is being written.</summary>
     private void OnPanelKey(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
     {
-        if (!_chat.IsBusy || !Hotline.Core.Activation.Hotkey.TryParseShortcut(_settings.Chat.StopShortcut, out var stop)) return;
-        if (!stop.Matches((uint)e.Key, HeldModifiers())) return;
-        _chat.Cancel();
-        _notices.Remove("stop-hint");
-        e.Handled = true; // e.g. Esc stops instead of hiding the panel
+        var held = HeldModifiers();
+        if (_chat.IsBusy && Hotline.Core.Activation.Hotkey.TryParseShortcut(_settings.Chat.StopShortcut, out var stop)
+            && stop.Matches((uint)e.Key, held))
+        {
+            _chat.Cancel();
+            _notices.Remove("stop-hint");
+            e.Handled = true; // e.g. Esc stops instead of hiding the panel
+            return;
+        }
+        foreach (var (id, text) in _settings.Chat.Shortcuts)
+        {
+            if (!Hotline.Core.Activation.Hotkey.TryParseShortcut(text, out var shortcut) || !shortcut.Matches((uint)e.Key, held)) continue;
+            e.Handled = true;
+            _tasks.Guard("toolbar shortcut " + id, () => _popup.InvokeToolbarShortcut(id));
+            return;
+        }
     }
 
     private static Hotline.Core.Activation.HotkeyModifiers HeldModifiers()

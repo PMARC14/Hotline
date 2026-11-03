@@ -184,6 +184,10 @@ public static class SettingsSchema
         new TextItem(SettingsPage.Chat, nameof(Strings.Set_Stop), nameof(Strings.Set_Stop_Desc),
             "Esc", s => s.Chat.StopShortcut, (s, v) => s.Chat.StopShortcut = string.IsNullOrWhiteSpace(v) ? "Esc" : v.Trim())
         { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = nameof(Strings.Set_Stop_Invalid) },
+        .. ChatShortcuts.Defaults.Select(pair => new TextItem(SettingsPage.Chat, "Bar_" + pair.Key, nameof(Strings.Set_Shortcuts_Desc),
+            pair.Value, s => s.Chat.Shortcuts.GetValueOrDefault(pair.Key, pair.Value),
+            (s, v) => s.Chat.Shortcuts[pair.Key] = string.IsNullOrWhiteSpace(v) ? pair.Value : v.Trim())
+        { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = nameof(Strings.Set_Stop_Invalid) }),
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Memory), nameof(Strings.Set_Memory_Desc),
             s => s.Chat.Memory, (s, v) => s.Chat.Memory = v),
         Choice(SettingsPage.Chat, nameof(Strings.Set_MemoryTool), nameof(Strings.Set_MemoryTool_Desc),

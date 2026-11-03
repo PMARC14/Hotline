@@ -862,4 +862,13 @@
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Не вдалося підключитися: {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>Зберегти</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Укажіть назву та адресу або команду.</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Копіювати останню відповідь</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Сполучення клавіш: {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Сполучення клавіш панелі; назви клавіш залишаються англійською. Порожнє поле відновлює команду. Для вимкнення задайте порожній рядок у chat.shortcuts у settings.json. Зупинка має пріоритет, далі — перше сполучення; у разі конфлікту діє вільне типове сполучення, інакше команду вимкнено.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: недійсне сполучення; використано типове, якщо доступне.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: сполучення вже зайняте; використано вільне типове або вимкнено.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: невідома кнопка {0}; пропущено.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: повторний запис; діє перший.</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Сполучення клавіш панелі</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Коли панель у фокусі, Ctrl+N починає чат, Ctrl+H відкриває історію, а Ctrl+Shift+C копіює останню завершену відповідь. Наведіть вказівник на кнопки, щоб побачити клавіші. Клавіші зусиль, моделі та постачальника перемикають пункти списків. Змінюйте їх у Налаштування &gt; Чат та історія або в chat.shortcuts у settings.json. Зупинка має пріоритет, далі діє перше сполучення. Порожні рядки у файлі вимикають команди.</value></data>
 </root>

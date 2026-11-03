@@ -145,6 +145,10 @@ public sealed partial class PopupWindow : Window
     /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
     public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);
 
+    public void SetToolbarShortcuts(ChatSettings settings) => _rows.SetShortcuts(settings.Shortcuts);
+    public string ShortcutTip(string id, string text) => _rows.ShortcutTip(id, text);
+    public void InvokeToolbarShortcut(string id) => _rows.InvokeShortcut(id);
+
     /// <summary>A custom button (toolbar.json "buttons") or its "⋯" entry was clicked.</summary>
     public event Action<CustomButton>? CustomButtonClicked;
 
@@ -502,12 +506,6 @@ public sealed partial class PopupWindow : Window
         if (e.Key == VirtualKey.Escape)
         {
             HidePopup();
-            e.Handled = true;
-        }
-        else if (e.Key == VirtualKey.N && InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down)
-                 && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
-        {
-            RequestNewChat();
             e.Handled = true;
         }
     }

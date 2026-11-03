@@ -862,4 +862,13 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Geen verbinding: {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>Opslaan</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Vul de naam en het adres of de opdracht in.</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Laatste antwoord kopiëren</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Sneltoets: {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Sneltoetsen in het paneel; toetsnamen blijven Engels. Leeg herstelt deze opdracht. Gebruik een lege tekenreeks in chat.shortcuts in settings.json om uit te schakelen. Stop heeft voorrang, daarna de eerste combinatie; bij conflicten geldt de standaard als die vrij is, anders wordt de opdracht uitgeschakeld.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: ongeldige sneltoets; de standaard wordt gebruikt indien beschikbaar.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: combinatie al in gebruik; de standaard wordt gebruikt als die vrij is, anders uitgeschakeld.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: onbekende knop {0}; genegeerd.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: dubbel vermeld; de eerste vermelding geldt.</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Sneltoetsen in het paneel</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Met het paneel actief start Ctrl+N een chat, opent Ctrl+H de geschiedenis en kopieert Ctrl+Shift+C het laatste voltooide antwoord. Wijs knoppen aan om hun toetsen te zien. De toetsen voor inspanning, model en aanbieder doorlopen hun lijsten. Wijzig toetsen in Instellingen &gt; Chat en geschiedenis of in chat.shortcuts in settings.json. Stop heeft voorrang; anders geldt de eerste combinatie. Lege tekenreeksen in het bestand schakelen opdrachten uit.</value></data>
 </root>

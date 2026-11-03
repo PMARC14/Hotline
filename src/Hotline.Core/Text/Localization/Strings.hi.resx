@@ -862,4 +862,13 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>कनेक्ट नहीं हो सका: {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>सहेजें</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>नाम और पता या कमांड भरें।</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>पिछला उत्तर कॉपी करें</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>शॉर्टकट: {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>पैनल के शॉर्टकट; कुंजियों के नाम अंग्रेज़ी में रखें। खाली फ़ील्ड कमांड को रीसेट करता है। बंद करने के लिए settings.json के chat.shortcuts में खाली स्ट्रिंग रखें। रोकने वाली कुंजी को प्राथमिकता है, फिर पहला संयोजन लागू होता है; टकराव पर डिफ़ॉल्ट खाली हो तो उसे चुनें, वरना बंद करें।</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: अमान्य शॉर्टकट; उपलब्ध होने पर डिफ़ॉल्ट चुना जाएगा।</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: संयोजन उपयोग में है; उपलब्ध होने पर डिफ़ॉल्ट चुना जाएगा, वरना बंद होगा।</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: अज्ञात बटन {0}; अनदेखा किया गया।</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: दोहराई गई प्रविष्टि; पहली लागू होगी।</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>पैनल के शॉर्टकट</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>पैनल पर फ़ोकस होने पर Ctrl+N चैट शुरू करता है, Ctrl+H इतिहास खोलता है और Ctrl+Shift+C पिछला पूरा उत्तर कॉपी करता है। कुंजियाँ देखने के लिए बटन पर माउस रखें। प्रयास, मॉडल और प्रदाता की कुंजियाँ उनकी सूचियों में आगे बढ़ती हैं। सेटिंग &gt; चैट और इतिहास में या settings.json के chat.shortcuts में कुंजियाँ बदलें। रोकने वाली कुंजी को प्राथमिकता है; अन्य टकरावों में पहला संयोजन लागू होता है। फ़ाइल में खाली स्ट्रिंग कमांड बंद करती है।</value></data>
 </root>

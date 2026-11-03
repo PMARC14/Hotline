@@ -9,7 +9,7 @@ public static class Guide
     public static readonly IReadOnlyList<string> Sections =
     [
         "Open", "Connections", "Attach", "Voice", "Actions", "Memory", "History", "Background",
-        "Move", "Direction", "Rows", "Sounds", "Files",
+        "Move", "Direction", "Rows", "Shortcuts", "Sounds", "Files",
     ];
 
     public static string TitleKey(string section) => $"Guide_{section}_Title";
