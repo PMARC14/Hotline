@@ -30,11 +30,14 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   after a detour, width-unit migration, MCP "Always allow" revocation, backups before connection removal / Reset / agy settings,
   drag minimum, async-handler guards, MCP stderr counts). The test suite was compacted in PR #38 (2777 -> 2374 tests, same coverage).
   Maintainer briefs and review outputs are kept outside the repo, in `~/.claude/briefs/hotline/`.
-- **Review items still open (PLAUSIBLE, each needs a reproducing test first):** watcher reload versus unsaved edits in Settings;
-  horizontal Alt-resize; filled-dropdown theme / disabled brushes; "Move what doesn't fit" overrides with a stale width; hold leak;
-  Open WebUI keys left after Reset; llama.cpp default target needing an endpoint; Gemini tool calls on a truncated answer; a disabled
-  MCP server called mid-answer; reopening an API chat in a CLI; backup/replace race. Not yet done from the review of the tests:
-  helper merges (shared HTTP fake, stream collector, MCP fake) and items 2, 3, 7, 9, 15, 17 of the Argon list.
+- **Review follow-ups (PRs #40, #41):** fixed with a failing test first: a server switched off in mcp.json mid-answer, Gemini function calls
+  from a cut-off answer, concurrent backups at the same timestamp. Rejected with tests: llama.cpp target without an endpoint, API chat
+  replay in a CLI. The App-only ones (Settings reload vs unsaved edits, Alt-resize, filled-dropdown brushes, "Move what doesn't fit"
+  stale width, hold leak, Open WebUI keys kept after Reset) are in [plausible-review.md](plausible-review.md) and need a hand check or an
+  App-side fix. Test cleanup not done: shared HTTP fake / stream collector / MCP fake helpers and Argon items 2, 3, 7, 9, 15, 17.
+- **Button shortcuts (PR #42):** `chat.shortcuts` (in-panel, Ctrl+N new chat, Ctrl+H recent, Ctrl+, settings, ...; table in configuration.md).
+  Not verified by eye: focus routing, flyouts, tooltips, picker cycling (TESTING.md).
+- **Schema freeze (S1) is NOT done:** it is the first job of the road to 1.0. Multi-monitor / mixed DPI is still to hand test.
 - **Open items:** `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale; the
   dropdowns' hover / press look with outline or fill is **UNVERIFIED by eye**. `personal/gemini-web` still needs `main` merged in.
 - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)).
