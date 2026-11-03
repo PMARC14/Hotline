@@ -37,6 +37,9 @@ API keys, `mcp.json`. Prompts, quick actions, memory and history are never reset
 Settings › **Backup** exports and imports these files (see *Backup*).
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
+Open WebUI's Continue in keys are stored per address, separately from connection API keys. Both resets leave those
+Open WebUI keys in Credential Locker, including keys for targets removed by the reset; adding the same address again
+reuses its saved key.
 
 ## settings.json
 

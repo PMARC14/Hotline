@@ -7,6 +7,34 @@ public sealed class BackupFilesTests : TempDirTest
     public BackupFilesTests() => Directory.CreateDirectory(_dir);
 
     [Fact]
+    public async Task Concurrent_copies_at_the_same_timestamp_keep_every_backup()
+    {
+        const int workers = 8, rounds = 8;
+        var now = new DateTime(2026, 11, 1, 12, 0, 0, 123);
+        var paths = Enumerable.Range(0, rounds).Select(i => Path.Combine(_dir, $"settings-{i}.json")).ToArray();
+        foreach (var path in paths) File.WriteAllText(path, "hand edited settings");
+        using var barrier = new Barrier(workers);
+        var errors = new System.Collections.Concurrent.ConcurrentBag<Exception>();
+        var copies = new System.Collections.Concurrent.ConcurrentBag<string>();
+        var tasks = Enumerable.Range(0, workers).Select(_ => Task.Factory.StartNew(() =>
+        {
+            foreach (var path in paths)
+            {
+                if (!barrier.SignalAndWait(TimeSpan.FromSeconds(10))) throw new TimeoutException("Backup workers did not meet");
+                try { copies.Add(BackupFiles.CopyStamped(path, now, keep: workers)); }
+                catch (Exception ex) { errors.Add(ex); }
+            }
+        }, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default)).ToArray();
+
+        await Task.WhenAll(tasks);
+
+        Assert.Empty(errors);
+        Assert.Equal(workers * rounds, copies.Distinct().Count());
+        foreach (var path in paths) Assert.Equal(workers, Directory.GetFiles(_dir, Path.GetFileName(path) + ".*.bak").Length);
+        Assert.All(copies, copy => Assert.Equal("hand edited settings", File.ReadAllText(copy)));
+    }
+
+    [Fact]
     public void Only_the_newest_copies_are_kept_and_other_files_are_left_alone()
     {
         var path = Path.Combine(_dir, "mcp.json");

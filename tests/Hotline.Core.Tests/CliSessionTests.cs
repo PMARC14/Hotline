@@ -146,6 +146,32 @@ public sealed class CliSessionTests : TempDirTest
         Assert.Null(other.ResumeSeen.Single());
     }
 
+    [Fact]
+    public async Task Reopening_an_api_chat_in_a_cli_replays_once_without_the_previous_session()
+    {
+        var history = History();
+        var api = new FakeBackend(new ChatDelta("api answer"));
+        var saved = New(api, history);
+        await saved.SendAsync("api question", []);
+        var cli = new FakeCli();
+        var chat = Two(cli, "cli", api, "fake", history);
+        await chat.SendAsync("unrelated CLI question", []);
+        var oldSession = chat.CurrentSession;
+
+        Assert.True(chat.Resume(saved.ConversationId));
+        Assert.Null(chat.CurrentSession);
+        Assert.Equal("cli", chat.BackendId);
+        await chat.SendAsync("continue", []);
+        await chat.SendAsync("again", []);
+
+        Assert.Null(cli.ResumeSeen[1]);
+        Assert.NotEqual(oldSession, chat.CurrentSession);
+        Assert.Equal(chat.CurrentSession!.Value.Session, cli.ResumeSeen[2]);
+        Assert.Equal(["api question", "api answer", "continue"], cli.Calls[1].Select(m => m.Text));
+        Assert.Equal(["api question", "api answer", "continue", "ok", "again"], cli.Calls[2].Select(m => m.Text));
+        Assert.Equal(["api question", "api answer", "continue", "ok", "again", "ok"], history.Load(saved.ConversationId).Select(m => m.Text));
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]

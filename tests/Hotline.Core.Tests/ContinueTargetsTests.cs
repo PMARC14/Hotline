@@ -32,6 +32,17 @@ public sealed class ContinueTargetsTests : TempDirTest
     [Fact]
     public void No_local_connection_means_an_empty_default() => Assert.Empty(ContinueTargets.Shared(With(Api())));
 
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void A_local_connection_without_an_endpoint_has_no_default_target(string? endpoint)
+    {
+        var local = Local();
+        local.Endpoint = endpoint;
+        Assert.Empty(ContinueTargets.Shared(With(Api(), local)));
+    }
+
     [Fact]
     public void A_set_shared_list_is_used_as_is()
     {

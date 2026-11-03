@@ -100,6 +100,26 @@ public sealed class SettingsResetTests : TempDirTest
         Assert.Equal("keep me", File.ReadAllText(Path.Combine(_dir, "memory.md")));
     }
 
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Reset_removes_shared_OpenWebUi_targets_and_reports_only_removed_connections(bool everything)
+    {
+        var (store, settings, local) = Customised();
+        var target = new ContinueTarget(ContinueKind.OpenWebUi, "Open WebUI", Url: "http://localhost:3000");
+        settings.Chat.ContinueIn = [target];
+        settings.Chat.Backends[0].ContinueIn = [target];
+        store.Save(settings);
+
+        var result = SettingsReset.Reset(store, _dir, settings, everything, Now);
+
+        var back = new SettingsStore(_dir).Load();
+        Assert.Null(back.Chat.ContinueIn);
+        Assert.Equal(everything ? [local] : Array.Empty<string>(), result.Removed);
+        if (everything) Assert.Empty(back.Chat.Backends);
+        else Assert.Equal(target, Assert.Single(Assert.Single(back.Chat.Backends).ContinueIn!));
+    }
+
     [Fact]
     public void Defaults_copy_is_hidden_and_loads_as_defaults()
     {
