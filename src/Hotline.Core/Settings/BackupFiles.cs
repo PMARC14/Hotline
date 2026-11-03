@@ -22,8 +22,15 @@ public static class BackupFiles
                 var rest = Path.GetFileName(entry)[(Path.GetFileName(path).Length + stamp.Length + 1)..^4]; // "" or "-002"
                 last = Math.Max(last, rest.Length == 0 ? 1 : rest.StartsWith('-') && int.TryParse(rest.AsSpan(1), out var n) ? n : 1);
             }
-        var target = last == 0 ? $"{path}.{stamp}.bak" : $"{path}.{stamp}-{last + 1:000}.bak";
-        File.Copy(path, target, overwrite: false);
+        string target;
+        while (true)
+        {
+            target = last == 0 ? $"{path}.{stamp}.bak" : $"{path}.{stamp}-{last + 1:000}.bak";
+            try { File.Copy(path, target, overwrite: false); break; }
+            // EEXIST (Unix), ERROR_FILE_EXISTS / ERROR_ALREADY_EXISTS (Windows). A failed copy that created a
+            // partial destination (e.g. disk full) must still fail, rather than retrying it as a name collision.
+            catch (IOException ex) when ((ex.HResult & 0xffff) is 17 or 80 or 183 && File.Exists(target)) { last++; }
+        }
         Prune(path, keep);
         return target;
     }

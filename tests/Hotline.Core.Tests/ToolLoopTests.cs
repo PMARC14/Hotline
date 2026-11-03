@@ -145,6 +145,35 @@ public sealed class ToolLoopTests : TempDirTest
 
     private static string GeminiParts(params object[] parts) => JsonSerializer.Serialize(new { candidates = new[] { new { content = new { role = "model", parts } } } });
 
+    [Theory]
+    [InlineData("MAX_TOKENS", false)]
+    [InlineData("MAX_TOKENS", true)]
+    [InlineData("MALFORMED_FUNCTION_CALL", false)]
+    [InlineData("MALFORMED_FUNCTION_CALL", true)]
+    public async Task Gemini_does_not_run_function_calls_from_a_truncated_candidate(string finishReason, bool separateChunk)
+    {
+        var host = new FakeToolHost();
+        // Valid JSON can still contain incomplete arguments; parsing them is not enough.
+        var parts = new[] { new { functionCall = new { name = "files__read_file", args = new { path = "a" } } } };
+        var stopped = JsonSerializer.Serialize(new
+        {
+            candidates = new[] { new { content = new { role = "model", parts }, finishReason } },
+        });
+        var finish = JsonSerializer.Serialize(new { candidates = new[] { new { finishReason } } });
+        var handler = new Handler((n, _) => n > 1 ? Sse(GeminiParts(new { text = "done" }))
+            : separateChunk ? Sse(GeminiParts(parts), finish) : Sse(stopped));
+        var secrets = new InMemorySecretStore();
+        secrets.Set(SecretKeys.ApiKey("g"), "k");
+        var backend = new GeminiBackend(new BackendProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
+            new HttpClient(handler), secrets, _ => "", Log, host);
+
+        var error = await Record.ExceptionAsync(() => Collect(backend.StreamAsync([U("read a.txt")], default)));
+
+        Assert.Empty(host.Calls);
+        Assert.Contains(finishReason, Assert.IsType<BackendException>(error).Message);
+        Assert.Single(handler.Bodies);
+    }
+
     [Fact]
     public async Task Gemini_runs_function_calls_and_echoes_the_models_parts()
     {

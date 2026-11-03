@@ -78,8 +78,11 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                             if (part.TryGetProperty("thought", out var thought) && thought.ValueKind == JsonValueKind.True) continue;
                             if (Str(part, "text") is { Length: > 0 } piece) yield return new ChatDelta(piece);
                         }
-                    if (Str(candidate, "finishReason") is ("SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST") and var finish)
-                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish));
+                    var stopReason = Str(candidate, "finishReason");
+                    // A cut-off answer is shown as far as it got, but a function call from one must not run (its arguments may be partial).
+                    if (stopReason is "SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST" or "MALFORMED_FUNCTION_CALL"
+                        || stopReason is "MAX_TOKENS" && calls.Count > 0)
+                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), stopReason));
                 }
             }
 
