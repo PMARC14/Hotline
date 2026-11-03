@@ -81,6 +81,12 @@ internal static class LenientReader
             if (found.Count > 1) problems.Add(L.F(Strings.Settings_ProblemDuplicate, where));
             var value = found.Value;
 
+            if (target is ChatSettings && prop.Name == nameof(ChatSettings.Shortcuts))
+            {
+                // Read below, after every scalar (especially StopShortcut), preserving JSON order and duplicate ids.
+                continue;
+            }
+
             if (IsSection(prop.PropertyType))
             {
                 if (value.ValueKind != JsonValueKind.Object) { problems.Add(WrongType(where, value)); continue; }
@@ -113,6 +119,18 @@ internal static class LenientReader
             {
                 problems.Add(Describe(where, $"{type.Name}.{prop.Name}", prop.PropertyType, value));
             }
+        }
+        if (target is ChatSettings chatSettings)
+        {
+            IEnumerable<KeyValuePair<string, string>>? entries = null;
+            if (keys.TryGetValue("shortcuts", out var shortcuts))
+            {
+                if (shortcuts.Value.ValueKind != JsonValueKind.Object)
+                    problems.Add(WrongType($"{label} › {path}.shortcuts", shortcuts.Value));
+                else entries = shortcuts.Value.EnumerateObject().Select(p => new KeyValuePair<string, string>(p.Name,
+                    p.Value.ValueKind == JsonValueKind.String ? p.Value.GetString()! : null!));
+            }
+            chatSettings.Shortcuts = ChatShortcuts.Normalize(entries, chatSettings.StopShortcut, problems.Add);
         }
     }
 

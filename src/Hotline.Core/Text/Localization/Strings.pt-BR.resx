@@ -862,4 +862,13 @@ As chaves de API são mantidas no Windows Credential Locker, nunca em um arquivo
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Não foi possível conectar: {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>Salvar</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Preencha o nome e o endereço ou o comando.</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Copiar a última resposta</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Atalho: {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Atalhos do painel; os nomes das teclas ficam em inglês. Deixar em branco restaura o comando. Para desativar, use uma string vazia em chat.shortcuts em settings.json. Parar tem prioridade, depois vale a primeira combinação; conflitos usam o padrão se estiver livre, ou são desativados.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: atalho inválido; usando o padrão se disponível.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: combinação em uso; usando o padrão se livre, ou desativando.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: botão desconhecido {0}; ignorado.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: entrada duplicada; a primeira prevalece.</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Atalhos do painel</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Com o painel em foco, Ctrl+N inicia um chat, Ctrl+H abre o histórico e Ctrl+Shift+C copia a última resposta concluída. Passe o mouse sobre os botões para ver as teclas. As teclas de esforço, modelo e provedor percorrem suas listas. Altere as teclas em Configurações &gt; Chat e histórico ou em chat.shortcuts em settings.json. Parar tem prioridade; nos demais conflitos, vale a primeira combinação. Strings vazias no arquivo desativam comandos.</value></data>
 </root>

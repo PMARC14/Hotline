@@ -28,7 +28,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private static readonly Dictionary<string, string> BuiltInGlyphs = new()
     {
         ["pin"] = "\uE718", ["captureWindow"] = "\uE7C4", ["captureScreen"] = "\uE7F4", ["captureRegion"] = "\uF407", ["prompt"] = "\uE8A5",
-        ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713", ["more"] = "\uE712",
+        ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713", ["more"] = "\uE712", ["copyLastAnswer"] = "\uE8C8",
     };
 
     private readonly Action<ToolbarModel> _save;

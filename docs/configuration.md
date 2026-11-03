@@ -78,6 +78,7 @@ reuses its saved key.
 | `chat.cliTranscripts` | `true` | Reopening a CLI chat Hotline kept only a record of (`keepInHotline` off) shows its earlier messages from the CLI's own history (read-only; see *Chats with a CLI*). Not in the Settings window |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
+| `chat.shortcuts` | See *Panel shortcuts* below | Toolbar button id → shortcut. Applies live, only while the panel has focus. Settings › Chat and history has a row for each command |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
 | `chat.memoryTool` | `ask` | Whether API models may save to `memory.md` with Hotline's remember tool (Anthropic and Gemini even in chat-only mode; OpenAI-style connections once Tool use is on; never while `chat.memory` is off; every save shows a notice): `ask` (approve each; "Always" switches to `allow`), `allow`, `off` |
 | `chat.continueIn` | *(llama.cpp of a Local connection)* | The shared "Continue this chat in" targets (see *Continue in* below). Missing = the llama.cpp web UI at your first Local connection's address, or none |
@@ -101,6 +102,42 @@ the problem. Hotline's own output replacing Hotline's own output makes no copies
 letters, digits, `-`, `_` and `.` become `-`). Two connections that would share one file (`work a` and `work-a`) are not allowed:
 the second is not saved and a problem is listed. Removing a connection in Settings deletes its own file; a file you drop in
 while Hotline runs is picked up before the next save and is never deleted unless you remove that connection.
+
+### Panel shortcuts
+
+These keys work anywhere in the panel, including the message box; they are separate from the global `activation.*` hotkeys.
+They use the same parser as `chat.stopShortcut`: English key names, case-insensitive, combinations or bare keys such as `Esc`.
+Enter is reserved for the message box. The defaults avoid Windows shortcuts and text editing keys (`Ctrl+C/V/X/A/Z/Y`).
+
+| Button id | Default | Action |
+|---|---|---|
+| `newChat` | `Ctrl+N` | New chat |
+| `recent` | `Ctrl+H` | Recent chats / history |
+| `settings` | `Ctrl+,` | Settings |
+| `pin` | `Ctrl+P` | Toggle pin |
+| `copyLastAnswer` | `Ctrl+Shift+C` | Copy the latest completed, nonempty answer (optional toolbar button; add it in Settings › Window) |
+| `captureRegion` | `Ctrl+Shift+R` | Capture a region |
+| `prompt` | `Ctrl+Shift+P` | Open the prompt library picker |
+| `effort` | `Ctrl+E` | Cycle effort |
+| `model` | `Ctrl+M` | Cycle model |
+| `provider` | `Ctrl+Shift+M` | Cycle provider / connection |
+| `captureWindow` | `Ctrl+Shift+W` | Capture the previous window |
+| `captureScreen` | `Ctrl+Shift+S` | Capture the screen |
+| `continueIn` | `Ctrl+Shift+I` | Open Continue in |
+| `more` | `Ctrl+Shift+O` | Open the first More / overflow menu |
+
+For example, `"chat": { "shortcuts": { "pin": "Ctrl+K", "captureScreen": "" } }` changes Pin and disables Capture screen's key;
+omitted commands keep their defaults. Blank fields in the Settings window restore that command's default. There is no separate
+quick-actions toolbar button: quick actions remain in the message box's `/` list. Disabled controls stay disabled for shortcuts,
+including the three pickers while an answer streams. Hidden buttons still work by shortcut; hidden pickers still cycle.
+
+**Conflicts:** `chat.stopShortcut` always has priority, even while idle. Otherwise the first shortcut in JSON order keeps the combo
+(aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
+their shortcut is disabled. Omitted defaults are filled last, under the same rule. Bad values fall back to that command's default
+with a warning; duplicate button ids keep the first entry with a warning; unknown ids are ignored with a warning. An empty string
+explicitly disables a shortcut. Custom buttons are not supported by this map. User-defined bindings can override editing or system
+keys, so choose them carefully; Windows may intercept system combinations. Bare `Esc` is available when Stop uses another combo;
+otherwise Stop owns it and idle Esc hides the panel.
 
 ### Broken files
 
@@ -261,7 +298,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 | Key | Meaning |
 |---|---|
 | `top`, `items` | Objects with `left`, `center` (optional) and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
-| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below) |
+| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`, `copyLastAnswer`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below); `copyLastAnswer` copies the latest completed answer |
 | `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order |
 | `style` | The look of the whole bar: `width` (the button width in cells: 0.5, 1, 2, 3 or 4, or the words `compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour) |
 | `overrides` | Per item id: the same `width`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. A picker takes `span` (its width), `outline`, `outlineColor` and `filled`, never `width`. The placed `more` button takes overrides like any item |

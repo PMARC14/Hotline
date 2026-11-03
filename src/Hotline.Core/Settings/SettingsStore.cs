@@ -567,6 +567,7 @@ public sealed class SettingsStore(string directory)
         s.Chat.HistoryListSize = SettingsRanges.All["ChatSettings.HistoryListSize"].Clamp(s.Chat.HistoryListSize);
         s.Chat.ThinkingDelayMs = SettingsRanges.All["ChatSettings.ThinkingDelayMs"].Clamp(s.Chat.ThinkingDelayMs);
         if (!Activation.Hotkey.TryParseShortcut(s.Chat.StopShortcut, out _)) s.Chat.StopShortcut = "Esc";
+        s.Chat.Shortcuts = ChatShortcuts.Normalize(s.Chat.Shortcuts, s.Chat.StopShortcut);
         if (s.Window.FontSize is { } fontSize) s.Window.FontSize = SettingsRanges.All["WindowSettings.FontSize"].Clamp(fontSize);
         s.Window.Anchor ??= new PanelAnchor();
         // → v13: the vertical position became the anchor's Y.

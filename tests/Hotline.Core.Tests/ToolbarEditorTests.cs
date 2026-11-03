@@ -195,7 +195,7 @@ public sealed class ToolbarEditorTests
     {
         var m = ToolbarEditor.Hide(Grid, "pin");
         Assert.Equal(["captureWindow", "captureScreen"], m.Items(BL));
-        Assert.Equal(["pin", "effort", "model", "provider", "more"], ToolbarEditor.Hidden(m)); // the more button is not placed by default
+        Assert.Equal(["pin", "effort", "model", "provider", "more", "copyLastAnswer"], ToolbarEditor.Hidden(m)); // optional buttons are not placed by default
         foreach (var q in Enum.GetValues<Quadrant>())
         {
             var shown = ToolbarEditor.Show(m, "pin", q);

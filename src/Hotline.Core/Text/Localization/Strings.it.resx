@@ -862,4 +862,13 @@ Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</val
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Connessione non riuscita: {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>Salva</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Inserisci il nome e l'indirizzo o il comando.</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Copia l'ultima risposta</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Scorciatoia: {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Scorciatoie del pannello; i nomi dei tasti restano in inglese. Il campo vuoto ripristina il comando. Per disattivarlo, usa una stringa vuota in chat.shortcuts in settings.json. Stop ha la precedenza, poi vale la prima combinazione; i conflitti usano il valore predefinito se libero, altrimenti vengono disattivati.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: scorciatoia non valida; viene usata quella predefinita se disponibile.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: combinazione già in uso; viene usata quella predefinita se libera, altrimenti viene disattivata.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: pulsante sconosciuto {0}; ignorato.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: voce duplicata; vale la prima.</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Scorciatoie del pannello</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Con il pannello attivo, Ctrl+N avvia una chat, Ctrl+H apre la cronologia e Ctrl+Shift+C copia l’ultima risposta completata. Passa il puntatore sui pulsanti per vedere i tasti. I tasti di impegno, modello e provider scorrono gli elenchi. Modificali in Impostazioni &gt; Chat e cronologia o in chat.shortcuts in settings.json. Stop ha la precedenza; negli altri conflitti vale la prima combinazione. Le stringhe vuote nel file disattivano i comandi.</value></data>
 </root>

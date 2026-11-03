@@ -61,7 +61,7 @@ public sealed record ToolbarModel(
     private static string W(string format, params object[] args) => L.F(format, args);
 
     public static readonly IReadOnlyList<string> BuiltIn =
-        ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings", "more"];
+        ["pin", "captureWindow", "captureScreen", "captureRegion", "effort", "model", "provider", "prompt", "recent", "continueIn", "newChat", "settings", "more", "copyLastAnswer"];
 
     /// <summary>The optional menu button the user places and fills (toolbar.json "menu"); the row's automatic overflow merges into it.</summary>
     public const string MoreId = "more";

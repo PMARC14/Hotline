@@ -237,6 +237,8 @@
                     Content="&#xE8BD;" ToolTipService.ToolTip="{local:Loc Key=Popup_NewChat}" AutomationProperties.Name="{local:Loc Key=Popup_NewChat}" />
             <Button x:Name="SettingsButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
                     Content="&#xE713;" ToolTipService.ToolTip="{local:Loc Key=Bar_settings}" AutomationProperties.Name="{local:Loc Key=Bar_settings}" />
+            <Button x:Name="CopyLastAnswerButton" x:FieldModifier="internal" Style="{StaticResource ToolbarButton}"
+                    Content="&#xE8C8;" ToolTipService.ToolTip="{local:Loc Key=Bar_copyLastAnswer}" AutomationProperties.Name="{local:Loc Key=Bar_copyLastAnswer}" />
         </Grid>
         <!-- Alt grips (Chat/PanelGrips): drawn over everything, out to the window's edges; never part of the layout. -->
         <Grid x:Name="GripLayer" x:FieldModifier="internal" Grid.RowSpan="4" Visibility="Collapsed" />

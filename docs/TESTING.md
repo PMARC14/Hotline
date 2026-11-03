@@ -46,6 +46,16 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] Windows' own "Right Ctrl" choice for the key (Hotline's own Right Ctrl mode was removed in 0.4): the key then acts as
       Right Ctrl and doesn't open Hotline.
 
+### Panel shortcuts (Settings › Chat and history)
+- [ ] With the message box focused, try each default in configuration.md's Panel shortcuts table; compare with clicking its button.
+      Picker keys cycle, stop while an answer streams, and resume afterwards. Copy with no completed answer does nothing.
+- [ ] Focus the transcript or a picker: shortcuts still work. Check prompts, history, Continue in and More open without closing on resize.
+      Hide a button or move it into overflow and repeat; add the optional Copy last answer button and compare with its shortcut.
+- [ ] Change a binding in Settings and settings.json: it and its tooltip update live; the previous combo stops working. Check Ctrl+C/V/X/A/Z
+      still edit text, Esc stops an answer / hides an idle panel, and shortcuts do nothing when another app has focus.
+- [ ] Set duplicate combos, a Stop conflict, an unknown id and a bad value: warnings and fallback match configuration.md. Reset restores defaults;
+      export/import preserves custom bindings and disabled entries. Spot-check translated shortcut tooltips.
+
 ### Button rows (Settings › Window)
 - [ ] The six groups (top / bottom × left / center / right) show the buttons in the bar; the pickers (effort, model, provider) are three
       separate items.

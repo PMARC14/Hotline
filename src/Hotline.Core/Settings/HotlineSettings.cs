@@ -232,6 +232,9 @@ public sealed class ChatSettings
     public bool VoiceAutoSend { get; set; }
     /// <summary>Stops a streaming answer: a key alone ("Esc") or a combo ("Ctrl+."). Enter never stops an answer.</summary>
     public string StopShortcut { get; set; } = "Esc";
+
+    /// <summary>In-panel toolbar shortcuts (button id to combo); empty text disables an entry.</summary>
+    public Dictionary<string, string> Shortcuts { get; set; } = ChatShortcuts.CreateDefaults();
     /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
     public bool Memory { get; set; } = true;
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>

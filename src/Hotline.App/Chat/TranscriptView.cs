@@ -426,8 +426,20 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
             Opacity = 0.75,
         };
         ToolTipService.SetToolTip(button, tooltip);
-        button.Click += (_, _) => { if (ClipboardText.TrySet(text())) notices.Show(Strings.Transcript_Copied, InfoBarSeverity.Success); else notices.Show(Strings.Transcript_ClipboardBusy, InfoBarSeverity.Warning); };
+        button.Click += (_, _) => CopyText(text());
         return button;
+    }
+
+    public void CopyLastAnswer()
+    {
+        var answer = _entries.OfType<AssistantView>().LastOrDefault(v => !v.Superseded && !v.Streaming && v.Text.Length > 0);
+        if (answer is not null) CopyText(answer.Text);
+    }
+
+    private void CopyText(string text)
+    {
+        if (ClipboardText.TrySet(text)) notices.Show(Strings.Transcript_Copied, InfoBarSeverity.Success);
+        else notices.Show(Strings.Transcript_ClipboardBusy, InfoBarSeverity.Warning);
     }
 
     /// <summary>The answer's "⋯" menu, kept out of the way: today it only holds "Report this answer" (opens the provider's page).</summary>
