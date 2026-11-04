@@ -13,7 +13,8 @@ sparse MSIX from a classic installer, both signed with a certificate the PC trus
   (`scripts/next-version.sh`; after `v0.2.25` comes `v0.2.26`, and bumping `version.txt` to `0.3` starts at
   `v0.3.0`). A pushed tag `vX.Y.Z` or **Run workflow** with a version publishes that version instead. The Store package
   is the same version plus `.0`; the Store only needs each submission higher than the last (compared as a whole) with
-  the fourth part `0`. When to bump: docs/HANDOFF.md › *Versions*.
+  the fourth part `0`. To start a new release line (0.6 to 0.7), bump `version.txt`; **1.0** comes when the Road to 1.0
+  ([HANDOFF.md](HANDOFF.md)) is done and a Store update with all 17 languages is certified.
   - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
     `Publisher`): a normal release. **Set since 2026-10-15** with a self-signed certificate valid until 2036-10-12
     (`CN=pmarc14 Hotline Dev`; the owner keeps `certs/release/hotline-release.pfx` and its password, git-ignored, and a
@@ -31,12 +32,11 @@ sparse MSIX from a classic installer, both signed with a certificate the PC trus
 
 Users then either double-click the `.msixbundle`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
 checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background. Updates keep
-settings (`%USERPROFILE%\.hotline`) and the Copilot key choice. After installing: Settings → Personalization → Text
-input → Customize Copilot key → Custom → Hotline.
+settings (`%USERPROFILE%\.hotline`) and the Copilot key choice (setup: [copilot-key.md](copilot-key.md)).
 
 Notes: Windows disabled the `ms-appinstaller:` web link by default, so link to the file
-itself and let users open it after downloading. Package version = `MAJOR.MINOR.PATCH.0` and must increase every
-release (the update check compares versions).
+itself and let users open it after downloading. The package version (`MAJOR.MINOR.PATCH.0`) must increase every
+release: the update check compares versions.
 
 ## Still open
 
@@ -50,24 +50,25 @@ release (the update check compares versions).
 
 ## Microsoft Store
 
-Partner Center › your app › Product management › Product identity gives four values. Build with them; the package is
-unsigned because the Store signs it, and Store versions must end in `.0`:
+The usual route is the workflow below. To build locally instead: Partner Center › your app › Product management › Product identity
+gives four values; the package is unsigned because the Store signs it, and Store versions must end in `.0`:
 
 ```bash
-scripts/build-msix.sh --store --arch all --version 0.2.4.0 \
+scripts/build-msix.sh --store --arch all --version 0.6.0.0 \
   --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \
   --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
 ```
 
-Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page. Each new submission needs a higher version than
-the last one. `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
+Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page.
+`--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
 
 ### Store workflow (`.github/workflows/store.yml`)
 
-**How Store updates are released: by hand.** Run **Actions › Store › Run workflow** with a version (`0.2.60` →
-package `0.2.60.0`) and *Submit* off (or push a tag `vX.Y.Z`). It builds the Store `.msixbundle` with the identity
+**How Store updates are released: by hand.** Run **Actions › Store › Run workflow** with a version (`0.6.0` →
+package `0.6.0.0`) and *Submit* off (or push a tag `vX.Y.Z`). It builds the Store `.msixbundle` with the identity
 above and attaches it to the run; download it from the run's *Artifacts* and upload it in a Partner Center
-submission. Store ID: `9PMW5CR6G3BC`.
+submission (**Packages** page), then paste the listing text from `store/listing.md` and `store/listings/` (17 languages).
+Store ID: `9PMW5CR6G3BC`. The 0.6.0.0 bundle is built and waits for the owner's upload.
 
 Automatic submission is **not set up, on purpose**: Partner Center only adds an Entra app from a work account
 (a personal Microsoft account is refused), which means a separate admin user in an Entra tenant just for this. If

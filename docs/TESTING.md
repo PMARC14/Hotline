@@ -28,25 +28,13 @@ Any web page can open a `hotline://` link, so `?selection` (reads another app) a
 file `%USERPROFILE%\.hotline\.allow-selftest-extras` exists (create it yourself, empty: `type nul > "%USERPROFILE%\.hotline\.allow-selftest-extras"`;
 a web page cannot). Without it the log says `selftest ?tools refused: ...` and the plain self-test still runs. Delete the file when done.
 
-## 2. Hands-on checklist
+## 2. Hands-on checklist (parts 2A and 2B)
 
-### Install and start
-- [ ] Install the `.msixbundle` from Releases (test builds: trust `Hotline.cer` first, see README). Hotline appears in Start.
-- [ ] Settings → Personalization → Text input → Customize Copilot key → Custom → Hotline.
-- [ ] Settings › General › Start with Windows: on → sign out/in → Hotline is in the tray, panel closed.
-- [ ] Uninstall and reinstall: settings in `.hotline` survive; the Copilot key choice needs setting again only after uninstall.
+Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list.
 
-### The key
-- [ ] Short press opens the panel on the monitor you're working on, ready to type; press again → it closes.
-- [ ] Long press starts a new chat (default).
-- [ ] Settings › General › Extra hotkey `Ctrl+Alt+H` → it opens/closes the panel.
-- [ ] Windows Settings › Bluetooth & devices › Keyboard (older builds: Personalization › Text input › Customize Copilot key
-      on keyboard) → Custom → Hotline: the key opens Hotline; tap and long press do what Settings › General says.
-- [ ] Settings › General › Open Copilot key settings opens that Windows page.
-- [ ] Windows' own "Right Ctrl" choice for the key (Hotline's own Right Ctrl mode was removed in 0.4): the key then acts as
-      Right Ctrl and doesn't open Hotline.
+## 2A. The 0.6 checklist (run first)
 
-### Panel shortcuts (Settings › Chat and history)
+### A1. Panel shortcuts (Settings › Chat and history)
 - [ ] Add custom quick-action, text-only and text/send buttons in Settings › Window. Type or capture `Ctrl+Shift+1` in Shortcut;
       check Esc cancels capture, Backspace clears it, Enter (also Ctrl+Enter) is refused, and a blank field saves no shortcut.
       Compare each shortcut with clicking the button, including slash-prefixed text (sent as plain text) and a missing quick action.
@@ -75,9 +63,57 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       types text without invoking the toolbar; a deliberate left Ctrl+Alt binding still works.
 - [ ] Compose text with an IME and press toolbar combos, Stop and Esc: none invokes an action or hides the panel; test normal keys
       after composition ends too. Virtual key 0xE5 must not invoke a shortcut.
+- [ ] Crowd the top row into automatic overflow and place More on the bottom row: the More shortcut opens the placed menu first.
+
+### A2. Multi-monitor and mixed DPI
+- [ ] Mouse drags in Button rows: inside and between groups, to "Not shown", across monitors and DPI.
+- [ ] Alt-drags across mixed-DPI monitors (a pinned panel keeps its size in scaled units: `PanelPlacement.Rescale`); a drop across
+      monitors, a drag to the top edge with growth `auto`, and a drag between a top/bottom pair of different DPIs.
+- [ ] Capture region and Capture window on a second monitor and on monitors with different scaling; the panel opens on the
+      monitor you are working on and the bar keeps its layout.
+- [ ] Move the bar (Alt-drag) and pin it, then switch monitors: how it behaves when pinned.
+
+### A3. Dropdown hover and press
+- [ ] Outline on the whole bar outlines the three drop-downs too, in the same colour (accent or `outlineColor`) and thickness, and they keep
+      their height; hover, press and open each: the outline stays and the usual hover/press background shows. Filled on the bar fills them like
+      the buttons. A picker's own style button (next to its width box) offers Outline, Outline color and Filled, no width; an override
+      (`"model": { "outline": false }`) switches one off; an old `toolbar.json` with `"style": { "size": "normal" }` loads with no warning.
+      Repeat with outline, filled and the widths in light, dark and contrast themes.
+
+### A4. Window-close, rename, flyout and tray guards (PR #48)
+- [ ] Close the Settings window while a save is failing (make a file read-only first), while a rename dialog is open and right after a
+      change that reloads settings: no error bar or crash follows, Hotline keeps running in the tray, and reopening Settings works.
+- [ ] Settings › Quick actions › Rename: an invalid name keeps the dialog open with the invalid-name header; a valid name renames; with the
+      file locked (open with a tool that denies sharing) a red notice appears at the top of the page, not a crash.
+- [ ] Open and close the More ("..."), Prompt, Continue in and Recent chats flyouts several times, also quickly: the panel resizes
+      normally afterwards (no frozen size, no flyout closing by itself).
+- [ ] Tray: quit Hotline from the tray menu and start it again (`hotline://tray`) several times: one tray icon each time, none left over.
+- [ ] Start a new chat (Clear, Ctrl+N) while an answer is streaming or the thinking spinner shows: the spinner and caret stop.
+
+### A5. Narrator names
 - [ ] With Narrator, inspect toolbar buttons, pickers and overflow entries: effective AcceleratorKey follows tooltip changes.
       The custom capture button reads its combo/waiting/error state distinctly from the shortcut text box.
-- [ ] Crowd the top row into automatic overflow and place More on the bottom row: the More shortcut opens the placed menu first.
+- [ ] Narrator / Accessibility Insights on the panel: every bar button, the three pickers, the "..." button, Add (+) and Send/Stop have a
+      spoken name (not a symbol); Send becomes Stop while an answer streams. Make 12+ mistakes in `toolbar.json`: the Settings InfoBar lists 10 and "(and N more)".
+- [ ] Attach a file: its chip's remove button reads "Remove <file name>". Settings › AI connections: the move up / move down buttons
+      read the selected connection's name. Settings rows whose control has no name of its own are read by the row's header.
+
+## 2B. The older checklist
+
+### Install and start
+- [ ] Install the `.msixbundle` from Releases (test builds: trust `Hotline.cer` first, see README). Hotline appears in Start.
+- [ ] Settings › General › Start with Windows: on → sign out/in → Hotline is in the tray, panel closed.
+- [ ] Uninstall and reinstall: settings in `.hotline` survive; the Copilot key choice needs setting again only after uninstall.
+
+### The key
+- [ ] Short press opens the panel on the monitor you're working on, ready to type; press again → it closes.
+- [ ] Long press starts a new chat (default).
+- [ ] Settings › General › Extra hotkey `Ctrl+Alt+H` → it opens/closes the panel.
+- [ ] Windows Settings › Bluetooth & devices › Keyboard (older builds: Settings › Personalization › Text input › Customize Copilot key
+      on keyboard) → Custom → Hotline: the key opens Hotline; tap and long press do what Settings › General says.
+- [ ] Settings › General › Open Copilot key settings opens that Windows page.
+- [ ] Windows' own "Right Ctrl" choice for the key (Hotline's own Right Ctrl mode was removed in 0.4): the key then acts as
+      Right Ctrl and doesn't open Hotline.
 
 ### Button rows (Settings › Window)
 - [ ] The six groups (top / bottom × left / center / right) show the buttons in the bar; the pickers (effort, model, provider) are three
@@ -86,11 +122,6 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       empty group and between two buttons. Drag one picker: only it moves.
 - [ ] The arrow buttons on a button and Alt+arrow / Ctrl+arrow give the same moves.
 - [ ] Bar look: Width compact, normal, wide, 3 and 4 cells (one list); outline and filled (light, dark, a Windows contrast theme); one button
-      with its own look; "Use bar look" resets it. Hiding a styled button and showing it again keeps its look.
-- [ ] Outline on the whole bar outlines the three drop-downs too, in the same colour (accent or `outlineColor`) and thickness, and they keep
-      their height; hover, press and open each: the outline stays and the usual hover/press background shows. Filled on the bar fills them like
-      the buttons. A picker's own style button (next to its width box) offers Outline, Outline color and Filled, no width; an override
-      (`"model": { "outline": false }`) switches one off; an old `toolbar.json` with `"style": { "size": "normal" }` loads with no warning.
 - [ ] Add a custom button that runs a quick action and one that inserts text (with and without Send): both work; delete the quick
       action's file → a notice, not a crash. A button called "Spacer" gets another id. A custom button with a PNG picture shows it.
 - [ ] Narrow the panel to its minimum (400 px) with many buttons: what doesn't fit moves into a "..." menu; widen it: they come back; Pin, Prompt and
@@ -110,8 +141,6 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       the page reloads the file, shows "toolbar.json changed while this page was open" and does not overwrite it.
 - [ ] Settings › Button rows: replace a custom button's picture with another PNG of the same name: the bar shows it at once (no other edit).
       Make toolbar.json read-only first and replace the picture: the old picture comes back and a save error is shown.
-- [ ] Narrator / Accessibility Insights on the panel: every bar button, the three pickers, the "..." button, Add (+) and Send/Stop have a
-      spoken name (not a symbol); Send becomes Stop while an answer streams. Make 12+ mistakes in `toolbar.json`: the Settings InfoBar lists 10 and "(and N more)".
 - [ ] A version 1 `toolbar.json` is left untouched: the default bar runs with the "version 1 files are no longer read" warning;
       Settings › Advanced › Reset settings puts the default bar back (a backup is made first).
 - [ ] `"backdrop": "glass"` in the `window` section of `settings.json`, saved: a notice "Part of your settings was ignored" appears in the
@@ -252,11 +281,8 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 - [ ] On GitHub, the repository shows a **Sponsor** button listing GitHub Sponsors and Ko-fi (after you've enrolled).
 
 ### Not hand-tested yet (0.4 leftovers)
-- [ ] Mouse drags in Button rows: inside and between groups, to "Not shown", across monitors and DPI.
 - [ ] The "..." menu (Prompt, Continue in) survives a `toolbar.json` change.
-- [ ] Outlined pickers' hover and press look; outline, filled and widths in light, dark and contrast themes.
 - [ ] 24 custom buttons at a narrow panel; the pixel width model at 150% and 200%.
-- [ ] Alt-drags across mixed-DPI monitors (a pinned panel keeps its size in scaled units: `PanelPlacement.Rescale`).
 - [ ] The Copilot key still arrives after the 26H2 upgrade.
 
 When you're done, leave Hotline running in the tray with the panel closed.
