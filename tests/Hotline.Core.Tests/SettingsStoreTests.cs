@@ -5,18 +5,11 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-public sealed class SettingsStoreTests : IDisposable
+public sealed class SettingsStoreTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private SettingsStore New() => new(_dir);
     private string SettingsPath => Path.Combine(_dir, SettingsStore.FileName);
     private string Conn(string id) => Path.Combine(_dir, SettingsStore.ConnectionsFolder, id + ".json");
-    public void Dispose()
-    {
-        if (!Directory.Exists(_dir)) return;
-        foreach (var f in Directory.EnumerateFiles(_dir, "*", SearchOption.AllDirectories)) File.SetAttributes(f, FileAttributes.Normal); // a test leaves a read-only file
-        Directory.Delete(_dir, recursive: true);
-    }
 
     private void WriteSettings(string json)
     {
@@ -189,14 +182,6 @@ public sealed class SettingsStoreTests : IDisposable
         Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion); // stamped in memory, written with the next save
         Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
         Assert.Equal(connText, File.ReadAllText(conn));
-    }
-
-    [Fact]
-    public void A_file_without_a_schema_version_is_not_archived()
-    {
-        WriteSettings("""{ "window": { "width": 700 } }""");
-        New().Load();
-        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
     }
 
     [Fact]

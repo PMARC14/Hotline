@@ -4,11 +4,9 @@ using Hotline.Core.Tools;
 namespace Hotline.Core.Tests;
 
 /// <summary>mcp.json, prompts/ and actions/: one bad value or file skips only that item, never the whole list.</summary>
-public sealed class BrokenFilesTests : IDisposable
+public sealed class BrokenFilesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     public BrokenFilesTests() => Directory.CreateDirectory(_dir);
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void An_mcp_server_with_odd_value_kinds_still_loads_and_the_others_are_untouched()

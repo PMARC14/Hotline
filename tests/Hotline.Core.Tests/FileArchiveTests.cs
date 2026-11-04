@@ -4,50 +4,36 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-public sealed class FileArchiveTests : IDisposable
+public sealed class FileArchiveTests : TempDirTest
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
 
-    public FileArchiveTests() => Directory.CreateDirectory(_root);
+    public FileArchiveTests() => Directory.CreateDirectory(_dir);
 
-    public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, recursive: true); }
-
-    [Fact]
-    public void KeepOld_copies_to_dot_old()
+    [Theory]
+    [InlineData(false, ".old")]
+    [InlineData(true, ".old2")]
+    public void KeepOld_copies_to_the_first_free_old_name_and_keeps_earlier_ones(bool oldExists, string extension)
     {
-        var path = Path.Combine(_root, "settings.json");
-        File.WriteAllText(path, "original");
+        var path = Path.Combine(_dir, "settings.json");
+        File.WriteAllText(path, "current");
+        if (oldExists) File.WriteAllText(path + ".old", "first");
 
         var archive = FileArchive.KeepOld(path);
 
-        Assert.Equal(path + ".old", archive);
-        Assert.Equal("original", File.ReadAllText(path + ".old"));
-        Assert.Equal("original", File.ReadAllText(path));
-    }
-
-    [Fact]
-    public void KeepOld_uses_old2_when_old_exists_and_keeps_the_first()
-    {
-        var path = Path.Combine(_root, "settings.json");
-        File.WriteAllText(path, "second");
-        File.WriteAllText(path + ".old", "first");
-
-        var archive = FileArchive.KeepOld(path);
-
-        Assert.Equal(path + ".old2", archive);
-        Assert.Equal("first", File.ReadAllText(path + ".old"));
-        Assert.Equal("second", File.ReadAllText(path + ".old2"));
-        Assert.Equal("second", File.ReadAllText(path));
+        Assert.Equal(path + extension, archive);
+        if (oldExists) Assert.Equal("first", File.ReadAllText(path + ".old"));
+        Assert.Equal("current", File.ReadAllText(path + extension));
+        Assert.Equal("current", File.ReadAllText(path));
     }
 
     [Fact]
     public void KeepOld_missing_file_returns_null()
-        => Assert.Null(FileArchive.KeepOld(Path.Combine(_root, "nope.json")));
+        => Assert.Null(FileArchive.KeepOld(Path.Combine(_dir, "nope.json")));
 
     [Fact]
     public void KeepOld_readonly_target_folder_returns_null_without_throwing()
     {
-        var dir = Path.Combine(_root, "locked");
+        var dir = Path.Combine(_dir, "locked");
         Directory.CreateDirectory(dir);
         var path = Path.Combine(dir, "settings.json");
         File.WriteAllText(path, "original");

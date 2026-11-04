@@ -3,15 +3,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Each connection lives in ~/.hotline/connections/&lt;id&gt;.json; settings.json holds order and default.</summary>
-public sealed class ConnectionFilesTests : IDisposable
+public sealed class ConnectionFilesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose()
-    {
-        if (!Directory.Exists(_dir)) return;
-        foreach (var file in Directory.EnumerateFiles(_dir, "*", SearchOption.AllDirectories)) File.SetAttributes(file, FileAttributes.Normal);
-        Directory.Delete(_dir, recursive: true);
-    }
 
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private string SettingsFile => Path.Combine(_dir, SettingsStore.FileName);

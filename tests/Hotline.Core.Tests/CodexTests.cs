@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Text.Json;
 using Hotline.Core.Backends;
 using Hotline.Core.Backends.Codex;
@@ -14,10 +16,6 @@ namespace Hotline.Core.Tests;
 public sealed class CodexTests : TempDirTest
 {
     private readonly FakeLineProcessFactory _factory = new();
-
-    private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
 
     private const string ThreadStarted = """{"type":"thread.started","thread_id":"0199a213-81c0-7800-8aa1-bbab2a035a53"}""";
     private const string TurnStarted = """{"type":"turn.started"}""";
@@ -37,13 +35,6 @@ public sealed class CodexTests : TempDirTest
 
     private void Script(Func<string, IEnumerable<string>> respond) =>
         _factory.Create = () => new FakeLineProcess { Respond = respond, ExitWhenInputCompletes = true };
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
 
     private static string After(IReadOnlyList<string> args, string flag) => args[args.ToList().IndexOf(flag) + 1];
 
@@ -280,14 +271,6 @@ public sealed class CodexTests : TempDirTest
     }
 
     [Fact]
-    public void Model_check_message_for_a_connection_without_a_model_list()
-    {
-        Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
-        Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
-        Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
-    }
-
-    [Fact]
     public async Task Stopping_early_stops_codex()
     {
         _factory.Create = () => new FakeLineProcess { Respond = _ => [ThreadStarted, Message("m", "partial")] }; // still running
@@ -392,16 +375,5 @@ public sealed class CodexTests : TempDirTest
         files.Add(@"D:\tools\codex.exe");
         Assert.Equal(@"D:\tools\codex.exe", CodexLocator.Find(@"D:\tools\codex.exe", Exists, @"C:\bin", "x64"));
         Assert.Null(CodexLocator.Find(@"D:\missing.exe", Exists, @"C:\bin", "x64"));
-    }
-
-    // ---- wiring --------------------------------------------------------------------------------
-
-    [Fact]
-    public void Codex_is_a_cli_connection_type()
-    {
-        var info = ConnectionTypes.Of(BackendType.Codex);
-        Assert.True(info.Has(ConnectionField.CliPath) && info.Has(ConnectionField.Tools));
-        Assert.False(info.Has(ConnectionField.ApiKey));
-        Assert.Equal(["low", "medium", "high", "xhigh", "max", "ultra"], info.EffortLevels);
     }
 }

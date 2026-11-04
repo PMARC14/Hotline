@@ -18,9 +18,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   was built by hand (Actions › Store, submit off) and is **not yet uploaded by the owner**; the 0.6 listing text is in `store/listing.md`
   and `store/listings/` (translations are model-drafted). Otherwise no Store bundles until just short of 1.0 (owner, 2026-10-17).
 - **Schema freeze (S1) is NOT done:** it is the first job of the road to 1.0.
-- **Tests:** about 2,525 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it) and
-  `hotline://selftest`; commands, options and the hand-test checklists: [TESTING.md](TESTING.md). Test cleanup not done: shared HTTP fake /
-  stream collector / MCP fake helpers and Argon items 2, 3, 7, 9, 15, 17.
+- **Tests:** about 2,520 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it) and
+  `hotline://selftest`; commands, options and the hand-test checklists: [TESTING.md](TESTING.md). Test cleanup done 2026-11-04 (shared fakes in
+  `TestFakes.cs`, `TempDirTest`); the remaining merge ideas were judged not worth the lost assertions.
 - **Reviews so far** (Astra, Argon, Opus, Sonnet, Flash; findings verified and fixed with a failing test first, rejected ones have tests):
   PR #36 (2026-11-01 deep review), #40/#41, #45/#46/#48 (0.6). Rejected items are listed in the PR texts.
 - **Security pass** (multi-model audit, verified, fixed with tests): UNC/device paths refused (`SafeDirectory`,

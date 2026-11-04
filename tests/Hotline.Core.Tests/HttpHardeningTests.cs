@@ -9,10 +9,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Security S2a: redirects never carry a key, response sizes are capped, bad endpoints and odd JSON don't throw.</summary>
-public sealed class HttpHardeningTests : IDisposable
+public sealed class HttpHardeningTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private sealed class Handler(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
     {

@@ -5,10 +5,8 @@ using Hotline.Core.Theming;
 
 namespace Hotline.Core.Tests;
 
-public sealed class AppearanceSettingsTests : IDisposable
+public sealed class AppearanceSettingsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private HotlineSettings LoadJson(string json)
     {

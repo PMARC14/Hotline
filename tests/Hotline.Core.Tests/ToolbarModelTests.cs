@@ -602,7 +602,6 @@ public sealed class ToolbarModelTests
     public void Accidentally_empty_bar_gets_the_defaults(string json)
     {
         var m = ToolbarModel.Resolve(json);
-        Assert.Equal(ToolbarModel.Defaults.Placed.Values.SelectMany(v => v), m.Placed.Values.SelectMany(v => v));
         Assert.Equal(ToolbarModel.Defaults, m);
         Assert.NotEmpty(m.Warnings);
     }

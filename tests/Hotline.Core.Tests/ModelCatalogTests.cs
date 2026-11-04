@@ -6,22 +6,12 @@ namespace Hotline.Core.Tests;
 
 public class ModelCatalogTests
 {
-    private sealed class FakeHttp(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
-    {
-        public List<HttpRequestMessage> Requests { get; } = [];
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
-        {
-            Requests.Add(request);
-            return Task.FromResult(respond(request));
-        }
-    }
-
     private static HttpResponseMessage Json(string body, HttpStatusCode code = HttpStatusCode.OK) =>
         new(code) { Content = new StringContent(body) };
 
-    private static (ModelCatalog, FakeHttp, InMemorySecretStore, ManualTimeProvider) New(Func<HttpRequestMessage, HttpResponseMessage> respond)
+    private static (ModelCatalog, RecordingHandler, InMemorySecretStore, ManualTimeProvider) New(Func<HttpRequestMessage, HttpResponseMessage> respond)
     {
-        var http = new FakeHttp(respond);
+        var http = new RecordingHandler(respond);
         var secrets = new InMemorySecretStore();
         var clock = new ManualTimeProvider();
         return (new ModelCatalog(new HttpClient(http), secrets, (_, _) => Task.FromResult("m1\tModel One\n"), clock), http, secrets, clock);
@@ -158,5 +148,13 @@ public class ModelCatalogTests
         var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.TestAsync(new BackendProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini }, default));
         Assert.Contains("API key not valid", ex.Message);
         Assert.DoesNotContain("AIza-secret", ex.Message);
+    }
+
+    [Fact]
+    public void Model_check_message_for_a_connection_without_a_model_list()
+    {
+        Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
+        Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
+        Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
     }
 }

@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Text.Json;
 using Hotline.Core.Backends.Agy;
 using Hotline.Core.Chat;
@@ -11,8 +13,6 @@ public sealed class AgyBackendTests : TempDirTest
     private readonly FakeLineProcessFactory _factory = new();
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
 
     private static IEnumerable<string> Answer(string text) =>
     [
@@ -29,13 +29,6 @@ public sealed class AgyBackendTests : TempDirTest
         new(profile ?? new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline" }, () => exe,
             new AgyWorkspace(Path.Combine(_dir, "ws"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")),
             _ => "SYSTEM PROMPT", home ?? Path.Combine(_dir, "home"));
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
 
     [Fact]
     public async Task Missing_exe_is_NotInstalled()

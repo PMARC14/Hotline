@@ -45,7 +45,6 @@ public sealed class BackendCatalogTests : TempDirTest
         Assert.Null(cache.Get("missing"));
         Assert.Equal(1, created);
         await cache.DisposeAllAsync();
-        Assert.Null(cache.Get("missing"));
     }
 
     [Fact]

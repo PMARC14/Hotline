@@ -7,19 +7,13 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Backup export/import must accept exactly what the app's own readers accept, and every file it writes must be importable.</summary>
-public sealed class SafetyG3PackageTests : IDisposable
+public sealed class SafetyG3PackageTests : TempDirTest
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-pkg-" + Guid.NewGuid().ToString("N"));
-    private string Data => Path.Combine(_root, "data");
-    private string Target => Path.Combine(_root, "target");
+    private string Data => Path.Combine(_dir, "data");
+    private string Target => Path.Combine(_dir, "target");
     private static readonly DateTimeOffset Now = new(2026, 10, 31, 12, 0, 0, TimeSpan.Zero);
 
-    public SafetyG3PackageTests() => Directory.CreateDirectory(_root);
-
-    public void Dispose()
-    {
-        try { Directory.Delete(_root, recursive: true); } catch (IOException) { } catch (UnauthorizedAccessException) { }
-    }
+    public SafetyG3PackageTests() => Directory.CreateDirectory(_dir);
 
     private void Put(string rel, string text)
     {

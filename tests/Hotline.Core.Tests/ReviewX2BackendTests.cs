@@ -11,10 +11,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Fixes from the full-codebase review: SSE tail, odd JSON from proxies, Claude Code start-up failures.</summary>
-public sealed class ReviewX2BackendTests : IDisposable
+public sealed class ReviewX2BackendTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
 
     private static async Task<List<string>> Events(string sse)

@@ -9,28 +9,18 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class SettingsPackageTests : IDisposable
+public sealed class SettingsPackageTests : TempDirTest
 {
     private static readonly byte[] Png16 = Convert.FromBase64String(
         "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAVSURBVDhPY2AYXuA/GI2CUTAKyAEAeu0B/zEZFcQAAAAASUVORK5CYII=");
 
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-pkg-" + Guid.NewGuid().ToString("N"));
+    private string _root => _dir;
     private string Data => Path.Combine(_root, "data");
     private string Target => Path.Combine(_root, "target");
     private string Backups => Path.Combine(Target, "backups");
     private static readonly DateTimeOffset Now = new(2026, 10, 22, 15, 30, 5, TimeSpan.Zero);
 
     public SettingsPackageTests() => Directory.CreateDirectory(_root);
-
-    public void Dispose()
-    {
-        try
-        {
-            foreach (var f in Directory.EnumerateFiles(_root, "*", SearchOption.AllDirectories)) File.SetAttributes(f, FileAttributes.Normal);
-            Directory.Delete(_root, recursive: true);
-        }
-        catch (IOException) { }
-    }
 
     // ---- fixtures ----------------------------------------------------------------------------
 

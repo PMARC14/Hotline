@@ -3,11 +3,9 @@ using Hotline.Core.Diagnostics;
 
 namespace Hotline.Core.Tests;
 
-public sealed class RecentChatsTests : IDisposable
+public sealed class RecentChatsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly ManualTimeProvider _clock = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private HistoryStore Store() => new(Path.Combine(_dir, "history"), _clock);
 
