@@ -22,7 +22,11 @@ public sealed record ButtonStyle(double? Width = null, bool? Outline = null, boo
 /// glyph when it can be read; the glyph stays as the fallback. <see cref="Shortcut"/> optionally runs the same action
 /// while the panel has focus.</summary>
 public sealed record CustomButton(string Id, string Label, string Icon, string? QuickAction, string? Text, bool Send, string? IconFile = null,
-    string? Shortcut = null);
+    string? Shortcut = null)
+{
+    /// <summary>The user's binding when runtime validation disabled it. Written back unchanged.</summary>
+    public string? RequestedShortcut { get; init; }
+}
 
 /// <summary>
 /// ~/.hotline/toolbar.json v2, resolved: what each quadrant shows, the bar's look, per-item overrides and the custom buttons.
@@ -85,6 +89,17 @@ public sealed record ToolbarModel(
     /// picker or the more button), each once. Empty unless a more button is placed (<see cref="Resolve"/> drops the entries otherwise).</summary>
     public IReadOnlyList<string> Menu { get; init; } = [];
 
+    /// <summary>Raw explicit built-in overrides, including invalid values and unknown ids. Null means the key was absent.</summary>
+    public JsonObject? Shortcuts { get; init; }
+    private IReadOnlyList<string> ShortcutWarnings { get; init; } = [];
+
+    public string ShortcutText(string id) => Shortcuts?.LastOrDefault(p => p.Key.Equals(id, StringComparison.OrdinalIgnoreCase)).Value
+        is JsonValue v && v.TryGetValue<string>(out var text) ? text : ChatShortcuts.Defaults.GetValueOrDefault(id, "");
+
+    public Dictionary<string, string> EffectiveShortcuts(string stop = "Esc", Action<string>? warn = null) =>
+        ChatShortcuts.Normalize(Shortcuts?.Select(p => new KeyValuePair<string, string>(p.Key,
+            p.Value is JsonValue v && v.TryGetValue<string>(out var text) ? text : null!)), stop, warn);
+
     /// <summary>The shipped layout: the three pickers across the top row (effort 3, model 4, provider 5
     /// cells wide); capture buttons, prompt and continue-in, and recent / new chat / settings (two cells wide each) in the bottom row.</summary>
     public static ToolbarModel Defaults { get; } = new(
@@ -143,7 +158,8 @@ public sealed record ToolbarModel(
         && Buttons.SequenceEqual(other.Buttons)
         && PickerSpans.Count == other.PickerSpans.Count
         && PickerSpans.All(p => other.PickerSpans.TryGetValue(p.Key, out var n) && n == p.Value)
-        && Menu.SequenceEqual(other.Menu);
+        && Menu.SequenceEqual(other.Menu)
+        && (Shortcuts?.ToJsonString() ?? "{}") == (other.Shortcuts?.ToJsonString() ?? "{}");
 
     public override int GetHashCode() =>
         HashCode.Combine(Style, Overrides.Count, Buttons.Count, string.Join(",", Order.SelectMany(Items)));
@@ -156,7 +172,7 @@ public sealed record ToolbarModel(
 
     /// <summary>Reads toolbar.json text. Never throws: unparsable text or a root that isn't an object gives
     /// <see cref="Defaults"/>; anything else is fixed per field. With chat settings, Stop and built-in shortcut conflicts
-    /// are checked too; file editors omit them to preserve combos freed by remapping built-ins.</summary>
+    /// are checked too. Built-in bindings always come from this toolbar's map.</summary>
     public static ToolbarModel Resolve(string json, ChatSettings? chat = null)
     {
         try
@@ -172,12 +188,15 @@ public sealed record ToolbarModel(
     }
 
     /// <summary>Resolves custom shortcut conflicts against the current chat settings without changing the source model.
-    /// Readers/editors without chat settings check custom bindings only, so remapped built-in combos remain available.</summary>
+    /// Without chat settings, Stop uses its shipped default.</summary>
     public ToolbarModel ResolveShortcuts(ChatSettings? chat)
     {
-        var warnings = Warnings.ToList();
-        var buttons = ChatShortcuts.NormalizeCustom(Buttons, chat, warnings.Add);
-        return this with { Buttons = buttons, Warnings = warnings };
+        var warnings = Warnings.Except(ShortcutWarnings).ToList();
+        var sourceCount = warnings.Count;
+        var effective = EffectiveShortcuts(chat?.StopShortcut ?? "Esc", warnings.Add);
+        var context = new ChatSettings { StopShortcut = chat?.StopShortcut ?? "Esc", Shortcuts = effective };
+        var buttons = ChatShortcuts.NormalizeCustom(Buttons, context, warnings.Add);
+        return this with { Buttons = buttons, Warnings = warnings, ShortcutWarnings = warnings.Skip(sourceCount).ToList() };
     }
 
     /// <summary>The tolerant read shared by <see cref="Resolve"/> and <see cref="ToolbarFile.Load"/>: strips a BOM, accepts comments and
@@ -205,7 +224,11 @@ public sealed record ToolbarModel(
         {
             case JsonValueKind.Object:
                 var o = new JsonObject();
-                foreach (var p in e.EnumerateObject()) o[p.Name] = LastWins(p.Value);
+                foreach (var p in e.EnumerateObject())
+                {
+                    o.Remove(p.Name); // The surviving value occupies its last position for shortcut conflict order.
+                    o[p.Name] = LastWins(p.Value);
+                }
                 return o;
             case JsonValueKind.Array:
                 return new JsonArray([.. e.EnumerateArray().Select(LastWins)]);
@@ -245,7 +268,32 @@ public sealed record ToolbarModel(
             style with { Width = style.Width ?? 1, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
             overrides,
             buttons,
-            warnings) { PickerSpans = spans, Menu = menu };
+            warnings) { PickerSpans = spans, Menu = menu, Shortcuts = ReadShortcuts(root, warnings) };
+    }
+
+    private static JsonObject? ReadShortcuts(JsonObject root, List<string> warnings)
+    {
+        if (!root.ContainsKey("shortcuts")) return null;
+        if (root["shortcuts"] is JsonObject map) return ReadShortcutMap(map, warnings);
+        warnings.Add(W(Strings.BarW_Object, "shortcuts"));
+        return new JsonObject();
+    }
+
+    internal static JsonObject ReadShortcutMap(JsonObject map, List<string> warnings)
+    {
+        var result = new JsonObject();
+        foreach (var (name, value) in map)
+        {
+            var id = ChatShortcuts.Defaults.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase)) ?? name;
+            var previous = result.Select(p => p.Key).FirstOrDefault(k => k.Equals(id, StringComparison.OrdinalIgnoreCase));
+            if (previous is not null)
+            {
+                warnings.Add(W(Strings.Shortcuts_Duplicate, id));
+                result.Remove(previous);
+            }
+            result[id] = value?.DeepClone();
+        }
+        return result;
     }
 
     private static (Dictionary<Quadrant, List<string>> Placed, bool ExplicitlyEmpty) ReadQuadrants(
@@ -518,7 +566,7 @@ public sealed record ToolbarModel(
 
     private static string ButtonText(CustomButton b) =>
         $"{{ \"label\": {Str(b.Label)}, \"icon\": {Str(b.Icon)}, " + (b.IconFile is { } file ? $"\"iconFile\": {Str(file)}, " : "")
-        + (b.Shortcut is { Length: > 0 } shortcut ? $"\"shortcut\": {Str(shortcut)}, " : "")
+        + ((b.RequestedShortcut ?? b.Shortcut) is { Length: > 0 } shortcut ? $"\"shortcut\": {Str(shortcut)}, " : "")
         + (b.QuickAction is { } qa ? $"\"quickAction\": {Str(qa)} }}" : $"\"text\": {Str(b.Text!)}, \"send\": {(b.Send ? "true" : "false")} }}");
 
     private static string Entries<T>(IEnumerable<(string Key, T Value)> entries, Func<T, string> text) =>
@@ -558,12 +606,14 @@ public sealed record ToolbarModel(
               // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
               // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from
               // icons\ instead of the icon (PNG, at most 256 KB, 16-256 px a side; Settings copies it there).
-              // Optional "shortcut": "Ctrl+Alt+1" runs the button while the panel has focus (Enter is reserved).
-              // Stop wins, then chat.shortcuts, then custom buttons in this file's order; a conflicting shortcut is dropped.
+              // Optional buttons.<id>."shortcut": "Ctrl+Shift+1" runs the button while the panel has focus (Enter is reserved).
+              // "shortcuts": built-in/picker overrides; omitted ids use defaults, "" disables. Ctrl, Alt or Win required, except F1-F24.
+              // Stop wins, then built-ins, then custom buttons in file order; conflicts affect runtime only, preserving requested values.
               // "menu": ids of buttons (built-in or custom, no pickers) listed in the "more" item's menu instead of on the bar. A row with a
               // "more" item sends the buttons that don't fit into that menu too (after these), and then has no separate "…" button.
               // Needs "more" placed in one of the groups; it is ignored otherwise.
               "version": {{CurrentVersion}},
+              "shortcuts": {{Shortcuts?.ToJsonString(WriteOptions) ?? "{}"}},
               "top": {{Row(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight)}},
               "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},
               "menu": [{{string.Join(", ", Menu.Select(Str))}}],

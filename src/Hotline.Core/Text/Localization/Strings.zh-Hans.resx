@@ -864,14 +864,17 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>请填写名称以及地址或命令。</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>复制上一条回答</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>快捷键：{0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>面板内快捷键；按键名称须使用英文。留空可恢复默认值。要禁用，请在 settings.json 的 chat.shortcuts 中设为空字符串。停止键优先，其次是最先出现的组合；冲突时使用未被占用的默认值，否则禁用。</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}：无效的快捷键；将使用可用的默认值。</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}：组合已被占用；将使用可用的默认值，否则禁用。</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts：未知按钮 {0}，已忽略。</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}：重复条目，保留第一项。</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>按键名称使用英文。除 F1-F24 外，需要 Ctrl、Alt 或 Win。留空禁用；重置恢复默认值。保存在 toolbar.json 中。停止和所有按钮必须使用不同组合。</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}：无效的快捷键；将使用可用的默认值。</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}：组合已被占用；将使用可用的默认值，否则禁用。</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts：未知按钮 {0}，已忽略。</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}：重复列出；使用最后一个条目。</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>面板快捷键</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>面板获得焦点时，Ctrl+N 开始聊天，Ctrl+H 打开历史记录，Ctrl+Shift+C 复制最后一条已完成的回答。将鼠标悬停在按钮上可查看快捷键。推理强度、模型和提供商快捷键会循环切换列表。可在设置的聊天和历史记录中或 settings.json 的 chat.shortcuts 中修改。停止键优先，其他冲突保留第一个组合。文件中的空字符串可禁用命令。</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>在面板内，Ctrl+N 开始聊天，Ctrl+H 打开历史，Ctrl+Shift+C 复制最后一个已完成回答。悬停按钮可查看快捷键；选择器快捷键循环切换列表。可在设置 &gt; 聊天和历史，或 toolbar.json 的 shortcuts 中修改。留空禁用；重置恢复默认值。停止优先。按键重复、AltGr 和 IME 组合输入不会执行工具栏命令。</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>快捷键</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut：快捷键无效，已禁用。</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut：组合键已被使用，已禁用。</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>请使用 Ctrl、Alt、Win 或 F1-F24。组合必须未被占用（包括停止、内置按钮和自定义按钮）。</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>请添加 Ctrl、Alt 或 Win（F1-F24 可单独使用）</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>没有可复制的已完成回答。</value></data>
 </root>

@@ -47,7 +47,7 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       Right Ctrl and doesn't open Hotline.
 
 ### Panel shortcuts (Settings › Chat and history)
-- [ ] Add custom quick-action, text-only and text/send buttons in Settings › Window. Type or capture `Ctrl+Alt+1` in Shortcut;
+- [ ] Add custom quick-action, text-only and text/send buttons in Settings › Window. Type or capture `Ctrl+Shift+1` in Shortcut;
       check Esc cancels capture, Backspace clears it, Enter (also Ctrl+Enter) is refused, and a blank field saves no shortcut.
       Compare each shortcut with clicking the button, including slash-prefixed text (sent as plain text) and a missing quick action.
 - [ ] Edit a custom button's label/action/picture and move it between groups, More/overflow and Not shown: its shortcut survives.
@@ -57,13 +57,27 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       Remap/disable a built-in or change Stop live: a freed custom combo works again; the old combo and tooltip update immediately.
       Save/reload and export/import the toolbar: shortcuts survive; the toolbar version stays 2.
 - [ ] With the message box focused, try each default in configuration.md's Panel shortcuts table; compare with clicking its button.
-      Picker keys cycle, stop while an answer streams, and resume afterwards. Copy with no completed answer does nothing.
+      Picker keys cycle, stop while an answer streams, and resume afterwards. Copy with no completed answer shows a short notice;
+      cancelled/failed partial answers are skipped, and an earlier completed answer can still be copied.
 - [ ] Focus the transcript or a picker: shortcuts still work. Check prompts, history, Continue in and More open without closing on resize.
       Hide a button or move it into overflow and repeat; add the optional Copy last answer button and compare with its shortcut.
-- [ ] Change a binding in Settings and settings.json: it and its tooltip update live; the previous combo stops working. Check Ctrl+C/V/X/A/Z
+- [ ] Change a binding in Settings and toolbar.json: it and its tooltip update live; the previous combo stops working. Check Ctrl+C/V/X/A/Z
       still edit text, Esc stops an answer / hides an idle panel, and shortcuts do nothing when another app has focus.
 - [ ] Set duplicate combos, a Stop conflict, an unknown id and a bad value: warnings and fallback match configuration.md. Reset restores defaults;
       export/import preserves custom bindings and disabled entries. Spot-check translated shortcut tooltips.
+- [ ] Type and capture Space, Tab, A and Shift+A: toolbar bindings reject them; F1–F24 and Ctrl/Alt/Win combinations work.
+      Stop still accepts bare keys. Settings rows reject conflicts with Stop, built-ins and custom buttons; the custom dialog warns.
+- [ ] Blank a built-in row: toolbar.json contains `""`; Reset removes that override. settings.json's legacy map stays untouched.
+      Start with a toolbar without `shortcuts` and an explicit legacy map: migrate raw values once, then save the map in toolbar.json.
+      An explicit empty toolbar map prevents migration; invalid/unknown values survive edits and round trips; duplicate ids use the last.
+      Move/style buttons and export/import the toolbar, then inspect the shortcut map and stamped backup for preservation.
+- [ ] Hold a toolbar shortcut: it runs once. Stop keeps its repeat behavior. On an AltGr keyboard, Ctrl + right Alt + a toolbar key
+      types text without invoking the toolbar; a deliberate left Ctrl+Alt binding still works.
+- [ ] Compose text with an IME and press toolbar combos, Stop and Esc: none invokes an action or hides the panel; test normal keys
+      after composition ends too. Virtual key 0xE5 must not invoke a shortcut.
+- [ ] With Narrator, inspect toolbar buttons, pickers and overflow entries: effective AcceleratorKey follows tooltip changes.
+      The custom capture button reads its combo/waiting/error state distinctly from the shortcut text box.
+- [ ] Crowd the top row into automatic overflow and place More on the bottom row: the More shortcut opens the placed menu first.
 
 ### Button rows (Settings › Window)
 - [ ] The six groups (top / bottom × left / center / right) show the buttons in the bar; the pickers (effort, model, provider) are three

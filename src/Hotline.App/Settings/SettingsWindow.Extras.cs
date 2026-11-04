@@ -14,6 +14,45 @@ public sealed partial class SettingsWindow
     private const int MaxToolbarProblemLines = 10;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
+    private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
+    {
+        var load = ToolbarFile.Load(ToolbarPath);
+        if (load.Error is { } problem) return Card(header, problem, null);
+        var model = load.Model;
+        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
+        var id = row.ToolbarShortcutId!;
+        var box = new TextBox { Text = model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
+        bool Accept(string value)
+        {
+            _settings.Current.Chat.Toolbar = model;
+            var valid = row.Validate!(value) && row.ValidateFor!(_settings.Current, value);
+            box.Header = valid ? null : L.Get(row.Invalid!);
+            return valid;
+        }
+        void Save(string? value)
+        {
+            if (value is not null && !Accept(value)) return;
+            try
+            {
+                if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
+                var next = ToolbarEditor.SetShortcut(model, id, value);
+                ToolbarFile.Save(ToolbarPath, next);
+                model = next;
+                stamp = ToolbarFile.Fingerprint(ToolbarPath);
+                _settings.Current.Chat.Toolbar = next;
+                box.Text = next.ShortcutText(id);
+                DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
+            }
+            catch (ToolbarQuadrantEditor.ChangedOnDiskException) { ShowPage(_currentPage); }
+            catch (Exception ex) { Fail("saving toolbar shortcut failed", ex); }
+        }
+        box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != model.ShortcutText(id)) Save(value); };
+        var capture = ShortcutBinder.Create(() => model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true);
+        var reset = new Button { Content = Strings.Bar_Reset };
+        reset.Click += (_, _) => Save(null);
+        return Card(header, description, new StackPanel { Spacing = 6, Children = { box, capture, reset } });
+    }
+
     /// <summary>
     /// Window › Button rows: the quadrant editor (<see cref="ToolbarQuadrantEditor"/>) on toolbar.json, read anew each time
     /// the page is shown (an edit made in the file while the page is open shows on the next visit; the bar itself follows
@@ -65,7 +104,7 @@ public sealed partial class SettingsWindow
             return null;
         }
         PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, Save,
-            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload));
+            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload, () => _settings.Current.Chat));
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 

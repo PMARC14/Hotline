@@ -125,6 +125,7 @@ internal static class LenientReader
             IEnumerable<KeyValuePair<string, string>>? entries = null;
             if (keys.TryGetValue("shortcuts", out var shortcuts))
             {
+                chatSettings.LegacyShortcutValues = shortcuts.Value.Clone();
                 if (shortcuts.Value.ValueKind != JsonValueKind.Object)
                     problems.Add(WrongType($"{label} › {path}.shortcuts", shortcuts.Value));
                 else entries = shortcuts.Value.EnumerateObject().Select(p => new KeyValuePair<string, string>(p.Name,

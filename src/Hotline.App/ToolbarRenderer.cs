@@ -111,22 +111,28 @@ internal sealed class ToolbarRenderer
             _shortcutWarnings = warnings;
             foreach (var warning in warnings) _log.Info("toolbar.json: " + warning);
         }
-        var shortcuts = Hotline.Core.Settings.ChatShortcuts.Normalize(settings.Shortcuts, settings.StopShortcut);
+        var shortcuts = Model.EffectiveShortcuts(settings.StopShortcut);
         foreach (var b in resolved.Buttons)
             if (b.Shortcut is { } combo) shortcuts[b.Id] = combo;
         _shortcuts = shortcuts;
         foreach (var (id, button) in _builtIn)
-            ToolTipService.SetToolTip(button, ShortcutTip(id, AutomationProperties.GetName(button)));
+            ShortcutHelp(button, id, AutomationProperties.GetName(button));
         foreach (var (id, picker) in _pickers)
         {
             var text = AutomationProperties.GetName(picker);
             if (id != "effort" && picker.SelectedItem is string name && name.Trim().Length > 0) text += ": " + name.Trim();
-            ToolTipService.SetToolTip(picker, ShortcutTip(id, text));
+            ShortcutHelp(picker, id, text);
         }
         foreach (var row in new[] { _top, _bottom })
-            ToolTipService.SetToolTip(row.More, ShortcutTip("more", Strings.Transcript_More));
+            ShortcutHelp(row.More, "more", Strings.Transcript_More);
         foreach (var (id, custom) in _customButtons)
-            ToolTipService.SetToolTip(custom.Button, ShortcutTip(id, custom.Definition.Label));
+            ShortcutHelp(custom.Button, id, custom.Definition.Label);
+    }
+
+    private void ShortcutHelp(DependencyObject element, string id, string text)
+    {
+        ToolTipService.SetToolTip(element, ShortcutTip(id, text));
+        AutomationProperties.SetAcceleratorKey(element, _shortcuts.GetValueOrDefault(id, ""));
     }
 
     /// <summary>Uses the same Click/toggle/flyout path as the bar and overflow. Pickers cycle through their items.</summary>
@@ -145,7 +151,8 @@ internal sealed class ToolbarRenderer
         }
         if (id == "more")
         {
-            var row = new[] { _top, _bottom }.FirstOrDefault(r => r.Plan.HasMore || r.Dropped.Count > 0);
+            var rows = new[] { _top, _bottom };
+            var row = rows.FirstOrDefault(r => r.Plan.HasMore) ?? rows.FirstOrDefault(r => r.Dropped.Count > 0);
             if (row is not null) Invoke(MenuButton(row), MenuButton(row));
             return;
         }
@@ -414,7 +421,7 @@ internal sealed class ToolbarRenderer
         if (_customButtons.TryGetValue(id, out var custom))
         {
             var item = new MenuFlyoutItem { Text = custom.Definition.Label, Icon = new FontIcon { Glyph = Glyph(custom.Definition.Icon) } };
-            ToolTipService.SetToolTip(item, ShortcutTip(id, custom.Definition.Label));
+            ShortcutHelp(item, id, custom.Definition.Label);
             if (CustomButtonPicture.Read(custom.Definition, _log.Info) is { } picture)
             {
                 var image = new ImageIcon();
@@ -431,10 +438,12 @@ internal sealed class ToolbarRenderer
         if (button is ToggleButton toggle)
         {
             var item = new ToggleMenuFlyoutItem { Text = text, Icon = icon, IsChecked = toggle.IsChecked == true };
+            ShortcutHelp(item, id, text);
             item.Click += (_, _) => toggle.IsChecked = toggle.IsChecked != true; // its Checked/Unchecked handlers do the rest
             return item;
         }
         var entry = new MenuFlyoutItem { Text = text, Icon = icon };
+        ShortcutHelp(entry, id, text);
         // After this menu has closed, so a menu the button opens isn't closed with it.
         entry.Click += (_, _) => _popup.DispatcherQueue.TryEnqueue(() =>
         {

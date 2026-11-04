@@ -10,6 +10,15 @@ public enum Shift { Left, Right, Up, Down }
 /// </summary>
 public static class ToolbarEditor
 {
+    /// <summary>Changes an explicit override. Empty disables; null resets to the shipped default.</summary>
+    public static ToolbarModel SetShortcut(ToolbarModel model, string id, string? text)
+    {
+        if (!Settings.ChatShortcuts.Defaults.ContainsKey(id)) return model;
+        var map = model.Shortcuts is null ? new System.Text.Json.Nodes.JsonObject() : (System.Text.Json.Nodes.JsonObject)model.Shortcuts.DeepClone();
+        foreach (var key in map.Select(p => p.Key).Where(k => k.Equals(id, StringComparison.OrdinalIgnoreCase)).ToList()) map.Remove(key);
+        if (text is not null) map[id] = text;
+        return model with { Shortcuts = map };
+    }
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
     /// <summary>Moves an item <paramref name="delta"/> places within its quadrant, stopping at the ends.</summary>

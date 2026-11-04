@@ -9,14 +9,15 @@ namespace Hotline.Core.Tests;
 
 public sealed class CustomButtonShortcutTests
 {
-    private static ToolbarModel Read(string value, ChatSettings? chat = null) => ToolbarModel.Resolve(
-        """{"version":2,"items":{"left":["my","pin"],"right":[]},"buttons":{"my":{"label":"Mine","text":"hello","shortcut": """ + value + "}}}", chat);
+    private static ToolbarModel Read(string value, ChatSettings? chat = null, string shortcuts = "{}") => ToolbarModel.Resolve(
+        """{"version":2,"items":{"left":["my","pin"],"right":[]},"shortcuts": """ + shortcuts
+        + """, "buttons":{"my":{"label":"Mine","text":"hello","shortcut": """ + value + "}}}", chat);
 
     [Theory]
     [InlineData("control+alt+1", "Ctrl+Alt+1")]
     [InlineData("Ctrl+Period", "Ctrl+.")]
     [InlineData("F5", "F5")]
-    [InlineData("Esc", "Esc")]
+    [InlineData("Alt+Q", "Alt+Q")]
     public void Parse_uses_the_shared_panel_parser_and_canonical_spelling(string text, string expected)
     {
         var model = Read(JsonSerializer.Serialize(text));
@@ -34,6 +35,10 @@ public sealed class CustomButtonShortcutTests
     [InlineData("\"Enter\"")]
     [InlineData("\"Ctrl+Enter\"")]
     [InlineData("\"   \"")]
+    [InlineData("\"Esc\"")]
+    [InlineData("\"Space\"")]
+    [InlineData("\"Tab\"")]
+    [InlineData("\"Shift+A\"")]
     public void Bad_values_drop_only_the_shortcut_and_warn_without_throwing(string value)
     {
         var model = Read(value);
@@ -96,9 +101,8 @@ public sealed class CustomButtonShortcutTests
         Assert.Null(Assert.Single(Read("\"Ctrl+Alt+1\"", chat).Buttons).Shortcut);
         Assert.Null(Assert.Single(Read("\"Ctrl+P\"", chat).Buttons).Shortcut);
         chat.StopShortcut = "Esc";
-        Assert.Null(Assert.Single(Read("\"Ctrl+Alt+1\"", chat).Buttons).Shortcut);
-        chat.Shortcuts["pin"] = "";
-        var freed = Read("\"Ctrl+Alt+1\"", chat);
+        Assert.Null(Assert.Single(Read("\"Ctrl+Alt+1\"", chat, """{"pin":"Ctrl+Alt+1"}""").Buttons).Shortcut);
+        var freed = Read("\"Ctrl+Alt+1\"", chat, """{"pin":""}""");
         Assert.Equal("Ctrl+Alt+1", Assert.Single(freed.Buttons).Shortcut);
         Assert.Empty(freed.Warnings);
     }
@@ -107,21 +111,22 @@ public sealed class CustomButtonShortcutTests
     public void Remapping_and_disabling_built_ins_frees_their_old_combos()
     {
         var chat = new ChatSettings { Shortcuts = new() { ["newChat"] = "Ctrl+Q", ["pin"] = "" } };
-        Assert.Equal("Ctrl+N", Assert.Single(Read("\"Ctrl+N\"", chat).Buttons).Shortcut);
-        Assert.Equal("Ctrl+P", Assert.Single(Read("\"Ctrl+P\"", chat).Buttons).Shortcut);
-        Assert.Null(Assert.Single(Read("\"Ctrl+Q\"", chat).Buttons).Shortcut);
+        const string map = """{"newChat":"Ctrl+Q","pin":""}""";
+        Assert.Equal("Ctrl+N", Assert.Single(Read("\"Ctrl+N\"", chat, map).Buttons).Shortcut);
+        Assert.Equal("Ctrl+P", Assert.Single(Read("\"Ctrl+P\"", chat, map).Buttons).Shortcut);
+        Assert.Null(Assert.Single(Read("\"Ctrl+Q\"", chat, map).Buttons).Shortcut);
     }
 
     [Fact]
     public void Live_conflict_resolution_preserves_source_and_restores_a_freed_combo()
     {
-        var model = Read("\"Ctrl+N\"");
-        var chat = new ChatSettings();
+        var model = Read("\"Ctrl+N\"", shortcuts: """{"newChat":""}""");
+        var chat = new ChatSettings { StopShortcut = "Ctrl+N" };
         var blocked = model.ResolveShortcuts(chat);
         Assert.Null(Assert.Single(blocked.Buttons).Shortcut);
         Assert.Single(blocked.Warnings);
         Assert.Equal("Ctrl+N", Assert.Single(model.Buttons).Shortcut);
-        chat.Shortcuts["newChat"] = "";
+        chat.StopShortcut = "Esc";
         var freed = model.ResolveShortcuts(chat);
         Assert.Equal("Ctrl+N", Assert.Single(freed.Buttons).Shortcut);
         Assert.Empty(freed.Warnings);
@@ -137,7 +142,7 @@ public sealed class CustomButtonShortcutTests
             }}
             """);
         var json = model.ToJson();
-        Assert.Contains("Optional \"shortcut\": \"Ctrl+Alt+1\"", json);
+        Assert.Contains("Optional buttons.<id>.\"shortcut\": \"Ctrl+Shift+1\"", json);
         Assert.Contains("\"version\": 2", json);
         var again = ToolbarModel.Resolve(json);
         Assert.Equal(model, again);

@@ -24,6 +24,16 @@ public readonly record struct Hotkey(HotkeyModifiers Modifiers, uint VirtualKey)
 
     private const uint VkEnter = 0x0D;
 
+    /// <summary>A toolbar command must not consume typing or focus navigation. F1-F24 may stand alone.</summary>
+    public static bool TryParseToolbarShortcut(string? text, out Hotkey hotkey)
+    {
+        if (TryParseShortcut(text, out hotkey)
+            && ((hotkey.Modifiers & (HotkeyModifiers.Control | HotkeyModifiers.Alt | HotkeyModifiers.Win)) != 0
+                || hotkey.VirtualKey is >= VkF1 and <= VkF24)) return true;
+        hotkey = default;
+        return false;
+    }
+
     /// <summary>True for exactly this key with exactly these modifiers held.</summary>
     public bool Matches(uint virtualKey, HotkeyModifiers held) => virtualKey == VirtualKey && held == Modifiers;
 

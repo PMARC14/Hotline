@@ -864,14 +864,17 @@ Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Podaj nazwę oraz adres lub polecenie.</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Kopiuj ostatnią odpowiedź</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Skrót: {0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Skróty panelu; nazwy klawiszy pozostają angielskie. Puste pole przywraca polecenie. Aby je wyłączyć, wpisz pusty ciąg w chat.shortcuts w settings.json. Zatrzymanie ma pierwszeństwo, potem pierwsza kombinacja; konflikt przywraca domyślny skrót, jeśli jest wolny, lub wyłącza polecenie.</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: nieprawidłowy skrót; używany będzie domyślny, jeśli jest dostępny.</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: kombinacja jest zajęta; używany będzie domyślny skrót, jeśli jest wolny, lub polecenie zostanie wyłączone.</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: nieznany przycisk {0}; pominięto.</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: powtórzony wpis; obowiązuje pierwszy.</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Nazwy klawiszy pozostają angielskie. Wymagane Ctrl, Alt lub Win, poza F1-F24. Puste pole wyłącza; Resetuj przywraca domyślną wartość. Zapis w toolbar.json. Zatrzymaj i wszystkie przyciski muszą mieć różne kombinacje.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: nieprawidłowy skrót; używany będzie domyślny, jeśli jest dostępny.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: kombinacja jest zajęta; używany będzie domyślny skrót, jeśli jest wolny, lub polecenie zostanie wyłączone.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: nieznany przycisk {0}; pominięto.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: wpis powtórzony; obowiązuje ostatni.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Skróty panelu</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Gdy panel ma fokus, Ctrl+N rozpoczyna czat, Ctrl+H otwiera historię, a Ctrl+Shift+C kopiuje ostatnią ukończoną odpowiedź. Wskaż przycisk, aby zobaczyć jego skrót. Klawisze wysiłku, modelu i dostawcy przełączają pozycje list. Zmień je w Ustawienia &gt; Czat i historia lub w chat.shortcuts w settings.json. Zatrzymanie ma pierwszeństwo; przy innych konfliktach obowiązuje pierwsza kombinacja. Pusty ciąg w pliku wyłącza polecenie.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>W panelu Ctrl+N rozpoczyna czat, Ctrl+H otwiera historię, a Ctrl+Shift+C kopiuje ostatnią ukończoną odpowiedź. Najedź na przycisk, aby zobaczyć skrót; skróty selektorów przełączają ich listy. Zmień w Ustawienia &gt; Czat i historia lub shortcuts w toolbar.json. Puste pole wyłącza; Resetuj przywraca domyślną wartość. Zatrzymaj ma pierwszeństwo. Powtarzanie, AltGr i kompozycja IME nie uruchamiają poleceń paska.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Skrót klawiszowy</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: nieprawidłowy skrót; wyłączono.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: kombinacja jest już używana; wyłączono.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Użyj Ctrl, Alt lub Win albo F1-F24. Kombinacja musi być wolna (liczą się Zatrzymaj, przyciski wbudowane i własne).</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Dodaj Ctrl, Alt lub Win (F1-F24 działają samodzielnie)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Brak ukończonej odpowiedzi do skopiowania.</value></data>
 </root>

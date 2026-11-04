@@ -78,7 +78,6 @@ reuses its saved key.
 | `chat.cliTranscripts` | `true` | Reopening a CLI chat Hotline kept only a record of (`keepInHotline` off) shows its earlier messages from the CLI's own history (read-only; see *Chats with a CLI*). Not in the Settings window |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
 | `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
-| `chat.shortcuts` | See *Panel shortcuts* below | Toolbar button id → shortcut. Applies live, only while the panel has focus. Settings › Chat and history has a row for each command |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
 | `chat.memoryTool` | `ask` | Whether API models may save to `memory.md` with Hotline's remember tool (Anthropic and Gemini even in chat-only mode; OpenAI-style connections once Tool use is on; never while `chat.memory` is off; every save shows a notice): `ask` (approve each; "Always" switches to `allow`), `allow`, `off` |
 | `chat.continueIn` | *(llama.cpp of a Local connection)* | The shared "Continue this chat in" targets (see *Continue in* below). Missing = the llama.cpp web UI at your first Local connection's address, or none |
@@ -102,45 +101,6 @@ the problem. Hotline's own output replacing Hotline's own output makes no copies
 letters, digits, `-`, `_` and `.` become `-`). Two connections that would share one file (`work a` and `work-a`) are not allowed:
 the second is not saved and a problem is listed. Removing a connection in Settings deletes its own file; a file you drop in
 while Hotline runs is picked up before the next save and is never deleted unless you remove that connection.
-
-### Panel shortcuts
-
-These keys work anywhere in the panel, including the message box; they are separate from the global `activation.*` hotkeys.
-They use the same parser as `chat.stopShortcut`: English key names, case-insensitive, combinations or bare keys such as `Esc`.
-Enter is reserved for the message box. The defaults avoid Windows shortcuts and text editing keys (`Ctrl+C/V/X/A/Z/Y`).
-
-| Button id | Default | Action |
-|---|---|---|
-| `newChat` | `Ctrl+N` | New chat |
-| `recent` | `Ctrl+H` | Recent chats / history |
-| `settings` | `Ctrl+,` | Settings |
-| `pin` | `Ctrl+P` | Toggle pin |
-| `copyLastAnswer` | `Ctrl+Shift+C` | Copy the latest completed, nonempty answer (optional toolbar button; add it in Settings › Window) |
-| `captureRegion` | `Ctrl+Shift+R` | Capture a region |
-| `prompt` | `Ctrl+Shift+P` | Open the prompt library picker |
-| `effort` | `Ctrl+E` | Cycle effort |
-| `model` | `Ctrl+M` | Cycle model |
-| `provider` | `Ctrl+Shift+M` | Cycle provider / connection |
-| `captureWindow` | `Ctrl+Shift+W` | Capture the previous window |
-| `captureScreen` | `Ctrl+Shift+S` | Capture the screen |
-| `continueIn` | `Ctrl+Shift+I` | Open Continue in |
-| `more` | `Ctrl+Shift+O` | Open the first More / overflow menu |
-
-For example, `"chat": { "shortcuts": { "pin": "Ctrl+K", "captureScreen": "" } }` changes Pin and disables Capture screen's key;
-omitted commands keep their defaults. Blank fields in the Settings window restore that command's default. There is no separate
-quick-actions toolbar button: quick actions remain in the message box's `/` list. Disabled controls stay disabled for shortcuts,
-including the three pickers while an answer streams. Hidden buttons still work by shortcut; hidden pickers still cycle.
-
-**Conflicts:** `chat.stopShortcut` always has priority, even while idle. Otherwise the first shortcut in JSON order keeps the combo
-(aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
-their shortcut is disabled. Omitted defaults are filled last, under the same rule. Bad values fall back to that command's default
-with a warning; duplicate button ids keep the first entry with a warning; unknown ids are ignored with a warning. An empty string
-explicitly disables a shortcut. Custom buttons use their own optional `shortcut` field in `toolbar.json` (see *Custom buttons*
-below). Stop wins first, then all effective built-in `chat.shortcuts` (including defaults), then custom buttons in `buttons` JSON
-order. A custom button with a bad or conflicting shortcut keeps its action but loses the shortcut, with a warning; it has no default.
-Omit `shortcut` or set it to `""` for none. User-defined bindings can override editing or system
-keys, so choose them carefully; Windows may intercept system combinations. Bare `Esc` is available when Stop uses another combo;
-otherwise Stop owns it and idle Esc hides the panel.
 
 ### Broken files
 
@@ -284,6 +244,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 ```jsonc
 {
   "version": 2,
+  "shortcuts": { "pin": "Ctrl+K", "model": "F6", "captureScreen": "" },
   "top":   { "left": ["effort"], "center": ["model"], "right": ["provider"] },
   "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
              "center": ["prompt", "continueIn"],
@@ -292,7 +253,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
   "style": { "width": "normal", "outline": false, "filled": false },
   "overrides": { "pin": { "outline": true } },
   "buttons": {
-    "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize", "shortcut": "Ctrl+Alt+1" },
+    "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize", "shortcut": "Ctrl+Shift+1" },
     "thanks":    { "label": "Say thanks", "icon": "E8BD", "text": "Thanks!", "send": false }
   }
 }
@@ -300,6 +261,7 @@ Settings › **Window** › **Button rows** edits this file; you can also edit i
 
 | Key | Meaning |
 |---|---|
+| `shortcuts` | Optional built-in/picker id → combo map; omitted ids use shipped defaults, `""` disables. See [Panel shortcuts](#panel-shortcuts) for defaults, validation and legacy migration. Custom bindings stay under `buttons.<id>.shortcut` |
 | `top`, `items` | Objects with `left`, `center` (optional) and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
 | built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`, `copyLastAnswer`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below); `copyLastAnswer` copies the latest completed answer |
 | `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order |
@@ -369,7 +331,7 @@ self-test (steps P01-P47); use any as a starting point.
 
 | Optional field | Format | Effect |
 |---|---|---|
-| `shortcut` | String, e.g. `"Ctrl+Alt+1"`; omitted or `""` for none | Runs the same quick action or text/send action while the panel has focus, even when hidden or in More/overflow. Uses the [panel shortcut](#panel-shortcuts) parser and conflict order; Enter is reserved. Settings › Window › custom button › Shortcut accepts typed keys or key capture; Esc cancels capture and Backspace clears it. The tooltip shows the effective combo. |
+| `shortcut` | String, e.g. `"Ctrl+Shift+1"`; omitted or `""` for none | Runs the same quick action or text/send action while the panel has focus, even when hidden or in More/overflow. Uses the [panel shortcut](#panel-shortcuts) parser and conflict order; Ctrl, Alt or Win required except F1–F24; Enter is reserved. Settings › Window › custom button › Shortcut accepts typed keys or key capture; Esc cancels capture and Backspace clears it. The tooltip and accessibility accelerator key show the effective combo. |
 
 - The id is 1-32 characters from `a-z`, `0-9` and `-`, and not a built-in id (built-in ids in the groups are case-insensitive).
 - `label` is the name (at most 40 characters; default the id). `icon` is a Segoe Fluent Icons code in hex (four to six digits,
@@ -401,6 +363,58 @@ as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit wh
 **Defaults.** Settings › Advanced › **Reset settings** restores `toolbar.json` too (see *Switching settings* above); `.defaults\toolbar.json` is
 rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 4); pin and
 the three captures on the bottom left, prompt and Continue in in the centre, recent, new chat and settings on the right.
+
+### Panel shortcuts
+
+These keys work anywhere in the panel, including the message box; they are separate from the global `activation.*` hotkeys.
+Store built-in and picker bindings in the optional top-level `shortcuts` map in **toolbar.json** (version stays 2).
+Settings › Chat and history has a row for each command. English key names are case-insensitive; Ctrl, Alt or Win is required,
+except F1–F24, which may stand alone. Shift alone is insufficient; bare letters, Space and Tab are refused, including during
+key capture. Enter (with any modifiers) is reserved for the message box. `chat.stopShortcut` stays in settings.json and keeps
+its separate rule allowing Esc and bare keys. The defaults avoid Windows shortcuts and text editing keys (`Ctrl+C/V/X/A/Z/Y`).
+Toolbar shortcuts ignore key auto-repeat and Ctrl with right Alt (AltGr). During IME composition, toolbar shortcuts, Stop
+and Esc-to-hide are suspended; virtual key 0xE5 is also ignored.
+
+| Button id | Default | Action |
+|---|---|---|
+| `newChat` | `Ctrl+N` | New chat |
+| `recent` | `Ctrl+H` | Recent chats / history |
+| `settings` | `Ctrl+,` | Settings |
+| `pin` | `Ctrl+P` | Toggle pin |
+| `copyLastAnswer` | `Ctrl+Shift+C` | Copy the latest completed, nonempty answer (optional toolbar button; add it in Settings › Window) |
+| `captureRegion` | `Ctrl+Shift+R` | Capture a region |
+| `prompt` | `Ctrl+Shift+P` | Open the prompt library picker |
+| `effort` | `Ctrl+E` | Cycle effort |
+| `model` | `Ctrl+M` | Cycle model |
+| `provider` | `Ctrl+Shift+M` | Cycle provider / connection |
+| `captureWindow` | `Ctrl+Shift+W` | Capture the previous window |
+| `captureScreen` | `Ctrl+Shift+S` | Capture the screen |
+| `continueIn` | `Ctrl+Shift+I` | Open Continue in |
+| `more` | `Ctrl+Shift+O` | Open the row with a placed More button, otherwise the first automatic overflow menu |
+
+For example, `"shortcuts": { "pin": "Ctrl+K", "captureScreen": "" }` in toolbar.json changes Pin and disables Capture screen's key;
+omitted commands keep their defaults. Blank fields in Settings disable a binding (write `""`); Reset removes that override.
+The first toolbar load without a `shortcuts` key reads the raw explicit legacy `settings.json` → `chat.shortcuts` values once
+per process, before settings normalization. The first toolbar save writes that map; subsequent loads use toolbar.json.
+An explicit `"shortcuts": {}` selects shipped defaults and prevents legacy fallback. Other settings saves leave the legacy key
+untouched; new settings files do not include it. There is no separate
+quick-actions toolbar button: quick actions remain in the message box's `/` list. Disabled controls stay disabled for shortcuts,
+including the three pickers while an answer streams. Hidden buttons still work by shortcut; hidden pickers still cycle.
+
+**Conflicts:** `chat.stopShortcut` always has priority, even while idle. Otherwise the first shortcut in JSON order keeps the combo
+(aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
+their shortcut is disabled. Omitted defaults are filled last, under the same rule. Bad values fall back to that command's default
+with a warning and preserve the raw value; duplicate shortcut ids keep the last entry with a warning; unknown ids are kept
+inactive with a warning. An empty string
+explicitly disables a shortcut. Custom buttons use their own optional `shortcut` field in `toolbar.json` (see *Custom buttons*
+above). Stop wins first, then all effective built-in `shortcuts` (including defaults), then custom buttons in `buttons` JSON
+order. A custom button with a bad or conflicting shortcut keeps its action but loses the shortcut, with a warning; it has no default.
+Runtime conflict resolution never saves its replacement over the requested value, including conflict-disabled bindings.
+Settings rejects combinations already used by Stop, another built-in or a custom button; the custom-button dialog shows a
+warning for those conflicts too. Omit a custom `shortcut` or set it to `""` for none. User-defined bindings can override editing
+or system keys, so choose them carefully; Windows may intercept system combinations. Idle Esc hides the panel.
+Tooltips and accessibility accelerator keys expose effective bindings. Copy last answer skips cancelled/failed partials and
+shows a short notice when no completed, nonempty answer is available.
 
 ## Backup (Settings > Backup)
 

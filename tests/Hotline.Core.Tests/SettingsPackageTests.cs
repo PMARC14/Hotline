@@ -758,9 +758,9 @@ public sealed class SettingsPackageTests : IDisposable
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
-    public void Compat_unknown_top_level_shortcuts_after_an_unrelated_edit(bool editToolbar)
+    public void Compat_unknown_top_level_key_after_an_unrelated_edit(bool editToolbar)
     {
-        const string original = """{"version":2,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
+        const string original = """{"version":2,"futureKey":{"x":1}}""";
         using var incoming = Zip([E("toolbar.json", original)]);
         Assert.Equal(["toolbar.json"], Import(incoming).Written);
         var store = new SettingsStore(Target);
@@ -780,7 +780,7 @@ public sealed class SettingsPackageTests : IDisposable
         // Compatibility gap (schema-freeze job): a toolbar edit drops unknown keys.
         // A settings-only edit preserves the imported bytes, including this unknown key.
         // Assert current behaviour deliberately; do not fix the toolbar schema here.
-        Assert.Equal(!editToolbar, saved.AsObject().ContainsKey("shortcuts"));
+        Assert.Equal(!editToolbar, saved.AsObject().ContainsKey("futureKey"));
         if (!editToolbar) Assert.Equal(original, ReadEntry(archive, "toolbar.json"));
         else Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(Target, "toolbar.json.*.bak"))));
     }

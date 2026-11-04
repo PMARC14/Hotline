@@ -47,6 +47,8 @@ public sealed partial class PopupWindow : Window
         _guard = guard;
         _log = log;
         InitializeComponent();
+        Input.TextCompositionStarted += (_, _) => IsComposing = true;
+        Input.TextCompositionEnded += (_, _) => IsComposing = false;
         // The grips reach the window's edge: the negated padding of Root (one source of truth, XAML has no way to bind it).
         var pad = Root.Padding;
         GripLayer.Margin = new Thickness(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
@@ -502,8 +504,11 @@ public sealed partial class PopupWindow : Window
         return cls == "CASCADIA_HOSTING_WINDOW_CLASS" && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
     }
 
+    internal bool IsComposing { get; private set; }
+
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
     {
+        if (IsComposing || (uint)e.Key == 0xE5 || (uint)e.OriginalKey == 0xE5) return;
         if (e.Key == VirtualKey.Escape)
         {
             HidePopup();

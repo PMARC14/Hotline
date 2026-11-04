@@ -864,14 +864,17 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Gib den Namen und die Adresse oder den Befehl ein.</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Letzte Antwort kopieren</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Tastenkombination: {0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Tastenkombinationen im Panel; Tastennamen bleiben Englisch. Leer setzt diesen Befehl zurück. Zum Deaktivieren in chat.shortcuts in settings.json eine leere Zeichenfolge eintragen. Stopp hat Vorrang, danach die erste Kombination; bei Konflikten gilt die freie Standardkombination, sonst wird der Befehl deaktiviert.</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: ungültige Tastenkombination; wenn verfügbar, wird der Standard verwendet.</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: Kombination bereits belegt; wenn verfügbar, wird der Standard verwendet, sonst deaktiviert.</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: unbekannte Schaltfläche {0}; ignoriert.</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: doppelt aufgeführt; der erste Eintrag gilt.</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Tastennamen bleiben Englisch. Ctrl, Alt oder Win ist nötig, außer bei F1-F24. Leer deaktiviert; Zurücksetzen stellt den Standard wieder her. Speicherung in toolbar.json. Stopp und alle Schaltflächen brauchen unterschiedliche Kombinationen.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: ungültige Tastenkombination; wenn verfügbar, wird der Standard verwendet.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: Kombination bereits belegt; wenn verfügbar, wird der Standard verwendet, sonst deaktiviert.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: unbekannte Schaltfläche {0}; ignoriert.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: doppelt aufgeführt; der letzte Eintrag gilt.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Tastenkombinationen im Panel</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Wenn das Panel den Fokus hat, startet Ctrl+N einen Chat, Ctrl+H öffnet den Verlauf und Ctrl+Shift+C kopiert die letzte fertige Antwort. Die Tastenkombinationen stehen in den Schaltflächenhinweisen. Die Tasten für Aufwand, Modell und Anbieter wechseln durch die Listen. Ändern Sie die Tasten in Einstellungen &gt; Chat und Verlauf oder unter chat.shortcuts in settings.json. Stopp hat Vorrang, sonst gilt die erste Kombination. Leere Zeichenfolgen in der Datei deaktivieren Befehle.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Im Panel startet Ctrl+N einen Chat, Ctrl+H öffnet den Verlauf und Ctrl+Shift+C kopiert die letzte abgeschlossene Antwort. Tooltips zeigen die Tasten; Auswahltasten wechseln Einträge. Änderungen unter Einstellungen &gt; Chat und Verlauf oder shortcuts in toolbar.json. Leer deaktiviert, Zurücksetzen stellt den Standard her. Stopp hat Vorrang. Wiederholung, AltGr und IME lösen keine Toolbar-Befehle aus.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Tastenkombination</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: ungültige Tastenkombination; deaktiviert.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: Tastenkombination bereits belegt; deaktiviert.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt oder Win oder F1-F24 verwenden. Die Kombination muss frei sein (Stopp, integrierte und eigene Schaltflächen zählen).</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt oder Win hinzufügen (F1-F24 gehen allein)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Keine abgeschlossene Antwort zum Kopieren.</value></data>
 </root>

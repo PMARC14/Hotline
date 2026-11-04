@@ -864,14 +864,17 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Adı ve adresi ya da komutu girin.</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Son yanıtı kopyala</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Kısayol: {0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Panel kısayolları; tuş adları İngilizce kalır. Boş alan komutu sıfırlar. Devre dışı bırakmak için settings.json içindeki chat.shortcuts değerini boş dize yapın. Durdur önceliklidir, ardından ilk birleşim geçerlidir; çakışmalarda varsayılan boşsa kullanılır, değilse komut devre dışı kalır.</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: geçersiz kısayol; uygunsa varsayılan kullanılır.</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: birleşim kullanımda; varsayılan boşsa kullanılır, değilse devre dışı bırakılır.</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: bilinmeyen düğme {0}; yok sayıldı.</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: yinelenen kayıt; ilk kayıt geçerlidir.</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Tuş adları İngilizce kalır. F1-F24 dışında Ctrl, Alt veya Win gerekir. Boş alan devre dışı bırakır; Sıfırla varsayılanı geri getirir. toolbar.json dosyasına kaydedilir. Durdur ve tüm düğmeler farklı birleşimler kullanmalıdır.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: geçersiz kısayol; uygunsa varsayılan kullanılır.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: birleşim kullanımda; varsayılan boşsa kullanılır, değilse devre dışı bırakılır.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: bilinmeyen düğme {0}; yok sayıldı.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: iki kez listelenmiş; son giriş geçerli.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Panel kısayolları</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Panel odaktayken Ctrl+N sohbet başlatır, Ctrl+H geçmişi açar ve Ctrl+Shift+C son tamamlanan yanıtı kopyalar. Tuşları görmek için düğmelerin üzerine gelin. Çaba, model ve sağlayıcı tuşları listelerde sırayla ilerler. Tuşları Ayarlar &gt; Sohbet ve geçmiş bölümünden veya settings.json içindeki chat.shortcuts alanından değiştirin. Durdur önceliklidir; diğer çakışmalarda ilk birleşim geçerlidir. Dosyadaki boş dizeler komutları devre dışı bırakır.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Panelde Ctrl+N sohbet başlatır, Ctrl+H geçmişi açar ve Ctrl+Shift+C son tamamlanmış yanıtı kopyalar. Tuşları görmek için düğmelerin üzerine gelin; seçici tuşları listelerde ilerler. Ayarlar &gt; Sohbet ve geçmiş veya toolbar.json içindeki shortcuts ile değiştirin. Boş alan devre dışı bırakır; Sıfırla varsayılanı getirir. Durdur önceliklidir. Tekrar, AltGr ve IME bileşimi araç çubuğu komutlarını çalıştırmaz.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Kısayol</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: geçersiz kısayol; devre dışı bırakıldı.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: tuş birleşimi zaten kullanımda; devre dışı bırakıldı.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt veya Win ya da F1-F24 kullanın. Birleşim boşta olmalıdır (Durdur, yerleşik ve özel düğmeler sayılır).</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt veya Win ekleyin (F1-F24 tek başına çalışır)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Kopyalanacak tamamlanmış yanıt yok.</value></data>
 </root>

@@ -324,7 +324,13 @@ public sealed class SettingsStore(string directory)
     {
         // Serialize to a tree and drop the list there: other threads read the live Chat.Backends meanwhile.
         var tree = JsonSerializer.SerializeToNode(s, Options)!.AsObject();
-        if (tree["chat"] is System.Text.Json.Nodes.JsonObject chat) chat.Remove("backends");
+        if (tree["chat"] is System.Text.Json.Nodes.JsonObject chat)
+        {
+            chat.Remove("backends");
+            if (s.Chat.LegacyShortcutValues is { } legacy)
+                chat["shortcuts"] = System.Text.Json.Nodes.JsonNode.Parse(legacy.GetRawText());
+            else chat.Remove("shortcuts");
+        }
         return tree.ToJsonString(Options);
     }
 
