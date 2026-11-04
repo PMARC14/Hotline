@@ -52,7 +52,7 @@ public sealed class AnthropicBackendTests : TempDirTest
         Assert.Equal("Hello", await Collect(b.StreamAsync([U("1", "look", img)], default)));
 
         var (request, body) = Assert.Single(handler.Seen);
-        Assert.Equal("https://api.anthropic.com/v1/messages?beta=true", request.RequestUri!.ToString().Replace("/v1/messages?beta=true", "/v1/messages?beta=true"));
+        Assert.Equal("https://api.anthropic.com/v1/messages?beta=true", request.RequestUri!.ToString());
         Assert.Equal("sk-ant-test", request.Headers.GetValues("x-api-key").Single());
         Assert.Contains("server-side-fallback-2026-07-01", string.Join(",", request.Headers.GetValues("anthropic-beta")));
         var json = JsonDocument.Parse(body).RootElement;
