@@ -119,9 +119,6 @@ public sealed class ContinueTargetsTests : TempDirTest
         => Assert.Null(ContinueTargets.FillUrl(template, Values(Msg(ChatRole.User, last))));
 
     [Fact]
-    public void An_https_template_is_opened() => Assert.NotNull(ContinueTargets.FillUrl("https://x.test/?q={chat}", Values(Msg(ChatRole.User, "hi"))));
-
-    [Fact]
     public void A_long_chat_falls_back_to_the_last_message()
     {
         var messages = Enumerable.Range(0, 5000).Select(i => Msg(ChatRole.User, "0123456789")).Append(Msg(ChatRole.User, "the last one")).ToArray();

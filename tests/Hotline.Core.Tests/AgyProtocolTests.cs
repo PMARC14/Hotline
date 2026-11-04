@@ -54,16 +54,12 @@ public class AgyProtocolTests
     }
 
     [Fact]
-    public void Args_use_stream_json_agent_and_never_skip_permissions()
+    public void Args_use_stream_json_the_default_agent_and_never_skip_permissions()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Agent = "hotline", Model = "gemini-3.8-flash-low", ExtraArgs = "--effort low" });
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Model = "gemini-3.8-flash-low", ExtraArgs = "--effort low" });
         Assert.Equal(["--input-format", "stream-json", "--output-format", "stream-json", "-p=", "--agent", "hotline",
                       "--model", "gemini-3.8-flash-low", "--effort", "low"], args);
     }
-
-    [Fact]
-    public void Default_agent_is_hotline()
-        => Assert.Contains("hotline", AgyProtocol.BuildArgs(new BackendProfile { Id = "agy" }));
 
     [Fact]
     public void Locator_prefers_configured_then_localappdata_then_path()
