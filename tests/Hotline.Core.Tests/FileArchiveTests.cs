@@ -9,32 +9,21 @@ public sealed class FileArchiveTests : TempDirTest
 
     public FileArchiveTests() => Directory.CreateDirectory(_dir);
 
-    [Fact]
-    public void KeepOld_copies_to_dot_old()
+    [Theory]
+    [InlineData(false, ".old")]
+    [InlineData(true, ".old2")]
+    public void KeepOld_copies_to_the_first_free_old_name_and_keeps_earlier_ones(bool oldExists, string extension)
     {
         var path = Path.Combine(_dir, "settings.json");
-        File.WriteAllText(path, "original");
+        File.WriteAllText(path, "current");
+        if (oldExists) File.WriteAllText(path + ".old", "first");
 
         var archive = FileArchive.KeepOld(path);
 
-        Assert.Equal(path + ".old", archive);
-        Assert.Equal("original", File.ReadAllText(path + ".old"));
-        Assert.Equal("original", File.ReadAllText(path));
-    }
-
-    [Fact]
-    public void KeepOld_uses_old2_when_old_exists_and_keeps_the_first()
-    {
-        var path = Path.Combine(_dir, "settings.json");
-        File.WriteAllText(path, "second");
-        File.WriteAllText(path + ".old", "first");
-
-        var archive = FileArchive.KeepOld(path);
-
-        Assert.Equal(path + ".old2", archive);
-        Assert.Equal("first", File.ReadAllText(path + ".old"));
-        Assert.Equal("second", File.ReadAllText(path + ".old2"));
-        Assert.Equal("second", File.ReadAllText(path));
+        Assert.Equal(path + extension, archive);
+        if (oldExists) Assert.Equal("first", File.ReadAllText(path + ".old"));
+        Assert.Equal("current", File.ReadAllText(path + extension));
+        Assert.Equal("current", File.ReadAllText(path));
     }
 
     [Fact]
