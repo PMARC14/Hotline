@@ -36,11 +36,10 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   Continue in, Backup, safe file writes: [configuration.md](configuration.md).
 - Hand tests and the automatic checks: [TESTING.md](TESTING.md). Releases, signing, Store, Azure: [RELEASING.md](RELEASING.md).
   Translations: [TRANSLATING.md](TRANSLATING.md). Copilot key setup: [copilot-key.md](copilot-key.md). Store text: `store/`. Privacy: `PRIVACY.md`.
-- Code entry points: the button rows `ToolbarModel.Resolve` / `ToolbarEditor` / `ToolbarPlan` / `ToolbarLayout` / `ToolbarRenderer`
-  (reference layouts `ToolbarProfiles` drawn by self-test steps P01..P47); width in real pixels (`ScreenScale.Line`); settings read field
-  by field (`LenientReader`); "no backup, no write" (`BackupFiles.CopyStamped`); Backup export/import (`SettingsPackage`); Continue in
-  (`ContinueIn.Targets()`, `ContinueTargets.FillCommand`, `OpenWebUiChat`; UI in `SettingsWindow.ContinueIn.cs`). The old design specs
-  and plans were removed from the tree (`git log -- docs/superpowers` has them).
+- Code entry points: button rows `ToolbarModel.Resolve` / `ToolbarEditor` / `ToolbarPlan` / `ToolbarLayout` / `ToolbarRenderer` (reference
+  layouts `ToolbarProfiles`, self-test steps P01..P47); width in real pixels `ScreenScale.Line`; `LenientReader`; "no backup, no write"
+  `BackupFiles.CopyStamped`; `SettingsPackage`; Continue in `ContinueIn.Targets()` / `ContinueTargets.FillCommand` / `OpenWebUiChat`. Old
+  design specs and plans: `git log -- docs/superpowers`.
 
 ## Open items
 
@@ -105,33 +104,20 @@ Owner preference: anything configurable should be in settings.json even when the
 
 ## Architecture map
 
-- `src/Hotline.Core` (net10.0, no UI, unit-tested):
-  - `Activation/` key events, URI parsing, dedupe, planner (`hotline://key|tray|settings|demo|selftest`), `AppActionRequest`.
-  - `Backends/` `ConnectionTypes`, `ConnectionEditor`, `ModelCatalog`/`ModelFamilies`, `Secrets`, `BackendCatalog` (factory + cache),
-    `CliHandoff` (Continue in), `CliTranscripts.*` (reads each CLI's own history), `Agy/`, `ClaudeCode/`, `Codex/` (`codex exec
-    --json`, one process per turn); the three CLIs resume a chat's own conversation (`--conversation` / `--resume` / `exec resume`);
-    `Api/` (`ApiCommon` SSE/errors/https rule, `OpenAiBackend`, `GeminiBackend`, `AnthropicBackend`).
-  - `Chat/` `ChatController` (turns, cancel, retry, resume; records each chat's `CliSession`), `HistoryStore` (JSONL +
-    `<id>.meta.json`), `PromptLibrary`, `QuickActions`, `MemoryStore`, `OcrPlan`, `VoiceText`, attachments.
-  - `Settings/` `HotlineSettings` (schema v15), `SettingsStore` (settings.json + `connections/*.json`, `LenientReader`, side-effect-free
-    `TryRead`), `SettingsService` (live Update/Reload, merge-by-id), `SettingsSchema` (pages), `SettingsReset`, `SettingsPackage*`
-    (export/import), `BackupFiles`, `FileArchive`, `Guide`.
-  - `Text/` `MarkdownModel` (Markdig → blocks; math, SVG, task lists), `LatexText`, `SvgSanitizer`, `Localization/`.
-  - `Tools/` MCP (`McpToolHost`, `McpConfig`, `McpProcess` + `StdioMcpSession`), `OdrDiscovery`. `Diagnostics/` `FileLog`, `LogText`,
-    `ConfigProblems`. `Processes/` line processes, `ShellOpen`. `Platform/` `SafeDirectory`, `CommandResolver`.
-    MCP approvals: only failed "Always" saves are remembered; a file rule or a removed/disabled server clears that fallback.
-  - `Windowing/` `PopupGeometry` (GrowUp/GrowDown), `PanelPlacement` (anchor, direction, clamp, resize, rescale), the toolbar files
-    (`ToolbarModel`, `ToolbarFile`, `ToolbarEditor`, `ToolbarEditorView`, `ToolbarPlan`, `ToolbarLayout`, `ToolbarProfiles`,
-    `CustomIcons`), `Sounds`.
-- `src/Hotline.App` (WinUI 3, packaged MSIX, full trust):
-  - `App.xaml.cs` (+ `App.*.cs` partials) composition root; `PopupWindow` (sizing, eased growth, focus, off-screen mode, `HoldResize`);
-    `ActivationRouter`; `ToolbarRenderer`; `SelfTestLinks` (hotline://selftest).
-  - `Chat/` one job per class: `ChatPresenter` (coordinator, send flow), `Composer`, `AttachmentPanel`, `TranscriptView` (one
-    selectable `RichTextBlock`), `MarkdownRenderer`, `NoticeArea`, `ProviderBar`, `VoiceInput`, `RecentChatsMenu`,
-    `PanelSelfTest`, `FirstRunNote`, `ConnectionChooser`, `SupportNote`, `AnswerNotifier`, `ContinueIn`, `PanelTheme`, `PanelLayout`
-    (rows for up/down), `PanelGrips` (Alt move/resize), `OcrReader`, `CliRunner`, `PasswordVaultSecretStore`.
-  - `Settings/` window (pages generated from `SettingsSchema`, connections, prompts, agy permissions, `ToolbarQuadrantEditor*`, Backup).
-  - `Interop/` tray, Copilot fast path, hotkey, job object, Win32, `SoundPlayer`, `SelectionReader` (UIA + clipboard fallback).
+- `src/Hotline.Core` (net10.0, no UI, unit-tested): `Activation/` (key events, URI planner `hotline://key|tray|settings|demo|selftest`,
+  `AppActionRequest`); `Backends/` (`ConnectionEditor`, `BackendCatalog`, `CliHandoff`, `CliTranscripts.*`, `Agy/`, `ClaudeCode/`,
+  `Codex/` = `codex exec --json`, one process per turn, all three resume a chat's own conversation; `Api/` with `ApiCommon` SSE/errors/https
+  rule); `Chat/` (`ChatController`, `HistoryStore` JSONL + `<id>.meta.json`, `PromptLibrary`, `QuickActions`, `MemoryStore`, `OcrPlan`);
+  `Settings/` (`HotlineSettings` schema v15, `SettingsStore`, `LenientReader`, `SettingsService` live Update/Reload, `SettingsSchema`,
+  `SettingsReset`, `SettingsPackage*`, `BackupFiles`, `Guide`); `Text/` (`MarkdownModel`, `SvgSanitizer`, `Localization/`); `Tools/` (MCP:
+  `McpToolHost`, `McpConfig`, `McpProcess`; `OdrDiscovery`); `Diagnostics/`, `Processes/`, `Platform/`; `Windowing/` (`PopupGeometry`,
+  `PanelPlacement`, the `Toolbar*` files, `Sounds`). MCP approvals: only failed "Always" saves are remembered; a file rule or a
+  removed/disabled server clears that fallback.
+- `src/Hotline.App` (WinUI 3, packaged MSIX, full trust): `App.xaml.cs` (+ partials) composition root; `PopupWindow` (sizing, eased
+  growth, focus, off-screen mode, `HoldResize`); `ActivationRouter`; `ToolbarRenderer`; `SelfTestLinks`; `Chat/` one job per class
+  (`ChatPresenter` coordinates, `Composer`, `AttachmentPanel`, `TranscriptView` = one selectable `RichTextBlock`, `PanelGrips`, `ContinueIn`,
+  `PanelSelfTest`, ...); `Settings/` (pages generated from `SettingsSchema`, `ToolbarQuadrantEditor*`); `Interop/` (tray, Copilot fast
+  path, hotkey, job object, `SelectionReader` UIA + clipboard fallback).
 
 ## Hard-won facts (don't relearn these)
 
