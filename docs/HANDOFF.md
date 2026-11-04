@@ -34,7 +34,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   from a cut-off answer, concurrent backups at the same timestamp. Rejected with tests: llama.cpp target without an endpoint, API chat
   replay in a CLI. The App-only ones (Settings reload vs unsaved edits, Alt-resize, filled-dropdown brushes, "Move what doesn't fit"
   stale width, hold leak, Open WebUI keys kept after Reset) are in [plausible-review.md](plausible-review.md) and need a hand check or an
-  App-side fix. Test cleanup not done: shared HTTP fake / stream collector / MCP fake helpers and Argon items 2, 3, 7, 9, 15, 17.
+  App-side fix. Test cleanup done 2026-11-04 (shared fakes in `TestFakes.cs`, `TempDirTest`); remaining merge ideas were judged not worth the lost assertions.
 - **0.6 checkpoint (v0.6.0, 2026-11-04):** GitHub release published; Store bundle `HotlineAI_0.6.0.0_Store.msixbundle` built by hand
   (Store workflow, submit off) and listing text refreshed in `store/listing.md` + `store/listings/` (translations are model-drafted).
   Reviews by Astra, Sonnet and four Flash reviewers were verified and fixed (PRs #45, #46, #48); rejected items are listed in the PR texts.
