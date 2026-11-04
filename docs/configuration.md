@@ -464,4 +464,4 @@ Developers: `hotline-action://ask?text=…` or `hotline-action://run/summarize?t
 
 `hotline://settings` opens the settings window, `hotline://tray` starts quietly in the tray, `hotline://demo` shows an
 example conversation, `hotline://selftest` renders a scripted conversation off-screen and builds every settings page
-(used by the smoke test); `hotline://selftest?tools` also starts the `mcp.json` servers and logs the result.
+(used by the smoke test; its variants are in [TESTING.md](TESTING.md)).
