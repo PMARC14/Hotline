@@ -499,7 +499,7 @@ Từ chối:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Phần còn lại vẫn được áp dụng. Cài đặt › Nâng cao liệt kê mọi thứ.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Không thể đọc tệp cài đặt</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline giữ nguyên các cài đặt hiện tại cho đến khi sự cố được khắc phục.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width hiện là pixel thực (trước đây: đơn vị theo tỷ lệ): các giá trị {0} của bạn được giữ nguyên như đã viết; hãy kiểm tra Cài đặt &amp;gt; Cửa sổ</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width hiện là pixel thực (trước đây: đơn vị theo tỷ lệ): các giá trị {0} của bạn được giữ nguyên như đã viết; hãy kiểm tra Cài đặt &gt; Cửa sổ</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Sự cố trong tệp cài đặt của bạn</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Các giá trị bị bỏ qua sẽ dùng giá trị mặc định. Hãy sửa tệp và Hotline sẽ áp dụng ngay.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Một phần của toolbar.json đã bị bỏ qua</value></data>
@@ -775,7 +775,7 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Bar_ColorPink" xml:space="preserve"><value>Hồng</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Độ rộng theo nút</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Không hiển thị</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Kéo các mục giữa bốn nhóm, hoặc dùng các nút bên dưới mỗi mục. Khi một mục có tiêu điểm, Alt+phím mũi tên sẽ di chuyển mục sang nhóm khác và Ctrl+Trái hoặc Ctrl+Phải sẽ di chuyển mục trong nhóm. Các thay đổi được lưu vào toolbar.json và áp dụng ngay.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Kéo các mục giữa sáu nhóm, hoặc dùng các nút bên dưới mỗi mục. Khi một mục có tiêu điểm, Alt+phím mũi tên sẽ di chuyển mục sang nhóm khác và Ctrl+Trái hoặc Ctrl+Phải sẽ di chuyển mục trong nhóm. Các thay đổi được lưu vào toolbar.json và áp dụng ngay.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Di chuyển sang nhóm bên trái</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Di chuyển sang nhóm bên phải</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Các bộ chọn</value></data>
@@ -877,4 +877,7 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Dùng Ctrl, Alt hoặc Win, hoặc F1-F24. Tổ hợp phải còn trống (tính cả Dừng, nút có sẵn và nút tùy chỉnh).</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Thêm Ctrl, Alt hoặc Win (F1-F24 dùng riêng được)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Không có câu trả lời hoàn tất để sao chép.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Xóa tệp đính kèm {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Di chuyển kết nối {0} lên</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Di chuyển kết nối {0} xuống</value></data>
 </root>

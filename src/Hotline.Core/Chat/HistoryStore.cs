@@ -121,9 +121,17 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         if (!HistoryIds.IsSafe(conversationId)) return;
         Directory.CreateDirectory(directory);
         var path = MetaPathFor(conversationId);
-        var temp = path + ".tmp";
-        File.WriteAllText(temp, JsonSerializer.Serialize(meta, Json));
-        File.Move(temp, path, overwrite: true);
+        var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
+        try
+        {
+            File.WriteAllText(temp, JsonSerializer.Serialize(meta, Json));
+            File.Move(temp, path, overwrite: true);
+        }
+        finally
+        {
+            try { File.Delete(temp); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+        }
     }
 
     public Meta? LoadMeta(string conversationId)

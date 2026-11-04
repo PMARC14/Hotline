@@ -88,6 +88,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
 
     public void Clear()
     {
+        _timer?.Stop();
+        _thinkingTimer?.Stop();
+        foreach (var view in _assistants.Values) RemoveCaret(view);
         _entries.Clear();
         _assistants.Clear();
         _block.Blocks.Clear();

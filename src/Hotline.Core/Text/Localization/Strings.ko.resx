@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 나머지는 적용됩니다. 설정 › 고급에서 전체 목록을 확인할 수 있습니다.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>설정 파일을 읽을 수 없습니다</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>문제가 해결될 때까지 Hotline은 현재 설정을 유지합니다.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width가 이제 실제 픽셀 단위입니다(이전: 배율 단위): {0} 값은 그대로 유지되었습니다. 설정 &amp;gt; 창에서 확인하세요</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width가 이제 실제 픽셀 단위입니다(이전: 배율 단위): {0} 값은 그대로 유지되었습니다. 설정 &gt; 창에서 확인하세요</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>설정 파일 문제</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>무시된 값에는 기본값이 사용됩니다. 파일을 수정하면 Hotline에 즉시 반영됩니다.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json의 일부가 무시되었습니다</value></data>
@@ -775,7 +775,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_ColorPink" xml:space="preserve"><value>분홍색</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>단추 단위 너비</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>표시 안 함</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>네 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>여섯 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>왼쪽 그룹으로 이동</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>오른쪽 그룹으로 이동</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>선택기</value></data>
@@ -877,4 +877,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt, Win 또는 F1-F24를 사용하세요. 중지, 기본 버튼, 사용자 지정 버튼이 쓰지 않는 조합이어야 합니다.</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt 또는 Win 추가 (F1-F24는 단독 사용 가능)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>복사할 완료된 답변이 없습니다.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>첨부 파일 {0} 제거</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>연결 {0} 위로 이동</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>연결 {0} 아래로 이동</value></data>
 </root>

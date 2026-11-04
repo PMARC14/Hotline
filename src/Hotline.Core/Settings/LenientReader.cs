@@ -141,6 +141,11 @@ internal static class LenientReader
     /// </summary>
     public static BackendProfile? ReadProfile(JsonElement obj, string label, ReadProblems problems)
     {
+        if (!obj.EnumerateObject().Any(m => m.Name.Equals("type", StringComparison.OrdinalIgnoreCase)))
+        {
+            problems.Add(L.F(Strings.Settings_ProblemConnectionType, label, "type"));
+            return null;
+        }
         foreach (var member in obj.EnumerateObject().Where(m => m.Name.Equals("type", StringComparison.OrdinalIgnoreCase)))
         {
             var known = member.Value.ValueKind == JsonValueKind.String

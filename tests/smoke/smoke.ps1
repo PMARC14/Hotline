@@ -124,7 +124,12 @@ try {
 
     # 4c. Hand edits to settings.json apply live (no restart)
     $n = Get-LogCount
-    $json = [IO.File]::ReadAllText($settingsFile) -replace '"verticalPosition":\s*[0-9.]+', '"verticalPosition": 0.75'
+    $json = [IO.File]::ReadAllText($settingsFile)
+    $anchorY = [regex]'(?s)("anchor"\s*:\s*\{[^{}]*"y"\s*:\s*)([0-9.]+)'
+    $match = $anchorY.Match($json)
+    if (-not $match.Success) { throw 'settings.json is missing window.anchor.y' }
+    $newY = if ([double]::Parse($match.Groups[2].Value, [Globalization.CultureInfo]::InvariantCulture) -eq 0.75) { '0.25' } else { '0.75' }
+    $json = $anchorY.Replace($json, '${1}' + $newY, 1)
     [IO.File]::WriteAllText($settingsFile, $json)
     for ($i = 0; $i -lt 10 -and -not (Get-NewLog $n | Select-String -Pattern 'settings.json changed on disk'); $i++) { Start-Sleep -Milliseconds 500 }
     Expect-Log 'settings.json edits apply live' $n 'settings.json changed on disk; applied'

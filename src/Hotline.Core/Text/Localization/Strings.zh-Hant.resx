@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 其餘項目仍會套用。「設定 › 進階」中列出了所有項目。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>無法讀取設定檔</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline 將保留現有設定，直到問題修正。</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 現為實際像素（先前為縮放單位）：您的數值 {0} 已按原樣保留；請查看 設定 &amp;gt; 視窗</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 現為實際像素（先前為縮放單位）：您的數值 {0} 已按原樣保留；請查看 設定 &gt; 視窗</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定檔發生問題</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>忽略的值將使用預設值。修正檔案後，Hotline 會立即載入。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
@@ -775,7 +775,7 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Bar_ColorPink" xml:space="preserve"><value>粉紅色</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>按按鈕寬度計算的寬度</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>在六個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左側群組</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>移至右側群組</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>選擇器</value></data>
@@ -877,4 +877,7 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>請使用 Ctrl、Alt、Win 或 F1-F24。組合必須尚未使用（包括停止、內建按鈕和自訂按鈕）。</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>請加入 Ctrl、Alt 或 Win（F1-F24 可單獨使用）</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>沒有可複製的已完成回答。</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>移除附件 {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>上移連線 {0}</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>下移連線 {0}</value></data>
 </root>

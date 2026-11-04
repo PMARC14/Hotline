@@ -499,7 +499,7 @@ Negar:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} O restante é aplicado. Configurações › Avançado lista tudo.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Não é possível ler um arquivo de configurações</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>O Hotline mantém as configurações atuais até que seja corrigido.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width agora são pixels reais (antes: unidades dimensionadas): seus valores {0} foram mantidos como estavam; verifique Configurações &amp;gt; Janela</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width agora são pixels reais (antes: unidades dimensionadas): seus valores {0} foram mantidos como estavam; verifique Configurações &gt; Janela</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemas nos seus arquivos de configurações</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Valores ignorados usam seus padrões. Corrija o arquivo e o Hotline o aplicará imediatamente.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Parte de toolbar.json foi ignorada</value></data>
@@ -775,7 +775,7 @@ As chaves de API são mantidas no Windows Credential Locker, nunca em um arquivo
   <data name="Bar_ColorPink" xml:space="preserve"><value>Rosa</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Largura em botões</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Não exibido</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Arraste itens entre os quatro grupos ou use os botões abaixo de cada item. Com um item em foco, Alt+teclas de seta o movem para outro grupo e Ctrl+Esquerda ou Ctrl+Direita o movem dentro do grupo. As alterações são salvas em toolbar.json e aplicadas imediatamente.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Arraste itens entre os seis grupos ou use os botões abaixo de cada item. Com um item em foco, Alt+teclas de seta o movem para outro grupo e Ctrl+Esquerda ou Ctrl+Direita o movem dentro do grupo. As alterações são salvas em toolbar.json e aplicadas imediatamente.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Mover para o grupo da esquerda</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Mover para o grupo da direita</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Seletores</value></data>
@@ -877,4 +877,7 @@ As chaves de API são mantidas no Windows Credential Locker, nunca em um arquivo
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Use Ctrl, Alt ou Win, ou F1-F24. A combinação deve estar livre (inclui Parar, botões integrados e personalizados).</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Adicione Ctrl, Alt ou Win (F1-F24 funcionam sozinhas)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Nenhuma resposta concluída para copiar.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Remover anexo {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Mover conexão {0} para cima</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Mover conexão {0} para baixo</value></data>
 </root>

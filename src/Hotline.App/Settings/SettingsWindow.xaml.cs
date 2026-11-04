@@ -6,6 +6,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
@@ -23,6 +24,7 @@ public sealed partial class SettingsWindow : Window
     private readonly string _settingsFile;
     private readonly string _logsDir;
     private readonly FileLog _log;
+    private bool _closed;
 
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private string _mcpPath = "";
@@ -52,7 +54,7 @@ public sealed partial class SettingsWindow : Window
         _settings.Changed += OnSettingsChanged;
         _settings.SaveFailed += OnSaveFailed;
         SystemTheme.Changed += OnSettingsChanged;
-        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
+        Closed += (_, _) => { _closed = true; _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
     }
 
@@ -68,15 +70,18 @@ public sealed partial class SettingsWindow : Window
         return failures;
     }
 
-    private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
+    private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(() => { if (!_closed) ApplyTheme(); });
 
     /// <summary>A save left something undone (a file couldn't be backed up or written): said at the top of the page, not only in the log.</summary>
     private void OnSaveFailed(IReadOnlyList<string> problems) => DispatcherQueue.TryEnqueue(() =>
+    {
+        if (_closed) return;
         PageHost.Children.Insert(0, new InfoBar
         {
             IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
             Message = string.Join(" ", problems.Take(3)),
-        }));
+        });
+    });
 
     private void ApplyTheme()
     {
@@ -99,6 +104,7 @@ public sealed partial class SettingsWindow : Window
 
     private void ShowPage(string tag)
     {
+        if (_closed) return;
         _currentPage = tag;
         PageHost.Children.Clear();
         PageHost.Children.Add(new TextBlock
@@ -149,6 +155,7 @@ public sealed partial class SettingsWindow : Window
         grid.Children.Add(text);
         if (control is FrameworkElement fe)
         {
+            if (string.IsNullOrEmpty(AutomationProperties.GetName(fe))) AutomationProperties.SetName(fe, header);
             Grid.SetColumn(fe, 1);
             fe.VerticalAlignment = VerticalAlignment.Center;
             grid.Children.Add(fe);
@@ -254,6 +261,7 @@ public sealed partial class SettingsWindow : Window
     private void Fail(string what, Exception ex)
     {
         _log.Error(what, ex);
+        if (_closed) return;
         PageHost.Children.Insert(0, new InfoBar
         {
             IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),

@@ -60,6 +60,7 @@ internal static class Native
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern bool AppendMenu(nint hMenu, uint flags, nuint id, string? text);
     [DllImport("user32.dll")] public static extern bool TrackPopupMenuEx(nint hMenu, uint flags, int x, int y, nint hWnd, nint tpm);
     [DllImport("user32.dll")] public static extern bool DestroyMenu(nint hMenu);
+    [DllImport("user32.dll")] public static extern bool DestroyIcon(nint hIcon);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern nint LoadImage(nint hInst, string name, uint type, int cx, int cy, uint flags);
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)] public static extern bool Shell_NotifyIcon(int message, ref NOTIFYICONDATA data);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(nint hWnd, System.Text.StringBuilder name, int max);

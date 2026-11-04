@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} बाकी लागू होता है। सेटिंग्स › उन्नत सब कुछ सूचीबद्ध करता है।</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>सेटिंग्स फ़ाइल पढ़ी नहीं जा सकती</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline अपनी सेटिंग्स तब तक बनाए रखता है जब तक इसे ठीक नहीं किया जाता।</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width अब वास्तविक पिक्सेल हैं (पहले: स्केल की गई इकाइयाँ): आपके मान {0} जैसे लिखे थे वैसे ही रखे गए; सेटिंग्स &amp;gt; विंडो देखें</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width अब वास्तविक पिक्सेल हैं (पहले: स्केल की गई इकाइयाँ): आपके मान {0} जैसे लिखे थे वैसे ही रखे गए; सेटिंग्स &gt; विंडो देखें</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>आपकी सेटिंग्स फ़ाइलों में समस्याएँ हैं</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>अनदेखे मान अपने डिफ़ॉल्ट का उपयोग करते हैं। फ़ाइल को ठीक करें और Hotline इसे तुरंत लागू कर देगा।</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json के एक भाग को अनदेखा किया गया</value></data>
@@ -775,7 +775,7 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Bar_ColorPink" xml:space="preserve"><value>गुलाबी</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>बटन में चौड़ाई</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>दिखाया नहीं गया</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>चारों समूहों के बीच आइटम खींचें, या प्रत्येक आइटम के नीचे दिए गए बटनों का उपयोग करें। किसी आइटम पर फ़ोकस होने पर, Alt+तीर कुंजियाँ उसे दूसरे समूह में ले जाती हैं और Ctrl+Left या Ctrl+Right उसे उसके समूह में ले जाते हैं। बदलाव toolbar.json में सहेजे जाते हैं और तुरंत लागू होते हैं।</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>छह समूहों के बीच आइटम खींचें, या प्रत्येक आइटम के नीचे दिए गए बटनों का उपयोग करें। किसी आइटम पर फ़ोकस होने पर, Alt+तीर कुंजियाँ उसे दूसरे समूह में ले जाती हैं और Ctrl+Left या Ctrl+Right उसे उसके समूह में ले जाते हैं। बदलाव toolbar.json में सहेजे जाते हैं और तुरंत लागू होते हैं।</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>बाएँ समूह में ले जाएँ</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>दाएँ समूह में ले जाएँ</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>पिकर</value></data>
@@ -877,4 +877,7 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt या Win, या F1-F24 का उपयोग करें। संयोजन खाली होना चाहिए (रोकें, अंतर्निहित और कस्टम बटन भी गिने जाते हैं)।</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt या Win जोड़ें (F1-F24 अकेले काम करती हैं)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>कॉपी करने के लिए कोई पूर्ण उत्तर नहीं है।</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>अटैचमेंट {0} हटाएँ</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>कनेक्शन {0} ऊपर ले जाएँ</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>कनेक्शन {0} नीचे ले जाएँ</value></data>
 </root>

@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Решта застосовується. У розділі Налаштування › Додатково наведено повний список.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Не вдалося прочитати файл налаштувань</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline зберігає поточні налаштування, доки це не буде виправлено.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width тепер є реальними пікселями (раніше: масштабовані одиниці): ваші значення {0} збережено без змін; перевірте Налаштування &amp;gt; Вікно</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width тепер є реальними пікселями (раніше: масштабовані одиниці): ваші значення {0} збережено без змін; перевірте Налаштування &gt; Вікно</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Проблеми у файлах налаштувань</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Проігноровані значення використовують значення за замовчуванням. Виправте файл, і Hotline відразу застосує зміни.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Частину toolbar.json проігноровано</value></data>
@@ -775,7 +775,7 @@
   <data name="Bar_ColorPink" xml:space="preserve"><value>Рожевий</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Ширина в кнопках</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Не відображається</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Перетягуйте елементи між чотирма групами або використовуйте кнопки під кожним елементом. Якщо елемент у фокусі, Alt+стрілки переміщують його до іншої групи, а Ctrl+Left або Ctrl+Right — у межах групи. Зміни зберігаються в toolbar.json і застосовуються одразу.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Перетягуйте елементи між шістьма групами або використовуйте кнопки під кожним елементом. Якщо елемент у фокусі, Alt+стрілки переміщують його до іншої групи, а Ctrl+Left або Ctrl+Right — у межах групи. Зміни зберігаються в toolbar.json і застосовуються одразу.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Перемістити до лівої групи</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Перемістити до правої групи</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Списки вибору</value></data>
@@ -877,4 +877,7 @@
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Використовуйте Ctrl, Alt чи Win або F1-F24. Комбінація має бути вільною (враховуються зупинка, вбудовані й власні кнопки).</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Додайте Ctrl, Alt чи Win (F1-F24 працюють окремо)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Немає завершеної відповіді для копіювання.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Видалити вкладення {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Перемістити підключення {0} вгору</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Перемістити підключення {0} вниз</value></data>
 </root>

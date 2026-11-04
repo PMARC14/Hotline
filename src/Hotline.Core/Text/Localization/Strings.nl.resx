@@ -499,7 +499,7 @@ Weigeren:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} De rest wordt toegepast. Instellingen › Geavanceerd toont alles.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Een instellingenbestand kan niet worden gelezen</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline behoudt de huidige instellingen totdat het is opgelost.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width zijn nu werkelijke pixels (voorheen: geschaalde eenheden): uw waarden {0} zijn ongewijzigd behouden; controleer Instellingen &amp;gt; Venster</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width zijn nu werkelijke pixels (voorheen: geschaalde eenheden): uw waarden {0} zijn ongewijzigd behouden; controleer Instellingen &gt; Venster</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problemen in uw instellingenbestanden</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Genegeerde waarden gebruiken de standaardwaarden. Corrigeer het bestand en Hotline past het direct toe.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Een deel van toolbar.json is genegeerd</value></data>
@@ -775,7 +775,7 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="Bar_ColorPink" xml:space="preserve"><value>Roze</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Breedte in knoppen</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Niet weergegeven</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Sleep items tussen de vier groepen of gebruik de knoppen onder elk item. Als een item de focus heeft, verplaatst Alt+pijltjestoetsen het naar een andere groep en Ctrl+Links of Ctrl+Rechts het binnen de groep. Wijzigingen worden opgeslagen in toolbar.json en direct toegepast.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Sleep items tussen de zes groepen of gebruik de knoppen onder elk item. Als een item de focus heeft, verplaatst Alt+pijltjestoetsen het naar een andere groep en Ctrl+Links of Ctrl+Rechts het binnen de groep. Wijzigingen worden opgeslagen in toolbar.json en direct toegepast.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Naar de linkergroep verplaatsen</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Naar de rechtergroep verplaatsen</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Keuzes</value></data>
@@ -877,4 +877,7 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Gebruik Ctrl, Alt of Win, of F1-F24. De combinatie moet vrij zijn (Stoppen, ingebouwde en eigen knoppen tellen mee).</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Voeg Ctrl, Alt of Win toe (F1-F24 werken alleen)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Geen voltooid antwoord om te kopiëren.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Bijlage {0} verwijderen</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Verbinding {0} omhoog verplaatsen</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Verbinding {0} omlaag verplaatsen</value></data>
 </root>

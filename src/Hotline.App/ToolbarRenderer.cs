@@ -468,6 +468,7 @@ internal sealed class ToolbarRenderer
                 Closed(null, EventArgs.Empty); // it never opened: release the hold now
                 throw;
             }
+            if (!flyout.IsOpen) Closed(null, EventArgs.Empty);
             return;
         }
         new ButtonAutomationPeer(button).Invoke(); // raises its Click: the same handlers as the button

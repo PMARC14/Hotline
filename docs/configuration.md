@@ -9,7 +9,7 @@ same files). Comments and trailing commas are allowed.
 | `connections\<id>.json` | One file per AI connection. Add a connection by dropping in a file; remove one by deleting it. A new install has none (the panel offers the CLIs it finds); every connection can be removed |
 | `prompts\<name>.md` | System prompts (`default.md` is created on first run) |
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
-| `actions\<name>.md` | Quick actions (`/translate`, `/summarize`, `/fix`, `/explain` are created on first run) |
+| `actions\<name>.md` | Quick actions (`/bullets`, `/explain`, `/fix`, `/formal`, `/reply`, `/shorter`, `/summarize`, `/translate` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
@@ -125,7 +125,7 @@ and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the
 | `type` | all | `antigravity`, `claudeCode`, `codex`, `gemini`, `anthropic`, `openAiCompatible`, `local` |
 | `name` | all | Shown in the Provider dropdown |
 | `model` | all | Model id (empty = the connection's default; Anthropic defaults to `claude-opus-5-5`) |
-| `effort` | all | Codex: `low` … `ultra` (`model_reasoning_effort`; what a model supports is Codex's call). agy, Claude Code, Anthropic: `low` … `max` (agy maps it to the nearest level the model has). Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible and `local`: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it; for `local` also as `chat_template_kwargs.reasoning_effort`, which llama.cpp's `llama-server --jinja` reads for gpt-oss-style models). Empty = the model's default |
+| `effort` | all | Codex: `low` … `ultra` (`model_reasoning_effort`; what a model supports is Codex's call). agy: Settings and the panel offer `low`/`medium`/`high`, mapped to the nearest level the model has; a hand-edited connection also accepts `max` as a CLI flag. Claude Code and Anthropic: `low`/`medium`/`high`/`xhigh`/`max`. Gemini: `low`/`medium`/`high` thinking level (Gemini 2.5: a thinking budget). OpenAI-compatible and `local`: `low`/`medium`/`high` as `reasoning_effort` (only reasoning models accept it; for `local` also as `chat_template_kwargs.reasoning_effort`, which llama.cpp's `llama-server --jinja` reads for gpt-oss-style models). Empty = the model's default |
 | `prompt` | all | System prompt name (`prompts\<name>.md`); empty = `chat.defaultPrompt` |
 | `endpoint` | APIs | Base URL (defaults per type, e.g. `http://127.0.0.1:8080/v1` for `local`) |
 | `cliPath` | agy, Claude Code, Codex | Program path (empty = auto-detect) |
@@ -189,7 +189,7 @@ message, `{file}` the chat saved as Markdown, `{model}` the chat's model. In a U
 each stays inside its own argument. `copyChat: true` also puts the whole chat (Markdown) on the clipboard first.
 A target that isn't an object with a known `kind` and a `name` is skipped with a warning in Settings › Advanced; the others
 still work. The Open WebUI key is never in a file.
-Ready-made entries in Settings: llama.cpp web UI, Open WebUI, LM Studio, ChatGPT, Claude.
+Ready-made entries in Settings: llama.cpp web UI, Open WebUI, LM Studio, ChatGPT, Claude, Gemini.
 What the apps accept (checked 2026-10-15): the llama.cpp web UI takes `?q=` (starts a conversation and sends the text) and
 `?model=` (picks the model); its import is only a JSON file in its Settings. Open WebUI has the API above. LM Studio has no URL
 and no import (its chats are undocumented files), so it opens with the chat copied.
@@ -296,11 +296,11 @@ a warning):
 "overrides": { "model": { "span": 6 }, "effort": { "span": 1, "outline": true, "outlineColor": "#E81123" } }
 ```
 
-| Picker | Default `span` | Width (DIPs) | Narrowest before it hides (outer width) |
+| Picker | Base `span` (when omitted) | Width (DIPs) | Narrowest before it hides (outer width) |
 |---|---|---|---|
 | `effort` | 3 | 120 | 56 |
 | `model` | 4 | 160 | 84 |
-| `provider` | 4 | 160 | 72 |
+| `provider` | 4 (shipped layout: 5) | 160 (shipped layout: 200) | 72 |
 
 A span equal to the default is not written to the file; a hidden picker keeps its span and look. A span is a maximum as well as the
 preferred width (the drop-down is 1 DIP narrower on each side). In a short row the pickers shrink evenly down to the narrowest width
@@ -361,8 +361,8 @@ the panel, under Settings › About › This PC and in the log. Saving from Sett
 as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
 
 **Defaults.** Settings › Advanced › **Reset settings** restores `toolbar.json` too (see *Switching settings* above); `.defaults\toolbar.json` is
-rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 4); pin and
-the three captures on the bottom left, prompt and Continue in in the centre, recent, new chat and settings on the right.
+rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 5); pin and
+the three captures on the bottom left, prompt and Continue in in the centre, recent, new chat and settings (two cells wide each) on the right.
 
 ### Panel shortcuts
 

@@ -84,5 +84,11 @@ internal sealed class TrayIcon : IDisposable
         Native.DestroyMenu(menu);
     }
 
-    public void Dispose() => Native.Shell_NotifyIcon(Native.NIM_DELETE, ref _data);
+    public void Dispose()
+    {
+        Native.Shell_NotifyIcon(Native.NIM_DELETE, ref _data);
+        if (_data.hIcon == 0) return;
+        Native.DestroyIcon(_data.hIcon);
+        _data.hIcon = 0;
+    }
 }

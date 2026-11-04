@@ -5,6 +5,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Storage;
@@ -247,6 +248,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
                 Background = new Microsoft.UI.Xaml.Media.SolidColorBrush(Microsoft.UI.Colors.Transparent),
             };
             ToolTipService.SetToolTip(remove, Strings.Common_Remove);
+            AutomationProperties.SetName(remove, L.F(Strings.Attachment_RemoveNamed, a.Name));
             var id = a.Id;
             remove.Click += (_, _) => { tray.Remove(id); Refresh(); };
             chip.Children.Add(remove);

@@ -105,6 +105,13 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
 
     public async Task RunAsync()
     {
+        // The URI handler is async void; setup and restoration can fail too.
+        try { await RunCoreAsync(); }
+        catch (Exception ex) { log.Error("selftest FAILED during setup or restoration", ex); }
+    }
+
+    private async Task RunCoreAsync()
+    {
         if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
         // What the test changes, restored in finally whatever happens: the user's draft, button rows and direction.
         var userDraft = composer.Text;
