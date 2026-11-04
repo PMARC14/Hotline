@@ -35,7 +35,7 @@ configurable in plain files.
 - **Tools, carefully**: MCP servers (`mcp.json`) and Windows agent connectors for API connections; read-only tools run, the rest ask first.
 - **System prompts** as Markdown files you can switch from the bar.
 - **Your panel, your way**: Alt to move or resize, pin, grow up or down, button rows you arrange and add to (Settings › Window), open/close sounds.
-- **Panel shortcuts** for built-in and custom toolbar buttons; set `chat.shortcuts` or a custom button's `shortcut` ([configuration](docs/configuration.md#panel-shortcuts)).
+- **Panel shortcuts** for built-in and custom toolbar buttons: the `shortcuts` map in `toolbar.json` or a custom button's `shortcut` ([configuration](docs/configuration.md#panel-shortcuts)).
 - **Built-in guide** (Settings › Guide), Reset with a backup, and Backup export/import (never API keys).
 - **Everything is a file**: edits apply instantly, a mistake costs only the wrong value, API keys live in Windows Credential Locker.
 
@@ -67,10 +67,9 @@ and open that.
 The first time you open it, Hotline asks which AI to use: the ones installed on your PC (Claude Code, Codex,
 Antigravity) or an API key. Nothing runs or is sent until you pick one.
 
-Then assign the key: **Settings → Personalization → Text input → Customize Copilot key on keyboard → Custom →
-Hotline**, or use the **Open Copilot key settings** button in Hotline (Settings › General). (Windows only lets packaged
-apps take the Copilot key, which is why Hotline installs as a package.) Step by step and troubleshooting:
-[docs/copilot-key.md](docs/copilot-key.md).
+Then assign the key in Windows (**Custom → Hotline**), or use the **Open Copilot key settings** button in Hotline
+(Settings › General). Windows only lets packaged apps take the Copilot key, which is why Hotline installs as a package. Step by step
+and troubleshooting: [docs/copilot-key.md](docs/copilot-key.md).
 
 ### From source
 
@@ -103,7 +102,7 @@ Then assign the key as above.
 | Anthropic / Gemini / OpenAI-compatible | An API key — Settings › AI connections › Add connection, paste the key, pick a model |
 | Local | An OpenAI-style server running (e.g. `llama-server` on `http://127.0.0.1:8080`) |
 
-Keys are only ever sent over https (plain http only to this PC).
+Keys are never stored in files and only sent over https ([what leaves your PC](#what-leaves-your-pc)).
 
 ### Configuration
 
@@ -119,8 +118,7 @@ recognition (Microsoft's online service). Full details: [PRIVACY.md](PRIVACY.md)
 
 ## Development
 
-Requires the .NET SDK 10.0.401+. Tests and the smoke test: `dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj`,
-`powershell -File tests\smoke\smoke.ps1 [-Install]` (commands and the hand-test list: [docs/TESTING.md](docs/TESTING.md)).
+Build requirements as in *From source*. Tests, the smoke test and the hand-test checklists: [docs/TESTING.md](docs/TESTING.md).
 `src/Hotline.Core` is UI-free and unit-tested, `src/Hotline.App` is the WinUI 3 app. New contributors and sessions start at
 [docs/HANDOFF.md](docs/HANDOFF.md).
 

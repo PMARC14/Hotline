@@ -33,7 +33,7 @@ the same placeholders, and formats.
 
 1. Copy `Strings.resx` to `Strings.<tag>.resx` and translate every `<value>`.
 2. Add `src/Hotline.App/Strings/<tag>/Resources.resw` with `AppDescription`.
-3. Add the tag to `Languages.Supported` and, if the README lists languages, there too.
+3. Add the tag to `Languages.Supported`, the README's language list and `general.language` in [configuration.md](configuration.md).
 4. Optionally add `store/listings/<tag>.md`.
 
 ## Checking the layout
