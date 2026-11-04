@@ -12,10 +12,8 @@ using Hotline.Core.Theming;
 namespace Hotline.Core.Tests;
 
 /// <summary>Fixes from the full-codebase review of the core infrastructure and the CLI backends (Activation, Platform, Diagnostics, Processes, Theming, Backends root, Agy).</summary>
-public sealed class ReviewX1Tests : IDisposable
+public sealed class ReviewX1Tests : TempDirTest
 {
-    private readonly string _dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { try { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); } catch (IOException) { } }
 
     // ---- Platform ----
 

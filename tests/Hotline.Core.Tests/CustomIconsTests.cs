@@ -4,21 +4,15 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class CustomIconsTests : IDisposable
+public sealed class CustomIconsTests : TempDirTest
 {
     /// <summary>A 16×16 PNG saved by System.Drawing (a real encoder, so the checker isn't only tested against our own writer).</summary>
     private static readonly byte[] Real16 = Convert.FromBase64String(
         "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAVSURBVDhPY2AYXuA/GI2CUTAKyAEAeu0B/zEZFcQAAAAASUVORK5CYII=");
 
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-icons-" + Guid.NewGuid().ToString("N"));
     private string Icons => Path.Combine(_dir, "icons");
 
     public CustomIconsTests() => Directory.CreateDirectory(_dir);
-
-    public void Dispose()
-    {
-        try { Directory.Delete(_dir, recursive: true); } catch (IOException) { }
-    }
 
     // ---- a minimal PNG writer (bitwise CRC, independent of the checker's table) ----
 

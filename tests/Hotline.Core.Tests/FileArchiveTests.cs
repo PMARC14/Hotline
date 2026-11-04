@@ -4,18 +4,15 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-public sealed class FileArchiveTests : IDisposable
+public sealed class FileArchiveTests : TempDirTest
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
 
-    public FileArchiveTests() => Directory.CreateDirectory(_root);
-
-    public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, recursive: true); }
+    public FileArchiveTests() => Directory.CreateDirectory(_dir);
 
     [Fact]
     public void KeepOld_copies_to_dot_old()
     {
-        var path = Path.Combine(_root, "settings.json");
+        var path = Path.Combine(_dir, "settings.json");
         File.WriteAllText(path, "original");
 
         var archive = FileArchive.KeepOld(path);
@@ -28,7 +25,7 @@ public sealed class FileArchiveTests : IDisposable
     [Fact]
     public void KeepOld_uses_old2_when_old_exists_and_keeps_the_first()
     {
-        var path = Path.Combine(_root, "settings.json");
+        var path = Path.Combine(_dir, "settings.json");
         File.WriteAllText(path, "second");
         File.WriteAllText(path + ".old", "first");
 
@@ -42,12 +39,12 @@ public sealed class FileArchiveTests : IDisposable
 
     [Fact]
     public void KeepOld_missing_file_returns_null()
-        => Assert.Null(FileArchive.KeepOld(Path.Combine(_root, "nope.json")));
+        => Assert.Null(FileArchive.KeepOld(Path.Combine(_dir, "nope.json")));
 
     [Fact]
     public void KeepOld_readonly_target_folder_returns_null_without_throwing()
     {
-        var dir = Path.Combine(_root, "locked");
+        var dir = Path.Combine(_dir, "locked");
         Directory.CreateDirectory(dir);
         var path = Path.Combine(dir, "settings.json");
         File.WriteAllText(path, "original");

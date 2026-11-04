@@ -5,10 +5,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Data safety of settings.json and the connection files (review round G3): backups, identity, races, reset, locked files.</summary>
-public sealed class SafetyG3Tests : IDisposable
+public sealed class SafetyG3Tests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { try { Directory.Delete(_dir, recursive: true); } catch (IOException) { } }
 
     private string Conn(string file) => Path.Combine(_dir, "connections", file);
     private string Main => Path.Combine(_dir, SettingsStore.FileName);

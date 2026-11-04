@@ -10,10 +10,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Answer length, temperature and effort reach each API the way it documents them.</summary>
-public sealed class ConnectionOptionsTests : IDisposable
+public sealed class ConnectionOptionsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private sealed class Capture : HttpMessageHandler
     {

@@ -7,10 +7,8 @@ using Hotline.Core.Text;
 namespace Hotline.Core.Tests;
 
 /// <summary>Findings from the Antigravity review (2026-10-02).</summary>
-public sealed class ReviewFixesTests : IDisposable
+public sealed class ReviewFixesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     // #1 SVG sanitizer (allowlist)
     [Theory]
@@ -115,10 +113,8 @@ public sealed class ReviewFixesTests : IDisposable
 }
 
 /// <summary>Antigravity review of the API backends and connection files (2026-10-02).</summary>
-public sealed class ApiReviewFixesTests : IDisposable
+public sealed class ApiReviewFixesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public async Task Sse_keeps_indentation_and_strips_only_one_space()
