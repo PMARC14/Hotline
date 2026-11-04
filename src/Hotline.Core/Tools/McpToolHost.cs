@@ -190,20 +190,18 @@ public sealed class McpToolHost(
             return new ToolResult($"{tool.Server}/{tool.Tool} is no longer available.", true);
         tool = current;
         // The policy is checked against the file as it is now (a deny added mid-answer applies to the next call).
-        var config = EffectiveConfig();
-        if (config is null) return new ToolResult("mcp.json can't be read, so no tools run until it's fixed.", true);
-        if (config.Servers.Concat(extraServers()).FirstOrDefault(s => Same(s.Name, tool.Server)) is { Disabled: true })
-            return new ToolResult($"{tool.Server} is switched off in mcp.json.", true);
-        var decision = ToolPolicy.Decide(Approvals(config), tool.Server, tool.Tool, tool.ReadOnly);
-        if (decision == ToolApproval.Deny) return new ToolResult($"The user doesn't allow {tool.Server}/{tool.Tool}.", true);
+        if (CheckPolicy(tool, out var decision) is { } blocked) return blocked;
         if (decision == ToolApproval.Ask)
         {
             var answer = await approve(new ToolCallRequest(tool, arguments), ct);
             if (answer == ToolDecision.Deny) return new ToolResult($"The user declined running {tool.Server}/{tool.Tool}.", true);
+            // Don't persist "Always" over a deny rule added while the dialog was open.
+            if (CheckPolicy(tool, out _) is { } changed) return changed;
             if (answer == ToolDecision.AllowAlways) Remember(tool);
         }
         try
         {
+            if (CheckPolicy(tool, out _) is { } changed) return changed;
             var result = await session.CallAsync(tool.Tool, arguments, ct);
             log.Info($"tool {tool.Server}/{tool.Tool}: {(result.IsError ? "error" : "ok")} ({result.Text.Length} chars)");
             return result.Text.Length <= MaxResultChars ? result
@@ -216,6 +214,18 @@ public sealed class McpToolHost(
             log.Error($"tool {tool.Server}/{tool.Tool} failed", ex);
             return new ToolResult($"The tool failed: {ex.Message}", true);
         }
+    }
+
+    private ToolResult? CheckPolicy(ToolSpec tool, out ToolApproval decision)
+    {
+        decision = ToolApproval.Deny;
+        var config = EffectiveConfig();
+        if (config is null) return new ToolResult("mcp.json can't be read, so no tools run until it's fixed.", true);
+        var server = config.Servers.Concat(extraServers()).FirstOrDefault(s => Same(s.Name, tool.Server));
+        if (server is null) return new ToolResult($"{tool.Server} is no longer configured.", true);
+        if (server.Disabled) return new ToolResult($"{tool.Server} is switched off in mcp.json.", true);
+        decision = ToolPolicy.Decide(Approvals(config), tool.Server, tool.Tool, tool.ReadOnly);
+        return decision == ToolApproval.Deny ? new ToolResult($"The user doesn't allow {tool.Server}/{tool.Tool}.", true) : null;
     }
 
     /// <summary>The config in force: the file if it reads cleanly, else the last good one (null if there never was one).</summary>

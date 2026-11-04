@@ -39,6 +39,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
         {
             var modelParts = new JsonArray();
             var calls = new List<(string Name, string? Id, JsonElement Args)>();
+            string? finishReason = null;
             HttpResponseMessage? sent = null;
             await foreach (var step in ApiCommon.SendWithRetriesAsync(http, () => Request(endpoint, model, key, contents, offered), profile, ct))
                 if (step.Status is { } note) yield return ChatDelta.StatusNote(note);
@@ -79,6 +80,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                             if (Str(part, "text") is { Length: > 0 } piece) yield return new ChatDelta(piece);
                         }
                     var stopReason = Str(candidate, "finishReason");
+                    if (stopReason is not null) finishReason = stopReason;
                     // A cut-off answer is shown as far as it got, but a function call from one must not run (its arguments may be partial).
                     if (stopReason is "SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST" or "MALFORMED_FUNCTION_CALL"
                         || stopReason is "MAX_TOKENS" && calls.Count > 0)
@@ -86,7 +88,15 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                 }
             }
 
-            if (calls.Count == 0 || offered.Count == 0) yield break;
+            if (calls.Count == 0)
+            {
+                if (finishReason == "MAX_TOKENS")
+                    yield return ChatDelta.StatusNote(L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finishReason));
+                yield break;
+            }
+            if (finishReason != "STOP")
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finishReason ?? "EOF"));
+            if (offered.Count == 0) yield break;
             contents.Add(new JsonObject { ["role"] = "model", ["parts"] = modelParts });
             var responses = new JsonArray();
             foreach (var (name, id, args) in calls)

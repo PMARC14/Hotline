@@ -52,6 +52,17 @@ public sealed class GeminiBackendTests : TempDirTest
     private static BackendProfile Gemini(string? model = "gemini-3.8-flash") => new() { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model };
 
     [Fact]
+    public async Task MAX_TOKENS_keeps_plain_answer_and_yields_a_localized_status_note()
+    {
+        var (backend, _) = New(Gemini(), _ => Sse(Part("Partial answer."), """{"candidates":[{"finishReason":"MAX_TOKENS"}]}"""));
+        var deltas = new List<ChatDelta>();
+        await foreach (var delta in backend.StreamAsync([new("1", ChatRole.User, "hi", [], Now)], default)) deltas.Add(delta);
+        Assert.Equal("Partial answer.", string.Concat(deltas.Select(d => d.Text)));
+        var status = Assert.Single(deltas, d => d.Status is not null);
+        Assert.Equal(Hotline.Core.Text.Localization.L.F(Hotline.Core.Text.Localization.Strings.Api_StoppedAnswer, "Gemini API", "MAX_TOKENS"), status.Status);
+    }
+
+    [Fact]
     public async Task Streams_generate_content_with_roles_system_and_images_and_skips_thoughts()
     {
         var (b, handler) = New(Gemini(), _ => Sse(Part("thinking…", thought: true), Part("Hel"), Part("lo")));

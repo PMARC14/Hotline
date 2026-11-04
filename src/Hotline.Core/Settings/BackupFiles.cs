@@ -31,6 +31,7 @@ public static class BackupFiles
             // partial destination (e.g. disk full) must still fail, rather than retrying it as a name collision.
             catch (IOException ex) when ((ex.HResult & 0xffff) is 17 or 80 or 183 && File.Exists(target)) { last++; }
         }
+        File.SetAttributes(target, FileAttributes.Normal);
         Prune(path, keep);
         return target;
     }
