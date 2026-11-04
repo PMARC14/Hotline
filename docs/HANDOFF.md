@@ -35,8 +35,16 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   replay in a CLI. The App-only ones (Settings reload vs unsaved edits, Alt-resize, filled-dropdown brushes, "Move what doesn't fit"
   stale width, hold leak, Open WebUI keys kept after Reset) are in [plausible-review.md](plausible-review.md) and need a hand check or an
   App-side fix. Test cleanup not done: shared HTTP fake / stream collector / MCP fake helpers and Argon items 2, 3, 7, 9, 15, 17.
-- **Button shortcuts (PR #42):** `chat.shortcuts` (in-panel, Ctrl+N new chat, Ctrl+H recent, Ctrl+, settings, ...; table in configuration.md).
-  Not verified by eye: focus routing, flyouts, tooltips, picker cycling (TESTING.md).
+- **0.6 checkpoint (v0.6.0, 2026-11-04):** GitHub release published; Store bundle `HotlineAI_0.6.0.0_Store.msixbundle` built by hand
+  (Store workflow, submit off) and listing text refreshed in `store/listing.md` + `store/listings/` (translations are model-drafted).
+  Reviews by Astra, Sonnet and four Flash reviewers were verified and fixed (PRs #45, #46, #48); rejected items are listed in the PR texts.
+- **Button shortcuts (PRs #42, #44, #46):** built-ins live in an optional top-level `shortcuts` map in `toolbar.json`, custom buttons use
+  `buttons.<id>.shortcut`; legacy `chat.shortcuts` is read once as a fallback; toolbar bindings need Ctrl/Alt/Win or an F-key. Stop stays
+  `chat.stopShortcut`. **Not verified by eye** (App code): focus routing, AltGr/IME/auto-repeat guards, tooltips and Narrator accelerator
+  keys, capture box, More menu shortcut (TESTING.md).
+- **For the schema freeze (S1):** a toolbar edit in Settings drops unknown top-level keys and unknown nested fields (documented by the
+  `Compat_*` tests in `SettingsPackageTests`); runtime conflict resolution must keep the requested value; see Astra's recommendation
+  (version 3 boundary for shortcuts, one backup policy, unknown fields preserved). Hand tests still open: multi-monitor / mixed DPI.
 - **Schema freeze (S1) is NOT done:** it is the first job of the road to 1.0. Multi-monitor / mixed DPI is still to hand test.
 - **Open items:** `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale; the
   dropdowns' hover / press look with outline or fill is **UNVERIFIED by eye**. `personal/gemini-web` still needs `main` merged in.
