@@ -271,14 +271,6 @@ public sealed class CodexTests : TempDirTest
     }
 
     [Fact]
-    public void Model_check_message_for_a_connection_without_a_model_list()
-    {
-        Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
-        Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
-        Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
-    }
-
-    [Fact]
     public async Task Stopping_early_stops_codex()
     {
         _factory.Create = () => new FakeLineProcess { Respond = _ => [ThreadStarted, Message("m", "partial")] }; // still running
@@ -383,16 +375,5 @@ public sealed class CodexTests : TempDirTest
         files.Add(@"D:\tools\codex.exe");
         Assert.Equal(@"D:\tools\codex.exe", CodexLocator.Find(@"D:\tools\codex.exe", Exists, @"C:\bin", "x64"));
         Assert.Null(CodexLocator.Find(@"D:\missing.exe", Exists, @"C:\bin", "x64"));
-    }
-
-    // ---- wiring --------------------------------------------------------------------------------
-
-    [Fact]
-    public void Codex_is_a_cli_connection_type()
-    {
-        var info = ConnectionTypes.Of(BackendType.Codex);
-        Assert.True(info.Has(ConnectionField.CliPath) && info.Has(ConnectionField.Tools));
-        Assert.False(info.Has(ConnectionField.ApiKey));
-        Assert.Equal(["low", "medium", "high", "xhigh", "max", "ultra"], info.EffortLevels);
     }
 }

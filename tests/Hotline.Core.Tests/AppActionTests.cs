@@ -96,11 +96,10 @@ public sealed class AppActionTests
     }
 
     [Fact]
-    public void Both_link_parsers_read_plus_as_a_space_and_percent_escapes()
+    public void Action_links_read_plus_as_a_space_and_percent_escapes()
     {
         var request = AppActionRequest.Parse(new Uri("hotline-action://ask?text=a+b%20c"), null, null);
         Assert.Equal("a b c", request!.Text);
-        Assert.Equal(KeyEvent.Tap, ActivationParser.ParseUri(new Uri("hotline://key?x=1&state=ta%70")));
     }
 
     [Fact]

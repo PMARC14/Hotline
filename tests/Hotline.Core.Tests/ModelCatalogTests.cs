@@ -149,4 +149,12 @@ public class ModelCatalogTests
         Assert.Contains("API key not valid", ex.Message);
         Assert.DoesNotContain("AIza-secret", ex.Message);
     }
+
+    [Fact]
+    public void Model_check_message_for_a_connection_without_a_model_list()
+    {
+        Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
+        Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
+        Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
+    }
 }
