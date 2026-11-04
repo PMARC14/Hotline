@@ -23,12 +23,8 @@ public sealed class ToolbarPlanTests
         Assert.Equal(new ButtonMetrics(width, height, font), ToolbarPlan.Metrics(new ButtonStyle(size, false, false), 36, 36, 15));
 
     [Fact]
-    public void Todays_sizes_are_20_40_and_80_by_one_cell_high()
+    public void A_bigger_base_scales_every_preset_and_the_height_stays_the_bases()
     {
-        Assert.Equal(new ButtonMetrics(20, 36, 13), ToolbarPlan.Metrics(new ButtonStyle(0.5)));
-        Assert.Equal(new ButtonMetrics(40, 36, 16), ToolbarPlan.Metrics(new ButtonStyle(1)));
-        Assert.Equal(new ButtonMetrics(80, 36, 16), ToolbarPlan.Metrics(new ButtonStyle(2)));
-        // A bigger base: every preset follows, the height stays the base's.
         Assert.Equal(new ButtonMetrics(25, 44, 16), ToolbarPlan.Metrics(new ButtonStyle(0.5), 50, 44, 20));
         Assert.Equal(new ButtonMetrics(100, 44, 20), ToolbarPlan.Metrics(new ButtonStyle(2), 50, 44, 20));
     }

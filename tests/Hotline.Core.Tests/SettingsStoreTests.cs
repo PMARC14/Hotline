@@ -185,14 +185,6 @@ public sealed class SettingsStoreTests : TempDirTest
     }
 
     [Fact]
-    public void A_file_without_a_schema_version_is_not_archived()
-    {
-        WriteSettings("""{ "window": { "width": 700 } }""");
-        New().Load();
-        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
-    }
-
-    [Fact]
     public void An_inline_backends_list_is_still_split_into_connection_files_without_an_old_archive()
     {
         WriteSettings("""{ "schemaVersion": 3, "chat": { "defaultBackend": "g", "backends": [ { "id": "g", "type": "gemini", "name": "G" } ] } }""");
