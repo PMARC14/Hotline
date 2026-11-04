@@ -499,7 +499,7 @@ Reddet:
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Geri kalanı geçerlidir. Ayarlar › Gelişmiş her şeyi listeler.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Bir ayar dosyası okunamıyor</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline, düzeltilene kadar mevcut ayarlarını korur.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width artık gerçek piksellerdir (önceki: ölçekli birimler): {0} değerleriniz olduğu gibi korundu; Ayarlar &amp;gt; Pencere bölümünü kontrol edin</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width artık gerçek piksellerdir (önceki: ölçekli birimler): {0} değerleriniz olduğu gibi korundu; Ayarlar &gt; Pencere bölümünü kontrol edin</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Ayar dosyalarınızdaki sorunlar</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Yoksayılan değerler varsayılanlarını kullanır. Dosyayı düzeltin; Hotline bunu hemen algılar.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json dosyasının bir kısmı yoksayıldı</value></data>
@@ -775,7 +775,7 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Bar_ColorPink" xml:space="preserve"><value>Pembe</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Düğme cinsinden genişlik</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Gösterilmiyor</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Öğeleri dört grup arasında sürükleyin veya her öğenin altındaki düğmeleri kullanın. Bir öğe odaktayken Alt+ok tuşları onu başka bir gruba taşır, Ctrl+Sol veya Ctrl+Sağ ise grubu içinde taşır. Değişiklikler toolbar.json dosyasına kaydedilir ve hemen uygulanır.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Öğeleri altı grup arasında sürükleyin veya her öğenin altındaki düğmeleri kullanın. Bir öğe odaktayken Alt+ok tuşları onu başka bir gruba taşır, Ctrl+Sol veya Ctrl+Sağ ise grubu içinde taşır. Değişiklikler toolbar.json dosyasına kaydedilir ve hemen uygulanır.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Sol gruba taşı</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Sağ gruba taşı</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Seçiciler</value></data>
@@ -877,4 +877,7 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt veya Win ya da F1-F24 kullanın. Birleşim boşta olmalıdır (Durdur, yerleşik ve özel düğmeler sayılır).</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt veya Win ekleyin (F1-F24 tek başına çalışır)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Kopyalanacak tamamlanmış yanıt yok.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>{0} ekini kaldır</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>{0} bağlantısını yukarı taşı</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>{0} bağlantısını aşağı taşı</value></data>
 </root>

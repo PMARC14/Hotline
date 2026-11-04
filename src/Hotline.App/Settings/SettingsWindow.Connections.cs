@@ -3,6 +3,7 @@ using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
 
@@ -95,10 +96,15 @@ public sealed partial class SettingsWindow
             try { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); }
             catch (Exception ex) { Fail("choosing the default connection failed", ex); }
         };
+        Action? updateOrderNames = null;
         Button MoveButton(string glyph, string tip, int delta)
         {
             var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
+            void UpdateName() => AutomationProperties.SetName(b, L.F(delta < 0 ? Strings.Conn_MoveNamedUp : Strings.Conn_MoveNamedDown,
+                chat.Backends.FirstOrDefault(p => p.Id == _selectedConnection)?.Name ?? ""));
+            UpdateName();
+            updateOrderNames += UpdateName;
             b.Click += (_, _) =>
             {
                 try { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); }
@@ -131,6 +137,7 @@ public sealed partial class SettingsWindow
         {
             if (list.SelectedItem is not ListViewItem { Tag: string id }) return;
             _selectedConnection = id;
+            updateOrderNames?.Invoke();
             makeDefault.IsEnabled = id != chat.DefaultBackend;
             // A connection removed by an external reload while this page was open: show no editor (never the previous one).
             if (chat.Backends.FirstOrDefault(b => b.Id == id) is { } picked) BuildEditor(editorHost, picked);

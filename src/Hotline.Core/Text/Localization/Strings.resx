@@ -775,7 +775,7 @@ API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="Bar_ColorPink" xml:space="preserve"><value>Pink</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Width in button widths</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Not shown</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Drag items between the four groups, or use the buttons under each item. With an item focused, Alt+arrow keys move it to another group and Ctrl+Left or Ctrl+Right move it within its group. Changes are saved to toolbar.json and applied at once.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Drag items between the six groups, or use the buttons under each item. With an item focused, Alt+arrow keys move it to another group and Ctrl+Left or Ctrl+Right move it within its group. Changes are saved to toolbar.json and applied at once.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Move to the left group</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Move to the right group</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Pickers</value></data>
@@ -877,4 +877,7 @@ API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Use Ctrl, Alt or Win, or F1-F24. This shortcut must be free (Stop, built-ins and custom buttons count).</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Add Ctrl, Alt or Win (F1-F24 work alone)</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>No completed answer to copy.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Remove attachment {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Move connection {0} up</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Move connection {0} down</value></data>
 </root>

@@ -18,6 +18,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
     FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
+    private readonly SemaphoreSlim _turnGate = new(1, 1);
 
     public CliSession? Resume { get; set; }
 
@@ -26,6 +27,18 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
     public BackendCapabilities Capabilities { get; } = new(Images: true, TextFiles: true);
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
+    {
+        // New chat may send again while the cancelled turn is still unwinding.
+        // Keep its process cleanup and session bookkeeping ahead of the next turn.
+        await _turnGate.WaitAsync(ct);
+        try
+        {
+            await foreach (var delta in StreamTurnAsync(conversation, ct)) yield return delta;
+        }
+        finally { _turnGate.Release(); }
+    }
+
+    private async IAsyncEnumerable<ChatDelta> StreamTurnAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
     {
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));
@@ -60,7 +73,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
             await StopAsync();
             ILineProcess process;
             try { process = _process = processes.Start(exe, args, cwd); }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
             {
                 throw new BackendException(BackendErrorKind.NotInstalled, L.F(Strings.Codex_StartFailed, exe, ex.Message), ex);
             }

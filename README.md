@@ -27,7 +27,7 @@ configurable in plain files.
 - **Rich answers**: Markdown, tables, code with Copy, math, inline SVG, and the whole conversation selectable in one drag.
 - **Screens and files**: capture a window, the screen or a region; paste or drop files; models that can't see images get the text (offline OCR).
 - **Selected text comes along** through UI Automation, without keystrokes or touching your clipboard.
-- **Quick actions** (`/translate`, `/summarize`, `/fix`, `/explain`, or your own Markdown files in `actions\`) and **memory** (`/remember`).
+- **Quick actions** (`/bullets`, `/explain`, `/fix`, `/formal`, `/reply`, `/shorter`, `/summarize`, `/translate`, or your own Markdown files in `actions\`) and **memory** (`/remember`).
 - **Voice**: set the long press to *Voice input*, hold the key and talk.
 - **Chat history**: searchable (🕘, Ctrl+↑, `/resume`); CLI chats live in that tool's own history and resume after a restart.
   **Continue this chat in ▸** opens a chat in a terminal, Open WebUI, the llama.cpp web UI, LM Studio or any web page.

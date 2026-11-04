@@ -168,7 +168,7 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
       about the text in it ("Text in …" attachment).
 
 ### Quick actions and memory
-- [ ] Type `/` → list with remember, translate, summarize, fix, explain; ↑/↓, Tab/Enter, Esc work; Esc doesn't close the panel.
+- [ ] Type `/` → list with remember and all eight default actions: bullets, explain, fix, formal, reply, shorter, summarize, translate; ↑/↓, Tab/Enter, Esc work; Esc doesn't close the panel.
 - [ ] `/fix teh cat sat` sends a corrected sentence; `/summarize` with an attachment summarizes it.
 - [ ] Settings › Quick actions › New action → edit the file → it's in the `/` list straight away.
 - [ ] `/remember I prefer metric units` → "Remembered."; a new chat answers in metric; Settings › Chat › Edit memory shows the line.

@@ -66,13 +66,15 @@ public static class OpenWebUiChat
         };
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", apiKey);
         HttpResponseMessage response;
-        try { response = await http.SendAsync(request, ct); }
+        try { response = await http.SendAsync(request, HttpCompletionOption.ResponseHeadersRead, ct); }
         catch (HttpRequestException ex) { throw new OpenWebUiException(OpenWebUiError.Unreachable, $"Open WebUI isn't running at {root}.", ex); }
         using (response)
         {
             if (response.StatusCode is HttpStatusCode.Unauthorized or HttpStatusCode.Forbidden)
                 throw new OpenWebUiException(OpenWebUiError.KeyRefused, "Open WebUI refused the API key.");
-            var text = await response.Content.ReadAsStringAsync(ct);
+            var (text, truncated) = await Api.ApiCommon.ReadCappedAsync(response.Content, Api.ApiCommon.MaxErrorBodyBytes, ct);
+            if (truncated)
+                throw new OpenWebUiException(OpenWebUiError.BadReply, "Open WebUI returned an oversized chat creation reply.");
             string? id = null;
             if (response.IsSuccessStatusCode)
                 try { id = JsonNode.Parse(text) is JsonObject o ? (string?)o["id"] : null; } // a bare value isn't a chat

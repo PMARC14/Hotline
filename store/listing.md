@@ -40,7 +40,7 @@ BRING CONTEXT WITH YOU
 • Models that can't see images get the text in your screenshot instead, read on your PC with Windows' own OCR.
 
 MADE FOR QUICK JOBS
-• Quick actions: type / for translate, summarize, fix or explain, or write your own as simple text files.
+• Quick actions: type / for bullets, explain, fix, formal, reply, shorter, summarize or translate, or write your own as simple text files.
 • Memory: "/remember I prefer metric units" and every chat knows it, whichever AI you use.
 • Voice: hold the key and talk; let go to stop.
 • Recent chats are one click away.
@@ -77,7 +77,7 @@ Pick your accent colour (Hotline purple, your Windows accent or any colour) and 
 6. Selected text from the app you came from is attached automatically
 7. Capture a window, the screen or a region; paste or drop images and files
 8. Text in screenshots is read on your PC (OCR) for models that can't see images
-9. Quick actions: /translate, /summarize, /fix, /explain, or your own
+9. Quick actions: /bullets, /explain, /fix, /formal, /reply, /shorter, /summarize, /translate, or your own
 10. Memory that every chat sees, whichever AI you use
 11. Push-to-talk voice input
 12. Send text or images from Click to Do and other apps
@@ -93,7 +93,7 @@ Pick your accent colour (Hotline purple, your Windows accent or any colour) and 
 
 1. Press the Copilot key: ask anything, answers stream in.
 2. Selected text comes along with your question.
-3. Quick actions with /: translate, summarize, fix, explain.
+3. Quick actions with /: bullets, explain, fix, formal, reply, shorter, summarize, translate.
 4. Use the AI you already have, and set everything your way.
 
 ## Trailer

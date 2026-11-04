@@ -18,6 +18,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
+    private readonly SemaphoreSlim _turnGate = new(1, 1);
     private int _knownCount;
     private string? _knownFirstId;
     private string? _startedPrompt;
@@ -30,6 +31,18 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     public CliSession? Resume { get; set; }
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
+    {
+        // New chat may send again while the cancelled turn is still unwinding.
+        // Keep its process cleanup and session bookkeeping ahead of the next turn.
+        await _turnGate.WaitAsync(ct);
+        try
+        {
+            await foreach (var delta in StreamTurnAsync(conversation, ct)) yield return delta;
+        }
+        finally { _turnGate.Release(); }
+    }
+
+    private async IAsyncEnumerable<ChatDelta> StreamTurnAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
     {
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));

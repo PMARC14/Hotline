@@ -384,6 +384,12 @@ public sealed class SettingsStore(string directory)
     private static string SafeFileName(string id)
     {
         var safe = new string(id.Select(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.' ? c : '-').ToArray()).Trim('.');
+        var stem = safe.Split('.')[0];
+        if (stem.Equals("CON", StringComparison.OrdinalIgnoreCase) || stem.Equals("PRN", StringComparison.OrdinalIgnoreCase)
+            || stem.Equals("AUX", StringComparison.OrdinalIgnoreCase) || stem.Equals("NUL", StringComparison.OrdinalIgnoreCase)
+            || (stem.Length == 4 && stem[3] is >= '1' and <= '9'
+                && (stem.StartsWith("COM", StringComparison.OrdinalIgnoreCase) || stem.StartsWith("LPT", StringComparison.OrdinalIgnoreCase))))
+            safe = "_" + safe;
         return safe.Length == 0 ? "connection" : safe;
     }
 

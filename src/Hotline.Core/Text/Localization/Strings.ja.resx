@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 残りの設定は適用されます。[設定] › [詳細設定] にすべて表示されます。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>設定ファイルを読み取れません</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>修正されるまで、Hotline は現在の設定を維持します。</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width は実際のピクセルになりました (以前: スケール単位): 設定値 {0} はそのまま保持されました。設定 &amp;gt; ウィンドウ を確認してください</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width は実際のピクセルになりました (以前: スケール単位): 設定値 {0} はそのまま保持されました。設定 &gt; ウィンドウ を確認してください</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定ファイルの問題</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>無視された値にはデフォルトが使用されます。ファイルを修正すると、Hotline にすぐに反映されます。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json の一部が無視されました</value></data>
@@ -775,7 +775,7 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Bar_ColorPink" xml:space="preserve"><value>ピンク</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>ボタン幅単位の幅</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>非表示</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>4 つのグループ間で項目をドラッグするか、各項目の下にあるボタンを使用します。項目にフォーカスがある状態で、Alt+矢印キーで別のグループへ、Ctrl+Left または Ctrl+Right でグループ内を移動できます。変更は toolbar.json に保存され、すぐに適用されます。</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>6 つのグループ間で項目をドラッグするか、各項目の下にあるボタンを使用します。項目にフォーカスがある状態で、Alt+矢印キーで別のグループへ、Ctrl+Left または Ctrl+Right でグループ内を移動できます。変更は toolbar.json に保存され、すぐに適用されます。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>左のグループに移動</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>右のグループに移動</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>ピッカー</value></data>
@@ -877,4 +877,7 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl、Alt、Win、または F1-F24 を使ってください。停止、組み込みボタン、カスタムボタンで使われていない組み合わせが必要です。</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl、Alt、Win を追加（F1-F24 は単独で使用可）</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>コピーできる完了済みの回答がありません。</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>添付ファイル {0} を削除</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>接続 {0} を上に移動</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>接続 {0} を下に移動</value></data>
 </root>

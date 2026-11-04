@@ -499,7 +499,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 其余项已生效。“设置 › 高级”中列出了所有内容。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>无法读取设置文件</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline 将保留现有设置，直至修复。</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 现为实际像素（此前为缩放单位）：您的数值 {0} 已按原样保留；请检查 设置 &amp;gt; 窗口</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 现为实际像素（此前为缩放单位）：您的数值 {0} 已按原样保留；请检查 设置 &gt; 窗口</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>配置文件存在问题</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>被忽略的值将使用其默认值。修复该文件后，Hotline 会立即加载。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的一部分已被忽略</value></data>
@@ -775,7 +775,7 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Bar_ColorPink" xml:space="preserve"><value>粉色</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>按按钮宽度计算的宽度</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>不显示</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>在四个分组之间拖动项目，或使用每个项目下方的按钮。聚焦项目时，按 Alt+方向键可将其移至其他分组，按 Ctrl+Left 或 Ctrl+Right 可在其分组内移动。更改会保存到 toolbar.json 并立即生效。</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>在六个分组之间拖动项目，或使用每个项目下方的按钮。聚焦项目时，按 Alt+方向键可将其移至其他分组，按 Ctrl+Left 或 Ctrl+Right 可在其分组内移动。更改会保存到 toolbar.json 并立即生效。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左侧分组</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>移至右侧分组</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>选择器</value></data>
@@ -877,4 +877,7 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>请使用 Ctrl、Alt、Win 或 F1-F24。组合必须未被占用（包括停止、内置按钮和自定义按钮）。</value></data>
   <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>请添加 Ctrl、Alt 或 Win（F1-F24 可单独使用）</value></data>
   <data name="Transcript_NothingToCopy" xml:space="preserve"><value>没有可复制的已完成回答。</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>移除附件 {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>上移连接 {0}</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>下移连接 {0}</value></data>
 </root>
