@@ -7,6 +7,27 @@ public sealed class BackupFilesTests : TempDirTest
     public BackupFilesTests() => Directory.CreateDirectory(_dir);
 
     [Fact]
+    public void Read_only_sources_produce_writable_backups_that_can_be_pruned()
+    {
+        var path = Path.Combine(_dir, "settings.json");
+        File.WriteAllText(path, "hand edited");
+        File.SetAttributes(path, FileAttributes.ReadOnly);
+        try
+        {
+            var first = BackupFiles.CopyStamped(path, new DateTime(2026, 11, 3, 12, 0, 0), keep: 1);
+            Assert.Equal(FileAttributes.Normal, File.GetAttributes(first));
+            var second = BackupFiles.CopyStamped(path, new DateTime(2026, 11, 3, 12, 0, 1), keep: 1);
+            Assert.False(File.Exists(first));
+            Assert.Equal("hand edited", File.ReadAllText(second));
+            Assert.True(File.GetAttributes(path).HasFlag(FileAttributes.ReadOnly));
+        }
+        finally
+        {
+            foreach (var file in Directory.GetFiles(_dir)) File.SetAttributes(file, FileAttributes.Normal);
+        }
+    }
+
+    [Fact]
     public async Task Concurrent_copies_at_the_same_timestamp_keep_every_backup()
     {
         const int workers = 8, rounds = 8;

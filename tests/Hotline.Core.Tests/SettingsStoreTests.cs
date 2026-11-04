@@ -24,6 +24,28 @@ public sealed class SettingsStoreTests : IDisposable
         File.WriteAllText(SettingsPath, json);
     }
 
+    [Theory]
+    [InlineData("width")]
+    [InlineData("chatWidth")]
+    [InlineData("chatHeight")]
+    [InlineData("fontSize")]
+    [InlineData("fontFamily")]
+    public void A_missing_null_option_does_not_hide_a_later_missing_non_null_option(string nullableKey)
+    {
+        var root = System.Text.Json.Nodes.JsonNode.Parse(SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings())))!;
+        var window = root["window"]!.AsObject();
+        window.Remove(nullableKey);
+        window.Remove("backdrop");
+        var original = "// hand edited\n" + root.ToJsonString();
+        WriteSettings(original);
+
+        New().Load();
+
+        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
+        var saved = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(SettingsPath))!;
+        Assert.True(saved["window"]!.AsObject().ContainsKey("backdrop"));
+    }
+
     [Fact]
     public void Missing_file_returns_defaults_and_writes_file()
     {

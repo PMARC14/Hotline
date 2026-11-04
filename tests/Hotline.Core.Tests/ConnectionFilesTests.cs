@@ -47,6 +47,38 @@ public sealed class ConnectionFilesTests : IDisposable
     }
 
     [Fact]
+    public void Legacy_migration_writes_only_new_connections_and_preserves_existing_bytes()
+    {
+        WithAgy();
+        var originalConnection = File.ReadAllBytes(Conn("agy"));
+        File.WriteAllText(SettingsFile, """{"schemaVersion":7,"chat":{"backends":[{"id":"agy","type":"local","name":"Old"},{"id":"new","type":"local","name":"New"}]}}""");
+        var originalSettings = File.ReadAllText(SettingsFile);
+
+        var loaded = new SettingsStore(_dir).Load();
+
+        Assert.Equal(originalConnection, File.ReadAllBytes(Conn("agy")));
+        Assert.Empty(Directory.GetFiles(Path.Combine(_dir, "connections"), "agy.json.*.bak"));
+        Assert.True(File.Exists(Conn("new")));
+        Assert.Equal(BackendType.Antigravity, loaded.Chat.Backends.Single(p => p.Id == "agy").Type);
+        Assert.Equal(originalSettings, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
+    }
+
+    [Fact]
+    public void Legacy_migration_creates_no_connection_when_the_settings_backup_fails()
+    {
+        Directory.CreateDirectory(_dir);
+        const string original = """{"chat":{"backends":[{"id":"new","type":"local","name":"New"}]}}""";
+        File.WriteAllText(SettingsFile, original);
+        var store = new SettingsStore(_dir) { BackupOverride = _ => throw new IOException("backup failed") };
+
+        store.Load();
+
+        Assert.False(File.Exists(Conn("new")));
+        Assert.Equal(original, File.ReadAllText(SettingsFile));
+        Assert.NotEmpty(store.WriteProblems);
+    }
+
+    [Fact]
     public void Order_comes_from_settings_and_unlisted_files_follow_by_name()
     {
         WithAgy();
