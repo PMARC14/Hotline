@@ -18,10 +18,10 @@ public sealed class ChatShortcutTests : TempDirTest
     }
 
     [Theory]
-    [InlineData("Esc", "Esc")]
+    [InlineData("F5", "F5")]
     [InlineData("control+shift+c", "Ctrl+Shift+C")]
     [InlineData("Ctrl+Period", "Ctrl+.")]
-    public void Uses_the_stop_shortcut_parser_and_canonical_spelling(string text, string expected)
+    public void Uses_the_toolbar_shortcut_parser_and_canonical_spelling(string text, string expected)
     {
         var (settings, store) = Read(JsonSerializer.Serialize(new { stopShortcut = "Ctrl+J", shortcuts = new { copyLastAnswer = text } }));
         Assert.Equal(expected, settings.Chat.Shortcuts["copyLastAnswer"]);
@@ -62,7 +62,7 @@ public sealed class ChatShortcutTests : TempDirTest
         Assert.Equal("Ctrl+Q", s.Chat.Shortcuts["recent"]);
         Assert.False(s.Chat.Memory);
         Assert.Single(store.SettingsProblems);
-        Assert.Contains("chat.shortcuts.pin", store.SettingsProblems[0]);
+        Assert.Contains("shortcuts.pin", store.SettingsProblems[0]);
         Assert.Contains(text, File.ReadAllText(store.FilePath));
     }
 
@@ -100,11 +100,11 @@ public sealed class ChatShortcutTests : TempDirTest
     }
 
     [Fact]
-    public void Duplicate_ids_are_case_insensitive_and_keep_the_first_even_if_invalid()
+    public void Duplicate_ids_are_case_insensitive_and_keep_the_last()
     {
         var (s, store) = Read("""{"shortcuts":{"PIN":42,"pin":"Ctrl+Q"}}""");
-        Assert.Equal("Ctrl+P", s.Chat.Shortcuts["pin"]);
-        Assert.Equal(2, store.SettingsProblems.Count);
+        Assert.Equal("Ctrl+Q", s.Chat.Shortcuts["pin"]);
+        Assert.Single(store.SettingsProblems);
         Assert.DoesNotContain("PIN", s.Chat.Shortcuts.Keys);
     }
 
@@ -152,7 +152,8 @@ public sealed class ChatShortcutTests : TempDirTest
         {
             var row = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == "Bar_" + id));
             Assert.Equal(combo, row.Get(new HotlineSettings()));
-            Assert.True(row.Validate!("Esc"));
+            Assert.False(row.Validate!("Esc"));
+            Assert.True(row.Validate!("Ctrl+Q"));
             Assert.False(row.Validate!("Enter"));
         }
     }
@@ -191,7 +192,7 @@ public sealed class ChatShortcutTests : TempDirTest
         Assert.Null(imported.Error);
         Assert.Equal(s.Chat.Shortcuts, new SettingsStore(importedDir).Load().Chat.Shortcuts);
         SettingsReset.WriteDefaults(_dir);
-        Assert.Contains("\"shortcuts\"", File.ReadAllText(SettingsReset.DefaultsPath(_dir)));
+        Assert.DoesNotContain("\"shortcuts\"", File.ReadAllText(SettingsReset.DefaultsPath(_dir)));
         Assert.Empty(SettingsReset.Reset(store, _dir, s, false, DateTimeOffset.UtcNow).Failed);
         Assert.Equal(ChatShortcuts.Defaults, new SettingsStore(_dir).Load().Chat.Shortcuts);
     }

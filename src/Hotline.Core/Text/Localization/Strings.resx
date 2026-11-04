@@ -864,14 +864,17 @@ API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Fill in the name and the address or command.</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Copy last answer</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Shortcut: {0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Panel shortcuts; key names stay in English. Blank resets this command. Edit chat.shortcuts in settings.json to disable a command with an empty string. Stop wins conflicts, then the first combo wins; a conflicting entry uses its default if free, otherwise it is disabled.</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: invalid shortcut; using this command's default if available.</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: combo already in use; using this command's default if available, otherwise disabling it.</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: unknown button {0}; ignored.</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: listed twice; the first entry wins.</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Toolbar shortcuts use English key names and require Ctrl, Alt or Win, except F1-F24. Blank disables; Reset restores the default. Saved in toolbar.json. Stop, built-ins and custom buttons must use different combinations.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: invalid shortcut; using this command's default if available.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: combo already in use; using this command's default if available, otherwise disabling it.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: unknown button {0}; ignored.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: listed twice; the last entry wins.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Panel shortcuts</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>With the panel focused, Ctrl+N starts a chat, Ctrl+H opens history, and Ctrl+Shift+C copies the last completed answer. Hover over toolbar buttons to see their keys. Effort, model and provider keys cycle their lists. Change keys in Settings &gt; Chat and history, or edit chat.shortcuts in settings.json. Stop has priority; other conflicts keep the first combination. Empty strings in the file disable commands.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>With the panel focused, Ctrl+N starts a chat, Ctrl+H opens history, and Ctrl+Shift+C copies the last completed answer. Hover over toolbar buttons to see their keys. Picker keys cycle their lists. Change keys in Settings &gt; Chat and history, or shortcuts in toolbar.json. Blank disables; Reset restores the default. Stop has priority. Repeats, AltGr and IME composition do not run toolbar commands.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Shortcut</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: invalid shortcut; disabled.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combo already in use; disabled.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Use Ctrl, Alt or Win, or F1-F24. This shortcut must be free (Stop, built-ins and custom buttons count).</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Add Ctrl, Alt or Win (F1-F24 work alone)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>No completed answer to copy.</value></data>
 </root>

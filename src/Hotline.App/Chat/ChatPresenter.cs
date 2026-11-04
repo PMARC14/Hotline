@@ -214,6 +214,7 @@ internal sealed class ChatPresenter
     /// <summary>Panel shortcuts run before text editing; Stop has priority while an answer is being written.</summary>
     private void OnPanelKey(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
     {
+        if (_popup.IsComposing || (uint)e.Key == 0xE5 || (uint)e.OriginalKey == 0xE5) return;
         var held = HeldModifiers();
         if (_chat.IsBusy && Hotline.Core.Activation.Hotkey.TryParseShortcut(_settings.Chat.StopShortcut, out var stop)
             && stop.Matches((uint)e.Key, held))
@@ -223,9 +224,13 @@ internal sealed class ChatPresenter
             e.Handled = true; // e.g. Esc stops instead of hiding the panel
             return;
         }
+        if (e.KeyStatus.WasKeyDown) return;
+        if (held.HasFlag(Hotline.Core.Activation.HotkeyModifiers.Control)
+            && Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.RightMenu)
+                .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)) return;
         foreach (var (id, text) in _popup.ToolbarShortcuts)
         {
-            if (!Hotline.Core.Activation.Hotkey.TryParseShortcut(text, out var shortcut) || !shortcut.Matches((uint)e.Key, held)) continue;
+            if (!Hotline.Core.Activation.Hotkey.TryParseToolbarShortcut(text, out var shortcut) || !shortcut.Matches((uint)e.Key, held)) continue;
             e.Handled = true;
             _tasks.Guard("toolbar shortcut " + id, () => _popup.InvokeToolbarShortcut(id));
             return;
@@ -332,7 +337,7 @@ internal sealed class ChatPresenter
                 _notices.Show(s.Message, InfoBarSeverity.Informational);
                 break;
             case AssistantCompleted c:
-                _transcript.FinishAnswer(c.Id);
+                _transcript.FinishAnswer(c.Id, completed: true);
                 SetBusy(false);
                 _log.Info("chat answer completed");
                 var answeredBy = BackendOf(c.Id);

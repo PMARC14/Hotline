@@ -235,6 +235,11 @@ public sealed class ChatSettings
 
     /// <summary>In-panel toolbar shortcuts (button id to combo); empty text disables an entry.</summary>
     public Dictionary<string, string> Shortcuts { get; set; } = ChatShortcuts.CreateDefaults();
+    /// <summary>Legacy explicit map, captured before normalization. Other settings saves retain its original JSON.</summary>
+    [System.Text.Json.Serialization.JsonIgnore]
+    public System.Text.Json.JsonElement? LegacyShortcutValues { get; set; }
+    [System.Text.Json.Serialization.JsonIgnore]
+    public Windowing.ToolbarModel Toolbar { get; set; } = Windowing.ToolbarModel.Defaults;
     /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
     public bool Memory { get; set; } = true;
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>

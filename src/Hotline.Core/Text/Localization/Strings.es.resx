@@ -864,14 +864,17 @@ Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.<
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Escribe el nombre y la dirección o el comando.</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Copiar la última respuesta</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Atajo: {0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Atajos del panel; los nombres de teclas se mantienen en inglés. Dejar en blanco restablece este comando. Para desactivarlo, usa una cadena vacía en chat.shortcuts en settings.json. Detener tiene prioridad y después gana la primera combinación; los conflictos usan el valor predeterminado si está libre o se desactivan.</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: atajo no válido; se usará el predeterminado si está disponible.</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: combinación en uso; se usará el valor predeterminado si está libre o se desactivará.</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: botón desconocido {0}; se ignora.</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: entrada duplicada; prevalece la primera.</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Los nombres de teclas van en inglés. Se requiere Ctrl, Alt o Win, salvo F1-F24. Vacío desactiva; Restablecer recupera el valor predeterminado. Se guarda en toolbar.json. Detener y todos los botones deben usar combinaciones distintas.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: atajo no válido; se usará el predeterminado si está disponible.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: combinación en uso; se usará el valor predeterminado si está libre o se desactivará.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: botón desconocido {0}; se ignora.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: aparece dos veces; se usa la última entrada.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Atajos del panel</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Con el panel enfocado, Ctrl+N inicia un chat, Ctrl+H abre el historial y Ctrl+Shift+C copia la última respuesta terminada. Pasa el puntero por los botones para ver sus atajos. Las teclas de esfuerzo, modelo y proveedor recorren sus listas. Cambia las teclas en Ajustes &gt; Chat e historial o en chat.shortcuts en settings.json. Detener tiene prioridad; en otros conflictos gana la primera combinación. Las cadenas vacías en el archivo desactivan comandos.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>En el panel, Ctrl+N inicia un chat, Ctrl+H abre el historial y Ctrl+Shift+C copia la última respuesta completada. Los botones muestran sus teclas al pasar el cursor; las teclas de selectores recorren sus listas. Cambia las teclas en Configuración &gt; Chat e historial o en shortcuts de toolbar.json. Vacío desactiva; Restablecer recupera el valor predeterminado. Detener tiene prioridad. La repetición, AltGr y la composición IME no ejecutan comandos de barra.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Atajo</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: atajo no válido; desactivado.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combinación ya en uso; desactivada.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Usa Ctrl, Alt o Win, o F1-F24. La combinación debe estar libre (cuentan Detener, botones integrados y personalizados).</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Añade Ctrl, Alt o Win (F1-F24 funcionan solas)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>No hay respuestas completadas para copiar.</value></data>
 </root>

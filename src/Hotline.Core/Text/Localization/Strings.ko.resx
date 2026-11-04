@@ -864,14 +864,17 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>이름과 주소 또는 명령을 입력하세요.</value></data>
   <data name="Bar_copyLastAnswer" xml:space="preserve"><value>마지막 답변 복사</value></data>
   <data name="Shortcuts_Tooltip" xml:space="preserve"><value>바로 가기: {0}</value></data>
-  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>패널 내 바로 가기입니다. 키 이름은 영어로 입력하세요. 빈 필드는 기본값으로 복원합니다. 비활성화하려면 settings.json의 chat.shortcuts에 빈 문자열을 설정하세요. 중지가 우선하고 그다음 첫 번째 조합이 적용됩니다. 충돌 시 기본값이 비어 있으면 사용하고, 아니면 비활성화합니다.</value></data>
-  <data name="Shortcuts_Invalid" xml:space="preserve"><value>chat.shortcuts.{0}: 잘못된 바로 가기입니다. 사용 가능하면 기본값을 사용합니다.</value></data>
-  <data name="Shortcuts_Conflict" xml:space="preserve"><value>chat.shortcuts.{0}: 이미 사용 중입니다. 기본값이 사용 가능하면 사용하고, 아니면 비활성화합니다.</value></data>
-  <data name="Shortcuts_Unknown" xml:space="preserve"><value>chat.shortcuts: 알 수 없는 버튼 {0}을 무시했습니다.</value></data>
-  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>chat.shortcuts.{0}: 중복 항목입니다. 첫 번째 항목이 적용됩니다.</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>키 이름은 영어로 씁니다. F1-F24 외에는 Ctrl, Alt 또는 Win이 필요합니다. 빈칸은 비활성화, 초기화는 기본값 복원입니다. toolbar.json에 저장됩니다. 중지와 모든 버튼은 서로 다른 조합을 써야 합니다.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: 잘못된 바로 가기입니다. 사용 가능하면 기본값을 사용합니다.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: 이미 사용 중입니다. 기본값이 사용 가능하면 사용하고, 아니면 비활성화합니다.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: 알 수 없는 버튼 {0}을 무시했습니다.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: 중복되었습니다. 마지막 항목을 사용합니다.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>패널 바로 가기</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>패널에 포커스가 있으면 Ctrl+N으로 채팅을 시작하고, Ctrl+H로 기록을 열고, Ctrl+Shift+C로 마지막 완료된 답변을 복사합니다. 버튼에 마우스를 올리면 키를 볼 수 있습니다. 추론 수준, 모델, 공급자 키는 목록을 순환합니다. 설정 &gt; 채팅 및 기록 또는 settings.json의 chat.shortcuts에서 변경하세요. 중지가 우선하고, 다른 충돌에서는 첫 번째 조합이 적용됩니다. 파일의 빈 문자열은 명령을 비활성화합니다.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>패널에서 Ctrl+N은 새 채팅, Ctrl+H는 기록, Ctrl+Shift+C는 마지막 완료된 답변 복사입니다. 버튼 위에 마우스를 올리면 키가 표시되고 선택기 키는 목록을 순환합니다. 설정 &gt; 채팅 및 기록 또는 toolbar.json의 shortcuts에서 바꿉니다. 빈칸은 비활성화, 초기화는 기본값 복원입니다. 중지가 우선합니다. 키 반복, AltGr, IME 조합 중에는 도구 모음 명령을 실행하지 않습니다.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>바로 가기</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: 잘못된 바로 가기이므로 비활성화했습니다.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: 이미 사용 중인 조합이므로 비활성화했습니다.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt, Win 또는 F1-F24를 사용하세요. 중지, 기본 버튼, 사용자 지정 버튼이 쓰지 않는 조합이어야 합니다.</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt 또는 Win 추가 (F1-F24는 단독 사용 가능)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>복사할 완료된 답변이 없습니다.</value></data>
 </root>

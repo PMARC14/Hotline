@@ -17,16 +17,17 @@ public static class HotkeyCapture
     // Shift, Ctrl, Alt (generic and left/right), Win, and the IME / Caps Lock keys that never make a shortcut.
     private static readonly HashSet<uint> ModifierKeys = [0x10, 0x11, 0x12, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0x5B, 0x5C, 0x14];
 
-    /// <param name="panel">Use the panel parser (bare keys allowed, Enter reserved) instead of the global hotkey parser.</param>
+    /// <param name="panel">Capture a toolbar shortcut (Ctrl, Alt or Win required, except F1-F24; Enter reserved).</param>
     public static Result Press(HotkeyModifiers held, uint virtualKey, bool panel = false)
     {
         if (ModifierKeys.Contains(virtualKey)) return new(Outcome.Waiting);
         if (held == HotkeyModifiers.None && virtualKey == VkEsc) return new(Outcome.Cancel);
         if (held == HotkeyModifiers.None && virtualKey is VkBackspace or VkDelete) return new(Outcome.Clear);
         var text = new Hotkey(held, virtualKey).ToString();
-        var valid = panel ? Hotkey.TryParseShortcut(text, out var parsed) : Hotkey.TryParse(text, out parsed);
+        var valid = panel ? Hotkey.TryParseToolbarShortcut(text, out var parsed) : Hotkey.TryParse(text, out parsed);
         if (valid && parsed == new Hotkey(held, virtualKey)) return new(Outcome.Bound, text);
         // Text the setting can't hold back (an unnamed key) is refused; a nameable key alone needs a modifier.
-        return held == HotkeyModifiers.None && Hotkey.TryParseShortcut(text, out _) ? new(Outcome.NeedsModifier) : new(Outcome.Unsupported);
+        return (held == HotkeyModifiers.None || panel && held == HotkeyModifiers.Shift) && Hotkey.TryParseShortcut(text, out _)
+            ? new(Outcome.NeedsModifier) : new(Outcome.Unsupported);
     }
 }

@@ -42,6 +42,7 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         public string Text { get; set; } = "";
         public string? Error { get; set; }
         public bool Streaming { get; set; } = true;
+        public bool Completed { get; set; }
         public bool Dirty { get; set; }
         /// <summary>A failed attempt that was retried: no longer shown.</summary>
         public bool Superseded { get; set; }
@@ -179,12 +180,13 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         ScrollToEnd(force: true);
     }
 
-    public void FinishAnswer(string id)
+    public void FinishAnswer(string id, bool completed = false)
     {
         if (!_assistants.TryGetValue(id, out var view)) return;
         view.Dirty = true;
         RenderDirty();
         view.Streaming = false;
+        view.Completed = completed;
         RemoveCaret(view);
         AppendFooter(view, withError: true);
     }
@@ -432,8 +434,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
 
     public void CopyLastAnswer()
     {
-        var answer = _entries.OfType<AssistantView>().LastOrDefault(v => !v.Superseded && !v.Streaming && v.Text.Length > 0);
+        var answer = _entries.OfType<AssistantView>().LastOrDefault(v => !v.Superseded && v.Completed && v.Text.Length > 0);
         if (answer is not null) CopyText(answer.Text);
+        else notices.Show(Strings.Transcript_NothingToCopy, InfoBarSeverity.Informational);
     }
 
     private void CopyText(string text)

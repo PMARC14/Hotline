@@ -218,6 +218,7 @@ public sealed partial class SettingsWindow : Window
                 return Card(header, description, HotkeyBinder(hk));
             case TextItem tx:
             {
+                if (tx.ToolbarShortcutId is not null) return ToolbarShortcutCard(tx, header, description);
                 var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder is null ? "" : L.Get(tx.Placeholder), Width = 240 };
                 box.LostFocus += (_, _) =>
                 {

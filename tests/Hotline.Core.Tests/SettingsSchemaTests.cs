@@ -67,6 +67,13 @@ public class SettingsSchemaTests
             t.Set(s, sample);
             Assert.Equal(sample, t.Get(s));
             t.Set(s, "  ");
+            if (t.ToolbarShortcutId is not null)
+            {
+                Assert.Equal("", t.Get(s));
+                t.Reset!(s);
+                Assert.Equal(t.Placeholder, t.Get(s));
+                continue;
+            }
             // Unset, or (for settings that always need a value) the default shown as the placeholder.
             Assert.True(t.Get(s) is null || t.Get(s) == t.Placeholder, $"{t.Header}: {t.Get(s)}");
         }

@@ -30,28 +30,45 @@ public static class ChatShortcuts
         void Add(string id, string? text)
         {
             if (text == "") { result[id] = ""; return; }
-            if (!Hotkey.TryParseShortcut(text, out var key))
+            if (!Hotkey.TryParseToolbarShortcut(text, out var key))
             {
                 warn?.Invoke(L.F(Strings.Shortcuts_Invalid, id));
-                Hotkey.TryParseShortcut(Defaults[id], out key);
+                Hotkey.TryParseToolbarShortcut(Defaults[id], out key);
             }
             if (!Claim(used, key, id, warn))
             {
-                Hotkey.TryParseShortcut(Defaults[id], out key);
+                Hotkey.TryParseToolbarShortcut(Defaults[id], out key);
                 if (!used.Add(key)) { result[id] = ""; return; }
             }
             result[id] = key.ToString();
         }
+        var requested = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (name, value) in entries ?? [])
         {
             var id = Defaults.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase));
             if (id is null) { warn?.Invoke(L.F(Strings.Shortcuts_Unknown, LenientReader.Quote(name))); continue; }
-            if (!seen.Add(id)) { warn?.Invoke(L.F(Strings.Shortcuts_Duplicate, id)); continue; }
-            Add(id, value);
+            if (!seen.Add(id)) warn?.Invoke(L.F(Strings.Shortcuts_Duplicate, id));
+            requested[id] = value;
         }
+        foreach (var (id, value) in requested) Add(id, value);
         foreach (var (id, value) in Defaults)
             if (seen.Add(id)) Add(id, value);
         return result;
+    }
+
+    /// <summary>Settings rejects collisions with requested bindings, including bindings currently disabled by a conflict.</summary>
+    public static bool CanBind(ToolbarModel toolbar, ChatSettings chat, string id, string? text)
+    {
+        if (string.IsNullOrWhiteSpace(text)) return true;
+        if (!Hotkey.TryParseToolbarShortcut(text, out var key)) return false;
+        if (Hotkey.TryParseShortcut(chat.StopShortcut, out var stop) && stop == key) return false;
+        var effective = toolbar.EffectiveShortcuts(chat.StopShortcut);
+        foreach (var other in Defaults.Keys.Where(k => !k.Equals(id, StringComparison.OrdinalIgnoreCase)))
+            if (Hotkey.TryParseToolbarShortcut(toolbar.ShortcutText(other), out var binding) && binding == key
+                || Hotkey.TryParseToolbarShortcut(effective[other], out binding) && binding == key) return false;
+        foreach (var button in toolbar.Buttons.Where(b => !b.Id.Equals(id, StringComparison.OrdinalIgnoreCase)))
+            if (Hotkey.TryParseToolbarShortcut(button.RequestedShortcut ?? button.Shortcut, out var binding) && binding == key) return false;
+        return true;
     }
 
     /// <summary>Custom bindings have no fallback. Stop and the effective built-in bindings reserve their combos first;
@@ -68,13 +85,15 @@ public static class ChatShortcuts
         }
         return buttons.Select(button =>
         {
-            if (button.Shortcut is null or "") return button with { Shortcut = null };
-            if (!Hotkey.TryParseShortcut(button.Shortcut, out var key))
+            var requested = button.RequestedShortcut ?? button.Shortcut;
+            if (requested is null or "") return button with { Shortcut = null };
+            if (!Hotkey.TryParseToolbarShortcut(requested, out var key))
             {
                 warn?.Invoke(L.F(Strings.BarW_ShortcutInvalid, button.Id));
-                return button with { Shortcut = null };
+                return button with { Shortcut = null, RequestedShortcut = requested };
             }
-            return button with { Shortcut = Claim(used, key, button.Id, warn, custom: true) ? key.ToString() : null };
+            return Claim(used, key, button.Id, warn, custom: true) ? button with { Shortcut = key.ToString(), RequestedShortcut = null }
+                : button with { Shortcut = null, RequestedShortcut = requested };
         }).ToList();
     }
 

@@ -13,6 +13,40 @@ public sealed record ToolbarLoad(ToolbarModel Model, string? Error);
 /// <summary>~/.hotline/toolbar.json: reading it (creating a missing one) and writing it.</summary>
 public static class ToolbarFile
 {
+    private static readonly Dictionary<string, (JsonObject Map, IReadOnlyList<string> Warnings)> LegacyShortcuts = new(StringComparer.OrdinalIgnoreCase);
+
+    private static ToolbarModel WithLegacyShortcuts(string path, ToolbarModel model)
+    {
+        if (model.Shortcuts is not null) return model;
+        var full = Path.GetFullPath(path);
+        lock (LegacyShortcuts)
+        {
+            if (!LegacyShortcuts.TryGetValue(full, out var legacy))
+            {
+                var map = new JsonObject();
+                var warnings = new List<string>();
+                var settingsPath = Path.Combine(Path.GetDirectoryName(full)!, SettingsStore.FileName);
+                try
+                {
+                    if (File.Exists(settingsPath))
+                    {
+                        var settings = ToolbarModel.Parse(File.ReadAllText(settingsPath), warnings);
+                        if (settings is JsonObject root
+                            && root.LastOrDefault(p => p.Key.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is JsonObject chat
+                            && chat.LastOrDefault(p => p.Key.Equals("shortcuts", StringComparison.OrdinalIgnoreCase)).Value is JsonObject explicitValues)
+                            map = ToolbarModel.ReadShortcutMap(explicitValues, warnings);
+                    }
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+                {
+                    // Settings reports its own read errors; they must not make a valid toolbar unreadable.
+                }
+                legacy = (map, warnings);
+                LegacyShortcuts[full] = legacy;
+            }
+            return (model with { Shortcuts = (JsonObject)legacy.Map.DeepClone(), Warnings = [.. model.Warnings, .. legacy.Warnings] }).ResolveShortcuts(null);
+        }
+    }
     /// <summary>
     /// Never throws. A missing file is created with the defaults. Any existing file is read and never rewritten (one in the
     /// old version 1 format gives the defaults and a warning, see <see cref="ToolbarModel.Resolve"/>); an unreadable one is
@@ -24,8 +58,9 @@ public static class ToolbarFile
         {
             if (!File.Exists(path))
             {
-                TrySave(path, ToolbarModel.Defaults);
-                return new ToolbarLoad(ToolbarModel.Defaults, null);
+                var initial = WithLegacyShortcuts(path, ToolbarModel.Defaults);
+                TrySave(path, initial);
+                return new ToolbarLoad(initial, null);
             }
             var text = File.ReadAllText(path);
             JsonNode? root;
@@ -33,9 +68,9 @@ public static class ToolbarFile
             catch (JsonException ex) { return Unreadable(ex.Message); }
             if (root is not JsonObject) return Unreadable("the file isn't a JSON object");
 
-            return new ToolbarLoad(ToolbarModel.Resolve(text), null);
+            return new ToolbarLoad(WithLegacyShortcuts(path, ToolbarModel.Resolve(text)), null);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
             return Unreadable(ex.Message);
         }

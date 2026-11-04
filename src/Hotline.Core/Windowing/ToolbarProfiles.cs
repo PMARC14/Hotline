@@ -22,9 +22,9 @@ public static class ToolbarProfiles
     private static string Group(string left = "", string center = "", string right = "") =>
         $"{{ \"left\": [{left}], \"center\": [{center}], \"right\": [{right}] }}";
 
-    private static string Doc(string description, string bottom, string top = "", string style = "{}", string overrides = "{}", string buttons = "{}", string menu = "") =>
+    private static string Doc(string description, string bottom, string top = "", string style = "{}", string overrides = "{}", string buttons = "{}", string menu = "", string shortcuts = "{}") =>
         $"// {description}\n{{ \"version\": 2,\n  \"top\": {(top.Length > 0 ? top : Group())},\n  \"items\": {bottom},\n  \"style\": {style},\n"
-        + $"  \"menu\": [{menu}],\n  \"overrides\": {overrides},\n  \"buttons\": {buttons} }}";
+        + $"  \"shortcuts\": {shortcuts},\n  \"menu\": [{menu}],\n  \"overrides\": {overrides},\n  \"buttons\": {buttons} }}";
 
     /// <summary>The ids c1..cN, as list text and as button definitions.</summary>
     private static string CustomIds(int count) => string.Join(", ", Enumerable.Range(1, count).Select(i => $"\"c{i}\""));
@@ -34,6 +34,11 @@ public static class ToolbarProfiles
 
     private static IReadOnlyList<ToolbarProfile> Build() =>
     [
+        new("shortcuts", Doc("Built-in and picker overrides, a disabled shortcut, and a custom binding; version stays 2.",
+            Group("\"pin\", \"mine\"", right: "\"recent\", \"newChat\", \"settings\""), top: Group(Pickers),
+            shortcuts: """{"pin":"Ctrl+Q","model":"F6","recent":""}""",
+            buttons: """{"mine":{"label":"Mine","text":"hello","shortcut":"Ctrl+Shift+1"}}""")),
+
         new("default", Doc("The shipped layout (the owner's): effort, model and provider across the top row; capture, prompt and chat buttons below.",
             Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", "\"prompt\", \"continueIn\"", "\"recent\", \"newChat\", \"settings\""),
             top: Group("\"effort\"", "\"model\"", "\"provider\""),

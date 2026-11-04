@@ -57,13 +57,15 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
 
     /// <summary>Reads toolbar.json anew (and notes its fingerprint) after <see cref="ChangedOnDiskException"/>; null when it can't be used.</summary>
     private readonly Func<ToolbarModel?> _reload;
+    private readonly Func<Hotline.Core.Settings.ChatSettings> _chat;
 
     public ToolbarQuadrantEditor(ToolbarModel model, Action<ToolbarModel> save, Func<IReadOnlyList<string>> quickActions,
         Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Func<double>? barRoom = null,
-        Func<ToolbarModel?>? reload = null)
+        Func<ToolbarModel?>? reload = null, Func<Hotline.Core.Settings.ChatSettings>? chat = null)
     {
         (_model, _save, _quickActions, _showDialog, _cardStyle, _log, _barRoom) = (model, save, quickActions, showDialog, cardStyle, log, barRoom);
         _reload = reload ?? (() => null);
+        _chat = chat ?? (() => new());
         Spacing = 8;
         Children.Add(_notice);
         Children.Add(new TextBlock { Text = Strings.Bar_EditorIntro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8 });
