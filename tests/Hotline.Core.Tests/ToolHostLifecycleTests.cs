@@ -15,6 +15,7 @@ public sealed class ToolHostLifecycleTests : TempDirTest
     private sealed class FakeSession(params (string Name, bool ReadOnly)[] tools) : IMcpSession
     {
         public int Lists;
+        public int Calls;
         public bool Disposed;
         public bool Throw;
         public TimeSpan ListDelay;
@@ -25,8 +26,11 @@ public sealed class ToolHostLifecycleTests : TempDirTest
             if (ListDelay > TimeSpan.Zero) await Task.Delay(ListDelay, ct);
             return tools.Select(t => new McpToolInfo(t.Name, "", JsonDocument.Parse("""{"type":"object"}""").RootElement, ReadOnlyNow?.Invoke() ?? t.ReadOnly)).ToList();
         }
-        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct) =>
-            Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult("ok", false));
+        public Task<ToolResult> CallAsync(string t, JsonElement args, CancellationToken ct)
+        {
+            Calls++;
+            return Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult("ok", false));
+        }
         public ValueTask DisposeAsync() { Disposed = true; return ValueTask.CompletedTask; }
     }
 
@@ -34,6 +38,51 @@ public sealed class ToolHostLifecycleTests : TempDirTest
     {
         Directory.CreateDirectory(_dir);
         File.WriteAllText(McpPath, json);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public async Task A_removed_server_is_not_called_from_a_stale_tool_list(bool extra)
+    {
+        WriteConfig(extra ? "{}" : """{"mcpServers":{"a":{"command":"x"}}}""");
+        var extras = extra ? new[] { new McpServerConfig("a", "x", [], new Dictionary<string, string>()) } : [];
+        var session = new FakeSession(("read", true));
+        await using var host = new McpToolHost(() => McpConfig.Load(McpPath), () => extras,
+            (_, _) => Task.FromResult<IMcpSession>(session), (_, _) => throw new Exception("read-only must not ask"), Log);
+        var tool = Assert.Single(await host.GetToolsAsync(default));
+        WriteConfig("{}");
+        extras = [];
+        var result = await host.CallAsync(tool, JsonDocument.Parse("{}").RootElement, default);
+        Assert.True(result.IsError);
+        Assert.Equal(0, session.Calls);
+    }
+
+    [Theory]
+    [InlineData("""{"mcpServers":{"a":{"command":"x","disabled":true}}}""", ToolDecision.AllowOnce)]
+    [InlineData("{}", ToolDecision.AllowOnce)]
+    [InlineData("""{"mcpServers":{"a":{"command":"x"}},"approvals":{"a/write":"deny"}}""", ToolDecision.AllowOnce)]
+    [InlineData("""{"mcpServers":{"a":{"command":"x","disabled":true}}}""", ToolDecision.AllowAlways)]
+    [InlineData("{}", ToolDecision.AllowAlways)]
+    [InlineData("""{"mcpServers":{"a":{"command":"x"}},"approvals":{"a/write":"deny"}}""", ToolDecision.AllowAlways)]
+    public async Task Config_changes_while_approval_is_pending_prevent_the_call(string changed, ToolDecision answer)
+    {
+        WriteConfig("""{"mcpServers":{"a":{"command":"x"}}}""");
+        var pending = new TaskCompletionSource<ToolDecision>(TaskCreationOptions.RunContinuationsAsynchronously);
+        var asked = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        var session = new FakeSession(("write", false));
+        await using var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
+            (_, _) => Task.FromResult<IMcpSession>(session),
+            (_, _) => { asked.SetResult(); return pending.Task; }, Log, McpPath);
+        var tool = Assert.Single(await host.GetToolsAsync(default));
+        var call = host.CallAsync(tool, JsonDocument.Parse("{}").RootElement, default);
+        await asked.Task.WaitAsync(TimeSpan.FromSeconds(5));
+        WriteConfig(changed);
+        pending.SetResult(answer);
+        var result = await call;
+        Assert.True(result.IsError);
+        Assert.Equal(0, session.Calls);
+        Assert.Equal(changed, File.ReadAllText(McpPath));
     }
 
     [Fact]

@@ -146,6 +146,44 @@ public sealed class ToolLoopTests : TempDirTest
     private static string GeminiParts(params object[] parts) => JsonSerializer.Serialize(new { candidates = new[] { new { content = new { role = "model", parts } } } });
 
     [Theory]
+    [InlineData(null)]
+    [InlineData("OTHER")]
+    [InlineData("LANGUAGE")]
+    [InlineData("IMAGE_SAFETY")]
+    [InlineData("SPII")]
+    [InlineData("UNEXPECTED_TOOL_CALL")]
+    [InlineData("STOP")]
+    public async Task Gemini_requires_STOP_before_running_collected_calls(string? finishReason)
+    {
+        var host = new FakeToolHost();
+        var callChunk = GeminiParts(new { text = "Checking." }, new { functionCall = new { name = "files__read_file", args = new { path = "a.txt" } } });
+        var handler = new Handler((n, _) => n == 1
+            ? finishReason is null ? Sse(callChunk) : Sse(callChunk, JsonSerializer.Serialize(new { candidates = new[] { new { finishReason } } }))
+            : Sse(GeminiParts(new { text = "Done." })));
+        var secrets = new InMemorySecretStore();
+        secrets.Set(SecretKeys.ApiKey("g"), "k");
+        var backend = new GeminiBackend(new BackendProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
+            new HttpClient(handler), secrets, _ => "", Log, host);
+        var deltas = new List<ChatDelta>();
+        var error = await Record.ExceptionAsync(async () =>
+        {
+            await foreach (var delta in backend.StreamAsync([U("read a.txt")], default)) deltas.Add(delta);
+        });
+        if (finishReason == "STOP")
+        {
+            Assert.Null(error);
+            Assert.Single(host.Calls);
+        }
+        else
+        {
+            Assert.Equal(BackendErrorKind.Failed, Assert.IsType<BackendException>(error).Kind);
+            Assert.Empty(host.Calls);
+            Assert.Single(handler.Bodies);
+        }
+        Assert.StartsWith("Checking.", string.Concat(deltas.Select(d => d.Text)));
+    }
+
+    [Theory]
     [InlineData("MAX_TOKENS", false)]
     [InlineData("MAX_TOKENS", true)]
     [InlineData("MALFORMED_FUNCTION_CALL", false)]
@@ -179,7 +217,8 @@ public sealed class ToolLoopTests : TempDirTest
     {
         var host = new FakeToolHost();
         var handler = new Handler((n, _) => n == 1
-            ? Sse(GeminiParts(new { text = "Checking." }), GeminiParts(new { functionCall = new { name = "files__read_file", args = new { path = "a.txt" }, id = "fc1" }, thoughtSignature = "sig==" }))
+            ? Sse(GeminiParts(new { text = "Checking." }), GeminiParts(new { functionCall = new { name = "files__read_file", args = new { path = "a.txt" }, id = "fc1" }, thoughtSignature = "sig==" }),
+                """{"candidates":[{"finishReason":"STOP"}]}""")
             : Sse(GeminiParts(new { text = "It says hi." })));
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "k");

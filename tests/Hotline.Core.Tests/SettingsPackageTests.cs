@@ -2,8 +2,10 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Hotline.Core.Backends;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
@@ -249,6 +251,41 @@ public sealed class SettingsPackageTests : IDisposable
     }
 
     // ---- inspect -----------------------------------------------------------------------------
+
+    [Theory]
+    [InlineData(1024)]
+    [InlineData(1024 * 1024 + 1)]
+    public void A_stored_manifest_with_a_small_declared_size_and_large_actual_content_is_refused(int actualSize)
+    {
+        using var buffer = new MemoryStream();
+        using (var zip = new ZipArchive(buffer, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            var entry = zip.CreateEntry(SettingsPackage.ManifestName, CompressionLevel.NoCompression);
+            using var content = entry.Open();
+            var json = Encoding.UTF8.GetBytes("""{"format":1,"files":[]}""".PadRight(actualSize));
+            content.Write(json);
+        }
+        var bytes = buffer.ToArray();
+        // Stored data is read using the compressed length. Forge both uncompressed sizes while
+        // retaining the actual compressed length and CRC, as an attacker-controlled ZIP can do.
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(22), 32);
+        var central = bytes.AsSpan().IndexOf(new byte[] { 0x50, 0x4b, 0x01, 0x02 });
+        Assert.True(central > 0);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(central + 24), 32);
+        using var forged = new MemoryStream(bytes);
+        using (var zip = new ZipArchive(forged, ZipArchiveMode.Read, leaveOpen: true))
+        {
+            var entry = Assert.Single(zip.Entries);
+            Assert.Equal(32, entry.Length);
+            using var actual = entry.Open();
+            using var read = new MemoryStream();
+            actual.CopyTo(read);
+            Assert.Equal(actualSize, read.Length); // prove the real stream exceeds the declaration
+        }
+        forged.Position = 0;
+
+        Assert.False(SettingsPackage.Inspect(forged).IsValid);
+    }
 
     [Fact]
     public void Inspect_reports_version_date_and_counts()
@@ -643,6 +680,143 @@ public sealed class SettingsPackageTests : IDisposable
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("haskey"), "k");
         Assert.Equal(["gpt"], SettingsPackage.ConnectionsNeedingKey(Target, result, secrets));
+    }
+
+    // ---- compatibility: import, load, unrelated edit, export ----------------------------------
+
+    private static JsonNode ExportedJson(ZipArchive zip, string path)
+    {
+        using var stream = zip.GetEntry(path)!.Open();
+        return JsonNode.Parse(stream, documentOptions: new() { CommentHandling = JsonCommentHandling.Skip })!;
+    }
+
+    [Fact]
+    public void Compat_pre_v14_widths_after_a_diagnostics_edit()
+    {
+        const string original = """{"schemaVersion":13,"window":{"minWidth":600,"maxWidth":1000},"chat":{"memory":false}}""";
+        using var incoming = Zip([E("settings.json", original)]);
+        Assert.Equal(["settings.json"], Import(incoming).Written);
+        var store = new SettingsStore(Target);
+        var settings = store.Load();
+        settings.Diagnostics.VerboseLogging = true; // unrelated to the old width units
+        store.Save(settings);
+        using var outgoing = Export(Target, [SettingsCategory.Settings], out _);
+        using var archive = new ZipArchive(outgoing);
+        var saved = ExportedJson(archive, "settings.json");
+        // Document the existing pre-v14 migration: 600/1000 were scaled-unit defaults,
+        // so loading replaces them with 400/1200 real-pixel defaults before exporting.
+        Assert.Equal(400, (int)saved["window"]!["minWidth"]!);
+        Assert.Equal(1200, (int)saved["window"]!["maxWidth"]!);
+        Assert.Equal(15, (int)saved["schemaVersion"]!);
+        Assert.False((bool)saved["chat"]!["memory"]!);
+        Assert.True((bool)saved["diagnostics"]!["verboseLogging"]!);
+        Assert.Contains(Directory.GetFiles(Target, "settings.json.*.bak"), path => File.ReadAllText(path) == original);
+    }
+
+    private const string CompatToolbar = """
+        {"version":2,"items":{"left":["quick","hello"],"right":[]},
+         "buttons":{
+           "quick":{"label":"Summarize","quickAction":"summarize","iconFile":"quick.png","shortcut":"Ctrl+Alt+1"},
+           "hello":{"label":"Hello","text":"Hello!","send":true,"shortcut":"Ctrl+Alt+2"}}}
+        """;
+
+    [Fact]
+    public void Compat_custom_buttons_icons_and_button_shortcuts_survive_a_style_edit()
+    {
+        using var incoming = Zip([E("toolbar.json", CompatToolbar), ("icons/quick.png", Png16), E("actions/summarize.md", "Summarize this.")]);
+        Assert.Equal(3, Import(incoming).Written.Count);
+        new SettingsStore(Target).Load();
+        var path = Path.Combine(Target, "toolbar.json");
+        var loaded = ToolbarFile.Load(path);
+        Assert.Null(loaded.Error);
+        Assert.Empty(loaded.Model.Warnings);
+        ToolbarFile.Save(path, loaded.Model with { Style = new ButtonStyle(2, true) });
+        using var outgoing = Export(Target, [.. SettingsPackage.All], out _);
+        using var archive = new ZipArchive(outgoing);
+        var saved = ExportedJson(archive, "toolbar.json");
+        Assert.Equal("Ctrl+Alt+1", (string)saved["buttons"]!["quick"]!["shortcut"]!);
+        Assert.Equal("quick.png", (string)saved["buttons"]!["quick"]!["iconFile"]!);
+        Assert.Equal("summarize", (string)saved["buttons"]!["quick"]!["quickAction"]!);
+        Assert.Equal("Ctrl+Alt+2", (string)saved["buttons"]!["hello"]!["shortcut"]!);
+        Assert.Equal("Hello!", (string)saved["buttons"]!["hello"]!["text"]!);
+        Assert.True((bool)saved["buttons"]!["hello"]!["send"]!);
+        Assert.Equal(["quick", "hello"], saved["items"]!["left"]!.AsArray().Select(n => (string)n!));
+        using var icon = archive.GetEntry("icons/quick.png")!.Open();
+        using var bytes = new MemoryStream();
+        icon.CopyTo(bytes);
+        Assert.Equal(Png16, bytes.ToArray());
+        Assert.Equal("Summarize this.", ReadEntry(archive, "actions/summarize.md"));
+    }
+
+    private static string ReadEntry(ZipArchive zip, string path)
+    {
+        using var stream = zip.GetEntry(path)!.Open();
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Compat_unknown_top_level_shortcuts_after_an_unrelated_edit(bool editToolbar)
+    {
+        const string original = """{"version":2,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
+        using var incoming = Zip([E("toolbar.json", original)]);
+        Assert.Equal(["toolbar.json"], Import(incoming).Written);
+        var store = new SettingsStore(Target);
+        var settings = store.Load();
+        var toolbarPath = Path.Combine(Target, "toolbar.json");
+        var loaded = ToolbarFile.Load(toolbarPath);
+        Assert.Null(loaded.Error);
+        if (editToolbar) ToolbarFile.Save(toolbarPath, loaded.Model with { Style = new ButtonStyle(2) });
+        else
+        {
+            settings.Chat.Memory = false;
+            store.Save(settings);
+        }
+        using var outgoing = Export(Target, [SettingsCategory.Toolbar], out _);
+        using var archive = new ZipArchive(outgoing);
+        var saved = ExportedJson(archive, "toolbar.json");
+        // Compatibility gap (schema-freeze job): a toolbar edit drops unknown keys.
+        // A settings-only edit preserves the imported bytes, including this unknown key.
+        // Assert current behaviour deliberately; do not fix the toolbar schema here.
+        Assert.Equal(!editToolbar, saved.AsObject().ContainsKey("shortcuts"));
+        if (!editToolbar) Assert.Equal(original, ReadEntry(archive, "toolbar.json"));
+        else Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(Target, "toolbar.json.*.bak"))));
+    }
+
+    [Theory]
+    [InlineData(SettingsCategory.Settings)]
+    [InlineData(SettingsCategory.Toolbar)]
+    public void Compat_partial_categories_keep_unselected_files_through_load_edit_export(SettingsCategory selected)
+    {
+        var source = SettingsStore.Normalize(new HotlineSettings());
+        source.Window.WidthPercent = 55;
+        using var incoming = Zip([E("settings.json", SettingsStore.Serialize(source)), E("toolbar.json", CompatToolbar), ("icons/quick.png", Png16), E("actions/summarize.md", "incoming action")]);
+        var existing = SettingsStore.Normalize(new HotlineSettings());
+        existing.Window.WidthPercent = 35;
+        Put(Target, "settings.json", SettingsStore.Serialize(existing));
+        const string originalToolbar = """{"version":2,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
+        Put(Target, "toolbar.json", originalToolbar);
+        Put(Target, "actions/summarize.md", "existing action");
+        var imported = Import(incoming, selected);
+        Assert.Equal(selected == SettingsCategory.Settings ? new[] { "settings.json" } : ["icons/quick.png", "toolbar.json"], imported.Written.Order(StringComparer.Ordinal));
+        var store = new SettingsStore(Target);
+        var settings = store.Load();
+        Assert.Equal(selected == SettingsCategory.Settings ? 55 : 35, settings.Window.WidthPercent);
+        settings.Diagnostics.VerboseLogging = true;
+        store.Save(settings);
+        var loaded = ToolbarFile.Load(Path.Combine(Target, "toolbar.json"));
+        Assert.Null(loaded.Error);
+        if (selected == SettingsCategory.Toolbar) Assert.Equal(2, loaded.Model.Buttons.Count);
+        else Assert.Equal(originalToolbar, File.ReadAllText(Path.Combine(Target, "toolbar.json")));
+        Assert.Equal("existing action", File.ReadAllText(Path.Combine(Target, "actions/summarize.md")));
+        using var outgoing = Export(Target, [selected], out _);
+        using var archive = new ZipArchive(outgoing);
+        var names = archive.Entries.Where(e => e.FullName != SettingsPackage.ManifestName).Select(e => e.FullName).Order(StringComparer.Ordinal);
+        Assert.Equal(imported.Written.Order(StringComparer.Ordinal), names);
+        if (selected == SettingsCategory.Settings) Assert.True((bool)ExportedJson(archive, "settings.json")["diagnostics"]!["verboseLogging"]!);
+        else Assert.Equal("Ctrl+Alt+1", (string)ExportedJson(archive, "toolbar.json")["buttons"]!["quick"]!["shortcut"]!);
     }
 
     // ---- logging helper ----------------------------------------------------------------------

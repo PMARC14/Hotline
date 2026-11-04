@@ -360,7 +360,7 @@ public static partial class SettingsPackage
     private static Loaded Refuse(List<string> problems, int format = 0, string? version = null, DateTimeOffset? created = null) =>
         new(new PackageInfo(format, version, created, new Dictionary<SettingsCategory, int>(), problems), []);
 
-    private static byte[]? ReadBounded(Stream s, long declared)
+    private static byte[] ReadBounded(Stream s, long declared)
     {
         var limit = Math.Min(declared, MaxEntryBytes) + 1;
         using var ms = new MemoryStream();
@@ -383,7 +383,10 @@ public static partial class SettingsPackage
         try
         {
             using var stream = entry.Open();
-            using var doc = JsonDocument.Parse(stream, new JsonDocumentOptions { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip });
+            var data = ReadBounded(stream, MaxManifestBytes);
+            if (data.Length > MaxManifestBytes) return Bad(Strings.Backup_Err_ManifestBig);
+            if (data.Length != entry.Length) return Bad(L.F(Strings.Backup_Err_SizeLies, LogName(entry.FullName)));
+            using var doc = JsonDocument.Parse(data, new JsonDocumentOptions { AllowTrailingCommas = true, CommentHandling = JsonCommentHandling.Skip });
             var root = doc.RootElement;
             if (root.ValueKind != JsonValueKind.Object || !root.TryGetProperty("format", out var f) || !f.TryGetInt32(out var format) || format < 1)
                 return Bad(Strings.Backup_Err_ManifestInvalid);

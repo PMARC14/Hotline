@@ -166,7 +166,7 @@ public sealed class SettingsStore(string directory)
             {
                 // Connection files are written only when the old "backends" list moves into them; otherwise they
                 // stay exactly as they are, byte for byte.
-                if (legacy is not null) TrySave(s);
+                if (legacy is not null) TryMigrateConnections(s);
                 else TrySaveMain(s);
             }
             return s;
@@ -296,12 +296,23 @@ public sealed class SettingsStore(string directory)
         }
     }
 
-    private bool SaveCore(HotlineSettings s, IEnumerable<string>? removed = null, bool connections = true)
+    private bool SaveCore(HotlineSettings s, IEnumerable<string>? removed = null, bool connections = true, bool migrateConnections = false)
     {
         _writeProblems = [];
         Directory.CreateDirectory(directory);
         s.Chat.Order = s.Chat.Backends.Select(b => b.Id).ToList();
-        if (connections) SaveConnections(s.Chat.Backends, removed); // first: if this fails, settings.json still has the old list
+        if (migrateConnections)
+        {
+            // Preserve the inline list before creating its connection files. Existing files stay byte-identical.
+            try { MakeBackup(FilePath); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                _writeProblems.Add(L.F(Strings.Settings_ProblemBackupFailed, FileName, ex.GetType().Name));
+                return false;
+            }
+            _safeToReplace[Path.GetFullPath(FilePath)] = File.ReadAllText(FilePath);
+        }
+        if (connections) SaveConnections(s.Chat.Backends, removed, migrateConnections); // first: if this fails, settings.json still has the old list
         return ReplaceFile(FilePath, SerializeMain(s));
     }
 
@@ -443,7 +454,7 @@ public sealed class SettingsStore(string directory)
     /// Writes changed connection files (each back to the file it was read from; a new connection is named from its id) and
     /// deletes the files of removed ones. Two connections never share a file: the one that would is not saved and a problem is listed.
     /// </summary>
-    private void SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed)
+    private void SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed, bool onlyNew = false)
     {
         Directory.CreateDirectory(ConnectionsDirectory);
         var snapshot = profiles.ToList(); // other threads read the live list
@@ -471,6 +482,7 @@ public sealed class SettingsStore(string directory)
 
         foreach (var (p, path) in plan)
         {
+            if (onlyNew && _sources.ContainsKey(p.Id)) continue;
             if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
                 continue; // the user's unreadable file stays exactly as it is
             if (ReplaceFile(path, JsonSerializer.Serialize(p, ConnectionOptions))) _sources[p.Id] = path;
@@ -520,7 +532,11 @@ public sealed class SettingsStore(string directory)
                 foreach (var p in expected.EnumerateObject())
                 {
                     var found = actual.EnumerateObject().FirstOrDefault(a => string.Equals(a.Name, p.Name, StringComparison.OrdinalIgnoreCase));
-                    if (found.Value.ValueKind == JsonValueKind.Undefined) return p.Value.ValueKind != JsonValueKind.Null;
+                    if (found.Value.ValueKind == JsonValueKind.Undefined)
+                    {
+                        if (p.Value.ValueKind != JsonValueKind.Null) return true;
+                        continue;
+                    }
                     if (Missing(p.Value, found.Value)) return true;
                 }
             }
@@ -533,9 +549,9 @@ public sealed class SettingsStore(string directory)
         }
     }
 
-    private void TrySave(HotlineSettings s)
+    private void TryMigrateConnections(HotlineSettings s)
     {
-        try { SaveCore(s); }
+        try { SaveCore(s, migrateConnections: true); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* keep running on in-memory settings */ }
     }
 
