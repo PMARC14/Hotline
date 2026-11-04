@@ -197,7 +197,7 @@ Owner preference: anything configurable should be in settings.json even when the
   stable `LanguageModel` surface, never a model name, and hide it unless probed supported (no download without consent). Hotline's
   on-device route is the Local connection. Windows agent connectors are discovered with `odr.exe mcp list`.
 - **Design notes (Argon/Flash):** `ThisPc` is static, `ActivationRouter` is coupled to `PopupWindow`, `App` is a monolith.
-- **Small:** tray icon HICON leak; ComboBox `TextSubmitted` `e.Handled`; `ReportHeight` runs in SizeChanged; `CopyImage` on the UI
+- **Small:** ComboBox `TextSubmitted` `e.Handled`; `ReportHeight` runs in SizeChanged; `CopyImage` on the UI
   thread; `PanelTheme.Style` read before `Update`; `PanelGrips` cursors; sounds not reloading a replaced .wav; Claude
   `Win32Exception` mapping (needs a string); Codex images beside the workspace; the Anthropic path bypasses `ApiCommon`; the
   tool round is written three times; `ToolsFor` type test.
@@ -211,7 +211,7 @@ Owner preference: anything configurable should be in settings.json even when the
   the top edge may not flip; `FramePx` is read before the panel moves to its monitor); `_barDip` is 0 until the first layout; connection
   ids are case-sensitive in a few places (`defaultBackend`); the Language box is blank for `"en-us"`; scheme-less endpoints throw a raw
   error; MCP approval keys differ by case; SVG `style` with CSS escapes; code-fence parity in `MarkdownModel`; the fallback hotkey
-  isn't re-registered on a settings change; the transcript spinner isn't stopped on Clear.
+  isn't re-registered on a settings change.
 
 ## Process that worked
 
