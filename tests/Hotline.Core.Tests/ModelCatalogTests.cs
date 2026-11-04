@@ -6,22 +6,12 @@ namespace Hotline.Core.Tests;
 
 public class ModelCatalogTests
 {
-    private sealed class FakeHttp(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
-    {
-        public List<HttpRequestMessage> Requests { get; } = [];
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
-        {
-            Requests.Add(request);
-            return Task.FromResult(respond(request));
-        }
-    }
-
     private static HttpResponseMessage Json(string body, HttpStatusCode code = HttpStatusCode.OK) =>
         new(code) { Content = new StringContent(body) };
 
-    private static (ModelCatalog, FakeHttp, InMemorySecretStore, ManualTimeProvider) New(Func<HttpRequestMessage, HttpResponseMessage> respond)
+    private static (ModelCatalog, RecordingHandler, InMemorySecretStore, ManualTimeProvider) New(Func<HttpRequestMessage, HttpResponseMessage> respond)
     {
-        var http = new FakeHttp(respond);
+        var http = new RecordingHandler(respond);
         var secrets = new InMemorySecretStore();
         var clock = new ManualTimeProvider();
         return (new ModelCatalog(new HttpClient(http), secrets, (_, _) => Task.FromResult("m1\tModel One\n"), clock), http, secrets, clock);

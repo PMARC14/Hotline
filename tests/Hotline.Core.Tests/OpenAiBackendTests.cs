@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -12,17 +14,6 @@ namespace Hotline.Core.Tests;
 public sealed class OpenAiBackendTests : TempDirTest
 {
 
-    private sealed class Handler(Func<HttpRequestMessage, string, HttpResponseMessage> respond) : HttpMessageHandler
-    {
-        public List<(HttpRequestMessage Request, string Body)> Seen { get; } = [];
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
-        {
-            var body = request.Content is null ? "" : await request.Content.ReadAsStringAsync(ct);
-            Seen.Add((request, body));
-            return respond(request, body);
-        }
-    }
-
     private static HttpResponseMessage Sse(params string[] data) => new(HttpStatusCode.OK)
     {
         Content = new StringContent(string.Concat(data.Select(d => $"data: {d}\n\n")), Encoding.UTF8, "text/event-stream"),
@@ -30,22 +21,11 @@ public sealed class OpenAiBackendTests : TempDirTest
 
     private static string Chunk(string text) => JsonSerializer.Serialize(new { choices = new[] { new { delta = new { content = text } } } });
 
-    private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
-
-    private (OpenAiBackend, Handler, InMemorySecretStore) New(BackendProfile profile, Func<HttpRequestMessage, string, HttpResponseMessage> respond)
+    private (OpenAiBackend, RecordingHandler, InMemorySecretStore) New(BackendProfile profile, Func<HttpRequestMessage, string, HttpResponseMessage> respond)
     {
-        var handler = new Handler(respond);
+        var handler = new RecordingHandler(respond);
         var secrets = new InMemorySecretStore();
         return (new OpenAiBackend(profile, new HttpClient(handler), secrets, _ => "Be brief.", new FileLog(Path.Combine(_dir, "h.log"))), handler, secrets);
-    }
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
     }
 
     [Fact]

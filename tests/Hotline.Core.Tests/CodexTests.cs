@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Text.Json;
 using Hotline.Core.Backends;
 using Hotline.Core.Backends.Codex;
@@ -14,10 +16,6 @@ namespace Hotline.Core.Tests;
 public sealed class CodexTests : TempDirTest
 {
     private readonly FakeLineProcessFactory _factory = new();
-
-    private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
 
     private const string ThreadStarted = """{"type":"thread.started","thread_id":"0199a213-81c0-7800-8aa1-bbab2a035a53"}""";
     private const string TurnStarted = """{"type":"turn.started"}""";
@@ -37,13 +35,6 @@ public sealed class CodexTests : TempDirTest
 
     private void Script(Func<string, IEnumerable<string>> respond) =>
         _factory.Create = () => new FakeLineProcess { Respond = respond, ExitWhenInputCompletes = true };
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
 
     private static string After(IReadOnlyList<string> args, string flag) => args[args.ToList().IndexOf(flag) + 1];
 

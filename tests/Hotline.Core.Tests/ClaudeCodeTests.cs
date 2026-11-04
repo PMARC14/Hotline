@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Text.Json;
 using Hotline.Core.Backends.ClaudeCode;
 using Hotline.Core.Chat;
@@ -10,10 +12,6 @@ namespace Hotline.Core.Tests;
 public sealed class ClaudeCodeTests : TempDirTest
 {
     private readonly FakeLineProcessFactory _factory = new();
-
-    private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
 
     private static string Delta(string text) =>
         "{\"type\":\"stream_event\",\"event\":{\"type\":\"content_block_delta\",\"index\":0,\"delta\":{\"type\":\"text_delta\",\"text\":" + JsonSerializer.Serialize(text) + "}}}";
@@ -31,13 +29,6 @@ public sealed class ClaudeCodeTests : TempDirTest
     private ClaudeCodeBackend New(string? exe = @"C:\claude.exe", BackendProfile? profile = null, Func<BackendProfile, string>? prompt = null) =>
         new(profile ?? new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode }, () => exe,
             _factory, new FileLog(Path.Combine(_dir, "h.log")), prompt ?? (_ => "SYSTEM"), Path.Combine(_dir, "home"));
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
 
     private static JsonElement Message(string line) => JsonDocument.Parse(line).RootElement.GetProperty("message");
 
