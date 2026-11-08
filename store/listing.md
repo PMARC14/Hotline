@@ -5,6 +5,10 @@ text is in `store/listings/<language>.md` (model-drafted; add those listings in 
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
 and trailer, captured from the installed app); output in `artifacts/store/`.
 
+The English **Description** below is the owner's own shorter text, as live in Partner Center (2026-11-08). The 16 files in
+`store/listings/` were translated from the earlier, longer description (Codex, Continue in, shortcuts, backup), so their
+descriptions differ from it until they are re-translated.
+
 ---
 
 ## Product name
@@ -17,7 +21,7 @@ Use the Copilot key for a native AI chat panel. Bring your Claude, Codex or Gemi
 
 ## Description (up to 10,000 characters)
 
-I made this because the Copilot key does nothing useful for me. Hotline AI turns it into a native AI chat panel
+You're stuck with the Copilot key, so you might as well use it. Hotline AI turns it into a fast, native AI chat panel
 that talks to the AI you choose.
 
 Press the key and a panel opens on the monitor you're working on, ready to type. Ask a question, get a streamed answer,
@@ -25,13 +29,11 @@ press the key again and it's gone. No browser tab, no account with us.
 
 USE THE AI YOU ALREADY HAVE
 • Claude Code: uses your installed Claude Code and its sign-in, so your Claude plan works with no API key.
-• OpenAI Codex CLI: uses your installed Codex and its sign-in, so your ChatGPT plan works with no API key.
 • Antigravity CLI (agy): Gemini with your Google sign-in.
 • Your own API key: Anthropic, Google Gemini, OpenAI and other OpenAI-compatible services such as OpenRouter.
-• Local models: any OpenAI-style server on your PC (for example llama.cpp or LM Studio), so the chat stays on your
+• Local models: any OpenAI-style server on your PC (for example llama.cpp or LM Studio), so nothing leaves your
   computer.
 Pick the model, the provider and how hard it should think straight from the panel's bar.
-You bring the service or run the model yourself. Hotline doesn't include an AI subscription.
 
 BRING CONTEXT WITH YOU
 • Text you had selected in another app is attached automatically when you press the key, and you can remove it before
@@ -40,52 +42,29 @@ BRING CONTEXT WITH YOU
 • Models that can't see images get the text in your screenshot instead, read on your PC with Windows' own OCR.
 
 MADE FOR QUICK JOBS
-• Quick actions: type / for translate, summarize, fix, explain, reply, shorter, formal or bullets, or write your own
-  as simple text files.
+• Quick actions: type / for translate, summarize, fix or explain, or write your own as simple text files.
 • Memory: "/remember I prefer metric units" and every chat knows it, whichever AI you use.
-• Voice: set the long press to Voice input, hold the key and talk; let go to stop. This uses Windows' online speech
-  recognition.
-• Recent chats are one click away, in a searchable list. Ctrl+H or /resume opens it too. CLI chats stay in the CLI's
-  own history and can be resumed after a restart.
+• Voice: hold the key and talk; let go to stop.
+• Recent chats are one click away.
 • Click to Do and Windows actions: send text or an image to Hotline AI from other apps.
-• Continue in: take the chat to a terminal, Open WebUI, the llama.cpp web UI, LM Studio or your own web or app target.
-  Open WebUI gets a real chat. LM Studio opens with the chat copied for you to paste; other targets vary.
-• While the panel has focus, use shortcuts for new chat, recent chats, Settings, pin, copy last answer, captures,
-  prompts and the model, provider and effort pickers. Your own buttons can have one too. They need Ctrl, Alt or Win, so
-  typing is never touched. Change them in Settings or in toolbar.json.
-• Get a Windows notification when an answer finishes while you're elsewhere.
 
 NATIVE, LIGHT AND YOURS
-• Built with WinUI 3: fast to open, follows your light or dark theme, no embedded browser. Native on x64 and ARM64.
-• Pick an accent colour or use Windows' own. There is a High contrast theme, and Hotline follows Windows' contrast
-  themes and transparency setting.
-• Rich answers: headings, lists, tables, code with a Copy button and sideways scrolling, math and simple drawings.
-  The panel follows answers as they stream in.
-• Hold Alt to move or resize the panel. Pin it, choose whether the chat grows up or down, and set open/close sounds.
-  Window widths use real pixels. You can have a narrow opening panel that grows wider when a chat starts.
+• Built with WinUI 3: fast to open, follows your light or dark theme, no embedded browser.
+• Rich answers: headings, lists, tables, code with a Copy button, math and simple drawings.
 • Everything is a plain file you can edit: settings, connections, prompts, the buttons in the bar.
-• Button rows v2: drag buttons between rows in Settings > Window > Button rows, or edit toolbar.json. Add buttons for
-  quick actions or preset text, with your own PNG picture. Choose widths in cells, size each picker separately, and
-  put less-used buttons in a More menu. A narrow bar moves buttons that don't fit into a menu.
-• A bad settings value falls back with a warning; the other settings still apply. Before replacing a hand-edited
-  settings, connection or toolbar file, Hotline keeps a backup. If that backup fails, it leaves the file alone.
-  It doesn't make another backup when replacing its own last save.
-• Settings > Backup exports and imports settings, button rows and pictures, MCP tools, sounds, connections, quick
-  actions and prompts. Import backs up every file it replaces first; no backup means no write. API keys are never
-  exported. Enter them again on the other PC. History and memory aren't in the package; MCP environment values are,
-  so keep the package private if you've put secrets there.
 • Tools, carefully: API connections can use tools from your MCP servers; anything that changes something asks you
-  first unless you've allowed it. Read-only tools run without asking, based on what the server declares.
+  first.
+• The Copilot key can also act as a Right Ctrl key, if you'd rather have that.
 
 PRIVATE BY DESIGN
 Hotline AI has no server and collects nothing: no account, no analytics, no ads. Your messages go only to the AI
 service you choose, under that service's terms. API keys stay in Windows Credential Locker; history, settings and
 memory stay on your PC. Free and open source.
 
-No Copilot key? Set any shortcut you like, for example Ctrl+Alt+H, by pressing it in Settings.
+No Copilot key? Set any shortcut you like, for example Ctrl+Alt+H.
 
 Hotline AI is an independent app and isn't affiliated with or endorsed by Microsoft, Anthropic, Google or OpenAI. Using
-Claude Code, Codex, the Antigravity CLI or an AI API requires your own account with that service.
+Claude Code, the Antigravity CLI or an AI API requires your own account with that service.
 
 ## What's new in this version
 
