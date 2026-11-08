@@ -4,8 +4,13 @@
 # the scripted demo scenes (hotline://demo?scene=…, no AI calls, no keystrokes) and records them with ffmpeg.
 # Takes about a minute; the panel and the settings window appear on screen — don't use the PC meanwhile.
 # Output in artifacts/store/: screenshot-1..4.png (1920x1080), trailer.mp4 (1920x1080) and trailer-thumbnail.png.
-#   scripts/make-store-media.sh        (install the build to capture first: scripts/install.sh)
+#   scripts/make-store-media.sh              (install the build to capture first: scripts/install.sh)
+#   scripts/make-store-media.sh --no-video   screenshots and panel crops only (no trailer); the crops in artifacts/store/panel-*.png
+#                                            feed scripts/make-store-localized.sh
 source "$(dirname "$0")/lib/common.sh"
+
+video=1
+[ "${1:-}" = "--no-video" ] && video=0
 
 command -v ffmpeg >/dev/null 2>&1 || die "ffmpeg is needed"
 edge="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
@@ -94,41 +99,43 @@ shot screenshot-2 summary "Selected text comes along with your question."
 shot screenshot-3 slash "Quick actions with /: translate, summarize, fix, explain."
 shot screenshot-4 settings "Use the AI you already have, and set everything your way."
 
-# ---- trailer: a real recording of the same scenes -----------------------------------------------------------------
-# 16:9 area around the panel (the screen is usually 16:10), recorded at full resolution, scaled to 1920x1080 later.
-IFS=, read -r sw sh < <(ffprobe -v error -show_entries stream=width,height -of csv=p=0 "$(winpath "$work/backdrop.png")" | tr -d '\r')
-rh=$(( sw * 9 / 16 )); [ "$rh" -le "$sh" ] || rh=$sh
-rw=$(( rh * 16 / 9 / 2 * 2 )); rh=$(( rh / 2 * 2 ))
-ox=$(( (sw - rw) / 2 )); oy=$(( (sh - rh) / 4 )) # a little above centre: the panel opens in the upper part
-ffmpeg -loglevel error -y -f lavfi -i "ddagrab=output_idx=0:draw_mouse=0:framerate=30:offset_x=$ox:offset_y=$oy:video_size=${rw}x${rh}" \
-    -vf "hwdownload,format=bgra,scale=1920:1080:flags=lanczos,format=yuv420p" -c:v libx264 -preset veryfast -crf 16 -t 32 \
-    "$(winpath "$work/recording.mp4")" &
-recorder=$!
-sleep 1.5
-open_link "hotline://demo?scene=math"; sleep 9
-open_link "hotline://key?state=tap"; sleep 0.8
-open_link "hotline://demo?scene=summary"; sleep 7.5
-open_link "hotline://key?state=tap"; sleep 0.8
-open_link "hotline://demo?scene=slash"; sleep 3
-open_link "hotline://key?state=tap"; sleep 0.5
-open_link "hotline://settings" # slow to appear the first time: the recording runs on until -t ends
-wait "$recorder"
-close_settings
+if [ "$video" = 1 ]; then
+    # ---- trailer: a real recording of the same scenes -----------------------------------------------------------------
+    # 16:9 area around the panel (the screen is usually 16:10), recorded at full resolution, scaled to 1920x1080 later.
+    IFS=, read -r sw sh < <(ffprobe -v error -show_entries stream=width,height -of csv=p=0 "$(winpath "$work/backdrop.png")" | tr -d '\r')
+    rh=$(( sw * 9 / 16 )); [ "$rh" -le "$sh" ] || rh=$sh
+    rw=$(( rh * 16 / 9 / 2 * 2 )); rh=$(( rh / 2 * 2 ))
+    ox=$(( (sw - rw) / 2 )); oy=$(( (sh - rh) / 4 )) # a little above centre: the panel opens in the upper part
+    ffmpeg -loglevel error -y -f lavfi -i "ddagrab=output_idx=0:draw_mouse=0:framerate=30:offset_x=$ox:offset_y=$oy:video_size=${rw}x${rh}" \
+        -vf "hwdownload,format=bgra,scale=1920:1080:flags=lanczos,format=yuv420p" -c:v libx264 -preset veryfast -crf 16 -t 32 \
+        "$(winpath "$work/recording.mp4")" &
+    recorder=$!
+    sleep 1.5
+    open_link "hotline://demo?scene=math"; sleep 9
+    open_link "hotline://key?state=tap"; sleep 0.8
+    open_link "hotline://demo?scene=summary"; sleep 7.5
+    open_link "hotline://key?state=tap"; sleep 0.8
+    open_link "hotline://demo?scene=slash"; sleep 3
+    open_link "hotline://key?state=tap"; sleep 0.5
+    open_link "hotline://settings" # slow to appear the first time: the recording runs on until -t ends
+    wait "$recorder"
+    close_settings
 
-# Title and end cards (3 s each, same look as the Store art), then the recording; plus the thumbnail.
-for card in title end; do
-    case $card in
-        title) q="kind=card" ;;
-        end) q="kind=card&title=Hotline%20AI&sub=Free%20and%20open%20source%20%C2%B7%20Microsoft%20Store" ;;
-    esac
-    "$edge" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1920,1080 \
-        --screenshot="$(winpath "$work/$card.png")" "$art?$q" >/dev/null 2>&1
-done
-cp "$work/title.png" "$out/trailer-thumbnail.png"
-ffmpeg -loglevel error -y \
-    -loop 1 -t 3 -framerate 30 -i "$(winpath "$work/title.png")" \
-    -i "$(winpath "$work/recording.mp4")" \
-    -loop 1 -t 3 -framerate 30 -i "$(winpath "$work/end.png")" \
-    -filter_complex "[0]scale=1920:1080,format=yuv420p,fade=out:st=2.5:d=0.5[a];[1]fade=in:d=0.5[b];[2]scale=1920:1080,format=yuv420p,fade=in:d=0.5[c];[a][b][c]concat=n=3:v=1:a=0" \
-    -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -movflags +faststart "$(winpath "$out/trailer.mp4")"
-echo "$out/trailer.mp4"
+    # Title and end cards (3 s each, same look as the Store art), then the recording; plus the thumbnail.
+    for card in title end; do
+        case $card in
+            title) q="kind=card" ;;
+            end) q="kind=card&title=Hotline%20AI&sub=Free%20and%20open%20source%20%C2%B7%20Microsoft%20Store" ;;
+        esac
+        "$edge" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1920,1080 \
+            --screenshot="$(winpath "$work/$card.png")" "$art?$q" >/dev/null 2>&1
+    done
+    cp "$work/title.png" "$out/trailer-thumbnail.png"
+    ffmpeg -loglevel error -y \
+        -loop 1 -t 3 -framerate 30 -i "$(winpath "$work/title.png")" \
+        -i "$(winpath "$work/recording.mp4")" \
+        -loop 1 -t 3 -framerate 30 -i "$(winpath "$work/end.png")" \
+        -filter_complex "[0]scale=1920:1080,format=yuv420p,fade=out:st=2.5:d=0.5[a];[1]fade=in:d=0.5[b];[2]scale=1920:1080,format=yuv420p,fade=in:d=0.5[c];[a][b][c]concat=n=3:v=1:a=0" \
+        -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p -movflags +faststart "$(winpath "$out/trailer.mp4")"
+    echo "$out/trailer.mp4"
+fi

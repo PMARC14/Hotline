@@ -58,6 +58,38 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Open WebUI keys stay in Credential Locker after both resets (`ContinueIn.ApiKeyName(url)`; documented in configuration.md; delete in
     the App's reset handler in `SettingsWindow.xaml.cs` if wanted; Credential Locker is not reachable from Core tests).
 - `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale (hand check).
+- **BUG: "Capture window" (the window you were in) falls back to the whole screen; the previous window is never recorded when the
+  panel opens from the Copilot key** (owner report 2026-11-08; diagnosed from `hotline.log`, not fixed). Evidence: every key open logs
+  `toggle: visible=False … foreground=<invalid window> … previous=none`, and the later `deactivated: focus went to
+  CopilotKeyPressFocusFrame (explorer)` shows what took focus. The key press moves focus to that short-lived shell frame, so
+  `Native.GetForegroundWindow()` returns 0 (or a shell class) at the instant `PopupWindow.ShowPopup` reads it
+  (`PopupWindow.xaml.cs`, about line 171: it records `PreviousForeground` only when the handle is valid and not a shell surface).
+  Nothing else ever sets it, so it stays 0. Consequences, in order of certainty:
+  1. `AttachmentPanel.CaptureAsync` (`Chat/AttachmentPanel.cs:76`) gets no target, `ScreenCapture.TryGetWindowRect` is false, it
+     captures the whole monitor and shows `Attach_WindowGone` ("That window isn't available (closed or minimized), so the whole
+     screen was captured"), which is wrong: nothing was closed.
+  2. Probably also: `BeforeShow` (reads the selected text in the app you came from) is skipped, so "selected text comes along"
+     may not work from the key; and `PlaceOnActiveMonitor` has no anchor and falls back to the cursor monitor (the log says `place:
+     active \\.\DISPLAY1` on every open). **Unverified**: confirm both on the desktop before and after the fix.
+  3. `Toggle`'s "give focus back to the previous window" also needs `PreviousForeground`.
+  Suggested fix: track the last real foreground window all the time, not only at the instant of the key. A `SetWinEventHook`
+  (`EVENT_SYSTEM_FOREGROUND`, out of context, skip-own-process) in the App keeps a "last real window" handle; ignore Hotline's own
+  windows, the shell classes in `ShellSurfaces.IsShell` (taskbar, desktop, Start, `CopilotKeyPressFocusFrame`), cloaked and
+  minimized windows. `ShowPopup` then uses the live foreground when it is a real window, else the tracked one (and `IsWindow`
+  must still hold: a closed window is dropped). Keep the decision rule ("is this a real app window, which of two candidates wins")
+  in Core, with tests (shell classes, own window, zero handle, stale handle); the hook is App-only. Check: the tracked window
+  must not become Hotline's own Settings window or the file picker; a pinned panel must not overwrite it while you click in
+  the panel; per-monitor placement must use the tracked window's monitor.
+  Hand test (desktop, two monitors, mixed DPI): open the key over a window on the second monitor, press Capture window, expect a
+  `window-HHmmss.png` of that window and no notice; minimize that window first and expect the notice; repeat for a selection in
+  another app (the "Selected text" chip) and for the panel opening on the monitor of the app you were in.
+- **Store screenshots in every language** (owner request 2026-11-08): `scripts/make-store-media.sh --no-video` captures the real
+  panel from the installed app (demo scenes, no AI calls) and `scripts/make-store-localized.sh` composes
+  `artifacts/store/<lang>/screenshot-1..4.png` with the translated captions from `store/listings/<lang>.md`; poster and box art
+  take the tagline from `store/art/taglines.json`; logos have no text and stay as they are; the trailer is skipped. The demo
+  conversations and the panel UI stay English (`Chat/PanelSelfTest.cs` strings are hard-coded); a fully localized UI capture would
+  need the `language` setting changed per run (back up `settings.json` first) and localized demo text. Output is under
+  `artifacts/` (git-ignored); see [RELEASING.md](RELEASING.md).
 - **Panel memory with a long chat** (owner request 2026-11-08; no change made yet). Measured on the 0.1.308 dev build with a big
   Antigravity answer open: Hotline.exe 311-322 MB working set / 209-218 MB private, handles flat at about 1,370, no growth while
   idle; the `agy.exe` child is a separate 275 MB. The WebView2 processes in the list belong to other apps. No baseline was taken, so

@@ -1,0 +1,70 @@
+{
+  "en": {
+    "sub": "Your AI on the Copilot key",
+    "key": "Claude · Gemini · OpenAI · Local models"
+  },
+  "de": {
+    "sub": "Deine KI auf der Copilot-Taste",
+    "key": "Claude · Gemini · OpenAI · Lokale Modelle"
+  },
+  "es": {
+    "sub": "Tu IA en la tecla Copilot",
+    "key": "Claude · Gemini · OpenAI · Modelos locales"
+  },
+  "fr": {
+    "sub": "Votre IA sur la touche Copilot",
+    "key": "Claude · Gemini · OpenAI · Modèles locaux"
+  },
+  "hi": {
+    "sub": "Copilot कुंजी पर आपका AI",
+    "key": "Claude · Gemini · OpenAI · स्थानीय मॉडल"
+  },
+  "id": {
+    "sub": "AI Anda di tombol Copilot",
+    "key": "Claude · Gemini · OpenAI · Model lokal"
+  },
+  "it": {
+    "sub": "La tua IA sul tasto Copilot",
+    "key": "Claude · Gemini · OpenAI · Modelli locali"
+  },
+  "ja": {
+    "sub": "Copilot キーで呼び出す AI",
+    "key": "Claude · Gemini · OpenAI · ローカルモデル"
+  },
+  "ko": {
+    "sub": "Copilot 키로 부르는 AI",
+    "key": "Claude · Gemini · OpenAI · 로컬 모델"
+  },
+  "nl": {
+    "sub": "Je AI op de Copilot-toets",
+    "key": "Claude · Gemini · OpenAI · Lokale modellen"
+  },
+  "pl": {
+    "sub": "Twoja AI pod klawiszem Copilot",
+    "key": "Claude · Gemini · OpenAI · Modele lokalne"
+  },
+  "pt-BR": {
+    "sub": "Sua IA na tecla Copilot",
+    "key": "Claude · Gemini · OpenAI · Modelos locais"
+  },
+  "tr": {
+    "sub": "Copilot tuşundaki yapay zekânız",
+    "key": "Claude · Gemini · OpenAI · Yerel modeller"
+  },
+  "uk": {
+    "sub": "Ваш ШІ на клавіші Copilot",
+    "key": "Claude · Gemini · OpenAI · Локальні моделі"
+  },
+  "vi": {
+    "sub": "AI của bạn trên phím Copilot",
+    "key": "Claude · Gemini · OpenAI · Mô hình cục bộ"
+  },
+  "zh-Hans": {
+    "sub": "Copilot 键上的 AI 助手",
+    "key": "Claude · Gemini · OpenAI · 本地模型"
+  },
+  "zh-Hant": {
+    "sub": "Copilot 鍵上的 AI 助理",
+    "key": "Claude · Gemini · OpenAI · 本機模型"
+  }
+}

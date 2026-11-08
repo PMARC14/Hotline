@@ -3,7 +3,11 @@
 Copy each field into Partner Center › your app › the submission › **Store listings** › English. The other languages'
 text is in `store/listings/<language>.md` (model-drafted; add those listings in Partner Center with *Add languages*). Limits are Partner
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
-and trailer, captured from the installed app); output in `artifacts/store/`.
+and trailer, captured from the installed app); output in `artifacts/store/`. Per-language images:
+`scripts/make-store-media.sh --no-video` (captures the panels once; the PC's screen is in use for about 40 seconds) and then
+`scripts/make-store-localized.sh` (headless, no screen): `artifacts/store/<lang>/screenshot-1..4.png`, `poster-1440x2160.png` and
+`boxart-2160x2160.png` for English and the 16 languages, with each language's captions and tagline. The logos have no text and
+are shared. The panel in the pictures stays English.
 
 The English **Short description** and **Description** are the owner's own text (the Partner Center version of 2026-11-08), with
 the real 0.6 features from the earlier longer description added in the same plain voice (Codex, Continue in, shortcuts,
