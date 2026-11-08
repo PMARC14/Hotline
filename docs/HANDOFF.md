@@ -58,6 +58,41 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Open WebUI keys stay in Credential Locker after both resets (`ContinueIn.ApiKeyName(url)`; documented in configuration.md; delete in
     the App's reset handler in `SettingsWindow.xaml.cs` if wanted; Credential Locker is not reachable from Core tests).
 - `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale (hand check).
+- **Panel memory with a long chat** (owner request 2026-11-08; no change made yet). Measured on the 0.1.308 dev build with a big
+  Antigravity answer open: Hotline.exe 311-322 MB working set / 209-218 MB private, handles flat at about 1,370, no growth while
+  idle; the `agy.exe` child is a separate 275 MB. The WebView2 processes in the list belong to other apps. No baseline was taken, so
+  the cost per message is unknown. Facts from the code: `MessagesPanel` is a plain `StackPanel` in one `ScrollViewer`
+  (`PopupWindow.xaml`), the whole conversation is one selectable `RichTextBlock` (`Chat/TranscriptView.cs`) with tables as `Grid`s of
+  `RichTextBlock` cells and code blocks as `NoWrap` boxes (`Chat/MarkdownRenderer.cs`), attachment images decode at display width
+  (`AttachmentVisuals.cs`). Nothing is virtualized, so everything stays in the visual tree while it is scrolled off. The panel height
+  is capped by `window.chatHeight` or `maxHeightPercent`, then it scrolls; it follows the bottom while streaming, with a jump-to-latest
+  button.
+  1. **Measure first** (read-only, no app changes): restart Hotline, note working set, private bytes and handles; open a new chat and
+     note them; generate a very large answer (long text, many table rows, code, an image) and note them again; close and re-open the
+     panel 20 times and compare handles. `dotnet-dump` is installed; `dotnet-gcdump` and `dotnet-counters` are not (dumps hold chat
+     text and keys: write them to a scratch folder and delete them).
+  2. **If the numbers justify it, release old messages**: past a size threshold, replace messages far above the viewport with a
+     light "N older messages" stub that rebuilds from the stored text on scroll-up. Keep cross-message selection and copy, scroll
+     position and the follow-bottom behaviour. `ItemsRepeater` virtualization is the larger option and loses one-drag selection
+     across messages, so it is not the first choice.
+- **Notices in one style, and they must survive resizing and several monitors** (owner request 2026-11-08). The target style is the
+  in-panel `InfoBar` from `Chat/NoticeArea.cs` (info icon, text, close X; passing ones are gone after 10 s, at most three, tagged ones
+  stay). Audit every message the user can see and move the odd ones into it:
+  - Capture: `AttachmentPanel.CaptureAsync` shows a notice only when the target window is gone; when the previous foreground window,
+    its monitor (`ScreenCapture.MonitorRect`, `DisplayArea.GetFromWindowId(..., Nearest)`) or the grab fails (`GrabBgra` throws
+    "BitBlt failed"), the only message is the generic `Task_Failed` error from `Chat/UiTasks.cs`. Give the failures their own
+    localized wording, such as "Couldn't pick the screen you were on" with the reason. `CaptureRegionAsync` has no notice at all:
+    cancel (Esc) is silent and fine, but a failed grab or a monitor that went away should say so.
+  - Other places: `TranscriptView.ShowError` (an error written inside the answer), `PopupWindow.SetStatus` (the status line; debug
+    "Last key" text in `ActivationRouter`), the Windows toast in `Chat/AnswerNotifier.cs`, tray messages, Settings `InfoBar`s
+    (`SettingsWindow.Backup.cs`, `Connections.cs`) and `ContentDialog` confirmations. Decide per case what is a notice and what must
+    stay a dialog (destructive confirmations stay). Strings go through `Strings.resx` with the 16 translations
+    ([TRANSLATING.md](TRANSLATING.md)).
+  - Behaviour to check by hand and, where it can be Core-tested, test: the notice bar is inside the panel, so the panel must grow
+    for it (and shrink back when it goes) without covering the box or the bar, hold its size when the owner has resized by hand
+    (`_fixedPx`/`_fixedWidth` in `PopupWindow.xaml.cs`), wrap long text at narrow widths, and stay on the monitor the panel is on
+    when the panel moves to another monitor or a different scale (`PanelPlacement.Rescale`); a notice raised while the panel is
+    hidden or on the other monitor shows when it opens. Test with a capture failure on a second monitor at 100% and 200% scaling.
 - `personal/gemini-web` still needs `main` merged in.
 
 ## Next work
@@ -76,7 +111,8 @@ exception is Windows agent connectors verification, which moves to 1.1 if they c
    resolution must keep the requested value; Astra's recommendation: a version 3 boundary for shortcuts, one backup policy, unknown
    fields preserved.
 2. After S1, in parallel (disjoint files): **E1** security leftovers (see *Deferred*); **F1** chat basics (edit/resend, regenerate,
-   history search, pin, export, context meter); **D2** support bundle, first-run flow, accessibility.
+   history search, pin, export, context meter); **D2** support bundle, first-run flow, accessibility; **P1** panel memory with long
+   chats and notices in one style across resize and monitors (both in *Open items*).
 3. Outlines, one job each (Core TDD + UI): **H** attachments (PDF/Office text, size caps, text only) and "ask about this window"
    context; **I** local models (Ollama, LM Studio presets and model lists); **J** tools (web search, MCP gallery, safe built-ins);
    **K** voice read-aloud; **L** `hotline ask` CLI and a shell entry; **N** customization (profiles, per-action hotkeys, quick-action
