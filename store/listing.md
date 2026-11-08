@@ -44,11 +44,12 @@ you press **Submit to the Store** at the end.
 | Screenshots (Desktop) | Keep the 4 and their captions (they match **Screenshot captions**). Optional: add a 5th of Settings > Window > Button rows, and one of Settings > Backup. |
 | Trailer | No change. |
 | Short description (under *Supplemental fields*) | Empty today. Paste **Short description** below (232 characters; the limit is 270). |
-| Keywords | Keep your seven (see **Search terms**). |
-| Copyright and trademark info | No change. |
+| Keywords | Replace your seven with the expanded set under **Search terms** (still 7 keywords, 21 words in all). |
+| Copyright and trademark info | **Change it.** Paste **Copyright and trademark info** below. It now leads with Apache 2.0 and says the MIT license is only for the Microsoft Fluent Emoji artwork. |
 | **Additional license terms** | **Change it.** It says "MIT License: …". Hotline is Apache 2.0. Paste **Additional license terms** below. The Fluent Emoji line in the copyright box stays (that artwork is MIT). |
 | Developed by | No change (PMARC14). |
-| Short title, Voice title | Leave empty (Xbox only). |
+| Short title | Paste **Short title** below. |
+| Voice title | Leave empty (Xbox only). |
 | Store logos / images | No change. |
 
 ### 4. Other languages
@@ -89,6 +90,10 @@ left "Not started" blocks submission: fill it in or remove it. The translations 
    page from another region.
 
 ---
+
+## Short title
+
+Hotline
 
 ## Product name
 
@@ -194,13 +199,13 @@ Arrange button rows in Settings, add buttons with your own pictures, and use a M
 
 `trailer.mp4` (1920x1080, 38 s, no audio) with `trailer-thumbnail.png`. Title: "Hotline AI in 30 seconds".
 
-## Search terms (up to 7; 40 characters each, at most 21 words in all; these are the ones already in Partner Center)
+## Search terms (up to 7; 40 characters each, at most 21 words in all; 7 keywords of up to 3 words = 21 words. Adds Codex, assistant, LLM and shortcut to the earlier seven)
 
-AI chat, Copilot key, Claude code integration, Antigravity CLI Gemini, Anthropic API key, OpenRouter compatible, Llama.cpp integration
+AI chat assistant, Copilot key shortcut, Claude Code integration, Codex Gemini CLI, Anthropic OpenAI API key, OpenRouter compatible, Local LLM llama.cpp
 
 ## Copyright and trademark info
 
-© 2026 PMARC14. Microsoft Fluent Emoji artwork © Microsoft Corporation (MIT License).
+© 2026 PMARC14. Hotline AI is licensed under the Apache License 2.0. Includes Microsoft Fluent Emoji artwork © Microsoft Corporation, used under the MIT License.
 
 ## Additional license terms
 
