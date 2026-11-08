@@ -5,55 +5,53 @@ Center › the submission › Store listings › Tiếng Việt. Product name st
 
 ## Mô tả ngắn
 
-Dùng phím Copilot cho bảng trò chuyện AI gốc. Mang theo tài khoản Claude, Codex hoặc Gemini, khóa API riêng hoặc mô hình cục bộ. Sắp xếp thanh công cụ, thêm nút của bạn và chuyển cuộc trò chuyện sang ứng dụng khác khi cần thêm không gian.
+Đằng nào cũng vướng phím Copilot thì dùng luôn: bảng trò chuyện AI gốc, nhanh chóng cho AI bạn đã có (Claude, Codex, Gemini), khóa API riêng hoặc mô hình cục bộ. Không cần tài khoản với chúng tôi. Sắp xếp thanh công cụ và chuyển cuộc trò chuyện sang ứng dụng khác.
 
 ## Mô tả
 
-Tôi tạo ra ứng dụng này vì phím Copilot chẳng làm được gì hữu ích cho tôi. Hotline AI biến nó thành một bảng trò chuyện AI gốc, nói chuyện với AI do bạn chọn.
+Đằng nào cũng vướng phím Copilot, vậy thì dùng luôn cho tiện. Hotline AI biến nó thành một bảng trò chuyện AI gốc, nhanh chóng để trao đổi với AI bạn chọn.
 
-Nhấn phím và một bảng sẽ mở trên màn hình bạn đang làm việc, sẵn sàng để gõ. Đặt câu hỏi, nhận câu trả lời hiện ra theo thời gian thực; nhấn phím lần nữa là bảng biến mất. Không cần thẻ trình duyệt, không cần tài khoản với chúng tôi.
+Nhấn phím và một bảng sẽ mở ra ngay trên màn hình bạn đang làm việc, sẵn sàng để gõ. Đặt câu hỏi, nhận câu trả lời phát trực tiếp, nhấn phím lần nữa là bảng biến mất. Không cần mở tab trình duyệt, không cần tài khoản với chúng tôi.
 
 DÙNG AI BẠN ĐÃ CÓ
-• Claude Code: dùng Claude Code đã cài và tài khoản đăng nhập của nó, nên gói Claude của bạn hoạt động mà không cần khóa API.
-• OpenAI Codex CLI: dùng Codex đã cài và tài khoản đăng nhập của nó, nên gói ChatGPT của bạn hoạt động mà không cần khóa API.
-• Antigravity CLI (agy): Gemini với tài khoản Google của bạn.
-• Khóa API của riêng bạn: Anthropic, Google Gemini, OpenAI và các dịch vụ tương thích OpenAI khác như OpenRouter.
-• Mô hình cục bộ: bất kỳ máy chủ kiểu OpenAI nào trên PC (ví dụ llama.cpp hoặc LM Studio), để cuộc trò chuyện ở lại trên máy tính của bạn.
-Chọn mô hình, nhà cung cấp và mức độ suy nghĩ ngay trên thanh của bảng.
-Bạn tự chuẩn bị dịch vụ hoặc tự chạy mô hình. Hotline không bao gồm gói đăng ký AI.
+• Claude Code: dùng Claude Code đã cài và thông tin đăng nhập của nó, nên gói Claude của bạn hoạt động mà không cần khóa API.
+• OpenAI Codex CLI: dùng Codex đã cài và thông tin đăng nhập của nó, nên gói ChatGPT của bạn hoạt động mà không cần khóa API.
+• Antigravity CLI (agy): Gemini với thông tin đăng nhập Google của bạn.
+• Khóa API riêng của bạn: Anthropic, Google Gemini, OpenAI và các dịch vụ tương thích OpenAI khác như OpenRouter.
+• Mô hình cục bộ: bất kỳ máy chủ nào theo chuẩn OpenAI trên PC của bạn (ví dụ llama.cpp hoặc LM Studio), không có gì rời khỏi máy tính của bạn.
+Chọn mô hình, nhà cung cấp và mức độ suy nghĩ sâu ngay từ thanh của bảng.
 
 MANG THEO NGỮ CẢNH
-• Văn bản bạn đã chọn trong ứng dụng khác sẽ tự động được đính kèm khi bạn nhấn phím, và bạn có thể bỏ nó trước khi gửi.
-• Chụp cửa sổ bạn vừa dùng, toàn màn hình hoặc vùng bạn kéo chọn; dán hoặc thả ảnh và tệp.
-• Các mô hình không xem được ảnh sẽ nhận văn bản trong ảnh chụp màn hình, được đọc trên PC bằng OCR có sẵn của Windows.
+• Văn bản bạn đã chọn trong ứng dụng khác được đính kèm tự động khi bạn nhấn phím, và bạn có thể xóa nó trước khi gửi.
+• Chụp cửa sổ bạn đang dùng, toàn bộ màn hình hoặc một vùng bạn kéo chọn; dán hoặc thả hình ảnh và tệp.
+• Các mô hình không thể xem hình ảnh sẽ nhận văn bản trong ảnh chụp màn hình của bạn, được đọc ngay trên PC bằng chính OCR của Windows.
 
-DÀNH CHO VIỆC NHANH
-• Thao tác nhanh: gõ / để dịch, tóm tắt, sửa, giải thích, trả lời, rút ngắn, trang trọng hoặc gạch đầu dòng, hoặc tự viết thao tác của bạn bằng tệp văn bản đơn giản.
-• Bộ nhớ: "/remember tôi thích đơn vị hệ mét" và mọi cuộc trò chuyện đều biết, dù bạn dùng AI nào.
-• Giọng nói: cài đặt thao tác nhấn giữ thành Nhập bằng giọng nói (Voice input), giữ phím và nói; thả ra để dừng. Tính năng này dùng khả năng nhận dạng giọng nói trực tuyến của Windows.
-• Các cuộc trò chuyện gần đây chỉ cách một cú nhấp chuột, trong danh sách có thể tìm kiếm. Ctrl+H hoặc /resume cũng mở danh sách này. Các cuộc trò chuyện CLI ở lại trong lịch sử riêng của CLI và có thể tiếp tục lại sau khi khởi động lại.
-• Click to Do và thao tác Windows: gửi văn bản hoặc ảnh tới Hotline AI từ ứng dụng khác.
-• Tiếp tục trong: chuyển cuộc trò chuyện sang terminal, Open WebUI, giao diện web của llama.cpp, LM Studio hoặc đích web hay ứng dụng của riêng bạn. Open WebUI nhận một cuộc trò chuyện thực sự. LM Studio mở ra với cuộc trò chuyện đã được sao chép sẵn để bạn dán; các đích khác sẽ khác nhau.
-• Khi bảng đang được chọn (focus), hãy dùng phím tắt cho cuộc trò chuyện mới, cuộc trò chuyện gần đây, Cài đặt, ghim, sao chép câu trả lời gần nhất, chụp màn hình, lời nhắc cùng các bộ chọn mô hình, nhà cung cấp và mức độ suy nghĩ. Nút bấm của riêng bạn cũng có thể có phím tắt. Chúng cần phím Ctrl, Alt hoặc Win để không bao giờ ảnh hưởng đến việc gõ phím. Thay đổi chúng trong Cài đặt hoặc trong toolbar.json.
-• Nhận thông báo Windows khi câu trả lời hoàn tất trong lúc bạn đang ở nơi khác.
+DÀNH CHO CÁC TÁC VỤ NHANH
+• Thao tác nhanh: gõ / để dịch, tóm tắt, sửa hoặc giải thích, hoặc tự viết thao tác riêng dưới dạng tệp văn bản đơn giản.
+• Bộ nhớ: "/remember Tôi thích dùng đơn vị hệ mét hơn" và mọi cuộc trò chuyện đều nhớ điều đó, dù bạn dùng AI nào.
+• Giọng nói: giữ phím và nói; thả tay ra để dừng.
+• Các cuộc trò chuyện gần đây chỉ cách một cú nhấp, trong danh sách có thể tìm kiếm (Ctrl+H).
+• Click to Do và các tác vụ Windows: gửi văn bản hoặc hình ảnh tới Hotline AI từ các ứng dụng khác.
+• Tiếp tục trong: chuyển cuộc trò chuyện sang cửa sổ lệnh, Open WebUI, giao diện web llama.cpp, LM Studio hoặc đích của riêng bạn khi bạn cần thêm không gian.
+• Phím tắt cho các nút trên thanh khi bảng đang được chọn: cuộc trò chuyện mới, trò chuyện gần đây, Cài đặt, ghim, chụp màn hình và các bộ chọn. Nút của riêng bạn cũng có thể có phím tắt. Chúng cần Ctrl, Alt hoặc Win, nên không bao giờ ảnh hưởng đến việc gõ phím.
+• Thông báo Windows sẽ báo cho bạn khi câu trả lời hoàn tất trong lúc bạn đang ở cửa sổ khác.
 
-GỐC, NHẸ VÀ CỦA BẠN
-• Xây dựng bằng WinUI 3: mở nhanh, theo chủ đề sáng hoặc tối của bạn, không nhúng trình duyệt. Chạy gốc trên x64 và ARM64.
-• Chọn màu nhấn hoặc dùng màu của Windows. Có chủ đề Độ tương phản cao, và Hotline cũng theo các chủ đề tương phản cùng cài đặt độ trong suốt của Windows.
-• Câu trả lời phong phú: tiêu đề, danh sách, bảng, mã có nút Sao chép và cuộn ngang, công thức toán và hình vẽ đơn giản. Bảng điều khiển cuộn theo câu trả lời khi chúng xuất hiện theo thời gian thực.
-• Giữ Alt để di chuyển hoặc đổi kích thước bảng. Ghim bảng, chọn cuộc trò chuyện mở rộng lên trên hay xuống dưới, và cài đặt âm thanh mở/đóng. Chiều rộng cửa sổ dùng pixel thực tế. Bạn có thể mở bảng ở dạng hẹp và tự mở rộng ra khi cuộc trò chuyện bắt đầu.
-• Mọi thứ đều là tệp văn bản đơn giản bạn có thể sửa: cài đặt, kết nối, lời nhắc, các nút trên thanh công cụ.
-• Hàng nút v2: kéo thả các nút giữa các hàng trong Cài đặt > Cửa sổ > Hàng nút (Settings > Window > Button rows), hoặc chỉnh sửa toolbar.json. Thêm nút cho thao tác nhanh hoặc văn bản đặt sẵn, kèm ảnh PNG của riêng bạn. Chọn độ rộng theo ô, định kích thước từng bộ chọn riêng biệt và đặt các nút ít dùng vào menu Thêm (More). Thanh công cụ hẹp sẽ chuyển các nút không vừa vào một menu.
-• Giá trị cài đặt không hợp lệ sẽ quay về mặc định kèm cảnh báo; các cài đặt khác vẫn được áp dụng. Trước khi thay thế tệp cài đặt, kết nối hoặc thanh công cụ được chỉnh sửa thủ công, Hotline sẽ sao lưu lại. Nếu việc sao lưu thất bại, ứng dụng sẽ giữ nguyên tệp. Ứng dụng không tạo bản sao lưu khác khi ghi đè lần lưu gần nhất của chính nó.
-• Cài đặt > Sao lưu (Settings > Backup) xuất và nhập cài đặt, các hàng nút cùng hình ảnh, công cụ MCP, âm thanh, kết nối, thao tác nhanh và lời nhắc. Khi nhập, ứng dụng sao lưu từng tệp trước khi thay thế; không sao lưu được nghĩa là không ghi đè. Khóa API không bao giờ được xuất. Hãy nhập lại chúng trên PC khác. Lịch sử và bộ nhớ không nằm trong gói xuất; các giá trị môi trường MCP thì có, vì vậy hãy giữ gói riêng tư nếu bạn lưu thông tin bí mật ở đó.
-• Công cụ, một cách thận trọng: kết nối API có thể dùng công cụ từ máy chủ MCP của bạn; bất cứ thao tác nào thay đổi điều gì đó đều hỏi bạn trước trừ khi bạn đã cho phép. Các công cụ chỉ đọc sẽ chạy mà không cần hỏi, dựa trên những gì máy chủ khai báo.
+GỐC, NHẸ VÀ LÀ CỦA BẠN
+• Xây dựng bằng WinUI 3: mở nhanh, theo chủ đề sáng hoặc tối của bạn, không có trình duyệt nhúng. Chạy gốc trên x64 và ARM64.
+• Phản hồi phong phú: tiêu đề, danh sách, bảng, mã với nút Sao chép, công thức toán học và hình vẽ đơn giản.
+• Giữ Alt để di chuyển hoặc đổi kích thước bảng; ghim bảng và chọn cuộc trò chuyện mở rộng lên trên hay xuống dưới.
+• Mọi thứ đều là tệp thuần túy mà bạn có thể chỉnh sửa: cài đặt, kết nối, câu lệnh prompt, các nút trên thanh.
+• Sắp xếp thanh theo cách của bạn: kéo các nút giữa các hàng trong Cài đặt, thêm nút của riêng bạn với hình ảnh tự chọn và giữ các nút ít dùng trong menu Thêm.
+• Cài đặt > Sao lưu chuyển thiết lập của bạn sang PC khác. Khóa API không bao giờ bị xuất ra, và tệp mà Hotline thay thế sẽ được sao lưu trước.
+• Công cụ, nhưng cẩn trọng: các kết nối API có thể dùng công cụ từ máy chủ MCP của bạn; bất cứ thứ gì làm thay đổi điều gì đó đều hỏi ý bạn trước.
+• Phím Copilot cũng có thể hoạt động như phím Right Ctrl, nếu bạn muốn thế.
 
-RIÊNG TƯ NGAY TỪ THIẾT KẾ
-Hotline AI không có máy chủ và không thu thập gì: không tài khoản, không phân tích, không quảng cáo. Tin nhắn của bạn chỉ được gửi tới dịch vụ AI bạn chọn, theo điều khoản của dịch vụ đó. Khóa API nằm trong Trình quản lý thông tin xác thực của Windows; lịch sử, cài đặt và bộ nhớ ở lại trên PC của bạn. Miễn phí và mã nguồn mở.
+RIÊNG TƯ TỪ THIẾT KẾ
+Hotline AI không có máy chủ và không thu thập bất cứ điều gì: không tài khoản, không phân tích dữ liệu, không quảng cáo. Tin nhắn của bạn chỉ gửi đến dịch vụ AI mà bạn chọn, theo các điều khoản của dịch vụ đó. Khóa API nằm trong Windows Credential Locker; lịch sử, cài đặt và bộ nhớ lưu lại ngay trên PC của bạn. Miễn phí và mã nguồn mở.
 
-Không có phím Copilot? Hãy đặt bất kỳ phím tắt nào bạn thích, ví dụ Ctrl+Alt+H, bằng cách nhấn phím đó trong Cài đặt.
+Không có phím Copilot? Hãy đặt bất kỳ phím tắt nào bạn thích, ví dụ như Ctrl+Alt+H.
 
-Hotline AI là ứng dụng độc lập, không liên kết với cũng như không được Microsoft, Anthropic, Google hay OpenAI bảo trợ. Để dùng Claude Code, Codex, Antigravity CLI hoặc API AI, bạn cần có tài khoản riêng tại dịch vụ đó.
+Hotline AI là một ứng dụng độc lập và không liên kết hay được chứng thực bởi Microsoft, Anthropic, Google hoặc OpenAI. Việc sử dụng Claude Code, Codex, Antigravity CLI hoặc API của AI yêu cầu tài khoản của riêng bạn với dịch vụ đó.
 
 ## Có gì mới trong phiên bản này
 

@@ -5,55 +5,53 @@ Center › the submission › Store listings › Nederlands. Product name stays 
 
 ## Korte beschrijving
 
-Gebruik de Copilot-toets voor een native AI-chatpaneel. Gebruik je Claude-, Codex- of Gemini-aanmelding, je eigen API-sleutel of een lokaal model. Deel de balk in, voeg eigen knoppen toe en zet de chat voort in een andere app als je meer ruimte nodig hebt.
+Je zit opgescheept met de Copilot-toets, dus gebruik hem: een snel, native AI-chatpaneel voor de AI die je al hebt (Claude, Codex, Gemini), je eigen API-sleutel of een lokaal model. Geen account bij ons. Deel de balk in en zet de chat voort in een andere app.
 
 ## Beschrijving
 
-Ik heb dit gemaakt omdat de Copilot-toets voor mij niets nuttigs doet. Hotline AI maakt er een native AI-chatpaneel van dat praat met de AI die jij kiest.
+Je zit opgescheept met de Copilot-toets, dus je kunt hem maar beter gebruiken. Hotline AI verandert hem in een snel, native AI-chatpaneel dat praat met de AI die jij kiest.
 
-Druk op de toets en er opent een paneel op het scherm waarop je werkt, klaar om te typen. Stel een vraag, zie het antwoord live verschijnen, druk nogmaals op de toets en het is weg. Geen browsertabblad, geen account bij ons.
+Druk op de toets en er opent een paneel op het scherm waarop je werkt, klaar om te typen. Stel een vraag, krijg een live gestreamd antwoord, druk nog eens op de toets en het is weer weg. Geen browsertabblad, geen account bij ons.
 
 GEBRUIK DE AI DIE JE AL HEBT
-• Claude Code: gebruikt je geïnstalleerde Claude Code en de aanmelding daarvan, dus je Claude-abonnement werkt zonder API-sleutel.
-• OpenAI Codex CLI: gebruikt je geïnstalleerde Codex en de aanmelding daarvan, dus je ChatGPT-abonnement werkt zonder API-sleutel.
+• Claude Code: gebruikt je geïnstalleerde Claude Code en je aanmelding, zodat je Claude-abonnement werkt zonder API-sleutel.
+• OpenAI Codex CLI: gebruikt je geïnstalleerde Codex en je aanmelding, zodat je ChatGPT-abonnement werkt zonder API-sleutel.
 • Antigravity CLI (agy): Gemini met je Google-aanmelding.
 • Je eigen API-sleutel: Anthropic, Google Gemini, OpenAI en andere OpenAI-compatibele diensten zoals OpenRouter.
-• Lokale modellen: elke server in OpenAI-stijl op je pc (bijvoorbeeld llama.cpp of LM Studio), zodat de chat op je computer blijft.
-Kies het model, de provider en hoeveel er nagedacht moet worden direct vanuit de balk van het paneel.
-Je zorgt zelf voor de dienst of draait het model zelf. Hotline bevat geen AI-abonnement.
+• Lokale modellen: elke server in OpenAI-stijl op je pc (zoals llama.cpp of LM Studio), zodat er niets van je computer weggaat.
+Kies het model, de provider en hoe hard er moet worden nagedacht rechtstreeks vanaf de balk van het paneel.
 
-NEEM JE CONTEXT MEE
-• Tekst die je in een andere app had geselecteerd, wordt automatisch bijgevoegd als je op de toets drukt; je kunt hem vóór het verzenden weghalen.
-• Leg het venster vast waarin je zat, het hele scherm of een gebied dat je uitsleept; plak of sleep afbeeldingen en bestanden.
-• Modellen die geen afbeeldingen kunnen zien, krijgen in plaats daarvan de tekst uit je schermafbeelding, op je pc gelezen met de OCR van Windows.
+NEEM CONTEXT MET JE MEE
+• Tekst die je in een andere app had geselecteerd, wordt automatisch toegevoegd zodra je op de toets drukt, en je kunt het vóór verzending weer verwijderen.
+• Leg het venster vast waarin je zat, het hele scherm of een getrokken selectie; plak of versleep afbeeldingen en bestanden.
+• Modellen die geen afbeeldingen kunnen zien, krijgen in plaats daarvan de tekst in je schermafbeelding, op je pc gelezen met de ingebouwde OCR van Windows.
 
 GEMAAKT VOOR SNELLE KLUSSEN
-• Snelle acties: typ / voor translate, summarize, fix, explain, reply, shorter, formal of bullets, of schrijf je eigen acties als gewone tekstbestanden.
-• Geheugen: "/remember ik gebruik liever metrische eenheden" en elke chat weet het, welke AI je ook gebruikt.
-• Spraak: stel lang indrukken in op Spraakinvoer, houd de toets ingedrukt en praat; laat los om te stoppen. Dit gebruikt de online spraakherkenning van Windows.
-• Recente chats zijn één klik verwijderd, in een doorzoekbare lijst. Ctrl+H of /resume opent deze ook. CLI-chats blijven in de eigen geschiedenis van de CLI en kunnen na een herstart worden hervat.
+• Snelle acties: typ / voor vertalen, samenvatten, verbeteren of uitleggen, of schrijf je eigen acties als eenvoudige tekstbestanden.
+• Geheugen: "/remember ik gebruik liever het metriek stelsel" en elke chat weet het, welke AI je ook gebruikt.
+• Spraak: houd de toets ingedrukt en praat; laat los om te stoppen.
+• Recente chats zijn één klik verwijderd, in een doorzoekbare lijst (Ctrl+H).
 • Click to Do en Windows-acties: stuur tekst of een afbeelding vanuit andere apps naar Hotline AI.
-• Doorgaan in: zet de chat voort in een terminal, Open WebUI, de web-UI van llama.cpp, LM Studio of je eigen web- of app-doel. Open WebUI krijgt een echte chat. LM Studio opent met de chat gekopieerd zodat je hem kunt plakken; bij andere doelen verschilt dit.
-• Terwijl het paneel de focus heeft, gebruik je sneltoetsen voor een nieuwe chat, recente chats, Instellingen, vastpinnen, het laatste antwoord kopiëren, opnames, prompts en de kiezers voor model, provider en denkinspanning. Je eigen knoppen kunnen er ook een hebben. Ze vereisen Ctrl, Alt of Win, zodat het typen nooit wordt verstoord. Wijzig ze in Instellingen of in toolbar.json.
-• Ontvang een Windows-melding wanneer een antwoord klaar is terwijl je ergens anders mee bezig bent.
+• Doorgaan in: zet de chat voort in een terminal, Open WebUI, de llama.cpp-web-UI, LM Studio of je eigen doel als je meer ruimte nodig hebt.
+• Sneltoetsen voor de knoppen in de balk terwijl het paneel de focus heeft: nieuwe chat, recente chats, Instellingen, vastzetten, opnames en de kiezers. Je eigen knoppen kunnen er ook een hebben. Ze vereisen Ctrl, Alt of Win, zodat typen nooit wordt verstoord.
+• Een Windows-melding laat je weten wanneer een antwoord klaar is terwijl je ergens anders bezig bent.
 
 NATIVE, LICHT EN VAN JOU
-• Gebouwd met WinUI 3: opent snel, volgt je lichte of donkere thema, zonder ingebouwde browser. Native op x64 en ARM64.
-• Kies een accentkleur of gebruik die van Windows. Er is een thema Hoog contrast, en Hotline volgt de contrastthema's en transparantie-instelling van Windows.
-• Rijke antwoorden: koppen, lijsten, tabellen, code met een knop Kopiëren en zijwaarts scrollen, formules en eenvoudige tekeningen. Het paneel volgt antwoorden terwijl ze binnenkomen.
-• Houd Alt ingedrukt om het paneel te verplaatsen of van grootte te veranderen. Pin het vast, kies of de chat naar boven of beneden groeit, en stel geluiden in voor openen en sluiten. Vensterbreedtes gebruiken echte pixels. Je kunt een smal beginpaneel instellen dat breder wordt zodra een chat start.
-• Alles is een gewoon bestand dat je kunt bewerken: instellingen, verbindingen, prompts en de knoppen in de balk.
-• Knoppenrijen v2: sleep knoppen tussen rijen in Instellingen > Venster > Knoppenrijen, of bewerk toolbar.json. Voeg knoppen toe voor snelle acties of vooraf ingestelde tekst, met je eigen PNG-afbeelding. Kies breedtes in cellen, stel de grootte van elke kiezer apart in en plaats minder gebruikte knoppen in een menu Meer. Een smalle balk verplaatst knoppen die niet passen naar een menu.
-• Een ongeldige instellingswaarde valt terug met een waarschuwing; de overige instellingen blijven gewoon gelden. Voordat een handmatig bewerkt instellingen-, verbindings- of werkbalkbestand wordt overschreven, maakt Hotline een back-up. Als die back-up mislukt, blijft het bestand onaangeroerd. Het maakt geen nieuwe back-up bij het vervangen van zijn eigen laatste opslag.
-• Instellingen > Back-up exporteert en importeert instellingen, knoppenrijen en afbeeldingen, MCP-hulpmiddelen, geluiden, verbindingen, snelle acties en prompts. Importeren maakt eerst een back-up van elk bestand dat het vervangt; geen back-up betekent niet schrijven. API-sleutels worden nooit geëxporteerd; voer ze op de andere pc opnieuw in. Geschiedenis en geheugen zitten niet in het pakket; MCP-omgevingsvariabelen wel, dus houd het pakket privé als je daar geheimen in hebt gezet.
-• Hulpmiddelen, met beleid: API-verbindingen kunnen hulpmiddelen van je MCP-servers gebruiken; alles wat iets wijzigt, vraagt het je eerst, tenzij je het hebt toegestaan. Alleen-lezen hulpmiddelen draaien zonder te vragen, op basis van wat de server opgeeft.
+• Gebouwd met WinUI 3: opent snel, volgt je lichte of donkere thema, geen ingebouwde browser. Native op x64 en ARM64.
+• Rijke antwoorden: koppen, lijsten, tabellen, code met een Kopieer-knop, wiskunde en eenvoudige tekeningen.
+• Houd Alt ingedrukt om het paneel te verplaatsen of van formaat te veranderen; zet het vast en kies of de chat naar boven of beneden groeit.
+• Alles is een eenvoudig bestand dat je kunt bewerken: instellingen, verbindingen, prompts, de knoppen in de balk.
+• Deel de balk naar eigen wens in: sleep knoppen tussen rijen in Instellingen, voeg je eigen knoppen toe met je eigen afbeeldingen en bewaar minder gebruikte knoppen in een menu Meer.
+• Instellingen > Back-up verplaatst je configuratie naar een andere pc. API-sleutels worden nooit geëxporteerd en van een bestand dat Hotline vervangt, wordt eerst een back-up gemaakt.
+• Hulpmiddelen, zorgvuldig: API-verbindingen kunnen hulpmiddelen van je MCP-servers gebruiken; alles wat iets wijzigt, vraagt je eerst om toestemming.
+• De Copilot-toets kan ook werken als een rechter Ctrl-toets, als je dat liever hebt.
 
-PRIVACY VOOROP
-Hotline AI heeft geen server en verzamelt niets: geen account, geen analyses, geen advertenties. Je berichten gaan alleen naar de AI-dienst die jij kiest, onder de voorwaarden van die dienst. API-sleutels blijven in Windows Referentiebeheer; geschiedenis, instellingen en geheugen blijven op je pc. Gratis en open source.
+PRIVÉ VAN OPZET
+Hotline AI heeft geen server en verzamelt niets: geen account, geen analyses, geen advertenties. Je berichten gaan alleen naar de AI-dienst die jij kiest, onder de voorwaarden van die dienst. API-sleutels blijven in Windows Credential Locker; geschiedenis, instellingen en geheugen blijven op je pc. Gratis en open source.
 
-Geen Copilot-toets? Stel een sneltoets naar keuze in, bijvoorbeeld Ctrl+Alt+H, door deze in Instellingen in te drukken.
+Geen Copilot-toets? Stel elke gewenste sneltoets in, bijvoorbeeld Ctrl+Alt+H.
 
-Hotline AI is een onafhankelijke app en is niet verbonden aan of goedgekeurd door Microsoft, Anthropic, Google of OpenAI. Voor het gebruik van Claude Code, Codex, de Antigravity CLI of een AI-API heb je een eigen account bij die dienst nodig.
+Hotline AI is een onafhankelijke app en is niet gelieerd aan of goedgekeurd door Microsoft, Anthropic, Google of OpenAI. Voor het gebruik van Claude Code, Codex, de Antigravity CLI of een AI-API is een eigen account bij die dienst vereist.
 
 ## Nieuw in deze versie
 
