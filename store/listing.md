@@ -5,9 +5,88 @@ text is in `store/listings/<language>.md` (model-drafted; add those listings in 
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
 and trailer, captured from the installed app); output in `artifacts/store/`.
 
-The English **Description** below is the owner's own shorter text, as live in Partner Center (2026-11-08). The 16 files in
-`store/listings/` were translated from the earlier, longer description (Codex, Continue in, shortcuts, backup), so their
-descriptions differ from it until they are re-translated.
+The English **Short description** and **Description** are the owner's own text (the Partner Center version of 2026-11-08), with
+the real 0.6 features from the earlier longer description added in the same plain voice (Codex, Continue in, shortcuts,
+bar layout, Backup). `store/listings/<language>.md` carry translations of both.
+
+---
+
+## Submission guide: what to paste and change in Partner Center (version 0.6.0.0)
+
+Do these in order. "Paste" means copy the text from the section of this file with the same name. Nothing here is submitted until
+you press **Submit to the Store** at the end.
+
+### 1. Start the update
+
+1. Partner Center › Apps and games › **Hotline AI** › **Start update**.
+2. **Pricing and availability**: no change (free).
+3. **Properties**: check against *Properties (suggested)* below. Change the category, the system requirements or the Generative AI
+   notes only if they differ.
+4. **Age ratings**: no change unless the questionnaire asks something new.
+
+### 2. Packages
+
+1. Get the bundle: GitHub › Actions › **Store** workflow › the run for version 0.6.0.0 › artifact (or the copy in
+   `Downloads\Hotline-store-0.6.0\`). It holds one `.msixbundle` for x64 and ARM64. See [RELEASING.md](../docs/RELEASING.md).
+2. **Packages** page: remove the old package, drag in the new `.msixbundle`, wait for validation (a few minutes). The version must
+   read 0.6.0.0 (Store versions end in `.0`).
+3. **Notes for certification** (the free-text box on the submission options page): paste the Generative AI text from *Properties*
+   below, plus: "Needs the user's own Claude/Codex/Gemini sign-in or API key to chat. To test without an account, add a connection of
+   type 'Local endpoint' or use any OpenAI-compatible API key."
+
+### 3. Store listing: English (United States)
+
+| Field in Partner Center | What to do |
+|---|---|
+| Description | Paste **Description** below. It replaces the old text. |
+| What's new in this version | Paste **What's new in this version** below. |
+| Product features | Replace all 20 with **Product features** below. The old set is shorter: no Codex, Continue in, shortcuts, Backup or button rows. Paste one per line. |
+| Screenshots (Desktop) | Keep the 4 and their captions (they match **Screenshot captions**). Optional: add a 5th of Settings > Window > Button rows, and one of Settings > Backup. |
+| Trailer | No change. |
+| Short description (under *Supplemental fields*) | Empty today. Paste **Short description** below (232 characters; the limit is 270). |
+| Keywords | Keep your seven (see **Search terms**). |
+| Copyright and trademark info | No change. |
+| **Additional license terms** | **Change it.** It says "MIT License: …". Hotline is Apache 2.0. Paste **Additional license terms** below. The Fluent Emoji line in the copyright box stays (that artwork is MIT). |
+| Developed by | No change (PMARC14). |
+| Short title, Voice title | Leave empty (Xbox only). |
+| Store logos / images | No change. |
+
+### 4. Other languages
+
+*Store listing languages* › **Manage additional languages**: you have the 16 below. Open each one and paste, from
+`store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**, **Screenshot
+captions** and **Search terms** (each file has them as sections in the same order). The shared fields (license, copyright,
+developer, trailer, logos) are not repeated per language.
+
+| Partner Center entry | File |
+|---|---|
+| Chinese (Simplified) (China) | `zh-Hans.md` |
+| Chinese (Traditional) (Taiwan) | `zh-Hant.md` |
+| Dutch (Netherlands) | `nl.md` |
+| French (France) | `fr.md` |
+| German (Germany) | `de.md` |
+| Hindi (India) | `hi.md` |
+| Indonesian (Indonesia) | `id.md` |
+| Italian (Italy) | `it.md` |
+| Japanese (Japan) | `ja.md` |
+| Korean (Korea) | `ko.md` |
+| Polish (Poland) | `pl.md` |
+| Portuguese (plain "Portuguese"; the text is Brazilian) | `pt-BR.md` |
+| Spanish (EU) | `es.md` |
+| Turkish (Türkiye) | `tr.md` |
+| Ukrainian (Ukraine) | `uk.md` |
+| Vietnamese (Vietnam) | `vi.md` |
+
+Notes: untick the plain "Chinese" entry (no script). Spanish speakers outside Spain should fall back to the Spanish listing; after
+it is live, check from a Latin American region, and if English shows, add "Spanish (Latin America)" with the same text. A language
+left "Not started" blocks submission: fill it in or remove it. The translations are model-drafted; a native speaker should skim them.
+
+### 5. Submit
+
+1. Re-read the English page once (Description, What's new, 20 features, short description).
+2. **Submit to the Store**. Certification usually takes a few days. The update goes live when it passes.
+3. After it is live: open the Store page on this PC, check the version in Hotline > About reads 0.6.0.0, and check the Spanish
+   page from another region.
 
 ---
 
@@ -17,7 +96,7 @@ Hotline AI
 
 ## Short description (shown near the top; keep it under ~270 characters)
 
-Use the Copilot key for a native AI chat panel. Bring your Claude, Codex or Gemini sign-in, your own API key, or a local model. Arrange the bar, add your own buttons, and take the chat to another app when you need more room.
+You're stuck with the Copilot key, so use it: a fast, native AI chat panel for the AI you already have (Claude, Codex, Gemini), your own API key or a local model. No account with us. Arrange the bar and take the chat to another app.
 
 ## Description (up to 10,000 characters)
 
@@ -29,6 +108,7 @@ press the key again and it's gone. No browser tab, no account with us.
 
 USE THE AI YOU ALREADY HAVE
 • Claude Code: uses your installed Claude Code and its sign-in, so your Claude plan works with no API key.
+• OpenAI Codex CLI: uses your installed Codex and its sign-in, so your ChatGPT plan works with no API key.
 • Antigravity CLI (agy): Gemini with your Google sign-in.
 • Your own API key: Anthropic, Google Gemini, OpenAI and other OpenAI-compatible services such as OpenRouter.
 • Local models: any OpenAI-style server on your PC (for example llama.cpp or LM Studio), so nothing leaves your
@@ -45,13 +125,23 @@ MADE FOR QUICK JOBS
 • Quick actions: type / for translate, summarize, fix or explain, or write your own as simple text files.
 • Memory: "/remember I prefer metric units" and every chat knows it, whichever AI you use.
 • Voice: hold the key and talk; let go to stop.
-• Recent chats are one click away.
+• Recent chats are one click away, in a searchable list (Ctrl+H).
 • Click to Do and Windows actions: send text or an image to Hotline AI from other apps.
+• Continue in: take the chat to a terminal, Open WebUI, the llama.cpp web UI, LM Studio or your own target when you
+  need more room.
+• Shortcuts for the bar's buttons while the panel has focus: new chat, recent chats, Settings, pin, captures and the
+  pickers. Your own buttons can have one too. They need Ctrl, Alt or Win, so typing is never touched.
+• A Windows notification tells you when an answer finishes while you're elsewhere.
 
 NATIVE, LIGHT AND YOURS
-• Built with WinUI 3: fast to open, follows your light or dark theme, no embedded browser.
+• Built with WinUI 3: fast to open, follows your light or dark theme, no embedded browser. Native on x64 and ARM64.
 • Rich answers: headings, lists, tables, code with a Copy button, math and simple drawings.
+• Hold Alt to move or resize the panel; pin it, and choose whether the chat grows up or down.
 • Everything is a plain file you can edit: settings, connections, prompts, the buttons in the bar.
+• Arrange the bar your way: drag buttons between rows in Settings, add your own buttons with your own pictures, and
+  keep less-used ones in a More menu.
+• Settings > Backup moves your setup to another PC. API keys are never exported, and a file Hotline replaces is backed
+  up first.
 • Tools, carefully: API connections can use tools from your MCP servers; anything that changes something asks you
   first.
 • The Copilot key can also act as a Right Ctrl key, if you'd rather have that.
@@ -64,7 +154,7 @@ memory stay on your PC. Free and open source.
 No Copilot key? Set any shortcut you like, for example Ctrl+Alt+H.
 
 Hotline AI is an independent app and isn't affiliated with or endorsed by Microsoft, Anthropic, Google or OpenAI. Using
-Claude Code, the Antigravity CLI or an AI API requires your own account with that service.
+Claude Code, Codex, the Antigravity CLI or an AI API requires your own account with that service.
 
 ## What's new in this version
 
@@ -104,9 +194,9 @@ Arrange button rows in Settings, add buttons with your own pictures, and use a M
 
 `trailer.mp4` (1920x1080, 38 s, no audio) with `trailer-thumbnail.png`. Title: "Hotline AI in 30 seconds".
 
-## Search terms (up to 7)
+## Search terms (up to 7; 40 characters each, at most 21 words in all; these are the ones already in Partner Center)
 
-AI chat, Copilot key, Claude, Gemini, AI assistant, LLM, local AI
+AI chat, Copilot key, Claude code integration, Antigravity CLI Gemini, Anthropic API key, OpenRouter compatible, Llama.cpp integration
 
 ## Copyright and trademark info
 
@@ -138,16 +228,3 @@ PMARC14
   connection of type 'Local endpoint' or use any OpenAI-compatible API key."
 - System requirements: Windows 11 22H2 or later; x64 or ARM64. A Copilot key is optional (any shortcut works).
 - Age rating: answer the questionnaire honestly; it has unrestricted AI-generated text through third-party services.
-
-## Notes for the Store submission
-
-Version: 0.6.0.0
-
-Ratings / notes for reviewers: "Needs the user's own Claude/Codex/Gemini sign-in or API key to chat"
-
-Change in Partner Center for this update:
-
-- Short description and Description: replace with the fields above.
-- What's new: replace with the update text above.
-- Features: replace with the 20 features above.
-- Screenshots: recapture the new button rows editor, the bar with custom buttons, and the Backup page.
