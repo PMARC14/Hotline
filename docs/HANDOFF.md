@@ -83,13 +83,28 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   Hand test (desktop, two monitors, mixed DPI): open the key over a window on the second monitor, press Capture window, expect a
   `window-HHmmss.png` of that window and no notice; minimize that window first and expect the notice; repeat for a selection in
   another app (the "Selected text" chip) and for the panel opening on the monitor of the app you were in.
-- **Store screenshots in every language** (owner request 2026-11-08): `scripts/make-store-media.sh --no-video` captures the real
-  panel from the installed app (demo scenes, no AI calls) and `scripts/make-store-localized.sh` composes
-  `artifacts/store/<lang>/screenshot-1..4.png` with the translated captions from `store/listings/<lang>.md`; poster and box art
-  take the tagline from `store/art/taglines.json`; logos have no text and stay as they are; the trailer is skipped. The demo
-  conversations and the panel UI stay English (`Chat/PanelSelfTest.cs` strings are hard-coded); a fully localized UI capture would
-  need the `language` setting changed per run (back up `settings.json` first) and localized demo text. Output is under
-  `artifacts/` (git-ignored); see [RELEASING.md](RELEASING.md).
+- **Store screenshots in every language** (owner request 2026-11-08; scripts written and the pieces tested, the full 17-language run
+  not finished: the owner stopped it because the PC became slow and windows stuck). `scripts/make-store-panels.sh` sets
+  `general.language` per language (settings.json backed up first and restored byte for byte, also on Ctrl+C or kill), restarts
+  Hotline and runs `scripts/make-store-media.sh --panels-only`, which captures the real panel and Settings (AI connections page,
+  `hotline://settings?page=Connections`) into `artifacts/store/panels/<lang>/`; `scripts/make-store-localized.sh` then composes
+  `artifacts/store/<lang>/screenshot-1..4.png`, poster and box art with the captions from `store/listings/<lang>.md` and the
+  tagline from `store/art/taglines.json` (the app's own `AppDescription` strings). The demo conversations are now interface text
+  (`Strings.Demo_*`, translated in all 16 files), so the panels are fully localized. Logos have no text and are shared. The trailer
+  is skipped (`store/video/storyboard.md` and `scripts/make-store-tour.sh` have the in-depth video ready; its caption pipeline was
+  tested with `--dry-run`, the screen recording was not run).
+  Lessons from the first runs (Argon review, verified): an edit to `scripts/lib/store-capture.sh` once dropped the exit trap, so
+  every run left a full-screen Edge backdrop and a 70 MB temp folder behind, which made the PC stuck and slow. Now: the cleanup
+  trap kills the backdrop by process id, the recorder, closes Settings and deletes the work folder (tested on exit and on kill);
+  window handling is one small ctypes helper (`scripts/lib/win-helper.py`) instead of eight PowerShell `Add-Type` compiles per
+  language (each starts `csc.exe`, which Defender scans); the backdrop is brought to the front by process (AttachThreadInput to
+  the foreground thread, then checked), and the capture stops with a message if the screen is not the dark backdrop; panel and
+  Settings pictures are cropped to the window's exact rectangle (DWM frame bounds), not to a diff against the backdrop; Hotline is
+  stopped before settings.json is edited, and the run waits for the "interface language" log line instead of sleeping. Still open:
+  Hotline has no quit link, so each language ends it with `taskkill /F` (a ghost tray icon until the mouse passes over it); a
+  graceful quit would need a `hotline://quit` (not built). Before the long run: keep the PC awake (`hold`), plug in the power, and
+  close other apps; run it when you will not use the PC for about 15 minutes. The panel's demo scene scrolls the answer back to the
+  top after streaming (`PanelSelfTest.DemoAsync`), so the question and heading show.
 - **Panel memory with a long chat** (owner request 2026-11-08; no change made yet). Measured on the 0.1.308 dev build with a big
   Antigravity answer open: Hotline.exe 311-322 MB working set / 209-218 MB private, handles flat at about 1,370, no growth while
   idle; the `agy.exe` child is a separate 275 MB. The WebView2 processes in the list belong to other apps. No baseline was taken, so

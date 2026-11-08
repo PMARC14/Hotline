@@ -16,7 +16,14 @@ log="$HOME/.hotline/logs/hotline.log"
 out="$ROOT/artifacts/store"
 mkdir -p "$out/panels"
 backup="$out/settings.before-panels.json"
-cp -p "$settings" "$backup" && cmp -s "$settings" "$backup" || die "couldn't back up settings.json; nothing was changed"
+if [ -f "$backup" ]; then # a run that didn't finish: the backup is still the original, never overwrite it with a changed file
+    if ! cmp -s "$settings" "$backup"; then
+        echo "A previous run didn't finish: putting your original settings.json back from $backup first." >&2
+        cp -p "$backup" "$settings" && cmp -s "$settings" "$backup" || die "couldn't restore settings.json from $backup"
+    fi
+else
+    cp -p "$settings" "$backup" && cmp -s "$settings" "$backup" || die "couldn't back up settings.json; nothing was changed"
+fi
 
 if [ $# -gt 0 ]; then
     langs=("$@")
@@ -25,22 +32,33 @@ else
     for f in "$ROOT"/store/listings/*.md; do langs+=("$(basename "$f" .md)"); done
 fi
 
-restart_hotline() {
+stop_hotline() { # the language applies at start; Hotline has no quit link, so it is ended (its tray icon vanishes at the next mouse-over)
     MSYS_NO_PATHCONV=1 taskkill.exe /IM Hotline.exe /F >/dev/null 2>&1 || true
     sleep 2
-    MSYS_NO_PATHCONV=1 cmd.exe /c start "" "hotline://tray"
-    sleep 7
 }
+start_hotline() { # starts it in the tray and waits (up to 40 s) until its log says which interface language it came up in
+    local before try
+    before=$(grep -c "interface language:" "$log" 2>/dev/null || true)
+    MSYS_NO_PATHCONV=1 cmd.exe /c start "" "hotline://tray"
+    for try in $(seq 1 80); do
+        [ "$(grep -c "interface language:" "$log" 2>/dev/null || true)" -gt "${before:-0}" ] && { sleep 3; return 0; }
+        sleep 0.5
+    done
+    return 1
+}
+restart_hotline() { stop_hotline; start_hotline || true; }
 restored=0
 restore() {
     [ "$restored" = 1 ] && return
     restored=1
     cp -p "$backup" "$settings"
-    if cmp -s "$settings" "$backup"; then echo "settings.json restored (identical to the backup)" >&2
+    if cmp -s "$settings" "$backup"; then echo "settings.json restored (identical to the backup)" >&2; rm -f "$backup"
     else echo "WARNING: settings.json differs from the backup; the original is $backup" >&2; fi
     restart_hotline
 }
-trap restore EXIT INT TERM
+trap restore EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
 set_language() { # TAG: change only general.language, keep the rest of the file as it is
     python - "$(winpath "$settings")" "$1" <<'PY'
@@ -57,8 +75,9 @@ PY
 for lang in "${langs[@]}"; do
     tag=$lang; [ "$lang" = en ] && tag=en-US
     echo "== $lang ==" >&2
+    stop_hotline # first, so the app can't save settings.json while it is being edited
     set_language "$tag" || die "couldn't set the language"
-    restart_hotline
+    start_hotline || die "Hotline didn't start (no 'interface language' line in $log within 40 s); settings.json will be restored"
     grep "interface language:" "$log" | tail -1 | grep -q "interface language: $tag" ||
         die "Hotline didn't start in $tag (see $log); stopped, settings.json will be restored"
     mkdir -p "$out/panels/$lang"
