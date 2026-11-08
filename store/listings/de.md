@@ -5,91 +5,53 @@ Center › the submission › Store listings › Deutsch. Product name stays "Ho
 
 ## Kurzbeschreibung
 
-Nutze die Copilot-Taste als natives KI-Chatfenster. Bring deine Claude-, Codex- oder Gemini-Anmeldung, deinen API-Schlüssel oder ein lokales Modell mit. Ordne die Leiste, füge eigene Buttons hinzu und nimm den Chat in eine andere App mit, wenn du mehr Platz brauchst.
+Du hast die Copilot-Taste nun mal, also nutze sie: ein schnelles, natives KI-Chatpanel für die KI, die du schon hast (Claude, Codex, Gemini), deinen API-Schlüssel oder ein lokales Modell. Kein Konto bei uns. Ordne die Leiste und nimm den Chat in andere Apps mit.
 
 ## Beschreibung
 
-Ich habe das gebaut, weil die Copilot-Taste für mich nichts Nützliches tut. Hotline AI macht daraus ein natives
-KI-Chatfenster, das mit der KI deiner Wahl spricht.
+Du hast die Copilot-Taste nun mal, also kannst du sie genauso gut nutzen. Hotline AI macht daraus ein schnelles, natives KI-Chatpanel, das mit der KI deiner Wahl spricht.
 
-Drück die Taste, und auf dem Monitor, an dem du arbeitest, öffnet sich ein Panel, bereit zum Tippen. Stell eine Frage,
-die Antwort erscheint live; drück die Taste erneut, und es ist weg. Kein Browser-Tab, kein Konto bei uns.
+Drück die Taste und auf dem Monitor, auf dem du arbeitest, öffnet sich ein Panel – tippbereit. Frag etwas, erhalte eine gestreamte Antwort, drück die Taste noch mal und es ist weg. Kein Browser-Tab, kein Konto bei uns.
 
 NUTZE DIE KI, DIE DU SCHON HAST
-• Claude Code: nutzt dein installiertes Claude Code und dessen Anmeldung, dein Claude-Abo funktioniert also ohne API-Schlüssel.
-• OpenAI Codex CLI: nutzt dein installiertes Codex und dessen Anmeldung, dein ChatGPT-Abo funktioniert also ohne API-Schlüssel.
+• Claude Code: nutzt dein installiertes Claude Code samt Anmeldung, sodass dein Claude-Abo ohne API-Schlüssel funktioniert.
+• OpenAI Codex CLI: nutzt dein installiertes Codex samt Anmeldung, sodass dein ChatGPT-Abo ohne API-Schlüssel funktioniert.
 • Antigravity CLI (agy): Gemini mit deiner Google-Anmeldung.
-• Dein eigener API-Schlüssel: Anthropic, Google Gemini, OpenAI und andere OpenAI-kompatible Dienste wie OpenRouter.
-• Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC (z. B. llama.cpp oder LM Studio), sodass der Chat auf deinem
-  Computer bleibt.
-Modell, Anbieter und Denkaufwand wählst du direkt in der Leiste des Panels.
-Du bringst den Dienst mit oder betreibst das Modell selbst. Hotline enthält kein KI-Abonnement.
+• Eigener API-Schlüssel: Anthropic, Google Gemini, OpenAI und andere OpenAI-kompatible Dienste wie OpenRouter.
+• Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC (zum Beispiel llama.cpp oder LM Studio), sodass nichts deinen Computer verlässt.
+Wähle Modell, Anbieter und wie gründlich gedacht werden soll direkt über die Leiste des Panels.
 
-KONTEXT KOMMT MIT
-• In einer anderen App markierter Text wird beim Drücken der Taste automatisch angehängt; du kannst ihn vor dem Senden
-  entfernen.
-• Nimm das Fenster auf, in dem du warst, den ganzen Bildschirm oder einen gezogenen Bereich; füge Bilder und Dateien ein
-  oder zieh sie hinein.
-• Modelle, die keine Bilder sehen, bekommen stattdessen den Text deines Screenshots, gelesen auf deinem PC mit der OCR
-  von Windows.
+BRING KONTEXT MIT
+• Text, den du in einer anderen App markiert hattest, wird beim Tastendruck automatisch angehängt und lässt sich vor dem Senden entfernen.
+• Erfasse das Fenster, in dem du warst, den gesamten Bildschirm oder ziehe einen Bereich auf; füge Bilder und Dateien per Einfügen oder Drag-and-drop ein.
+• Modelle, die keine Bilder verarbeiten können, erhalten stattdessen den Text aus deinem Screenshot – direkt auf deinem PC ausgelesen mit Windows-eigenem OCR.
 
-FÜR SCHNELLE AUFGABEN GEMACHT
-• Schnellaktionen: Tippe / für Übersetzen, Zusammenfassen, Korrigieren, Erklären, /reply, /shorter, /formal oder /bullets,
-  oder schreib eigene als einfache Textdateien.
-• Gedächtnis: „/remember Ich bevorzuge metrische Einheiten“, und jeder Chat weiß es, egal welche KI du nutzt.
-• Sprache: Lege langes Drücken auf Spracheingabe fest, halte die Taste und sprich; loslassen zum Beenden. Dies nutzt die
-  Online-Spracherkennung von Windows.
-• Letzte Chats sind einen Klick entfernt, in einer durchsuchbaren Liste. Ctrl+H oder /resume öffnet sie ebenfalls. CLI-Chats
-  bleiben im eigenen Verlauf der CLI und können nach einem Neustart fortgesetzt werden.
-• Click to Do und Windows-Aktionen: Text oder ein Bild aus anderen Apps an Hotline AI senden.
-• Weiterführen in: Nimm den Chat mit in ein Terminal, Open WebUI, die llama.cpp-Weboberfläche, LM Studio oder dein eigenes
-  Web- oder App-Ziel. Open WebUI erhält einen echten Chat. LM Studio öffnet sich mit dem kopierten Chat zum Einfügen;
-  andere Ziele variieren.
-• Solange das Panel den Fokus hat, nutze Tastenkombinationen für neuen Chat, letzte Chats, Einstellungen, Anheften, letzte
-  Antwort kopieren, Aufnahmen, Prompts sowie die Auswahl von Modell, Anbieter und Denkaufwand. Auch deine eigenen
-  Schaltflächen können eine haben. Sie benötigen Ctrl, Alt oder Win, damit normales Tippen nie beeinträchtigt wird. Ändere
-  sie in den Einstellungen oder in toolbar.json.
-• Erhalte eine Windows-Benachrichtigung, wenn eine Antwort fertiggestellt wird, während du in einer anderen App bist.
+GEMACHT FÜR SCHNELLE AUFGABEN
+• Schnellaktionen: Tippe / für übersetzen, zusammenfassen, korrigieren oder erklären, oder erstelle eigene als einfache Textdateien.
+• Gedächtnis: "/remember Ich bevorzuge metrische Einheiten" und jeder Chat weiß Bescheid, ganz gleich, welche KI du nutzt.
+• Sprache: Halte die Taste gedrückt und sprich; lass los, um zu stoppen.
+• Letzte Chats sind nur einen Klick entfernt, in einer durchsuchbaren Liste (Ctrl+H).
+• Click to Do und Windows-Aktionen: Sende Text oder Bilder aus anderen Apps an Hotline AI.
+• Weiterführen in: Nimm den Chat mit in ein Terminal, Open WebUI, die Web-UI von llama.cpp, LM Studio oder eigene Ziele, wenn du mehr Platz brauchst.
+• Tastenkombinationen für die Schaltflächen der Leiste, solange das Panel den Fokus hat: neuer Chat, letzte Chats, Einstellungen, Anheften, Bildschirmaufnahmen und die Auswahlfelder. Auch deine eigenen Schaltflächen können eine haben. Sie erfordern Ctrl, Alt oder Win, damit normales Tippen unberührt bleibt.
+• Eine Windows-Benachrichtigung sagt dir Bescheid, wenn eine Antwort fertig ist, während du woanders bist.
 
-NATIV, LEICHT UND DEINS
-• Mit WinUI 3 gebaut: öffnet schnell, folgt deinem hellen oder dunklen Design, kein eingebetteter Browser. Nativ auf x64
-  und ARM64.
-• Wähle eine Akzentfarbe oder nutze die von Windows. Es gibt ein Design für hohen Kontrast, und Hotline folgt den
-  Kontrast-Designs und der Transparenzeinstellung von Windows.
-• Reichhaltige Antworten: Überschriften, Listen, Tabellen, Code mit Kopieren-Schaltfläche und seitlichem Scrollen,
-  Formeln und einfache Zeichnungen. Das Panel folgt Antworten, während sie gestreamt werden.
-• Halte Alt gedrückt, um das Panel zu verschieben oder in der Größe anzupassen. Hefte es an, wähle, ob der Chat nach oben
-  oder unten wächst, und lege Töne für das Öffnen/Schließen fest. Fensterbreiten nutzen echte Pixel. Du kannst ein schmales
-  Panel öffnen lassen, das breiter wird, sobald ein Chat beginnt.
-• Alles ist eine einfache Datei, die du bearbeiten kannst: Einstellungen, Verbindungen, Prompts, die Schaltflächen in der
-  Leiste.
-• Schaltflächenzeilen v2: Ziehe Schaltflächen in Einstellungen > Fenster > Schaltflächenzeilen zwischen Zeilen hin und her
-  oder bearbeite toolbar.json. Füge Schaltflächen für Schnellaktionen oder vorgefertigten Text mit deinem eigenen PNG-Bild
-  hinzu. Wähle Breiten in Zellen, passe die Größe jedes Auswahlfelds separat an und lege weniger genutzte Schaltflächen in
-  ein Mehr-Menü. Eine schmale Leiste verschiebt Schaltflächen, die nicht hineinpassen, in ein Menü.
-• Ein fehlerhafter Einstellungswert fällt mit einer Warnung auf den Standard zurück; die übrigen Einstellungen gelten
-  weiterhin. Vor dem Ersetzen einer manuell bearbeiteten Einstellungs-, Verbindungs- oder Symbolleistendatei erstellt
-  Hotline ein Backup. Schlägt dieses Backup fehl, bleibt die Datei unberührt. Beim Ersetzen der eigenen letzten Speicherung
-  wird kein weiteres Backup erstellt.
-• Einstellungen > Backup exportiert und importiert Einstellungen, Schaltflächenzeilen und Bilder, MCP-Tools, Töne,
-  Verbindungen, Schnellaktionen und Prompts. Der Import sichert zuerst jede Datei, die er ersetzt; ohne Backup kein
-  Schreiben. API-Schlüssel werden niemals exportiert – trage sie auf dem anderen PC erneut ein. Verlauf und Gedächtnis sind
-  nicht im Paket enthalten; MCP-Umgebungswerte schon, halte das Paket also privat, wenn du dort Geheimnisse hinterlegt hast.
-• Tools, mit Bedacht: API-Verbindungen können Tools deiner MCP-Server nutzen; alles, was etwas ändert, fragt dich zuerst,
-  es sei denn, du hast es erlaubt. Schreibgeschützte Tools werden ohne Nachfrage ausgeführt, basierend auf den Angaben des
-  Servers.
+NATIV, SCHLANK UND DEINS
+• Entwickelt mit WinUI 3: öffnet schnell, folgt deinem hellen oder dunklen Design, kein eingebetteter Browser. Nativ auf x64 und ARM64.
+• Formatierte Antworten: Überschriften, Listen, Tabellen, Code mit Kopieren-Schaltfläche, Mathe und einfache Zeichnungen.
+• Halte Alt gedrückt, um das Panel zu verschieben oder in der Größe anzupassen; hefte es an und wähle, ob der Chat nach oben oder unten wächst.
+• Alles ist eine einfache Datei, die du bearbeiten kannst: Einstellungen, Verbindungen, Prompts, die Schaltflächen in der Leiste.
+• Richte die Leiste nach deinen Wünschen ein: Ziehe Schaltflächen in den Einstellungen zwischen Zeilen, füge eigene Schaltflächen mit eigenen Bildern hinzu und behalte seltener genutzte in einem Mehr-Menü.
+• Einstellungen > Backup überträgt deine Konfiguration auf einen anderen PC. API-Schlüssel werden niemals exportiert, und Dateien, die Hotline ersetzt, werden vorher gesichert.
+• Tools, aber mit Bedacht: API-Verbindungen können Tools von deinen MCP-Servern nutzen; alles, was Änderungen vornimmt, fragt dich zuerst.
+• Die Copilot-Taste kann auch als rechte Ctrl-Taste fungieren, falls dir das lieber ist.
 
-PRIVAT VON GRUND AUF
-Hotline AI hat keinen Server und sammelt nichts: kein Konto, keine Analysen, keine Werbung. Deine Nachrichten gehen nur
-an den KI-Dienst, den du wählst, zu dessen Bedingungen. API-Schlüssel bleiben in der Windows-Anmeldeinformationsverwaltung;
-Verlauf, Einstellungen und Gedächtnis bleiben auf deinem PC. Kostenlos und Open Source.
+VON GRUND AUF PRIVAT
+Hotline AI hat keine Server und sammelt nichts: kein Konto, keine Analysen, keine Werbung. Deine Nachrichten gehen ausschließlich an den von dir gewählten KI-Dienst – zu dessen Bedingungen. API-Schlüssel bleiben im Windows Credential Locker; Verlauf, Einstellungen und Gedächtnis bleiben auf deinem PC. Kostenlos und quelloffen.
 
-Keine Copilot-Taste? Lege eine beliebige Tastenkombination fest, z. B. Ctrl+Alt+H, indem du sie in den Einstellungen
-drückst.
+Keine Copilot-Taste? Lege eine beliebige Tastenkombination fest, zum Beispiel Ctrl+Alt+H.
 
-Hotline AI ist eine unabhängige App und steht in keiner Verbindung zu Microsoft, Anthropic, Google oder OpenAI und wird
-von diesen nicht unterstützt. Für Claude Code, Codex, die Antigravity CLI oder eine KI-API brauchst du ein eigenes Konto bei
-dem jeweiligen Dienst.
+Hotline AI ist eine unabhängige App und steht in keiner Verbindung zu Microsoft, Anthropic, Google oder OpenAI und wird von diesen weder unterstützt noch empfohlen. Die Nutzung von Claude Code, Codex, der Antigravity CLI oder einer KI-API setzt ein eigenes Konto beim jeweiligen Dienst voraus.
 
 ## Neuigkeiten in dieser Version
 
