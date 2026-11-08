@@ -1,7 +1,7 @@
 # Microsoft Store listing: Hotline AI
 
 Copy each field into Partner Center › your app › the submission › **Store listings** › English. The other languages'
-text is in `store/listings/<language>.md` (model-drafted; add those listings in Partner Center with *Add languages*). Limits are Partner
+text is in `store/listings/<language>.md` (model-drafted; paste each into that language's listing, see step 4 below). Limits are Partner
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
 and trailer, captured from the installed app); output in `artifacts/store/`. Per-language images:
 `scripts/make-store-media.sh --no-video` (captures the panels once; the PC's screen is in use for about 40 seconds) and then
@@ -56,35 +56,41 @@ you press **Submit to the Store** at the end.
 | Voice title | Leave empty (Xbox only). |
 | Store logos / images | No change. |
 
-### 4. Other languages
+### 4. The other languages (one listing per package language)
 
-*Store listing languages* › **Manage additional languages**: you have the 16 below. Open each one and paste, from
-`store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**, **Screenshot
-captions** and **Search terms** (each file has them as sections in the same order). The shared fields (license, copyright,
-developer, trailer, logos) are not repeated per language.
+The Store listing languages are the ones the package declares: English (United States) plus the 16 below, which come from the
+`src/Hotline.App/Strings/<tag>/` folders ([TRANSLATING.md](../docs/TRANSLATING.md)). There is no separate "additional languages"
+section any more (that was for region-specific listings, and it was removed): every language in the package list gets its own
+listing, and Partner Center asks for all of them before you can submit. Open each language from the **Store listings** page and
+paste, from `store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**,
+**Screenshot captions** and **Search terms** (each file has them as sections in the same order). The shared fields (license,
+copyright, developer, trailer, logos, short title) are entered once, not per language.
 
-| Partner Center entry | File |
+| Partner Center language | File |
 |---|---|
-| Chinese (Simplified) (China) | `zh-Hans.md` |
-| Chinese (Traditional) (Taiwan) | `zh-Hant.md` |
-| Dutch (Netherlands) | `nl.md` |
-| French (France) | `fr.md` |
-| German (Germany) | `de.md` |
-| Hindi (India) | `hi.md` |
-| Indonesian (Indonesia) | `id.md` |
-| Italian (Italy) | `it.md` |
-| Japanese (Japan) | `ja.md` |
-| Korean (Korea) | `ko.md` |
-| Polish (Poland) | `pl.md` |
-| Portuguese (plain "Portuguese"; the text is Brazilian) | `pt-BR.md` |
-| Spanish (EU) | `es.md` |
-| Turkish (Türkiye) | `tr.md` |
-| Ukrainian (Ukraine) | `uk.md` |
-| Vietnamese (Vietnam) | `vi.md` |
+| Chinese (Simplified) | `zh-Hans.md` |
+| Chinese (Traditional) | `zh-Hant.md` |
+| Dutch | `nl.md` |
+| French | `fr.md` |
+| German | `de.md` |
+| Hindi | `hi.md` |
+| Indonesian | `id.md` |
+| Italian | `it.md` |
+| Japanese | `ja.md` |
+| Korean | `ko.md` |
+| Polish | `pl.md` |
+| Portuguese (Brazil) | `pt-BR.md` |
+| Spanish | `es.md` |
+| Turkish | `tr.md` |
+| Ukrainian | `uk.md` |
+| Vietnamese | `vi.md` |
 
-Notes: untick the plain "Chinese" entry (no script). Spanish speakers outside Spain should fall back to the Spanish listing; after
-it is live, check from a Latin American region, and if English shows, add "Spanish (Latin America)" with the same text. A language
-left "Not started" blocks submission: fill it in or remove it. The translations are model-drafted; a native speaker should skim them.
+Notes: a language left "Not started" blocks submission. To drop a language, remove it from the package (its `Strings/<tag>` folder and
+`Languages.Supported`), not from the page. No regional variants are needed: the Store shows a user the listing of their language
+whatever their region (after it is live, check the Spanish page from a Latin American setting). The translations are
+model-drafted; a native speaker should skim them. Pictures per language (screenshots with translated captions and a translated
+panel, poster and box art): `scripts/make-store-panels.sh` then `scripts/make-store-localized.sh`, output in
+`artifacts/store/<lang>/`; upload them on that language's listing (the logos are shared).
 
 ### 5. Submit
 
