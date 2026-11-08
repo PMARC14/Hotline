@@ -82,7 +82,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     public event Action<string?>? DemoRequested;
     /// <summary>hotline://grips?show=1|0 (tests and screenshots): the Alt grips without holding Alt.</summary>
     public event Action<bool>? GripsRequested;
-    public event Action? OpenSettingsRequested;
+    /// <summary>The Settings window, on the named page when the link has ?page=.</summary>
+    public event Action<string?>? OpenSettingsRequested;
     /// <summary>The Voice key action: start (hold), stop (release) or toggle (short press).</summary>
     public event Action<VoiceCommand>? VoiceRequested;
 
@@ -107,7 +108,7 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
             return;
         }
         var plan = ActivationPlanner.Plan(request);
-        if (plan.OpenSettings) { OpenSettingsRequested?.Invoke(); return; }
+        if (plan.OpenSettings) { OpenSettingsRequested?.Invoke(plan.SettingsPage); return; }
         if (plan.AppAction is { } action)
         {
             log.Info($"app action: {(action.QuickAction ?? "ask")} ({(action.Text is null ? "image" : $"{action.Text.Length} chars")}, from Windows: {action.FromWindows})");

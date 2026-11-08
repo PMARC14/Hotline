@@ -67,6 +67,18 @@ public sealed class ReviewX1Tests : TempDirTest
         Assert.True(plan.OpenSettings);
     }
 
+    [Theory]
+    [InlineData("hotline://settings?page=Connections", "Connections")]
+    [InlineData("hotline://settings?state=tap&page=Backup", "Backup")]
+    [InlineData("hotline://settings?page=", null)]
+    [InlineData("hotline://settings", null)]
+    public void A_settings_link_can_name_the_page_to_open(string uri, string? page)
+    {
+        var plan = ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri(uri), false));
+        Assert.True(plan.OpenSettings);
+        Assert.Equal(page, plan.SettingsPage);
+    }
+
     [Fact]
     public void Deduper_drops_the_late_copy_of_a_whole_press_and_release_from_the_other_channel()
     {

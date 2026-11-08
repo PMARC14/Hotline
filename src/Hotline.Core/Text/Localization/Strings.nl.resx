@@ -880,4 +880,35 @@ API-sleutels worden bewaard in Windows Credential Locker, nooit in een bestand.<
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Bijlage {0} verwijderen</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Verbinding {0} omhoog verplaatsen</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Verbinding {0} omlaag verplaatsen</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Hoe bereken ik de oppervlakte van een cirkel? Laat het zien in Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Oppervlakte van een cirkel
+
+De oppervlakte is
+
+$$A = \pi r^2$$
+
+- **r** is de straal (de helft van de diameter)
+- **π** ≈ 3.14159
+
+Voor een straal van 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Straal | Oppervlakte |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Werken op afstand heeft de manier waarop teams communiceren veranderd. Asynchrone updates vervangen nu veel vergaderingen, schriftelijke besluiten reiken verder dan gesproken woorden en teams die goed documenteren werken nieuwe mensen in dagen in plaats van weken in. De keerzijde is minder toevallige gesprekken, dus plannen veel bedrijven nu bewust fysieke tijd samen in: een paar dagen per kwartaal voor planning, mentorschap en om elkaar beter te leren kennen.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Vat dit samen in drie opsommingspunten.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Asynchroon voorop:** schriftelijke updates vervangen veel vergaderingen en geschreven besluiten bereiken meer mensen.
+- **Documentatie loont:** teams die goed documenteren werken nieuwe mensen in dagen in plaats van weken in.
+- **Geplande tijd samen:** toevallige gesprekken komen minder voor, dus plannen bedrijven elk kwartaal fysieke dagen in.</value></data>
 </root>

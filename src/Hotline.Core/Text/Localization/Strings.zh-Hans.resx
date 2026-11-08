@@ -880,4 +880,35 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>移除附件 {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>上移连接 {0}</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>下移连接 {0}</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>如何计算圆的面积？请用 Python 展示一下。</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### 圆的面积
+
+面积是
+
+$$A = \pi r^2$$
+
+- **r** 是半径（直径的一半）
+- **π** ≈ 3.14159
+
+半径为 2 时：$A = \pi \times 2^2 \approx 12.57$。
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| 半径 | 面积 |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>远程办公重塑了团队的沟通方式。异步更新逐渐取代了许多会议，文字决策比口头沟通传达得更远，善于文档记录的团队只需数天就能完成新成员入职培训，而不是耗费数周。但随之而来的代价是偶然交流的机会变少了，因此不少公司现在会特意安排线下相聚的时间：每个季度抽出几天一起做规划、开展辅导并增进彼此了解。</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>请用三点总结以上内容。</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **异步优先：** 书面更新取代了许多会议，文字决策也能传达给更多人。
+- **文档成效显著：** 文档完善的团队只需数天就能完成新人培训，而非耗时数周。
+- **特意安排相聚：** 随性交流变少了，因此很多公司每季度会专门安排几天线下见面。</value></data>
 </root>

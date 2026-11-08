@@ -880,4 +880,35 @@ Khóa API được lưu giữ trong Windows Credential Locker, không bao giờ 
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Xóa tệp đính kèm {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Di chuyển kết nối {0} lên</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Di chuyển kết nối {0} xuống</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Làm sao để tính diện tích hình tròn? Hãy viết bằng Python nhé.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Diện tích hình tròn
+
+Diện tích là
+
+$$A = \pi r^2$$
+
+- **r** là bán kính (bằng một nửa đường kính)
+- **π** ≈ 3.14159
+
+Với bán kính bằng 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Bán kính | Diện tích |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Làm việc từ xa đã thay đổi cách các đội ngũ giao tiếp. Các cập nhật bất đồng bộ hiện thay thế nhiều cuộc họp, những quyết định bằng văn bản được lan tỏa rộng rãi hơn lời nói, và các nhóm lưu trữ tài liệu tốt có thể hướng dẫn thành viên mới chỉ trong vài ngày thay vì vài tuần. Điểm đánh đổi là những cuộc trò chuyện tình cờ ít đi, nên nhiều công ty hiện chủ động sắp xếp thời gian gặp mặt trực tiếp: vài ngày mỗi quý để lên kế hoạch, cố vấn và gắn kết với nhau.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Hãy tóm tắt nội dung này thành ba gạch đầu dòng.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Ưu tiên bất đồng bộ:** cập nhật bằng văn bản thay thế nhiều cuộc họp, và quyết định dạng chữ tiếp cận được nhiều người hơn.
+- **Tài liệu phát huy hiệu quả:** các nhóm có tài liệu tốt hướng dẫn người mới chỉ trong vài ngày, không phải vài tuần.
+- **Chủ động gặp mặt:** các cuộc trò chuyện ngẫu nhiên ít đi, nên các công ty lên lịch gặp mặt trực tiếp vào mỗi quý.</value></data>
 </root>

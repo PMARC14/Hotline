@@ -7,78 +7,20 @@
 #   scripts/make-store-media.sh              (install the build to capture first: scripts/install.sh)
 #   scripts/make-store-media.sh --no-video   screenshots and panel crops only (no trailer); the crops in artifacts/store/panel-*.png
 #                                            feed scripts/make-store-localized.sh
+#   scripts/make-store-media.sh --panels-only  only the panel crops (artifacts/store/panel-*.png, or $STORE_OUT/panel-*.png);
+#                                            scripts/make-store-panels.sh runs this once per interface language
 source "$(dirname "$0")/lib/common.sh"
 
-video=1
-[ "${1:-}" = "--no-video" ] && video=0
+video=1; panels_only=0
+case "${1:-}" in --no-video) video=0 ;; --panels-only) video=0; panels_only=1 ;; esac
 
-command -v ffmpeg >/dev/null 2>&1 || die "ffmpeg is needed"
-edge="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
-[ -x "$edge" ] || edge="/c/Program Files/Microsoft/Edge/Application/msedge.exe"
-[ -x "$edge" ] || die "Microsoft Edge not found"
-
-out="$ROOT/artifacts/store"
-work=$(mktemp -d)
-mkdir -p "$out"
-art="file:///$(cygpath -m "$ROOT/store/art/art.html")"
-profile=$(winpath "$work/edge")
-
-open_link() { MSYS_NO_PATHCONV=1 cmd.exe /c start "" "$1"; }
-grab() { ffmpeg -loglevel error -y -f lavfi -i "ddagrab=output_idx=0:draw_mouse=0" -vf "hwdownload,format=bgra" -frames:v 1 "$(winpath "$1")"; }
-# Closes Hotline's settings window with WM_CLOSE (no keystrokes) and checks it's gone.
-close_settings() {
-    cat > "$work/close-settings.ps1" <<'PS'
-Add-Type -Namespace W -Name U -MemberDefinition @"
-[DllImport("user32.dll")] public static extern bool PostMessage(System.IntPtr h, uint m, System.IntPtr w, System.IntPtr l);
-"@
-function Find-Settings { Get-Process Hotline -ErrorAction SilentlyContinue | Where-Object { $_.MainWindowTitle -eq 'Hotline settings' } }
-foreach ($try in 1..10) {
-    $p = Find-Settings
-    if (-not $p) { exit 0 }
-    [void][W.U]::PostMessage($p.MainWindowHandle, 0x10, [IntPtr]::Zero, [IntPtr]::Zero)
-    Start-Sleep -Milliseconds 500
-}
-exit 1
-PS
-    powershell.exe -NoProfile -ExecutionPolicy Bypass -File "$(winpath "$work/close-settings.ps1")" ||
-        die "couldn't close the Hotline settings window"
-}
-cleanup() {
-    ( close_settings ) 2>/dev/null || true # never leave the settings window open
-    open_link "hotline://tray" 2>/dev/null || true
-    powershell.exe -NoProfile -Command "Get-CimInstance Win32_Process -Filter \"Name='msedge.exe'\" | Where-Object { \$_.CommandLine -like '*$(basename "$work")*' } | ForEach-Object { Stop-Process -Id \$_.ProcessId -Force -ErrorAction SilentlyContinue }" || true
-    sleep 1; rm -rf "$work"
-}
-trap cleanup EXIT
-
-# Where the panel is in a capture: compare it with the backdrop-only frame (at 1/8 size), pad, and crop it out.
-crop_panel() { # SHOT BACKDROP OUT
-    local box
-    box=$(ffmpeg -loglevel error -i "$(winpath "$1")" -i "$(winpath "$2")" -filter_complex \
-        "[0][1]blend=all_mode=difference,scale=iw/8:ih/8,format=gray" -f rawvideo - |
-        python -c "
-import sys
-w, h = (int(v) // 8 for v in sys.argv[1].split(',')); d = sys.stdin.buffer.read()
-pts = [(i % w, i // w) for i, v in enumerate(d) if v > 24]
-xs, ys = [p[0] for p in pts], [p[1] for p in pts]
-x0, y0, x1, y1 = max(min(xs) - 1, 0) * 8, max(min(ys) - 1, 0) * 8, min(max(xs) + 2, w) * 8, min(max(ys) + 2, h) * 8
-print(f'{x1 - x0}:{y1 - y0}:{x0}:{y0}')" "$(ffprobe -v error -show_entries stream=width,height -of csv=p=0 "$(winpath "$1")" | tr -d '\r')")
-    ffmpeg -loglevel error -y -i "$(winpath "$1")" -vf "crop=$box" "$(winpath "$3")"
-}
-
-# shot NAME PANEL CAPTION — puts a cropped panel (artifacts/store/panel-PANEL.png) on a 1920x1080 card with a caption.
-shot() {
-    local file; file=$(winpath "$out/$1.png")
-    "$edge" --headless=new --disable-gpu --hide-scrollbars --force-device-scale-factor=1 --window-size=1920,1080 \
-        --screenshot="$file" "$art?kind=shot&img=../../artifacts/store/panel-$2.png&caption=$(python -c 'import sys,urllib.parse;print(urllib.parse.quote(sys.argv[1]))' "$3")" >/dev/null 2>&1
-    [ -s "$out/$1.png" ] || die "composing $1 failed"
-    echo "$out/$1.png"
-}
+source "$(dirname "$0")/lib/store-capture.sh"
 
 echo "Showing the backdrop and the demo scenes for about a minute: please don't use the PC." >&2
 "$edge" --kiosk "$art?kind=bg" --edge-kiosk-type=fullscreen --user-data-dir="$profile" --no-first-run \
     --no-default-browser-check >/dev/null 2>&1 &
-sleep 5
+sleep 4
+front_backdrop
 grab "$work/backdrop.png"
 
 # ---- screenshots ------------------------------------------------------------------------------------------------
@@ -86,18 +28,22 @@ grab "$work/backdrop.png"
 declare -A wait_for=([math]=8 [summary]=3 [slash]=3)
 for scene in math summary slash; do
     open_link "hotline://demo?scene=$scene"; sleep "${wait_for[$scene]}"
+    window_rect "Hotline" "$work/panel.rect"
     grab "$work/$scene.png"
     open_link "hotline://key?state=tap"; sleep 1.5 # hide the panel (same as pressing the key)
-    crop_panel "$work/$scene.png" "$work/backdrop.png" "$out/panel-$scene.png"
+    crop_rect "$work/$scene.png" "$out/panel-$scene.png" "$work/panel.rect"
 done
-open_link "hotline://settings"; sleep 4
+open_link "hotline://settings?page=Connections"; sleep 4 # the AI connections page: it matches the caption "Use the AI you already have"
+place_settings 40 40; sleep 1.5
 grab "$work/settings.png"; close_settings; sleep 1.5
-crop_panel "$work/settings.png" "$work/backdrop.png" "$out/panel-settings.png"
+crop_rect "$work/settings.png" "$out/panel-settings.png"
 # Captions match store/listing.md.
-shot screenshot-1 math "Press the Copilot key: ask anything, answers stream in."
-shot screenshot-2 summary "Selected text comes along with your question."
-shot screenshot-3 slash "Quick actions with /: translate, summarize, fix, explain."
-shot screenshot-4 settings "Use the AI you already have, and set everything your way."
+if [ "$panels_only" = 0 ]; then
+    shot screenshot-1 math "Press the Copilot key: ask anything, answers stream in."
+    shot screenshot-2 summary "Selected text comes along with your question."
+    shot screenshot-3 slash "Quick actions with /: translate, summarize, fix, explain."
+    shot screenshot-4 settings "Use the AI you already have, and set everything your way."
+fi
 
 if [ "$video" = 1 ]; then
     # ---- trailer: a real recording of the same scenes -----------------------------------------------------------------

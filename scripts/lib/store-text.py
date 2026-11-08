@@ -3,7 +3,8 @@
 
 Used by scripts/make-store-localized.sh. The captions come from the language's listing file (the same text as on the
 images, `## Screenshot captions` in store/listing.md or the fifth `## ` section of store/listings/<lang>.md); the poster
-and box text come from store/art/taglines.json.
+and box text come from store/art/taglines.json. The panel pictures are artifacts/store/panels/<lang>/ when
+scripts/make-store-panels.sh made them, else the English artifacts/store/panel-*.png.
 
     store-text.py ROOT LANG        (LANG is "en" or a file name in store/listings, without .md)
 """
@@ -38,8 +39,11 @@ def q(value):
 
 
 panels = ["math", "summary", "slash", "settings"]
+# The language's own panel pictures (scripts/make-store-panels.sh) when they exist, else the English ones.
+own = os.path.join(root, "artifacts", "store", "panels", lang)
+folder = f"panels/{lang}/" if all(os.path.isfile(os.path.join(own, f"panel-{p}.png")) for p in panels) else ""
 for i, (panel, caption) in enumerate(zip(panels, captions()), start=1):
-    print(f"screenshot-{i}\t1920\t1080\tkind=shot&img=../../artifacts/store/panel-{panel}.png&caption={q(caption)}")
+    print(f"screenshot-{i}\t1920\t1080\tkind=shot&img=../../artifacts/store/{folder}panel-{panel}.png&caption={q(caption)}")
 
 tag = json.load(open(os.path.join(root, "store", "art", "taglines.json"), encoding="utf-8"))[lang]
 art = f"title=Hotline%20AI&sub={q(tag['sub'])}&key={q(tag['key'])}"

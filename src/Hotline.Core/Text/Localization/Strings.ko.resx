@@ -880,4 +880,35 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>첨부 파일 {0} 제거</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>연결 {0} 위로 이동</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>연결 {0} 아래로 이동</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>원의 넓이는 어떻게 구하나요? Python 코드로 보여주세요.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### 원의 넓이
+
+넓이는 다음과 같습니다.
+
+$$A = \pi r^2$$
+
+- **r**은 반지름(지름의 절반)입니다
+- **π** ≈ 3.14159
+
+반지름이 2인 경우: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| 반지름 | 넓이 |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>원격 근무는 팀의 소통 방식을 크게 변화시켰습니다. 이제 비동기 업데이트가 많은 회의를 대체하고, 기록된 결정은 말로 나눈 대화보다 더 멀리 전해지며, 문서화가 잘된 팀은 신규 입사자를 몇 주가 아닌 며칠 만에 온보딩합니다. 반면 우연히 나누는 대화가 줄어든다는 단점이 있어, 많은 기업이 분기마다 며칠씩 계획 수립, 멘토링, 상호 교류를 위한 대면 모임 시간을 의도적으로 마련하고 있습니다.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>이 내용을 세 가지 항목으로 요약해 주세요.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **비동기 우선:** 서면 업데이트가 많은 회의를 대체하고, 기록된 결정이 더 많은 사람에게 전달됩니다.
+- **문서화의 힘:** 문서화가 잘된 팀은 신규 입사자를 몇 주가 아닌 며칠 만에 온보딩합니다.
+- **계획된 대면 시간:** 우연한 대화가 줄어든 만큼, 기업들은 매 분기 대면 모임 일정을 의도적으로 계획합니다.</value></data>
 </root>

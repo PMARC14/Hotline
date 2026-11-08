@@ -14,25 +14,15 @@ namespace Hotline.App.Chat;
 internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript, Composer composer, HotlineSettings settings, FileLog log,
     Action<ChatEvent> apply, Action rebuild, Action newChat, Action<string, string?> attachSelection, Func<IReadOnlyList<Attachment>> takeAttachments)
 {
-    private const string DemoAnswer = "### Area of a circle\n\nThe area is\n\n$$A = \\pi r^2$$\n\n" +
-            "- **r** is the radius (half the diameter)\n- **π** ≈ 3.14159\n\n" +
-            "For a radius of 2: $A = \\pi \\times 2^2 \\approx 12.57$.\n\n" +
-            "```python\nimport math\n\ndef circle_area(r: float) -> float:\n    return math.pi * r ** 2\n\nprint(round(circle_area(2), 2))  # 12.57\n```\n\n" +
-            "| Radius | Area |\n|---|---|\n| 1 | 3.14 |\n| 2 | 12.57 |\n| 3 | 28.27 |";
+    // The demo conversations are interface text (Strings.Demo_*), so the Store screenshots can be taken in every language.
+    private static string DemoAnswer => Strings.Demo_MathAnswer;
 
     private const string TestAnswer = "# Heading\n\nSome **bold** text with `code` and <kbd>Ctrl</kbd>.\n\n- one\n- two\n  1. nested\n\n" +
             "```csharp\nvar x = 1;\nConsole.WriteLine(x);\n```\n\n| a | b |\n|---|---|\n| 1 | 22 |\n\n> quoted\n\n$$\\pi r^2$$\n\n<div align=\"center\">\n\n<svg viewBox=\"0 0 10 10\" width=\"40\" height=\"40\">\n\n<circle cx=\"5\" cy=\"5\" r=\"4\" fill=\"#0284c7\"/>\n</svg>\n\n</div>\n\n- [x] done ==marked== x^2^\n\n---\n\nEnd.";
 
-    private const string SummaryText = "Remote work has reshaped how teams communicate. Asynchronous updates now replace many " +
-            "meetings, written decisions travel further than spoken ones, and teams that document well onboard new people in " +
-            "days instead of weeks. The trade-off is fewer chance conversations, so many companies now plan in-person time on " +
-            "purpose: a few days each quarter for planning, mentoring and getting to know each other.";
+    private static string SummaryText => Strings.Demo_SummaryText;
 
-    private const string SummaryAnswer = """
-        - **Async first:** written updates replace many meetings, and written decisions reach more people.
-        - **Documentation pays off:** well-documented teams onboard new people in days, not weeks.
-        - **Planned together-time:** chance conversations are rarer, so companies schedule in-person days each quarter.
-        """;
+    private static string SummaryAnswer => Strings.Demo_SummaryAnswer;
 
     /// <summary>
     /// hotline://demo[?scene=math|summary|slash]: a scripted conversation shown in the real panel and streamed like a
@@ -49,20 +39,24 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             {
                 case "summary":
                     attachSelection(SummaryText, "Microsoft Edge"); // the chip, as when the key opens over a selection
-                    await TypeAsync("Summarize this in three bullet points.");
+                    await TypeAsync(Strings.Demo_SummaryQuestion);
                     await Task.Delay(2500); // the Store screenshot is taken here: chip + question
                     composer.Text = "";
-                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, "Summarize this in three bullet points.", takeAttachments(), DateTimeOffset.Now)));
+                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, Strings.Demo_SummaryQuestion, takeAttachments(), DateTimeOffset.Now)));
                     await StreamAsync(backend, SummaryAnswer);
                     break;
                 case "slash":
                     await TypeAsync("/"); // opens the quick-action list
                     break;
                 default:
-                    await TypeAsync("How do I find the area of a circle? Show it in Python.");
+                    await TypeAsync(Strings.Demo_MathQuestion);
                     composer.Text = "";
-                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, "How do I find the area of a circle? Show it in Python.", [], DateTimeOffset.Now)));
+                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, Strings.Demo_MathQuestion, [], DateTimeOffset.Now)));
                     await StreamAsync(backend, DemoAnswer);
+                    // The answer is taller than the panel and the view follows the stream to the bottom; the screenshot reads
+                    // better from the top (the question, the heading and the equation).
+                    await Task.Delay(400);
+                    popup.MessagesScroll.ChangeView(null, 0, null, disableAnimation: true);
                     break;
             }
             log.Info($"demo conversation shown ({scene ?? "math"})");

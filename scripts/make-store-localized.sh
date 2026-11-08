@@ -2,9 +2,10 @@
 # Composes the Store screenshots, poster and box art for every listing language (English and the 16 in store/listings),
 # from the panel crops that scripts/make-store-media.sh captured. Nothing is shown on screen: it only runs headless Edge.
 # Per language: artifacts/store/<lang>/screenshot-1..4.png (1920x1080), poster-1440x2160.png, boxart-2160x2160.png.
-# Captions come from each listing file, the poster/box text from store/art/taglines.json. The panel itself stays the
-# English UI (the demo conversation is hard-coded English); the logos have no text, so one set serves every language.
-#   scripts/make-store-media.sh --no-video     once, to capture the panels
+# Captions come from each listing file, the poster/box text from store/art/taglines.json. The panel is in that language
+# when scripts/make-store-panels.sh captured it, else the English one; the logos have no text, so one set serves all.
+#   scripts/make-store-panels.sh               once, to capture the panels in every interface language
+#   (or scripts/make-store-media.sh --no-video for the English panels only, used for every language)
 #   scripts/make-store-localized.sh [lang ...]  all languages, or just the ones named
 source "$(dirname "$0")/lib/common.sh"
 
@@ -13,9 +14,8 @@ edge="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
 [ -x "$edge" ] || die "Microsoft Edge not found"
 
 out="$ROOT/artifacts/store"
-for panel in math summary slash settings; do
-    [ -s "$out/panel-$panel.png" ] || die "artifacts/store/panel-$panel.png is missing: run scripts/make-store-media.sh --no-video first"
-done
+[ -s "$out/panel-math.png" ] || [ -d "$out/panels" ] ||
+    die "no panel pictures: run scripts/make-store-panels.sh (one set per language) or scripts/make-store-media.sh --no-video (English) first"
 art="file:///$(cygpath -m "$ROOT/store/art/art.html")"
 
 if [ $# -gt 0 ]; then
