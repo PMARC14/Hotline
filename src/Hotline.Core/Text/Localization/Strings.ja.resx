@@ -880,4 +880,35 @@ API キーは Windows Credential Locker に保管され、ファイルに保存�
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>添付ファイル {0} を削除</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>接続 {0} を上に移動</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>接続 {0} を下に移動</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>円の面積はどうやって求めますか？Pythonのコードも見せてください。</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### 円の面積
+
+面積は次の式で求められます。
+
+$$A = \pi r^2$$
+
+- **r** は半径（直径の半分）
+- **π** ≈ 3.14159
+
+半径が 2 の場合：$A = \pi \times 2^2 \approx 12.57$。
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| 半径 | 面積 |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>リモートワークによって、チームのコミュニケーション方法は大きく変化しました。今では多くの会議が非同期のテキスト共有に置き換わり、文字に残した決定事項は口頭よりも広く伝わり、ドキュメントの整備されたチームなら新メンバーの立ち上げが数週間ではなく数日で完了します。その一方で偶然の雑談は生まれにくくなったため、多くの企業があえて対面で過ごす時間を設けています。四半期ごとに数日間集まり、計画を練ったり、メンタリングを行ったり、お互いを深く知る機会を作っています。</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>これを3つの箇条書きで要約してください。</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **非同期優先:** テキスト共有が多くの会議に代わり、文章化された決定事項がより多くの人に届きます。
+- **ドキュメントの価値:** ドキュメントが整ったチームなら、新メンバーの受け入れは数週間ではなく数日で完了します。
+- **計画的な対面時間:** 偶発的な会話が減ったため、企業は四半期ごとに対面で集まる日を設けています。</value></data>
 </root>

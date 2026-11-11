@@ -880,4 +880,35 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Hapus lampiran {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Pindahkan koneksi {0} ke atas</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Pindahkan koneksi {0} ke bawah</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Bagaimana cara menghitung luas lingkaran? Tunjukkan dalam Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Luas lingkaran
+
+Luasnya adalah
+
+$$A = \pi r^2$$
+
+- **r** adalah jari-jari (setengah diameter)
+- **π** ≈ 3.14159
+
+Untuk jari-jari 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Jari-jari | Luas |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Kerja jarak jauh telah mengubah cara tim berkomunikasi. Pembaruan asinkron kini menggantikan banyak rapat, keputusan tertulis menjangkau lebih jauh daripada keputusan lisan, dan tim dengan dokumentasi yang baik dapat melakukan onboarding anggota baru dalam hitungan hari, bukan minggu. Konsekuensinya adalah berkurangnya percakapan spontan, sehingga banyak perusahaan sengaja merencanakan waktu tatap muka: beberapa hari setiap kuartal untuk perencanaan, mentoring, dan saling mengenal.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Rangkum ini dalam tiga poin.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Utamakan asinkron:** pembaruan tertulis menggantikan banyak rapat, dan keputusan tertulis menjangkau lebih banyak orang.
+- **Dokumentasi membuahkan hasil:** tim dengan dokumentasi yang baik melakukan onboarding anggota baru dalam hitungan hari, bukan minggu.
+- **Waktu bersama terencana:** percakapan spontan makin jarang, sehingga perusahaan menjadwalkan hari tatap muka setiap kuartal.</value></data>
 </root>

@@ -880,4 +880,35 @@ Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</val
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Rimuovi l'allegato {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Sposta la connessione {0} in alto</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Sposta la connessione {0} in basso</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Come si calcola l'area di un cerchio? Mostramelo in Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Area di un cerchio
+
+L'area è
+
+$$A = \pi r^2$$
+
+- **r** è il raggio (metà del diametro)
+- **π** ≈ 3.14159
+
+Per un raggio di 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Raggio | Area |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Il lavoro da remoto ha trasformato il modo in cui i team comunicano. Gli aggiornamenti asincroni sostituiscono ormai molte riunioni, le decisioni scritte raggiungono più persone rispetto a quelle orali e i team che documentano bene inseriscono i nuovi arrivati in pochi giorni anziché in settimane. Il compromesso è una riduzione delle conversazioni spontanee, perciò molte aziende programmano appositamente momenti in presenza: qualche giorno ogni trimestre per pianificare, fare mentoring e conoscersi meglio.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Riassumi in tre punti elenco.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Prima l'asincrono:** gli aggiornamenti scritti sostituiscono molte riunioni e le decisioni scritte raggiungono più persone.
+- **La documentazione ripaga:** i team con una buona documentazione inseriscono le nuove persone in giorni, non settimane.
+- **Momenti insieme pianificati:** le conversazioni spontanee sono più rare, quindi le aziende programmano giornate in presenza ogni trimestre.</value></data>
 </root>

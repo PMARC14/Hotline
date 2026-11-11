@@ -880,4 +880,35 @@ Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.<
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Quitar el archivo adjunto {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Subir la conexión {0}</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Bajar la conexión {0}</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>¿Cómo calculo el área de un círculo? Muéstralo en Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Área de un círculo
+
+El área es
+
+$$A = \pi r^2$$
+
+- **r** es el radio (la mitad del diámetro)
+- **π** ≈ 3.14159
+
+Para un radio de 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Radio | Área |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>El trabajo remoto ha transformado la forma en que los equipos se comunican. Las actualizaciones asincrónicas ahora reemplazan muchas reuniones, las decisiones por escrito llegan más lejos que las habladas y los equipos que documentan bien incorporan a nuevos miembros en días en lugar de semanas. La contrapartida es que hay menos conversaciones espontáneas, por lo que muchas empresas ahora planifican tiempo presencial de forma deliberada: unos días cada trimestre para planificar, hacer mentoría y conocerse mejor.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Resume esto en tres puntos.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Prioridad asíncrona:** las actualizaciones escritas reemplazan muchas reuniones y las decisiones por escrito llegan a más personas.
+- **Documentar vale la pena:** los equipos bien documentados incorporan a nuevos miembros en días, no en semanas.
+- **Tiempo presencial planificado:** las charlas espontáneas son menos frecuentes, así que las empresas programan días presenciales cada trimestre.</value></data>
 </root>

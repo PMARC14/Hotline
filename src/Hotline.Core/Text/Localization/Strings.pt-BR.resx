@@ -880,4 +880,35 @@ As chaves de API são mantidas no Windows Credential Locker, nunca em um arquivo
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Remover anexo {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Mover conexão {0} para cima</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Mover conexão {0} para baixo</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Como calculo a área de um círculo? Mostre em Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Área de um círculo
+
+A área é
+
+$$A = \pi r^2$$
+
+- **r** é o raio (metade do diâmetro)
+- **π** ≈ 3.14159
+
+Para um raio de 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Raio | Área |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>O trabalho remoto transformou a forma como as equipes se comunicam. Atualizações assíncronas agora substituem muitas reuniões, decisões por escrito vão mais longe do que as faladas, e equipes que documentam bem integram novos membros em dias, em vez de semanas. A contrapartida é ter menos conversas espontâneas, por isso muitas empresas agora planejam momentos presenciais de propósito: alguns dias a cada trimestre para planejamento, mentoria e convivência.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Resuma isso em três tópicos.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Foco no assíncrono:** atualizações por escrito substituem muitas reuniões, e decisões registradas alcançam mais pessoas.
+- **Documentar compensa:** equipes que documentam bem integram novas pessoas em dias, não semanas.
+- **Momentos presenciais planejados:** conversas espontâneas são mais raras, então as empresas agendam dias presenciais a cada trimestre.</value></data>
 </root>

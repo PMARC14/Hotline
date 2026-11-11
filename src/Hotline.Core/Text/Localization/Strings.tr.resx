@@ -880,4 +880,35 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>{0} ekini kaldır</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>{0} bağlantısını yukarı taşı</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>{0} bağlantısını aşağı taşı</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Bir dairenin alanını nasıl bulurum? Python ile göster.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Dairenin alanı
+
+Alan şöyledir:
+
+$$A = \pi r^2$$
+
+- **r** yarıçaptır (çapın yarısı)
+- **π** ≈ 3.14159
+
+Yarıçapı 2 olan bir daire için: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Yarıçap | Alan |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Uzaktan çalışma, ekiplerin iletişim biçimini kökten değiştirdi. Artık asenkron güncellemeler birçok toplantının yerini alıyor, yazılı kararlar sözlü olanlara kıyasla çok daha geniş kitlelere ulaşıyor ve iyi dokümantasyon tutan ekipler yeni çalışanları haftalar yerine günler içinde işe alıştırabiliyor. Bunun dezavantajı ise kendiliğinden gelişen sohbetlerin azalması; bu yüzden birçok şirket artık bilinçli olarak yüz yüze zamanlar planlıyor: planlama, mentorluk ve birbirini tanıma amacıyla her çeyrekte birkaç gün.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Bunu üç maddede özetle.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Önce asenkron:** Yazılı bilgilendirmeler birçok toplantının yerini alır ve yazılı kararlar daha çok kişiye ulaşır.
+- **Dokümantasyon kazandırır:** İyi dokümantasyon yapan ekipler yeni katılanları haftalar değil, günler içinde işe alıştırır.
+- **Planlı ortak zaman:** Ayaküstü sohbetler artık daha nadir olduğu için şirketler her çeyrekte yüz yüze günler planlar.</value></data>
 </root>

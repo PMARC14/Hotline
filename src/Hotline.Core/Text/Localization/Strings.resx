@@ -880,4 +880,35 @@ API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Remove attachment {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Move connection {0} up</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Move connection {0} down</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>How do I find the area of a circle? Show it in Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Area of a circle
+
+The area is
+
+$$A = \pi r^2$$
+
+- **r** is the radius (half the diameter)
+- **π** ≈ 3.14159
+
+For a radius of 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Radius | Area |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Remote work has reshaped how teams communicate. Asynchronous updates now replace many meetings, written decisions travel further than spoken ones, and teams that document well onboard new people in days instead of weeks. The trade-off is fewer chance conversations, so many companies now plan in-person time on purpose: a few days each quarter for planning, mentoring and getting to know each other.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Summarize this in three bullet points.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Async first:** written updates replace many meetings, and written decisions reach more people.
+- **Documentation pays off:** well-documented teams onboard new people in days, not weeks.
+- **Planned together-time:** chance conversations are rarer, so companies schedule in-person days each quarter.</value></data>
 </root>

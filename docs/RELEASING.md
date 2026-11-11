@@ -60,6 +60,11 @@ scripts/build-msix.sh --store --arch all --version 0.6.0.0 \
 ```
 
 Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page.
+
+Store images in every language: install the build to capture (`scripts/install.sh`), run `scripts/make-store-media.sh --no-video`
+(shows the panel on screen for about 40 seconds: don't use the PC), then `scripts/make-store-localized.sh` (headless). Pictures for
+each language land in `artifacts/store/<lang>/`; upload them on that language's listing. Captions come from
+`store/listings/<lang>.md`, poster/box text from `store/art/taglines.json`.
 `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
 
 ### Store workflow (`.github/workflows/store.yml`)

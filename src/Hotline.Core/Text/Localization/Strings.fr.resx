@@ -880,4 +880,35 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Supprimer la pièce jointe {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Déplacer la connexion {0} vers le haut</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Déplacer la connexion {0} vers le bas</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Comment calculer l'aire d'un cercle ? Montre-le en Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Aire d'un cercle
+
+L'aire est
+
+$$A = \pi r^2$$
+
+- **r** est le rayon (la moitié du diamètre)
+- **π** ≈ 3.14159
+
+Pour un rayon de 2 : $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Rayon | Aire |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Le télétravail a transformé la communication au sein des équipes. Les points asynchrones remplacent désormais de nombreuses réunions, les décisions écrites circulent mieux que les échanges oraux, et les équipes qui documentent bien accueillent de nouveaux membres en quelques jours plutôt qu'en plusieurs semaines. En contrepartie, les conversations informelles se font plus rares : beaucoup d'entreprises prévoient donc délibérément des moments en présentiel, quelques jours par trimestre pour planifier, guider et apprendre à se connaître.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Résume cela en trois points.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Priorité à l'asynchrone :** les points écrits remplacent de nombreuses réunions et les décisions écrites touchent davantage de personnes.
+- **La documentation paie :** les équipes bien organisées intègrent les nouveaux membres en quelques jours, pas en plusieurs semaines.
+- **Des moments d'équipe planifiés :** les échanges informels étant plus rares, les entreprises organisent des journées en présentiel chaque trimestre.</value></data>
 </root>

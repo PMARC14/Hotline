@@ -12,10 +12,23 @@ public sealed record ActivationRequest(ActivationKind Kind, Uri? Uri, bool IsFir
 
 /// <summary>What to do: route a key event, show the popup, or (neither) stay in the tray. ReadSelection: attach the text
 /// selected in the app in front (not when the panel opens to show an answer).</summary>
-public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false, AppActionRequest? AppAction = null, bool ReadSelection = true);
+public sealed record ActivationPlan(KeyEvent? Key, bool ShowPopup, bool OpenSettings = false, AppActionRequest? AppAction = null, bool ReadSelection = true,
+    string? SettingsPage = null);
 
 public static class ActivationPlanner
 {
+    /// <summary>hotline://settings?page=Connections: the Settings page to open (a navigation tag; the window ignores unknown ones).</summary>
+    private static string? SettingsPageOf(Uri? uri)
+    {
+        foreach (var pair in (uri?.Query ?? "").TrimStart('?').Split('&', StringSplitOptions.RemoveEmptyEntries))
+        {
+            var eq = pair.IndexOf('=');
+            if (eq > 0 && pair[..eq].Equals("page", StringComparison.OrdinalIgnoreCase) && Uri.UnescapeDataString(pair[(eq + 1)..]).Trim() is { Length: > 0 } page)
+                return page;
+        }
+        return null;
+    }
+
     public static ActivationPlan Plan(ActivationRequest r) => r.Kind switch
     {
         // App Actions (Click to Do and other apps): the content arrives as inputs; an unusable one does nothing.
@@ -24,7 +37,7 @@ public static class ActivationPlanner
         // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
         ActivationKind.Protocol or ActivationKind.ProtocolForResults =>
             ActivationParser.ParseUri(r.Uri) is { } key ? new ActivationPlan(key, false)
-            : string.Equals(r.Uri?.Host, "settings", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false, OpenSettings: true)
+            : string.Equals(r.Uri?.Host, "settings", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false, OpenSettings: true, SettingsPage: SettingsPageOf(r.Uri))
             // hotline://tray: start or wake quietly in the tray (used by install/test scripts)
             : string.Equals(r.Uri?.Host, "tray", StringComparison.OrdinalIgnoreCase) ? new ActivationPlan(null, false)
             // hotline://answer: a click on the "answer finished" notification

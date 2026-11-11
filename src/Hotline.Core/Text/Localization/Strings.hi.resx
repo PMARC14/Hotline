@@ -880,4 +880,35 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>अटैचमेंट {0} हटाएँ</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>कनेक्शन {0} ऊपर ले जाएँ</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>कनेक्शन {0} नीचे ले जाएँ</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>किसी वृत्त का क्षेत्रफल कैसे निकालें? इसे Python में दिखाएं।</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### वृत्त का क्षेत्रफल
+
+क्षेत्रफल होता है
+
+$$A = \pi r^2$$
+
+- **r** त्रिज्या है (व्यास का आधा)
+- **π** ≈ 3.14159
+
+त्रिज्या 2 के लिए: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| त्रिज्या | क्षेत्रफल |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>रिमोट वर्क ने टीमों के आपस में संवाद करने के तरीके को बदल दिया है। अब कई मीटिंग्स की जगह एसिंक्रोनस अपडेट्स ने ले ली है, बोलकर लिए गए फ़ैसलों की तुलना में लिखे गए फ़ैसले ज़्यादा दूर तक पहुँचते हैं, और जो टीमें अच्छा डॉक्यूमेंटेशन रखती हैं, वे नए लोगों को हफ़्तों के बजाय दिनों में ऑनबोर्ड कर लेती हैं। इसका नुकसान यह है कि अचानक होने वाली बातचीत कम हो गई है, इसलिए कई कंपनियाँ अब सोच-समझकर आमने-सामने मिलने का समय तय करती हैं: प्लानिंग, मेंटरिंग और एक-दूसरे को जानने के लिए हर तिमाही में कुछ दिन।</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>इसे तीन बुलेट पॉइंट्स में संक्षेप में बताएं।</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **एसिंक पहले:** लिखित अपडेट्स कई मीटिंग्स की जगह ले लेते हैं, और लिखे गए फ़ैसले ज़्यादा लोगों तक पहुँचते हैं।
+- **डॉक्यूमेंटेशन का फ़ायदा:** बेहतर डॉक्यूमेंटेशन रखने वाली टीमें नए लोगों को हफ़्तों में नहीं, बल्कि दिनों में ऑनबोर्ड कर लेती हैं।
+- **साथ मिलने की योजना:** अचानक होने वाली बातचीत के मौके कम होते हैं, इसलिए कंपनियाँ हर तिमाही में आमने-सामने मिलने के दिन तय करती हैं।</value></data>
 </root>

@@ -880,4 +880,35 @@
   <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Видалити вкладення {0}</value></data>
   <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Перемістити підключення {0} вгору</value></data>
   <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Перемістити підключення {0} вниз</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Як знайти площу круга? Покажи це на Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Площа круга
+
+Площа дорівнює
+
+$$A = \pi r^2$$
+
+- **r** — це радіус (половина діаметра)
+- **π** ≈ 3.14159
+
+Для радіуса 2: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Радіус | Площа |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Дистанційна робота змінила те, як спілкуються команди. Асинхронні оновлення тепер замінюють безліч зустрічей, письмові рішення поширюються значно далі за усні, а команди з якісною документацією адаптують нових людей за лічені дні замість тижнів. Зворотний бік — менше випадкових розмов, тому багато компаній тепер свідомо планують очні зустрічі: кілька днів щокварталу для планування, наставництва та знайомства ближче.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Підсумуй це у трьох пунктах.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Пріоритет асинхронності:** письмові оновлення замінюють багато зустрічей, а зафіксовані рішення доходять до більшої кількості людей.
+- **Документація окупається:** команди з гарною документацією вводять у курс справ новачків за дні, а не тижні.
+- **Заплановані зустрічі:** випадкових розмов поменшало, тож компанії планують спільні очні дні щокварталу.</value></data>
 </root>
