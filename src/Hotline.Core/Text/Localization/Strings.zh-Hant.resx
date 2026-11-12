@@ -911,18 +911,18 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **非同步優先：** 文字更新取代了許多會議，書面決策也能傳達給更多人。
 - **文件發揮效益：** 完善記錄文件的團隊，只需數天即可帶領新人上手，而非數週。
 - **規劃實體相聚：** 偶遇交流的機會減少，因此公司每季都會特別安排實體見面時間。</value></data>
-  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Review programs and permissions</value></data>
-  <data name="Backup_ExecutionBody" xml:space="preserve"><value>This backup contains settings that can run programs or allow tools without asking. Review the details below. Import only if you trust these settings.</value></data>
-  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import cancelled: programs and permissions require confirmation.</value></data>
-  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>The approvals section must be a JSON object.</value></data>
-  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Settings changes are waiting for settings.json to become readable.</value></data>
-  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Couldn't start {0} because its launch command is too long. Shorten the system prompt, saved memory, or extra launch arguments.</value></data>
-  <data name="Api_AnswerCutOff" xml:space="preserve"><value>The answer was cut off before the server confirmed it was finished.</value></data>
-  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>The chat or connection changed while attachments were being prepared. Your message wasn't sent.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>檢閱程式與權限</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>此備份包含無需詢問即可執行程式或允許工具的設定。請檢閱下方的詳細資料。僅在信任這些設定時才進行匯入。</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>已取消匯入：程式與權限需要確認。</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals 區段必須是 JSON 物件。</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>設定變更正在等待 settings.json 變成可讀取。</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>無法啟動 {0}，因為其啟動命令過長。請縮短系統提示、儲存的記憶或額外的啟動引數。</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>在伺服器確認完成之前，回答已被截斷。</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>準備附件時聊天或連線發生變更。未傳送您的訊息。</value></data>
   <data name="Attach_FromLink" xml:space="preserve">
-    <value>From a link</value>
+    <value>從連結</value>
   </data>
-  <data name="Grip_Move" xml:space="preserve"><value>Move panel</value></data>
-  <data name="Grip_Resize" xml:space="preserve"><value>Resize panel</value></data>
-  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 opens the panel menu. Choose Move or Resize, use arrow keys, then Enter to finish or Esc to cancel.</value></data>
+  <data name="Grip_Move" xml:space="preserve"><value>移動面板</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>調整面板大小</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 可開啟面板功能表。選擇「移動」或「調整大小」，使用方向鍵，然後按 Enter 完成或按 Esc 取消。</value></data>
 </root>

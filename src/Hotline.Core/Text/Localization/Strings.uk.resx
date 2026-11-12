@@ -911,18 +911,18 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Пріоритет асинхронності:** письмові оновлення замінюють багато зустрічей, а зафіксовані рішення доходять до більшої кількості людей.
 - **Документація окупається:** команди з гарною документацією вводять у курс справ новачків за дні, а не тижні.
 - **Заплановані зустрічі:** випадкових розмов поменшало, тож компанії планують спільні очні дні щокварталу.</value></data>
-  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Review programs and permissions</value></data>
-  <data name="Backup_ExecutionBody" xml:space="preserve"><value>This backup contains settings that can run programs or allow tools without asking. Review the details below. Import only if you trust these settings.</value></data>
-  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import cancelled: programs and permissions require confirmation.</value></data>
-  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>The approvals section must be a JSON object.</value></data>
-  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Settings changes are waiting for settings.json to become readable.</value></data>
-  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Couldn't start {0} because its launch command is too long. Shorten the system prompt, saved memory, or extra launch arguments.</value></data>
-  <data name="Api_AnswerCutOff" xml:space="preserve"><value>The answer was cut off before the server confirmed it was finished.</value></data>
-  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>The chat or connection changed while attachments were being prepared. Your message wasn't sent.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Перевірте програми та дозволи</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Ця резервна копія містить параметри, які можуть запускати програми або дозволяти інструменти без запиту. Перегляньте відомості нижче. Імпортуйте, лише якщо ви довіряєте цим параметрам.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Імпорт скасовано: програми та дозволи потребують підтвердження.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Розділ approvals має бути об'єктом JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Зміни параметрів очікують, поки settings.json стане доступним для читання.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Не вдалося запустити {0}, оскільки команда запуску задовга. Скоротіть системний запит, збережену пам'ять або додаткові аргументи запуску.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Відповідь обірвалася до того, як сервер підтвердив її завершення.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Чат або підключення змінилися під час підготовки вкладень. Ваше повідомлення не надіслано.</value></data>
   <data name="Attach_FromLink" xml:space="preserve">
-    <value>From a link</value>
+    <value>За посиланням</value>
   </data>
-  <data name="Grip_Move" xml:space="preserve"><value>Move panel</value></data>
-  <data name="Grip_Resize" xml:space="preserve"><value>Resize panel</value></data>
-  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 opens the panel menu. Choose Move or Resize, use arrow keys, then Enter to finish or Esc to cancel.</value></data>
+  <data name="Grip_Move" xml:space="preserve"><value>Перемістити панель</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Змінити розмір панелі</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 відкриває меню панелі. Виберіть «Перемістити» або «Змінити розмір», скористайтеся клавішами зі стрілками, потім Enter для завершення або Esc для скасування.</value></data>
 </root>

@@ -911,18 +911,18 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Komunikacja asynchroniczna:** pisemne aktualizacje zastępują wiele spotkań, a spisane decyzje docierają do większej liczby osób.
 - **Dokumentacja popłaca:** zespoły z dobrą dokumentacją wdrażają nowe osoby w dni, a nie tygodnie.
 - **Zaplanowany czas razem:** spontaniczne rozmowy zdarzają się rzadziej, więc firmy planują wspólne spotkania w każdym kwartale.</value></data>
-  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Review programs and permissions</value></data>
-  <data name="Backup_ExecutionBody" xml:space="preserve"><value>This backup contains settings that can run programs or allow tools without asking. Review the details below. Import only if you trust these settings.</value></data>
-  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import cancelled: programs and permissions require confirmation.</value></data>
-  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>The approvals section must be a JSON object.</value></data>
-  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Settings changes are waiting for settings.json to become readable.</value></data>
-  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Couldn't start {0} because its launch command is too long. Shorten the system prompt, saved memory, or extra launch arguments.</value></data>
-  <data name="Api_AnswerCutOff" xml:space="preserve"><value>The answer was cut off before the server confirmed it was finished.</value></data>
-  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>The chat or connection changed while attachments were being prepared. Your message wasn't sent.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Przejrzyj programy i uprawnienia</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Ta kopia zapasowa zawiera ustawienia, które mogą uruchamiać programy lub zezwalać na narzędzia bez pytania. Przejrzyj szczegóły poniżej. Zaimportuj tylko wtedy, gdy ufasz tym ustawieniom.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Importowanie anulowane: programy i uprawnienia wymagają potwierdzenia.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Sekcja approvals musi być obiektem JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Zmiany ustawień oczekują, aż plik settings.json stanie się czytelny.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Nie można uruchomić {0}, ponieważ polecenie uruchomienia jest zbyt długie. Skróć monit systemowy, zapisaną pamięć lub dodatkowe argumenty uruchamiania.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Odpowiedź została ucięta, zanim serwer potwierdził jej ukończenie.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Czat lub połączenie uległy zmianie podczas przygotowywania załączników. Twoja wiadomość nie została wysłana.</value></data>
   <data name="Attach_FromLink" xml:space="preserve">
-    <value>From a link</value>
+    <value>Z linku</value>
   </data>
-  <data name="Grip_Move" xml:space="preserve"><value>Move panel</value></data>
-  <data name="Grip_Resize" xml:space="preserve"><value>Resize panel</value></data>
-  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 opens the panel menu. Choose Move or Resize, use arrow keys, then Enter to finish or Esc to cancel.</value></data>
+  <data name="Grip_Move" xml:space="preserve"><value>Przenieś panel</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Zmień rozmiar panelu</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 otwiera menu panelu. Wybierz opcję Przenieś lub Zmień rozmiar, użyj klawiszy strzałek, a następnie naciśnij Enter, aby zakończyć, lub Esc, aby anulować.</value></data>
 </root>
