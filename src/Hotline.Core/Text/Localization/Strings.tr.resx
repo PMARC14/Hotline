@@ -925,6 +925,6 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Grip_Move" xml:space="preserve"><value>Paneli taşı</value></data>
   <data name="Grip_Resize" xml:space="preserve"><value>Paneli yeniden boyutlandır</value></data>
   <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 panel menüsünü açar. Taşı veya Yeniden Boyutlandır'ı seçin, ok tuşlarını kullanın, ardından bitirmek için Enter'a veya iptal etmek için Esc'ye basın.</value></data>
-  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json was written by a newer Hotline (version {0}; this one writes {1}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
-  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json was written by a newer Hotline (version {0}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json daha yeni bir Hotline sürümü tarafından yazıldı (sürüm {0}; bu sürüm {1} yazıyor), bu nedenle Hotline bu dosyanın üzerine yazmayacak. Hotline uygulamasını güncelleyin veya dosyayı el ile düzenleyin.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json daha yeni bir Hotline sürümü tarafından yazıldı (sürüm {0}), bu nedenle Hotline bu dosyanın üzerine yazmayacak. Hotline uygulamasını güncelleyin veya dosyayı el ile düzenleyin.</value></data>
 </root>

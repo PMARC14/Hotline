@@ -925,6 +925,6 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Grip_Move" xml:space="preserve"><value>패널 이동</value></data>
   <data name="Grip_Resize" xml:space="preserve"><value>패널 크기 조정</value></data>
   <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10을 누르면 패널 메뉴가 열립니다. 이동 또는 크기 조정을 선택하고 화살표 키를 사용한 다음 Enter 키를 눌러 완료하거나 Esc 키를 눌러 취소하세요.</value></data>
-  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json was written by a newer Hotline (version {0}; this one writes {1}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
-  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json was written by a newer Hotline (version {0}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json 파일은 최신 버전의 Hotline(버전 {0}, 이 버전은 {1})에서 작성되었으므로 Hotline에서 덮어쓰지 않습니다. Hotline을 업데이트하거나 파일을 직접 편집하세요.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json 파일은 최신 버전의 Hotline(버전 {0})에서 작성되었으므로 Hotline에서 덮어쓰지 않습니다. Hotline을 업데이트하거나 파일을 직접 편집하세요.</value></data>
 </root>

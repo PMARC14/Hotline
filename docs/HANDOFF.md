@@ -82,8 +82,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **Store language images:** the zh-Hans and zh-Hant panel sets must be recaptured with the 0.6.3 build (the demo hold was lengthened to
   8 s; the old sets caught the answer already streaming and clipped a code line), then `scripts/make-store-localized.sh zh-Hans zh-Hant`.
   Use `hold screen`, run when the owner is away, and look at the images. The other 15 languages and English were reviewed by Flash.
-- **Interface strings:** the two newest keys (`Settings_NewerVersion`, `Toolbar_NewerVersion`) are English placeholders in 16 languages
-  (all older new keys are translated).
+- **Interface strings:** all new keys are translated in 16 languages by model (Flash); no native review (see TRANSLATING.md).
 - **Cleanup left on this PC:** agent worktrees and branches (`codex/*`, `agy/*`, under `Git/hotline.worktrees/review-fixes.worktrees`),
   the integration worktree `Git/hotline.worktrees/review-fixes`, and an empty locked folder `Git/hotline.worktrees/handoff-capture`.
 - `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale (hand check).

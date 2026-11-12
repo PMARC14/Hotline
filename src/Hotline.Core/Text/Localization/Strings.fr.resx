@@ -925,6 +925,6 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Grip_Move" xml:space="preserve"><value>Déplacer le panneau</value></data>
   <data name="Grip_Resize" xml:space="preserve"><value>Redimensionner le panneau</value></data>
   <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 ouvre le menu du panneau. Choisissez Déplacer ou Redimensionner, utilisez les touches de direction, puis Enter pour terminer ou Esc pour annuler.</value></data>
-  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json was written by a newer Hotline (version {0}; this one writes {1}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
-  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json was written by a newer Hotline (version {0}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json a été écrit par une version plus récente de Hotline (version {0} ; celle-ci écrit {1}), Hotline ne l'écrasera donc pas. Mettez Hotline à jour ou modifiez le fichier manuellement.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json a été écrit par une version plus récente de Hotline (version {0}), Hotline ne l'écrasera donc pas. Mettez Hotline à jour ou modifiez le fichier manuellement.</value></data>
 </root>
