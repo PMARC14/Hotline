@@ -10,24 +10,35 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 user picks: Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-11-04)
+## State (2026-11-12)
 
-- **Released:** v0.6.0 (GitHub; `version.txt` says `0.6`). Every push to `main` that changes code publishes the next patch release, signed
-  with Hotline's long-lived self-signed certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; [RELEASING.md](RELEASING.md)).
-- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`). Last uploaded bundle 0.3.0.0. The 0.6.0.0 bundle (`HotlineAI_0.6.0.0_Store.msixbundle`)
-  was built by hand (Actions › Store, submit off) and is **not yet uploaded by the owner**; the 0.6 listing text is in `store/listing.md`
-  and `store/listings/` (translations are model-drafted). Otherwise no Store bundles until just short of 1.0 (owner, 2026-10-17).
-- **Schema freeze (S1) is NOT done:** it is the first job of the road to 1.0.
-- **Tests:** about 2,520 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` (the owner sometimes skips it) and
-  `hotline://selftest`; commands, options and the hand-test checklists: [TESTING.md](TESTING.md). Test cleanup done 2026-11-04 (shared fakes in
-  `TestFakes.cs`, `TempDirTest`); the remaining merge ideas were judged not worth the lost assertions.
-- **Reviews so far** (Astra, Argon, Opus, Sonnet, Flash; findings verified and fixed with a failing test first, rejected ones have tests):
-  PR #36 (2026-11-01 deep review), #40/#41, #45/#46/#48 (0.6). Rejected items are listed in the PR texts.
-- **Security pass** (multi-model audit, verified, fixed with tests): UNC/device paths refused (`SafeDirectory`,
-  `AppActionRequest.IsSafeLocalImagePath`), history ids validated (`HistoryIds`), response-size caps, chat-only isolation flags
-  always applied and tool pre-approval flags dropped, CLI output capped, `ShellOpen` limited to Hotline's own files, MCP `.exe`
-  started directly and `cmd.exe` refused for unsafe characters, SVG `style` allow-listed, `LogText` (secrets redacted, link queries
-  never logged). Findings still open are under *Deferred*.
+- **Released:** v0.6.2 on GitHub (`version.txt` says `0.6`). PR #60 (`fix/review-2026-11`, the review-fix wave below) is open and tested
+  but **not merged**: the owner said to finish every finding from Fable, Astra, Sol and Sonnet first, so merging (which publishes
+  v0.6.3 automatically) waits for that. Pushes to `main` publish the next patch release, signed with Hotline's self-signed certificate
+  (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; [RELEASING.md](RELEASING.md)).
+- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`). Last uploaded bundle 0.3.0.0. A 0.6.3.0 bundle was built from the branch (Actions
+  › Store, run 43164221390, artifact `hotline-store-0.6.3.0`, submit off) and is **not uploaded**; the owner uploads by hand and fills
+  each language's listing from `store/listing.md` (the "additional languages" section is gone: one listing per package language).
+  Rebuild it after the merge if the code changed. Otherwise no Store bundles until just short of 1.0 (owner, 2026-10-17).
+- **Schema freeze (S1) is NOT done:** the first job of the road to 1.0; the plan is [simplification-plan.md](simplification-plan.md).
+- **Tests:** 2,740 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`; commands and the hand-test
+  checklists: [TESTING.md](TESTING.md).
+- **Reviews:** 2026-11-12 whole-codebase review by Fable 5.2 and Astra (bugs), Sol and Sonnet (design, testing, simplification, merged
+  into [simplification-plan.md](simplification-plan.md)). Findings were confirmed by Sol, fixed in worktrees and combined in PR #60.
+- **Review-fix wave in PR #60** (all with tests; App-only parts need the hand tests under *Open items*): attachments and links
+  (send-time snapshot, destination guard, protocol auto-send rules, image size bound); clipboard (deny list of terminals, remote
+  and VM windows, no Ctrl+C when the process is unknown, late-copy restore); flyout holds, keyboard move and resize of the panel
+  (Ctrl+Shift+F10), tray keyboard activation, Narrator announcements for key capture, AltGr refused as a shortcut; one durable writer
+  for settings, toolbar, mcp and history, failed-migration keeps the inline list, automatic updates queue while `settings.json` is
+  unreadable; import safety (execution review dialog, `diagnostics.testLinks` default off, protocol voice blocked); backends (cut-off
+  API answers noted, command-line length check, one argument splitter); release and scripts (signing identity required on push,
+  least-privilege CI, winget tag validated); Settings window clamped to the work area; embedded tables and code re-fit when the
+  panel resizes; foreground-window tracker (fixes "Capture window" from the Copilot key; see below); display and DPI change recovery;
+  Esc auto-repeat no longer hides the panel while stopping an answer; tap-mode voice stops on blur and after 30 s of silence;
+  Credential Locker errors logged (not shown as "no key"); non-recursive settings watchers; a newer `settings.json` or
+  `toolbar.json` is never overwritten; narrow panel keeps the bottom row; test duplicates merged; new strings translated in 16 languages.
+- **Security pass** (earlier, verified): UNC/device paths refused, history ids validated, response-size caps, chat-only isolation flags
+  always applied, CLI output capped, `ShellOpen` limited, MCP `.exe` started directly, SVG `style` allow-listed, secrets redacted in logs.
 - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)).
 
 ### Where things are documented (this file does not repeat them)
@@ -43,46 +54,42 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Open items
 
-- **Hand tests still open** (all in [TESTING.md](TESTING.md), "0.6 checklist" first): shortcuts as the App uses them (focus routing,
-  AltGr/IME/auto-repeat guards, tooltips and Narrator accelerator keys, capture box, More menu shortcut), multi-monitor / mixed DPI,
-  dropdown hover / press look with outline or fill (**UNVERIFIED by eye**), window-close / rename / flyout / tray guards, Narrator names.
-- **App-only review findings** (need a hand check or an App-side fix; the Core parts are tested):
-  - Settings reload vs unsaved edits: open controls and file-watcher dispatch in `Settings/SettingsWindow*.cs` (`SettingsService.Reload` and
-    failed-save handling in `Update` are Core-tested).
-  - Horizontal Alt-resize: grips, height application and drag state in `Chat/PanelGrips.cs` (`PanelPlacement.Resize` is tested).
-  - Filled-dropdown brushes: WinUI resource lookup and templates in `ToolbarRenderer.cs`.
-  - "Move what doesn't fit" stale width: the App supplies the available width (`Settings/ToolbarQuadrantEditor.cs` →
-    `ToolbarEditor.FillMenuFromOverflow(m, room, room)`, Core-tested with explicit widths).
-  - Hold leak: `PopupWindow.HoldResize` users, menu event subscriptions and disposal (`ToolbarRenderer.cs`, `Chat/PanelGrips.cs`,
-    `Chat/RecentChatsMenu.cs`).
-  - Open WebUI keys stay in Credential Locker after both resets (`ContinueIn.ApiKeyName(url)`; documented in configuration.md; delete in
-    the App's reset handler in `SettingsWindow.xaml.cs` if wanted; Credential Locker is not reachable from Core tests).
+- **Owner hand tests for PR #60** (on the desktop, not run by agents; [TESTING.md](TESTING.md) has the older checklists):
+  Ctrl+Shift+F10 then Move or Resize with the arrow keys, Enter and Esc; **Capture window from the Copilot key** on a second monitor
+  (expect `window-HHmmss.png` of the window you were in, no notice; minimize it first and expect the notice; the "selected text"
+  chip from another app; panel opens on that window's monitor); Settings on a small or mixed-DPI screen (opens clamped, fully
+  visible); the import confirmation dialog (Cancel is the default; a backup with programs shows the review); resizing the panel with
+  long code or a wide table; unplug a monitor, change scale or the taskbar under an open pinned panel (display-change recovery,
+  new in this wave: **never reproduced on real hardware**); hold Esc while an answer streams (stops, panel stays); tap the voice
+  button and click another app (stops listening), stay silent 30 s (stops); tray icon via keyboard (Tab to the tray, Enter); a
+  hand-edited newer `settings.json` (`"schemaVersion": 99`) is not overwritten and says so.
+- **Findings from the 2026-11-12 reviews not fixed** (Fable and Astra bugs; the design ones are in [simplification-plan.md](simplification-plan.md)):
+  - **Update channel gating:** a hand-promoted `stable` appinstaller, push builds as prereleases, SHA-pinned actions, pinned
+    `wingetcreate` (W5 F23). Today every code push publishes and the appinstaller follows it.
+  - **`toolbar.json` lossless writer** and a version-aware save for every family: part of S1 (the 0.6.3 guard only refuses to overwrite).
+  - The Windows toast shows the answer text (a title-only option was proposed).
+  - `build-msix.sh` takes the signing password on the command line and does not timestamp; `ci.yml` never builds the MSIX; `build-msix.sh`
+    staging (F24).
+  - **Test gaps:** `ClipboardCopy` and `SelectionReader` logic, `OnPanelKey` routing, attachment intake, flyout hold counting,
+    packaging checks (the Core decisions in simplification-plan step 5 close most of them).
+  - Smaller items from the Fable list not covered by any fix: check `docs/` and the Fable findings file
+    (`~/AppData/Local/Temp/claude/.../scratchpad/fable-findings.md`, machine-local) if you need the full text; the reports of the Sol
+    confirm phase are in `~/.agent-jobs/jobs/<id>/final.txt` (W1 979681f0, W2 14dac610, W3 c70e617d, W4 a2d6d989, W5 9943d62e), Sol
+    design review 16df04d0, Sonnet review a920fbc2.
+- **Fable review of the toolbar code, and anything Astra missed:** requested by the owner and **not done** (Fable hit usage limits).
+  Run it in the new chat: `ToolbarModel`, `ToolbarEditor`, `ToolbarPlan`, `ToolbarLayout`, `ToolbarRenderer`, `ToolbarQuadrantEditor*`,
+  `ToolbarFile` and their tests, plus any area the first Fable and Astra passes skipped.
+- **Store language images:** the zh-Hans and zh-Hant panel sets must be recaptured with the 0.6.3 build (the demo hold was lengthened to
+  8 s; the old sets caught the answer already streaming and clipped a code line), then `scripts/make-store-localized.sh zh-Hans zh-Hant`.
+  Use `hold screen`, run when the owner is away, and look at the images. The other 15 languages and English were reviewed by Flash.
+- **Interface strings:** all new keys are translated in 16 languages by model (Flash); no native review (see TRANSLATING.md).
+- **Cleanup left on this PC:** agent worktrees and branches (`codex/*`, `agy/*`, under `Git/hotline.worktrees/review-fixes.worktrees`),
+  the integration worktree `Git/hotline.worktrees/review-fixes`, and an empty locked folder `Git/hotline.worktrees/handoff-capture`.
 - `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale (hand check).
-- **BUG: "Capture window" (the window you were in) falls back to the whole screen; the previous window is never recorded when the
-  panel opens from the Copilot key** (owner report 2026-11-08; diagnosed from `hotline.log`, not fixed). Evidence: every key open logs
-  `toggle: visible=False … foreground=<invalid window> … previous=none`, and the later `deactivated: focus went to
-  CopilotKeyPressFocusFrame (explorer)` shows what took focus. The key press moves focus to that short-lived shell frame, so
-  `Native.GetForegroundWindow()` returns 0 (or a shell class) at the instant `PopupWindow.ShowPopup` reads it
-  (`PopupWindow.xaml.cs`, about line 171: it records `PreviousForeground` only when the handle is valid and not a shell surface).
-  Nothing else ever sets it, so it stays 0. Consequences, in order of certainty:
-  1. `AttachmentPanel.CaptureAsync` (`Chat/AttachmentPanel.cs:76`) gets no target, `ScreenCapture.TryGetWindowRect` is false, it
-     captures the whole monitor and shows `Attach_WindowGone` ("That window isn't available (closed or minimized), so the whole
-     screen was captured"), which is wrong: nothing was closed.
-  2. Probably also: `BeforeShow` (reads the selected text in the app you came from) is skipped, so "selected text comes along"
-     may not work from the key; and `PlaceOnActiveMonitor` has no anchor and falls back to the cursor monitor (the log says `place:
-     active \\.\DISPLAY1` on every open). **Unverified**: confirm both on the desktop before and after the fix.
-  3. `Toggle`'s "give focus back to the previous window" also needs `PreviousForeground`.
-  Suggested fix: track the last real foreground window all the time, not only at the instant of the key. A `SetWinEventHook`
-  (`EVENT_SYSTEM_FOREGROUND`, out of context, skip-own-process) in the App keeps a "last real window" handle; ignore Hotline's own
-  windows, the shell classes in `ShellSurfaces.IsShell` (taskbar, desktop, Start, `CopilotKeyPressFocusFrame`), cloaked and
-  minimized windows. `ShowPopup` then uses the live foreground when it is a real window, else the tracked one (and `IsWindow`
-  must still hold: a closed window is dropped). Keep the decision rule ("is this a real app window, which of two candidates wins")
-  in Core, with tests (shell classes, own window, zero handle, stale handle); the hook is App-only. Check: the tracked window
-  must not become Hotline's own Settings window or the file picker; a pinned panel must not overwrite it while you click in
-  the panel; per-monitor placement must use the tracked window's monitor.
-  Hand test (desktop, two monitors, mixed DPI): open the key over a window on the second monitor, press Capture window, expect a
-  `window-HHmmss.png` of that window and no notice; minimize that window first and expect the notice; repeat for a selection in
-  another app (the "Selected text" chip) and for the panel opening on the monitor of the app you were in.
+- **Fixed in PR #60, verify by hand: "Capture window" fell back to the whole screen.** The Copilot key moves focus to
+  `CopilotKeyPressFocusFrame`, so the foreground handle was 0 at `ShowPopup`. Now `ForegroundWindowTracker` (`SetWinEventHook`,
+  App) and `ForegroundWindowPolicy` (Core, tested) keep the last real window; `CaptureAsync` revalidates it. If it still fails, read
+  the `toggle:` and `deactivated:` lines in `hotline.log`.
 - **Store screenshots in every language** (owner request 2026-11-08; scripts written and the pieces tested, the full 17-language run
   not finished: the owner stopped it because the PC became slow and windows stuck). `scripts/make-store-panels.sh` sets
   `general.language` per language (settings.json backed up first and restored byte for byte, also on Ctrl+C or kill), restarts
@@ -140,7 +147,6 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
     (`_fixedPx`/`_fixedWidth` in `PopupWindow.xaml.cs`), wrap long text at narrow widths, and stay on the monitor the panel is on
     when the panel moves to another monitor or a different scale (`PanelPlacement.Rescale`); a notice raised while the panel is
     hidden or on the other monitor shows when it opens. Test with a capture failure on a second monitor at 100% and 200% scaling.
-- `personal/gemini-web` still needs `main` merged in.
 
 ## Next work
 
@@ -149,7 +155,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 Owner decisions: everything below is in 1.0; the file formats are frozen from 1.0 (migrations, never breaking changes); the one
 exception is Windows agent connectors verification, which moves to 1.1 if they cannot be tested. Work in this order:
 
-1. **S1 schema freeze** (first, merged before the rest): unknown keys survive saves; one `version` rule with migrations (no
+1. **S1 schema freeze** (first, merged before the rest; the reviewed plan, owner decisions and order are in
+   [simplification-plan.md](simplification-plan.md)): unknown keys survive saves; one `version` rule with migrations (no
    `schemaVersion` / `version` split); no rewrite on load; a connection file's name = its id; app state (`.first-run-shown`,
    `supportReminder`) in `state.json`, not in config; one backup policy in `backups\` (about 7 schemes today); 3 renames with aliases
    (`window.height` to `minHeight`, `backends` to `connections`, toolbar `items` to `bottom`); JSON schemas and frozen compatibility
