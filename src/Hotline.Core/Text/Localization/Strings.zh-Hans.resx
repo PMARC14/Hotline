@@ -911,4 +911,12 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **异步优先：** 书面更新取代了许多会议，文字决策也能传达给更多人。
 - **文档成效显著：** 文档完善的团队只需数天就能完成新人培训，而非耗时数周。
 - **特意安排相聚：** 随性交流变少了，因此很多公司每季度会专门安排几天线下见面。</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Review programs and permissions</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>This backup contains settings that can run programs or allow tools without asking. Review the details below. Import only if you trust these settings.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import cancelled: programs and permissions require confirmation.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>The approvals section must be a JSON object.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Settings changes are waiting for settings.json to become readable.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Couldn't start {0} because its launch command is too long. Shorten the system prompt, saved memory, or extra launch arguments.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>The answer was cut off before the server confirmed it was finished.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>The chat or connection changed while attachments were being prepared. Your message wasn't sent.</value></data>
 </root>

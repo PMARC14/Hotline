@@ -911,4 +911,12 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **비동기 우선:** 서면 업데이트가 많은 회의를 대체하고, 기록된 결정이 더 많은 사람에게 전달됩니다.
 - **문서화의 힘:** 문서화가 잘된 팀은 신규 입사자를 몇 주가 아닌 며칠 만에 온보딩합니다.
 - **계획된 대면 시간:** 우연한 대화가 줄어든 만큼, 기업들은 매 분기 대면 모임 일정을 의도적으로 계획합니다.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Review programs and permissions</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>This backup contains settings that can run programs or allow tools without asking. Review the details below. Import only if you trust these settings.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import cancelled: programs and permissions require confirmation.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>The approvals section must be a JSON object.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Settings changes are waiting for settings.json to become readable.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Couldn't start {0} because its launch command is too long. Shorten the system prompt, saved memory, or extra launch arguments.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>The answer was cut off before the server confirmed it was finished.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>The chat or connection changed while attachments were being prepared. Your message wasn't sent.</value></data>
 </root>
