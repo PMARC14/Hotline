@@ -23,7 +23,18 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
 
     public event Action<ChatEvent>? Event;
     public string ConversationId { get; private set; } = Ids.New();
-    public string BackendId { get; set; } = "";
+    private string _backendId = "";
+    public long DestinationVersion { get; private set; }
+    public string BackendId
+    {
+        get => _backendId;
+        set
+        {
+            if (_backendId == value) return;
+            _backendId = value;
+            DestinationVersion++;
+        }
+    }
     public IReadOnlyList<ChatMessage> Messages => _messages;
     public bool IsBusy => _cts is not null;
     /// <summary>The CLI conversation this chat lives in, and its connection (null: none yet, or not a CLI chat).</summary>
@@ -53,6 +64,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
 
     public void NewChat()
     {
+        DestinationVersion++;
         Cancel();
         _cts = null; // supersede the old turn now: a send right after must not be swallowed while it unwinds
         _messages.Clear();
@@ -101,6 +113,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         _cts = null;
         _messages.Clear();
         _lastFailed = null;
+        DestinationVersion++;
         ConversationId = conversationId;
         _session = session;
         _sessionBackendId = session is null ? null : meta!.BackendId;
@@ -224,11 +237,12 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             _messages.Add(assistant);
             if (transcript) TryHistory(conversationId, assistant);
         }
-        if (_session is { } session && _sessionBackendId == backend.Id) TryMeta(conversationId, session, backend.Id, added: keepEmptyReply ? 2 : 1);
+        if (HasWholeTranscript || _sessionBackendId == backend.Id)
+            TryMeta(conversationId, _session, _sessionBackendId ?? backend.Id, added: keepEmptyReply ? 2 : 1);
     }
 
     /// <summary>The chat's record: what Recent chats lists and what resuming its CLI conversation needs.</summary>
-    private void TryMeta(string conversationId, CliSession session, string backendId, int added)
+    private void TryMeta(string conversationId, CliSession? session, string backendId, int added)
     {
         if (history is null) return;
         try
@@ -237,7 +251,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             var first = _messages.FirstOrDefault(m => m.Role == ChatRole.User && m.Text.Trim().Length > 0)?.Text;
             var title = previous?.Title is { Length: > 0 } kept ? kept : HistoryStore.TitleOf(first ?? "");
             var count = Math.Max(_messages.Count, (previous?.MessageCount ?? 0) + added); // the panel may hold only this session's part
-            history.SaveMeta(conversationId, new HistoryStore.Meta(title, clock.GetUtcNow(), backendId, session.Id, session.WorkingDirectory, count));
+            history.SaveMeta(conversationId, new HistoryStore.Meta(title, clock.GetUtcNow(), backendId, session?.Id, session?.WorkingDirectory, count));
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or System.Text.Json.JsonException)
         {

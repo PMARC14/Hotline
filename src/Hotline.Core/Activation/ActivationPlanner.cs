@@ -33,7 +33,7 @@ public static class ActivationPlanner
     {
         // App Actions (Click to Do and other apps): the content arrives as inputs; an unusable one does nothing.
         ActivationKind.Protocol or ActivationKind.ProtocolForResults when string.Equals(r.Uri?.Scheme, AppActionRequest.Scheme, StringComparison.OrdinalIgnoreCase) =>
-            AppActionRequest.Parse(r.Uri, r.Inputs, r.CallerPackageFamily) is { } action ? new ActivationPlan(null, false, AppAction: action) : new ActivationPlan(null, false),
+            AppActionRequest.Parse(r.Uri, r.Inputs, r.CallerPackageFamily, r.Kind == ActivationKind.ProtocolForResults) is { } action ? new ActivationPlan(null, false, AppAction: action) : new ActivationPlan(null, false),
         // A Copilot key press while Hotline isn't running arrives as ProtocolForResults.
         ActivationKind.Protocol or ActivationKind.ProtocolForResults =>
             ActivationParser.ParseUri(r.Uri) is { } key ? new ActivationPlan(key, false)

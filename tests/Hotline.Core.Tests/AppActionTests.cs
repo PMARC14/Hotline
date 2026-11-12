@@ -10,6 +10,26 @@ public sealed class AppActionTests
     private static Dictionary<string, string> Inputs(params (string Key, string Value)[] pairs) => pairs.ToDictionary(p => p.Key, p => p.Value);
 
     [Fact]
+    public void Link_text_has_its_own_label_and_preserves_existing_draft()
+    {
+        var action = AppActionRequest.Parse(new Uri("hotline-action://run/summarize?text=external"), null, null)!;
+        Assert.Equal("From a link", action.TextAttachment()!.Name);
+        Assert.Equal("existing draft", action.DraftAfter("existing draft"));
+        Assert.Equal("/summarize", action.DraftAfter(""));
+        Assert.False(action.FromWindows);
+    }
+
+    [Theory]
+    [InlineData(ActivationKind.Protocol, true)]
+    [InlineData(ActivationKind.ProtocolForResults, false)]
+    public void Auto_send_requires_for_results_and_text_in_inputs(ActivationKind kind, bool textInInputs)
+    {
+        var request = new ActivationRequest(kind, new Uri("hotline-action://run/summarize?text=query"), false,
+            textInInputs ? Inputs(("text", "input")) : Inputs(), Windows);
+        Assert.False(ActivationPlanner.Plan(request).AppAction!.AutoSend);
+    }
+
+    [Fact]
     public void Ask_about_text_attaches_it_without_sending()
     {
         var a = AppActionRequest.Parse(new Uri("hotline-action://ask"), Inputs(("text", "Some selected text")), Windows);
@@ -22,7 +42,7 @@ public sealed class AppActionTests
     [Fact]
     public void A_quick_action_from_windows_runs_at_once()
     {
-        var a = AppActionRequest.Parse(new Uri("hotline-action://run/summarize"), Inputs(("text", "long text")), Windows)!;
+        var a = AppActionRequest.Parse(new Uri("hotline-action://run/summarize"), Inputs(("text", "long text")), Windows, protocolForResults: true)!;
         Assert.Equal("summarize", a.QuickAction);
         Assert.True(a.FromWindows);
         Assert.True(a.AutoSend);
@@ -109,10 +129,11 @@ public sealed class AppActionTests
     [Fact]
     public void The_planner_routes_app_actions()
     {
-        var request = new ActivationRequest(ActivationKind.ProtocolForResults, new Uri("hotline-action://ask"), false,
+        var request = new ActivationRequest(ActivationKind.ProtocolForResults, new Uri("hotline-action://run/summarize"), false,
             Inputs(("text", "hi")), Windows);
         var plan = ActivationPlanner.Plan(request);
         Assert.Equal("hi", plan.AppAction!.Text);
+        Assert.True(plan.AppAction.AutoSend);
         Assert.False(plan.ShowPopup); // the action shows it, with the content attached
     }
 
