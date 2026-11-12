@@ -89,4 +89,4 @@ Hotline AI є незалежною програмою і не пов'язана 
 
 ## Пошукові терміни
 
-чат ШІ, клавіша Copilot, Claude, Gemini, ШІ-помічник, LLM, локальний ШІ
+Чат-помічник ШІ, Сполучення клавіші Copilot, Інтеграція Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Сумісний з OpenRouter, Локальна LLM llama.cpp

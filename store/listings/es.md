@@ -77,7 +77,7 @@ Organiza las filas de botones en Configuración, añade botones con tus propias 
 16. Herramientas MCP opcionales para conexiones API; los cambios piden confirmación salvo que los permitas
 17. Sin cuenta, analíticas ni anuncios; claves en el Administrador de credenciales de Windows; gratis y código abierto
 18. Edita ajustes, conexiones, prompts y toolbar.json; valores erróneos avisan y copias protegen tus ediciones
-19. Configuración > Copia de seguridad exporta e importa ajustes, barra, MCP, sonidos y prompts; nunca claves de API
+19. Configuración > Copia de seguridad exporta e importa ajustes, barra, MCP, sonidos, conexiones, acciones rápidas y prompts; nunca claves de API
 20. Atajos en panel para botones de la barra y propios; mueve, fija y redimensiona con anchos en píxeles y chat amplio
 
 ## Textos de las capturas
@@ -89,7 +89,4 @@ Organiza las filas de botones en Configuración, añade botones con tus propias 
 
 ## Términos de búsqueda
 
-chat con IA, tecla Copilot, Claude, Gemini, asistente de IA, LLM, IA local
-
-
-chat con IA, tecla Copilot, Claude, Gemini, asistente de IA, LLM, IA local
+Asistente chat IA, Atajo tecla Copilot, Integración Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Compatible OpenRouter, LLM local llama.cpp

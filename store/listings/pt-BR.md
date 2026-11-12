@@ -89,4 +89,4 @@ Organize linhas de botões nas Configurações, adicione botões com suas própr
 
 ## Termos de pesquisa
 
-chat de IA, tecla Copilot, Claude, Gemini, assistente de IA, LLM, IA local
+Assistente chat IA, Atalho tecla Copilot, Integração Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Compatível OpenRouter, LLM local llama.cpp
