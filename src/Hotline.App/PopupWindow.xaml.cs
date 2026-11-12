@@ -23,6 +23,8 @@ public sealed partial class PopupWindow : Window
     public GrowMode GrowMode { get; set; }
     private readonly PopupToggleGuard _guard;
     private readonly FileLog _log;
+    private readonly ForegroundWindowTracker _foreground;
+    private PanelLayoutSettings? _lastLayout;
     private int _modal;
     private RectI _bar;
     private RectI _work;
@@ -40,12 +42,13 @@ public sealed partial class PopupWindow : Window
     public event Action? NewChatRequested;
     public event Action<bool>? CaptureRequested;
 
-    public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus)
+    public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus, ForegroundWindowTracker? foreground = null)
     {
         _settings = settings;
         GrowMode = growMode;
         _guard = guard;
         _log = log;
+        _foreground = foreground ?? new ForegroundWindowTracker(log);
         InitializeComponent();
         Input.TextCompositionStarted += (_, _) => IsComposing = true;
         Input.TextCompositionEnded += (_, _) => IsComposing = false;
@@ -104,7 +107,18 @@ public sealed partial class PopupWindow : Window
             ScrollbarStyle.Hidden => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden,
             _ => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden, // Auto: shown on wheel/hover (ShowScrollbarBriefly)
         };
-        if (AppWindow.IsVisible) PlaceOnActiveMonitor();
+        var next = PanelLayoutSettings.From(_settings);
+        var changed = next != _lastLayout;
+        _lastLayout = next;
+        if (!AppWindow.IsVisible) return;
+        if (changed) RequestPlacement(); // deferred while HoldResize is held
+        else ApplyHeight();
+    }
+
+    private void RequestPlacement()
+    {
+        if (_resizeHolds > 0) { _placementHeld = true; return; }
+        PlaceOnActiveMonitor();
     }
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueueTimer _scrollbarHide;
@@ -162,21 +176,27 @@ public sealed partial class PopupWindow : Window
     /// <summary>Runs synchronously when the panel is about to open over a real app window (its handle), before focus moves.</summary>
     public Action<nint>? BeforeShow { get; set; }
 
+    /// <summary>Revalidates the show-time target window right before a capture uses it.</summary>
+    public nint RevalidateCaptureTarget(nint? candidate = null)
+    {
+        var fg = _foreground.RevalidateShowTarget(candidate ?? PreviousForeground);
+        PreviousForeground = fg;
+        return fg;
+    }
+
     /// <param name="readSelection">False when the caller brings the content itself (an App Action).</param>
     public void ShowPopup(bool readSelection = true)
     {
         // The open sound plays only when it really opens (not back from the file picker).
-        var wasShown = AppWindow.IsVisible && !_offscreen || _hiddenForDialog;
+        var hiddenForDialog = _hiddenForDialog;
+        var wasShown = AppWindow.IsVisible && !_offscreen || hiddenForDialog;
         _hiddenForDialog = false;
-        var fg = Native.GetForegroundWindow();
-        if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
+        var fg = hiddenForDialog ? _foreground.RevalidateShowTarget(PreviousForeground) : _foreground.ResolveForShow();
+        PreviousForeground = fg;
+        if (fg != 0 && !hiddenForDialog && readSelection)
         {
-            PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
-            if (readSelection)
-            {
-                try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
-                catch (Exception ex) { _log.Error("before-show step failed", ex); }
-            }
+            try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
+            catch (Exception ex) { _log.Error("before-show step failed", ex); }
         }
 
         if (_offscreen)
@@ -282,6 +302,8 @@ public sealed partial class PopupWindow : Window
         PlayOpenClose?.Invoke(false);
         if (!Pinned || _forgetOnHide) _session = null; // moved but not pinned (or forgotten): the next open uses the default
         _forgetOnHide = false;
+        _placementHeld = false;
+        _resizeHeld = false;
         AppWindow.Hide();
         _guard.NoteHidden();
         Hidden?.Invoke();
@@ -307,9 +329,11 @@ public sealed partial class PopupWindow : Window
             // Closed by the key while it had focus (a pinned panel keeps it; unpinned, the shell usually took it first):
             // no window had focus afterwards, the rest of the key press went nowhere and Windows played its warning
             // sound. Give focus back to the app the panel opened over.
-            if (fg == Hwnd && PreviousForeground != 0 && Native.IsWindow(PreviousForeground))
+            var prev = _foreground.RevalidateShowTarget(PreviousForeground);
+            PreviousForeground = prev;
+            if (fg == Hwnd && prev != 0)
             {
-                if (Native.ForceForeground(PreviousForeground)) _log.Info($"focus back to {Native.ClassNameOf(PreviousForeground)}");
+                if (Native.ForceForeground(prev)) _log.Info($"focus back to {Native.ClassNameOf(prev)}");
                 else _log.Info("could not give focus back to the previous window");
             }
         }
@@ -337,12 +361,13 @@ public sealed partial class PopupWindow : Window
     public IDisposable Modal()
     {
         _modal++;
-        return new Releaser(() => _modal--);
+        var suppress = _foreground.Suppress();
+        return new Releaser(() => { suppress.Dispose(); _modal--; });
     }
 
     /// <summary>
     /// While held, the window keeps its size: resizing a window closes its open flyouts at once (the history list
-    /// opened from the keyboard did exactly that). A resize asked for meanwhile is applied when the last hold ends.
+    /// opened from the keyboard did exactly that). A resize or placement asked for meanwhile is applied when the last hold ends.
     /// Only flyouts take it; dialogs and captures still resize as usual.
     /// </summary>
     public IDisposable HoldResize()
@@ -353,7 +378,10 @@ public sealed partial class PopupWindow : Window
             void Release()
             {
                 _resizeHolds--;
-                if (_resizeHolds == 0 && _resizeHeld && AppWindow.IsVisible) ApplyHeight();
+                if (_resizeHolds != 0) return;
+                if (!AppWindow.IsVisible) { _placementHeld = false; _resizeHeld = false; return; }
+                if (_placementHeld) PlaceOnActiveMonitor();
+                else if (_resizeHeld) ApplyHeight();
             }
             if (DispatcherQueue.HasThreadAccess) Release(); else DispatcherQueue.TryEnqueue(Release);
         });
@@ -362,6 +390,8 @@ public sealed partial class PopupWindow : Window
     private int _resizeHolds;
     /// <summary>A resize was asked for during a HoldResize; any real resize settles it.</summary>
     private bool _resizeHeld;
+    /// <summary>A placement was asked for during a HoldResize; consumed before height when the last hold ends.</summary>
+    private bool _placementHeld;
 
     /// <summary>Hides the popup briefly (e.g. to capture what is underneath), then brings it back.</summary>
     public async Task<T> WithHiddenAsync<T>(Func<Task<T>> work)
@@ -438,11 +468,7 @@ public sealed partial class PopupWindow : Window
     public Func<bool>? KeepOnKeyPress { get; set; }
 
     /// <summary>Another Hotline process (the key's launcher instance) never counts as another app.</summary>
-    private static bool IsHotline(uint pid)
-    {
-        try { using var p = System.Diagnostics.Process.GetProcessById((int)pid); return string.Equals(p.ProcessName, "Hotline", StringComparison.OrdinalIgnoreCase); }
-        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException) { return false; }
-    }
+    private static bool IsHotline(uint pid) => ForegroundWindowTracker.IsHotlineExecutable(pid);
 
     /// <summary>A window for the log: class and process name.</summary>
     private static string Describe(nint hwnd)
@@ -455,8 +481,13 @@ public sealed partial class PopupWindow : Window
         return $"{Native.ClassNameOf(hwnd)} ({name})";
     }
 
+    private Func<uint, bool>? _isOurProcess;
     /// <summary>Whether a process is one Hotline started (a CLI, or something it started); set by App.</summary>
-    public Func<uint, bool>? IsOurProcess { get; set; }
+    public Func<uint, bool>? IsOurProcess
+    {
+        get => _isOurProcess;
+        set { _isOurProcess = value; _foreground.IsOurProcess = value; }
+    }
 
     /// <summary>
     /// Focus went elsewhere: hide, unless the window that took it belongs to a program Hotline started (a CLI opening a
@@ -735,7 +766,7 @@ public sealed partial class PopupWindow : Window
         _session = null;
         _fixedPx = null;
         _fixedWidth = false;
-        PlaceOnActiveMonitor();
+        RequestPlacement();
     }
 
     /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width in real pixels (what window.width holds), chat height in DIPs.</summary>
@@ -780,6 +811,7 @@ public sealed partial class PopupWindow : Window
 
     private void PlaceOnActiveMonitor()
     {
+        _placementHeld = false;
         // A moved spot: kept across closes only while pinned (HidePopup drops it otherwise), and kept while open, so a
         // settings change (a model picked in the bar) doesn't snap a moved panel back to its default spot.
         if (_session is { } spot && MonitorAt(spot.Work) is { } still)
@@ -846,8 +878,8 @@ public sealed partial class PopupWindow : Window
         }
         // A remembered window may have closed since (stale handle): its monitor/DPI lookups then fail and the
         // popup came out at 100% scale ("occasionally small"). Only trust live windows; otherwise use the cursor.
-        if (PreviousForeground != 0 && !Native.IsWindow(PreviousForeground))
-            PreviousForeground = 0;
+        if (PreviousForeground != 0)
+            PreviousForeground = _foreground.RevalidateShowTarget(PreviousForeground);
         var anchor = PreviousForeground;
         DisplayArea? area = null;
         nint monitor = 0;
