@@ -1,4 +1,5 @@
 using Hotline.Core.Text;
+using Hotline.Core.Windowing;
 using Microsoft.UI.Text;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -37,9 +38,11 @@ internal static class MarkdownRenderer
             var available = rtb.ActualWidth > 0 ? rtb.ActualWidth : contentWidth;
             if (element is FrameworkElement fe)
             {
-                var width = Math.Max(160, available - indent * 18 - 8);
-                if (fe.HorizontalAlignment == HorizontalAlignment.Left) fe.MaxWidth = width; // content-sized, never wider than the line
+                var width = EmbeddedWidths.ForViewport(available, indent);
+                var contentSized = fe.HorizontalAlignment == HorizontalAlignment.Left;
+                if (contentSized) fe.MaxWidth = width; // content-sized, never wider than the line
                 else fe.Width = width;
+                fe.Tag = new EmbeddedBox(indent, contentSized);
             }
             var p = new Paragraph { Margin = new Thickness(indent * 18, 0, 0, 8) };
             p.Inlines.Add(new InlineUIContainer { Child = element });
