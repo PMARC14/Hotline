@@ -5,6 +5,24 @@ namespace Hotline.Core.Tests;
 /// <summary>Setting the fallback hotkey by pressing it (Settings › General).</summary>
 public class HotkeyCaptureTests
 {
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Right_alt_refuses_capture_for_global_and_panel_shortcuts(bool panel)
+    {
+        var result = HotkeyCapture.Press(HotkeyModifiers.Control | HotkeyModifiers.Alt, 'Q', panel, rightAltDown: true);
+        Assert.Equal(HotkeyCapture.Outcome.Waiting, result.Outcome);
+        Assert.Null(result.Text);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Left_ctrl_alt_still_binds_after_right_alt_is_released(bool panel)
+    {
+        Assert.Equal("Ctrl+Alt+Q", HotkeyCapture.Press(HotkeyModifiers.Control | HotkeyModifiers.Alt, 'Q', panel, rightAltDown: false).Text);
+    }
+
     private const uint Esc = 0x1B, Backspace = 0x08, Delete = 0x2E, Ctrl = 0x11, Shift = 0x10, LWin = 0x5B, H = 'H', F13 = 0x7C, F5 = 0x74;
 
     [Fact]

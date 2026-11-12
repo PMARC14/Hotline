@@ -30,7 +30,8 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private TextBlock _empty = null!;
     private StackPanel _actions = null!;
     private IReadOnlyList<HistoryStore.Summary> _all = [];
-    private IDisposable? _modal, _resizeHold;
+    private FlyoutHold? _hold;
+    private readonly Dictionary<string, ListViewItem> _rows = [];
 
     public void Initialize()
     {
@@ -42,10 +43,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
     private void ShowContinueMenu(FrameworkElement at)
     {
         if (ContinueMenu() is not { } menu) { notices.Show(Strings.Recent_ContinueNothing, InfoBarSeverity.Informational); return; }
-        var hold = popup.HoldResize(); // a resize would close the menu (see PopupWindow.HoldResize)
-        menu.Closed += (_, _) => hold.Dispose();
-        try { menu.ShowAt(at); }
-        catch { hold.Dispose(); throw; } // a menu that never opened must not leave the panel's auto-sizing frozen
+        new FlyoutHold(popup, menu).ShowAt(at);
     }
 
     /// <summary>"Continue this chat in ▸": the chat's own CLI, other CLIs under More…; null when there's nowhere to go.</summary>
@@ -88,15 +86,19 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             var flyout = _flyout ??= Build();
             BuildActions();
             _all = [];
+            _list.Items.Clear();
+            _rows.Clear();
             _takeTyping = fromTyping;
             _search.Text = query;
             Fill(query);
-            flyout.ShowAt(popup.Composer, new FlyoutShowOptions { Placement = FlyoutPlacementMode.Top });
+            _hold!.ShowAt(popup.Composer, new FlyoutShowOptions { Placement = FlyoutPlacementMode.Top });
+            if (!flyout.IsOpen) return;
             _all = await Task.Run(() => source(Math.Clamp(listSize(), 10, 5000))); // reads each chat's file: off the UI thread
             if (flyout.IsOpen) Fill(_search.Text); // what has been typed by now
         }
         catch (Exception ex) // async void: nothing may escape (an unreadable history folder, a WinUI refusal)
         {
+            _hold?.Release();
             log.Error("opening the history list failed", ex);
             notices.Show(Strings.Recent_OpenFailed, InfoBarSeverity.Warning);
         }
@@ -127,10 +129,9 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         var presenter = new Style(typeof(FlyoutPresenter)); // layered over the default style, which keeps the frame
         presenter.Setters.Add(new Setter(FrameworkElement.MaxWidthProperty, double.PositiveInfinity)); // the default caps it at 456
         flyout.FlyoutPresenterStyle = presenter;
+        _hold = new FlyoutHold(popup, flyout);
         flyout.Opening += (_, _) =>
         {
-            _modal ??= popup.Modal(); // the list is part of the panel: do not hide the panel as focus moves into it
-            _resizeHold ??= popup.HoldResize(); // and keep its size: a window resize would close the list
             grid.Width = Math.Max(320, popup.Composer.ActualWidth - 24); // as wide as the message bar (less the frame)
         };
         flyout.Opened += (_, _) =>
@@ -145,7 +146,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             _search.SelectionStart = _search.Text.Length;
             if (_list.SelectedItem is { } selected) _list.ScrollIntoView(selected, ScrollIntoViewAlignment.Default);
         };
-        flyout.Closed += (_, _) => { _modal?.Dispose(); _modal = null; _resizeHold?.Dispose(); _resizeHold = null; popup.Input.Focus(FocusState.Programmatic); };
+        flyout.Closed += (_, _) => popup.Input.Focus(FocusState.Programmatic);
         return flyout;
 
         static void AddRow(Grid g, FrameworkElement e, int row) { Grid.SetRow(e, row); g.Children.Add(e); }
@@ -157,6 +158,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _list.Items.Clear();
         foreach (var c in view.Items)
         {
+            if (_rows.TryGetValue(c.Id, out var cached)) { _list.Items.Add(cached); continue; }
             var row = new Grid { ColumnSpacing = 12, Tag = c.Id };
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
             row.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
@@ -168,6 +170,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
             row.Children.Add(ago);
             var item = new ListViewItem { Content = row, Tag = c.Id };
             ToolTipService.SetToolTip(item, L.F(Strings.Recent_Tip, c.MessageCount, c.LastAt.ToLocalTime()));
+            _rows[c.Id] = item;
             _list.Items.Add(item);
         }
         _list.SelectedIndex = view.Selected;
@@ -218,6 +221,7 @@ internal sealed class RecentChatsMenu(PopupWindow popup, ChatController chat, No
         _actions.Children.Clear();
         if (ContinueMenu() is { } menu)
         {
+            _ = new FlyoutHold(popup, menu);
             _actions.Children.Add(new DropDownButton
             {
                 Content = new StackPanel

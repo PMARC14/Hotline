@@ -922,4 +922,7 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Attach_FromLink" xml:space="preserve">
     <value>From a link</value>
   </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Move panel</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Resize panel</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 opens the panel menu. Choose Move or Resize, use arrow keys, then Enter to finish or Esc to cancel.</value></data>
 </root>

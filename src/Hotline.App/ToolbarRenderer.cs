@@ -409,9 +409,7 @@ internal sealed class ToolbarRenderer
             foreach (var id in row.Dropped) menu.Items.Add(Item(id, row));
             if (menu.Items.Count == 0) menu.Items.Add(new MenuFlyoutItem { Text = Strings.Bar_NothingHere, IsEnabled = false });
         };
-        IDisposable? hold = null;
-        menu.Opened += (_, _) => hold = _popup.HoldResize(); // a resize would close the menu
-        menu.Closed += (_, _) => { hold?.Dispose(); hold = null; };
+        _ = HoldFor(menu);
         return menu;
     }
 
@@ -459,19 +457,17 @@ internal sealed class ToolbarRenderer
         if (button.Flyout is { } flyout)
         {
             // Its own menu (the prompt list), opened at the row's menu button: the button itself isn't on screen.
-            var hold = _popup.HoldResize();
-            void Closed(object? s, object e) { flyout.Closed -= Closed; hold.Dispose(); }
-            flyout.Closed += Closed;
-            try { flyout.ShowAt(anchor); }
-            catch
-            {
-                Closed(null, EventArgs.Empty); // it never opened: release the hold now
-                throw;
-            }
-            if (!flyout.IsOpen) Closed(null, EventArgs.Empty);
+            HoldFor(flyout).ShowAt(anchor);
             return;
         }
         new ButtonAutomationPeer(button).Invoke(); // raises its Click: the same handlers as the button
+    }
+
+    private readonly Dictionary<Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase, FlyoutHold> _flyoutHolds = [];
+    private FlyoutHold HoldFor(Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase flyout)
+    {
+        if (!_flyoutHolds.TryGetValue(flyout, out var hold)) _flyoutHolds[flyout] = hold = new FlyoutHold(_popup, flyout);
+        return hold;
     }
 }
 
