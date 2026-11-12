@@ -130,6 +130,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             e.Handled = true;
         };
         popup.Input.KeyboardAccelerators.Add(shortcut);
+        popup.Input.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden; // no automatic "Ctrl+Shift+F10" tooltip on the box
         AutomationProperties.SetHelpText(popup.Input, Strings.Grip_KeyboardHelp);
         // Handle before the composer's Input.PreviewKeyDown (Enter sends from there).
         popup.Root.PreviewKeyDown += OnKeyboard;
