@@ -101,9 +101,19 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   - Test gaps: renderer honouring `ButtonWidths`; the `LegacyShortcuts` cache; Reset on a newer toolbar.json; reserved combos; Stop
     colliding with a toolbar binding from the Settings side. Not covered by the review: `SettingsPackage` import and export of
     toolbar.json and icons, `PanelSelfTest`, `PopupWindow.xaml` styles.
-- **Store language images:** the zh-Hans and zh-Hant panel sets must be recaptured with the 0.6.3 build (the demo hold was lengthened to
-  8 s; the old sets caught the answer already streaming and clipped a code line), then `scripts/make-store-localized.sh zh-Hans zh-Hant`.
-  Use `hold screen`, run when the owner is away, and look at the images. The other 15 languages and English were reviewed by Flash.
+- **Store images (2026-11-12): all 17 sets are done and reviewed.** The zh-Hans and zh-Hant panels were recaptured with the 0.6.3
+  build; a hydrogen pass over all 102 images (plus my own look at the fixed ones) found: caption wrap and line height (fixed in
+  `store/art/art.html`: French spaces before `: ; ! ?` are non-breaking, Devanagari lines get line-height 1.4), the slash scene
+  showing leftover summary text (the summary demo's 8 s hold keeps running after its shot and streamed into the next scene; fixed:
+  `scripts/make-store-media.sh` takes the summary last), and a stray "Ctrl+Shift+F10" tooltip on the message
+  box (a real app bug from PR #60, fixed there: `KeyboardAcceleratorPlacementMode.Hidden`). The images are in
+  `C:/Users/pmadd/Git/hotline/artifacts/store/<lang>/` (git-ignored); the panel captures are in `artifacts/store/panels/<lang>/`.
+  Trap fixed: composing in another checkout silently made screenshots without the app panel when its `artifacts/store/panels/<lang>/`
+  was missing; `scripts/lib/store-text.py` now stops with a message. **Still open:** the French Settings picture
+  (`fr/screenshot-4.png`) shows the sidebar label "Conversation et histor" clipped: a real app layout issue (the Settings navigation
+  pane clips long labels in some languages); fix the pane (wrap or widen) or shorten the string, then recapture `fr` with
+  `bash scripts/make-store-panels.sh fr` and `bash scripts/make-store-localized.sh fr`. Check the other languages' pane for the same.
+  The "slash" screenshot (`screenshot-3`) shows a finished quick-action answer, not the `/` menu, in every language (same scene).
 - **Interface strings:** all new keys are translated in 16 languages by model (Flash); no native review (see TRANSLATING.md).
 - **Cleanup left on this PC:** agent worktrees and branches (`codex/*`, `agy/*`, under `Git/hotline.worktrees/review-fixes.worktrees`),
   the integration worktree `Git/hotline.worktrees/review-fixes`, and an empty locked folder `Git/hotline.worktrees/handoff-capture`.

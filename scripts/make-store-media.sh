@@ -25,8 +25,8 @@ grab "$work/backdrop.png"
 
 # ---- screenshots ------------------------------------------------------------------------------------------------
 # Seconds after opening each scene to take its screenshot (summary: while the selected-text chip is showing).
-declare -A wait_for=([math]=8 [summary]=3 [slash]=10)
-for scene in math summary slash; do
+declare -A wait_for=([math]=8 [summary]=3 [slash]=3)
+for scene in math slash summary; do # summary last: its 8 s typing hold keeps running after the shot and would stream into the next scene
     open_link "hotline://demo?scene=$scene"; sleep "${wait_for[$scene]}"
     window_rect "Hotline" "$work/panel.rect"
     grab "$work/$scene.png"
