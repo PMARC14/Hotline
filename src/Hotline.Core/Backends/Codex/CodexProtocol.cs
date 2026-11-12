@@ -30,7 +30,7 @@ public static class CodexProtocol
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort))
             args.AddRange(["-c", $"model_reasoning_effort={Toml(effort)}"]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["-c", $"developer_instructions={Toml(systemPrompt.Trim())}"]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries), chatOnly: !inherit);
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, CliArguments.SplitExtra(p.ExtraArgs), chatOnly: !inherit);
         // Chat only: never the user's config.toml (MCP servers, profiles) or rules, whatever "args" say. Before "resume",
         // whose own options these aren't.
         if (!inherit) args.AddRange(["--ignore-user-config", "--ignore-rules"]);

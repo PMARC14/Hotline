@@ -90,6 +90,8 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
 
             if (calls.Count == 0)
             {
+                if (finishReason is null)
+                    yield return ChatDelta.StatusNote(Strings.Api_AnswerCutOff);
                 if (finishReason == "MAX_TOKENS")
                     yield return ChatDelta.StatusNote(L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finishReason));
                 yield break;

@@ -225,6 +225,26 @@ public sealed class ClaudeCodeTests : TempDirTest
     }
 
     [Fact]
+    public async Task Oversized_command_is_rejected_before_start()
+    {
+        var b = New(prompt: _ => new string('x', 33_000));
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.NotConfigured, ex.Kind);
+        Assert.Contains("Claude", ex.Message);
+        Assert.Empty(_factory.Started);
+    }
+
+    [Fact]
+    public async Task Win32_error_206_maps_to_failed_with_command_too_long()
+    {
+        _factory.Create = () => throw new System.ComponentModel.Win32Exception(206);
+        var b = New();
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.Failed, ex.Kind);
+        Assert.Contains("Claude", ex.Message);
+    }
+
+    [Fact]
     public void Custom_args_replace_the_mode_flags_but_not_the_protocol_or_safety()
     {
         var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, Args = ["--tools", "Read", "--mcp-config", @"C:\mcp.json", "--dangerously-skip-permissions"] }, "x").ToList();

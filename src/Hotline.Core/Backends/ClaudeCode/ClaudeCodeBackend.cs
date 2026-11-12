@@ -141,7 +141,12 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
         Directory.CreateDirectory(cwd);
         var args = ClaudeCodeProtocol.BuildArgs(profile, prompt).ToList();
         if (resume is not null) args.AddRange(["--resume", resume.Id]);
-        _process = processes.Start(exe, args, cwd);
+        CliCommandLine.RequireFits(exe, args, profile.Name);
+        try { _process = processes.Start(exe, args, cwd); }
+        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 206)
+        {
+            throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_CommandTooLong, profile.Name), ex);
+        }
         _startedPrompt = prompt;
         _cwd = cwd;
         _sessionId = null;

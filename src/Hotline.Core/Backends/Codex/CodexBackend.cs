@@ -69,10 +69,15 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         attempt:
             var text = CodexProtocol.ComposeText(user.Text, texts, resume is null ? prior : []);
             var args = CodexProtocol.BuildArgs(profile, prompt, resume, images);
+            CliCommandLine.RequireFits(exe, args, profile.Name);
 
             await StopAsync();
             ILineProcess process;
             try { process = _process = processes.Start(exe, args, cwd); }
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 206)
+            {
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_CommandTooLong, profile.Name), ex);
+            }
             catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
             {
                 throw new BackendException(BackendErrorKind.NotInstalled, L.F(Strings.Codex_StartFailed, exe, ex.Message), ex);
