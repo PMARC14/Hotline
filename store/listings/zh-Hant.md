@@ -82,11 +82,11 @@ Hotline AI 是一款獨立應用程式，與 Microsoft、Anthropic、Google 或 
 
 ## 螢幕擷取畫面說明
 
-1. 按下 Copilot 鍵:隨意提問,回答即時串流呈現。
+1. 按下 Copilot 鍵：隨意提問，回答即時串流呈現。
 2. 選取的文字會隨問題一起傳送。
-3. 用 / 快速動作:翻譯、摘要、修正、解釋。
-4. 使用你已有的 AI,一切依你的方式設定。
+3. 用 / 快速動作：翻譯、摘要、修正、解釋。
+4. 使用你已有的 AI，一切依你的方式設定。
 
 ## 搜尋詞彙
 
-AI 聊天, Copilot 鍵, Claude, Gemini, AI 助理, LLM, 本機 AI
+AI 聊天助理, Copilot 鍵快捷鍵, Claude Code 整合, Codex Gemini CLI, Anthropic OpenAI API, 相容 OpenRouter, 本機 LLM llama.cpp

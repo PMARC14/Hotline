@@ -89,4 +89,4 @@ Settings में बटन पंक्तियों को व्यवस�
 
 ## खोज शब्द
 
-AI चैट, Copilot कुंजी, Claude, Gemini, AI सहायक, LLM, स्थानीय AI
+AI चैट सहायक, Copilot कुंजी शॉर्टकट, Claude Code एकीकरण, Codex Gemini CLI, Anthropic OpenAI API, OpenRouter संगत, स्थानीय LLM llama.cpp
