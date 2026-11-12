@@ -8,7 +8,7 @@
 #      AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID (an Entra app with a GitHub OIDC federated
 #      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored). A normal release.
 #   2. A .pfx — secrets HOTLINE_SIGNING_PFX_BASE64 / HOTLINE_SIGNING_PFX_PASSWORD (subject = manifest Publisher).
-#   3. Neither: a throwaway self-signed certificate (users trust Hotline.cer first; the release notes say how).
+#   3. Neither: publishing fails; a throwaway certificate is allowed only for workflow_dispatch with publish off.
 name: Release
 
 on:
@@ -131,6 +131,8 @@ jobs:
         env:
           PFX_BASE64: ${{ secrets.HOTLINE_SIGNING_PFX_BASE64 }}
           PFX_PASSWORD: ${{ secrets.HOTLINE_SIGNING_PFX_PASSWORD }}
+          EVENT: ${{ github.event_name }}
+          PUBLISH: ${{ inputs.publish }}
         run: |
           mkdir -p certs
           if [ -n "$PFX_BASE64" ]; then
@@ -138,6 +140,9 @@ jobs:
             password=$PFX_PASSWORD
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
           else
+            if [ "$EVENT" != workflow_dispatch ] || [ "$PUBLISH" != false ]; then
+              echo "::error::Publishing requires a configured signing identity."; exit 1
+            fi
             # No signing secrets yet: a throwaway certificate with the manifest's Publisher, for test builds.
             scripts/dev-cert.sh --dir certs --no-trust
             mv certs/hotline-dev.pfx certs/release.pfx

@@ -67,6 +67,19 @@ function Send-Fast([int]$w) { [SmokeWin]::PostMessage([SmokeWin]::Popup([uint32]
 
 $originalSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
 try {
+    # Enable diagnostics.testLinks (gates hotline://selftest)
+    $json = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { '' }
+    if ($json -match '(?s)"diagnostics"\s*:\s*\{[^}]*?"testLinks"\s*:\s*(true|false)') {
+        $json = [regex]::Replace($json, '(?s)("diagnostics"\s*:\s*\{[^}]*?"testLinks"\s*:\s*)(?:true|false)', '${1}true')
+    } elseif ($json -match '"diagnostics"\s*:\s*\{') {
+        $json = [regex]::Replace($json, '("diagnostics"\s*:\s*\{)', "`$1`r`n    `"testLinks`": true,")
+    } elseif ($json -match '^\s*\{') {
+        $json = [regex]::Replace($json.TrimEnd(), '(?s)\}\s*$', ",`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}")
+    } else {
+        $json = "{`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}"
+    }
+    [IO.File]::WriteAllText($settingsFile, $json)
+
     # 1. Launch
     Restart-Hotline
     Check 'launches' ([bool](Get-Process Hotline -ErrorAction SilentlyContinue))
@@ -166,6 +179,7 @@ try {
 finally {
     Get-Process Hotline -ErrorAction SilentlyContinue | Stop-Process -Force
     if ($null -ne $originalSettings) { [IO.File]::WriteAllText($settingsFile, $originalSettings) }
+    else { Remove-Item $settingsFile -ErrorAction SilentlyContinue }
     Remove-Item "$settingsFile.bad" -ErrorAction SilentlyContinue
     Start-Process 'hotline://tray'   # leave Hotline running in the tray, panel closed
 }

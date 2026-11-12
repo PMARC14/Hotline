@@ -20,10 +20,8 @@ sparse MSIX from a classic installer, both signed with a certificate the PC trus
     (`CN=pmarc14 Hotline Dev`; the owner keeps `certs/release/hotline-release.pfx` and its password, git-ignored, and a
     backup). Users trust `Hotline.cer` once; `.appinstaller` updates then work across releases. To replace it, set the
     two secrets again (every user then trusts the new `Hotline.cer`).
-  - Without them: signed with a throwaway self-signed certificate, still published as a normal release (since
-    v0.2.24; earlier ones were pre-releases) with notes on trusting `Hotline.cer`. Each such release has a new
-    certificate, so users trust each one's `Hotline.cer` and `.appinstaller` updates don't carry across releases;
-    automatic updates need one stable certificate (a `.pfx` above, or Azure Artifact Signing).
+  - Without a configured signing identity: publishing fails. Throwaway certificates are
+    allowed only for workflow_dispatch with Publish off; files remain workflow artifacts.
   - Assets: the `.msixbundle` (x64 and ARM64; Windows installs the right one), `Hotline.cer` and `Hotline.appinstaller` (`scripts/make-appinstaller.sh`).
 - **winget:** covered by the Store. Its `msstore` source lists every Store app, so `winget install 9PMW5CR6G3BC`
   installs Hotline AI and `winget upgrade` updates it, with nothing to submit. `winget show` lists its version as
@@ -61,10 +59,10 @@ scripts/build-msix.sh --store --arch all --version 0.6.0.0 \
 
 Upload the `.msixbundle` it prints (x64 + ARM64; the Store gives each PC the right one) on the submission's **Packages** page.
 
-Store images in every language: install the build to capture (`scripts/install.sh`), run `scripts/make-store-media.sh --no-video`
-(shows the panel on screen for about 40 seconds: don't use the PC), then `scripts/make-store-localized.sh` (headless). Pictures for
-each language land in `artifacts/store/<lang>/`; upload them on that language's listing. Captions come from
-`store/listings/<lang>.md`, poster/box text from `store/art/taglines.json`.
+Store images in every language: install the build to capture (`scripts/install.sh`), run `scripts/make-store-panels.sh`
+(captures each language's panels; turns on `diagnostics.testLinks` and sets the language temporarily), then
+`scripts/make-store-localized.sh` (headless). Pictures for each language land in `artifacts/store/<lang>/`; upload them
+on that language's listing. Captions come from `store/listings/<lang>.md`, poster/box text from `store/art/taglines.json`.
 `--display-name` must be a name reserved for the app; the panel and tray still say "Hotline".
 
 ### Store workflow (`.github/workflows/store.yml`)

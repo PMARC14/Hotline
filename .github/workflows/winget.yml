@@ -24,9 +24,13 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
           GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
           if (-not $env:WINGET_TOKEN) { throw 'Secret WINGET_TOKEN is not set (see the comment at the top of this workflow).' }
-          $tag = if ('${{ github.event_name }}' -eq 'release') { '${{ github.event.release.tag_name }}' } else { '${{ inputs.tag }}' }
+          $tag = if ($env:EVENT -eq 'release') { $env:RELEASE_TAG } else { $env:INPUT_TAG }
+          if ($tag -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+$') { throw 'Invalid release tag' }
           $version = $tag.TrimStart('v')
           $msix = gh release view $tag --repo '${{ github.repository }}' --json assets --jq '.assets[] | select(.name | endswith(".msixbundle")) | .url' # x64 + ARM64 in one file
           if (-not $msix) { throw "Release $tag has no .msixbundle" }
