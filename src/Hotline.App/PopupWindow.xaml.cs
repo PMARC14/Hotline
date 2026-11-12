@@ -25,6 +25,9 @@ public sealed partial class PopupWindow : Window
     private readonly FileLog _log;
     private readonly ForegroundWindowTracker _foreground;
     private PanelLayoutSettings? _lastLayout;
+    private readonly PanelDisplayObserver _displayObserver;
+    private bool _displayRecoveryHeld;
+    private nint _displayMonitor;
     private int _modal;
     private RectI _bar;
     private RectI _work;
@@ -73,6 +76,8 @@ public sealed partial class PopupWindow : Window
         if (showDebugStatus)
             StatusText.Visibility = Visibility.Visible;
         ApplyAppearance();
+        _displayObserver = new PanelDisplayObserver(Root, DispatcherQueue, RecoverDisplay);
+        Closed += (_, _) => _displayObserver.Dispose();
 
         Activated += OnActivated;
         _scrollbarHide = DispatcherQueue.CreateTimer();
@@ -302,6 +307,7 @@ public sealed partial class PopupWindow : Window
         PlayOpenClose?.Invoke(false);
         if (!Pinned || _forgetOnHide) _session = null; // moved but not pinned (or forgotten): the next open uses the default
         _forgetOnHide = false;
+        _displayRecoveryHeld = false;
         _placementHeld = false;
         _resizeHeld = false;
         AppWindow.Hide();
@@ -380,6 +386,7 @@ public sealed partial class PopupWindow : Window
                 _resizeHolds--;
                 if (_resizeHolds != 0) return;
                 if (!AppWindow.IsVisible) { _placementHeld = false; _resizeHeld = false; return; }
+                if (_displayRecoveryHeld) RecoverDisplay();
                 if (_placementHeld) PlaceOnActiveMonitor();
                 else if (_resizeHeld) ApplyHeight();
             }
@@ -540,11 +547,34 @@ public sealed partial class PopupWindow : Window
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
     {
         if (IsComposing || (uint)e.Key == 0xE5 || (uint)e.OriginalKey == 0xE5) return;
-        if (e.Key == VirtualKey.Escape)
+        if (e.Key == VirtualKey.Escape && !e.KeyStatus.WasKeyDown)
         {
             HidePopup();
             e.Handled = true;
         }
+    }
+
+    private void RecoverDisplay()
+    {
+        if (!AppWindow.IsVisible || _offscreen || _bar.Width == 0) { _displayRecoveryHeld = false; return; }
+        if (_resizeHolds > 0 || _dragging) { _displayRecoveryHeld = true; return; }
+        _displayRecoveryHeld = false;
+        var monitor = Native.MonitorFromWindow(Hwnd, Native.MONITOR_DEFAULTTONEAREST);
+        var area = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Nearest);
+        if (area is null) return;
+        var wa = area.WorkArea;
+        var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
+        var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
+        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001) return;
+        _displayMonitor = monitor;
+        StopAnimation();
+        var result = PanelDisplayRecovery.Calculate(_work, work, _scale, scale, WindowRect, _bar, _fixedPx, _growUp);
+        (_work, _scale, _bar, _fixedPx) = (work, scale, result.Bar, result.FixedHeight);
+        _downTop = _growUp ? null : result.Rect.Y;
+        _currentRect = _targetRect = result.Rect;
+        MoveTo(result.Rect);
+        if (_session is not null) _session = new SessionSpot(_bar, _work, _scale, _fixedPx, _fixedWidth);
+        ApplyHeight();
     }
 
     private RectI _targetRect;
@@ -749,6 +779,8 @@ public sealed partial class PopupWindow : Window
         }
         _session = new SessionSpot(_bar, _work, _scale, _fixedPx, _fixedWidth);
         _forgetOnHide = false; // moved again: this is the spot now
+        _displayMonitor = monitor;
+        _displayRecoveryHeld = false; // drag completion rebuilt geometry using the surviving display
         ApplyHeight(force: true);
     }
 
@@ -824,6 +856,7 @@ public sealed partial class PopupWindow : Window
             ChooseDirection();
             _log.Info($"place: pinned spot {_bar} on {still.Device} scale={still.Scale} up={_growUp}");
             ApplyHeight(force: true);
+            _displayMonitor = Native.MonitorFromWindow(Hwnd, Native.MONITOR_DEFAULTTONEAREST);
             return;
         }
         _fixedPx = null;
@@ -835,6 +868,7 @@ public sealed partial class PopupWindow : Window
         var widthPx = _settings.Width ?? PopupGeometry.RelativeWidthPx(wa.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
         var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.Height, scale, _settings.Anchor);
         (_bar, _work, _scale) = (r, work, scale);
+        _displayMonitor = monitor;
         ChooseDirection();
         _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
         ApplyHeight(force: true);

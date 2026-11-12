@@ -192,20 +192,7 @@ public sealed class ToolsTests : TempDirTest
 
     // ---- tool host -----------------------------------------------------------------------------
 
-    private sealed class FakeSession(params (string Name, bool ReadOnly)[] tools) : IMcpSession
-    {
-        public List<string> Called { get; } = [];
-        public Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct) =>
-            Task.FromResult<IReadOnlyList<McpToolInfo>>(tools.Select(t => new McpToolInfo(t.Name, $"does {t.Name}", JsonDocument.Parse("""{"type":"object"}""").RootElement, t.ReadOnly)).ToList());
-        public Task<ToolResult> CallAsync(string tool, JsonElement args, CancellationToken ct)
-        {
-            Called.Add(tool);
-            return Task.FromResult(new ToolResult($"{tool} done", false));
-        }
-        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
-    }
-
-    private McpToolHost Host(FakeSession session, Func<ToolCallRequest, CancellationToken, Task<ToolDecision>> approve, string mcpJson)
+    private McpToolHost Host(FakeMcpSession session, Func<ToolCallRequest, CancellationToken, Task<ToolDecision>> approve, string mcpJson)
     {
         WriteMcp(mcpJson);
         return new McpToolHost(() => McpConfig.Load(McpPath), () => [], (_, _) => Task.FromResult<IMcpSession>(session), approve, new FileLog(Path.Combine(_dir, "h.log")), McpPath);
@@ -218,7 +205,7 @@ public sealed class ToolsTests : TempDirTest
     [InlineData(false, 1, true, "declined", 0)]   // others ask; deny is an error result, not a call
     public async Task Tools_ask_unless_read_only_and_deny_is_an_error_result_not_a_call(bool readOnly, int expectedAsks, bool expectError, string expectedText, int expectedCalls)
     {
-        var session = new FakeSession(("tool", readOnly));
+        var session = new FakeMcpSession(("tool", readOnly));
         var asked = 0;
         var host = Host(session, (_, _) => { asked++; return Task.FromResult(ToolDecision.Deny); }, OneServer);
         var tools = await host.GetToolsAsync(default);
@@ -232,7 +219,7 @@ public sealed class ToolsTests : TempDirTest
     [Fact]
     public async Task Allow_always_is_remembered_in_mcp_json()
     {
-        var session = new FakeSession(("write", false));
+        var session = new FakeMcpSession(("write", false));
         var asked = 0;
         var host = Host(session, (_, _) => { asked++; return Task.FromResult(ToolDecision.AllowAlways); }, OneServer);
         var tools = await host.GetToolsAsync(default);
@@ -246,7 +233,7 @@ public sealed class ToolsTests : TempDirTest
     public async Task Denied_tools_are_not_offered_and_a_failing_server_does_not_break_others()
     {
         WriteMcp("""{ "mcpServers": { "good": { "command": "x" }, "bad": { "command": "y" } }, "approvals": { "good/secret": "deny" } }""");
-        var good = new FakeSession(("read", true), ("secret", true));
+        var good = new FakeMcpSession(("read", true), ("secret", true));
         var host = new McpToolHost(() => McpConfig.Load(McpPath), () => [],
             (server, _) => server.Name == "bad" ? throw new InvalidOperationException("won't start") : Task.FromResult<IMcpSession>(good),
             (_, _) => Task.FromResult(ToolDecision.Deny), new FileLog(Path.Combine(_dir, "h.log")));
@@ -258,7 +245,7 @@ public sealed class ToolsTests : TempDirTest
     [Fact]
     public async Task Unknown_tool_name_is_an_error_result()
     {
-        var host = Host(new FakeSession(("read", true)), (_, _) => Task.FromResult(ToolDecision.Deny), OneServer);
+        var host = Host(new FakeMcpSession(("read", true)), (_, _) => Task.FromResult(ToolDecision.Deny), OneServer);
         await host.GetToolsAsync(default);
         var stranger = new ToolSpec("x__nope", "x", "nope", "", JsonDocument.Parse("{}").RootElement, true);
         Assert.True((await host.CallAsync(stranger, JsonDocument.Parse("{}").RootElement, default)).IsError);

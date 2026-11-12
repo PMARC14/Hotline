@@ -1,6 +1,39 @@
+using System.Text.Json;
 using Hotline.Core.Chat;
+using Hotline.Core.Tools;
 
 namespace Hotline.Core.Tests;
+
+/// <summary>One scripted MCP session fake for tool tests: tools it lists, call tracking, failure injection, delays and dynamic read-only flags.</summary>
+public sealed class FakeMcpSession(params (string Name, bool ReadOnly)[] tools) : IMcpSession
+{
+    public int Lists;
+    public int Calls => Called.Count;
+    public List<string> Called { get; } = [];
+    public bool Disposed;
+    public bool Throw;
+    public TimeSpan ListDelay;
+    public Func<bool>? ReadOnlyNow;
+
+    public async Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct)
+    {
+        Lists++;
+        if (ListDelay > TimeSpan.Zero) await Task.Delay(ListDelay, ct);
+        return tools.Select(t => new McpToolInfo(t.Name, $"does {t.Name}", JsonDocument.Parse("""{"type":"object"}""").RootElement, ReadOnlyNow?.Invoke() ?? t.ReadOnly)).ToList();
+    }
+
+    public Task<ToolResult> CallAsync(string tool, JsonElement args, CancellationToken ct)
+    {
+        Called.Add(tool);
+        return Throw ? throw new IOException("pipe closed") : Task.FromResult(new ToolResult($"{tool} done", false));
+    }
+
+    public ValueTask DisposeAsync()
+    {
+        Disposed = true;
+        return ValueTask.CompletedTask;
+    }
+}
 
 /// <summary>Shared helpers for the backend tests: a recording HTTP fake, a stream collector and message factories.</summary>
 public sealed class RecordingHandler : HttpMessageHandler

@@ -1,6 +1,9 @@
+using Hotline.App.Interop;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Microsoft.UI.Dispatching;
+using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Media.SpeechRecognition;
 using Windows.System;
@@ -23,7 +26,12 @@ internal sealed class VoiceInput
     private readonly FileLog _log;
     private readonly VoiceSession _session;
     private WindowsSpeech? _speech;
+    private Microsoft.UI.Dispatching.DispatcherQueueTimer? _silenceTimer;
+    private long _lastSpeechTicks;
     private bool _holding;
+    private bool _panelActive = true;
+
+    private VoiceMode CurrentMode => _holding ? VoiceMode.Hold : VoiceMode.Tap;
 
     /// <summary>Dictation finished with "send" (chat.voiceAutoSend) and something was said.</summary>
     public event Action? SendRequested;
@@ -41,9 +49,55 @@ internal sealed class VoiceInput
 
     public void Initialize()
     {
-        _popup.Hidden += () => { if (Active) _tasks.Run("voice stop (hidden)", () => _session.StopAsync(send: false)); };
+        _popup.Hidden += () =>
+        {
+            _panelActive = false;
+            _silenceTimer?.Stop();
+            if (Active) _tasks.Run("voice stop (hidden)", () => _session.StopAsync(send: false));
+        };
+        _popup.Shown += () => _panelActive = true;
+        _popup.Activated += (_, e) =>
+        {
+            if (e.WindowActivationState == WindowActivationState.Deactivated)
+            {
+                var fg = Native.GetForegroundWindow();
+                if (Native.ClassNameOf(fg) == "CopilotKeyPressFocusFrame") return;
+                _panelActive = false;
+                if (Active)
+                {
+                    var seconds = (Environment.TickCount64 - _lastSpeechTicks) / 1000.0;
+                    if (VoiceStopPolicy.ShouldStop(CurrentMode, seconds, panelActive: false))
+                    {
+                        _log.Info("voice: panel deactivated in tap mode: stopping");
+                        _silenceTimer?.Stop();
+                        _tasks.Run("voice stop (deactivated)", () => _session.StopAsync(send: false));
+                    }
+                }
+            }
+            else
+            {
+                _panelActive = true;
+            }
+        };
+
+        _silenceTimer = _popup.DispatcherQueue.CreateTimer();
+        _silenceTimer.Interval = TimeSpan.FromSeconds(1);
+        _silenceTimer.Tick += (_, _) => OnSilenceTick();
+
         var previous = _composer.KeyFilter;
         _composer.KeyFilter = key => HandleKey(key) || previous?.Invoke(key) == true;
+    }
+
+    private void OnSilenceTick()
+    {
+        if (!Active || _session.State != VoiceState.Listening) return;
+        var seconds = (Environment.TickCount64 - _lastSpeechTicks) / 1000.0;
+        if (VoiceStopPolicy.ShouldStop(CurrentMode, seconds, _panelActive))
+        {
+            _log.Info($"voice: tap mode silence timeout ({seconds:F1}s): stopping");
+            _silenceTimer?.Stop();
+            _tasks.Run("voice stop (silence timeout)", () => _session.StopAsync(send: false));
+        }
     }
 
     public void Handle(VoiceCommand command)
@@ -75,6 +129,17 @@ internal sealed class VoiceInput
         _notices.ShowTagged(Tag, Strings.Voice_Starting, hint, InfoBarSeverity.Informational);
         await _session.StartAsync(_composer.Text);
         if (_session.State != VoiceState.Listening) return;
+        _lastSpeechTicks = Environment.TickCount64;
+        if (CurrentMode == VoiceMode.Tap)
+        {
+            if (VoiceStopPolicy.ShouldStop(CurrentMode, 0.0, _panelActive))
+            {
+                _log.Info("voice: panel deactivated before listening started: stopping");
+                _tasks.Run("voice stop (deactivated)", () => _session.StopAsync(send: false));
+                return;
+            }
+            _silenceTimer?.Start();
+        }
         _notices.ShowTagged(Tag, Strings.Voice_Listening, hint, InfoBarSeverity.Informational); // now words are heard
         _log.Info("voice: listening");
     }
@@ -90,8 +155,17 @@ internal sealed class VoiceInput
             _notices.ShowTagged(Tag, null, problem!, InfoBarSeverity.Warning, closable: true);
             return null;
         }
-        speech.Hypothesis += _session.OnHypothesis;
-        speech.Result += _session.OnResult;
+        speech.Hypothesis += text =>
+        {
+            _lastSpeechTicks = Environment.TickCount64;
+            _session.OnHypothesis(text);
+        };
+        speech.Result += (text, rejected) =>
+        {
+            if (!rejected && !string.IsNullOrWhiteSpace(text))
+                _lastSpeechTicks = Environment.TickCount64;
+            _session.OnResult(text, rejected);
+        };
         speech.Ended += status =>
         {
             if (_session.State != VoiceState.Listening) return; // our own stop or cancel
@@ -135,6 +209,7 @@ internal sealed class VoiceInput
     /// <summary>Back to typing: the box is editable and the voice bar is gone (warnings are shown after this).</summary>
     private void Reset()
     {
+        _silenceTimer?.Stop();
         _composer.IsReadOnly = false;
         _notices.Remove(Tag);
     }

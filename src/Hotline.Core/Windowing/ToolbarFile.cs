@@ -95,9 +95,22 @@ public static class ToolbarFile
     /// process last wrote there is first copied to <c>toolbar.json.&lt;yyyyMMdd-HHmmss&gt;.bak</c> (see <see cref="BackupFiles.CopyStamped"/>:
     /// never over an older copy, the newest 10 kept) unless <paramref name="keepPrevious"/> is false. If that copy can't be made nothing is
     /// replaced and an <see cref="IOException"/> says why (its message names the reason, for the notice).</summary>
-    public static void Save(string path, ToolbarModel model, bool keepPrevious = true)
+    public static string? Save(string path, ToolbarModel model, bool keepPrevious = true)
     {
         path = Path.GetFullPath(path);
+        if (File.Exists(path))
+        {
+            try
+            {
+                var text = File.ReadAllText(path);
+                var root = ToolbarModel.Parse(text, []);
+                if (root is JsonObject obj && obj["version"] is JsonValue v && v.TryGetValue<int>(out var fileVer) && fileVer > ToolbarModel.CurrentVersion)
+                {
+                    return L.F(Strings.Toolbar_NewerVersion, fileVer);
+                }
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { }
+        }
         if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder);
         var bytes = new UTF8Encoding(false).GetBytes(model.ToJson());
         if (keepPrevious && File.Exists(path) && !IsOurLastWrite(path))
@@ -110,6 +123,7 @@ public static class ToolbarFile
         }
         DurableFile.WriteBytes(path, bytes);
         lock (LastWritten) LastWritten[path] = bytes;
+        return null;
     }
 
     private static bool IsOurLastWrite(string path)
@@ -121,7 +135,7 @@ public static class ToolbarFile
 
     private static bool TrySave(string path, ToolbarModel model)
     {
-        try { Save(path, model, keepPrevious: false); return true; } // only used for a missing file: nothing to keep
+        try { return Save(path, model, keepPrevious: false) is null; } // only used for a missing file: nothing to keep
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
     }
 }

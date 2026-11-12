@@ -36,7 +36,12 @@ public sealed partial class SettingsWindow
             {
                 if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
                 var next = ToolbarEditor.SetShortcut(model, id, value);
-                ToolbarFile.Save(ToolbarPath, next);
+                var problem = ToolbarFile.Save(ToolbarPath, next);
+                if (problem is not null)
+                {
+                    Fail("saving toolbar shortcut failed", new IOException(problem));
+                    return;
+                }
                 model = next;
                 stamp = ToolbarFile.Fingerprint(ToolbarPath);
                 _settings.Current.Chat.Toolbar = next;
@@ -92,7 +97,8 @@ public sealed partial class SettingsWindow
         void Save(ToolbarModel model)
         {
             if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-            ToolbarFile.Save(ToolbarPath, model);
+            var problem = ToolbarFile.Save(ToolbarPath, model);
+            if (problem is not null) throw new IOException(problem);
             stamp = ToolbarFile.Fingerprint(ToolbarPath);
         }
         ToolbarModel? Reload()
@@ -174,7 +180,8 @@ public sealed partial class SettingsWindow
             try
             {
                 Hotline.Core.Settings.FileArchive.KeepOld(ToolbarPath); // the user's file stays as toolbar.json.old (or .old2…)
-                ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+                if (problem is not null) throw new IOException(problem);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
             ShowPage(_currentPage);

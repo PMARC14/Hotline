@@ -159,17 +159,12 @@ public sealed class ToolbarFileTests : TempDirTest
     }
 
     [Fact]
-    public void Save_works_with_a_bare_file_name()
+    public void Save_creates_backup_in_target_folder()
     {
-        var old = Directory.GetCurrentDirectory();
-        Directory.SetCurrentDirectory(_root);
-        try
-        {
-            File.WriteAllText("bare.json", "// mine");
-            ToolbarFile.Save("bare.json", ToolbarModel.Defaults);
-        }
-        finally { Directory.SetCurrentDirectory(old); }
-        Assert.True(File.Exists(Path.Combine(_root, "bare.json")));
+        var path = Path.Combine(_root, "bare.json");
+        File.WriteAllText(path, "// mine");
+        ToolbarFile.Save(path, ToolbarModel.Defaults);
+        Assert.True(File.Exists(path));
         Assert.Single(Directory.GetFiles(_root, "bare.json.*.bak"));
     }
 

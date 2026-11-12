@@ -105,6 +105,8 @@ settings.json is schema version 15. Upgrading a file below 14 converts widths fr
 notice; check Settings > Window). A lower version alone does not rewrite the file; a missing option or a Settings save does. An old
 `activation.copilotKey` and `window.layout` are dropped then ([copilot-key.md](copilot-key.md)).
 
+**Files from a newer Hotline.** When `settings.json` has a `schemaVersion` greater than 15, Hotline reads it leniently so settings remain usable in memory, but refuses to overwrite the file on save (connection files continue to save separately). Update Hotline, or edit the file by hand.
+
 **Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and
 that is not exactly what Hotline itself last wrote, it copies it to `<file>.<time>.bak` (never over an older copy; the newest 10 per
 file are kept). If the copy can't be made (disk full, locked) that file is left as it is and the panel and Settings › Advanced list
@@ -373,6 +375,8 @@ so is a version 2 file with warnings; Hotline never rewrites a version 2 file by
 warning and the file is left as it is. To change the bar, write the version 2 format or delete the file. What was ignored is listed in
 the panel, under Settings › About › This PC and in the log. Saving from Settings writes the corrected file and keeps the one it replaces
 as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
+
+**Files from a newer Hotline.** When `toolbar.json` has a `version` greater than 2, Hotline reads it leniently with a warning, but refuses to overwrite the file on save. Update Hotline, or edit the file by hand.
 
 **Defaults.** Settings › Advanced › **Reset settings** restores `toolbar.json` too (see *Switching settings* above); `.defaults\toolbar.json` is
 rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 5); pin and
