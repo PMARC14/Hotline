@@ -99,27 +99,17 @@ public static class ToolbarFile
     {
         path = Path.GetFullPath(path);
         if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder);
-        var tmp = path + ".tmp";
         var bytes = new UTF8Encoding(false).GetBytes(model.ToJson());
-        try
+        if (keepPrevious && File.Exists(path) && !IsOurLastWrite(path))
         {
-            if (keepPrevious && File.Exists(path) && !IsOurLastWrite(path))
+            try { BackupFiles.CopyStamped(path); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
             {
-                try { BackupFiles.CopyStamped(path); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-                {
-                    throw new IOException(L.F(Strings.Bar_SaveBackupFailed, ex.Message), ex);
-                }
+                throw new IOException(L.F(Strings.Bar_SaveBackupFailed, ex.Message), ex);
             }
-            File.WriteAllBytes(tmp, bytes);
-            File.Move(tmp, path, overwrite: true);
-            lock (LastWritten) LastWritten[path] = bytes;
         }
-        catch
-        {
-            try { File.Delete(tmp); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* nothing more to do */ }
-            throw;
-        }
+        DurableFile.WriteBytes(path, bytes);
+        lock (LastWritten) LastWritten[path] = bytes;
     }
 
     private static bool IsOurLastWrite(string path)

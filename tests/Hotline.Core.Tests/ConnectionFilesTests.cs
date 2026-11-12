@@ -5,6 +5,21 @@ namespace Hotline.Core.Tests;
 /// <summary>Each connection lives in ~/.hotline/connections/&lt;id&gt;.json; settings.json holds order and default.</summary>
 public sealed class ConnectionFilesTests : TempDirTest
 {
+    [Fact]
+    public void Failed_connection_migration_preserves_inline_list_on_retry()
+    {
+        Directory.CreateDirectory(Conn("b"));
+        const string original = """{"chat":{"backends":[{"id":"a","type":"local"},{"id":"b","type":"local"}]}}""";
+        File.WriteAllText(SettingsFile, original);
+        var store = new SettingsStore(_dir);
+        var settings = store.Load();
+        Assert.Equal(original, File.ReadAllText(SettingsFile));
+        Assert.NotEmpty(store.WriteProblems);
+        store.Save(settings);
+        Assert.Equal(original, File.ReadAllText(SettingsFile));
+        Assert.NotEmpty(store.WriteProblems);
+        Assert.Equal(2, new SettingsStore(_dir).Load().Chat.Backends.Count);
+    }
 
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private string SettingsFile => Path.Combine(_dir, SettingsStore.FileName);

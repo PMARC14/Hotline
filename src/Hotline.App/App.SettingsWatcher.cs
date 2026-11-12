@@ -40,6 +40,11 @@ public partial class App
             _settingsWatcher.Created += (_, e) => Kick(e.FullPath);
             _settingsWatcher.Deleted += (_, e) => Kick(e.FullPath);
             _settingsWatcher.Renamed += (_, e) => { Kick(e.FullPath); Kick(e.OldFullPath); };
+            _settingsWatcher.Error += (_, e) =>
+            {
+                _log?.Error("settings watcher failed", e.GetException());
+                _popup.DispatcherQueue.TryEnqueue(() => { timer.Stop(); timer.Start(); });
+            };
             _settingsWatcher.EnableRaisingEvents = true;
         }
         catch (Exception ex) when (ex is IOException or ArgumentException) { _log?.Error("can't watch settings.json", ex); }

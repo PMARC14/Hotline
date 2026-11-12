@@ -90,7 +90,13 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         Directory.CreateDirectory(directory);
         var entry = new Entry(m.Id, m.Role, m.Text, m.At, m.BackendId,
             m.Attachments.Select(a => new AttachmentInfo(a.Name, a.Kind, a.MimeType)).ToList());
-        File.AppendAllText(PathFor(conversationId), JsonSerializer.Serialize(entry, Json) + "\n");
+        using var stream = new FileStream(PathFor(conversationId), FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.Read);
+        if (stream.Length > 0)
+        {
+            stream.Position = stream.Length - 1;
+            if (stream.ReadByte() != '\n') stream.WriteByte((byte)'\n');
+        }
+        stream.Write(System.Text.Encoding.UTF8.GetBytes(JsonSerializer.Serialize(entry, Json) + "\n"));
     }
 
     public IReadOnlyList<Entry> Load(string conversationId)
@@ -121,17 +127,7 @@ public sealed class HistoryStore(string directory, TimeProvider clock)
         if (!HistoryIds.IsSafe(conversationId)) return;
         Directory.CreateDirectory(directory);
         var path = MetaPathFor(conversationId);
-        var temp = path + "." + Guid.NewGuid().ToString("N") + ".tmp";
-        try
-        {
-            File.WriteAllText(temp, JsonSerializer.Serialize(meta, Json));
-            File.Move(temp, path, overwrite: true);
-        }
-        finally
-        {
-            try { File.Delete(temp); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-        }
+        DurableFile.WriteText(path, JsonSerializer.Serialize(meta, Json));
     }
 
     public Meta? LoadMeta(string conversationId)

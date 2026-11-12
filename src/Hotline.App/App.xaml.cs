@@ -144,7 +144,7 @@ public partial class App : Application
         var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
             () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow)), // Update may Reload: UI thread
+            () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow, UpdateSource.Automatic)), // Update may Reload: UI thread
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
                 _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
@@ -172,7 +172,7 @@ public partial class App : Application
         };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
         {
-            UpdateSettings = change => _settingsService!.Update(change),
+            UpdateSettings = change => _settingsService!.Update(change, UpdateSource.Automatic),
         };
         _popup.BeforeShow = foreground =>
         {

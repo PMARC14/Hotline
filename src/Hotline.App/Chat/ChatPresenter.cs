@@ -121,8 +121,11 @@ internal sealed class ChatPresenter
             {
                 var (anchor, width, chat) = _popup.CurrentSpot();
                 _updateSettings?.Invoke(s => { s.Window.Anchor = anchor; s.Window.Width = width; s.Window.ChatHeight = chat; });
-                _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
-                Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                if (_store.SettingsError is null && _store.WriteProblems.Count == 0)
+                {
+                    _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
+                    Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                }
             },
         };
         _grips.Initialize();

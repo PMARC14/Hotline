@@ -37,11 +37,11 @@ public sealed class BrokenFilesTests : TempDirTest
     }
 
     [Theory]
-    [InlineData("""{ "mcpServers": [], "approvals": [] }""")]
-    [InlineData("""{ "mcpServers": "x", "approvals": 5 }""")]
-    [InlineData("""{ "mcpServers": null, "approvals": null }""")]
+    [InlineData("""{ "mcpServers": [] }""")]
+    [InlineData("""{ "mcpServers": "x", "approvals": {} }""")]
+    [InlineData("""{ "mcpServers": null }""")]
     [InlineData("{}")]
-    public void Wrong_kinds_for_the_two_sections_give_an_empty_but_valid_config(string json)
+    public void Wrong_server_kinds_with_missing_or_object_approvals_give_an_empty_valid_config(string json)
     {
         var config = McpConfig.Parse(json);
         Assert.Empty(config.Servers);

@@ -341,8 +341,12 @@ public sealed class ToolHostLifecycleTests : TempDirTest
         Assert.Equal(3, config.Warnings.Count);
     }
 
-    [Fact]
-    public async Task An_unreadable_mcp_json_keeps_the_last_good_rules_and_servers()
+    [Theory]
+    [InlineData("{ half-saved")]
+    [InlineData("{\"approvals\":[]}")]
+    [InlineData("{\"approvals\":null}")]
+    [InlineData("{\"approvals\":42}")]
+    public async Task An_unreadable_mcp_json_keeps_the_last_good_rules_and_servers(string invalid)
     {
         WriteConfig("""{ "mcpServers": { "a": { "command": "x" } }, "approvals": { "a/secret": "deny" } }""");
         var session = new FakeSession(("open", true), ("secret", true));
@@ -350,7 +354,7 @@ public sealed class ToolHostLifecycleTests : TempDirTest
             (_, _) => Task.FromResult(ToolDecision.Deny), Log);
         Assert.Equal(["open"], (await host.GetToolsAsync(default)).Select(t => t.Tool));
 
-        File.WriteAllText(McpPath, "{ half-saved");
+        File.WriteAllText(McpPath, invalid);
         Assert.Equal(["open"], (await host.GetToolsAsync(default)).Select(t => t.Tool)); // the deny still applies
         Assert.False(session.Disposed);                                                  // and the server kept running
         Assert.Contains("last good", host.ConfigError);

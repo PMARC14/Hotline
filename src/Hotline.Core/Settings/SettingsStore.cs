@@ -103,7 +103,11 @@ public sealed class SettingsStore(string directory)
     {
         try
         {
-            if (!File.Exists(FilePath)) return null;
+            if (!File.Exists(FilePath))
+            {
+                SettingsError = L.F(Strings.Settings_ProblemUnreadable, FileName, nameof(FileNotFoundException));
+                return null;
+            }
             var text = File.ReadAllText(FilePath);
             var (s, legacy, failure, _) = Parse(text);
             if (s is null) { SettingsError = failure; return null; } // keep what is running; the problem is reported
@@ -116,7 +120,11 @@ public sealed class SettingsStore(string directory)
                 s.Chat.Order is { Count: > 0 } order ? order : LegacyOrder(legacy));
             return Normalize(s);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            SettingsError = L.F(Strings.Settings_ProblemUnreadable, FileName, ex.GetType().Name);
+            return null;
+        }
     }
 
     public HotlineSettings Load()
@@ -312,7 +320,7 @@ public sealed class SettingsStore(string directory)
             }
             _safeToReplace[Path.GetFullPath(FilePath)] = File.ReadAllText(FilePath);
         }
-        if (connections) SaveConnections(s.Chat.Backends, removed, migrateConnections); // first: if this fails, settings.json still has the old list
+        if (connections && !SaveConnections(s.Chat.Backends, removed, migrateConnections)) return false;
         return ReplaceFile(FilePath, SerializeMain(s));
     }
 
@@ -336,9 +344,7 @@ public sealed class SettingsStore(string directory)
 
     private static void WriteAtomic(string path, string content)
     {
-        var tmp = path + ".tmp";
-        File.WriteAllText(tmp, content);
-        File.Move(tmp, path, overwrite: true);
+        DurableFile.WriteText(path, content);
     }
 
     /// <summary>
@@ -460,7 +466,7 @@ public sealed class SettingsStore(string directory)
     /// Writes changed connection files (each back to the file it was read from; a new connection is named from its id) and
     /// deletes the files of removed ones. Two connections never share a file: the one that would is not saved and a problem is listed.
     /// </summary>
-    private void SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed, bool onlyNew = false)
+    private bool SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed, bool onlyNew = false)
     {
         Directory.CreateDirectory(ConnectionsDirectory);
         var snapshot = profiles.ToList(); // other threads read the live list
@@ -490,7 +496,10 @@ public sealed class SettingsStore(string directory)
         {
             if (onlyNew && _sources.ContainsKey(p.Id)) continue;
             if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
+            {
+                _writeProblems.Add(L.F(Strings.Settings_ProblemWriteFailed, Path.GetFileName(path), nameof(InvalidDataException)));
                 continue; // the user's unreadable file stays exactly as it is
+            }
             if (ReplaceFile(path, JsonSerializer.Serialize(p, ConnectionOptions))) _sources[p.Id] = path;
         }
 
@@ -520,6 +529,7 @@ public sealed class SettingsStore(string directory)
             _sources.Remove(id);
             _safeToReplace.Remove(path);
         }
+        return _writeProblems.Count == 0;
     }
 
     /// <summary>True when the file lacks an option the current schema has (compared by property names, recursively).</summary>

@@ -6,6 +6,19 @@ namespace Hotline.Core.Tests;
 
 public sealed class ToolsTests : TempDirTest
 {
+    [Theory]
+    [InlineData("[]")]
+    [InlineData("null")]
+    [InlineData("42")]
+    [InlineData("\"allow\"")]
+    public void Non_object_approvals_are_rejected_and_never_replaced(string approvals)
+    {
+        var json = "{\"approvals\":" + approvals + "}";
+        WriteMcp(json);
+        Assert.NotNull(McpConfig.Load(McpPath).Error);
+        Assert.Throws<JsonException>(() => McpConfig.SaveApproval(McpPath, "a/read", ToolApproval.Allow));
+        Assert.Equal(json, File.ReadAllText(McpPath));
+    }
     private string McpPath => Path.Combine(_dir, "mcp.json");
 
     private void WriteMcp(string json)
