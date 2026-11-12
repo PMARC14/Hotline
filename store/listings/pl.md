@@ -89,4 +89,4 @@ Układaj rzędy przycisków w Ustawieniach, dodawaj przyciski z własnymi grafik
 
 ## Terminy wyszukiwania
 
-czat AI, klawisz Copilot, Claude, Gemini, asystent AI, LLM, lokalna AI
+Asystent czatu AI, Skrót klawisza Copilot, Integracja Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Zgodność OpenRouter, Lokalny LLM llama.cpp

@@ -89,4 +89,4 @@ Disponi le righe di pulsanti in Impostazioni, aggiungi pulsanti con le tue immag
 
 ## Termini di ricerca
 
-chat IA, tasto Copilot, Claude, Gemini, assistente IA, LLM, IA locale
+Assistente chat IA, Scorciatoia tasto Copilot, Integrazione Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Compatibile OpenRouter, LLM locale llama.cpp

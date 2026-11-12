@@ -89,4 +89,4 @@ Hotline AI는 독립 앱이며 Microsoft, Anthropic, Google, OpenAI와 제휴하
 
 ## 검색어
 
-AI 채팅, Copilot 키, Claude, Gemini, AI 도우미, LLM, 로컬 AI
+AI 채팅 어시스턴트, Copilot 키 단축키, Claude Code 연동, Codex Gemini CLI, Anthropic OpenAI API, OpenRouter 호환, 로컬 LLM llama.cpp

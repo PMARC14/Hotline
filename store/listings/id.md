@@ -89,4 +89,4 @@ Atur baris tombol di Pengaturan, tambahkan tombol dengan gambar Anda sendiri, da
 
 ## Istilah pencarian
 
-obrolan AI, tombol Copilot, Claude, Gemini, asisten AI, LLM, AI lokal
+Asisten obrolan AI, Pintasan tombol Copilot, Integrasi Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Kompatibel OpenRouter, LLM lokal llama.cpp

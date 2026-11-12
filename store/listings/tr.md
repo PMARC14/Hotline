@@ -89,4 +89,4 @@ Ayarlar'da düğme satırlarını düzenleyin, kendi resimlerinizle düğmeler e
 
 ## Arama terimleri
 
-yapay zekâ sohbeti, Copilot tuşu, Claude, Gemini, yapay zekâ asistanı, LLM, yerel yapay zekâ
+Yapay zekâ asistanı, Copilot tuşu kısayolu, Claude Code entegrasyonu, Codex Gemini CLI, Anthropic OpenAI API, OpenRouter uyumlu, Yerel LLM llama.cpp

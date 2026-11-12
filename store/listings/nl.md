@@ -89,4 +89,4 @@ Deel knoppenrijen in via Instellingen, voeg knoppen toe met je eigen afbeeldinge
 
 ## Zoektermen
 
-AI-chat, Copilot-toets, Claude, Gemini, AI-assistent, LLM, lokale AI
+AI-chatassistent, Copilot-toets sneltoets, Claude Code integratie, Codex Gemini CLI, Anthropic OpenAI API-sleutel, OpenRouter compatibel, Lokaal LLM llama.cpp

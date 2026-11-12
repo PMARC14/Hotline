@@ -89,4 +89,4 @@ Sắp xếp các hàng nút trong Cài đặt, thêm nút với hình ảnh củ
 
 ## Từ khóa tìm kiếm
 
-trò chuyện AI, phím Copilot, Claude, Gemini, trợ lý AI, LLM, AI cục bộ
+Trợ lý AI, Phím tắt Copilot, Claude Code integration, Codex Gemini CLI, Anthropic OpenAI API, Tương thích OpenRouter, Local LLM llama.cpp

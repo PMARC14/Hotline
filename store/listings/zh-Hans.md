@@ -89,4 +89,4 @@ Hotline AI 是一款独立应用，与 Microsoft、Anthropic、Google 或 OpenAI
 
 ## 搜索词
 
-AI 聊天, Copilot 键, Claude, Gemini, AI 助手, LLM, 本地 AI
+AI 聊天助手, Copilot 键快捷键, Claude Code 集成, Codex Gemini CLI, Anthropic OpenAI API, 兼容 OpenRouter, 本地 LLM llama.cpp

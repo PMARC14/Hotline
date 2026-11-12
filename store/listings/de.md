@@ -89,4 +89,4 @@ Ordne Schaltflächenzeilen in den Einstellungen an, füge Schaltflächen mit eig
 
 ## Suchbegriffe
 
-KI-Chat, Copilot-Taste, Claude, Gemini, KI-Assistent, LLM, lokale KI
+KI-Chat-Assistent, Copilot-Taste Tastenkürzel, Claude Code Integration, Codex Gemini CLI, Anthropic OpenAI API-Schlüssel, OpenRouter-kompatibel, Lokales LLM llama.cpp

@@ -89,4 +89,4 @@ Organisez les rangées de boutons dans Paramètres, ajoutez des boutons avec vos
 
 ## Termes de recherche
 
-chat IA, touche Copilot, Claude, Gemini, assistant IA, LLM, IA locale
+Assistant chat IA, Raccourci touche Copilot, Intégration Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Compatible OpenRouter, LLM local llama.cpp
