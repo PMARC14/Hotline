@@ -113,7 +113,6 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   (`fr/screenshot-4.png`) shows the sidebar label "Conversation et histor" clipped: a real app layout issue (the Settings navigation
   pane clips long labels in some languages); fix the pane (wrap or widen) or shorten the string, then recapture `fr` with
   `bash scripts/make-store-panels.sh fr` and `bash scripts/make-store-localized.sh fr`. Check the other languages' pane for the same.
-  The "slash" screenshot (`screenshot-3`) shows a finished quick-action answer, not the `/` menu, in every language (same scene).
 - **Interface strings:** all new keys are translated in 16 languages by model (Flash); no native review (see TRANSLATING.md).
 - **Cleanup left on this PC:** agent worktrees and branches (`codex/*`, `agy/*`, under `Git/hotline.worktrees/review-fixes.worktrees`),
   the integration worktree `Git/hotline.worktrees/review-fixes`, and an empty locked folder `Git/hotline.worktrees/handoff-capture`.
