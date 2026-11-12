@@ -52,7 +52,7 @@ The usual route is the workflow below. To build locally instead: Partner Center 
 gives four values; the package is unsigned because the Store signs it, and Store versions must end in `.0`:
 
 ```bash
-scripts/build-msix.sh --store --arch all --version 0.6.0.0 \
+scripts/build-msix.sh --store --arch all --version 0.6.3.0 \
   --identity-name "<Package/Identity/Name>" --publisher "<Package/Identity/Publisher>" \
   --publisher-display-name "<Package/Properties/PublisherDisplayName>" --display-name "Hotline AI"
 ```
@@ -67,11 +67,11 @@ on that language's listing. Captions come from `store/listings/<lang>.md`, poste
 
 ### Store workflow (`.github/workflows/store.yml`)
 
-**How Store updates are released: by hand.** Run **Actions › Store › Run workflow** with a version (`0.6.0` →
-package `0.6.0.0`) and *Submit* off (or push a tag `vX.Y.Z`). It builds the Store `.msixbundle` with the identity
+**How Store updates are released: by hand.** Run **Actions › Store › Run workflow** with a version (`0.6.3` →
+package `0.6.3.0`) and *Submit* off (or push a tag `vX.Y.Z`). It builds the Store `.msixbundle` with the identity
 above and attaches it to the run; download it from the run's *Artifacts* and upload it in a Partner Center
 submission (**Packages** page), then paste the listing text from `store/listing.md` and `store/listings/` (17 languages).
-Store ID: `9PMW5CR6G3BC`. The 0.6.0.0 bundle is built and waits for the owner's upload.
+Store ID: `9PMW5CR6G3BC`. The artifact is `hotline-store-<version>.0` holding `HotlineAI_<version>.0_Store.msixbundle`; the owner uploads it by hand.
 
 Automatic submission is **not set up, on purpose**: Partner Center only adds an Entra app from a work account
 (a personal Microsoft account is refused), which means a separate admin user in an Entra tenant just for this. If
