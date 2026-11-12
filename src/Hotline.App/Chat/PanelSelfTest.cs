@@ -40,7 +40,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                 case "summary":
                     attachSelection(SummaryText, "Microsoft Edge"); // the chip, as when the key opens over a selection
                     await TypeAsync(Strings.Demo_SummaryQuestion);
-                    await Task.Delay(2500); // the Store screenshot is taken here: chip + question
+                    await Task.Delay(8000); // the Store screenshot is taken here: chip + question (long enough for every language: a short question is typed in half a second)
                     composer.Text = "";
                     apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, Strings.Demo_SummaryQuestion, takeAttachments(), DateTimeOffset.Now)));
                     await StreamAsync(backend, SummaryAnswer);
