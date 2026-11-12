@@ -60,6 +60,8 @@ public sealed class DiagnosticsSettings
 {
     /// <summary>Write DEBUG lines to the log and show the key-status line in the popup. Debug builds force this on.</summary>
     public bool VerboseLogging { get; set; }
+    /// <summary>Allow diagnostic links (hotline://demo, hotline://selftest, hotline://grips). File-only; off by default.</summary>
+    public bool TestLinks { get; set; }
 }
 
 public sealed class ActivationSettings

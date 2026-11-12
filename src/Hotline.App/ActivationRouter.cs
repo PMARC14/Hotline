@@ -8,7 +8,7 @@ using ActivationKind = Hotline.Core.Activation.ActivationKind;
 namespace Hotline.App;
 
 /// <summary>Turns activations and key events into popup actions. All calls except <see cref="Snapshot"/> must be on the UI thread.</summary>
-public sealed class ActivationRouter(PopupWindow popup, ActivationSettings settings, KeyEventDeduper deduper, FileLog log)
+public sealed class ActivationRouter(PopupWindow popup, ActivationSettings settings, KeyEventDeduper deduper, FileLog log, Func<bool>? testLinksEnabled = null)
 {
     /// <summary>
     /// Copies everything needed out of the WinRT activation args. Call this synchronously where the args are
@@ -91,6 +91,11 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     {
         log.Info($"activation kind={request.Kind} first={request.IsFirstLaunch}");
         log.Debug($"activation uri={LogText.SafeUri(request.Uri)}"); // never the query: App Actions links carry your text or images
+        var host = request.Uri?.Host;
+        if ((string.Equals(host, "demo", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(host, "selftest", StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(host, "grips", StringComparison.OrdinalIgnoreCase)) &&
+            testLinksEnabled?.Invoke() != true) return;
         if (string.Equals(request.Uri?.Host, "demo", StringComparison.OrdinalIgnoreCase))
         {
             DemoRequested?.Invoke(System.Web.HttpUtility.ParseQueryString(request.Uri!.Query)["scene"]);
@@ -122,12 +127,17 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
 
     public void OnKey(KeyEvent e, KeySource source)
     {
+        var action = KeyActionResolver.Resolve(e, settings);
+        if (source == KeySource.Protocol && action == KeyAction.Voice)
+        {
+            if (e != KeyEvent.HoldStop) popup.ShowPopup(readSelection: false);
+            return;
+        }
         if (!deduper.ShouldHandle(e, source))
         {
             log.Info($"key {e} via {source} (duplicate, ignored)");
             return;
         }
-        var action = KeyActionResolver.Resolve(e, settings);
         log.Info($"key {e} via {source} -> {action}");
         popup.SetStatus($"Last key: {e} via {source} → {action}");
         Execute(action, e);

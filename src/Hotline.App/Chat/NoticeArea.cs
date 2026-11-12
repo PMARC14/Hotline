@@ -136,7 +136,7 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
         });
         bar.Content = details;
         Panel.Children.Add(bar);
-        if (!popup.IsShown) popup.ShowPopup();
+        if (!popup.IsShown) popup.ShowPopup(readSelection: false);
         timer.Interval = TimeSpan.FromMinutes(5);
         timer.IsRepeating = false;
         timer.Tick += (_, _) => Answer(ToolDecision.Deny);

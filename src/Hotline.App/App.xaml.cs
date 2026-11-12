@@ -124,7 +124,8 @@ public partial class App : Application
 
         _popup = new PopupWindow(settings.Window, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose);
         _router = new ActivationRouter(_popup, settings.Activation,
-            new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
+            new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log,
+            testLinksEnabled: () => _settingsService.Current.Diagnostics.TestLinks);
         var job = new ChildProcessJob(_log);
         _popup.IsOurProcess = job.Owns;
         // Chat-only CLI chats run in folders named "Hotline": Claude Code and Codex list sessions by folder, agy names its

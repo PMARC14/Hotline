@@ -85,6 +85,7 @@ reuses its saved key.
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: also permits the restricted Ctrl+C fallback described below (opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
+| `diagnostics.testLinks` | `false` | Enables the diagnostic protocol links (`hotline://demo`, `hotline://selftest`, `hotline://grips`). Not in the Settings window |
 
 **Selection clipboard fallback.** Ctrl+C is sent only when UI Automation reports no text pattern, and never to terminals
 (Windows Terminal, console hosts, PuTTY, WezTerm, Alacritty, mintty, ConEmu and similar), remote desktop clients, virtual machine
@@ -441,7 +442,11 @@ the Windows Credential Locker; enter them again on the new PC, the import lists 
 `mcp.json` is exported exactly as written, and its `env` values can hold secrets: keep such a package private.
 
 An import only accepts the file names above (anything else, `..` paths and oversized or damaged files refuse the package),
-checks every file's content, adds and replaces files and never deletes. Each file it replaces is first copied to
+checks every file's content, adds and replaces files and never deletes. When the selected categories contain or activate
+executable configuration (MCP server commands, arguments, working directories, environment overrides or approval rules,
+CLI or tool-enabled connections, `approveAllTools`, `cliPath`, `extraArgs`, `args`, or `Continue in` `app` commands),
+Settings > Backup shows the details for review and asks for confirmation before anything is written (Cancel is the default,
+and confirming writes the exact bytes that were reviewed). Each file it replaces is first copied to
 `backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. The content check is the one
 loading uses: a file with a wrong value or a word from a newer version is accepted (the app warns and goes on, as with a hand edit),
 a connection file whose `id` differs from its file name is accepted; only a file that is not a JSON object (or a connection with an
@@ -475,6 +480,8 @@ Developers: `hotline-action://ask?text=…` or `hotline-action://run/summarize?t
 
 ## Links
 
-`hotline://settings` opens the settings window, `hotline://tray` starts quietly in the tray, `hotline://demo` shows an
-example conversation, `hotline://selftest` renders a scripted conversation off-screen and builds every settings page
-(used by the smoke test; its variants are in [TESTING.md](TESTING.md)).
+`hotline://settings` opens the settings window and `hotline://tray` starts quietly in the tray. With `"diagnostics": { "testLinks": true }`
+in `settings.json`, `hotline://demo` shows an example conversation, `hotline://grips?show=1|0` toggles the Alt grips, and
+`hotline://selftest` renders a scripted conversation off-screen and builds every settings page (used by the smoke test; its variants
+are in [TESTING.md](TESTING.md)). Protocol `hotline://key` links never start or stop voice input; when a key action is set to `voice`,
+a protocol press opens the panel (without reading the selection) and dictation requires a physical key press.
