@@ -63,12 +63,13 @@ public static class ToolbarFile
                 return new ToolbarLoad(initial, null);
             }
             var text = File.ReadAllText(path);
+            var warnings = new List<string>();
             JsonNode? root;
-            try { root = ToolbarModel.Parse(text, []); }
+            try { root = ToolbarModel.Parse(text, warnings); }
             catch (JsonException ex) { return Unreadable(ex.Message); }
-            if (root is not JsonObject) return Unreadable("the file isn't a JSON object");
+            if (root is not JsonObject o) return Unreadable("the file isn't a JSON object");
 
-            return new ToolbarLoad(WithLegacyShortcuts(path, ToolbarModel.Resolve(text)), null);
+            return new ToolbarLoad(WithLegacyShortcuts(path, ToolbarModel.Resolve(o, warnings)), null);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {

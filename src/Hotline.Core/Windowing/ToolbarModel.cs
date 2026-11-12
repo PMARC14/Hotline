@@ -179,7 +179,19 @@ public sealed record ToolbarModel(
         {
             var warnings = new List<string>();
             var root = Parse(json, warnings);
-            return root is JsonObject o ? Read(o, warnings).ResolveShortcuts(chat) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
+            return root is JsonObject o ? Resolve(o, warnings, chat) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
+        }
+        catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
+        {
+            return Defaults with { Warnings = [W(Strings.BarW_CantRead, Clean(ex.Message, 200, false))] };
+        }
+    }
+
+    internal static ToolbarModel Resolve(JsonObject root, List<string> warnings, ChatSettings? chat = null)
+    {
+        try
+        {
+            return Read(root, warnings).ResolveShortcuts(chat);
         }
         catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {

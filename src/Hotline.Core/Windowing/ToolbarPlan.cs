@@ -24,7 +24,7 @@ public sealed record RowPlan(IReadOnlyList<string> Left, IReadOnlyList<string> C
 /// minimum room (false: they shrink and hide in what is left, see <see cref="ToolbarLayout.Compute"/>), the width of
 /// everything in the row but the pickers themselves (all columns' gaps included, one gap kept for the pickers; for Compute's fixedWidth), and how many
 /// right-group buttons moved into the menu (from the right group's left end; 0 unless the right group alone is too wide).</summary>
-public sealed record RowFit(int LeftShown, bool Overflow, bool PickersKept, double FixedWidth, int RightDropped = 0);
+public sealed record RowFit(int LeftShown, bool Overflow, bool PickersKept, double FixedWidth, int RightDropped = 0, bool ShrunkLastRight = false);
 
 /// <summary>
 /// The renderer's decisions for a resolved <see cref="ToolbarModel"/>, kept pure so they're tested: what each row holds,
@@ -166,8 +166,9 @@ public static class ToolbarPlan
         RowFit Result(FitResult f, bool kept)
         {
             var buttons = leftWidths.Take(f.LeftShown).Concat(rightWidths.Skip(f.RightDropped)).ToList();
+            if (f.ShrunkLastRight && buttons.Count > 0) buttons[^1] = overflowWidth;
             var columns = buttons.Count + (f.Overflow ? 1 : 0) + (hasPickers ? 1 : 0) + (hasCenter ? 2 : 1); // + the flexible column(s)
-            return new RowFit(f.LeftShown, f.Overflow, kept, buttons.Sum() + (f.Overflow ? overflowWidth : 0) + spacing * (columns - 1), f.RightDropped);
+            return new RowFit(f.LeftShown, f.Overflow, kept, buttons.Sum() + (f.Overflow ? overflowWidth : 0) + spacing * (columns - 1), f.RightDropped, f.ShrunkLastRight);
         }
     }
 
@@ -241,6 +242,7 @@ public static class ToolbarPlan
         var visible = widths.Values.Count(w => w > 0);
         var buttons = new Dictionary<string, double>();
         foreach (var id in leftIds.Take(fit.LeftShown).Concat(rightIds.Skip(fit.RightDropped))) buttons[id] = Metrics(model, id).Width;
+        if (fit.ShrunkLastRight && rightIds.Count > fit.RightDropped) buttons[rightIds[^1]] = overflowWidth;
         if (hasMore) buttons[ToolbarModel.MoreId] = overflowWidth;
         var used = fit.FixedWidth + widths.Values.Sum() + spacing * Math.Max(0, visible - 1);
         return new RowLayout(plan, shown, dropped, widths, buttons, fit, used, rightShown, rightDropped, hasMore ? MenuItems(model) : []);

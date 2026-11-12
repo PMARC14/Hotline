@@ -6,7 +6,7 @@ public sealed record PickerSpec(string Name, double Preferred, double Min, bool 
 
 /// <summary>How many left-group buttons stay on the bar, whether the "more" button is needed for the rest, and how many
 /// buttons the right group gave up (from its left end; 0 unless the right group alone is wider than the room).</summary>
-public sealed record FitResult(int LeftShown, bool Overflow, int RightDropped = 0);
+public sealed record FitResult(int LeftShown, bool Overflow, int RightDropped = 0, bool ShrunkLastRight = false);
 
 /// <summary>
 /// Lays out the bottom bar's pickers in the space left after the fixed buttons. The buttons are fitted first
@@ -94,6 +94,12 @@ public static class ToolbarLayout
         var lastRight = Math.Max(0, right.Length - 1);
         for (var dropped = 0; dropped <= lastRight; dropped++)
             if (Needed(0, dropped) <= room) return (new FitResult(0, alwaysOverflow || left.Length > 0 || dropped > 0, dropped), true);
+        if (right.Length > 0 && right[lastRight] > overflowWidth * 1.5)
+        {
+            right[lastRight] = overflowWidth;
+            if (Needed(0, lastRight) <= room) return (new FitResult(0, alwaysOverflow || left.Length > 0 || lastRight > 0, lastRight, ShrunkLastRight: true), true);
+            return (new FitResult(0, alwaysOverflow || left.Length > 0 || lastRight > 0, lastRight, ShrunkLastRight: true), false);
+        }
         return (new FitResult(0, alwaysOverflow || left.Length > 0 || lastRight > 0, lastRight), false);
     }
 }

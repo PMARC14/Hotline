@@ -60,7 +60,6 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         }
         if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); }
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
-        if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
         var previous = System.Text.Json.JsonSerializer.Serialize(Current, options);
         if (_automatic.Count == 0 && System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == previous) return false;
         var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
@@ -119,7 +118,6 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         }
     }
 
-    private DateTime _knownWriteUtc = DateTime.MinValue;
     private bool _unsaved; // the last save failed: memory is newer than the disk, so a re-read must not replace it
     private readonly List<Action<HotlineSettings>> _automatic = [];
     private readonly HashSet<string> _automaticRemoved = new(StringComparer.OrdinalIgnoreCase);
@@ -173,7 +171,6 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             // <file>.<time>.bak by the store before it is replaced; without that copy it is left alone and a problem is listed.
             store.Save(Current, removed);
             _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
-            if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
             problems = [.. store.WriteProblems];
             if (!_unsaved) { _automatic.Clear(); _automaticRemoved.Clear(); }
             foreach (var problem in problems) log.Info($"settings: {problem}");

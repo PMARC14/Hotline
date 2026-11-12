@@ -203,7 +203,6 @@ public sealed class SettingsServiceTests : TempDirTest
         var edited = store.Load();
         edited.Window.FontSize = 20;            // hand edit, not yet reloaded by the watcher
         store.Save(edited);
-        File.SetLastWriteTimeUtc(store.FilePath, DateTime.UtcNow.AddSeconds(5));
         service.Update(s => s.Window.AlwaysOnTop = false); // e.g. a picker change
         var onDisk = store.Load();
         Assert.Equal((20, false), (onDisk.Window.FontSize, onDisk.Window.AlwaysOnTop));

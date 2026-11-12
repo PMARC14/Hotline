@@ -100,6 +100,23 @@ public sealed class ToolbarGridTests
     }
 
     [Fact]
+    public void Shipped_default_bottom_row_fits_200px_at_200_percent_by_shrinking_last_button()
+    {
+        // Window width 200 px at 200% scale leaves 80 DIP of room (100 DIP window - 2 * 10 DIP padding).
+        // The shipped 2-cell right buttons (recent, newChat, settings) normally need 120 DIP (80 + 40 overflow).
+        // When settings shrinks to one cell (40 DIP), settings (40) + overflow (40) = 80 DIP fits without clipping.
+        const double room = (200.0 / 2.0) - 2 * ToolbarPlan.PanelPadding;
+        Assert.Equal(80.0, room);
+
+        var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: false, room, ToolbarPlan.CellGap);
+        Assert.True(f.Used <= room, $"bottom row uses {f.Used} DIP of room {room} DIP");
+        Assert.Equal(40.0, f.ButtonWidths["settings"]);
+        Assert.Equal(["settings"], f.RightShown);
+        Assert.Equal(["recent", "newChat"], f.RightDropped);
+        Assert.True(f.Fit.Overflow);
+    }
+
+    [Fact]
     public void Panel_width_for_n_buttons_adds_the_padding()
     {
         Assert.Equal(10, ToolbarPlan.PanelPadding);
