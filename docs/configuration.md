@@ -83,8 +83,21 @@ reuses its saved key.
 | `chat.continueIn` | *(llama.cpp of a Local connection)* | The shared "Continue this chat in" targets (see *Continue in* below). Missing = the llama.cpp web UI at your first Local connection's address, or none |
 | `chat.voiceAutoSend` | `false` | With `voice`: send the message when you let go of the key (off: check it first, then press Enter) |
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
-| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
+| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: also permits the restricted Ctrl+C fallback described below (opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
+
+**Selection clipboard fallback.** Ctrl+C is sent only when UI Automation reports no text pattern, and never to terminals
+(Windows Terminal, console hosts, PuTTY, WezTerm, Alacritty, mintty, ConEmu and similar), remote desktop clients, virtual machine
+consoles, or editors and IDEs with an integrated terminal (VS Code, Cursor, Visual Studio, JetBrains IDEs): there Ctrl+C is an
+interrupt or is forwarded. The built-in list matches window classes and process names (case-insensitive); a window whose process
+cannot be identified gets no keystroke. UI Automation remains available in every mode except `off`.
+The clipboard must contain only supported memory formats (plain text, HTML, RTF, DIB images, file paths, locale and history/cloud exclusion flags),
+totalling at most 64 MB. Unsupported or unreadable formats skip Ctrl+C entirely: bitmap/metafile handles, OLE streams,
+Outlook attachments, zip-folder virtual files and unknown registered formats stay on the original clipboard.
+After the 450 ms copy deadline, Hotline watches for another two seconds and restores late copies owned by the target
+process, without attaching their text. A changed clipboard from another process is left alone, and the sequence and
+owner are checked again before restoration. Copies arriving after that watch, copies with no identifiable owner,
+and a clipboard that cannot be reopened for restoration remain unrestored. The target's copy can appear in clipboard history.
 
 settings.json is schema version 15. Upgrading a file below 14 converts widths from scaled units to real pixels: the old default
 `minWidth` 600 / `maxWidth` 1000 become 400 / 1200, other limits keep their numbers, and saved `width` / `chatWidth` are cleared (one

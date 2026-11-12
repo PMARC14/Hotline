@@ -4,6 +4,7 @@ using System.Text;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 using Interop.UIAutomationClient;
 
 namespace Hotline.App.Interop;
@@ -14,10 +15,6 @@ internal static class SelectionReader
     private const int UIA_IsPasswordPropertyId = 30019;
     private static readonly TimeSpan UiaBudget = TimeSpan.FromMilliseconds(150);
     private static readonly TimeSpan ClipboardBudget = TimeSpan.FromMilliseconds(450);
-    private static readonly HashSet<string> ConsoleClasses = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "ConsoleWindowClass", "CASCADIA_HOSTING_WINDOW_CLASS", "PseudoConsoleWindow", "mintty", "VirtualConsoleClass",
-    };
 
     // One UI Automation client for all reads, with short timeouts so a hung app can't hold threads for ~20 s.
     private static readonly Lazy<IUIAutomation> Automation = new(() =>
@@ -65,7 +62,8 @@ internal static class SelectionReader
 
         // Ctrl+C only where UIA positively said "no text pattern here": an empty selection would copy a whole line
         // (editors) or interrupt a command (terminals), and a timeout can't rule out a password field.
-        if (outcome == UiaOutcome.NoTextPattern && mode == AttachSelectionMode.Clipboard && !ConsoleClasses.Contains(Native.ClassNameOf(foreground)))
+        if (outcome == UiaOutcome.NoTextPattern && mode == AttachSelectionMode.Clipboard &&
+            SelectionCopyPolicy.MaySendCtrlC(Native.ClassNameOf(foreground), ProcessName(pid)))
         {
             var copied = new TaskCompletionSource<string?>(TaskCreationOptions.RunContinuationsAsynchronously);
             using var stop = new CancellationTokenSource();
@@ -94,6 +92,19 @@ internal static class SelectionReader
             return string.Equals(p.ProcessName, "ApplicationFrameHost", StringComparison.OrdinalIgnoreCase);
         }
         catch (ArgumentException) { return false; }
+    }
+
+    private static string? ProcessName(uint pid)
+    {
+        try
+        {
+            using var process = Process.GetProcessById((int)pid);
+            return process.ProcessName;
+        }
+        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException or System.ComponentModel.Win32Exception)
+        {
+            return null; // Unknown identity cannot authorize keystrokes.
+        }
     }
 
     private static (UiaOutcome Outcome, string? Text) ReadUia(uint pid, bool frameHost)
