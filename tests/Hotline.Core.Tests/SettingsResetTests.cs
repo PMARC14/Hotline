@@ -84,6 +84,18 @@ public sealed class SettingsResetTests : TempDirTest
     }
 
     [Fact]
+    public void Reset_settings_reports_a_newer_toolbar_json_it_refused_to_replace()
+    {
+        var (store, s, _) = Customised();
+        var toolbar = Path.Combine(_dir, "toolbar.json");
+        const string newer = """{ "version": 3, "bottom": { "left": ["pin"] } }""";
+        File.WriteAllText(toolbar, newer);
+        var result = SettingsReset.Reset(store, _dir, s, everything: false, Now);
+        Assert.Contains("toolbar.json", result.Failed);
+        Assert.Equal(newer, File.ReadAllText(toolbar));
+    }
+
+    [Fact]
     public void Reset_everything_removes_connections_and_toolbar_but_not_memory()
     {
         var (store, s, local) = Customised();

@@ -104,7 +104,8 @@ public static class SettingsReset
             var toolbar = Path.Combine(directory, ToolbarFileName);
             if (!File.Exists(toolbar) || backedUp.Contains(Path.GetFullPath(toolbar)))
             {
-                try { ToolbarFile.Save(toolbar, ToolbarModel.Defaults); } // the backup copy above has the old one
+                // The backup copy above has the old one; a refusal (a newer file's version) is a failure, not a reset.
+                try { if (ToolbarFile.Save(toolbar, ToolbarModel.Defaults) is not null) failed.Add(ToolbarFileName); }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(ToolbarFileName); }
             }
         }
