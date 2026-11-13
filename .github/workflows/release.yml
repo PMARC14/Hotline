@@ -1,4 +1,4 @@
-# Builds a signed MSIX and publishes a GitHub Release:
+# Builds a signed MSIX and publishes a GitHub prerelease (stable requires manual promotion):
 #   - every push to main (code changes): version.txt's major.minor plus the next patch in that line, e.g. 0.2.26
 #     (scripts/next-version.sh; bumping version.txt to 0.3 starts at 0.3.0)
 #   - a pushed tag vX.Y.Z, or "Run workflow" with a version: that version
@@ -6,7 +6,7 @@
 #   1. Azure Artifact Signing (formerly Trusted Signing) — repository variables ARTIFACT_SIGNING_ENDPOINT,
 #      ARTIFACT_SIGNING_ACCOUNT, ARTIFACT_SIGNING_PROFILE, HOTLINE_PUBLISHER (the certificate subject, exactly) and
 #      AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID (an Entra app with a GitHub OIDC federated
-#      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored). A normal release.
+#      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored).
 #   2. A .pfx — secrets HOTLINE_SIGNING_PFX_BASE64 / HOTLINE_SIGNING_PFX_PASSWORD (subject = manifest Publisher).
 #   3. Neither: publishing fails; a throwaway certificate is allowed only for workflow_dispatch with publish off.
 name: Release
@@ -22,13 +22,11 @@ on:
         description: 'Version to release, e.g. 0.2.0 (empty = the next one: scripts/next-version.sh)'
         required: false
       publish:
-        description: 'Publish the GitHub Release (off = build and upload the files only, e.g. to test a branch)'
+        description: 'Publish a GitHub prerelease (off = build and upload the files only, e.g. to test a branch)'
         type: boolean
         default: true
 
-permissions:
-  contents: write
-  id-token: write # OIDC login for Azure Artifact Signing
+permissions: {}
 
 concurrency:
   group: release
@@ -37,6 +35,9 @@ concurrency:
 jobs:
   release:
     runs-on: windows-latest
+    permissions:
+      contents: write # Create the prerelease and its tag; checkout also needs contents access.
+      id-token: write # OIDC login for Azure Artifact Signing
     defaults:
       run:
         shell: bash # Git Bash on the Windows runner; the scripts are bash (scripts/*.sh)
@@ -186,8 +187,8 @@ jobs:
           SHA: ${{ github.sha }}
           PRERELEASE: ${{ steps.cert.outputs.prerelease }}
         run: |
-          # Every release is a normal ("latest") release; a self-signed one says how to trust it.
-          flags=(--target "$SHA" --title "Hotline $TAG" --generate-notes --latest)
+          # Tags also start as prereleases: only the owner's promotion advances the stable update channel.
+          flags=(--target "$SHA" --title "Hotline $TAG" --generate-notes --prerelease --latest=false)
           if [ "$PRERELEASE" = true ]; then
             flags+=(--notes "Signed with a self-signed certificate: install Hotline.cer into Local Machine > Trusted People first (README › Install), then open the .msixbundle (x64 and ARM64). The Microsoft Store version (Hotline AI) needs none of this.")
           else flags+=(--notes ""); fi
