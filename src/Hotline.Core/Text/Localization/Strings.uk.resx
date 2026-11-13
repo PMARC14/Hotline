@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Ні</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Зупинка відповіді</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Клавіша, що зупиняє відповідь під час її написання (Enter ніколи цього не робить; кнопка «Надіслати» теж зупиняє). Окрема клавіша (Esc) або комбінація, наприклад Ctrl+. — коли нічого не генерується, Esc ховає панель.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Команда панелі вже використовує це сполучення клавіш. Спочатку змініть або очистьте сполучення клавіш цієї команди чи виберіть інше.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Неприпустима комбінація клавіш (приклади: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Пам'ять</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Кожен чат бачить memory.md у вашій папці .hotline («/remember щось» додає рядок).</value></data>

@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>No</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Detener una respuesta</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>La tecla que detiene una respuesta mientras se escribe (Entrar nunca lo hace; el botón Enviar también la detiene). Una tecla sola (Esc) o una combinación como Ctrl+. — cuando no se está respondiendo nada, Esc oculta el panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Un comando del panel ya usa este atajo. Cambia o borra primero el atajo de ese comando, o elige otro.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>No es un atajo válido (ejemplos: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memoria</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Cada chat ve memory.md en tu carpeta .hotline («/remember algo» añade una línea).</value></data>

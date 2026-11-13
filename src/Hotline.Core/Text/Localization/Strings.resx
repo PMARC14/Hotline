@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>No</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Stop an answer</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>The key that stops an answer while it's being written (Enter never does; the Send button does too). A key alone (Esc) or a combo like Ctrl+. — when nothing is being answered, Esc hides the panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>A panel command already uses this shortcut. Change or clear that command's shortcut first, or pick another.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Not a valid shortcut (examples: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memory</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Every chat sees memory.md in your .hotline folder ("/remember something" adds a line).</value></data>

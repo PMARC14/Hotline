@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Tidak</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Hentikan jawaban</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Tombol yang menghentikan jawaban saat sedang ditulis (Enter tidak pernah; tombol Kirim juga menghentikannya). Satu tombol (Esc) atau kombinasi seperti Ctrl+. — saat tidak ada yang sedang dijawab, Esc menyembunyikan panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Perintah panel sudah menggunakan pintasan ini. Ubah atau hapus pintasan perintah tersebut terlebih dahulu, atau pilih yang lain.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Bukan pintasan yang valid (contoh: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memori</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Setiap obrolan melihat memory.md di folder .hotline Anda ("/remember sesuatu" menambahkan satu baris).</value></data>

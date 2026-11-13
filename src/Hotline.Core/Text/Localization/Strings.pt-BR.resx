@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Não</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Parar uma resposta</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>A tecla que para uma resposta enquanto ela é escrita (Enter nunca para; o botão Enviar também para). Uma tecla sozinha (Esc) ou uma combinação como Ctrl+. — quando nada está sendo respondido, Esc oculta o painel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Um comando do painel já usa este atalho. Altere ou limpe o atalho desse comando primeiro ou escolha outro.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Atalho inválido (exemplos: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memória</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Todo chat vê o memory.md na sua pasta .hotline ("/remember algo" adiciona uma linha).</value></data>

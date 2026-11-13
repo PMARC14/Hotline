@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Nie</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Zatrzymywanie odpowiedzi</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Klawisz, który zatrzymuje odpowiedź w trakcie pisania (Enter nigdy tego nie robi; przycisk Wyślij też ją zatrzymuje). Pojedynczy klawisz (Esc) lub kombinacja, np. Ctrl+. — gdy nic nie jest generowane, Esc ukrywa panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Polecenie panelu już używa tego skrótu. Najpierw zmień lub wyczyść skrót tego polecenia albo wybierz inny.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>To nie jest prawidłowy skrót (przykłady: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Pamięć</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Każdy czat widzi plik memory.md w folderze .hotline („/remember coś” dodaje wiersz).</value></data>

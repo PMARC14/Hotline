@@ -56,6 +56,18 @@ public static class ChatShortcuts
         return result;
     }
 
+    /// <summary>The toolbar command whose requested binding (built-in or custom; switched-off ones don't count) is
+    /// <paramref name="stop"/>, or null. Stop wins at run time, so Settings refuses such a Stop instead of disabling the command.</summary>
+    public static string? StopConflict(ToolbarModel toolbar, string? stop)
+    {
+        if (!Hotkey.TryParseShortcut(stop, out var key)) return null;
+        foreach (var id in Defaults.Keys)
+            if (Hotkey.TryParseToolbarShortcut(toolbar.ShortcutText(id), out var binding) && binding == key) return id;
+        foreach (var button in toolbar.Buttons)
+            if (Hotkey.TryParseToolbarShortcut(button.RequestedShortcut ?? button.Shortcut, out var binding) && binding == key) return button.Id;
+        return null;
+    }
+
     /// <summary>Settings rejects collisions with requested bindings, including bindings currently disabled by a conflict.</summary>
     public static bool CanBind(ToolbarModel toolbar, ChatSettings chat, string id, string? text)
     {

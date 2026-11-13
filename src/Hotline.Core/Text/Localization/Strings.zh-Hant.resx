@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>否</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>停止回答</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答產生時用來停止的按鍵 (Enter 永遠不會停止;[傳送] 按鈕也可停止)。單一按鍵 (Esc) 或組合鍵,例如 Ctrl+. —— 未在產生回答時,Esc 會隱藏面板。</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>面板命令已在使用此快速鍵。請先變更或清除該命令的快速鍵，或選擇其他快速鍵。</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>快速鍵無效 (範例:Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>記憶</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>每個聊天都會讀取 .hotline 資料夾中的 memory.md (「/remember 某件事」會新增一行)。</value></data>

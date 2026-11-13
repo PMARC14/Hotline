@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Non</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Arrêter une réponse</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>La touche qui arrête une réponse en cours d'écriture (Entrée ne le fait jamais ; le bouton Envoyer l'arrête aussi). Une touche seule (Échap) ou une combinaison comme Ctrl+. — quand rien n'est en cours, Échap masque le panneau.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Une commande du panneau utilise déjà ce raccourci. Modifiez ou effacez d'abord le raccourci de cette commande, ou choisissez-en un autre.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Raccourci non valide (exemples : Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Mémoire</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Chaque conversation voit memory.md dans votre dossier .hotline (« /remember quelque chose » ajoute une ligne).</value></data>

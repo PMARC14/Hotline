@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>नहीं</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>उत्तर रोकें</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>वह कुंजी जो लिखे जा रहे उत्तर को रोकती है (Enter कभी नहीं रोकता; भेजें बटन भी रोकता है)। अकेली कुंजी (Esc) या Ctrl+. जैसा संयोजन — जब कोई उत्तर नहीं लिखा जा रहा हो, तो Esc पैनल छिपाता है।</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>एक पैनल कमांड पहले से ही इस शॉर्टकट का उपयोग कर रहा है। पहले उस कमांड का शॉर्टकट बदलें या साफ़ करें, या कोई दूसरा चुनें।</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>मान्य शॉर्टकट नहीं है (उदाहरण: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>मेमोरी</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>हर चैट आपके .hotline फ़ोल्डर में memory.md देखती है ("/remember कुछ" एक पंक्ति जोड़ता है)।</value></data>
