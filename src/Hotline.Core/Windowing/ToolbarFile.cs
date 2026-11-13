@@ -13,39 +13,31 @@ public sealed record ToolbarLoad(ToolbarModel Model, string? Error);
 /// <summary>~/.hotline/toolbar.json: reading it (creating a missing one) and writing it.</summary>
 public static class ToolbarFile
 {
-    private static readonly Dictionary<string, (JsonObject Map, IReadOnlyList<string> Warnings)> LegacyShortcuts = new(StringComparer.OrdinalIgnoreCase);
-
+    /// <summary>A toolbar.json without "shortcuts" takes settings.json's old <c>chat.shortcuts</c>, read anew on each load (a reset
+    /// or hand edit of settings.json shows at once; S1 moves them for good).</summary>
     private static ToolbarModel WithLegacyShortcuts(string path, ToolbarModel model)
     {
         if (model.Shortcuts is not null) return model;
         var full = Path.GetFullPath(path);
-        lock (LegacyShortcuts)
+        var map = new JsonObject();
+        var warnings = new List<string>();
+        var settingsPath = Path.Combine(Path.GetDirectoryName(full)!, SettingsStore.FileName);
+        try
         {
-            if (!LegacyShortcuts.TryGetValue(full, out var legacy))
+            if (File.Exists(settingsPath))
             {
-                var map = new JsonObject();
-                var warnings = new List<string>();
-                var settingsPath = Path.Combine(Path.GetDirectoryName(full)!, SettingsStore.FileName);
-                try
-                {
-                    if (File.Exists(settingsPath))
-                    {
-                        var settings = ToolbarModel.Parse(File.ReadAllText(settingsPath), warnings);
-                        if (settings is JsonObject root
-                            && root.LastOrDefault(p => p.Key.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is JsonObject chat
-                            && chat.LastOrDefault(p => p.Key.Equals("shortcuts", StringComparison.OrdinalIgnoreCase)).Value is JsonObject explicitValues)
-                            map = ToolbarModel.ReadShortcutMap(explicitValues, warnings);
-                    }
-                }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
-                {
-                    // Settings reports its own read errors; they must not make a valid toolbar unreadable.
-                }
-                legacy = (map, warnings);
-                LegacyShortcuts[full] = legacy;
+                var settings = ToolbarModel.Parse(File.ReadAllText(settingsPath), warnings);
+                if (settings is JsonObject root
+                    && root.LastOrDefault(p => p.Key.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is JsonObject chat
+                    && chat.LastOrDefault(p => p.Key.Equals("shortcuts", StringComparison.OrdinalIgnoreCase)).Value is JsonObject explicitValues)
+                    map = ToolbarModel.ReadShortcutMap(explicitValues, warnings);
             }
-            return (model with { Shortcuts = (JsonObject)legacy.Map.DeepClone(), Warnings = [.. model.Warnings, .. legacy.Warnings] }).ResolveShortcuts(null);
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            // Settings reports its own read errors; they must not make a valid toolbar unreadable.
+        }
+        return (model with { Shortcuts = map, Warnings = [.. model.Warnings, .. warnings] }).ResolveShortcuts(null);
     }
     /// <summary>
     /// Never throws. A missing file is created with the defaults. Any existing file is read and never rewritten (one in the

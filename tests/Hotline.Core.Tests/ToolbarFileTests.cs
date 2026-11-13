@@ -20,6 +20,19 @@ public sealed class ToolbarFileTests : TempDirTest
         Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
     }
 
+    // A toolbar.json without "shortcuts" takes settings.json's old chat.shortcuts as they are now: a reset or a hand edit of
+    // settings.json shows on the next load (no copy kept for the life of the process).
+    [Fact]
+    public void Legacy_shortcuts_follow_settings_json_on_every_load()
+    {
+        var settings = Path.Combine(_root, "settings.json");
+        File.WriteAllText(File_, """{ "version": 2 }""");
+        File.WriteAllText(settings, """{ "chat": { "shortcuts": { "pin": "Ctrl+Q" } } }""");
+        Assert.Equal("Ctrl+Q", ToolbarFile.Load(File_).Model.ShortcutText("pin"));
+        File.WriteAllText(settings, """{ "chat": { } }""");
+        Assert.Equal("Ctrl+P", ToolbarFile.Load(File_).Model.ShortcutText("pin"));
+    }
+
     [Fact]
     public void Missing_folder_is_created_and_the_defaults_are_written()
     {
