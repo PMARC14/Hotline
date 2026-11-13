@@ -14,12 +14,15 @@ public sealed partial class SettingsWindow
     private const int MaxToolbarProblemLines = 10;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
+    /// <summary>toolbar.json as this page build read it: once per page, not once per shortcut row (cleared by ShowPage).</summary>
+    private (ToolbarLoad Load, string? Stamp)? _pageToolbar;
+
     private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
     {
-        var load = ToolbarFile.Load(ToolbarPath);
+        _pageToolbar ??= (ToolbarFile.Load(ToolbarPath), ToolbarFile.Fingerprint(ToolbarPath));
+        var (load, stamp) = _pageToolbar.Value;
         if (load.Error is { } problem) return Card(header, problem, null);
         var model = load.Model;
-        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
         var id = row.ToolbarShortcutId!;
         var box = new TextBox { Text = model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
         bool Accept(string value)
@@ -48,7 +51,16 @@ public sealed partial class SettingsWindow
                 box.Text = next.ShortcutText(id);
                 DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
             }
-            catch (ToolbarQuadrantEditor.ChangedOnDiskException) { ShowPage(_currentPage); }
+            catch (ToolbarQuadrantEditor.ChangedOnDiskException)
+            {
+                // Not saved: the file changed since the page read it. Show it as it is now and say why.
+                ShowPage(_currentPage);
+                PageHost.Children.Insert(1, new InfoBar
+                {
+                    IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
+                    Message = Strings.Bar_ChangedOnDisk,
+                });
+            }
             catch (Exception ex) { Fail("saving toolbar shortcut failed", ex); }
         }
         box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != model.ShortcutText(id)) Save(value); };

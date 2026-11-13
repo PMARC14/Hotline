@@ -131,6 +131,7 @@ public sealed partial class SettingsWindow : Window
     {
         if (_closed) return;
         _currentPage = tag;
+        _pageToolbar = null;
         PageHost.Children.Clear();
         PageHost.Children.Add(new TextBlock
         {
