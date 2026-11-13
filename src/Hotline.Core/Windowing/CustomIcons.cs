@@ -174,6 +174,11 @@ public static class CustomIcons
         if (!ToolbarModel.IsCustomId(buttonId)) return false;
         try
         {
+            // The rollback copy goes too (a new button with this id must never roll back to it); the stamped .bak copies are
+            // backups and stay.
+            var previous = PreviousPath(iconsFolder, buttonId);
+            if (File.Exists(previous)) File.Delete(previous);
+            lock (FirstPictures) FirstPictures.Remove(previous);
             var path = Path.Combine(iconsFolder, buttonId + ".png");
             if (!File.Exists(path)) return false;
             File.Delete(path);

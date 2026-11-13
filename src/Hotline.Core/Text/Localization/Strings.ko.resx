@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>아니요</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>답변 중지</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>답변이 작성되는 동안 이를 멈추는 키입니다(Enter로는 멈추지 않으며, 보내기 단추로도 멈출 수 있습니다). 단일 키(Esc) 또는 Ctrl+. 같은 조합 — 답변 중이 아닐 때 Esc는 패널을 숨깁니다.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>패널 명령에서 이미 이 바로 가기를 사용하고 있습니다. 먼저 해당 명령의 바로 가기를 변경하거나 지우거나, 다른 바로 가기를 선택하세요.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>올바른 바로 가기 키가 아닙니다(예: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>메모리</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>모든 대화에서 .hotline 폴더의 memory.md를 참조합니다("/remember 내용"으로 한 줄 추가).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **비동기 우선:** 서면 업데이트가 많은 회의를 대체하고, 기록된 결정이 더 많은 사람에게 전달됩니다.
 - **문서화의 힘:** 문서화가 잘된 팀은 신규 입사자를 몇 주가 아닌 며칠 만에 온보딩합니다.
 - **계획된 대면 시간:** 우연한 대화가 줄어든 만큼, 기업들은 매 분기 대면 모임 일정을 의도적으로 계획합니다.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>프로그램 및 권한 검토</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>이 백업에는 확인 없이 프로그램을 실행하거나 도구를 허용할 수 있는 설정이 포함되어 있습니다. 아래 세부 정보를 검토하세요. 이러한 설정을 신뢰하는 경우에만 가져오세요.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>가져오기 취소됨: 프로그램 및 권한에 대한 확인이 필요합니다.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals 섹션은 JSON 개체여야 합니다.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>설정 변경 사항이 settings.json을 읽을 수 있게 될 때까지 대기 중입니다.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>시작 명령이 너무 길어 {0}을(를) 시작할 수 없습니다. 시스템 프롬프트, 저장된 메모리 또는 추가 시작 인수를 줄이세요.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>서버가 완료되었음을 확인하기 전에 응답이 중단되었습니다.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>첨부 파일을 준비하는 동안 채팅 또는 연결이 변경되었습니다. 메시지가 전송되지 않았습니다.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>링크에서</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>패널 이동</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>패널 크기 조정</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10을 누르면 패널 메뉴가 열립니다. 이동 또는 크기 조정을 선택하고 화살표 키를 사용한 다음 Enter 키를 눌러 완료하거나 Esc 키를 눌러 취소하세요.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json 파일은 최신 버전의 Hotline(버전 {0}, 이 버전은 {1})에서 작성되었으므로 Hotline에서 덮어쓰지 않습니다. Hotline을 업데이트하거나 파일을 직접 편집하세요.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json 파일은 최신 버전의 Hotline(버전 {0})에서 작성되었으므로 Hotline에서 덮어쓰지 않습니다. Hotline을 업데이트하거나 파일을 직접 편집하세요.</value></data>
 </root>

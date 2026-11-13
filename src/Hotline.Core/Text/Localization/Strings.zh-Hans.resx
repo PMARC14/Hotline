@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>否</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>停止回答</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答生成过程中将其停止的按键(Enter 从不停止;“发送”按钮也可停止)。单个键(Esc)或组合键,如 Ctrl+. —— 没有回答在进行时,Esc 会隐藏面板。</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>面板命令已在使用此快捷键。请先更改或清除该命令的快捷键，或选择其他快捷键。</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>快捷键无效(示例:Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>记忆</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>每个聊天都会读取 .hotline 文件夹中的 memory.md(“/remember 某事”会添加一行)。</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **异步优先：** 书面更新取代了许多会议，文字决策也能传达给更多人。
 - **文档成效显著：** 文档完善的团队只需数天就能完成新人培训，而非耗时数周。
 - **特意安排相聚：** 随性交流变少了，因此很多公司每季度会专门安排几天线下见面。</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>查看程序和权限</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>此备份包含无需询问即可运行程序或允许工具的设置。请查看下面的详细信息。仅在信任这些设置时才导入。</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>已取消导入：程序和权限需要确认。</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals 部分必须是 JSON 对象。</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>设置更改正在等待 settings.json 变为可读。</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>无法启动 {0}，因为其启动命令过长。请缩短系统提示词、保存的记忆或额外的启动参数。</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>在服务器确认完成之前，回答已被截断。</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>准备附件时聊天或连接发生更改。未发送你的消息。</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>来自链接</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>移动面板</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>调整面板大小</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 可打开面板菜单。选择“移动”或“调整大小”，使用方向键，然后按 Enter 完成或按 Esc 取消。</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json 是由较新版本的 Hotline (版本 {0}；此版本写入 {1}) 编写的，因此 Hotline 不会覆盖它。请更新 Hotline，或手动编辑该文件。</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json 是由较新版本的 Hotline (版本 {0}) 编写的，因此 Hotline 不会覆盖它。请更新 Hotline，或手动编辑该文件。</value></data>
 </root>

@@ -26,7 +26,6 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
     private string? _selectionId;
     private bool _regionCaptureOpen;
     private bool _ocrMissingNoted;
-    private readonly HashSet<string> _ocrDone = [];
 
     public IReadOnlyList<Attachment> Items => tray.Items;
 
@@ -73,11 +72,14 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
 
     private async Task CaptureAsync(bool window)
     {
-        var target = popup.PreviousForeground;
-        var usedWindow = window && ScreenCapture.TryGetWindowRect(target, out _);
+        var target = popup.RevalidateCaptureTarget();
+        var usedWindow = false;
         var png = await popup.WithHiddenAsync(async () =>
         {
-            var rect = usedWindow && ScreenCapture.TryGetWindowRect(target, out var w) ? w : ScreenCapture.MonitorRect(target);
+            target = popup.RevalidateCaptureTarget(target);
+            Hotline.Core.Windowing.RectI w = default;
+            usedWindow = window && ScreenCapture.TryGetWindowRect(target, out w);
+            var rect = usedWindow ? w : ScreenCapture.MonitorRect(target != 0 ? target : popup.Hwnd);
             var bgra = ScreenCapture.GrabBgra(rect);
             return await ImageProcessor.EncodeBgraPngAsync(bgra, rect.Width, rect.Height, settings.Chat.MaxImagePixels);
         });
@@ -98,7 +100,8 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             {
                 var monitor = ScreenCapture.CursorMonitorRect();
                 var bgra = ScreenCapture.GrabBgra(monitor);
-                var picker = new RegionSelectWindow((byte[])bgra.Clone(), monitor);
+                // The picker makes alpha opaque in place; EncodeBgraPngAsync ignores alpha.
+                var picker = new RegionSelectWindow(bgra, monitor);
                 if (await picker.SelectAsync() is not { } r) return null;
                 var crop = Hotline.Core.Windowing.RegionMath.CropBgra(bgra, monitor.Width, monitor.Height, r);
                 return await ImageProcessor.EncodeBgraPngAsync(crop, r.Width, r.Height, settings.Chat.MaxImagePixels);
@@ -154,6 +157,7 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
     {
         var reference = await content.GetBitmapAsync();
         using var stream = await reference.OpenReadAsync();
+        AttachmentFactory.RequireBitmapSize(stream.Size);
         var bytes = new byte[stream.Size];
         using var reader = new DataReader(stream);
         await reader.LoadAsync((uint)stream.Size);
@@ -175,9 +179,11 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             try
             {
                 var size = (await file.GetBasicPropertiesAsync()).Size;
-                if (size > (ulong)Limits.MaxImageBytes)
+                var maxInput = AttachmentFactory.IsImage(file.Name, file.ContentType)
+                    ? AttachmentFactory.MaxBitmapInputBytes : (ulong)Limits.MaxImageBytes;
+                if (size > maxInput)
                 {
-                    notices.Show(L.F(Strings.Attach_TooLarge, file.Name, size / (1024 * 1024), Limits.MaxImageBytes / (1024 * 1024)), InfoBarSeverity.Warning);
+                    notices.Show(L.F(Strings.Attach_TooLarge, file.Name, size / (1024 * 1024), maxInput / (1024 * 1024)), InfoBarSeverity.Warning);
                     continue;
                 }
                 var buffer = await FileIO.ReadBufferAsync(file);
@@ -197,12 +203,10 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
         Attachment attachment;
         try
         {
-            attachment = AttachmentFactory.FromBytes(name, string.IsNullOrEmpty(mime) ? null : mime, data, Limits);
-            if (attachment.Kind == AttachmentKind.Image)
-            {
-                var png = await ImageProcessor.NormalizeAsync(attachment.Data, settings.Chat.MaxImagePixels);
-                attachment = attachment with { Data = png, MimeType = "image/png", Name = Path.ChangeExtension(attachment.Name, ".png") };
-            }
+            attachment = AttachmentFactory.IsImage(name, mime)
+                ? await AttachmentFactory.FromImageAsync(name, data, Limits,
+                    bytes => ImageProcessor.NormalizeAsync(bytes, settings.Chat.MaxImagePixels))
+                : AttachmentFactory.FromBytes(name, string.IsNullOrEmpty(mime) ? null : mime, data, Limits);
         }
         catch (AttachmentRejectedException ex) { notices.Show(ex.Message, InfoBarSeverity.Warning); return; }
         catch (Exception ex) when (ex is ArgumentException or COMException) { notices.Show(L.F(Strings.Attach_NotImage, name), InfoBarSeverity.Warning); return; }
@@ -221,6 +225,19 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
         }
         if (Add(attachment)) _selectionId = attachment.Id;
         else Refresh();
+    }
+
+    public void AttachActionText(Hotline.Core.Activation.AppActionRequest action)
+    {
+        if (action.Text is not { } text) return;
+        if (action.FromWindows) AttachSelection(text, null);
+        else if (action.TextAttachment() is { } attachment) Add(attachment);
+    }
+
+    public void Consume(IReadOnlyList<Attachment> snapshot)
+    {
+        tray.Consume(snapshot);
+        Refresh();
     }
 
     private bool Add(Attachment attachment)
@@ -263,58 +280,41 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
 
     // ---- OCR before sending ---------------------------------------------------------------------
 
-    /// <summary>
-    /// Applies chat.ocr to the tray before a send: images become (or gain) a "Text in …" attachment. False when the
-    /// send should stop (a notice says why).
-    /// </summary>
-    public async Task<bool> PrepareForSendAsync(bool takesImages)
+    /// <summary>Prepare detached attachments from the send snapshot. Null stops the send and retains the tray.</summary>
+    public async Task<IReadOnlyList<Attachment>?> PrepareForSendAsync(IReadOnlyList<Attachment> snapshot, bool takesImages)
     {
-        var images = tray.Items.Where(a => a.Kind == AttachmentKind.Image).ToList();
-        if (images.Count == 0) return true;
+        var images = snapshot.Where(a => a.Kind == AttachmentKind.Image).ToList();
         var (run, keepImages) = OcrPlan.Decide(settings.Chat.Ocr, takesImages);
-        if (!run) return true;
+        if (images.Count == 0 || !run) return snapshot;
         if (OcrReader.TryCreateEngine() is not { } engine)
         {
             if (!_ocrMissingNoted || !takesImages)
                 notices.Show(Strings.Attach_NoOcr, InfoBarSeverity.Warning);
             _ocrMissingNoted = true;
-            return takesImages; // an image model still gets the image; a text-only one can't take it
+            return takesImages ? snapshot : null;
         }
-        var ok = true;
-        try
+        var prepared = new AttachmentTray(Limits);
+        foreach (var attachment in snapshot) prepared.Add(attachment);
+        foreach (var image in images)
         {
-            foreach (var image in images)
+            string text;
+            try { text = await OcrReader.RecognizeAsync(engine, image.Data); }
+            catch (Exception ex) when (ex is ArgumentException or COMException)
             {
-                if (_ocrDone.Contains(image.Id))
-                {
-                    // Already read on an earlier try to send; its text is attached. A text-only model now: drop the image.
-                    if (!keepImages) { tray.Remove(image.Id); _ocrDone.Remove(image.Id); }
-                    continue;
-                }
-                string text;
-                try { text = await OcrReader.RecognizeAsync(engine, image.Data); }
-                catch (Exception ex) when (ex is ArgumentException or COMException)
-                {
-                    log.Error($"OCR of {image.Name} failed", ex);
-                    notices.Show(L.F(Strings.Attach_OcrFailed, image.Name), InfoBarSeverity.Warning);
-                    ok &= takesImages; // an image model still gets the image; carry on with the others
-                    continue;
-                }
-                var textAttachment = OcrPlan.TextAttachment(image.Name, text);
-                if (!keepImages) tray.Remove(image.Id); // replacing: the count stays the same
-                try { tray.Add(textAttachment); }
-                catch (AttachmentRejectedException ex)
-                {
-                    if (!keepImages) tray.Add(image); // put it back: a rejection never loses the image
-                    notices.Show(ex.Message, InfoBarSeverity.Warning);
-                    ok = false;
-                    break;
-                }
-                if (keepImages) _ocrDone.Add(image.Id);
-                log.Info($"OCR: {text.Length} chars from {image.Name} ({(keepImages ? "with" : "instead of")} the image)");
+                log.Error($"OCR of {image.Name} failed", ex);
+                notices.Show(L.F(Strings.Attach_OcrFailed, image.Name), InfoBarSeverity.Warning);
+                if (!takesImages) return null;
+                continue;
             }
+            if (!keepImages) prepared.Remove(image.Id);
+            try { prepared.Add(OcrPlan.TextAttachment(image.Name, text)); }
+            catch (AttachmentRejectedException ex)
+            {
+                notices.Show(ex.Message, InfoBarSeverity.Warning);
+                return null;
+            }
+            log.Info($"OCR: {text.Length} chars from {image.Name} ({(keepImages ? "with" : "instead of")} the image)");
         }
-        finally { Refresh(); }
-        return ok;
+        return prepared.TakeAll();
     }
 }

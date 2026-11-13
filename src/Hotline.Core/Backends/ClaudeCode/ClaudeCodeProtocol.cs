@@ -29,7 +29,7 @@ public static class ClaudeCodeProtocol
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort)) args.AddRange(["--effort", effort]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["--append-system-prompt", systemPrompt.Trim()]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries), chatOnly);
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, CliArguments.SplitExtra(p.ExtraArgs), chatOnly);
         if (chatOnly)
         {
             // Chat only: no tools, and none of the user's settings/plugins/hooks/MCP servers. (Not --bare: it never

@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>否</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>停止回答</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答產生時用來停止的按鍵 (Enter 永遠不會停止;[傳送] 按鈕也可停止)。單一按鍵 (Esc) 或組合鍵,例如 Ctrl+. —— 未在產生回答時,Esc 會隱藏面板。</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>面板命令已在使用此快速鍵。請先變更或清除該命令的快速鍵，或選擇其他快速鍵。</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>快速鍵無效 (範例:Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>記憶</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>每個聊天都會讀取 .hotline 資料夾中的 memory.md (「/remember 某件事」會新增一行)。</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **非同步優先：** 文字更新取代了許多會議，書面決策也能傳達給更多人。
 - **文件發揮效益：** 完善記錄文件的團隊，只需數天即可帶領新人上手，而非數週。
 - **規劃實體相聚：** 偶遇交流的機會減少，因此公司每季都會特別安排實體見面時間。</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>檢閱程式與權限</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>此備份包含無需詢問即可執行程式或允許工具的設定。請檢閱下方的詳細資料。僅在信任這些設定時才進行匯入。</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>已取消匯入：程式與權限需要確認。</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals 區段必須是 JSON 物件。</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>設定變更正在等待 settings.json 變成可讀取。</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>無法啟動 {0}，因為其啟動命令過長。請縮短系統提示、儲存的記憶或額外的啟動引數。</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>在伺服器確認完成之前，回答已被截斷。</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>準備附件時聊天或連線發生變更。未傳送您的訊息。</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>從連結</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>移動面板</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>調整面板大小</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 可開啟面板功能表。選擇「移動」或「調整大小」，使用方向鍵，然後按 Enter 完成或按 Esc 取消。</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json 是由較新版本的 Hotline (版本 {0}；此版本寫入 {1}) 所撰寫，因此 Hotline 不會覆寫它。請更新 Hotline，或手動編輯此檔案。</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json 是由較新版本的 Hotline (版本 {0}) 所撰寫，因此 Hotline 不會覆寫它。請更新 Hotline，或手動編輯此檔案。</value></data>
 </root>

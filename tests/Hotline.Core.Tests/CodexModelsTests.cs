@@ -130,7 +130,6 @@ public class CodexModelsTests
     {
         Assert.Equal("gpt-6.1-sol", CodexModels.Curated[0].Id);
         Assert.Equal(8, CodexModels.Curated.Count);
-        Assert.True(ConnectionTypes.Of(BackendType.Codex).ListsModels);
         Assert.Contains("max", CodexProtocol.EffortLevels);
         Assert.Contains("ultra", CodexProtocol.EffortLevels);
     }

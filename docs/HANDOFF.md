@@ -20,7 +20,8 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   › Store, run 43164221390, artifact `hotline-store-0.6.3.0`, submit off) and is **not uploaded**; the owner uploads by hand and fills
   each language's listing from `store/listing.md` (the "additional languages" section is gone: one listing per package language).
   Rebuild it after the merge if the code changed. Otherwise no Store bundles until just short of 1.0 (owner, 2026-10-17).
-- **Schema freeze (S1) is NOT done:** the first job of the road to 1.0; the plan is [simplification-plan.md](simplification-plan.md).
+- **Schema freeze (S1) is NOT done:** the first job of the road to 1.0; the plan and the owner's decisions (2026-11-12, reviewed with
+  Fable) are in [simplification-plan.md](simplification-plan.md).
 - **Tests:** 2,740 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`; commands and the hand-test
   checklists: [TESTING.md](TESTING.md).
 - **Reviews:** 2026-11-12 whole-codebase review by Fable 5.2 and Astra (bugs), Sol and Sonnet (design, testing, simplification, merged
@@ -64,43 +65,21 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   button and click another app (stops listening), stay silent 30 s (stops); tray icon via keyboard (Tab to the tray, Enter); a
   hand-edited newer `settings.json` (`"schemaVersion": 99`) is not overwritten and says so.
 - **Findings from the 2026-11-12 reviews not fixed** (Fable and Astra bugs; the design ones are in [simplification-plan.md](simplification-plan.md)):
-  - **Update channel gating:** a hand-promoted `stable` appinstaller, push builds as prereleases, SHA-pinned actions, pinned
-    `wingetcreate` (W5 F23). Today every code push publishes and the appinstaller follows it.
+  - Done in PR #60: SHA-pinned actions, pinned and hash-checked `wingetcreate`, CI builds the MSIX, `build-msix.sh` signs by
+    thumbprint (no password on a command line), timestamps and builds from a staged copy (F24). **Update-channel gating** is PR #63
+    (stacked on #60, merge right after it): prereleases on push, Actions › Promote makes a release stable.
+  - Toast text: owner chose a settings key, default title-only; part of S1. Test gaps: deferred to plan step 5 (Core decisions).
   - **`toolbar.json` lossless writer** and a version-aware save for every family: part of S1 (the 0.6.3 guard only refuses to overwrite).
-  - The Windows toast shows the answer text (a title-only option was proposed).
-  - `build-msix.sh` takes the signing password on the command line and does not timestamp; `ci.yml` never builds the MSIX; `build-msix.sh`
-    staging (F24).
   - **Test gaps:** `ClipboardCopy` and `SelectionReader` logic, `OnPanelKey` routing, attachment intake, flyout hold counting,
     packaging checks (the Core decisions in simplification-plan step 5 close most of them).
   - Smaller items from the Fable list not covered by any fix: check `docs/` and the Fable findings file
     (`~/AppData/Local/Temp/claude/.../scratchpad/fable-findings.md`, machine-local) if you need the full text; the reports of the Sol
     confirm phase are in `~/.agent-jobs/jobs/<id>/final.txt` (W1 979681f0, W2 14dac610, W3 c70e617d, W4 a2d6d989, W5 9943d62e), Sol
     design review 16df04d0, Sonnet review a920fbc2.
-- **Fable 5.2 toolbar review (2026-11-12, read-only, nothing reproduced in the running app; no high finding, no toolbar.json or icon
-  loss path) - TO FIX**, each with a failing test first where Core can hold it:
-  - **T1 (medium)** `ToolbarRenderer.cs:267-281` with `ToolbarLayout.cs:97-102`, `ToolbarPlan.cs:169,245`: the 0.6.3 "shrink the last
-    right button to one cell" exists only in Core. The renderer never reads `Fit.ShrunkLastRight` or `RowLayout.ButtonWidths`, so the
-    button is drawn full width (about 7 DIP clipped at `window.minWidth` 200 px / 150%; pickers sized too wide). Fix: apply
-    `ButtonWidths[id]` to each shown button in `Fit`, add `ShrunkLastRight` to the `Row.Arranged` key, add a renderer or self-test check
-    that drawn widths equal `ButtonWidths`. (This item belongs to the Flash change in PR #60: fix it before merging.)
-  - T2 (low) `SettingsReset.cs:107`: the `ToolbarFile.Save` return (newer-version refusal) is ignored, so Reset reports success on a
-    `"version": 3` toolbar.json. Treat a non-null result as failed.
-  - T3 (low) `SettingsWindow.Extras.cs:37,51`: a stale-fingerprint shortcut save drops the entry silently; show the `Bar_ChangedOnDisk`
-    notice. Also load `toolbar.json` once per page, not once per row (14 loads and SHA-256 per page build).
-  - T4 (low) `Hotkey.cs:28-35`, `ChatShortcuts.cs:60-72`, `ChatPresenter.cs:234-238`: a toolbar shortcut may be Ctrl+V, C, X, A, Z or
-    Ctrl+Tab and then steals the editing key from the message box. Reject a reserved set in `TryParseToolbarShortcut` with a warning.
-  - T5 (low) `SettingsSchema.cs:187-189`: the Stop shortcut row does not check toolbar bindings, so Stop = Ctrl+N silently disables New
-    chat's Ctrl+N. Validate against requested bindings or show the conflict.
-  - T6 (low) `ToolbarRenderer.cs:146-151`: a picker shortcut cycles and saves the model or default connection even when the picker is not
-    on the bar or has no room. Skip it then, or show a notice naming the new value.
-  - T7 (low) `ToolbarFile.cs:16-47`: `LegacyShortcuts` caches settings.json `chat.shortcuts` per path for the life of the process, so a
-    reset or hand edit is ignored and the next toolbar.json load can resurrect old shortcuts (cache confirmed, reset path not traced).
-    Drop the cache or clear it on reset and on settings.json change (goes away with S1).
-  - T8 (low) `CustomIcons.cs:111`, `ToolbarQuadrantEditor.Custom.cs:71-75`: deleting a button removes `<id>.png` but leaves the
-    `<id>.png.<stamp>.bak` copies (up to 10) and `.prev`; a new button with that id inherits them. Delete them or document it.
-  - Test gaps: renderer honouring `ButtonWidths`; the `LegacyShortcuts` cache; Reset on a newer toolbar.json; reserved combos; Stop
-    colliding with a toolbar binding from the Settings side. Not covered by the review: `SettingsPackage` import and export of
-    toolbar.json and icons, `PanelSelfTest`, `PopupWindow.xaml` styles.
+- **Fable 5.2 toolbar review T1-T8: fixed in PR #60** (tests first where Core holds them; T1 proven red then green by the self-test's
+  drawn-width check). Hand-test: a shortcut save after editing toolbar.json by hand shows the "changed on disk" notice (T3); Settings
+  refuses Stop = Ctrl+N with the conflict message (T5); with the model picker off the bar, Ctrl+M does nothing (T6, a change: hidden
+  pickers no longer cycle).
 - **Store images (2026-11-12): all 17 sets are done and reviewed.** The zh-Hans and zh-Hant panels were recaptured with the 0.6.3
   build; a hydrogen pass over all 102 images (plus my own look at the fixed ones) found: caption wrap and line height (fixed in
   `store/art/art.html`: French spaces before `: ; ! ?` are non-breaking, Devanagari lines get line-height 1.4), the slash scene
@@ -109,10 +88,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   box (a real app bug from PR #60, fixed there: `KeyboardAcceleratorPlacementMode.Hidden`). The images are in
   `C:/Users/pmadd/Git/hotline/artifacts/store/<lang>/` (git-ignored); the panel captures are in `artifacts/store/panels/<lang>/`.
   Trap fixed: composing in another checkout silently made screenshots without the app panel when its `artifacts/store/panels/<lang>/`
-  was missing; `scripts/lib/store-text.py` now stops with a message. **Still open:** the French Settings picture
-  (`fr/screenshot-4.png`) shows the sidebar label "Conversation et histor" clipped: a real app layout issue (the Settings navigation
-  pane clips long labels in some languages); fix the pane (wrap or widen) or shorten the string, then recapture `fr` with
-  `bash scripts/make-store-panels.sh fr` and `bash scripts/make-store-localized.sh fr`. Check the other languages' pane for the same.
+  was missing; `scripts/lib/store-text.py` now stops with a message. The French sidebar clipping is fixed in PR #60 (the pane widens
+  to its longest label: fr 238, uk 215, tr 216 DIP; the self-test checks all 17 languages). `fr/screenshot-4.png` still shows the old
+  clipping: recapture with `bash scripts/make-store-panels.sh fr` and `bash scripts/make-store-localized.sh fr` before the next Store upload.
 - **Interface strings:** all new keys are translated in 16 languages by model (Flash); no native review (see TRANSLATING.md).
 - **Cleanup left on this PC:** agent worktrees and branches (`codex/*`, `agy/*`, under `Git/hotline.worktrees/review-fixes.worktrees`),
   the integration worktree `Git/hotline.worktrees/review-fixes`, and an empty locked folder `Git/hotline.worktrees/handoff-capture`.

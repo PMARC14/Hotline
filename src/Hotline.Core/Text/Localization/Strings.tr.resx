@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Hayır</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Yanıtı durdur</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Yazılırken bir yanıtı durduran tuş (Enter asla durdurmaz; Gönder düğmesi de durdurur). Tek bir tuş (Esc) veya Ctrl+. gibi bir kombinasyon — yanıtlanan bir şey yokken Esc paneli gizler.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Bir panel komutu bu kısayolu zaten kullanıyor. Önce o komutun kısayolunu değiştirin veya temizleyin ya da başka bir kısayol seçin.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Geçerli bir kısayol değil (örnekler: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Bellek</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Her sohbet .hotline klasörünüzdeki memory.md dosyasını görür ("/remember bir şey" bir satır ekler).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Önce asenkron:** Yazılı bilgilendirmeler birçok toplantının yerini alır ve yazılı kararlar daha çok kişiye ulaşır.
 - **Dokümantasyon kazandırır:** İyi dokümantasyon yapan ekipler yeni katılanları haftalar değil, günler içinde işe alıştırır.
 - **Planlı ortak zaman:** Ayaküstü sohbetler artık daha nadir olduğu için şirketler her çeyrekte yüz yüze günler planlar.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Programları ve izinleri gözden geçirin</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Bu yedekleme, programları çalıştırabilen veya sormadan araçlara izin verebilen ayarlar içeriyor. Aşağıdaki ayrıntıları gözden geçirin. Yalnızca bu ayarlara güveniyorsanız içe aktarın.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>İçe aktarma iptal edildi: programlar ve izinler onay gerektirir.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals bölümü bir JSON nesnesi olmalıdır.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Ayar değişiklikleri, settings.json dosyasının okunabilir hale gelmesini bekliyor.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Başlatma komutu çok uzun olduğundan {0} başlatılamadı. Sistem istemini, kayıtlı belleği veya ek başlatma bağımsız değişkenlerini kısaltın.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Sunucu tamamlandığını onaylamadan önce yanıt kesildi.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Ekler hazırlanırken sohbet veya bağlantı değişti. Mesajınız gönderilmedi.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>Bir bağlantıdan</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Paneli taşı</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Paneli yeniden boyutlandır</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 panel menüsünü açar. Taşı veya Yeniden Boyutlandır'ı seçin, ok tuşlarını kullanın, ardından bitirmek için Enter'a veya iptal etmek için Esc'ye basın.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json daha yeni bir Hotline sürümü tarafından yazıldı (sürüm {0}; bu sürüm {1} yazıyor), bu nedenle Hotline bu dosyanın üzerine yazmayacak. Hotline uygulamasını güncelleyin veya dosyayı el ile düzenleyin.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json daha yeni bir Hotline sürümü tarafından yazıldı (sürüm {0}), bu nedenle Hotline bu dosyanın üzerine yazmayacak. Hotline uygulamasını güncelleyin veya dosyayı el ile düzenleyin.</value></data>
 </root>

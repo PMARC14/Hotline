@@ -48,6 +48,29 @@ public sealed class CliSessionTests : TempDirTest
             keepTranscript) { BackendId = firstId };
 
     [Fact]
+    public async Task Api_detour_then_reopen_does_not_restore_old_cli_session()
+    {
+        var history = History();
+        var cli = new FakeCli();
+        var api = new FakeBackend(new ChatDelta("api answer"));
+        var c = Two(cli, "cli", api, "fake", history);
+        await c.SendAsync("first", []);
+        c.BackendId = "fake";
+        await c.SendAsync("second", []);
+        var meta = history.LoadMeta(c.ConversationId)!;
+        Assert.Null(meta.SessionId);
+        Assert.Null(meta.WorkingDirectory);
+        Assert.Equal("first", meta.Title);
+        Assert.Equal(4, meta.MessageCount);
+        var reopened = Two(cli, "cli", api, "fake", history);
+        Assert.True(reopened.Resume(c.ConversationId));
+        reopened.BackendId = "cli";
+        await reopened.SendAsync("third", []);
+        Assert.Null(cli.ResumeSeen.Last());
+        Assert.Equal(["first", "ok", "second", "api answer", "third"], cli.Calls.Last().Select(m => m.Text));
+    }
+
+    [Fact]
     public async Task The_reported_session_is_resumed_on_the_next_turn_and_recorded()
     {
         var cli = new FakeCli();

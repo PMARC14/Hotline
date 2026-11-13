@@ -178,7 +178,8 @@ public sealed class ToolbarProfileTests
                     Assert.Equal(buttons.Take(f.Fit.LeftShown).Concat(rightButtons.Skip(f.Fit.RightDropped)).Concat(row.HasMore ? [ToolbarModel.MoreId] : []).OrderBy(id => id), f.ButtonWidths.Keys.OrderBy(id => id));
                     foreach (var (id, width) in f.ButtonWidths)
                     {
-                        Assert.Equal(ToolbarPlan.Metrics(m, id).Width, width);
+                        var expected = f.Fit.ShrunkLastRight && rightButtons.Count > 0 && id == rightButtons[^1] ? overflow : ToolbarPlan.Metrics(m, id).Width;
+                        Assert.Equal(expected, width);
                         Assert.Equal(ToolbarPlan.BaseHeight, ToolbarPlan.Metrics(m, id).Height); // every button is one cell high
                         Assert.InRange(width, 0.5 * ToolbarPlan.BaseWidth, 4 * ToolbarPlan.BaseWidth);
                     }

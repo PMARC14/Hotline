@@ -332,4 +332,18 @@ public sealed class CustomIconsTests : TempDirTest
         Assert.Equal(["b2.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
         Assert.True(File.Exists(Path.Combine(_dir, "outside.png")));
     }
+
+    // Deleting a button's picture also drops its rollback copy (.prev: a new button with that id must never roll back to it);
+    // the stamped .bak copies are backups and stay (they are never read as a picture).
+    [Fact]
+    public void Delete_drops_the_rollback_copy_and_keeps_the_backups()
+    {
+        CustomIcons.Import(Write("a.png", Real16), Icons, "b1");
+        CustomIcons.Import(Write("b.png", Real16), Icons, "b1"); // replaced: a .prev until Commit, and a stamped .bak
+        Assert.Contains(Directory.GetFiles(Icons, "*", SearchOption.AllDirectories), f => f.EndsWith(".b1.prev"));
+        Assert.True(CustomIcons.Delete(Icons, "b1"));
+        var left = Directory.GetFiles(Icons).Select(Path.GetFileName).ToList();
+        Assert.DoesNotContain(left, f => f!.EndsWith(".prev") || f == "b1.png");
+        Assert.Contains(left, f => f!.StartsWith("b1.png.") && f.EndsWith(".bak"));
+    }
 }

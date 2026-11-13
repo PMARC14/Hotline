@@ -18,6 +18,7 @@ public partial class App : Application
 {
     private readonly AppActivationArguments _initialActivation;
     private FileLog? _log;
+    private ForegroundWindowTracker? _foreground;
     private PopupWindow? _popup;
     private ActivationRouter? _router;
     private TrayIcon? _tray;
@@ -54,7 +55,7 @@ public partial class App : Application
         AppDomain.CurrentDomain.UnhandledException += (_, e) =>
             _log?.Error($"FATAL (terminating={e.IsTerminating})", e.ExceptionObject as Exception);
         // Lifecycle breadcrumbs: Hotline once vanished during Modern Standby without a crash record.
-        AppDomain.CurrentDomain.ProcessExit += (_, _) => _log?.Info($"process exiting (exit code {Environment.ExitCode})");
+        AppDomain.CurrentDomain.ProcessExit += (_, _) => { _foreground?.Dispose(); _log?.Info($"process exiting (exit code {Environment.ExitCode})"); };
         Microsoft.Windows.System.Power.PowerManager.SystemSuspendStatusChanged += (_, _) =>
             _log?.Info($"system suspend status: {Microsoft.Windows.System.Power.PowerManager.SystemSuspendStatus}");
         TaskScheduler.UnobservedTaskException += (_, e) => _log?.Error("unobserved task exception", e.Exception);
@@ -122,10 +123,12 @@ public partial class App : Application
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var prompts = _prompts;
 
-        _popup = new PopupWindow(settings.Window, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose);
-        _router = new ActivationRouter(_popup, settings.Activation,
-            new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log);
         var job = new ChildProcessJob(_log);
+        _foreground = new ForegroundWindowTracker(_log, job.Owns);
+        _popup = new PopupWindow(settings.Window, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground);
+        _router = new ActivationRouter(_popup, settings.Activation,
+            new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log,
+            testLinksEnabled: () => _settingsService.Current.Diagnostics.TestLinks);
         _popup.IsOurProcess = job.Owns;
         // Chat-only CLI chats run in folders named "Hotline": Claude Code and Codex list sessions by folder, agy names its
         // project after it (Plan 9). The older folders held only the agent file and temporary attachments.
@@ -144,7 +147,7 @@ public partial class App : Application
         var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
             () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow)), // Update may Reload: UI thread
+            () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow, UpdateSource.Automatic)), // Update may Reload: UI thread
             fact => _popup.DispatcherQueue.TryEnqueue(() =>
                 _presenter?.Notice(L.F(Strings.Memory_Saved, fact), Microsoft.UI.Xaml.Controls.InfoBarSeverity.Success)));
         var deps = new BackendDeps(new SystemLineProcessFactory(job.Add), agyWorkspace, _log, File.Exists,
@@ -172,7 +175,7 @@ public partial class App : Application
         };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
         {
-            UpdateSettings = change => _settingsService!.Update(change),
+            UpdateSettings = change => _settingsService!.Update(change, UpdateSource.Automatic),
         };
         _popup.BeforeShow = foreground =>
         {
@@ -292,9 +295,10 @@ public partial class App : Application
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),
-            onRestart: () => { _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
+            onRestart: () => { _foreground?.Dispose(); _tray?.Dispose(); StopToolServers(); AppInstance.Restart(string.Empty); },
             onQuit: () =>
             {
+                _foreground?.Dispose();
                 _tray?.Dispose();
                 // Both at once: a slow backend shutdown must not use up the time the MCP servers need (they're not in the job).
                 try

@@ -666,7 +666,8 @@ public sealed class SettingsPackageTests : TempDirTest
             E("connections/local.json", Conn("local", "local")),           // key optional
             E("connections/claude.json", Conn("claude", "claudeCode")),    // CLI
         ]);
-        var result = Import(zip);
+        var plan = SettingsPackage.PrepareImport(Target, zip, SettingsPackage.All);
+        var result = SettingsPackage.Import(plan, Backups, executionConfirmed: true, Now);
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("haskey"), "k");
         Assert.Equal(["gpt"], SettingsPackage.ConnectionsNeedingKey(Target, result, secrets));
@@ -816,5 +817,183 @@ public sealed class SettingsPackageTests : TempDirTest
     {
         var text = SettingsPackage.LogName("actions/a\nb.md");
         Assert.DoesNotContain('\n', text);
+    }
+
+    // ---- execution review and confirmation (F1) ----------------------------------------------
+
+    [Fact]
+    public void Import_ExecutableConfigurationWithoutConfirmation_WritesNothing()
+    {
+        const string existingSettings = """{"window":{"widthPercent":45}}""";
+        const string existingMcp = """{"mcpServers":{},"approvals":{}}""";
+        Put(Target, "settings.json", existingSettings);
+        Put(Target, "mcp.json", existingMcp);
+
+        const string incomingSettings = """
+            // custom comment
+            {
+              "unknownTop": 42,
+              "chat": {
+                "continueIn": [
+                  { "kind": "app", "name": "Run Tool", "command": "C:\\Tools\\runner.exe --chat {file}" }
+                ],
+                "backends": [
+                  {
+                    "id": "legacy-cli",
+                    "type": "codex",
+                    "name": "Legacy Codex",
+                    "tools": "inherit",
+                    "approveAllTools": true,
+                    "cliPath": "C:\\CLI\\codex-custom.exe",
+                    "extraArgs": "--search",
+                    "args": ["--full-auto"]
+                  }
+                ]
+              }
+            }
+            """;
+        const string incomingMcp = """
+            {
+              "mcpServers": {
+                "fs": {
+                  "command": "npx",
+                  "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Work"],
+                  "cwd": "C:\\Work",
+                  "env": { "NODE_ENV": "production" },
+                  "disabled": false
+                }
+              },
+              "approvals": {
+                "fs/*": "allow"
+              }
+            }
+            """;
+        const string incomingConn = """
+            {
+              "id": "claude-dev",
+              "type": "claudeCode",
+              "name": "Claude Dev",
+              "tools": "inherit",
+              "approveAllTools": true,
+              "cliPath": "C:\\Tools\\claude.exe",
+              "extraArgs": "--mcp-config C:\\mcp.json",
+              "args": ["--verbose"],
+              "continueIn": [
+                { "kind": "app", "name": "Local Editor", "command": "C:\\Tools\\edit.exe {file}" }
+              ]
+            }
+            """;
+
+        using var zip = Zip([
+            E("settings.json", incomingSettings),
+            E("mcp.json", incomingMcp),
+            E("connections/claude-dev.json", incomingConn),
+        ]);
+
+        var plan = SettingsPackage.PrepareImport(Target, zip, SettingsPackage.All);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("mcp.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("npx", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("@modelcontextprotocol/server-filesystem", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\Work", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("NODE_ENV=production", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("enabled: true", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("fs/*", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("allow", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connections/claude-dev.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("claudeCode", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("inherit", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("approveAllTools: true", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("C:\\Tools\\claude.exe", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("--mcp-config C:\\mcp.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("--verbose", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\Tools\\edit.exe {file}", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("settings.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\Tools\\runner.exe --chat {file}", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\CLI\\codex-custom.exe", plan.ExecutionReview, StringComparison.Ordinal);
+
+        Assert.False(Directory.Exists(Backups));
+        Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
+        Assert.Equal(existingMcp, File.ReadAllText(Path.Combine(Target, "mcp.json")));
+        Assert.False(File.Exists(Path.Combine(Target, "connections", "claude-dev.json")));
+
+        var unconfirmed = SettingsPackage.Import(plan, Backups, executionConfirmed: false, Now);
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Backup_ExecutionConfirmationRequired, unconfirmed.Error);
+        Assert.Empty(unconfirmed.Written);
+        Assert.Null(unconfirmed.BackupFolder);
+        Assert.False(Directory.Exists(Backups));
+        Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
+        Assert.Equal(existingMcp, File.ReadAllText(Path.Combine(Target, "mcp.json")));
+        Assert.False(File.Exists(Path.Combine(Target, "connections", "claude-dev.json")));
+
+        zip.Position = 0;
+        var wrapperResult = Import(zip);
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Backup_ExecutionConfirmationRequired, wrapperResult.Error);
+        Assert.Empty(wrapperResult.Written);
+        Assert.False(Directory.Exists(Backups));
+        Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
+    }
+
+    [Fact]
+    public void Import_ConfirmedExecutableConfiguration_PreservesReviewedBytesEvenIfSourceChanges()
+    {
+        Put(Target, "mcp.json", """{"mcpServers":{},"approvals":{}}""");
+        const string reviewedMcp = "// reviewed comment\n{\"mcpServers\":{\"s\":{\"command\":\"npx\",\"args\":[\"a\"]}},\"approvals\":{\"s/*\":\"allow\"},\"extraField\":123}";
+        const string tamperedMcp = "{\"mcpServers\":{\"s\":{\"command\":\"evil.exe\"}},\"approvals\":{}}";
+
+        var zipPath = Path.Combine(_root, "pkg.zip");
+        using (var first = Zip([E("mcp.json", reviewedMcp)]))
+            File.WriteAllBytes(zipPath, first.ToArray());
+
+        PreparedImport plan;
+        using (var stream = new FileStream(zipPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            plan = SettingsPackage.PrepareImport(Target, stream, [SettingsCategory.Mcp]);
+
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("npx", plan.ExecutionReview, StringComparison.Ordinal);
+
+        // Replace the ZIP on disk before committing the prepared plan.
+        using (var second = Zip([E("mcp.json", tamperedMcp)]))
+            File.WriteAllBytes(zipPath, second.ToArray());
+
+        var result = SettingsPackage.Import(plan, Backups, executionConfirmed: true, Now);
+        Assert.Null(result.Error);
+        Assert.Equal(["mcp.json"], result.Written);
+        Assert.NotNull(result.BackupFolder);
+        Assert.Equal(reviewedMcp, File.ReadAllText(Path.Combine(Target, "mcp.json")));
+    }
+
+    [Fact]
+    public void PrepareImport_UnselectedExecutableCategories_DoNotEnterPlanOrRequireConfirmation()
+    {
+        using var zip = Zip([
+            E("mcp.json", """{"mcpServers":{"s":{"command":"npx"}},"approvals":{"s/*":"allow"}}"""),
+            E("connections/cli.json", """{"id":"cli","type":"claudeCode","name":"CLI","tools":"inherit","approveAllTools":true,"cliPath":"claude.exe"}"""),
+            E("settings.json", """{"chat":{"continueIn":[{"kind":"app","name":"App","command":"app.exe"}]}}"""),
+            E("prompts/default.md", "Safe prompt."),
+        ]);
+
+        var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Prompts]);
+        Assert.False(plan.RequiresExecutionConfirmation);
+        Assert.Equal("", plan.ExecutionReview);
+
+        var result = SettingsPackage.Import(plan, Backups, executionConfirmed: false, Now);
+        Assert.Null(result.Error);
+        Assert.Equal(["prompts/default.md"], result.Written);
+        Assert.Equal(["prompts/default.md"], Relative(Target));
+    }
+
+    [Fact]
+    public void PrepareImport_ExistingMcpInteractingWithImportedInheritConnection_RequiresConfirmation()
+    {
+        Put(Target, "mcp.json", """{"mcpServers":{"existing":{"command":"existing-server.exe"}},"approvals":{}}""");
+        using var zip = Zip([
+            E("connections/api.json", """{"id":"api","type":"openAiCompatible","name":"API","tools":"inherit"}"""),
+        ]);
+
+        var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Connections]);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("connections/api.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("existing-server.exe", plan.ExecutionReview, StringComparison.Ordinal);
     }
 }

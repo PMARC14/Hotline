@@ -42,6 +42,10 @@ panels = ["math", "summary", "slash", "settings"]
 # The language's own panel pictures (scripts/make-store-panels.sh) when they exist, else the English ones.
 own = os.path.join(root, "artifacts", "store", "panels", lang)
 folder = f"panels/{lang}/" if all(os.path.isfile(os.path.join(own, f"panel-{p}.png")) for p in panels) else ""
+for p in panels:  # a missing picture would silently compose a screenshot without the app panel
+    chosen = os.path.join(root, "artifacts", "store", *([folder.rstrip("/")] if folder else []), f"panel-{p}.png")
+    if not os.path.isfile(chosen):
+        sys.exit(f"no panel picture for {lang}: {chosen} (run scripts/make-store-panels.sh {lang}, or scripts/make-store-media.sh --no-video for the English fallback)")
 for i, (panel, caption) in enumerate(zip(panels, captions()), start=1):
     print(f"screenshot-{i}\t1920\t1080\tkind=shot&img=../../artifacts/store/{folder}panel-{panel}.png&caption={q(caption)}")
 

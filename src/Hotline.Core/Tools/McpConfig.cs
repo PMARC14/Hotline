@@ -60,6 +60,7 @@ public sealed class McpConfig
     public static McpConfig Parse(string json)
     {
         var root = JsonNode.Parse(json, documentOptions: ReadOptions) as JsonObject ?? throw new JsonException("mcp.json must be a JSON object");
+        RequireApprovalsObject(root);
         var servers = new List<McpServerConfig>();
         if (root["mcpServers"] is JsonObject list)
             foreach (var (name, node) in list)
@@ -89,6 +90,12 @@ public sealed class McpConfig
     /// <summary>A string value, or null when the node is missing or not a string (a hand-edit slip must not break the whole file).</summary>
     private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<string>(out var s) ? s : null;
 
+    private static void RequireApprovalsObject(JsonObject root)
+    {
+        if (root.ContainsKey("approvals") && root["approvals"] is not JsonObject)
+            throw new JsonException(Strings.Mcp_ApprovalsObjectRequired);
+    }
+
     /// <summary>
     /// Writes one approval rule, keeping everything else in the file. A rewrite loses comments and formatting, so the
     /// previous file is first copied to mcp.json.bak-&lt;timestamp&gt; (never overwrite a user's file without a backup).
@@ -105,6 +112,7 @@ public sealed class McpConfig
                 if (original is not null && parsed is not JsonObject)
                     throw new JsonException("mcp.json isn't a JSON object, so the approval wasn't saved (the file was left as it is).");
                 root = parsed as JsonObject ?? new JsonObject();
+                RequireApprovalsObject(root);
                 if (root["approvals"] is not JsonObject rules) root["approvals"] = rules = new JsonObject();
                 rules[key] = approval.ToString().ToLowerInvariant();
             }
@@ -116,9 +124,7 @@ public sealed class McpConfig
             if (updated == original) return; // the rule was already there
             if (original is not null) WriteBackup(path, original); // never replacing an earlier backup
             Directory.CreateDirectory(Path.GetDirectoryName(Path.GetFullPath(path))!);
-            var tmp = $"{path}.{Guid.NewGuid():N}.tmp";
-            File.WriteAllText(tmp, updated);
-            File.Move(tmp, path, overwrite: true);
+            DurableFile.WriteText(path, updated);
         }
     }
 
@@ -136,11 +142,11 @@ public sealed class McpConfig
                 using var writer = new StreamWriter(stream);
                 writer.Write(content);
                 writer.Flush();
-                stream.Flush();
+                stream.Flush(flushToDisk: true);
                 Settings.BackupFiles.Prune(path); // every approval saved is one more copy: keep the newest ten
                 return;
             }
-            catch (IOException) when (File.Exists(backup) && i < 100) { /* taken: try the next name */ }
+            catch (IOException ex) when ((ex.HResult & 0xffff) is 17 or 80 or 183 && File.Exists(backup) && i < 100) { /* taken: try the next name */ }
         }
     }
 }

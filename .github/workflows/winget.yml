@@ -24,11 +24,19 @@ jobs:
         env:
           WINGET_TOKEN: ${{ secrets.WINGET_TOKEN }}
           GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          EVENT: ${{ github.event_name }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          INPUT_TAG: ${{ inputs.tag }}
         run: |
           if (-not $env:WINGET_TOKEN) { throw 'Secret WINGET_TOKEN is not set (see the comment at the top of this workflow).' }
-          $tag = if ('${{ github.event_name }}' -eq 'release') { '${{ github.event.release.tag_name }}' } else { '${{ inputs.tag }}' }
+          $tag = if ($env:EVENT -eq 'release') { $env:RELEASE_TAG } else { $env:INPUT_TAG }
+          if ($tag -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+$') { throw 'Invalid release tag' }
           $version = $tag.TrimStart('v')
-          $msix = gh release view $tag --repo '${{ github.repository }}' --json assets --jq '.assets[] | select(.name | endswith(".msixbundle")) | .url' # x64 + ARM64 in one file
+          $msix = gh release view $tag --repo "$env:GH_REPO" --json assets --jq '.assets[] | select(.name | endswith(".msixbundle")) | .url' # x64 + ARM64 in one file
           if (-not $msix) { throw "Release $tag has no .msixbundle" }
-          Invoke-WebRequest https://aka.ms/wingetcreate/latest -OutFile wingetcreate.exe
+          Invoke-WebRequest https://github.com/microsoft/winget-create/releases/download/v1.28.1.0/wingetcreate.exe -OutFile wingetcreate.exe
+          $expectedHash = '63D980BA79E97042395BD6EB5992C2DB9E01E9E7A8A22958A95C288F27310413'
+          $actualHash = (Get-FileHash -Algorithm SHA256 -LiteralPath wingetcreate.exe).Hash
+          if ($actualHash -ne $expectedHash) { throw 'wingetcreate.exe SHA256 mismatch' }
           .\wingetcreate.exe update PMARC14.Hotline --version $version --urls $msix --submit --token $env:WINGET_TOKEN

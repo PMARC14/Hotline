@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>いいえ</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>回答を停止</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>回答の生成中にそれを止めるキーです (Enter では止まりません。送信ボタンでも止まります)。単独のキー (Esc) または Ctrl+. のような組み合わせ。回答中でないときは Esc でパネルが隠れます。</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>パネル コマンドが既にこのショートカットを使用しています。先にそのコマンドのショートカットを変更またはクリアするか、別のショートカットを選択してください。</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>有効なショートカットではありません (例: Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>メモリ</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>すべてのチャットが .hotline フォルダーの memory.md を参照します (「/remember 内容」で 1 行追加)。</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **非同期優先:** テキスト共有が多くの会議に代わり、文章化された決定事項がより多くの人に届きます。
 - **ドキュメントの価値:** ドキュメントが整ったチームなら、新メンバーの受け入れは数週間ではなく数日で完了します。
 - **計画的な対面時間:** 偶発的な会話が減ったため、企業は四半期ごとに対面で集まる日を設けています。</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>プログラムとアクセス許可の確認</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>このバックアップには、確認なしでプログラムを実行したりツールを許可したりできる設定が含まれています。以下の詳細を確認してください。これらの設定を信頼できる場合のみインポートしてください。</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>インポートがキャンセルされました: プログラムとアクセス許可には確認が必要です。</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals セクションは JSON オブジェクトである必要があります。</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>設定の変更は settings.json が読み取り可能になるのを待機しています。</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>起動コマンドが長すぎるため、{0} を開始できませんでした。システム プロンプト、保存されたメモリ、または追加の起動引数を短くしてください。</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>サーバーが完了を確認する前に回答が途切れました。</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>添付ファイルの準備中にチャットまたは接続が変更されました。メッセージは送信されませんでした。</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>リンクから</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>パネルの移動</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>パネルのサイズ変更</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 でパネル メニューを開きます。[移動] または [サイズ変更] を選択し、方向キーを使用して、Enter で完了するか Esc でキャンセルします。</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json は新しいバージョンの Hotline (バージョン {0}、このバージョンは {1}) で作成されたため、Hotline は上書きしません。Hotline を更新するか、ファイルを手動で編集してください。</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json は新しいバージョンの Hotline (バージョン {0}) で作成されたため、Hotline は上書きしません。Hotline を更新するか、ファイルを手動で編集してください。</value></data>
 </root>

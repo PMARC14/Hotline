@@ -13,7 +13,7 @@ same files). Comments and trailing commas are allowed.
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
-| `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file) |
+| `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file). Deleting the button leaves them; a new button with that id adds to them (they are never read as its picture) |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
@@ -83,13 +83,29 @@ reuses its saved key.
 | `chat.continueIn` | *(llama.cpp of a Local connection)* | The shared "Continue this chat in" targets (see *Continue in* below). Missing = the llama.cpp web UI at your first Local connection's address, or none |
 | `chat.voiceAutoSend` | `false` | With `voice`: send the message when you let go of the key (off: check it first, then press Enter) |
 | `chat.ocr` | `auto` | Screenshot text, read offline by Windows: `auto` sends it instead of the image to connections whose model can't take images; `always` also adds it alongside images; `off`. Needs a Windows language with "Optical character recognition" (Settings › Time & language › Language & region); Hotline says so if none is installed |
-| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: for apps that don't share text through UI Automation, also send Ctrl+C and restore your clipboard afterwards (never in terminals; whole-line copies from Visual Studio/VS Code are ignored; the app's copy can show up in clipboard history; opening can take ~0.5 s). `off`. Password fields are never read |
+| `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: also permits the restricted Ctrl+C fallback described below (opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
+| `diagnostics.testLinks` | `false` | Enables the diagnostic protocol links (`hotline://demo`, `hotline://selftest`, `hotline://grips`). Not in the Settings window |
+
+**Selection clipboard fallback.** Ctrl+C is sent only when UI Automation reports no text pattern, and never to terminals
+(Windows Terminal, console hosts, PuTTY, WezTerm, Alacritty, mintty, ConEmu and similar), remote desktop clients, virtual machine
+consoles, or editors and IDEs with an integrated terminal (VS Code, Cursor, Visual Studio, JetBrains IDEs): there Ctrl+C is an
+interrupt or is forwarded. The built-in list matches window classes and process names (case-insensitive); a window whose process
+cannot be identified gets no keystroke. UI Automation remains available in every mode except `off`.
+The clipboard must contain only supported memory formats (plain text, HTML, RTF, DIB images, file paths, locale and history/cloud exclusion flags),
+totalling at most 64 MB. Unsupported or unreadable formats skip Ctrl+C entirely: bitmap/metafile handles, OLE streams,
+Outlook attachments, zip-folder virtual files and unknown registered formats stay on the original clipboard.
+After the 450 ms copy deadline, Hotline watches for another two seconds and restores late copies owned by the target
+process, without attaching their text. A changed clipboard from another process is left alone, and the sequence and
+owner are checked again before restoration. Copies arriving after that watch, copies with no identifiable owner,
+and a clipboard that cannot be reopened for restoration remain unrestored. The target's copy can appear in clipboard history.
 
 settings.json is schema version 15. Upgrading a file below 14 converts widths from scaled units to real pixels: the old default
 `minWidth` 600 / `maxWidth` 1000 become 400 / 1200, other limits keep their numbers, and saved `width` / `chatWidth` are cleared (one
 notice; check Settings > Window). A lower version alone does not rewrite the file; a missing option or a Settings save does. An old
 `activation.copilotKey` and `window.layout` are dropped then ([copilot-key.md](copilot-key.md)).
+
+**Files from a newer Hotline.** When `settings.json` has a `schemaVersion` greater than 15, Hotline reads it leniently so settings remain usable in memory, but refuses to overwrite the file on save (connection files continue to save separately). Update Hotline, or edit the file by hand.
 
 **Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and
 that is not exactly what Hotline itself last wrote, it copies it to `<file>.<time>.bak` (never over an older copy; the newest 10 per
@@ -360,6 +376,8 @@ warning and the file is left as it is. To change the bar, write the version 2 fo
 the panel, under Settings › About › This PC and in the log. Saving from Settings writes the corrected file and keeps the one it replaces
 as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
 
+**Files from a newer Hotline.** When `toolbar.json` has a `version` greater than 2, Hotline reads it leniently with a warning, but refuses to overwrite the file on save. Update Hotline, or edit the file by hand.
+
 **Defaults.** Settings › Advanced › **Reset settings** restores `toolbar.json` too (see *Switching settings* above); `.defaults\toolbar.json` is
 rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 5); pin and
 the three captures on the bottom left, prompt and Continue in in the centre, recent, new chat and settings (two cells wide each) on the right.
@@ -370,8 +388,9 @@ These keys work anywhere in the panel, including the message box; they are separ
 Store built-in and picker bindings in the optional top-level `shortcuts` map in **toolbar.json** (version stays 2).
 Settings › Chat and history has a row for each command. English key names are case-insensitive; Ctrl, Alt or Win is required,
 except F1–F24, which may stand alone. Shift alone is insufficient; bare letters, Space and Tab are refused, including during
-key capture. Enter (with any modifiers) is reserved for the message box. `chat.stopShortcut` stays in settings.json and keeps
-its separate rule allowing Esc and bare keys. The defaults avoid Windows shortcuts and text editing keys (`Ctrl+C/V/X/A/Z/Y`).
+key capture. Enter (with any modifiers) and the message box's editing keys (`Ctrl+A/C/V/X/Y/Z`, `Ctrl+Tab`, `Ctrl+Backspace`,
+`Ctrl+Shift+Z`, `Ctrl+Shift+Tab`) are reserved for the message box: such a binding is refused with a warning. `chat.stopShortcut`
+stays in settings.json and keeps its separate rule allowing Esc and bare keys; Settings refuses a Stop that a panel command asked for.
 Toolbar shortcuts ignore key auto-repeat and Ctrl with right Alt (AltGr). During IME composition, toolbar shortcuts, Stop
 and Esc-to-hide are suspended; virtual key 0xE5 is also ignored.
 
@@ -399,7 +418,7 @@ per process, before settings normalization. The first toolbar save writes that m
 An explicit `"shortcuts": {}` selects shipped defaults and prevents legacy fallback. Other settings saves leave the legacy key
 untouched; new settings files do not include it. There is no separate
 quick-actions toolbar button: quick actions remain in the message box's `/` list. Disabled controls stay disabled for shortcuts,
-including the three pickers while an answer streams. Hidden buttons still work by shortcut; hidden pickers still cycle.
+including the three pickers while an answer streams. Hidden buttons still work by shortcut; a picker cycles only while it is drawn on the bar (a hidden one would change the model or connection unseen).
 
 **Conflicts:** `chat.stopShortcut` always has priority, even while idle. Otherwise the first shortcut in JSON order keeps the combo
 (aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
@@ -428,7 +447,11 @@ the Windows Credential Locker; enter them again on the new PC, the import lists 
 `mcp.json` is exported exactly as written, and its `env` values can hold secrets: keep such a package private.
 
 An import only accepts the file names above (anything else, `..` paths and oversized or damaged files refuse the package),
-checks every file's content, adds and replaces files and never deletes. Each file it replaces is first copied to
+checks every file's content, adds and replaces files and never deletes. When the selected categories contain or activate
+executable configuration (MCP server commands, arguments, working directories, environment overrides or approval rules,
+CLI or tool-enabled connections, `approveAllTools`, `cliPath`, `extraArgs`, `args`, or `Continue in` `app` commands),
+Settings > Backup shows the details for review and asks for confirmation before anything is written (Cancel is the default,
+and confirming writes the exact bytes that were reviewed). Each file it replaces is first copied to
 `backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. The content check is the one
 loading uses: a file with a wrong value or a word from a newer version is accepted (the app warns and goes on, as with a hand edit),
 a connection file whose `id` differs from its file name is accepted; only a file that is not a JSON object (or a connection with an
@@ -462,6 +485,8 @@ Developers: `hotline-action://ask?text=…` or `hotline-action://run/summarize?t
 
 ## Links
 
-`hotline://settings` opens the settings window, `hotline://tray` starts quietly in the tray, `hotline://demo` shows an
-example conversation, `hotline://selftest` renders a scripted conversation off-screen and builds every settings page
-(used by the smoke test; its variants are in [TESTING.md](TESTING.md)).
+`hotline://settings` opens the settings window and `hotline://tray` starts quietly in the tray. With `"diagnostics": { "testLinks": true }`
+in `settings.json`, `hotline://demo` shows an example conversation, `hotline://grips?show=1|0` toggles the Alt grips, and
+`hotline://selftest` renders a scripted conversation off-screen and builds every settings page (used by the smoke test; its variants
+are in [TESTING.md](TESTING.md)). Protocol `hotline://key` links never start or stop voice input; when a key action is set to `voice`,
+a protocol press opens the panel (without reading the selection) and dictation requires a physical key press.

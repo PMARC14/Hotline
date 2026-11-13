@@ -121,8 +121,11 @@ internal sealed class ChatPresenter
             {
                 var (anchor, width, chat) = _popup.CurrentSpot();
                 _updateSettings?.Invoke(s => { s.Window.Anchor = anchor; s.Window.Width = width; s.Window.ChatHeight = chat; });
-                _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
-                Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                if (_store.SettingsError is null && _store.WriteProblems.Count == 0)
+                {
+                    _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
+                    Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                }
             },
         };
         _grips.Initialize();
@@ -181,7 +184,7 @@ internal sealed class ChatPresenter
     /// </summary>
     public void RunAppAction(Hotline.Core.Activation.AppActionRequest action) => _tasks.Run("run the action", async () =>
     {
-        if (action.Text is { } text) _attachments.AttachSelection(text, null);
+        _attachments.AttachActionText(action);
         if (action.ImagePath is { } path)
         {
             var bytes = await File.ReadAllBytesAsync(path);
@@ -189,7 +192,7 @@ internal sealed class ChatPresenter
             if (path.StartsWith(Hotline.App.ActivationRouter.ActionImagesFolder, StringComparison.OrdinalIgnoreCase))
                 try { File.Delete(path); } catch (IOException) { } // our copy; the original stays where it was
         }
-        if (action.QuickAction is { } name) _composer.Text = $"/{name}";
+        _composer.Text = action.DraftAfter(_composer.Text);
         if (action.AutoSend) await SendAsync();
     });
 
@@ -289,18 +292,28 @@ internal sealed class ChatPresenter
 
     private async Task SendMessageAsync(string typed, SendRoute.Message message)
     {
+        var destination = _chat.DestinationVersion;
+        var snapshot = _attachments.Items.ToArray();
+        IReadOnlyList<Attachment> attachments;
         _preparingSend = true;
         try
         {
-            if (!await _attachments.PrepareForSendAsync(_chat.CurrentCapabilities?.Images ?? true)) return;
-            if (!_chat.CanAccept(_attachments.Items, out var reason))
+            var prepared = await _attachments.PrepareForSendAsync(snapshot, _chat.CurrentCapabilities?.Images ?? true);
+            if (destination != _chat.DestinationVersion)
+            {
+                _notices.Show(Strings.Chat_SendDestinationChanged, InfoBarSeverity.Warning);
+                return;
+            }
+            if (prepared is null) return;
+            if (!_chat.CanAccept(prepared, out var reason))
             {
                 _notices.Show(reason!, InfoBarSeverity.Warning); // draft stays in the box
                 return;
             }
+            attachments = prepared;
+            _attachments.Consume(snapshot);
         }
         finally { _preparingSend = false; }
-        var attachments = _attachments.TakeAll();
         if (_composer.Text == typed) _composer.Text = ""; // keep anything typed while OCR ran
         if (message.Action is { } action) _log.Info($"quick action /{action}");
         _log.Info($"chat send via {_chat.BackendId}: {message.Text.Length} chars, {attachments.Count} attachment(s)");

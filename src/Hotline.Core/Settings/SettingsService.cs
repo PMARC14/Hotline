@@ -1,6 +1,9 @@
 using Hotline.Core.Diagnostics;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Settings;
+
+public enum UpdateSource { Settings, Automatic }
 
 /// <summary>
 /// The single way to change settings at runtime: mutate, normalize, save, notify. Components keep references to
@@ -35,7 +38,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             log.Error("settings reset failed", ex);
             result = new ResetResult("", [], [ex.GetType().Name]);
         }
-        Reload(store.TryRead() ?? store.Load()); // Load when a scanner held the file a moment
+        Reload(store.TryRead() ?? store.Load(), force: true); // Load when a scanner held the file a moment
         log.Info($"settings reset ({(everything ? "everything" : "settings")}); backup in {result.Backup}"
                  + (result.Failed.Count > 0 ? $"; {result.Failed.Count} file(s) could not be handled" : ""));
         return result;
@@ -45,21 +48,34 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     /// Takes settings re-read from disk (the user edited settings.json) into the live objects other components hold.
     /// Returns false (and raises nothing) when nothing changed, e.g. for Hotline's own saves. Always called on the UI thread
     /// (the file watcher's timer, <see cref="Update"/> from Settings, <see cref="Reset"/>), which is why the live connection
-    /// list is changed in place.
+    /// list is changed in place. Pending automatic edits replay after a valid read; failed saves keep memory until a retry
+    /// succeeds. Reset uses force to discard pending edits and take the reset files.
     /// </summary>
-    public bool Reload(HotlineSettings fromDisk)
+    public bool Reload(HotlineSettings fromDisk, bool force = false)
     {
+        if (_unsaved && !force)
+        {
+            if (_automatic.Count > 0) SaveCurrent(_automaticRemoved);
+            return false;
+        }
+        if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); }
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
-        if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
-        if (System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == System.Text.Json.JsonSerializer.Serialize(Current, options)) return false;
-        var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options));
+        var previous = System.Text.Json.JsonSerializer.Serialize(Current, options);
+        if (_automatic.Count == 0 && System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == previous) return false;
+        var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
         CopyInto(fromDisk.Activation, Current.Activation);
         CopyInto(fromDisk.Diagnostics, Current.Diagnostics);
         CopyInto(fromDisk.Window, Current.Window);
         CopyInto(fromDisk.General, Current.General);
         MergeChat(fromDisk.Chat, Current.Chat);
         Current.SchemaVersion = fromDisk.SchemaVersion;
-        var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id == kv.Key) is not { } now
+        if (_automatic.Count > 0)
+        {
+            foreach (var change in _automatic) ApplyAutomatic(change);
+            SaveCurrent(_automaticRemoved);
+        }
+        if (System.Text.Json.JsonSerializer.Serialize(Current, options) == previous) return false;
+        var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id.Equals(kv.Key, StringComparison.OrdinalIgnoreCase)) is not { } now
                                          || System.Text.Json.JsonSerializer.Serialize(now, options) != kv.Value)
             .Select(kv => kv.Key).ToList();
         Changed?.Invoke();
@@ -73,7 +89,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     /// </summary>
     private static void MergeChat(ChatSettings from, ChatSettings to)
     {
-        var existing = to.Backends.ToDictionary(b => b.Id);
+        var existing = to.Backends.ToDictionary(b => b.Id, StringComparer.OrdinalIgnoreCase);
         var merged = new List<BackendProfile>();
         foreach (var profile in from.Backends)
         {
@@ -102,18 +118,38 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         }
     }
 
-    private DateTime _knownWriteUtc = DateTime.MinValue;
     private bool _unsaved; // the last save failed: memory is newer than the disk, so a re-read must not replace it
+    private readonly List<Action<HotlineSettings>> _automatic = [];
+    private readonly HashSet<string> _automaticRemoved = new(StringComparer.OrdinalIgnoreCase);
+
+    private void ApplyAutomatic(Action<HotlineSettings> change)
+    {
+        var before = Current.Chat.Backends.Select(b => b.Id).ToList();
+        change(Current);
+        SettingsStore.Normalize(Current);
+        var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _automaticRemoved.UnionWith(before.Where(id => !kept.Contains(id)));
+    }
 
     /// <summary>
     /// Applies the change in memory and saves it. Returns what the save could not do (empty when all went well); the same list is
-    /// raised as <see cref="SaveFailed"/>. The change itself always applies in memory.
+    /// raised as <see cref="SaveFailed"/>. The change itself always applies in memory. Automatic changes queue without writing
+    /// while settings.json is unreadable; explicit Settings edits retain the backed-up replacement path.
     /// </summary>
-    public IReadOnlyList<string> Update(Action<HotlineSettings> change)
+    public IReadOnlyList<string> Update(Action<HotlineSettings> change, UpdateSource source = UpdateSource.Settings)
     {
         // A hand edit saved moments ago (settings.json or a connection file) may not have been reloaded yet (the file watcher
         // debounces): take a fresh snapshot in first, so this save doesn't overwrite it or delete a file that was just added.
         var fromDisk = store.TryRead(); // once: it re-reads every connection file
+        if (fromDisk is null && source == UpdateSource.Automatic)
+        {
+            ApplyAutomatic(change);
+            _automatic.Add(change);
+            IReadOnlyList<string> deferred = [Strings.Settings_SaveDeferred];
+            Changed?.Invoke();
+            SaveFailed?.Invoke(deferred);
+            return deferred;
+        }
         if (fromDisk is not null && !_unsaved) Reload(fromDisk);
         var before = Current.Chat.Backends.Select(b => b.Id).ToList();
         change(Current);
@@ -121,15 +157,22 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         // Only a connection the change removed loses its file; one that merely isn't in memory yet is never deleted.
         var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var removed = before.Where(id => !kept.Contains(id)).ToList();
-        IReadOnlyList<string> problems = [];
+        var problems = SaveCurrent(removed.Concat(_automaticRemoved).ToList());
+        Changed?.Invoke();
+        return problems;
+    }
+
+    private IReadOnlyList<string> SaveCurrent(IEnumerable<string> removed)
+    {
+        IReadOnlyList<string> problems;
         try
         {
             // A file that isn't what this process wrote (a hand edit, half-finished or with ignored values) is copied to
             // <file>.<time>.bak by the store before it is replaced; without that copy it is left alone and a problem is listed.
             store.Save(Current, removed);
             _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
-            if (File.Exists(store.FilePath)) _knownWriteUtc = File.GetLastWriteTimeUtc(store.FilePath);
             problems = [.. store.WriteProblems];
+            if (!_unsaved) { _automatic.Clear(); _automaticRemoved.Clear(); }
             foreach (var problem in problems) log.Info($"settings: {problem}");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
@@ -138,7 +181,6 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             log.Error("saving settings failed", ex);
             problems = [ex.GetType().Name];
         }
-        Changed?.Invoke();
         if (problems.Count > 0) SaveFailed?.Invoke(problems);
         return problems;
     }

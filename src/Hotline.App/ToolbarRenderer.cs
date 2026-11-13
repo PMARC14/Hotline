@@ -33,6 +33,10 @@ internal sealed class ToolbarRenderer
         /// <summary>The buttons the user put in the more button's menu, when this row holds that button (they come first in its menu).</summary>
         public IReadOnlyList<string> UserMenu { get; set; } = [];
         public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers)? Arranged { get; set; }
+        /// <summary>The last fit's cell width of each shown button (<see cref="ToolbarPlan.RowLayout.ButtonWidths"/>): what is drawn,
+        /// including the last right button shrunk to one cell when the row is very narrow.</summary>
+        public IReadOnlyDictionary<string, double> Widths { get; set; } = new Dictionary<string, double>();
+        public bool ShrunkLastRight { get; set; }
     }
 
     private readonly PopupWindow _popup;
@@ -52,6 +56,8 @@ internal sealed class ToolbarRenderer
     private (double Room, IReadOnlyCollection<string> Available)? _lastFit;
 
     private readonly Dictionary<string, ComboBox> _pickers;
+    /// <summary>The last fit's picker widths (0 or missing = hidden or not on the bar).</summary>
+    private IReadOnlyDictionary<string, double> _pickerWidths = new Dictionary<string, double>();
 
     public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom, FileLog log)
     {
@@ -145,6 +151,9 @@ internal sealed class ToolbarRenderer
         }
         if (_pickers.TryGetValue(id, out var picker))
         {
+            // Only a picker on the bar with room to show (the last fit gave it a width): cycling a hidden one would change and save
+            // the model or default connection without the user seeing it.
+            if (_pickerWidths.GetValueOrDefault(id) <= 0) return;
             if (picker.IsEnabled && picker.Items.Count > 0)
                 picker.SelectedIndex = (picker.SelectedIndex + 1) % picker.Items.Count;
             return;
@@ -192,6 +201,7 @@ internal sealed class ToolbarRenderer
             row.Plan = ToolbarPlan.Row(model, top);
             row.UserMenu = row.Plan.HasMore ? ToolbarPlan.MenuItems(model) : [];
             row.Arranged = null;
+            (row.Widths, row.ShrunkLastRight) = (new Dictionary<string, double>(), false);
             Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.Stays(id)), rightDropped: 0, overflow: false, hiddenPickers: []); // as Fit counts them
             var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
@@ -268,6 +278,7 @@ internal sealed class ToolbarRenderer
     {
         _lastFit = (room, availablePickers);
         var widths = new Dictionary<string, double>();
+        _pickerWidths = widths;
         foreach (var (row, top) in new[] { (_top, true), (_bottom, false) })
         {
             if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
@@ -276,9 +287,35 @@ internal sealed class ToolbarRenderer
             var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers);
             var hidden = layout.PickerWidths.Where(p => p.Value <= 0).Select(p => p.Key).ToList();
             Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden);
+            (row.Widths, row.ShrunkLastRight) = (layout.ButtonWidths, layout.Fit.ShrunkLastRight);
+            ApplyWidths(row);
             foreach (var (id, width) in layout.PickerWidths) widths[id] = width;
         }
         return widths;
+    }
+
+    /// <summary>Sizes each shown button to its fitted cell (<see cref="Row.Widths"/>): normally its style's width (as <see cref="Restyle"/>
+    /// set it), one cell for a shrunk last right button. Only values that differ are set.</summary>
+    private void ApplyWidths(Row row)
+    {
+        foreach (var (id, cell) in row.Widths)
+        {
+            var element = Element(id);
+            var width = ToolbarPlan.Inner(cell);
+            if (element.Width != width) element.Width = width;
+        }
+    }
+
+    /// <summary>For the self-test: each shown button whose drawn width differs from its fitted cell (less the inset), and whether a
+    /// row shrank its last right button.</summary>
+    public (IReadOnlyList<string> Problems, bool AnyShrunk) DrawnWidths()
+    {
+        var problems = new List<string>();
+        foreach (var (row, label) in new[] { (_top, "top"), (_bottom, "bottom") })
+        foreach (var (id, cell) in row.Widths)
+                if (Element(id) is { ActualWidth: > 0 } e && Math.Abs(e.ActualWidth - ToolbarPlan.Inner(cell)) > 0.5)
+                    problems.Add($"{label} {id} is {e.ActualWidth} wide, fitted {ToolbarPlan.Inner(cell)}");
+        return (problems, _top.ShrunkLastRight || _bottom.ShrunkLastRight);
     }
 
     /// <summary>The row's menu button: its placed more item, else its automatic "⋯".</summary>
@@ -317,6 +354,9 @@ internal sealed class ToolbarRenderer
         var overflowStyle = model.Style with { Width = 1 };
         ApplyStyle(_top.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
         ApplyStyle(_bottom.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
+        // ApplyStyle set each style's own width: the fitted widths (a shrunk last right button) win until the next fit.
+        ApplyWidths(_top);
+        ApplyWidths(_bottom);
     }
 
     /// <summary>The outline's thickness: drawn inside the button's fixed width and height, so it never changes the layout.</summary>
@@ -409,9 +449,7 @@ internal sealed class ToolbarRenderer
             foreach (var id in row.Dropped) menu.Items.Add(Item(id, row));
             if (menu.Items.Count == 0) menu.Items.Add(new MenuFlyoutItem { Text = Strings.Bar_NothingHere, IsEnabled = false });
         };
-        IDisposable? hold = null;
-        menu.Opened += (_, _) => hold = _popup.HoldResize(); // a resize would close the menu
-        menu.Closed += (_, _) => { hold?.Dispose(); hold = null; };
+        _ = HoldFor(menu);
         return menu;
     }
 
@@ -459,19 +497,17 @@ internal sealed class ToolbarRenderer
         if (button.Flyout is { } flyout)
         {
             // Its own menu (the prompt list), opened at the row's menu button: the button itself isn't on screen.
-            var hold = _popup.HoldResize();
-            void Closed(object? s, object e) { flyout.Closed -= Closed; hold.Dispose(); }
-            flyout.Closed += Closed;
-            try { flyout.ShowAt(anchor); }
-            catch
-            {
-                Closed(null, EventArgs.Empty); // it never opened: release the hold now
-                throw;
-            }
-            if (!flyout.IsOpen) Closed(null, EventArgs.Empty);
+            HoldFor(flyout).ShowAt(anchor);
             return;
         }
         new ButtonAutomationPeer(button).Invoke(); // raises its Click: the same handlers as the button
+    }
+
+    private readonly Dictionary<Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase, FlyoutHold> _flyoutHolds = [];
+    private FlyoutHold HoldFor(Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase flyout)
+    {
+        if (!_flyoutHolds.TryGetValue(flyout, out var hold)) _flyoutHolds[flyout] = hold = new FlyoutHold(_popup, flyout);
+        return hold;
     }
 }
 

@@ -21,6 +21,12 @@ public sealed class SettingsStore(string directory)
     /// <summary>Connection files that couldn't be read (left untouched; never overwritten or deleted).</summary>
     public IReadOnlyList<string> BrokenConnectionFiles { get; private set; } = [];
 
+    /// <summary>
+    /// When the file on disk has a schemaVersion greater than <see cref="HotlineSettings.CurrentSchemaVersion"/>,
+    /// this holds that version; null when the file is on this version or older (or missing/unreadable).
+    /// </summary>
+    public int? NewerVersionFile { get; private set; }
+
     private List<string> _mainProblems = [];
     private List<string> _connectionProblems = [];
     private List<string> _writeProblems = [];
@@ -103,10 +109,16 @@ public sealed class SettingsStore(string directory)
     {
         try
         {
-            if (!File.Exists(FilePath)) return null;
+            if (!File.Exists(FilePath))
+            {
+                NewerVersionFile = null;
+                SettingsError = L.F(Strings.Settings_ProblemUnreadable, FileName, nameof(FileNotFoundException));
+                return null;
+            }
             var text = File.ReadAllText(FilePath);
             var (s, legacy, failure, _) = Parse(text);
-            if (s is null) { SettingsError = failure; return null; } // keep what is running; the problem is reported
+            if (s is null) { NewerVersionFile = null; SettingsError = failure; return null; } // keep what is running; the problem is reported
+            NewerVersionFile = s.SchemaVersion > HotlineSettings.CurrentSchemaVersion ? s.SchemaVersion : null;
             var (files, broken) = ReadConnectionFiles();
             BrokenConnectionFiles = broken; // a file broken (or fixed) since start: the next save must leave it alone
             if (legacy is not null)
@@ -116,13 +128,18 @@ public sealed class SettingsStore(string directory)
                 s.Chat.Order is { Count: > 0 } order ? order : LegacyOrder(legacy));
             return Normalize(s);
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        {
+            SettingsError = L.F(Strings.Settings_ProblemUnreadable, FileName, ex.GetType().Name);
+            return null;
+        }
     }
 
     public HotlineSettings Load()
     {
         if (!File.Exists(FilePath))
         {
+            NewerVersionFile = null;
             var fresh = new HotlineSettings();
             fresh.Chat.Backends = AssembleConnections(null, fresh.Chat.Order);
             Normalize(fresh);
@@ -137,6 +154,7 @@ public sealed class SettingsStore(string directory)
             var (s, legacy, failure, canRewrite) = Parse(text);
             if (s is null)
             {
+                NewerVersionFile = null;
                 // Keep the user's file as it is (they can fix it; a fix applies live) plus a copy, and run on defaults
                 // in memory. Earlier copies are never overwritten.
                 SettingsError = failure;
@@ -154,6 +172,7 @@ public sealed class SettingsStore(string directory)
                 fallback.Chat.Backends = AssembleConnections(null, fallback.Chat.Order);
                 return Normalize(fallback);
             }
+            NewerVersionFile = s.SchemaVersion > HotlineSettings.CurrentSchemaVersion ? s.SchemaVersion : null;
             s.Chat.Backends = AssembleConnections(legacy, s.Chat.Order);
             var migrateWidths = s.SchemaVersion < 14;
             Normalize(s);
@@ -162,7 +181,7 @@ public sealed class SettingsStore(string directory)
             // settings.json.<time>.bak; if that copy can't be made the file is left as it is and a problem is reported. An older
             // schemaVersion alone changes nothing, except for the pre-v14 width migration. A file with ignored values is not rewritten
             // for new options: the user's wording stays visible until they fix it.
-            if (legacy is not null || (canRewrite && (migrateWidths || HasMissingOptions(text, s))))
+            if (NewerVersionFile is null && (legacy is not null || (canRewrite && (migrateWidths || HasMissingOptions(text, s)))))
             {
                 // Connection files are written only when the old "backends" list moves into them; otherwise they
                 // stay exactly as they are, byte for byte.
@@ -296,6 +315,19 @@ public sealed class SettingsStore(string directory)
         }
     }
 
+    private int? DiskSchemaVersion()
+    {
+        try
+        {
+            if (!File.Exists(FilePath)) return null;
+            using var doc = JsonDocument.Parse(File.ReadAllText(FilePath), new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
+            if (doc.RootElement.ValueKind == JsonValueKind.Object && LastMember(doc.RootElement, "schemaVersion") is { ValueKind: JsonValueKind.Number } v && v.TryGetInt32(out var n) && n > HotlineSettings.CurrentSchemaVersion)
+                return n;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { }
+        return null;
+    }
+
     private bool SaveCore(HotlineSettings s, IEnumerable<string>? removed = null, bool connections = true, bool migrateConnections = false)
     {
         _writeProblems = [];
@@ -312,7 +344,15 @@ public sealed class SettingsStore(string directory)
             }
             _safeToReplace[Path.GetFullPath(FilePath)] = File.ReadAllText(FilePath);
         }
-        if (connections) SaveConnections(s.Chat.Backends, removed, migrateConnections); // first: if this fails, settings.json still has the old list
+        var connOk = !connections || SaveConnections(s.Chat.Backends, removed, migrateConnections);
+        var newer = NewerVersionFile ?? (s.SchemaVersion > HotlineSettings.CurrentSchemaVersion ? s.SchemaVersion : DiskSchemaVersion());
+        if (newer is not null)
+        {
+            NewerVersionFile = newer;
+            _writeProblems.Add(L.F(Strings.Settings_NewerVersion, newer.Value, HotlineSettings.CurrentSchemaVersion));
+            return false;
+        }
+        if (!connOk) return false;
         return ReplaceFile(FilePath, SerializeMain(s));
     }
 
@@ -336,9 +376,7 @@ public sealed class SettingsStore(string directory)
 
     private static void WriteAtomic(string path, string content)
     {
-        var tmp = path + ".tmp";
-        File.WriteAllText(tmp, content);
-        File.Move(tmp, path, overwrite: true);
+        DurableFile.WriteText(path, content);
     }
 
     /// <summary>
@@ -350,6 +388,17 @@ public sealed class SettingsStore(string directory)
     {
         var full = Path.GetFullPath(path);
         var name = Path.GetFileName(path);
+        if (string.Equals(full, Path.GetFullPath(FilePath), StringComparison.OrdinalIgnoreCase))
+        {
+            var newer = NewerVersionFile ?? DiskSchemaVersion();
+            if (newer is not null)
+            {
+                NewerVersionFile = newer;
+                var msg = L.F(Strings.Settings_NewerVersion, newer.Value, HotlineSettings.CurrentSchemaVersion);
+                if (!_writeProblems.Contains(msg)) _writeProblems.Add(msg);
+                return false;
+            }
+        }
         try
         {
             if (File.Exists(path))
@@ -460,7 +509,7 @@ public sealed class SettingsStore(string directory)
     /// Writes changed connection files (each back to the file it was read from; a new connection is named from its id) and
     /// deletes the files of removed ones. Two connections never share a file: the one that would is not saved and a problem is listed.
     /// </summary>
-    private void SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed, bool onlyNew = false)
+    private bool SaveConnections(List<BackendProfile> profiles, IEnumerable<string>? removed, bool onlyNew = false)
     {
         Directory.CreateDirectory(ConnectionsDirectory);
         var snapshot = profiles.ToList(); // other threads read the live list
@@ -490,7 +539,10 @@ public sealed class SettingsStore(string directory)
         {
             if (onlyNew && _sources.ContainsKey(p.Id)) continue;
             if (BrokenConnectionFiles.Any(b => string.Equals(Path.GetFullPath(b), path, StringComparison.OrdinalIgnoreCase)))
+            {
+                _writeProblems.Add(L.F(Strings.Settings_ProblemWriteFailed, Path.GetFileName(path), nameof(InvalidDataException)));
                 continue; // the user's unreadable file stays exactly as it is
+            }
             if (ReplaceFile(path, JsonSerializer.Serialize(p, ConnectionOptions))) _sources[p.Id] = path;
         }
 
@@ -520,6 +572,7 @@ public sealed class SettingsStore(string directory)
             _sources.Remove(id);
             _safeToReplace.Remove(path);
         }
+        return _writeProblems.Count == 0;
     }
 
     /// <summary>True when the file lacks an option the current schema has (compared by property names, recursively).</summary>
@@ -616,7 +669,8 @@ public sealed class SettingsStore(string directory)
         s.Window.MaxWidth = Math.Max(s.Window.MinWidth, SettingsRanges.All["WindowSettings.MaxWidth"].Clamp(s.Window.MaxWidth));
         s.Window.Height = SettingsRanges.All["WindowSettings.Height"].Clamp(s.Window.Height);
         s.Window.MaxHeightPercent = SettingsRanges.All["WindowSettings.MaxHeightPercent"].Clamp(s.Window.MaxHeightPercent);
-        s.SchemaVersion = HotlineSettings.CurrentSchemaVersion;
+        if (s.SchemaVersion <= HotlineSettings.CurrentSchemaVersion)
+            s.SchemaVersion = HotlineSettings.CurrentSchemaVersion;
         return s;
     }
 }

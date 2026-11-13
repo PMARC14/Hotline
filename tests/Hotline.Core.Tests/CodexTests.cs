@@ -376,4 +376,25 @@ public sealed class CodexTests : TempDirTest
         Assert.Equal(@"D:\tools\codex.exe", CodexLocator.Find(@"D:\tools\codex.exe", Exists, @"C:\bin", "x64"));
         Assert.Null(CodexLocator.Find(@"D:\missing.exe", Exists, @"C:\bin", "x64"));
     }
+
+    [Fact]
+    public async Task Oversized_command_is_rejected_before_start()
+    {
+        var b = New(prompt: _ => new string('x', 33_000));
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.NotConfigured, ex.Kind);
+        Assert.Contains("Codex", ex.Message);
+        Assert.Empty(_factory.Started);
+    }
+
+    [Fact]
+    public async Task Win32_error_206_maps_to_failed_never_not_installed()
+    {
+        _factory.Create = () => throw new System.ComponentModel.Win32Exception(206);
+        var b = New();
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.Failed, ex.Kind);
+        Assert.NotEqual(BackendErrorKind.NotInstalled, ex.Kind);
+        Assert.Contains("Codex", ex.Message);
+    }
 }

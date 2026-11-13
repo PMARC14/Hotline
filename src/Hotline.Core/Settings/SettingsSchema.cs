@@ -37,7 +37,11 @@ public sealed record TextItem(SettingsPage Page, string Header, string? Descript
     public Func<string, bool>? Validate { get; init; }
     /// <summary>What to say when <see cref="Validate"/> rejects a value.</summary>
     public string? Invalid { get; init; }
+    /// <summary>Rejects a value that conflicts with the rest of the settings (toolbar.json included: the caller sets
+    /// <c>Chat.Toolbar</c> from the file first).</summary>
     public Func<HotlineSettings, string, bool>? ValidateFor { get; init; }
+    /// <summary>What to say when <see cref="ValidateFor"/> rejects a value (null: <see cref="Invalid"/>).</summary>
+    public string? InvalidFor { get; init; }
     public Action<HotlineSettings>? Reset { get; init; }
     public string? ToolbarShortcutId { get; init; }
 }
@@ -186,7 +190,10 @@ public static class SettingsSchema
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
         new TextItem(SettingsPage.Chat, nameof(Strings.Set_Stop), nameof(Strings.Set_Stop_Desc),
             "Esc", s => s.Chat.StopShortcut, (s, v) => s.Chat.StopShortcut = string.IsNullOrWhiteSpace(v) ? "Esc" : v.Trim())
-        { Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = nameof(Strings.Set_Stop_Invalid) },
+        {
+            Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = nameof(Strings.Set_Stop_Invalid),
+            ValidateFor = (s, v) => ChatShortcuts.StopConflict(s.Chat.Toolbar, v) is null, InvalidFor = nameof(Strings.Set_Stop_Conflict),
+        },
         .. ChatShortcuts.Defaults.Select(pair => new TextItem(SettingsPage.Chat, "Bar_" + pair.Key, nameof(Strings.Set_Shortcuts_Desc),
             pair.Value, s => s.Chat.Toolbar.ShortcutText(pair.Key),
             (s, v) => s.Chat.Toolbar = Windowing.ToolbarEditor.SetShortcut(s.Chat.Toolbar, pair.Key, v?.Trim() ?? ""))

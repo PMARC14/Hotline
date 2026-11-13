@@ -8,6 +8,8 @@ BundleArtifacts/
 .vs/
 TestResults/
 .superpowers/
+__pycache__/
+*.pyc
 
 # Machine-specific / private notes (handoff)
 docs/local/

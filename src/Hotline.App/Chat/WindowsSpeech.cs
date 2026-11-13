@@ -24,7 +24,7 @@ internal sealed class WindowsSpeech : ISpeechSession, IDisposable
     private WindowsSpeech(SpeechRecognizer recognizer, DispatcherQueue ui)
     {
         (_recognizer, _ui) = (recognizer, ui);
-        // Long pauses are normal while thinking; the key (or Esc) ends the session.
+        // Long pauses are normal while thinking; the key (or Esc) ends hold sessions; tap mode enforces ~30s in VoiceInput.
         recognizer.ContinuousRecognitionSession.AutoStopSilenceTimeout = TimeSpan.FromMinutes(5);
         recognizer.HypothesisGenerated += (_, e) => _ui.TryEnqueue(() => Hypothesis?.Invoke(e.Hypothesis.Text));
         recognizer.ContinuousRecognitionSession.ResultGenerated += (_, e) =>

@@ -32,6 +32,8 @@ public static class BackupFiles
             catch (IOException ex) when ((ex.HResult & 0xffff) is 17 or 80 or 183 && File.Exists(target)) { last++; }
         }
         File.SetAttributes(target, FileAttributes.Normal);
+        using (var destination = new FileStream(target, FileMode.Open, FileAccess.Write, FileShare.Read))
+            destination.Flush(flushToDisk: true);
         Prune(path, keep);
         return target;
     }

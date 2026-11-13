@@ -16,6 +16,30 @@ public sealed class ChatControllerTests : TempDirTest
     }
 
     [Fact]
+    public async Task Destination_version_tracks_selection_new_chat_and_successful_resume()
+    {
+        var history = new HistoryStore(Path.Combine(_dir, "history"), new ManualTimeProvider());
+        var c = New(new FakeBackend(new ChatDelta("ok")), history);
+        long Version() => c.DestinationVersion;
+        var initial = Version();
+        c.BackendId = "fake";
+        Assert.Equal(initial, Version());
+        c.BackendId = "other";
+        c.BackendId = "fake";
+        Assert.True(Version() > initial);
+        await c.SendAsync("hi", []);
+        var saved = c.ConversationId;
+        var beforeNew = Version();
+        c.NewChat();
+        Assert.True(Version() > beforeNew);
+        var beforeResume = Version();
+        Assert.False(c.Resume("missing"));
+        Assert.Equal(beforeResume, Version());
+        Assert.True(c.Resume(saved));
+        Assert.True(Version() > beforeResume);
+    }
+
+    [Fact]
     public async Task Send_streams_deltas_and_records_both_messages()
     {
         var c = New(new FakeBackend(new ChatDelta("Hel"), new ChatDelta("lo")));

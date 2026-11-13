@@ -256,4 +256,28 @@ public sealed class SettingsStoreTests : TempDirTest
         reader.Wait();
         Assert.False(seenNull);
     }
+
+    [Fact]
+    public void TestLinks_DefaultsFalseAndReadsExplicitTrue()
+    {
+        WriteSettings("""{ "diagnostics": { "verboseLogging": false } }""");
+        var absent = New();
+        Assert.False(absent.Load().Diagnostics.TestLinks);
+        Assert.Empty(absent.SettingsProblems);
+
+        WriteSettings("""{ "diagnostics": { "testLinks": false } }""");
+        var explicitFalse = New();
+        Assert.False(explicitFalse.Load().Diagnostics.TestLinks);
+        Assert.Empty(explicitFalse.SettingsProblems);
+
+        WriteSettings("""{ "diagnostics": { "testLinks": true } }""");
+        var explicitTrue = New();
+        Assert.True(explicitTrue.Load().Diagnostics.TestLinks);
+        Assert.Empty(explicitTrue.SettingsProblems);
+
+        WriteSettings("""{ "diagnostics": { "testLinks": "yes" } }""");
+        var invalid = New();
+        Assert.False(invalid.Load().Diagnostics.TestLinks);
+        Assert.Contains(invalid.SettingsProblems, p => p.Contains("diagnostics.testLinks", StringComparison.Ordinal));
+    }
 }

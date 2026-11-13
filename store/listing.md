@@ -4,10 +4,11 @@ Copy each field into Partner Center › your app › the submission › **Store 
 text is in `store/listings/<language>.md` (model-drafted; paste each into that language's listing, see step 4 below). Limits are Partner
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
 and trailer, captured from the installed app); output in `artifacts/store/`. Per-language images:
-`scripts/make-store-media.sh --no-video` (captures the panels once; the PC's screen is in use for about 40 seconds) and then
+`scripts/make-store-panels.sh` (captures each language's panels; turns on diagnostics.testLinks temporarily) and then
 `scripts/make-store-localized.sh` (headless, no screen): `artifacts/store/<lang>/screenshot-1..4.png`, `poster-1440x2160.png` and
-`boxart-2160x2160.png` for English and the 16 languages, with each language's captions and tagline. The logos have no text and
-are shared. The panel in the pictures stays English.
+`boxart-2160x2160.png` for English and the 16 languages, with each language's captions, tagline and a panel in that language
+(the demo conversation is interface text). The logos have no text and are shared. For the English panel alone,
+`scripts/make-store-media.sh --no-video` is enough.
 
 The English **Short description** and **Description** are the owner's own text (the Partner Center version of 2026-11-08), with
 the real 0.6 features from the earlier longer description added in the same plain voice (Codex, Continue in, shortcuts,
@@ -15,10 +16,11 @@ bar layout, Backup). `store/listings/<language>.md` carry translations of both.
 
 ---
 
-## Submission guide: what to paste and change in Partner Center (version 0.6.0.0)
+## Submission guide: what to paste and change in Partner Center (Store version 0.6.N.0)
 
 Do these in order. "Paste" means copy the text from the section of this file with the same name. Nothing here is submitted until
-you press **Submit to the Store** at the end.
+you press **Submit to the Store** at the end. The Store version is the Hotline version with `.0` added (0.6.3 becomes 0.6.3.0);
+below, 0.6.N.0 stands for the bundle you built, and it must be higher than the last version uploaded.
 
 ### 1. Start the update
 
@@ -30,12 +32,13 @@ you press **Submit to the Store** at the end.
 
 ### 2. Packages
 
-1. Get the bundle: GitHub › Actions › **Store** workflow › the run for version 0.6.0.0 › artifact (or the copy in
-   `Downloads\Hotline-store-0.6.0\`). It holds one `.msixbundle` for x64 and ARM64. See [RELEASING.md](../docs/RELEASING.md).
+1. Get the bundle: GitHub › Actions › **Store** › **Run workflow** with the version in three parts (for example `0.6.3`, no `.0`)
+   and *Submit* off, then download the artifact `hotline-store-0.6.3.0` (it holds `HotlineAI_0.6.3.0_Store.msixbundle`, one file for
+   x64 and ARM64). See [RELEASING.md](../docs/RELEASING.md).
 2. **Packages** page: remove the old package, drag in the new `.msixbundle`, wait for validation (a few minutes). The version must
-   read 0.6.0.0 (Store versions end in `.0`).
-3. **Notes for certification** (the free-text box on the submission options page): paste the Generative AI text from *Properties*
-   below, plus: "Needs the user's own Claude/Codex/Gemini sign-in or API key to chat. To test without an account, add a connection of
+   read 0.6.N.0 (Store versions end in `.0`).
+3. **Notes for certification** (the free-text box under **Submission options**, near the end): paste the Generative AI text from
+   *Properties* below, plus: "Needs the user's own Claude/Codex/Gemini sign-in or API key to chat. To test without an account, add a connection of
    type 'Local endpoint' or use any OpenAI-compatible API key."
 
 ### 3. Store listing: English (United States)
@@ -44,14 +47,16 @@ you press **Submit to the Store** at the end.
 |---|---|
 | Description | Paste **Description** below. It replaces the old text. |
 | What's new in this version | Paste **What's new in this version** below. |
-| Product features | Replace all 20 with **Product features** below. The old set is shorter: no Codex, Continue in, shortcuts, Backup or button rows. Paste one per line. |
+| Product features | Replace all 20 with **Product features** below. The old set is shorter: no Codex, Continue in, shortcuts, Backup or button rows. Paste one per box, without the leading "1." to "20." numbers. |
 | Screenshots (Desktop) | Keep the 4 and their captions (they match **Screenshot captions**). Optional: add a 5th of Settings > Window > Button rows, and one of Settings > Backup. |
 | Trailer | No change. |
 | Short description (under *Supplemental fields*) | Empty today. Paste **Short description** below (232 characters; the limit is 270). |
-| Keywords | Replace your seven with the expanded set under **Search terms** (still 7 keywords, 21 words in all). |
+| Keywords | Replace your seven with the set under **Search terms** below: one comma-separated term per box (7 terms, at most 40 characters each, 21 words in all). |
 | Copyright and trademark info | **Change it.** Paste **Copyright and trademark info** below. It now leads with Apache 2.0 and says the MIT license is only for the Microsoft Fluent Emoji artwork. |
 | **Additional license terms** | **Change it.** It says "MIT License: …". Hotline is Apache 2.0. Paste **Additional license terms** below. The Fluent Emoji line in the copyright box stays (that artwork is MIT). |
 | Developed by | No change (PMARC14). |
+| Product name | Keep **Product name** below (Hotline AI). |
+| Privacy policy, Website, Support | Check the URLs against **Links** below. |
 | Short title | Paste **Short title** below. |
 | Voice title | Leave empty (Xbox only). |
 | Store logos / images | No change. |
@@ -63,8 +68,10 @@ The Store listing languages are the ones the package declares: English (United S
 section any more (that was for region-specific listings, and it was removed): every language in the package list gets its own
 listing, and Partner Center asks for all of them before you can submit. Open each language from the **Store listings** page and
 paste, from `store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**,
-**Screenshot captions** and **Search terms** (each file has them as sections in the same order). The shared fields (license,
-copyright, developer, trailer, logos, short title) are entered once, not per language.
+**Screenshot captions** and **Search terms** (each file has them as sections in the same order; the headings are in that
+language), set the product name to `Hotline AI`, and upload that language's pictures from `artifacts/store/<lang>/`
+(`screenshot-1..4.png`, `poster-1440x2160.png`, `boxart-2160x2160.png`). The shared fields (license, copyright, developer,
+trailer, logos, short title) are entered once, not per language.
 
 | Partner Center language | File |
 |---|---|
@@ -96,7 +103,7 @@ panel, poster and box art): `scripts/make-store-panels.sh` then `scripts/make-st
 
 1. Re-read the English page once (Description, What's new, 20 features, short description).
 2. **Submit to the Store**. Certification usually takes a few days. The update goes live when it passes.
-3. After it is live: open the Store page on this PC, check the version in Hotline > About reads 0.6.0.0, and check the Spanish
+3. After it is live: open the Store page on this PC, install it, check that Settings > About shows the version (0.6.N), and check the Spanish
    page from another region.
 
 ---

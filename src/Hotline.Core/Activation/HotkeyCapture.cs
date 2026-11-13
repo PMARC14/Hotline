@@ -18,8 +18,10 @@ public static class HotkeyCapture
     private static readonly HashSet<uint> ModifierKeys = [0x10, 0x11, 0x12, 0xA0, 0xA1, 0xA2, 0xA3, 0xA4, 0xA5, 0x5B, 0x5C, 0x14];
 
     /// <param name="panel">Capture a toolbar shortcut (Ctrl, Alt or Win required, except F1-F24; Enter reserved).</param>
-    public static Result Press(HotkeyModifiers held, uint virtualKey, bool panel = false)
+    /// <param name="rightAltDown">AltGr input must keep waiting; the runtime ignores shortcuts while right Alt is down.</param>
+    public static Result Press(HotkeyModifiers held, uint virtualKey, bool panel = false, bool rightAltDown = false)
     {
+        if (rightAltDown) return new(Outcome.Waiting);
         if (ModifierKeys.Contains(virtualKey)) return new(Outcome.Waiting);
         if (held == HotkeyModifiers.None && virtualKey == VkEsc) return new(Outcome.Cancel);
         if (held == HotkeyModifiers.None && virtualKey is VkBackspace or VkDelete) return new(Outcome.Clear);

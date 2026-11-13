@@ -13,39 +13,31 @@ public sealed record ToolbarLoad(ToolbarModel Model, string? Error);
 /// <summary>~/.hotline/toolbar.json: reading it (creating a missing one) and writing it.</summary>
 public static class ToolbarFile
 {
-    private static readonly Dictionary<string, (JsonObject Map, IReadOnlyList<string> Warnings)> LegacyShortcuts = new(StringComparer.OrdinalIgnoreCase);
-
+    /// <summary>A toolbar.json without "shortcuts" takes settings.json's old <c>chat.shortcuts</c>, read anew on each load (a reset
+    /// or hand edit of settings.json shows at once; S1 moves them for good).</summary>
     private static ToolbarModel WithLegacyShortcuts(string path, ToolbarModel model)
     {
         if (model.Shortcuts is not null) return model;
         var full = Path.GetFullPath(path);
-        lock (LegacyShortcuts)
+        var map = new JsonObject();
+        var warnings = new List<string>();
+        var settingsPath = Path.Combine(Path.GetDirectoryName(full)!, SettingsStore.FileName);
+        try
         {
-            if (!LegacyShortcuts.TryGetValue(full, out var legacy))
+            if (File.Exists(settingsPath))
             {
-                var map = new JsonObject();
-                var warnings = new List<string>();
-                var settingsPath = Path.Combine(Path.GetDirectoryName(full)!, SettingsStore.FileName);
-                try
-                {
-                    if (File.Exists(settingsPath))
-                    {
-                        var settings = ToolbarModel.Parse(File.ReadAllText(settingsPath), warnings);
-                        if (settings is JsonObject root
-                            && root.LastOrDefault(p => p.Key.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is JsonObject chat
-                            && chat.LastOrDefault(p => p.Key.Equals("shortcuts", StringComparison.OrdinalIgnoreCase)).Value is JsonObject explicitValues)
-                            map = ToolbarModel.ReadShortcutMap(explicitValues, warnings);
-                    }
-                }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
-                {
-                    // Settings reports its own read errors; they must not make a valid toolbar unreadable.
-                }
-                legacy = (map, warnings);
-                LegacyShortcuts[full] = legacy;
+                var settings = ToolbarModel.Parse(File.ReadAllText(settingsPath), warnings);
+                if (settings is JsonObject root
+                    && root.LastOrDefault(p => p.Key.Equals("chat", StringComparison.OrdinalIgnoreCase)).Value is JsonObject chat
+                    && chat.LastOrDefault(p => p.Key.Equals("shortcuts", StringComparison.OrdinalIgnoreCase)).Value is JsonObject explicitValues)
+                    map = ToolbarModel.ReadShortcutMap(explicitValues, warnings);
             }
-            return (model with { Shortcuts = (JsonObject)legacy.Map.DeepClone(), Warnings = [.. model.Warnings, .. legacy.Warnings] }).ResolveShortcuts(null);
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
+        {
+            // Settings reports its own read errors; they must not make a valid toolbar unreadable.
+        }
+        return (model with { Shortcuts = map, Warnings = [.. model.Warnings, .. warnings] }).ResolveShortcuts(null);
     }
     /// <summary>
     /// Never throws. A missing file is created with the defaults. Any existing file is read and never rewritten (one in the
@@ -63,12 +55,13 @@ public static class ToolbarFile
                 return new ToolbarLoad(initial, null);
             }
             var text = File.ReadAllText(path);
+            var warnings = new List<string>();
             JsonNode? root;
-            try { root = ToolbarModel.Parse(text, []); }
+            try { root = ToolbarModel.Parse(text, warnings); }
             catch (JsonException ex) { return Unreadable(ex.Message); }
-            if (root is not JsonObject) return Unreadable("the file isn't a JSON object");
+            if (root is not JsonObject o) return Unreadable("the file isn't a JSON object");
 
-            return new ToolbarLoad(WithLegacyShortcuts(path, ToolbarModel.Resolve(text)), null);
+            return new ToolbarLoad(WithLegacyShortcuts(path, ToolbarModel.Resolve(o, warnings)), null);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException)
         {
@@ -95,31 +88,35 @@ public static class ToolbarFile
     /// process last wrote there is first copied to <c>toolbar.json.&lt;yyyyMMdd-HHmmss&gt;.bak</c> (see <see cref="BackupFiles.CopyStamped"/>:
     /// never over an older copy, the newest 10 kept) unless <paramref name="keepPrevious"/> is false. If that copy can't be made nothing is
     /// replaced and an <see cref="IOException"/> says why (its message names the reason, for the notice).</summary>
-    public static void Save(string path, ToolbarModel model, bool keepPrevious = true)
+    public static string? Save(string path, ToolbarModel model, bool keepPrevious = true)
     {
         path = Path.GetFullPath(path);
-        if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder);
-        var tmp = path + ".tmp";
-        var bytes = new UTF8Encoding(false).GetBytes(model.ToJson());
-        try
+        if (File.Exists(path))
         {
-            if (keepPrevious && File.Exists(path) && !IsOurLastWrite(path))
+            try
             {
-                try { BackupFiles.CopyStamped(path); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+                var text = File.ReadAllText(path);
+                var root = ToolbarModel.Parse(text, []);
+                if (root is JsonObject obj && obj["version"] is JsonValue v && v.TryGetValue<int>(out var fileVer) && fileVer > ToolbarModel.CurrentVersion)
                 {
-                    throw new IOException(L.F(Strings.Bar_SaveBackupFailed, ex.Message), ex);
+                    return L.F(Strings.Toolbar_NewerVersion, fileVer);
                 }
             }
-            File.WriteAllBytes(tmp, bytes);
-            File.Move(tmp, path, overwrite: true);
-            lock (LastWritten) LastWritten[path] = bytes;
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { }
         }
-        catch
+        if (Path.GetDirectoryName(path) is { Length: > 0 } folder) Directory.CreateDirectory(folder);
+        var bytes = new UTF8Encoding(false).GetBytes(model.ToJson());
+        if (keepPrevious && File.Exists(path) && !IsOurLastWrite(path))
         {
-            try { File.Delete(tmp); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { /* nothing more to do */ }
-            throw;
+            try { BackupFiles.CopyStamped(path); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+            {
+                throw new IOException(L.F(Strings.Bar_SaveBackupFailed, ex.Message), ex);
+            }
         }
+        DurableFile.WriteBytes(path, bytes);
+        lock (LastWritten) LastWritten[path] = bytes;
+        return null;
     }
 
     private static bool IsOurLastWrite(string path)
@@ -131,7 +128,7 @@ public static class ToolbarFile
 
     private static bool TrySave(string path, ToolbarModel model)
     {
-        try { Save(path, model, keepPrevious: false); return true; } // only used for a missing file: nothing to keep
+        try { return Save(path, model, keepPrevious: false) is null; } // only used for a missing file: nothing to keep
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
     }
 }

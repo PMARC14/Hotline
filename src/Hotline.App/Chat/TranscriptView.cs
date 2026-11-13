@@ -2,6 +2,7 @@ using System.Diagnostics;
 using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Text;
+using Hotline.Core.Windowing;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Documents;
@@ -67,18 +68,9 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
         _timer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(50), RenderDirty);
         _thinkingTimer = new RenderTimer(popup.DispatcherQueue, TimeSpan.FromMilliseconds(200), UpdateThinking);
         popup.MessagesPanel.SizeChanged += (_, _) => { if (_follow.Following) ScrollToBottomNow(); };
-        // The viewport changes height too (the panel grows, the chat swaps direction, a button row or notice comes or
-        // goes): keep the newest text in view. After the size event, never inside it.
-        popup.MessagesScroll.SizeChanged += (_, _) =>
-        {
-            // Not animated: an animated scroll started while the window is still growing gets cut short by the next resize.
-            if (!_follow.Following || _scrollQueued) return;
-            _scrollQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
-            {
-                _scrollQueued = false;
-                if (_follow.Following) ScrollToBottomNow(animate: false); // still following: the user may have scrolled up
-            });
-        };
+        // The viewport changes size (width re-fits embedded boxes; height keeps the newest text in view).
+        // After the size event, never inside it.
+        popup.MessagesScroll.SizeChanged += (_, _) => QueueEmbeddedWidths();
         popup.MessagesScroll.ViewChanged += OnViewChanged;
         WatchReaderScrolling(popup.MessagesScroll);
         popup.JumpToLatestButton.Click += (_, _) => { _follow.Follow(); UpdateJumpButton(); ScrollToBottomNow(); };
@@ -345,7 +337,41 @@ internal sealed class TranscriptView(PopupWindow popup, PanelTheme theme, Attach
     private void UpdateJumpButton() =>
         popup.JumpToLatestButton.Visibility = !_follow.Following && popup.MessagesScroll.ScrollableHeight > 0 ? Visibility.Visible : Visibility.Collapsed;
 
-    private bool _scrollQueued;
+    private bool _widthsQueued;
+
+    private void QueueEmbeddedWidths()
+    {
+        if (_widthsQueued) return;
+        _widthsQueued = popup.DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, () =>
+        {
+            _widthsQueued = false;
+            RefitEmbeddedWidths();
+            if (_follow.Following) ScrollToBottomNow(animate: false);
+        });
+    }
+
+    private void RefitEmbeddedWidths()
+    {
+        var sv = popup.MessagesScroll;
+        if (sv.ViewportWidth <= 0 || _block is null) return;
+        var padding = popup.MessagesPanel.Padding;
+        var available = sv.ViewportWidth - padding.Left - padding.Right;
+        foreach (var inline in _block.Blocks.OfType<Paragraph>().SelectMany(p => p.Inlines).OfType<InlineUIContainer>())
+        {
+            if (inline.Child is FrameworkElement { Tag: EmbeddedBox box } fe)
+            {
+                var width = EmbeddedWidths.ForViewport(available, box.Indent);
+                if (box.ContentSized)
+                {
+                    if (fe.MaxWidth != width) fe.MaxWidth = width;
+                }
+                else
+                {
+                    if (fe.Width != width) fe.Width = width;
+                }
+            }
+        }
+    }
 
     private void ScrollToBottomNow() => ScrollToBottomNow(animate: true);
 

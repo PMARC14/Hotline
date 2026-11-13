@@ -11,8 +11,7 @@ public enum ConnectionField { None = 0, Endpoint = 1, ApiKey = 2, CliPath = 4, A
 /// <param name="DescriptionKey">Resource key of the one-line description (shown as <see cref="Description"/>).</param>
 public sealed record ConnectionTypeInfo(
     BackendType Type, string DisplayNameKey, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
-    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true,
-    bool ListsModels = true)
+    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true)
 {
     public string DisplayName => L.Get(DisplayNameKey);
     public string Description => L.Get(DescriptionKey);

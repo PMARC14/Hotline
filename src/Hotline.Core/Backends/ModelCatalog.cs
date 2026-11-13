@@ -34,7 +34,7 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
     /// model is among them. Throws <see cref="ModelListException"/> with the server's message on failure.
     /// </summary>
     public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) =>
-        Describe(await GetAsync(p, refresh: true, ct), p.Model, ConnectionTypes.Of(p.Type).ListsModels);
+        Describe(await GetAsync(p, refresh: true, ct), p.Model);
 
     /// <summary>"Connected: N models[, including X | , but X isn't one of them]."</summary>
     public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen, bool listsModels = true)

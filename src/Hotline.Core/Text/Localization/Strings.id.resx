@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Tidak</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Hentikan jawaban</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Tombol yang menghentikan jawaban saat sedang ditulis (Enter tidak pernah; tombol Kirim juga menghentikannya). Satu tombol (Esc) atau kombinasi seperti Ctrl+. — saat tidak ada yang sedang dijawab, Esc menyembunyikan panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Perintah panel sudah menggunakan pintasan ini. Ubah atau hapus pintasan perintah tersebut terlebih dahulu, atau pilih yang lain.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Bukan pintasan yang valid (contoh: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memori</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Setiap obrolan melihat memory.md di folder .hotline Anda ("/remember sesuatu" menambahkan satu baris).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Utamakan asinkron:** pembaruan tertulis menggantikan banyak rapat, dan keputusan tertulis menjangkau lebih banyak orang.
 - **Dokumentasi membuahkan hasil:** tim dengan dokumentasi yang baik melakukan onboarding anggota baru dalam hitungan hari, bukan minggu.
 - **Waktu bersama terencana:** percakapan spontan makin jarang, sehingga perusahaan menjadwalkan hari tatap muka setiap kuartal.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Tinjau program dan izin</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Cadangan ini berisi pengaturan yang dapat menjalankan program atau mengizinkan alat tanpa bertanya. Tinjau detail di bawah ini. Impor hanya jika Anda memercayai pengaturan ini.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Impor dibatalkan: program dan izin memerlukan konfirmasi.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Bagian approvals harus berupa objek JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Perubahan pengaturan sedang menunggu settings.json agar dapat dibaca.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Tidak dapat memulai {0} karena perintah peluncurannya terlalu panjang. Perpendek perintah sistem, memori tersimpan, atau argumen peluncuran tambahan.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Jawaban terputus sebelum server mengonfirmasi bahwa itu selesai.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Obrolan atau koneksi berubah saat lampiran sedang disiapkan. Pesan Anda tidak terkirim.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>Dari tautan</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Pindahkan panel</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Ubah ukuran panel</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 membuka menu panel. Pilih Pindahkan atau Ubah ukuran, gunakan tombol panah, lalu Enter untuk selesai atau Esc untuk membatalkan.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json ditulis oleh versi Hotline yang lebih baru (versi {0}; versi ini menulis {1}), sehingga Hotline tidak akan menimpanya. Perbarui Hotline, atau edit file secara manual.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json ditulis oleh versi Hotline yang lebih baru (versi {0}), sehingga Hotline tidak akan menimpanya. Perbarui Hotline, atau edit file secara manual.</value></data>
 </root>

@@ -340,8 +340,8 @@ public sealed partial class SettingsWindow
         {
             host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
             // Advanced: replaces the mode's flags (the protocol flags are always added; dangerous ones never come from here).
-            host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : string.Join(' ', p.Args), Strings.Conn_LaunchArgs_Default,
-                v => p.Args = string.IsNullOrWhiteSpace(v) ? null : v.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList())));
+            host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : CliArguments.Join(p.Args), Strings.Conn_LaunchArgs_Default,
+                v => p.Args = string.IsNullOrWhiteSpace(v) ? null : CliArguments.Split(v).ToList())));
         }
 
         if (info.Has(ConnectionField.Tools) && !info.Has(ConnectionField.CliPath))
@@ -447,7 +447,7 @@ public sealed partial class SettingsWindow
                 model.SelectedItem = current;
                 filling = false;
                 status.Severity = InfoBarSeverity.Success;
-                status.Message = ModelCatalog.Describe(list, p.Model, ConnectionTypes.Of(p.Type).ListsModels);
+                status.Message = ModelCatalog.Describe(list, p.Model);
             }
             catch (ModelListException ex) { status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
             catch (Exception ex) { _log.Error("model list failed", ex); status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }

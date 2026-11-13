@@ -35,12 +35,36 @@ stack another; design and review the whole system before building; live-test eac
    `ToolbarQuadrantEditor` views, `TranscriptView` state and scrolling, SVG handling, `App` runtime.
 7. **Freeze** the formats with the fixtures as the gate.
 
-## Owner decisions needed
+## Owner decisions (2026-11-12, reviewed with Fable 5.2)
 
-Shortcut home (the `toolbar.json` map is proposed); width keys (one key, px or percent); where `mcp.json` approvals go; whether `env`
-secrets in `mcp.json` move to the Credential Locker (existing literal values stay readable; conversion explicit and warned as not
-portable); the connection id character set; the shape of `backups\`; whether to remove the Voice toggle (the Hold action is the single
-source); `state.json` for reminder and first-run state (`general.supportReminder`, `.support-note-shown`, `.first-run-shown`).
+- **Shortcuts:** one `toolbar.json` `shortcuts` map for every panel command, **Stop included** (`"stop": "Esc"`, bare keys allowed for
+  Stop only, Stop wins every conflict); custom buttons keep `buttons.<id>.shortcut`; `chat.shortcuts` and `chat.stopShortcut` migrate
+  out of settings.json. Conflicts resolve in a fixed command order, not JSON order. `stop` is reserved as a custom button id. The
+  Backup category reads "Button rows and shortcuts". (This bends "configurable means settings.json" on purpose: one file per check.)
+- **Width:** `window.width` and `window.chatWidth` take a number (real pixels, as today) or `"N%"`; `maxWidth` stays as the clamp for a
+  percent; a size dragged by hand goes to `state.json`, never over a hand-written value; `window.height` becomes `minHeight`.
+- **MCP approvals:** hand-written allow/deny rules in settings.json (`tools.approvals`: exported, shown in the import review);
+  "Always allow" clicks are grants in `state.json` (this PC's consent, never exported), each bound to server name plus
+  command, args and cwd (not env), so a removed or re-pointed server loses them. Precedence: deny, allow, ask. Settings › Tools
+  lists grants with revoke. `mcp.json` holds servers only and Hotline never rewrites it (removes `SaveApproval`, `WriteBackup`, the
+  `_remembered` fallback).
+- **`env` secrets:** literal values keep working; an explicit, warned "move to Credential Locker" replaces a value with the string
+  `"${hotline:secret:<name>}"` (Locker key `mcp:secret:<name>`). `${hotline:` is reserved; a non-string env value is a warning and
+  skipped. Backup exports the token, never the secret; import lists servers whose secrets are missing; the import review masks env values.
+- **Connection ids:** the file stem is the id (the id wins over a mismatched stem in the migration); `[A-Za-z0-9._-]`, matched
+  case-insensitively, device names and length still refused; a non-conforming id is renamed once. The Locker key uses the
+  lower-cased id; the old entry is deleted only after the copy reads back.
+- **Backups:** `backups\<yyyyMMdd-HHmmss>-<reason>\<relative path>` (reasons such as `save`, `reset`, `import`, `migrate`; same-second
+  suffix kept), newest N folders kept; "no backup, no write"; a file that is Hotline's own last write is not backed up again. Old-style
+  backups stay where they are and are never pruned or deleted (today's prune-to-10 stops).
+- **Voice toggle:** removed from Settings › General; the Hold action picker is the single source (no file change).
+- **`state.json`:** app state, not configuration: never exported, never needs hand edits, has a `version` and keeps unknown keys;
+  losing it is always harmless (notes show again, tools ask again). Holds the "shown" flags (`.first-run-shown`,
+  `.support-note-shown`), MCP grants and dragged sizes. The support-reminder on/off preference stays in settings.json and the app
+  no longer rewrites settings.json to turn it off. Reset clears state.json.
+- **Toast text:** a settings key, default off: the answer toast shows "Answer ready" and the chat title; turned on, it shows the text.
+- **Release gating:** push builds publish as prereleases and a hand-promoted release updates the `.appinstaller`; a separate PR
+  merged right after PR #60 (so #60 still publishes v0.6.3 as today).
 
 ## Dead or doubled code to remove
 

@@ -67,6 +67,13 @@
       document.getElementById('caption').textContent = q.get('caption') || '';
       document.getElementById('panel').src = q.get('img');
     }
+    // French spaces before : ; ! ? and inside « » must not wrap alone onto the next line; Devanagari marks need more line height.
+    ['title', 'sub', 'key', 'caption'].forEach(id => {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = el.textContent.replace(/ ([:;!?»])/g, ' $1').replace(/(«) /g, '$1 ');
+      if (/[ऀ-ॿ]/.test(el.textContent)) el.style.lineHeight = '1.4';
+    });
     if (kind === 'tile') ['title', 'sub', 'key'].forEach(id => document.getElementById(id).remove());
     if (kind === 'box' || kind === 'card') document.getElementById('key').remove();
   </script>

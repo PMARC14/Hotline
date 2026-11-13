@@ -124,6 +124,38 @@ public sealed class ShortcutHardeningTests : TempDirTest
         Assert.True(Hotkey.TryParseShortcut(text, out _)); // Stop retains its rule.
     }
 
+    // The message box's editing and focus keys stay the message box's: a toolbar binding would steal them.
+    [Theory]
+    [InlineData("Ctrl+V")]
+    [InlineData("Ctrl+C")]
+    [InlineData("Ctrl+X")]
+    [InlineData("Ctrl+A")]
+    [InlineData("Ctrl+Z")]
+    [InlineData("Ctrl+Y")]
+    [InlineData("Ctrl+Shift+Z")]
+    [InlineData("Ctrl+Tab")]
+    [InlineData("Ctrl+Shift+Tab")]
+    [InlineData("Ctrl+Backspace")]
+    public void Toolbar_bindings_refuse_the_message_boxs_editing_keys(string text)
+    {
+        Assert.False(Hotkey.TryParseToolbarShortcut(text, out _));
+        var warnings = new List<string>();
+        Assert.Equal("Ctrl+P", ChatShortcuts.Normalize(new Dictionary<string, string> { ["pin"] = text }, "Esc", warnings.Add)["pin"]);
+        Assert.Single(warnings);
+        var buttons = ChatShortcuts.NormalizeCustom([new("mine", "Mine", "E734", null, "text", false, Shortcut: text)], warn: warnings.Add);
+        Assert.Null(buttons[0].Shortcut);
+        Assert.Equal(2, warnings.Count);
+        Assert.True(Hotkey.TryParseShortcut(text, out var key));
+        Assert.NotEqual(HotkeyCapture.Outcome.Bound, HotkeyCapture.Press(key.Modifiers, key.VirtualKey, panel: true).Outcome);
+    }
+
+    [Fact]
+    public void Every_default_toolbar_binding_is_allowed()
+    {
+        foreach (var (id, text) in ChatShortcuts.Defaults) Assert.True(Hotkey.TryParseToolbarShortcut(text, out _), id + ": " + text);
+        Assert.True(Hotkey.TryParseToolbarShortcut("Ctrl+Shift+V", out _)); // only the exact editing combos are taken
+    }
+
     [Theory]
     [InlineData(HotkeyModifiers.None, 0x20u)]
     [InlineData(HotkeyModifiers.None, 0x09u)]
@@ -190,7 +222,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     }
 
     [Fact]
-    public void Legacy_fallback_is_raw_once_and_toolbar_key_takes_precedence()
+    public void Legacy_fallback_is_raw_follows_settings_and_toolbar_key_takes_precedence()
     {
         Directory.CreateDirectory(_dir);
         var settingsPath = Path.Combine(_dir, "settings.json");
@@ -202,7 +234,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
         Assert.Equal("Ctrl+P", model.EffectiveShortcuts()["pin"]);
         Assert.Equal("", model.EffectiveShortcuts()["recent"]);
         File.WriteAllText(settingsPath, """{"chat":{"shortcuts":{"pin":"Ctrl+Q"}}}""");
-        Assert.Equal("Shift+A", ToolbarFile.Load(toolbarPath).Model.ShortcutText("pin"));
+        Assert.Equal("Ctrl+Q", ToolbarFile.Load(toolbarPath).Model.ShortcutText("pin")); // read anew, never cached
         ToolbarFile.Save(toolbarPath, model);
         Assert.Equal("Shift+A", ToolbarFile.Load(toolbarPath).Model.ShortcutText("pin"));
         File.WriteAllText(toolbarPath, """{"version":2,"shortcuts":{}}""");

@@ -20,11 +20,9 @@ public sealed class OwnerDefaultsTests
         Assert.Equal(["newChat", "recent", "settings"], d.Overrides.Keys.Order()); // two cells across each
         Assert.All(d.Overrides.Values, o => Assert.Equal(new ButtonStyle(2), o));
         Assert.Equal((3, 4, 5), (d.EffectiveSpan("effort"), d.EffectiveSpan("model"), d.EffectiveSpan("provider")));
+        Assert.Empty(d.Buttons);
+        Assert.Equal(2, ToolbarModel.CurrentVersion);
     }
-
-    [Fact]
-    public void Default_rows_survive_a_write_and_read()
-        => Assert.Equal(ToolbarModel.Defaults, ToolbarModel.Resolve(ToolbarModel.Defaults.ToJson()));
 
     [Fact]
     public void Default_window_sizes_are_the_owners()

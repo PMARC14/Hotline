@@ -142,4 +142,143 @@ public static partial class SettingsPackage
     private static string? ValidateConnection(string path, string text) =>
         SettingsStore.ParseConnection(text, path, Path.GetFileNameWithoutExtension(path), new ReadProblems(), out _) is null
             ? "not readable as a connection" : null;
+
+    private static string DecodeUtf8(byte[] bytes)
+    {
+        var text = Encoding.UTF8.GetString(bytes);
+        return text.StartsWith('\uFEFF') ? text[1..] : text;
+    }
+
+    internal static string BuildExecutionReview(string rootDirectory, IReadOnlyList<(string Path, string Full, byte[] Data)> plan)
+    {
+        if (plan.Count == 0) return "";
+        var planned = plan.ToDictionary(p => p.Path, p => p.Data, StringComparer.OrdinalIgnoreCase);
+        var hasSettings = planned.ContainsKey("settings.json");
+        var hasMcp = planned.ContainsKey("mcp.json");
+        var hasConnections = plan.Any(p => p.Path.StartsWith("connections/", StringComparison.OrdinalIgnoreCase));
+        if (!hasSettings && !hasMcp && !hasConnections) return "";
+
+        var blocks = new List<string>();
+        var anyInherit = false;
+
+        if (hasSettings && planned.TryGetValue("settings.json", out var settingsBytes))
+        {
+            var (settings, legacy, _) = SettingsStore.ParseSettings(DecodeUtf8(settingsBytes), new ReadProblems());
+            if (settings?.Chat?.ContinueIn is { } shared)
+                AppendContinueTargets(blocks, "settings.json › chat.continueIn", shared);
+            if (legacy is not null)
+            {
+                for (var i = 0; i < legacy.Count; i++)
+                {
+                    if (legacy[i] is not { } p) continue;
+                    if (p.Tools == ToolMode.Inherit) anyInherit = true;
+                    if (IsExecutableConnection(p)) AppendConnection(blocks, $"settings.json › chat.backends[{i}]", p);
+                }
+            }
+        }
+
+        foreach (var (path, _, data) in plan.Where(p => p.Path.StartsWith("connections/", StringComparison.OrdinalIgnoreCase)))
+        {
+            var profile = SettingsStore.ParseConnection(DecodeUtf8(data), path, Path.GetFileNameWithoutExtension(path), new ReadProblems(), out _);
+            if (profile is null) continue;
+            if (profile.Tools == ToolMode.Inherit) anyInherit = true;
+            if (IsExecutableConnection(profile)) AppendConnection(blocks, path, profile);
+        }
+
+        if (hasSettings || hasMcp)
+        {
+            var connectionsDir = Path.Combine(rootDirectory, SettingsStore.ConnectionsFolder);
+            if (Directory.Exists(connectionsDir))
+            {
+                try
+                {
+                    foreach (var file in Directory.EnumerateFiles(connectionsDir, "*.json").Order(StringComparer.OrdinalIgnoreCase))
+                    {
+                        var rel = $"{SettingsStore.ConnectionsFolder}/{Path.GetFileName(file)}";
+                        if (planned.ContainsKey(rel)) continue;
+                        var profile = SettingsStore.ParseConnection(File.ReadAllText(file), rel, Path.GetFileNameWithoutExtension(file), new ReadProblems(), out _);
+                        if (profile is null) continue;
+                        if (profile.Tools == ToolMode.Inherit) anyInherit = true;
+                        if (hasSettings && IsExecutableConnection(profile)) AppendConnection(blocks, rel, profile);
+                    }
+                }
+                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+            }
+        }
+
+        if (hasMcp && planned.TryGetValue("mcp.json", out var mcpBytes))
+        {
+            try { AppendMcp(blocks, "mcp.json", McpConfig.Parse(DecodeUtf8(mcpBytes))); }
+            catch (Exception ex) when (ex is JsonException or InvalidOperationException or FormatException or ArgumentException) { }
+        }
+        else if (anyInherit || hasSettings)
+        {
+            var existingMcp = Path.Combine(rootDirectory, "mcp.json");
+            if (File.Exists(existingMcp))
+            {
+                try { AppendMcp(blocks, "mcp.json", McpConfig.Parse(File.ReadAllText(existingMcp))); }
+                catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException or ArgumentException) { }
+            }
+        }
+
+        return string.Join("\n\n", blocks);
+    }
+
+    private static bool IsExecutableContinueTarget(ContinueTarget? t) =>
+        t is not null && (t.Kind == ContinueKind.App || !string.IsNullOrWhiteSpace(t.Command));
+
+    private static bool IsExecutableConnection(BackendProfile p) =>
+        ConnectionTypes.IsCli(p.Type)
+        || p.Tools == ToolMode.Inherit
+        || p.ApproveAllTools
+        || !string.IsNullOrWhiteSpace(p.CliPath)
+        || !string.IsNullOrWhiteSpace(p.ExtraArgs)
+        || p.Args is { Count: > 0 }
+        || !string.IsNullOrWhiteSpace(p.WorkingDirectory)
+        || (p.ContinueIn is { } list && list.Any(IsExecutableContinueTarget));
+
+    private static void AppendContinueTargets(List<string> blocks, string prefix, IReadOnlyList<ContinueTarget> targets)
+    {
+        for (var i = 0; i < targets.Count; i++)
+        {
+            var t = targets[i];
+            if (!IsExecutableContinueTarget(t)) continue;
+            blocks.Add($"{prefix}[{i}] ({t.Name})\n  command: {t.Command ?? ""}");
+        }
+    }
+
+    private static void AppendConnection(List<string> blocks, string location, BackendProfile p)
+    {
+        var sb = new StringBuilder();
+        var idSuffix = string.IsNullOrWhiteSpace(p.Id) ? "" : $" ({p.Id})";
+        sb.Append($"{location}{idSuffix}");
+        sb.Append($"\n  type: {JsonNamingPolicy.CamelCase.ConvertName(p.Type.ToString())}");
+        sb.Append($"\n  tools: {JsonNamingPolicy.CamelCase.ConvertName(p.Tools.ToString())}");
+        sb.Append($"\n  approveAllTools: {(p.ApproveAllTools ? "true" : "false")}");
+        if (!string.IsNullOrWhiteSpace(p.CliPath)) sb.Append($"\n  cliPath: {p.CliPath}");
+        if (!string.IsNullOrWhiteSpace(p.WorkingDirectory)) sb.Append($"\n  workingDirectory: {p.WorkingDirectory}");
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) sb.Append($"\n  extraArgs: {p.ExtraArgs}");
+        if (p.Args is { Count: > 0 }) sb.Append($"\n  args: {string.Join(" ", p.Args)}");
+        blocks.Add(sb.ToString());
+        if (p.ContinueIn is { } list)
+            AppendContinueTargets(blocks, $"{location} › continueIn", list);
+    }
+
+    private static void AppendMcp(List<string> blocks, string location, McpConfig mcp)
+    {
+        foreach (var s in mcp.Servers)
+        {
+            var sb = new StringBuilder();
+            sb.Append($"{location} › mcpServers.{s.Name}");
+            sb.Append($"\n  enabled: {(!s.Disabled ? "true" : "false")}");
+            sb.Append($"\n  command: {s.Command}");
+            if (s.Args.Count > 0) sb.Append($"\n  args: {string.Join(" ", s.Args)}");
+            if (!string.IsNullOrWhiteSpace(s.WorkingDirectory)) sb.Append($"\n  cwd: {s.WorkingDirectory}");
+            if (s.Env.Count > 0)
+                sb.Append($"\n  env: {string.Join(", ", s.Env.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => $"{kv.Key}={kv.Value}"))}");
+            blocks.Add(sb.ToString());
+        }
+        foreach (var (key, approval) in mcp.Approvals.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase))
+            blocks.Add($"{location} › approvals.{key}: {approval.ToString().ToLowerInvariant()}");
+    }
 }

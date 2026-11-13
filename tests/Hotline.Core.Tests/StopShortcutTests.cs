@@ -47,6 +47,35 @@ public sealed class StopShortcutTests
         Assert.False(item.Validate!("Enter"));
     }
 
+    // Stop wins every collision at run time, so Settings must refuse a Stop that a toolbar command asked for (Ctrl+N would
+    // silently switch off New chat's default).
+    [Fact]
+    public void Settings_refuses_a_stop_shortcut_a_toolbar_command_asked_for()
+    {
+        var item = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Stop)));
+        var s = new HotlineSettings();
+        s.Chat.Toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""
+            { "version": 2, "shortcuts": { "pin": "Ctrl+Q", "recent": "" },
+              "buttons": { "mine": { "label": "Mine", "text": "hi", "shortcut": "Ctrl+J" } } }
+            """);
+        Assert.NotNull(item.ValidateFor);
+        Assert.False(item.ValidateFor!(s, "Ctrl+N")); // New chat's default
+        Assert.False(item.ValidateFor!(s, "ctrl+q")); // pin's own binding
+        Assert.False(item.ValidateFor!(s, "Ctrl+J")); // a custom button's
+        Assert.True(item.ValidateFor!(s, "Ctrl+P")); // pin's default, replaced by Ctrl+Q
+        Assert.True(item.ValidateFor!(s, "Ctrl+H")); // recent is switched off
+        Assert.True(item.ValidateFor!(s, "Esc"));
+        Assert.Equal("newChat", ChatShortcuts.StopConflict(s.Chat.Toolbar, "Ctrl+N"));
+    }
+
+    // An invalid binding falls back to the command's default: Stop must not take that default either.
+    [Fact]
+    public void Settings_refuses_a_stop_shortcut_an_invalid_bindings_default_falls_back_to()
+    {
+        var toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""{ "version": 2, "shortcuts": { "pin": "Shift+A" } }""");
+        Assert.Equal("pin", ChatShortcuts.StopConflict(toolbar, "Ctrl+P"));
+    }
+
     [Fact]
     public void An_invalid_value_in_the_file_falls_back_to_esc()
     {

@@ -47,15 +47,16 @@ public sealed partial class SettingsWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
         AppWindow.SetIcon("Assets\\Hotline.ico");
-        var dpi = Native.GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(this));
-        var scale = dpi == 0 ? 1.0 : dpi / 96.0;
-        AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(740 * scale)));
+        FitInitialWindow();
+        Activated += FitOnceAfterFirstActivation;
         ApplyTheme();
         _settings.Changed += OnSettingsChanged;
         _settings.SaveFailed += OnSaveFailed;
         SystemTheme.Changed += OnSettingsChanged;
-        Closed += (_, _) => { _closed = true; _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
+        Closed += (_, _) => { _closed = true; Activated -= FitOnceAfterFirstActivation; _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
+        // After the first layout (queued: not inside it): the pane widens when a label is trimmed (SettingsWindow.NavPane.cs).
+        Nav.Loaded += (_, _) => DispatcherQueue.TryEnqueue(() => { if (!_closed) FitNavPane(); });
     }
 
     /// <summary>Self-test: builds every page once (hidden window) so a broken page fails the smoke test.</summary>
@@ -89,6 +90,32 @@ public sealed partial class SettingsWindow : Window
         SystemTheme.ApplyTitleBar(AppWindow, _settings.Current.Window.Theme);
     }
 
+    private void FitInitialWindow()
+    {
+        if (_closed) return;
+        var area = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);
+        var wa = area?.WorkArea ?? Microsoft.UI.Windowing.DisplayArea.Primary?.WorkArea ?? new RectInt32(0, 0, 1920, 1080);
+        var work = new Hotline.Core.Windowing.RectI(wa.X, wa.Y, wa.Width, wa.Height);
+        var dpi = Native.GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(this));
+        var scale = dpi == 0 ? 1.0 : dpi / 96.0;
+        var target = Hotline.Core.Windowing.WindowSizing.Centered(work, 1000, 740, scale);
+        var pos = AppWindow.Position;
+        var size = AppWindow.Size;
+        if (pos.X != target.X || pos.Y != target.Y || size.Width != target.Width || size.Height != target.Height)
+        {
+            AppWindow.MoveAndResize(new RectInt32(target.X, target.Y, target.Width, target.Height));
+        }
+    }
+
+    private void FitOnceAfterFirstActivation(object sender, WindowActivatedEventArgs args)
+    {
+        Activated -= FitOnceAfterFirstActivation;
+        if (DispatcherQueue is null || !DispatcherQueue.TryEnqueue(FitInitialWindow))
+        {
+            FitInitialWindow();
+        }
+    }
+
     private void Nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
         => ShowPage(args.SelectedItemContainer?.Tag as string ?? "General");
 
@@ -106,6 +133,7 @@ public sealed partial class SettingsWindow : Window
     {
         if (_closed) return;
         _currentPage = tag;
+        _pageToolbar = null;
         PageHost.Children.Clear();
         PageHost.Children.Add(new TextBlock
         {
@@ -233,6 +261,17 @@ public sealed partial class SettingsWindow : Window
                     {
                         box.Header = tx.Invalid is null ? Strings.Settings_InvalidValue : L.Get(tx.Invalid);
                         return;
+                    }
+                    if (tx.ValidateFor is { } validFor && !string.IsNullOrWhiteSpace(box.Text))
+                    {
+                        // Checked against toolbar.json as it is now (the Stop row: a panel command's binding).
+                        var toolbar = Hotline.Core.Windowing.ToolbarFile.Load(ToolbarPath);
+                        if (toolbar.Error is null) _settings.Current.Chat.Toolbar = toolbar.Model;
+                        if (!validFor(_settings.Current, box.Text.Trim()))
+                        {
+                            box.Header = L.Get(tx.InvalidFor ?? tx.Invalid ?? nameof(Strings.Settings_InvalidValue));
+                            return;
+                        }
                     }
                     box.Header = null;
                     if ((tx.Get(_settings.Current) ?? "") != box.Text.Trim()) _settings.Update(x => tx.Set(x, box.Text));

@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>No</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Interrompi una risposta</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Il tasto che interrompe una risposta mentre viene scritta (Invio non lo fa mai; anche il pulsante Invia la interrompe). Un tasto singolo (Esc) o una combinazione come Ctrl+. — quando non c'è nessuna risposta in corso, Esc nasconde il pannello.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Un comando del pannello usa già questa scorciatoia. Modifica o cancella prima la scorciatoia di quel comando, oppure scegline un'altra.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Tasto di scelta rapida non valido (esempi: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memoria</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Ogni chat vede memory.md nella tua cartella .hotline («/remember qualcosa» aggiunge una riga).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Prima l'asincrono:** gli aggiornamenti scritti sostituiscono molte riunioni e le decisioni scritte raggiungono più persone.
 - **La documentazione ripaga:** i team con una buona documentazione inseriscono le nuove persone in giorni, non settimane.
 - **Momenti insieme pianificati:** le conversazioni spontanee sono più rare, quindi le aziende programmano giornate in presenza ogni trimestre.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Verifica programmi e autorizzazioni</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Questo backup contiene impostazioni che possono eseguire programmi o consentire strumenti senza chiedere. Verifica i dettagli di seguito. Importa solo se ritieni attendibili queste impostazioni.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Importazione annullata: programmi e autorizzazioni richiedono una conferma.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>La sezione approvals deve essere un oggetto JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Le modifiche alle impostazioni sono in attesa che settings.json diventi leggibile.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Impossibile avviare {0} perché il comando di avvio è troppo lungo. Riduci il prompt di sistema, la memoria salvata o gli argomenti di avvio aggiuntivi.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>La risposta è stata interrotta prima che il server confermasse il completamento.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>La chat o la connessione è cambiata durante la preparazione degli allegati. Il messaggio non è stato inviato.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>Da un collegamento</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Sposta pannello</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Ridimensiona pannello</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 apre il menu del pannello. Scegli Sposta o Ridimensiona, usa i tasti freccia, quindi Enter per completare o Esc per annullare.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json è stato scritto da una versione più recente di Hotline (versione {0}; questa versione scrive {1}), quindi Hotline non lo sovrascriverà. Aggiorna Hotline o modifica il file manualmente.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json è stato scritto da una versione più recente di Hotline (versione {0}), quindi Hotline non lo sovrascriverà. Aggiorna Hotline o modifica il file manualmente.</value></data>
 </root>

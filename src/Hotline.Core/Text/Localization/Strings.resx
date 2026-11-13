@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>No</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Stop an answer</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>The key that stops an answer while it's being written (Enter never does; the Send button does too). A key alone (Esc) or a combo like Ctrl+. — when nothing is being answered, Esc hides the panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>A panel command already uses this shortcut. Change or clear that command's shortcut first, or pick another.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Not a valid shortcut (examples: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Memory</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Every chat sees memory.md in your .hotline folder ("/remember something" adds a line).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Async first:** written updates replace many meetings, and written decisions reach more people.
 - **Documentation pays off:** well-documented teams onboard new people in days, not weeks.
 - **Planned together-time:** chance conversations are rarer, so companies schedule in-person days each quarter.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Review programs and permissions</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>This backup contains settings that can run programs or allow tools without asking. Review the details below. Import only if you trust these settings.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import cancelled: programs and permissions require confirmation.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>The approvals section must be a JSON object.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Settings changes are waiting for settings.json to become readable.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Couldn't start {0} because its launch command is too long. Shorten the system prompt, saved memory, or extra launch arguments.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>The answer was cut off before the server confirmed it was finished.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>The chat or connection changed while attachments were being prepared. Your message wasn't sent.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>From a link</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Move panel</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Resize panel</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 opens the panel menu. Choose Move or Resize, use arrow keys, then Enter to finish or Esc to cancel.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json was written by a newer Hotline (version {0}; this one writes {1}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json was written by a newer Hotline (version {0}), so Hotline will not overwrite it. Update Hotline, or edit the file by hand.</value></data>
 </root>

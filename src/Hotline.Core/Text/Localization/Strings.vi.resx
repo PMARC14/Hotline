@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Không</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Dừng câu trả lời</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Phím dừng câu trả lời trong khi đang được viết (Enter không bao giờ dừng; nút Gửi cũng dừng được). Một phím đơn (Esc) hoặc tổ hợp như Ctrl+. — khi không có câu trả lời nào đang được tạo, Esc sẽ ẩn bảng.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Một lệnh của bảng điều khiển đã sử dụng phím tắt này. Hãy thay đổi hoặc xóa phím tắt của lệnh đó trước, hoặc chọn phím tắt khác.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Phím tắt không hợp lệ (ví dụ: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Bộ nhớ</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Mọi cuộc trò chuyện đều thấy memory.md trong thư mục .hotline của bạn ("/remember điều gì đó" thêm một dòng).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Ưu tiên bất đồng bộ:** cập nhật bằng văn bản thay thế nhiều cuộc họp, và quyết định dạng chữ tiếp cận được nhiều người hơn.
 - **Tài liệu phát huy hiệu quả:** các nhóm có tài liệu tốt hướng dẫn người mới chỉ trong vài ngày, không phải vài tuần.
 - **Chủ động gặp mặt:** các cuộc trò chuyện ngẫu nhiên ít đi, nên các công ty lên lịch gặp mặt trực tiếp vào mỗi quý.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Xem lại chương trình và quyền</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Bản sao lưu này chứa các cài đặt có thể chạy chương trình hoặc cho phép các công cụ mà không cần hỏi. Hãy xem lại các chi tiết bên dưới. Chỉ nhập nếu bạn tin cậy các cài đặt này.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Đã hủy nhập: chương trình và quyền cần có xác nhận.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Phần approvals phải là một đối tượng JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Các thay đổi cài đặt đang chờ settings.json có thể đọc được.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Không thể khởi động {0} vì lệnh khởi chạy quá dài. Hãy rút ngắn lời nhắc hệ thống, bộ nhớ đã lưu hoặc các đối số khởi chạy bổ sung.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Câu trả lời đã bị gián đoạn trước khi máy chủ xác nhận hoàn tất.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Cuộc trò chuyện hoặc kết nối đã thay đổi trong khi chuẩn bị tệp đính kèm. Tin nhắn của bạn chưa được gửi.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>Từ một liên kết</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Di chuyển bảng điều khiển</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Thay đổi kích thước bảng điều khiển</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 mở menu bảng điều khiển. Chọn Di chuyển hoặc Đổi kích thước, sử dụng các phím mũi tên, sau đó nhấn Enter để hoàn tất hoặc Esc để hủy.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json được tạo bởi phiên bản Hotline mới hơn (phiên bản {0}; phiên bản này ghi {1}), vì vậy Hotline sẽ không ghi đè lên tệp. Hãy cập nhật Hotline hoặc chỉnh sửa tệp theo cách thủ công.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json được tạo bởi phiên bản Hotline mới hơn (phiên bản {0}), vì vậy Hotline sẽ không ghi đè lên tệp. Hãy cập nhật Hotline hoặc chỉnh sửa tệp theo cách thủ công.</value></data>
 </root>

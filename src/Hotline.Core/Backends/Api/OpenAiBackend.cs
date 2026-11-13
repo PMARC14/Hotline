@@ -93,6 +93,8 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
                 }
             }
 
+            if ((calls.Count == 0 || offered.Count == 0) && !done && finish is null)
+                yield return ChatDelta.StatusNote(Strings.Api_AnswerCutOff);
             if (calls.Count == 0 || offered.Count == 0) yield break;
             // Never run tool calls from a cut-off stream: their arguments may be incomplete.
             if (finish is "length" or "content_filter")

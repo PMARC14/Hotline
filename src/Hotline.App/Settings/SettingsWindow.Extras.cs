@@ -14,12 +14,15 @@ public sealed partial class SettingsWindow
     private const int MaxToolbarProblemLines = 10;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
+    /// <summary>toolbar.json as this page build read it: once per page, not once per shortcut row (cleared by ShowPage).</summary>
+    private (ToolbarLoad Load, string? Stamp)? _pageToolbar;
+
     private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
     {
-        var load = ToolbarFile.Load(ToolbarPath);
+        _pageToolbar ??= (ToolbarFile.Load(ToolbarPath), ToolbarFile.Fingerprint(ToolbarPath));
+        var (load, stamp) = _pageToolbar.Value;
         if (load.Error is { } problem) return Card(header, problem, null);
         var model = load.Model;
-        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
         var id = row.ToolbarShortcutId!;
         var box = new TextBox { Text = model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
         bool Accept(string value)
@@ -36,14 +39,28 @@ public sealed partial class SettingsWindow
             {
                 if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
                 var next = ToolbarEditor.SetShortcut(model, id, value);
-                ToolbarFile.Save(ToolbarPath, next);
+                var problem = ToolbarFile.Save(ToolbarPath, next);
+                if (problem is not null)
+                {
+                    Fail("saving toolbar shortcut failed", new IOException(problem));
+                    return;
+                }
                 model = next;
                 stamp = ToolbarFile.Fingerprint(ToolbarPath);
                 _settings.Current.Chat.Toolbar = next;
                 box.Text = next.ShortcutText(id);
                 DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
             }
-            catch (ToolbarQuadrantEditor.ChangedOnDiskException) { ShowPage(_currentPage); }
+            catch (ToolbarQuadrantEditor.ChangedOnDiskException)
+            {
+                // Not saved: the file changed since the page read it. Show it as it is now and say why.
+                ShowPage(_currentPage);
+                PageHost.Children.Insert(1, new InfoBar
+                {
+                    IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
+                    Message = Strings.Bar_ChangedOnDisk,
+                });
+            }
             catch (Exception ex) { Fail("saving toolbar shortcut failed", ex); }
         }
         box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != model.ShortcutText(id)) Save(value); };
@@ -92,7 +109,8 @@ public sealed partial class SettingsWindow
         void Save(ToolbarModel model)
         {
             if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-            ToolbarFile.Save(ToolbarPath, model);
+            var problem = ToolbarFile.Save(ToolbarPath, model);
+            if (problem is not null) throw new IOException(problem);
             stamp = ToolbarFile.Fingerprint(ToolbarPath);
         }
         ToolbarModel? Reload()
@@ -174,7 +192,8 @@ public sealed partial class SettingsWindow
             try
             {
                 Hotline.Core.Settings.FileArchive.KeepOld(ToolbarPath); // the user's file stays as toolbar.json.old (or .old2…)
-                ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+                if (problem is not null) throw new IOException(problem);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
             ShowPage(_currentPage);

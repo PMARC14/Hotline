@@ -6,6 +6,9 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.UI.Xaml.Media;
+using Microsoft.UI.Xaml.Automation;
+using Microsoft.UI.Xaml.Automation.Peers;
+using Windows.System;
 
 namespace Hotline.App.Chat;
 
@@ -64,6 +67,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
                     },
                 },
             };
+            AutomationProperties.SetName(handle, Strings.Grip_Resize);
             Wire(handle, () => popup.GrowsUp ? up : down);
             _handles.Add((handle, up, down));
             layer.Children.Add(handle);
@@ -93,18 +97,44 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             Children = { new Border { Width = 64, Height = line, CornerRadius = new CornerRadius(line / 2.0), Background = grabber, VerticalAlignment = VerticalAlignment.Center } },
         };
         ToolTipService.SetToolTip(grip, Strings.Grip_Tip);
+        AutomationProperties.SetName(grip, Strings.Grip_Move);
+        AutomationProperties.SetHelpText(grip, Strings.Grip_KeyboardHelp);
         Wire(grip, () => ResizeEdge.None);
         var menu = new MenuFlyout();
+        bool? keyboard = null;
+        var move = new MenuFlyoutItem { Text = Strings.Grip_Move };
+        var resize = new MenuFlyoutItem { Text = Strings.Grip_Resize };
+        move.Click += (_, _) => keyboard = false;
+        resize.Click += (_, _) => keyboard = true;
+        menu.Items.Add(move);
+        menu.Items.Add(resize);
         var save = new MenuFlyoutItem { Text = Strings.Grip_SaveDefault };
         save.Click += (_, _) => SaveAsDefault?.Invoke();
         var home = new MenuFlyoutItem { Text = Strings.Grip_BackHome };
         home.Click += (_, _) => popup.BackToDefaultSpot();
         menu.Items.Add(save);
         menu.Items.Add(home);
-        IDisposable? hold = null;
-        menu.Opened += (_, _) => { _menuOpen = true; hold = popup.HoldResize(); }; // a resize would close the menu
-        menu.Closed += (_, _) => { _menuOpen = false; hold?.Dispose(); hold = null; };
+        var hold = new FlyoutHold(popup, menu);
+        menu.Opened += (_, _) => _menuOpen = true;
+        menu.Closed += (_, _) =>
+        {
+            _menuOpen = false;
+            if (keyboard is { } mode) { keyboard = null; QueueKeyboard(mode); }
+        };
         grip.ContextFlyout = menu;
+        var shortcut = new KeyboardAccelerator { Key = VirtualKey.F10, Modifiers = VirtualKeyModifiers.Control | VirtualKeyModifiers.Shift };
+        shortcut.Invoked += (_, e) =>
+        {
+            try { hold.ShowAt(popup.Input); }
+            catch (Exception ex) { log.Error("opening the panel menu failed", ex); }
+            e.Handled = true;
+        };
+        popup.Input.KeyboardAccelerators.Add(shortcut);
+        popup.Input.KeyboardAcceleratorPlacementMode = KeyboardAcceleratorPlacementMode.Hidden; // no automatic "Ctrl+Shift+F10" tooltip on the box
+        AutomationProperties.SetHelpText(popup.Input, Strings.Grip_KeyboardHelp);
+        // Handle before the composer's Input.PreviewKeyDown (Enter sends from there).
+        popup.Root.PreviewKeyDown += OnKeyboard;
+        popup.Input.LostFocus += (_, _) => EndKeyboard();
         _grip = grip;
         layer.Children.Add(grip);
 
@@ -113,7 +143,57 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         _timer.Tick += (_, _) => Update();
         popup.Shown += () => _timer.Start();
         popup.DirectionChanged += _ => { if (popup.GripLayer.Visibility == Visibility.Visible) SyncDirection(); };
-        popup.Hidden += () => { _timer.Stop(); SetVisible(false); };
+        popup.Hidden += () => { EndKeyboard(); _timer.Stop(); SetVisible(false); };
+    }
+
+    private bool? _keyboardResize;
+    private RectI _keyboardStart;
+    private bool _keyboardHeight, _keyboardWidth;
+
+    private void QueueKeyboard(bool resize) => popup.DispatcherQueue.TryEnqueue(() =>
+    {
+        try
+        {
+            if (!popup.IsShown || popup.IsResizeHeld) return;
+            popup.Input.Focus(FocusState.Programmatic);
+            _keyboardStart = popup.WindowRect;
+            _keyboardHeight = _keyboardWidth = false;
+            _keyboardResize = resize;
+            popup.BeginUserDrag();
+        }
+        catch (Exception ex) { EndKeyboard(); log.Error("starting keyboard panel placement failed", ex); }
+    });
+
+    private void EndKeyboard(bool cancel = false)
+    {
+        if (_keyboardResize is null) return;
+        _keyboardResize = null;
+        if (cancel) popup.DragResizeTo(_keyboardStart);
+        popup.EndUserDrag(!cancel && _keyboardHeight, !cancel && _keyboardWidth);
+    }
+
+    private void OnKeyboard(object sender, KeyRoutedEventArgs e)
+    {
+        if (_keyboardResize is not { } resize) return;
+        e.Handled = true;
+        if (e.Key is VirtualKey.Enter or VirtualKey.Escape) { EndKeyboard(e.Key == VirtualKey.Escape); return; }
+        var dx = e.Key == VirtualKey.Left ? -10 : e.Key == VirtualKey.Right ? 10 : 0;
+        var dy = e.Key == VirtualKey.Up ? -10 : e.Key == VirtualKey.Down ? 10 : 0;
+        if (dx == 0 && dy == 0) return;
+        var rect = popup.WindowRect;
+        if (resize)
+        {
+            var edges = ResizeEdge.Right | (popup.GrowsUp ? ResizeEdge.Top : ResizeEdge.Bottom);
+            var next = PanelPlacement.Resize(rect, edges, dx, dy, popup.MinDragWidthPx, popup.MinDragHeightPx, popup.WorkArea);
+            _keyboardWidth |= next.Width != rect.Width;
+            _keyboardHeight |= next.Height != rect.Height;
+            popup.DragResizeTo(next);
+        }
+        else
+        {
+            var next = PanelPlacement.Clamp(rect with { X = rect.X + dx, Y = rect.Y + dy }, popup.WorkArea);
+            popup.DragMoveTo(next.X, next.Y);
+        }
     }
 
     /// <summary>Alt held while the panel has focus or the pointer is over it (or a drag/menu in progress).</summary>
@@ -123,7 +203,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         var alt = (Native.GetAsyncKeyState(VK_MENU) & 0x8000) != 0;
         var fg = Native.GetForegroundWindow();
         var ours = fg == popup.Hwnd || Native.ClassNameOf(fg) == "CopilotKeyPressFocusFrame"; // 26H2: the key holds focus a moment
-        var show = _forced || _dragging || _menuOpen || alt && !popup.IsResizeHeld && (ours || PointerOver());
+        var show = _forced || _dragging || _menuOpen || _keyboardResize is not null || alt && !popup.IsResizeHeld && (ours || PointerOver());
         SetVisible(show);
     }
 
@@ -157,6 +237,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         {
             if (!e.GetCurrentPoint(element).Properties.IsLeftButtonPressed || popup.IsResizeHeld) return;
             if (!element.CapturePointer(e.Pointer)) return;
+            EndKeyboard();
             _edges = edges();
             _dragging = true;
             _resized = false;
@@ -203,5 +284,6 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     private sealed class Handle : Grid
     {
         public Handle(InputSystemCursorShape cursor) => ProtectedCursor = InputSystemCursor.Create(cursor);
+        protected override AutomationPeer OnCreateAutomationPeer() => new FrameworkElementAutomationPeer(this);
     }
 }

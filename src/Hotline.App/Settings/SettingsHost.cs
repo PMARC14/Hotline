@@ -14,7 +14,7 @@ internal sealed class SettingsHost(Func<SettingsWindow> create, FileLog log)
         try
         {
             var window = create();
-            var failures = window.BuildAllPages();
+            var failures = window.BuildAllPages().Concat(window.CheckNavLabels()).ToList();
             window.Close();
             return failures;
         }

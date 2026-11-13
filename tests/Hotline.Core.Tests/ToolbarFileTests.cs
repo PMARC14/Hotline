@@ -20,6 +20,19 @@ public sealed class ToolbarFileTests : TempDirTest
         Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
     }
 
+    // A toolbar.json without "shortcuts" takes settings.json's old chat.shortcuts as they are now: a reset or a hand edit of
+    // settings.json shows on the next load (no copy kept for the life of the process).
+    [Fact]
+    public void Legacy_shortcuts_follow_settings_json_on_every_load()
+    {
+        var settings = Path.Combine(_root, "settings.json");
+        File.WriteAllText(File_, """{ "version": 2 }""");
+        File.WriteAllText(settings, """{ "chat": { "shortcuts": { "pin": "Ctrl+Q" } } }""");
+        Assert.Equal("Ctrl+Q", ToolbarFile.Load(File_).Model.ShortcutText("pin"));
+        File.WriteAllText(settings, """{ "chat": { } }""");
+        Assert.Equal("Ctrl+P", ToolbarFile.Load(File_).Model.ShortcutText("pin"));
+    }
+
     [Fact]
     public void Missing_folder_is_created_and_the_defaults_are_written()
     {
@@ -159,17 +172,12 @@ public sealed class ToolbarFileTests : TempDirTest
     }
 
     [Fact]
-    public void Save_works_with_a_bare_file_name()
+    public void Save_creates_backup_in_target_folder()
     {
-        var old = Directory.GetCurrentDirectory();
-        Directory.SetCurrentDirectory(_root);
-        try
-        {
-            File.WriteAllText("bare.json", "// mine");
-            ToolbarFile.Save("bare.json", ToolbarModel.Defaults);
-        }
-        finally { Directory.SetCurrentDirectory(old); }
-        Assert.True(File.Exists(Path.Combine(_root, "bare.json")));
+        var path = Path.Combine(_root, "bare.json");
+        File.WriteAllText(path, "// mine");
+        ToolbarFile.Save(path, ToolbarModel.Defaults);
+        Assert.True(File.Exists(path));
         Assert.Single(Directory.GetFiles(_root, "bare.json.*.bak"));
     }
 

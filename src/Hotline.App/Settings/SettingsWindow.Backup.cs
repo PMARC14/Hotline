@@ -177,10 +177,16 @@ public sealed partial class SettingsWindow
             try
             {
                 var data = DataDirectory;
-                var (result, needKeys) = await Task.Run(() =>
+                var plan = await Task.Run(() =>
                 {
                     using var stream = new FileStream(path, FileMode.Open, FileAccess.Read, FileShare.Read);
-                    var r = SettingsPackage.Import(data, stream, chosen, Path.Combine(data, SettingsReset.BackupsFolder));
+                    return SettingsPackage.PrepareImport(data, stream, chosen);
+                });
+                if (plan.RequiresExecutionConfirmation && !await ConfirmExecutionImportAsync(plan.ExecutionReview)) return;
+                var (result, needKeys) = await Task.Run(() =>
+                {
+                    var r = SettingsPackage.Import(plan, Path.Combine(data, SettingsReset.BackupsFolder),
+                        executionConfirmed: plan.RequiresExecutionConfirmation);
                     return (r, r.Error is null ? SettingsPackage.ConnectionsNeedingKey(data, r, _secrets) : []);
                 });
                 _log.Info($"settings imported: {result.Written.Count} files, {result.Skipped.Count} skipped" + (result.Error is null ? "" : ", refused"));
@@ -227,6 +233,44 @@ public sealed partial class SettingsWindow
         });
         PageHost.Children.Add(status);
         Refresh();
+    }
+
+    /// <summary>
+    /// Asks the user to review and confirm any executable programs or tool permissions in the backup before writing.
+    /// Cancel is the default; review text is selectable and never logged.
+    /// </summary>
+    private async Task<bool> ConfirmExecutionImportAsync(string review)
+    {
+        var dialog = new ContentDialog
+        {
+            XamlRoot = Root.XamlRoot,
+            Title = Strings.Backup_ExecutionTitle,
+            Content = new StackPanel
+            {
+                Spacing = 8,
+                Children =
+                {
+                    new TextBlock { Text = Strings.Backup_ExecutionBody, TextWrapping = TextWrapping.Wrap },
+                    new ScrollViewer
+                    {
+                        MaxHeight = 320,
+                        HorizontalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        VerticalScrollBarVisibility = ScrollBarVisibility.Auto,
+                        Content = new TextBlock
+                        {
+                            Text = review,
+                            IsTextSelectionEnabled = true,
+                            TextWrapping = TextWrapping.Wrap,
+                            FontFamily = new Microsoft.UI.Xaml.Media.FontFamily("Cascadia Mono, Consolas"),
+                        },
+                    },
+                },
+            },
+            PrimaryButtonText = Strings.Backup_ImportButton,
+            CloseButtonText = Strings.Common_Cancel,
+            DefaultButton = ContentDialogButton.Close,
+        };
+        return await ShowDialogAsync(dialog) == ContentDialogResult.Primary;
     }
 
     /// <summary>Replaces the status area's content with one InfoBar.</summary>

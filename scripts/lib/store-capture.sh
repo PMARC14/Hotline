@@ -9,6 +9,13 @@ edge="/c/Program Files (x86)/Microsoft/Edge/Application/msedge.exe"
 [ -x "$edge" ] || edge="/c/Program Files/Microsoft/Edge/Application/msedge.exe"
 [ -x "$edge" ] || die "Microsoft Edge not found"
 
+if [ "${dry:-0}" = 0 ]; then
+    settings_file="$HOME/.hotline/settings.json"
+    if [ ! -f "$settings_file" ] || ! python -c 'import re, sys; sys.exit(0 if re.search(r"\"testLinks\"\s*:\s*true", open(sys.argv[1], encoding="utf-8-sig").read()) else 1)' "$(winpath "$settings_file")" 2>/dev/null; then
+        die "diagnostics.testLinks is not enabled in $settings_file; run scripts/make-store-panels.sh or set diagnostics.testLinks to true"
+    fi
+fi
+
 out="${STORE_OUT:-$ROOT/artifacts/store}"
 export STORE_SETTINGS_TITLE="${STORE_SETTINGS_TITLE:-Hotline settings}" # the Settings window's title in the interface language
 work=$(mktemp -d)
@@ -63,7 +70,10 @@ close_settings() {
 # its children), puts Hotline back in the tray and deletes the work folder.
 cleanup() {
     trap - EXIT INT TERM
-    [ -n "${recorder:-}" ] && kill "$recorder" 2>/dev/null
+    if [ -n "${recorder:-}" ]; then
+        kill "$recorder" 2>/dev/null || true
+        wait "$recorder" 2>/dev/null || true
+    fi
     python "$helper" close "$STORE_SETTINGS_TITLE" >/dev/null 2>&1 || true
     if [ -s "$work/edge.pid" ]; then
         MSYS_NO_PATHCONV=1 taskkill.exe /PID "$(cat "$work/edge.pid")" /T /F >/dev/null 2>&1 || true

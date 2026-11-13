@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Nein</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Antwort stoppen</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Die Taste, die eine Antwort stoppt, während sie geschrieben wird (Enter nie; die Senden-Schaltfläche ebenfalls). Eine einzelne Taste (Esc) oder eine Kombination wie Ctrl+. — wenn gerade nichts beantwortet wird, blendet Esc das Panel aus.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Ein Panel-Befehl verwendet diese Tastenkombination bereits. Ändern oder löschen Sie zuerst die Tastenkombination dieses Befehls, oder wählen Sie eine andere.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Keine gültige Tastenkombination (Beispiele: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Gedächtnis</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Jeder Chat sieht memory.md in deinem .hotline-Ordner („/remember etwas“ fügt eine Zeile hinzu).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Asynchron zuerst:** Schriftliche Updates ersetzen viele Meetings, und schriftliche Entscheidungen erreichen mehr Menschen.
 - **Dokumentation zahlt sich aus:** Gut dokumentierte Teams arbeiten neue Leute in Tagen statt Wochen ein.
 - **Geplante Präsenzzeit:** Spontane Gespräche sind seltener, daher planen Unternehmen jedes Quartal feste Tage vor Ort ein.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Programme und Berechtigungen überprüfen</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Dieses Backup enthält Einstellungen, die Programme ausführen oder Tools ohne Nachfragen zulassen können. Überprüfen Sie die Details unten. Importieren Sie nur, wenn Sie diesen Einstellungen vertrauen.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Import abgebrochen: Programme und Berechtigungen erfordern eine Bestätigung.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Der Abschnitt approvals muss ein JSON-Objekt sein.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Einstellungsänderungen warten darauf, dass settings.json lesbar wird.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>{0} konnte nicht gestartet werden, da der Startbefehl zu lang ist. Kürzen Sie den System-Prompt, das gespeicherte Gedächtnis oder zusätzliche Startargumente.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Die Antwort wurde abgeschnitten, bevor der Server das Ende bestätigt hat.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Der Chat oder die Verbindung wurde geändert, während Anhänge vorbereitet wurden. Ihre Nachricht wurde nicht gesendet.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>Über einen Link</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Panel verschieben</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Panelgröße ändern</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 öffnet das Panel-Menü. Wählen Sie Verschieben oder Größe ändern, verwenden Sie die Pfeiltasten, dann Enter zum Abschließen oder Esc zum Abbrechen.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json wurde von einer neueren Version von Hotline erstellt (Version {0}; diese Version schreibt {1}), daher wird Hotline die Datei nicht überschreiben. Aktualisieren Sie Hotline oder bearbeiten Sie die Datei manuell.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json wurde von einer neueren Version von Hotline erstellt (Version {0}), daher wird Hotline die Datei nicht überschreiben. Aktualisieren Sie Hotline oder bearbeiten Sie die Datei manuell.</value></data>
 </root>

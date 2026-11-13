@@ -55,6 +55,8 @@ public static class SettingsReset
                 Directory.CreateDirectory(Path.GetDirectoryName(to)!);
                 if (copyFile is not null) copyFile(file, to);
                 else File.Copy(file, to, overwrite: true);
+                using (var destination = new FileStream(to, FileMode.Open, FileAccess.Write, FileShare.Read))
+                    destination.Flush(flushToDisk: true);
                 backedUp.Add(Path.GetFullPath(file));
                 return true;
             }
@@ -102,7 +104,8 @@ public static class SettingsReset
             var toolbar = Path.Combine(directory, ToolbarFileName);
             if (!File.Exists(toolbar) || backedUp.Contains(Path.GetFullPath(toolbar)))
             {
-                try { ToolbarFile.Save(toolbar, ToolbarModel.Defaults); } // the backup copy above has the old one
+                // The backup copy above has the old one; a refusal (a newer file's version) is a failure, not a reset.
+                try { if (ToolbarFile.Save(toolbar, ToolbarModel.Defaults) is not null) failed.Add(ToolbarFileName); }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(ToolbarFileName); }
             }
         }
@@ -110,19 +113,12 @@ public static class SettingsReset
         // rewrite retained connections, including ones whose reset backup failed, and may skip backing up its own last write.
         if (!File.Exists(store.FilePath) || backedUp.Contains(Path.GetFullPath(store.FilePath)))
         {
-            var temp = store.FilePath + ".tmp";
             try
             {
                 fresh.Chat.Order = fresh.Chat.Backends.Select(b => b.Id).ToList();
-                File.WriteAllText(temp, SettingsStore.Serialize(SettingsStore.Normalize(fresh)));
-                File.Move(temp, store.FilePath, overwrite: true);
+                DurableFile.WriteText(store.FilePath, SettingsStore.Serialize(SettingsStore.Normalize(fresh)));
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(SettingsStore.FileName); }
-            finally
-            {
-                try { File.Delete(temp); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-            }
         }
         return new ResetResult(backup, removed, failed.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
     }

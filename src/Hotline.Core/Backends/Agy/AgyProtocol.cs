@@ -57,7 +57,7 @@ public static class AgyProtocol
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model]);
         if (p.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" or "max")
             args.AddRange(["--effort", p.Effort.Trim().ToLowerInvariant()]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries), chatOnly);
+        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, CliArguments.SplitExtra(p.ExtraArgs), chatOnly);
         return args;
     }
 

@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Nie</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Zatrzymywanie odpowiedzi</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Klawisz, który zatrzymuje odpowiedź w trakcie pisania (Enter nigdy tego nie robi; przycisk Wyślij też ją zatrzymuje). Pojedynczy klawisz (Esc) lub kombinacja, np. Ctrl+. — gdy nic nie jest generowane, Esc ukrywa panel.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Polecenie panelu już używa tego skrótu. Najpierw zmień lub wyczyść skrót tego polecenia albo wybierz inny.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>To nie jest prawidłowy skrót (przykłady: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Pamięć</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Każdy czat widzi plik memory.md w folderze .hotline („/remember coś” dodaje wiersz).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Komunikacja asynchroniczna:** pisemne aktualizacje zastępują wiele spotkań, a spisane decyzje docierają do większej liczby osób.
 - **Dokumentacja popłaca:** zespoły z dobrą dokumentacją wdrażają nowe osoby w dni, a nie tygodnie.
 - **Zaplanowany czas razem:** spontaniczne rozmowy zdarzają się rzadziej, więc firmy planują wspólne spotkania w każdym kwartale.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Przejrzyj programy i uprawnienia</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Ta kopia zapasowa zawiera ustawienia, które mogą uruchamiać programy lub zezwalać na narzędzia bez pytania. Przejrzyj szczegóły poniżej. Zaimportuj tylko wtedy, gdy ufasz tym ustawieniom.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Importowanie anulowane: programy i uprawnienia wymagają potwierdzenia.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Sekcja approvals musi być obiektem JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Zmiany ustawień oczekują, aż plik settings.json stanie się czytelny.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Nie można uruchomić {0}, ponieważ polecenie uruchomienia jest zbyt długie. Skróć monit systemowy, zapisaną pamięć lub dodatkowe argumenty uruchamiania.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Odpowiedź została ucięta, zanim serwer potwierdził jej ukończenie.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Czat lub połączenie uległy zmianie podczas przygotowywania załączników. Twoja wiadomość nie została wysłana.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>Z linku</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Przenieś panel</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Zmień rozmiar panelu</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 otwiera menu panelu. Wybierz opcję Przenieś lub Zmień rozmiar, użyj klawiszy strzałek, a następnie naciśnij Enter, aby zakończyć, lub Esc, aby anulować.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json został zapisany przez nowszą wersję Hotline (wersja {0}; ta wersja zapisuje {1}), więc Hotline go nie zastąpi. Zaktualizuj Hotline lub edytuj plik ręcznie.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json został zapisany przez nowszą wersję Hotline (wersja {0}), więc Hotline go nie zastąpi. Zaktualizuj Hotline lub edytuj plik ręcznie.</value></data>
 </root>

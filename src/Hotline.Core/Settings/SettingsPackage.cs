@@ -63,6 +63,28 @@ public sealed record PackageInfo(int Format, string? AppVersion, DateTimeOffset?
 public sealed record ImportResult(IReadOnlyList<string> Written, IReadOnlyList<SkippedFile> Skipped, string? BackupFolder, string? Error);
 
 /// <summary>
+/// A validated import plan holding private copies of the selected files and the plain-text summary of any executable
+/// configuration that requires confirmation before writing.
+/// </summary>
+public sealed class PreparedImport
+{
+    internal IReadOnlyList<(string Path, string Full, byte[] Data)> Files { get; }
+    internal IReadOnlyList<SkippedFile> Skipped { get; }
+    internal string? Error { get; }
+    public string ExecutionReview { get; }
+    public bool RequiresExecutionConfirmation => ExecutionReview.Length > 0;
+
+    internal PreparedImport(IReadOnlyList<(string Path, string Full, byte[] Data)> files,
+        IReadOnlyList<SkippedFile> skipped, string executionReview, string? error = null)
+    {
+        Files = files;
+        Skipped = skipped;
+        ExecutionReview = executionReview;
+        Error = error;
+    }
+}
+
+/// <summary>
 /// Settings export and import: one .zip holding the ticked parts of the data folder plus <c>hotline-export.json</c> (format,
 /// app version, date, and every file's size and SHA-256). Never exported: logs, history, memory, backups, the .defaults copies,
 /// .bak/.old files, and API keys (they live in the Credential Locker, not in a file). An import adds and replaces; it never

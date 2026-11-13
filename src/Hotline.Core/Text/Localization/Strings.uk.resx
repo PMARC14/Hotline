@@ -84,6 +84,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Ні</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Зупинка відповіді</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>Клавіша, що зупиняє відповідь під час її написання (Enter ніколи цього не робить; кнопка «Надіслати» теж зупиняє). Окрема клавіша (Esc) або комбінація, наприклад Ctrl+. — коли нічого не генерується, Esc ховає панель.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Команда панелі вже використовує це сполучення клавіш. Спочатку змініть або очистьте сполучення клавіш цієї команди чи виберіть інше.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Неприпустима комбінація клавіш (приклади: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Пам'ять</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Кожен чат бачить memory.md у вашій папці .hotline («/remember щось» додає рядок).</value></data>
@@ -911,4 +912,20 @@ print(round(circle_area(2), 2))  # 12.57
   <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Пріоритет асинхронності:** письмові оновлення замінюють багато зустрічей, а зафіксовані рішення доходять до більшої кількості людей.
 - **Документація окупається:** команди з гарною документацією вводять у курс справ новачків за дні, а не тижні.
 - **Заплановані зустрічі:** випадкових розмов поменшало, тож компанії планують спільні очні дні щокварталу.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Перевірте програми та дозволи</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Ця резервна копія містить параметри, які можуть запускати програми або дозволяти інструменти без запиту. Перегляньте відомості нижче. Імпортуйте, лише якщо ви довіряєте цим параметрам.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Імпорт скасовано: програми та дозволи потребують підтвердження.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>Розділ approvals має бути об'єктом JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Зміни параметрів очікують, поки settings.json стане доступним для читання.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Не вдалося запустити {0}, оскільки команда запуску задовга. Скоротіть системний запит, збережену пам'ять або додаткові аргументи запуску.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>Відповідь обірвалася до того, як сервер підтвердив її завершення.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Чат або підключення змінилися під час підготовки вкладень. Ваше повідомлення не надіслано.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>За посиланням</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Перемістити панель</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Змінити розмір панелі</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 відкриває меню панелі. Виберіть «Перемістити» або «Змінити розмір», скористайтеся клавішами зі стрілками, потім Enter для завершення або Esc для скасування.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json створено новішою версією Hotline (версія {0}; ця версія записує {1}), тому Hotline не перезаписуватиме його. Оновіть Hotline або відредагуйте файл вручну.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json створено новішою версією Hotline (версія {0}), тому Hotline не перезаписуватиме його. Оновіть Hotline або відредагуйте файл вручну.</value></data>
 </root>
