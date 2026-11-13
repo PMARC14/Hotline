@@ -6,7 +6,9 @@
 #                           without uninstalling (which would wipe settings and the Copilot key choice)
 #   --certificate PATH      .pfx to sign with (default certs/hotline-dev.pfx from scripts/dev-cert.sh)
 #   --certificate-password  default: $HOTLINE_CERT_PASSWORD, else the <certificate>.password file next to the .pfx
+#                           prefer env/file: an explicit password argument is visible on the caller's own argv
 #   --unsigned              build without signing (CI signs afterwards with Azure Artifact Signing)
+#   --no-timestamp          sign without the default RFC 3161 timestamp (http://timestamp.digicert.com)
 #   --arch x64|arm64|all    processor (default x64); "all" builds both and combines them into one .msixbundle,
 #                           which Windows and the Store install as the right one for each PC
 #   --publisher "CN=…"      package Publisher for this build; must equal the signing certificate's subject exactly
@@ -14,10 +16,15 @@
 # signs it), version ending in .0:
 #   scripts/build-msix.sh --store --version 0.2.3.0 --identity-name "PMARC14.HotlineAI" \
 #     --publisher "CN=…" --publisher-display-name "PMARC14" --display-name "Hotline AI"
+set +x # Passwords must not be echoed, including when invoked with bash -x.
 source "$(dirname "$0")/lib/common.sh"
 
 arch=x64 configuration=Release version="" certificate="" password="${HOTLINE_CERT_PASSWORD:-}" unsigned=false
 publisher="" store=false identity_name="" publisher_display_name="" display_name=""
+timestamp=true
+# Keep the password shell-local until the signing helper needs it.
+export -n password
+unset HOTLINE_CERT_PASSWORD
 while [ $# -gt 0 ]; do
     case $1 in
         --configuration) configuration=$2; shift 2 ;;
@@ -25,6 +32,7 @@ while [ $# -gt 0 ]; do
         --certificate) certificate=$2; shift 2 ;;
         --certificate-password) password=$2; shift 2 ;;
         --unsigned) unsigned=true; shift ;;
+        --no-timestamp) timestamp=false; shift ;;
         --arch) arch=$2; shift 2 ;;
         --publisher) publisher=$2; shift 2 ;;
         --store) store=true; shift ;;
@@ -44,15 +52,13 @@ if $store; then
     unsigned=true # the Store signs the package
 fi
 
-signing=(-p:AppxPackageSigningEnabled=false)
 if ! $unsigned; then
     [ -n "$certificate" ] || certificate="$ROOT/certs/hotline-dev.pfx"
     [ -f "$certificate" ] || die "no signing certificate at $certificate; run scripts/dev-cert.sh first"
-    certificate="$(cd "$(dirname "$certificate")" && pwd)/$(basename "$certificate")" # MSBuild resolves relative paths from the project
+    certificate="$(cd "$(dirname "$certificate")" && pwd)/$(basename "$certificate")"
     password_file="${certificate%.*}.password"
     if [ -z "$password" ] && [ -f "$password_file" ]; then password=$(tr -d '\r\n' < "$password_file"); fi
     [ -n "$password" ] || die "no certificate password: pass --certificate-password, set HOTLINE_CERT_PASSWORD, or put it in $password_file"
-    signing=(-p:AppxPackageSigningEnabled=true "-p:PackageCertificateKeyFile=$(winpath "$certificate")" "-p:PackageCertificatePassword=$password")
 fi
 
 if [ -z "$version" ]; then
@@ -60,12 +66,27 @@ if [ -z "$version" ]; then
     version="0.1.$(( 10#$(date +%j) )).$(( seconds / 2 ))"
 fi
 
-out="$ROOT/artifacts"
-original=$(mktemp)
-cp "$MANIFEST" "$original"
-trap 'cp "$original" "$MANIFEST"; rm -f "$original"' EXIT # always put the manifest back
+stage=$(mktemp -d)
+cleanup() { rm -rf -- "$stage"; }
+trap cleanup EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
 
-# Patch the manifest for this build (the repo copy is restored on exit).
+# Copy the working files, including uncommitted/untracked source edits. Never stage certificates,
+# previous build products, or the shared obj/bin trees. Keep root-level MSBuild/NuGet/SDK settings.
+stage_files=(src)
+for file in "$ROOT"/*.props "$ROOT"/*.targets "$ROOT"/*.json "$ROOT"/*.config; do
+    [ ! -f "$file" ] || stage_files+=("$(basename "$file")")
+done
+mkdir -p "$stage/source"
+tar -C "$ROOT" --exclude=bin --exclude=obj --exclude=AppPackages --exclude=BundleArtifacts \
+    --exclude=certs --exclude='*.pfx' --exclude='*.p12' --exclude='*.password' --exclude=__pycache__ \
+    -cf - "${stage_files[@]}" | tar -C "$stage/source" -xf -
+manifest="$stage/source/src/Hotline.App/Package.appxmanifest"
+out="$stage/packages"
+mkdir -p "$out"
+
+# Patch only this build's staged manifest.
 sed_args=(-e "s|(<Identity [^>]*Version=\")[^\"]+|\1$(sed_escape "$version")|")
 [ -z "$publisher" ] || sed_args+=(-e "s|(<Identity [^>]*Publisher=\")[^\"]+|\1$(sed_escape "$(xml_escape "$publisher")")|")
 [ -z "$identity_name" ] || sed_args+=(-e "s|(<Identity [^>]*Name=\")[^\"]+|\1$(sed_escape "$(xml_escape "$identity_name")")|")
@@ -77,16 +98,83 @@ if [ -n "$display_name" ]; then
     sed_args+=(-e "/<Properties>/,/<\/Properties>/s|<DisplayName>[^<]*</DisplayName>|<DisplayName>$name</DisplayName>|")
     sed_args+=(-e "s|(<uap:VisualElements DisplayName=\")[^\"]+|\1$name|")
 fi
-sed -E "${sed_args[@]}" "$original" > "$MANIFEST"
+sed -E -i "${sed_args[@]}" "$manifest"
+
+# The helper receives the password through its environment, never argv or a generated file.
+# A mutex serializes temporary My-store imports across concurrent builds. Existing certificates
+# and their keys are retained; newly imported certificates/keys are removed in finally.
+cat > "$stage/sign.ps1" <<'POWERSHELL'
+param([string]$Certificate, [string]$SignTool, [string]$Package, [switch]$NoTimestamp)
+$ErrorActionPreference = 'Stop'
+$securePassword = ConvertTo-SecureString $env:HOTLINE_SIGNING_PASSWORD -AsPlainText -Force
+Remove-Item Env:HOTLINE_SIGNING_PASSWORD
+$mutex = [System.Threading.Mutex]::new($false, 'Local\HotlineBuildSigning')
+$locked = $false
+$temporary = @()
+try {
+    try { $locked = $mutex.WaitOne() }
+    catch [System.Threading.AbandonedMutexException] { $locked = $true }
+    $pfx = Get-PfxData -FilePath $Certificate -Password $securePassword
+    $leaf = @($pfx.EndEntityCertificates)
+    if ($leaf.Count -ne 1) { throw 'The PFX must contain exactly one signing certificate.' }
+    $thumbprint = $leaf[0].Thumbprint
+    $certPath = "Cert:\CurrentUser\My\$thumbprint"
+    if (Test-Path $certPath) {
+        if (-not (Get-Item $certPath).HasPrivateKey) {
+            throw 'The signing certificate already exists in CurrentUser\My without its private key.'
+        }
+    } else {
+        $temporary = @(@($pfx.EndEntityCertificates) + @($pfx.OtherCertificates) |
+            Where-Object { $_ -and -not (Test-Path "Cert:\CurrentUser\My\$($_.Thumbprint)") } |
+            ForEach-Object { "Cert:\CurrentUser\My\$($_.Thumbprint)" })
+        Import-PfxCertificate -FilePath $Certificate -Password $securePassword -CertStoreLocation Cert:\CurrentUser\My | Out-Null
+    }
+    $signArgs = @('sign', '/fd', 'SHA256', '/s', 'My', '/sha1', $thumbprint)
+    if (-not $NoTimestamp) { $signArgs += @('/tr', 'http://timestamp.digicert.com', '/td', 'SHA256') }
+    & $SignTool @signArgs $Package
+    if ($LASTEXITCODE -ne 0) {
+        throw "Signing/timestamping failed (signtool exit $LASTEXITCODE); no package will be published."
+    }
+    $signature = Get-AuthenticodeSignature -LiteralPath $Package
+    if (-not $signature.SignerCertificate) { throw 'The package has no signature.' }
+    if (-not $NoTimestamp -and -not $signature.TimeStamperCertificate) {
+        throw 'The timestamp server did not return a timestamp; no package will be published.'
+    }
+} finally {
+    try {
+        foreach ($path in $temporary) {
+            if (Test-Path $path) { Remove-Item -Path $path -DeleteKey }
+        }
+    } finally {
+        $securePassword.Dispose()
+        if ($locked) { $mutex.ReleaseMutex() }
+        $mutex.Dispose()
+    }
+}
+POWERSHELL
+
+sign_package() {
+    $unsigned && return 0
+    local signtool timestamp_args=()
+    signtool=$(sdk_tool signtool.exe)
+    [ -n "$signtool" ] || die "signtool.exe not found"
+    $timestamp || timestamp_args=(-NoTimestamp)
+    HOTLINE_SIGNING_PASSWORD="$password" MSYS_NO_PATHCONV=1 powershell.exe -NoProfile -NonInteractive \
+        -ExecutionPolicy Bypass -File "$(winpath "$stage/sign.ps1")" \
+        -Certificate "$(winpath "$certificate")" -SignTool "$(winpath "$signtool")" \
+        -Package "$(winpath "$1")" "${timestamp_args[@]}" >&2
+}
 
 # Builds one processor's .msix and prints its path.
 build_one() {
     local rid=$1 platform=$2 msix
-    dotnet publish "$(winpath "$ROOT/src/Hotline.App/Hotline.App.csproj")" -c "$configuration" -r "win-$rid" \
-        "-p:Platform=$platform" -p:GenerateAppxPackageOnBuild=true "${signing[@]}" "-p:AppxPackageDir=$(winpath "$out")\\" >&2
+    (cd "$stage/source" && dotnet publish "$(winpath "$stage/source/src/Hotline.App/Hotline.App.csproj")" \
+        -c "$configuration" -r "win-$rid" "-p:Platform=$platform" -p:GenerateAppxPackageOnBuild=true \
+        -p:AppxPackageSigningEnabled=false "-p:AppxPackageDir=$(winpath "$out")\\") >&2 || return $?
     # Debug packages are named …_<rid>_Debug.msix; Release ones …_<rid>.msix.
     msix=$(find "$out" \( -name "*_${version}_${rid}.msix" -o -name "*_${version}_${rid}_Debug.msix" \) | tail -1)
     [ -n "$msix" ] || die "no $rid .msix for version $version was produced"
+    sign_package "$msix" || return $?
     printf '%s\n' "$msix"
 }
 
@@ -101,19 +189,30 @@ case $arch in
     arm64) result=$(build_one arm64 ARM64) ;;
     all)
         bundle_dir="$out/bundle-$version"
-        rm -rf "$bundle_dir"; mkdir -p "$bundle_dir"
-        cp "$(build_one x64 x64)" "$(build_one arm64 ARM64)" "$bundle_dir/"
+        mkdir -p "$bundle_dir"
+        x64_package=$(build_one x64 x64)
+        arm64_package=$(build_one arm64 ARM64)
+        cp "$x64_package" "$arm64_package" "$bundle_dir/"
         makeappx=$(sdk_tool makeappx.exe); [ -n "$makeappx" ] || die "makeappx.exe not found (restore the app project first)"
         result="$out/Hotline_${version}.msixbundle"
-        rm -f "$result"
         MSYS_NO_PATHCONV=1 "$makeappx" bundle /o /bv "$version" /d "$(winpath "$bundle_dir")" /p "$(winpath "$result")" >&2
         rm -rf "$bundle_dir"
-        if ! $unsigned; then # the packages inside are signed; the bundle needs the same signature
-            signtool=$(sdk_tool signtool.exe); [ -n "$signtool" ] || die "signtool.exe not found"
-            MSYS_NO_PATHCONV=1 "$signtool" sign /fd SHA256 /f "$(winpath "$certificate")" /p "$password" "$(winpath "$result")" >&2
-        fi
+        sign_package "$result"
         ;;
 esac
+
+# Publish only completed packages. A bundle keeps its documented path, artifacts/Hotline_<version>.msixbundle (release.yml
+# reads it there); a single package goes to a unique folder, even for concurrent identical versions.
+mkdir -p "$ROOT/artifacts"
+if [ "$arch" = all ]; then
+    cp "$result" "$ROOT/artifacts/"
+    result="$ROOT/artifacts/$(basename "$result")"
+else
+    published=$(mktemp -d "$ROOT/artifacts/Hotline.App_${version}_${arch}_XXXXXXXX")
+    cp "$result" "$published/"
+    result="$published/$(basename "$result")"
+fi
+out="$ROOT/artifacts"
 
 # Keep the newest package folders; every build is ~90 MB per processor and they piled up to gigabytes.
 ls -dt "$out"/Hotline.App_*/ 2>/dev/null | tail -n +5 | while read -r old; do rm -rf "$old"; done || true # none yet: ls fails, which pipefail would turn into an exit
