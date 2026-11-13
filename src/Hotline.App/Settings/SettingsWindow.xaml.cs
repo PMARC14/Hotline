@@ -55,6 +55,8 @@ public sealed partial class SettingsWindow : Window
         SystemTheme.Changed += OnSettingsChanged;
         Closed += (_, _) => { _closed = true; Activated -= FitOnceAfterFirstActivation; _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
+        // After the first layout (queued: not inside it): the pane widens when a label is trimmed (SettingsWindow.NavPane.cs).
+        Nav.Loaded += (_, _) => DispatcherQueue.TryEnqueue(() => { if (!_closed) FitNavPane(); });
     }
 
     /// <summary>Self-test: builds every page once (hidden window) so a broken page fails the smoke test.</summary>
