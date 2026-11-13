@@ -251,6 +251,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                     if (Math.Abs(box.BorderThickness.Left - wanted) > 0.01)
                         log.Error($"selftest FAILED: {name}: the {id} picker's border is {box.BorderThickness.Left}, not {wanted}");
                 }
+                // Every shown button is drawn at the width the fit gave it (ToolbarPlan.PlanRow's ButtonWidths).
+                foreach (var problem in popup.ToolbarDrawnWidths().Problems) log.Error($"selftest FAILED: {name}: {problem}");
             }
             var customButtons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$"""
                 "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
@@ -273,6 +275,9 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             await Look("18-custom-4-cells-320", Bar("""{ "width": "wide" }""", customIds, customButtons, biggest), 320);
             // A coloured outline bar-wide, and one item in another colour.
             await Look("19-outline-colour", Bar("""{ "width": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            // Very narrow with a four-cell last right button: the fit shrinks it to one cell, and it must be drawn that way (CheckGrid).
+            await Look("21-shrunk-last-right-200", Bar("{}", overrides: """ "settings": { "width": 4 } """), 200);
+            if (!popup.ToolbarDrawnWidths().AnyShrunk) log.Error("selftest FAILED: 21-shrunk-last-right-200: the fit did not shrink the last right button");
             // Items in the left, centre and right groups of both rows.
             await Look("20-centre-group", """
                 { "version": 2, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },

@@ -163,6 +163,9 @@ public sealed partial class PopupWindow : Window
     public IReadOnlyDictionary<string, double> FitToolbar(double room, IReadOnlyCollection<string> availablePickers) =>
         _rows.Fit(room, availablePickers);
 
+    /// <summary>Self-test: shown buttons drawn at another width than fitted, and whether a row shrank its last right button.</summary>
+    public (IReadOnlyList<string> Problems, bool AnyShrunk) ToolbarDrawnWidths() => _rows.DrawnWidths();
+
     /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
     public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);
 
