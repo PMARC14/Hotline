@@ -13,7 +13,7 @@ same files). Comments and trailing commas are allowed.
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
-| `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file) |
+| `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file). Deleting the button leaves them; a new button with that id adds to them (they are never read as its picture) |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
@@ -388,8 +388,9 @@ These keys work anywhere in the panel, including the message box; they are separ
 Store built-in and picker bindings in the optional top-level `shortcuts` map in **toolbar.json** (version stays 2).
 Settings › Chat and history has a row for each command. English key names are case-insensitive; Ctrl, Alt or Win is required,
 except F1–F24, which may stand alone. Shift alone is insufficient; bare letters, Space and Tab are refused, including during
-key capture. Enter (with any modifiers) is reserved for the message box. `chat.stopShortcut` stays in settings.json and keeps
-its separate rule allowing Esc and bare keys. The defaults avoid Windows shortcuts and text editing keys (`Ctrl+C/V/X/A/Z/Y`).
+key capture. Enter (with any modifiers) and the message box's editing keys (`Ctrl+A/C/V/X/Y/Z`, `Ctrl+Tab`, `Ctrl+Backspace`,
+`Ctrl+Shift+Z`, `Ctrl+Shift+Tab`) are reserved for the message box: such a binding is refused with a warning. `chat.stopShortcut`
+stays in settings.json and keeps its separate rule allowing Esc and bare keys; Settings refuses a Stop that a panel command asked for.
 Toolbar shortcuts ignore key auto-repeat and Ctrl with right Alt (AltGr). During IME composition, toolbar shortcuts, Stop
 and Esc-to-hide are suspended; virtual key 0xE5 is also ignored.
 
@@ -417,7 +418,7 @@ per process, before settings normalization. The first toolbar save writes that m
 An explicit `"shortcuts": {}` selects shipped defaults and prevents legacy fallback. Other settings saves leave the legacy key
 untouched; new settings files do not include it. There is no separate
 quick-actions toolbar button: quick actions remain in the message box's `/` list. Disabled controls stay disabled for shortcuts,
-including the three pickers while an answer streams. Hidden buttons still work by shortcut; hidden pickers still cycle.
+including the three pickers while an answer streams. Hidden buttons still work by shortcut; a picker cycles only while it is drawn on the bar (a hidden one would change the model or connection unseen).
 
 **Conflicts:** `chat.stopShortcut` always has priority, even while idle. Otherwise the first shortcut in JSON order keeps the combo
 (aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
