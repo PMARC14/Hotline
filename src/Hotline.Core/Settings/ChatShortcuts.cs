@@ -56,13 +56,16 @@ public static class ChatShortcuts
         return result;
     }
 
-    /// <summary>The toolbar command whose requested binding (built-in or custom; switched-off ones don't count) is
+    /// <summary>The toolbar command whose requested or effective binding (built-in or custom; switched-off ones don't count) is
     /// <paramref name="stop"/>, or null. Stop wins at run time, so Settings refuses such a Stop instead of disabling the command.</summary>
     public static string? StopConflict(ToolbarModel toolbar, string? stop)
     {
         if (!Hotkey.TryParseShortcut(stop, out var key)) return null;
+        // What each command asked for, and what it falls back to (an invalid value takes its default), counted without any Stop.
+        var effective = toolbar.EffectiveShortcuts(stop: "");
         foreach (var id in Defaults.Keys)
-            if (Hotkey.TryParseToolbarShortcut(toolbar.ShortcutText(id), out var binding) && binding == key) return id;
+            if (Hotkey.TryParseToolbarShortcut(toolbar.ShortcutText(id), out var binding) && binding == key
+                || Hotkey.TryParseToolbarShortcut(effective.GetValueOrDefault(id), out binding) && binding == key) return id;
         foreach (var button in toolbar.Buttons)
             if (Hotkey.TryParseToolbarShortcut(button.RequestedShortcut ?? button.Shortcut, out var binding) && binding == key) return button.Id;
         return null;

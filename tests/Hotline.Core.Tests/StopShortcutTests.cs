@@ -68,6 +68,14 @@ public sealed class StopShortcutTests
         Assert.Equal("newChat", ChatShortcuts.StopConflict(s.Chat.Toolbar, "Ctrl+N"));
     }
 
+    // An invalid binding falls back to the command's default: Stop must not take that default either.
+    [Fact]
+    public void Settings_refuses_a_stop_shortcut_an_invalid_bindings_default_falls_back_to()
+    {
+        var toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""{ "version": 2, "shortcuts": { "pin": "Shift+A" } }""");
+        Assert.Equal("pin", ChatShortcuts.StopConflict(toolbar, "Ctrl+P"));
+    }
+
     [Fact]
     public void An_invalid_value_in_the_file_falls_back_to_esc()
     {
