@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # Writes Hotline.appinstaller: opening it installs Hotline from the GitHub Release, and Windows then checks the
-# "latest" copy of this file for updates (once a day, in the background, without blocking launch).
+# promoted "latest" copy of this file for updates (once a day, in the background, without blocking launch).
 # Identity (Name, Publisher) comes from the manifest so it always matches the signed package.
 #   scripts/make-appinstaller.sh --version 1.2.3.0 --tag v1.2.3 --msix-name Hotline_1.2.3.0.msixbundle --out artifacts/Hotline.appinstaller
 #   (--msix-name: the release's .msixbundle, or a single x64 .msix)
@@ -28,6 +28,7 @@ name=$(identity_attr Name)
 [ -n "$name" ] && [ -n "$publisher" ] || die "Package.appxmanifest has no Identity Name/Publisher"
 
 self="https://github.com/$repository/releases/latest/download/Hotline.appinstaller"
+# Pin the bundle to this file's version; only the promoted appinstaller is served through "latest".
 msix="https://github.com/$repository/releases/download/$tag/$msix_name"
 # A .msixbundle (x64 + ARM64) is a MainBundle; a single .msix is an x64 MainPackage.
 if [[ $msix_name == *.msixbundle ]]; then

@@ -1,4 +1,5 @@
-# Submits each full (non-pre-release) GitHub Release to winget (microsoft/winget-pkgs) as PMARC14.Hotline.
+# Submits promoted GitHub releases to winget (microsoft/winget-pkgs) as PMARC14.Hotline.
+# GITHUB_TOKEN promotions do not trigger release workflows; use Run workflow after promotion in that case.
 # DISABLED until the repository variable HOTLINE_WINGET_ENABLED is 'true'. Prerequisites:
 #   - releases signed with a trusted certificate (winget validation rejects self-signed MSIX packages)
 #   - the first version submitted once by hand (wingetcreate new <.msixbundle url>), so the package identifier exists
@@ -11,12 +12,18 @@ on:
   workflow_dispatch:
     inputs:
       tag:
-        description: 'Release tag to submit, e.g. v0.2.57'
+        description: 'Promoted release tag to submit, e.g. v0.2.57'
         required: true
+
+permissions:
+  contents: read
 
 jobs:
   submit:
-    if: ${{ vars.HOTLINE_WINGET_ENABLED == 'true' }}
+    if: >-
+      vars.HOTLINE_WINGET_ENABLED == 'true' &&
+      (github.event_name == 'workflow_dispatch' ||
+       (github.event.release.prerelease == false && github.event.release.draft == false))
     runs-on: windows-latest
     steps:
       - name: Submit to winget-pkgs
@@ -32,9 +39,11 @@ jobs:
           if (-not $env:WINGET_TOKEN) { throw 'Secret WINGET_TOKEN is not set (see the comment at the top of this workflow).' }
           $tag = if ($env:EVENT -eq 'release') { $env:RELEASE_TAG } else { $env:INPUT_TAG }
           if ($tag -notmatch '^v[0-9]+\.[0-9]+\.[0-9]+$') { throw 'Invalid release tag' }
+          $stable = gh release view $tag --repo "$env:GH_REPO" --json isPrerelease,isDraft --jq '(.isPrerelease == false) and (.isDraft == false)'
+          if ($LASTEXITCODE -ne 0 -or $stable -ne 'true') { throw "Release $tag must be promoted before winget submission" }
           $version = $tag.TrimStart('v')
           $msix = gh release view $tag --repo "$env:GH_REPO" --json assets --jq '.assets[] | select(.name | endswith(".msixbundle")) | .url' # x64 + ARM64 in one file
-          if (-not $msix) { throw "Release $tag has no .msixbundle" }
+          if ($LASTEXITCODE -ne 0 -or -not $msix) { throw "Release $tag has no .msixbundle" }
           Invoke-WebRequest https://github.com/microsoft/winget-create/releases/download/v1.28.1.0/wingetcreate.exe -OutFile wingetcreate.exe
           $expectedHash = '63D980BA79E97042395BD6EB5992C2DB9E01E9E7A8A22958A95C288F27310413'
           $actualHash = (Get-FileHash -Algorithm SHA256 -LiteralPath wingetcreate.exe).Hash

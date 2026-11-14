@@ -8,15 +8,15 @@ sparse MSIX from a classic installer, both signed with a certificate the PC trus
 ## How a release is built (GitHub Actions)
 
 - **CI** (`.github/workflows/ci.yml`): unit tests + app build on every pull request and every push to `main`.
-- **Release** (`.github/workflows/release.yml`): every push to `main` that changes code publishes a release
+- **Release** (`.github/workflows/release.yml`): every push to `main` that changes code publishes a prerelease
   `v<major.minor>.<patch>`: major.minor from `version.txt`, patch the next number in that line from the existing tags
   (`scripts/next-version.sh`; after `v0.2.25` comes `v0.2.26`, and bumping `version.txt` to `0.3` starts at
-  `v0.3.0`). A pushed tag `vX.Y.Z` or **Run workflow** with a version publishes that version instead. The Store package
+  `v0.3.0`). A pushed tag `vX.Y.Z` or **Run workflow** with a version publishes that version as a prerelease too. The Store package
   is the same version plus `.0`; the Store only needs each submission higher than the last (compared as a whole) with
   the fourth part `0`. To start a new release line (0.6 to 0.7), bump `version.txt`; **1.0** comes when the Road to 1.0
   ([HANDOFF.md](HANDOFF.md)) is done and a Store update with all 17 languages is certified.
   - With the secrets `HOTLINE_SIGNING_PFX_BASE64` / `HOTLINE_SIGNING_PFX_PASSWORD` (subject must equal the manifest
-    `Publisher`): a normal release. **Set since 2026-10-15** with a self-signed certificate valid until 2036-10-12
+    `Publisher`): a signed prerelease. **Set since 2026-10-15** with a self-signed certificate valid until 2036-10-12
     (`CN=pmarc14 Hotline Dev`; the owner keeps `certs/release/hotline-release.pfx` and its password, git-ignored, and a
     backup). Users trust `Hotline.cer` once; `.appinstaller` updates then work across releases. To replace it, set the
     two secrets again (every user then trusts the new `Hotline.cer`).
@@ -28,9 +28,15 @@ sparse MSIX from a classic installer, both signed with a certificate the PC trus
   *Unknown*: the Store source doesn't publish versions for Store apps (same for every msstore app; not fixable here). (`.github/workflows/winget.yml`, for a
   `winget-pkgs` entry of the GitHub builds, stays disabled: winget-pkgs rejects self-signed packages.)
 
-Users then either double-click the `.msixbundle`, or open `Hotline.appinstaller` (downloaded) — same install, plus Windows
-checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background. Updates keep
-settings (`%USERPROFILE%\.hotline`) and the Copilot key choice (setup: [copilot-key.md](copilot-key.md)).
+**Preview:** push and dispatch builds are GitHub prereleases, available for manual installation. **Stable:** the owner runs
+**Actions › Promote › Run workflow** with a tag (`v0.6.3`). It validates the tag, published release, `.msixbundle` and
+`Hotline.appinstaller`, then runs `gh release edit <tag> --prerelease=false --latest`. Promoting changes status without rebuilding.
+
+Users either double-click the `.msixbundle`, or open the downloaded `Hotline.appinstaller` for automatic updates. Windows
+checks `releases/latest/download/Hotline.appinstaller` once a day and updates in the background; GitHub excludes prereleases,
+so only promotion advances stable. The bundle URL pins that file's version. Updates keep settings (`%USERPROFILE%\.hotline`)
+and the Copilot key choice (setup: [copilot-key.md](copilot-key.md)). If the winget route is enabled, run its workflow manually
+after **Promote**: events from `GITHUB_TOKEN` do not start another release workflow. Prereleases are rejected there too.
 
 Notes: Windows disabled the `ms-appinstaller:` web link by default, so link to the file
 itself and let users open it after downloading. The package version (`MAJOR.MINOR.PATCH.0`) must increase every
@@ -115,7 +121,7 @@ ID and a selfie); elsewhere it takes an organization with a verifiable business 
    subject from step 4), `AZURE_CLIENT_ID` (the app), `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`.
 
 From then on every release is built unsigned with that `Publisher`, signed by Azure (`azure/artifact-signing-action`),
-timestamped, and published as a normal release — no `Hotline.cer`, and `.appinstaller` updates work. Check a release
+timestamped, and published as a prerelease — no `Hotline.cer`; promotion enables `.appinstaller` updates. Check a release
 with `Get-AuthenticodeSignature Hotline_*.msixbundle` (Status *Valid*, signer = your name).
 
 **Identity change:** the `Publisher` is part of the package identity, so the first trusted build installs *next to* a

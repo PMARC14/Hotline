@@ -197,7 +197,7 @@ Owner preference: anything configurable should be in settings.json even when the
 
 ### Versions
 
-`version.txt` holds major.minor (now `0.6`). Every code push to `main` publishes `v<major.minor>.<patch>` (`scripts/next-version.sh`;
+`version.txt` holds major.minor (now `0.6`). Every code push to `main` publishes prerelease `v<major.minor>.<patch>`; only owner promotion advances stable (`scripts/next-version.sh`;
 [RELEASING.md](RELEASING.md)); the Store package is the same version plus `.0` and each submission must be higher than the last.
 **1.0** comes when the Road to 1.0 is done and a Store update with all 17 languages is certified.
 

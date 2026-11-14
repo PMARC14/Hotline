@@ -1,0 +1,36 @@
+# Only an owner-requested promotion advances the sideload update channel.
+name: Promote
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Prerelease tag to promote to stable, e.g. v0.6.3'
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: release # Serialize promotion with release publication.
+  cancel-in-progress: false
+
+jobs:
+  promote:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write # Validate release assets and edit release status/latest.
+    steps:
+      - name: Validate and promote release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ inputs.tag }}
+        run: |
+          set -euo pipefail
+          [[ $TAG =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]] || { echo '::error::Tag must look like v1.2.3'; exit 1; }
+          valid=$(gh release view "$TAG" --repo "$GH_REPO" --json isDraft,assets \
+            --jq '(.isDraft == false) and any(.assets[]; .name | endswith(".msixbundle")) and any(.assets[]; .name == "Hotline.appinstaller")')
+          [ "$valid" = true ] || { echo '::error::Promotion requires a published release with a .msixbundle and Hotline.appinstaller'; exit 1; }
+          gh release edit "$TAG" --repo "$GH_REPO" --prerelease=false --latest
