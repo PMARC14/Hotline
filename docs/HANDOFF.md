@@ -4,25 +4,32 @@ Read this first, then `CLAUDE.md` (working rules; local, git-ignored) and, if pr
 (machine-specific notes; git-ignored). Everything else is linked from *Where things are documented*. The maintainer's job briefs and
 review outputs are **outside the repo**, in `~/.claude/briefs/hotline/` (the 1.0 job briefs `1.0-*.md` and `1.0-plan-README.md` are there).
 
+## Contents
+
+[What Hotline is](#what-hotline-is) | [State](#state-2026-11-14) | [Open items](#open-items) |
+[Next work](#next-work) | [Architecture](#architecture-map) | [Hard-won facts](#hard-won-facts-dont-relearn-these) |
+[Deferred](#deferred-not-bugs-to-rediscover-from-the-reviews) | [Process](#process-that-worked) | [Glossary](#glossary)
+
 ## What Hotline is
 
 A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acrylic, no WebView) that chats with the AI the
 user picks: Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-11-12)
+## State (2026-11-14)
 
-- **Released:** v0.6.2 on GitHub (`version.txt` says `0.6`). PR #60 (`fix/review-2026-11`, the review-fix wave below) is open and tested
-  but **not merged**: the owner said to finish every finding from Fable, Astra, Sol and Sonnet first, so merging (which publishes
-  v0.6.3 automatically) waits for that. Pushes to `main` publish the next patch release, signed with Hotline's self-signed certificate
-  (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; [RELEASING.md](RELEASING.md)).
-- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`). Last uploaded bundle 0.3.0.0. A 0.6.3.0 bundle was built from the branch (Actions
-  › Store, run 43164221390, artifact `hotline-store-0.6.3.0`, submit off) and is **not uploaded**; the owner uploads by hand and fills
-  each language's listing from `store/listing.md` (the "additional languages" section is gone: one listing per package language).
-  Rebuild it after the merge if the code changed. Otherwise no Store bundles until just short of 1.0 (owner, 2026-10-17).
-- **Schema freeze (S1) is NOT done:** the first job of the road to 1.0; the plan and the owner's decisions (2026-11-12, reviewed with
-  Fable) are in [simplification-plan.md](simplification-plan.md).
-- **Tests:** 2,740 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`; commands and the hand-test
+- **Released:** v0.6.3 is stable on GitHub (`version.txt` says `0.6`). PR #60 is squash-merged as `ce7b7fd`; it ships the review-fix
+  wave below, Fable toolbar fixes T1-T8 and a Settings nav pane that widens to its longest label. Releases use Hotline's self-signed
+  certificate (`CN=pmarc14 Hotline Dev`, valid to 2036-10-12; [RELEASING.md](RELEASING.md)).
+- **Release channel:** PR #63 (`beb8bab`) is merged. Pushes to `main` publish GitHub prereleases; **Actions > Promote** with a tag
+  makes a release stable without rebuilding. Only stable releases move sideload users: `.appinstaller` follows `releases/latest`.
+  The #63 merge itself publishes the next patch as a prerelease; v0.6.3 stays stable until the owner promotes a newer release.
+- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`). The owner is uploading the earlier 0.6.3.0 bundle (Actions run 43164221390,
+  artifact `hotline-store-0.6.3.0`), built before T1-T8 and the Settings nav fix. The next upload must be **0.6.4.0 or higher**.
+  Uploads are manual; each language's listing comes from `store/listing.md` and `store/listings/`.
+- **Schema freeze (S1) is first:** owner decisions are final, reviewed with Fable 5.2, in
+  [simplification-plan.md](simplification-plan.md#owner-decisions-2026-11-12-reviewed-with-fable-52).
+- **Tests:** 2,757 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`; commands and the hand-test
   checklists: [TESTING.md](TESTING.md).
 - **Reviews:** 2026-11-12 whole-codebase review by Fable 5.2 and Astra (bugs), Sol and Sonnet (design, testing, simplification, merged
   into [simplification-plan.md](simplification-plan.md)). Findings were confirmed by Sol, fixed in worktrees and combined in PR #60.
@@ -33,8 +40,9 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   for settings, toolbar, mcp and history, failed-migration keeps the inline list, automatic updates queue while `settings.json` is
   unreadable; import safety (execution review dialog, `diagnostics.testLinks` default off, protocol voice blocked); backends (cut-off
   API answers noted, command-line length check, one argument splitter); release and scripts (signing identity required on push,
-  least-privilege CI, winget tag validated); Settings window clamped to the work area; embedded tables and code re-fit when the
-  panel resizes; foreground-window tracker (fixes "Capture window" from the Copilot key; see below); display and DPI change recovery;
+  least-privilege CI, winget tag validated, workflow SHA pins, pinned and hash-checked `wingetcreate`, CI builds the MSIX,
+  `build-msix.sh` signs by thumbprint with timestamps and staged builds); Settings window clamped to the work area; embedded tables
+  and code re-fit when the panel resizes; foreground-window tracker (fixes "Capture window" from the Copilot key; see below); display and DPI change recovery;
   Esc auto-repeat no longer hides the panel while stopping an answer; tap-mode voice stops on blur and after 30 s of silence;
   Credential Locker errors logged (not shown as "no key"); non-recursive settings watchers; a newer `settings.json` or
   `toolbar.json` is never overwritten; narrow panel keeps the bottom row; test duplicates merged; new strings translated in 16 languages.
@@ -55,7 +63,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ## Open items
 
-- **Owner hand tests for PR #60** (on the desktop, not run by agents; [TESTING.md](TESTING.md) has the older checklists):
+- **Owner hand tests for shipped 0.6.3** (on the desktop, not run by agents; [TESTING.md](TESTING.md) has the older checklists):
   Ctrl+Shift+F10 then Move or Resize with the arrow keys, Enter and Esc; **Capture window from the Copilot key** on a second monitor
   (expect `window-HHmmss.png` of the window you were in, no notice; minimize it first and expect the notice; the "selected text"
   chip from another app; panel opens on that window's monitor); Settings on a small or mixed-DPI screen (opens clamped, fully
@@ -63,64 +71,28 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
   long code or a wide table; unplug a monitor, change scale or the taskbar under an open pinned panel (display-change recovery,
   new in this wave: **never reproduced on real hardware**); hold Esc while an answer streams (stops, panel stays); tap the voice
   button and click another app (stops listening), stay silent 30 s (stops); tray icon via keyboard (Tab to the tray, Enter); a
-  hand-edited newer `settings.json` (`"schemaVersion": 99`) is not overwritten and says so.
+  hand-edited newer `settings.json` (`"schemaVersion": 99`) is not overwritten and says so; a stale shortcut save after editing
+  `toolbar.json` by hand shows the "changed on disk" notice; Settings refuses Stop = Ctrl+N with the conflict message; Settings in
+  French shows the full nav label; with the model picker off the bar, Ctrl+M does nothing (T6, deliberate: hidden pickers no longer cycle).
 - **Findings from the 2026-11-12 reviews not fixed** (Fable and Astra bugs; the design ones are in [simplification-plan.md](simplification-plan.md)):
-  - Done in PR #60: SHA-pinned actions, pinned and hash-checked `wingetcreate`, CI builds the MSIX, `build-msix.sh` signs by
-    thumbprint (no password on a command line), timestamps and builds from a staged copy (F24). **Update-channel gating** is PR #63
-    (stacked on #60, merge right after it): prereleases on push, Actions › Promote makes a release stable.
-  - Toast text: owner chose a settings key, default title-only; part of S1. Test gaps: deferred to plan step 5 (Core decisions).
-  - **`toolbar.json` lossless writer** and a version-aware save for every family: part of S1 (the 0.6.3 guard only refuses to overwrite).
-  - **Test gaps:** `ClipboardCopy` and `SelectionReader` logic, `OnPanelKey` routing, attachment intake, flyout hold counting,
-    packaging checks (the Core decisions in simplification-plan step 5 close most of them).
+  - S1 and plan step 5 cover the remaining schema and test work; see *Next work*.
   - Smaller items from the Fable list not covered by any fix: check `docs/` and the Fable findings file
     (`~/AppData/Local/Temp/claude/.../scratchpad/fable-findings.md`, machine-local) if you need the full text; the reports of the Sol
     confirm phase are in `~/.agent-jobs/jobs/<id>/final.txt` (W1 979681f0, W2 14dac610, W3 c70e617d, W4 a2d6d989, W5 9943d62e), Sol
     design review 16df04d0, Sonnet review a920fbc2.
-- **Fable 5.2 toolbar review T1-T8: fixed in PR #60** (tests first where Core holds them; T1 proven red then green by the self-test's
-  drawn-width check). Hand-test: a shortcut save after editing toolbar.json by hand shows the "changed on disk" notice (T3); Settings
-  refuses Stop = Ctrl+N with the conflict message (T5); with the model picker off the bar, Ctrl+M does nothing (T6, a change: hidden
-  pickers no longer cycle).
-- **Store images (2026-11-12): all 17 sets are done and reviewed.** The zh-Hans and zh-Hant panels were recaptured with the 0.6.3
-  build; a hydrogen pass over all 102 images (plus my own look at the fixed ones) found: caption wrap and line height (fixed in
-  `store/art/art.html`: French spaces before `: ; ! ?` are non-breaking, Devanagari lines get line-height 1.4), the slash scene
-  showing leftover summary text (the summary demo's 8 s hold keeps running after its shot and streamed into the next scene; fixed:
-  `scripts/make-store-media.sh` takes the summary last), and a stray "Ctrl+Shift+F10" tooltip on the message
-  box (a real app bug from PR #60, fixed there: `KeyboardAcceleratorPlacementMode.Hidden`). The images are in
-  `C:/Users/pmadd/Git/hotline/artifacts/store/<lang>/` (git-ignored); the panel captures are in `artifacts/store/panels/<lang>/`.
-  Trap fixed: composing in another checkout silently made screenshots without the app panel when its `artifacts/store/panels/<lang>/`
-  was missing; `scripts/lib/store-text.py` now stops with a message. The French sidebar clipping is fixed in PR #60 (the pane widens
-  to its longest label: fr 238, uk 215, tr 216 DIP; the self-test checks all 17 languages). `fr/screenshot-4.png` still shows the old
-  clipping: recapture with `bash scripts/make-store-panels.sh fr` and `bash scripts/make-store-localized.sh fr` before the next Store upload.
+- **Store images:** all 17 sets are reviewed. `fr/screenshot-4.png` still shows the old clipped "Conversation et histor" label:
+  recapture `fr` with `bash scripts/make-store-panels.sh fr`, then `bash scripts/make-store-localized.sh fr` before the next Store
+  upload. Images are in `C:/Users/pmadd/Git/hotline/artifacts/store/<lang>/` (git-ignored); panel captures are in
+  `artifacts/store/panels/<lang>/`. Compose in the checkout containing the captures; missing panels stop composition.
+- **Store trailer:** deferred; `store/video/storyboard.md` and `scripts/make-store-tour.sh` hold the pipeline. Caption dry-run is
+  tested; screen recording is untested. Capture still uses `taskkill /F` per language (temporary ghost tray icon); no `hotline://quit` exists.
 - **Interface strings:** all new keys are translated in 16 languages by model (Flash); no native review (see TRANSLATING.md).
-- **Cleanup left on this PC:** agent worktrees and branches (`codex/*`, `agy/*`, under `Git/hotline.worktrees/review-fixes.worktrees`),
-  the integration worktree `Git/hotline.worktrees/review-fixes`, and an empty locked folder `Git/hotline.worktrees/handoff-capture`.
+- **Cleanup left on this PC:** empty, unregistered directory `C:/Users/pmadd/Git/hotline.worktrees/review-fixes` remains.
 - `PanelPlacement.Rescale` keeps a pinned panel's size in scaled units across monitors of different scale (hand check).
 - **Fixed in PR #60, verify by hand: "Capture window" fell back to the whole screen.** The Copilot key moves focus to
   `CopilotKeyPressFocusFrame`, so the foreground handle was 0 at `ShowPopup`. Now `ForegroundWindowTracker` (`SetWinEventHook`,
   App) and `ForegroundWindowPolicy` (Core, tested) keep the last real window; `CaptureAsync` revalidates it. If it still fails, read
   the `toggle:` and `deactivated:` lines in `hotline.log`.
-- **Store screenshots in every language** (owner request 2026-11-08; scripts written and the pieces tested, the full 17-language run
-  not finished: the owner stopped it because the PC became slow and windows stuck). `scripts/make-store-panels.sh` sets
-  `general.language` per language (settings.json backed up first and restored byte for byte, also on Ctrl+C or kill), restarts
-  Hotline and runs `scripts/make-store-media.sh --panels-only`, which captures the real panel and Settings (AI connections page,
-  `hotline://settings?page=Connections`) into `artifacts/store/panels/<lang>/`; `scripts/make-store-localized.sh` then composes
-  `artifacts/store/<lang>/screenshot-1..4.png`, poster and box art with the captions from `store/listings/<lang>.md` and the
-  tagline from `store/art/taglines.json` (the app's own `AppDescription` strings). The demo conversations are now interface text
-  (`Strings.Demo_*`, translated in all 16 files), so the panels are fully localized. Logos have no text and are shared. The trailer
-  is skipped (`store/video/storyboard.md` and `scripts/make-store-tour.sh` have the in-depth video ready; its caption pipeline was
-  tested with `--dry-run`, the screen recording was not run).
-  Lessons from the first runs (Argon review, verified): an edit to `scripts/lib/store-capture.sh` once dropped the exit trap, so
-  every run left a full-screen Edge backdrop and a 70 MB temp folder behind, which made the PC stuck and slow. Now: the cleanup
-  trap kills the backdrop by process id, the recorder, closes Settings and deletes the work folder (tested on exit and on kill);
-  window handling is one small ctypes helper (`scripts/lib/win-helper.py`) instead of eight PowerShell `Add-Type` compiles per
-  language (each starts `csc.exe`, which Defender scans); the backdrop is brought to the front by process (AttachThreadInput to
-  the foreground thread, then checked), and the capture stops with a message if the screen is not the dark backdrop; panel and
-  Settings pictures are cropped to the window's exact rectangle (DWM frame bounds), not to a diff against the backdrop; Hotline is
-  stopped before settings.json is edited, and the run waits for the "interface language" log line instead of sleeping. Still open:
-  Hotline has no quit link, so each language ends it with `taskkill /F` (a ghost tray icon until the mouse passes over it); a
-  graceful quit would need a `hotline://quit` (not built). Before the long run: keep the PC awake (`hold`), plug in the power, and
-  close other apps; run it when you will not use the PC for about 15 minutes. The panel's demo scene scrolls the answer back to the
-  top after streaming (`PanelSelfTest.DemoAsync`), so the question and heading show.
 - **Panel memory with a long chat** (owner request 2026-11-08; no change made yet). Measured on the 0.1.308 dev build with a big
   Antigravity answer open: Hotline.exe 311-322 MB working set / 209-218 MB private, handles flat at about 1,370, no growth while
   idle; the `agy.exe` child is a separate 275 MB. The WebView2 processes in the list belong to other apps. No baseline was taken, so
@@ -164,15 +136,15 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 Owner decisions: everything below is in 1.0; the file formats are frozen from 1.0 (migrations, never breaking changes); the one
 exception is Windows agent connectors verification, which moves to 1.1 if they cannot be tested. Work in this order:
 
-1. **S1 schema freeze** (first, merged before the rest; the reviewed plan, owner decisions and order are in
-   [simplification-plan.md](simplification-plan.md)): unknown keys survive saves; one `version` rule with migrations (no
-   `schemaVersion` / `version` split); no rewrite on load; a connection file's name = its id; app state (`.first-run-shown`,
-   `supportReminder`) in `state.json`, not in config; one backup policy in `backups\` (about 7 schemes today); 3 renames with aliases
-   (`window.height` to `minHeight`, `backends` to `connections`, toolbar `items` to `bottom`); JSON schemas and frozen compatibility
-   fixtures. Also decide `mcp.json` `env` secrets versus the Credential Locker rule. Notes: a toolbar edit in Settings drops unknown
-   top-level keys and unknown nested fields (documented by the `Compat_*` tests in `SettingsPackageTests`); runtime shortcut conflict
-   resolution must keep the requested value; Astra's recommendation: a version 3 boundary for shortcuts, one backup policy, unknown
-   fields preserved.
+1. **S1 schema freeze** comes first. Follow the final owner decisions in [simplification-plan.md](simplification-plan.md):
+   fixtures and JSON schemas first, then one writer and `backups\<stamp>-<reason>\<relative path>` policy, round-trip safety,
+   the one migration, then **plan step 5: Core decisions out of WinUI**. Step 5 closes the deferred test gaps:
+   `ClipboardCopy`/`SelectionReader`, `OnPanelKey` routing, attachment intake, flyout hold counting and packaging checks.
+   Unknown keys survive every save; loading never rewrites files; newer versions are never overwritten. The `toolbar.json`
+   lossless writer and version-aware saves for every family are S1 work; 0.6.3 only supplies the overwrite guard.
+   Use one `version` rule, the file stem as connection id, and `state.json` for shown flags, MCP grants and dragged sizes;
+   the support-reminder preference stays in settings.json. Apply renames, shortcut consolidation and MCP approval/secret handling
+   in the single migration. The toast-text settings key defaults to title-only (text off). Do not reopen owner decisions.
 2. After S1, in parallel (disjoint files): **E1** security leftovers (see *Deferred*); **F1** chat basics (edit/resend, regenerate,
    history search, pin, export, context meter); **D2** support bundle, first-run flow, accessibility; **P1** panel memory with long
    chats and notices in one style across resize and monitors (both in *Open items*).
@@ -193,7 +165,8 @@ build with KB5070316 or an Insider Dev build, turn on Settings > System > AI com
 <https://windowsreport.com/kb5070316-adds-native-mcp-smarter-app-updates-and-midi-2-0-tools-to-windows-11-25h2/>. If it cannot be
 tested before 1.0, ship the code as is, label it preview, and verify in 1.1.
 
-Owner preference: anything configurable should be in settings.json even when the Settings window doesn't show it.
+Owner preference: configurable values belong in settings.json even without a Settings UI, except the final S1 decisions
+(shortcuts in toolbar.json, custom-button shortcuts under `buttons.<id>.shortcut`).
 
 ### Versions
 
@@ -240,6 +213,8 @@ Owner preference: anything configurable should be in settings.json even when the
   seen when rendered, which is why `hotline://selftest` renders off-screen.
 - **The TextBox caret takes the inverse colour and opacity of the box background** (WinUI #6498/#8207/#9005): the composer is a solid surface.
 - **A `UIElement` can't have two parents** (broke the settings window once; the self-test now builds every page).
+- **Hidden self-test Settings uses NavigationView's default 320 DIP pane.** Measure overhead (item width less label slot),
+  not absolute widths.
 
 **Windows and the key**
 - **Windows 11 26H2 gives focus to Explorer's `CopilotKeyPressFocusFrame` on each key press**, ~0.1 s before Hotline's toggle arrives. A
@@ -275,6 +250,12 @@ Owner preference: anything configurable should be in settings.json even when the
   `--no-session-persistence` keeps its resume list clean.
 
 **Working with the tools (this machine)**
+- **Smoke process check:** `tests/smoke/smoke.ps1`'s "agy exits with Hotline" check fails whenever any `agy.exe` runs, including
+  agents MCP server jobs; it does not identify only Hotline's child.
+- **Self-test links:** `hotline://selftest` requires `diagnostics.testLinks: true` (default off since 0.6.3). Back up settings.json,
+  enable it for the run, then restore the file byte for byte.
+- **Signed packages in a worktree need the git-ignored `certs/` folder.** A junction to the main checkout's `certs` works.
+  Remove the junction with `cmd /c rmdir <junction>`, never a recursive delete, which follows the junction.
 - The Agent tool's worktree isolation needs the cwd spelled `C:\Users\pmadd\Git\...` (capital G); otherwise create worktrees by hand
   with `git worktree add`. The auto-mode classifier blocks copying files out of `~/.hotline` into the repo (build fixtures from code
   defaults). Python run from bash cannot read `/tmp`. Translations: `agy --model gemini-3.8-flash-high -p "Do NOT use any tools ..."`
@@ -327,3 +308,9 @@ Parallel work: worktree agents, each on a branch from a given SHA, cherry-picked
 - **Clean up after testing:** restore any settings.json/toolbar.json you changed (back them up first), close every panel/window you
   opened, and restart Hotline (`taskkill /IM Hotline.exe /F`, then `hotline://tray`).
 - New features get a section in Settings › Guide (`Settings/Guide.cs` + `Guide_*` strings in all languages).
+
+## Glossary
+
+- **S1:** schema freeze, the first Road to 1.0 job.
+- **Core:** UI-independent logic in `src/Hotline.Core`; **App:** WinUI integration in `src/Hotline.App`.
+- **MSIX:** Windows app package; **DIP:** device-independent pixel; **agy:** Antigravity CLI.
