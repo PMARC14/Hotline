@@ -32,7 +32,7 @@ internal sealed class ToolbarRenderer
         public IReadOnlyList<string> Dropped { get; set; } = [];
         /// <summary>The buttons the user put in the more button's menu, when this row holds that button (they come first in its menu).</summary>
         public IReadOnlyList<string> UserMenu { get; set; } = [];
-        public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers)? Arranged { get; set; }
+        public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers, bool Fill)? Arranged { get; set; }
         /// <summary>The last fit's cell width of each shown button (<see cref="ToolbarPlan.RowLayout.ButtonWidths"/>): what is drawn,
         /// including the last right button shrunk to one cell when the row is very narrow.</summary>
         public IReadOnlyDictionary<string, double> Widths { get; set; } = new Dictionary<string, double>();
@@ -232,12 +232,12 @@ internal sealed class ToolbarRenderer
     /// <summary>Lays a row out: the left items kept (every picker stays in its group), "⋯" when some buttons moved into it, a flexible
     /// gap, the centre group (between two flexible gaps, so it sits in the free space), the right group (without the buttons it
     /// gave up). A picker in <paramref name="hiddenPickers"/> (no room, or nothing to show) is left out of the grid, so it costs
-    /// no column gap.</summary>
-    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow, IReadOnlyCollection<string> hiddenPickers)
+    /// no column gap. A filled row uses the planned item widths without flexible group gaps.</summary>
+    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow, IReadOnlyCollection<string> hiddenPickers, bool fill = false)
     {
         var hiddenKey = string.Join(",", hiddenPickers.Order());
-        if (row.Arranged == (leftShown, rightDropped, overflow, hiddenKey)) return;
-        row.Arranged = (leftShown, rightDropped, overflow, hiddenKey);
+        if (row.Arranged == (leftShown, rightDropped, overflow, hiddenKey, fill)) return;
+        row.Arranged = (leftShown, rightDropped, overflow, hiddenKey, fill);
         var (shown, dropped) = ToolbarPlan.Split(row.Plan.Droppable, leftShown); // the left group, then the centre: the centre goes first
         var (rightShown, rightGone) = ToolbarPlan.SplitRight(row.Plan.Right, rightDropped);
         row.Dropped = [.. dropped, .. rightGone];
@@ -250,7 +250,10 @@ internal sealed class ToolbarRenderer
             Grid.SetColumn(element, grid.ColumnDefinitions.Count - 1);
             grid.Children.Add(element);
         }
-        void Gap() => grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        void Gap()
+        {
+            if (!fill) grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        }
         foreach (var id in shown.Where(row.Plan.Left.Contains).Where(Visible)) Add(Element(id));
         if (overflow && !row.Plan.HasMore) Add(row.More); // a row with the more item has that as its menu button
         Gap();
@@ -284,9 +287,9 @@ internal sealed class ToolbarRenderer
             if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
             // The same call the tests make: which buttons stay, and the widths of the row's pickers from what they leave. The
             // row's column gap lies between any two items, pickers too.
-            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers);
+            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers, fill: true);
             var hidden = layout.PickerWidths.Where(p => p.Value <= 0).Select(p => p.Key).ToList();
-            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden);
+            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden, fill: true);
             (row.Widths, row.ShrunkLastRight) = (layout.ButtonWidths, layout.Fit.ShrunkLastRight);
             ApplyWidths(row);
             foreach (var (id, width) in layout.PickerWidths) widths[id] = width;
@@ -294,13 +297,13 @@ internal sealed class ToolbarRenderer
         return widths;
     }
 
-    /// <summary>Sizes each shown button to its fitted cell (<see cref="Row.Widths"/>): normally its style's width (as <see cref="Restyle"/>
-    /// set it), one cell for a shrunk last right button. Only values that differ are set.</summary>
+    /// <summary>Sizes each shown button, including automatic more, to its planned cell (<see cref="Row.Widths"/>).
+    /// Only values that differ are set.</summary>
     private void ApplyWidths(Row row)
     {
         foreach (var (id, cell) in row.Widths)
         {
-            var element = Element(id);
+            var element = id == ToolbarModel.MoreId ? MenuButton(row) : Element(id);
             var width = ToolbarPlan.Inner(cell);
             if (element.Width != width) element.Width = width;
         }
@@ -313,7 +316,7 @@ internal sealed class ToolbarRenderer
         var problems = new List<string>();
         foreach (var (row, label) in new[] { (_top, "top"), (_bottom, "bottom") })
         foreach (var (id, cell) in row.Widths)
-                if (Element(id) is { ActualWidth: > 0 } e && Math.Abs(e.ActualWidth - ToolbarPlan.Inner(cell)) > 0.5)
+                if ((id == ToolbarModel.MoreId ? MenuButton(row) : Element(id)) is { ActualWidth: > 0 } e && Math.Abs(e.ActualWidth - ToolbarPlan.Inner(cell)) > 0.5)
                     problems.Add($"{label} {id} is {e.ActualWidth} wide, fitted {ToolbarPlan.Inner(cell)}");
         return (problems, _top.ShrunkLastRight || _bottom.ShrunkLastRight);
     }
@@ -350,11 +353,11 @@ internal sealed class ToolbarRenderer
         foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
         foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
         foreach (var (id, box) in _pickers) ApplyPickerStyle(id, box, model.EffectiveStyle(id), accent);
-        // The automatic "⋯" button is always one cell (BaseWidth x one cell high), whatever the bar's width.
+        // The automatic "⋯" starts at one cell, whatever the bar's width; the fitted width below shares the row's room.
         var overflowStyle = model.Style with { Width = 1 };
         ApplyStyle(_top.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
         ApplyStyle(_bottom.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
-        // ApplyStyle set each style's own width: the fitted widths (a shrunk last right button) win until the next fit.
+        // ApplyStyle set each style's own width: the fitted widths win until the next fit.
         ApplyWidths(_top);
         ApplyWidths(_bottom);
     }

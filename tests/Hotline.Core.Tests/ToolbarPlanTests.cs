@@ -250,6 +250,225 @@ public sealed class ToolbarPlanTests
         Assert.Empty(ToolbarPlan.Unknown(ToolbarModel.Defaults));
     }
 
+    // ---- fill ----
+
+    [Theory]
+    [InlineData(120, 40, 40, 40)]
+    [InlineData(301, 101, 100, 100)]
+    [InlineData(302.9, 101, 101, 100)]
+    [InlineData(900, 300, 300, 300)]
+    public void Fill_spreads_buttons_across_groups_and_rounds_from_left_to_right(double room, double left, double center, double right)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin"]), (Quadrant.BottomCenter, ["prompt"]), (Quadrant.BottomRight, ["settings"]))
+            with { Overrides = new Dictionary<string, ButtonStyle>() };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal([left, center, right], new[] { row.ButtonWidths["pin"], row.ButtonWidths["prompt"], row.ButtonWidths["settings"] });
+        Assert.False(row.Fit.Overflow);
+        Assert.Equal(Math.Floor(room), row.Used);
+    }
+
+    [Theory]
+    [InlineData(350, 100, 200, 50)]
+    [InlineData(353, 101, 202, 50)]
+    [InlineData(120, 40, 60, 20)]
+    public void Fill_uses_button_widths_as_shares_and_allows_wide_buttons_down_to_one_cell(double room, double pin, double prompt, double settings)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin", "prompt"]), (Quadrant.BottomRight, ["settings"])) with
+        {
+            Overrides = new Dictionary<string, ButtonStyle> { ["prompt"] = new(Width: 2), ["settings"] = new(Width: 0.5) },
+        };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal([pin, prompt, settings], new[] { row.ButtonWidths["pin"], row.ButtonWidths["prompt"], row.ButtonWidths["settings"] });
+        Assert.False(row.Fit.Overflow);
+        Assert.Equal(room, row.Used);
+    }
+
+    [Theory]
+    [InlineData(700, 200, 400, 100)]
+    [InlineData(280, 80, 160, 40)]
+    [InlineData(164, 40, 84, 40)]
+    public void Fill_mixes_button_width_and_picker_span_shares_without_a_span_cap(double room, double pin, double model, double settings)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin"]), (Quadrant.BottomCenter, ["model"]), (Quadrant.BottomRight, ["settings"])) with
+        {
+            Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 2) },
+        };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal([pin, model, settings], new[] { row.ButtonWidths["pin"], row.PickerWidths["model"], row.ButtonWidths["settings"] });
+        Assert.False(row.Fit.Overflow);
+        Assert.Equal(room, row.Used);
+    }
+
+    [Theory]
+    [InlineData(180, 0, 0, false, 180)]
+    [InlineData(179, 2, 0, true, 179)]
+    [InlineData(119, 3, 1, true, 119)]
+    [InlineData(80, 3, 1, true, 80)]
+    [InlineData(79, 3, 1, true, 80)]
+    public void Fill_overflows_at_button_minima_in_group_order_and_shares_with_automatic_more(double room, int dropped, int rightDropped, bool overflow, double used)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin", "captureWindow"]), (Quadrant.BottomCenter, ["prompt"]), (Quadrant.BottomRight, ["newChat", "settings"])) with
+        {
+            Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(Width: 4), ["captureWindow"] = new(Width: 0.5), ["prompt"] = new(Width: 2), ["settings"] = new(Width: 4) },
+        };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal(new[] { "pin", "captureWindow", "prompt" }.Skip(3 - dropped), row.Dropped);
+        Assert.Equal(new[] { "newChat" }.Take(rightDropped), row.RightDropped);
+        Assert.Equal(overflow, row.Fit.Overflow);
+        Assert.Equal(used, row.Used);
+        Assert.Equal(row.Used, row.ButtonWidths.Values.Sum());
+        Assert.All(row.ButtonWidths, p => Assert.True(p.Value >= (p.Key == "captureWindow" ? 20 : 40)));
+        if (room == 179) Assert.Equal(40, row.ButtonWidths["more"]);
+        if (room == 119) Assert.Equal(79, row.ButtonWidths["settings"]);
+    }
+
+    [Theory]
+    [InlineData(350, 100, 200, 50)]
+    [InlineData(59, 0, 40, 20)] // a half-cell more cannot shrink the last normal button below one cell
+    public void Fill_keeps_a_placed_more_in_position_with_its_width_shares_and_user_menu(double room, double pin, double settings, double more)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin"]), (Quadrant.BottomCenter, ["more"]), (Quadrant.BottomRight, ["settings"])) with
+        {
+            Overrides = new Dictionary<string, ButtonStyle> { ["more"] = new(Width: 0.5), ["settings"] = new(Width: 2) },
+            Menu = ["recent"],
+        };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal(pin, row.ButtonWidths.GetValueOrDefault("pin"));
+        Assert.Equal(settings, row.ButtonWidths["settings"]);
+        Assert.Equal(more, row.ButtonWidths["more"]);
+        Assert.Equal(pin > 0 ? new[] { "recent" } : new[] { "recent", "pin" }, row.Menu);
+        Assert.Equal(Math.Max(60, room), row.Used);
+    }
+
+    [Theory]
+    [InlineData(212, 56, 84, 72)]
+    [InlineData(211, 0, 106, 105)]
+    [InlineData(156, 0, 84, 72)]
+    [InlineData(155, 0, 155, 0)]
+    [InlineData(84, 0, 84, 0)]
+    [InlineData(83, 0, 0, 0)]
+    public void Fill_pickers_keep_their_current_floors_and_hide_in_the_current_order(double room, double effort, double model, double provider)
+    {
+        var m = With((Quadrant.BottomLeft, ["model", "effort", "provider"])) with { PickerSpans = new Dictionary<string, int>() };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal([effort, model, provider], new[] { row.PickerWidths["effort"], row.PickerWidths["model"], row.PickerWidths["provider"] });
+        Assert.Equal(effort + model + provider, row.Used);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(2)]
+    public void Fill_counts_only_visible_items_and_their_gaps_and_plans_each_row_independently(double spacing)
+    {
+        var m = With((Quadrant.TopLeft, ["provider"]), (Quadrant.BottomLeft, ["pin", "effort"]), (Quadrant.BottomCenter, ["model"]), (Quadrant.BottomRight, ["settings"]))
+            with { Overrides = new Dictionary<string, ButtonStyle>() };
+        var row = ToolbarPlan.PlanRow(m, false, 601 + 2 * spacing, spacing, availablePickers: ["model", "provider"], fill: true);
+        Assert.Equal(0, row.PickerWidths["effort"]);
+        Assert.Equal([101.0, 400, 100], new[] { row.ButtonWidths["pin"], row.PickerWidths["model"], row.ButtonWidths["settings"] });
+        Assert.Equal(601 + 2 * spacing, row.Used);
+        Assert.Equal(601 + 2 * spacing, ToolbarPlan.PlanRow(m, true, 601 + 2 * spacing, spacing, fill: true).PickerWidths["provider"]);
+        var hidden = ToolbarPlan.PlanRow(With((Quadrant.BottomLeft, ["model"])), false, 500, spacing, availablePickers: [], fill: true);
+        Assert.Equal(0, hidden.Used);
+        Assert.Empty(hidden.ButtonWidths);
+    }
+
+    [Theory]
+    [InlineData(179, 45, 44)]
+    [InlineData(199, 50, 49)]
+    public void Fill_grows_automatic_more_as_one_share_and_rounds_in_draw_order(double room, double more, double settings)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt"]), (Quadrant.BottomRight, ["settings"]))
+            with { Overrides = new Dictionary<string, ButtonStyle>() };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal(["captureScreen", "captureRegion", "prompt"], row.Dropped);
+        Assert.Equal(more, row.ButtonWidths["more"]);
+        Assert.Equal(settings, row.ButtonWidths["settings"]);
+        Assert.Equal(room, row.Used);
+    }
+
+    [Theory]
+    [InlineData(1, 40)]
+    [InlineData(5, 84)]
+    [InlineData(8, 84)]
+    public void Fill_uses_custom_picker_spans_as_shares_and_keeps_the_existing_span_capped_floor(int span, double minimum)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin", "model"])) with { PickerSpans = new Dictionary<string, int> { ["model"] = span } };
+        var wide = ToolbarPlan.PlanRow(m, false, (span + 1) * 100, 0, fill: true);
+        Assert.Equal(100, wide.ButtonWidths["pin"]);
+        Assert.Equal(span * 100, wide.PickerWidths["model"]);
+        Assert.Equal(minimum, ToolbarPlan.PlanRow(m, false, 40 + minimum, 0, fill: true).PickerWidths["model"]);
+        Assert.Equal(0, ToolbarPlan.PlanRow(m, false, 39 + minimum, 0, fill: true).PickerWidths["model"]);
+    }
+
+    [Theory]
+    [InlineData(244, 0, 0, true)]
+    [InlineData(243, 2, 0, true)]
+    [InlineData(204, 2, 0, true)]
+    [InlineData(203, 2, 1, true)]
+    [InlineData(164, 2, 1, true)]
+    [InlineData(163, 0, 0, false)]
+    public void Fill_reserves_picker_minima_before_overflow_and_releases_the_reserve_when_it_cannot_fit(double room, int leftDropped, int rightDropped, bool pickerKept)
+    {
+        var m = With((Quadrant.BottomLeft, ["pin", "prompt", "model"]), (Quadrant.BottomRight, ["newChat", "settings"]))
+            with { Overrides = new Dictionary<string, ButtonStyle>() };
+        var row = ToolbarPlan.PlanRow(m, false, room, 0, fill: true);
+        Assert.Equal(leftDropped, row.Dropped.Count);
+        Assert.Equal(rightDropped, row.RightDropped.Count);
+        Assert.Equal(pickerKept, row.Fit.PickersKept);
+        Assert.Equal(pickerKept, row.PickerWidths["model"] >= 84);
+        Assert.Equal(room, row.Used);
+    }
+
+    [Fact]
+    public void Fill_reference_rows_keep_buttons_reachable_and_use_the_room_or_only_overshoot_at_minima()
+    {
+        foreach (var profile in ToolbarProfiles.All)
+        foreach (var size in new[] { 0.5, 1, 2, 4 })
+        foreach (var top in new[] { false, true })
+        foreach (var spacing in new[] { 0, 2 })
+        {
+            var m = ToolbarModel.Resolve(profile.Json);
+            m = m with { Style = m.Style with { Width = size } };
+            for (var room = 20; room <= 1200; room += 17)
+            {
+                var row = ToolbarPlan.PlanRow(m, top, room, spacing, fill: true);
+                var expected = row.Plan.Droppable.Concat(row.Plan.Right).Where(id => !ToolbarPlan.Stays(id)).Order();
+                var reachable = row.ButtonWidths.Keys.Where(id => id != "more").Concat(row.Dropped).Concat(row.RightDropped).Order();
+                Assert.Equal(expected, reachable);
+                Assert.All(row.ButtonWidths, p => Assert.True(p.Value >= 40 * Math.Min(1, p.Key == "more" && !row.Plan.HasMore ? 1 : ToolbarPlan.WidthCells(m.EffectiveStyle(p.Key)))));
+                var specs = ToolbarPlan.PickerSpecs(m, ToolbarModel.Pickers).ToDictionary(p => p.Name);
+                Assert.All(row.PickerWidths, p => Assert.True(p.Value == 0 || p.Value >= specs[p.Key].Min));
+                var widths = row.ButtonWidths.Values.Concat(row.PickerWidths.Values.Where(w => w > 0)).ToList();
+                Assert.All(widths, w => Assert.Equal(Math.Floor(w), w));
+                Assert.Equal(widths.Sum() + spacing * Math.Max(0, widths.Count - 1), row.Used);
+                if (row.Used > room)
+                {
+                    Assert.DoesNotContain(row.Shown, id => !ToolbarPlan.Stays(id));
+                    Assert.True(row.RightShown.Count(id => !ToolbarPlan.Stays(id)) <= 1);
+                    Assert.All(row.PickerWidths.Values, w => Assert.Equal(0, w));
+                }
+                else Assert.Equal(widths.Count == 0 ? 0 : room, row.Used);
+            }
+        }
+    }
+
+    [Fact]
+    public void Fill_off_preserves_the_default_plan_for_every_reference_layout()
+    {
+        foreach (var profile in ToolbarProfiles.All)
+        foreach (var room in new[] { 79, 164, 320, 680, 1600 })
+        foreach (var top in new[] { false, true })
+        {
+            var m = ToolbarModel.Resolve(profile.Json);
+            var before = ToolbarPlan.PlanRow(m, top, room, 0);
+            var off = ToolbarPlan.PlanRow(m, top, room, 0, fill: false);
+            Assert.Equal((before.Fit, before.Used, before.Plan), (off.Fit, off.Used, off.Plan));
+            Assert.Equal(before.ButtonWidths, off.ButtonWidths);
+            Assert.Equal(before.PickerWidths, off.PickerWidths);
+            Assert.Equal(before.Menu, off.Menu);
+        }
+    }
+
     // ---- This PC ----
 
     [Fact]
@@ -263,5 +482,16 @@ public sealed class ToolbarPlanTests
         var inMenu = With((Quadrant.BottomLeft, ["pin", "more"])) with { Menu = ["settings"] };
         Assert.Equal((true, Strings.Pc_ToolbarOk), ToolbarPlan.Report(inMenu, null));
         Assert.Equal((false, "toolbar.json couldn't be read: x"), ToolbarPlan.Report(ToolbarModel.Defaults, "toolbar.json couldn't be read: x"));
+    }
+
+    [Theory]
+    [InlineData(double.NaN, 0)]
+    [InlineData(400, double.NaN)]
+    [InlineData(double.NegativeInfinity, 0)]
+    public void Fill_with_a_bad_room_or_spacing_gives_finite_widths(double room, double spacing)
+    {
+        var row = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: false, room, spacing, fill: true);
+        Assert.True(double.IsFinite(row.Used));
+        Assert.All(row.ButtonWidths.Values, w => Assert.True(double.IsFinite(w)));
     }
 }
