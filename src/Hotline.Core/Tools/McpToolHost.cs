@@ -151,11 +151,11 @@ public sealed class McpToolHost(
                 var offered = 0;
                 foreach (var t in running.Tools)
                 {
-                    if (ToolNames.IsAmbiguous(t.Name)) { log.Error($"MCP server {server.Name}: skipped tool '{t.Name}' ('/' and '*' aren't allowed in names)"); continue; }
+                    if (ToolNames.IsAmbiguous(t.Name)) { log.Error($"MCP server {server.Name}: skipped tool '{McpSecrets.Scrub(t.Name, running.SensitiveValues)}' ('/' and '*' aren't allowed in names)"); continue; }
                     var decision = ToolPolicy.Evaluate(rules, grants, server.Name, t.Name, t.ReadOnly, running.LaunchHash);
                     WarnIfCaseMismatch(server.Name, t.Name, decision.CaseMismatchAllowRule);
                     if (decision.Approval == ToolApproval.Deny) continue; // never offered
-                    tools.Add(new ToolSpec(ToolNames.ForApi(server.Name, t.Name, used), server.Name, t.Name, t.Description, t.InputSchema, t.ReadOnly));
+                    tools.Add(new ToolSpec(ToolNames.ForApi(server.Name, t.Name, used), server.Name, t.Name, McpSecrets.Scrub(t.Description, running.SensitiveValues), t.InputSchema, t.ReadOnly));
                     offered++;
                 }
                 SetStatus(new(server.Name, display, McpServerState.Ready, offered, null));
@@ -211,7 +211,8 @@ public sealed class McpToolHost(
         tool = current;
         // Policy is checked against live rules, grants, and the launch hash of the running process.
         if (CheckPolicy(tool, running, out var decision) is { } blocked) return blocked;
-        if (decision.Approval == ToolApproval.Ask)
+        var asked = decision.Approval == ToolApproval.Ask;
+        if (asked)
         {
             var answer = await approve(new ToolCallRequest(tool, arguments, decision.CanAlwaysAllow), ct);
             if (answer == ToolDecision.Deny) return new ToolResult($"The user declined running {tool.Server}/{tool.Tool}.", true);
@@ -222,8 +223,13 @@ public sealed class McpToolHost(
         }
         try
         {
-            if (CheckPolicy(tool, running, out _) is { } changed) return changed;
+            if (CheckPolicy(tool, running, out var last) is { } changed) return changed;
+            // A grant revoked or an "ask" rule added since the first check: this call was never shown to the user.
+            if (last.Approval == ToolApproval.Ask && !asked)
+                return new ToolResult($"The approval for {tool.Server}/{tool.Tool} changed; try again.", true);
             var result = await running.Session.CallAsync(tool.Tool, arguments, ct);
+            // What a server returns can echo its own environment (an "invalid token: ..." error); it goes to the model and the chat.
+            result = result with { Text = McpSecrets.Scrub(result.Text, running.SensitiveValues) };
             log.Info($"tool {tool.Server}/{tool.Tool}: {(result.IsError ? "error" : "ok")} ({result.Text.Length} chars)");
             return result.Text.Length <= MaxResultChars ? result
                 : result with { Text = result.Text[..MaxResultChars] + $"\n…(truncated, {result.Text.Length} chars total)" };

@@ -224,6 +224,51 @@ public sealed class ToolHostLifecycleTests : TempDirTest
         public ValueTask DisposeAsync() => ValueTask.CompletedTask;
     }
 
+    private sealed class EchoingSession(string leak, Action? beforeCall = null) : IMcpSession
+    {
+        public Task<IReadOnlyList<McpToolInfo>> ListToolsAsync(CancellationToken ct) =>
+            Task.FromResult<IReadOnlyList<McpToolInfo>>([new McpToolInfo("read", "reads with " + leak, JsonDocument.Parse("{}").RootElement, true),
+                new McpToolInfo("write", "", JsonDocument.Parse("{}").RootElement, false)]);
+        public Task<ToolResult> CallAsync(string tool, JsonElement arguments, CancellationToken ct)
+        {
+            beforeCall?.Invoke();
+            return Task.FromResult(new ToolResult("Authentication failed: " + leak, true));
+        }
+        public ValueTask DisposeAsync() => ValueTask.CompletedTask;
+    }
+
+    [Fact]
+    public async Task Tool_results_and_descriptions_from_a_server_are_scrubbed_of_its_secrets()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x", "env": { "TOKEN": "${hotline:secret:tok}" } } } }""");
+        var secrets = new InMemorySecretStore();
+        secrets.Set("mcp:secret:tok", "SECRET_TOKEN_1");
+        await using var host = CreateHost(() => [], (_, _) => Task.FromResult<IMcpSession>(new EchoingSession("SECRET_TOKEN_1")),
+            (_, _) => Task.FromResult(ToolDecision.Deny), secrets: secrets);
+        var tools = await host.GetToolsAsync(TestContext.Current.CancellationToken);
+        var read = tools.Single(t => t.Tool == "read");
+        Assert.Equal("reads with ***", read.Description);
+        var result = await host.CallAsync(read, JsonDocument.Parse("{}").RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal("Authentication failed: ***", result.Text);
+    }
+
+    [Fact]
+    public async Task A_grant_revoked_before_the_call_starts_does_not_run_unasked()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "x" } } }""");
+        var state = new StateStore(StatePath);
+        var hash = StateStore.ComputeLaunchHash("x");
+        state.AddGrant("a", "write", hash);
+        var asked = 0;
+        await using var host = CreateHost(() => [], (_, _) => Task.FromResult<IMcpSession>(new EchoingSession("x")),
+            (_, _) => { asked++; return Task.FromResult(ToolDecision.AllowOnce); }, grants: state);
+        var write = (await host.GetToolsAsync(TestContext.Current.CancellationToken)).Single(t => t.Tool == "write");
+        state.RevokeGrant("a", "write", hash);
+        var result = await host.CallAsync(write, JsonDocument.Parse("{}").RootElement, TestContext.Current.CancellationToken);
+        Assert.Equal(1, asked); // no grant any more: the user is asked, never skipped
+        Assert.True(result.IsError); // the fake server's own error text, reached only after the prompt
+    }
+
     [Fact]
     public async Task Rule_overrides_existing_grant_without_widening()
     {
