@@ -1,0 +1,68 @@
+{
+  "version": 1,
+  "general": {
+    "language": "system",
+    "supportReminder": true
+  },
+  "activation": {
+    "tap": "togglePopup",
+    "hold": "newChat",
+    "fallbackHotkey": null
+  },
+  "window": {
+    "width": "40%",
+    "chatWidth": null,
+    "minWidth": 320,
+    "maxWidth": 800,
+    "minHeight": 0,
+    "maxHeightPercent": 60,
+    "chatHeight": null,
+    "growMode": "grow",
+    "growDirection": "auto",
+    "anchor": {
+      "monitor": "active",
+      "x": 0.5,
+      "y": 0.8
+    },
+    "openSound": "off",
+    "closeSound": "off",
+    "hideOnBlur": true,
+    "alwaysOnTop": true,
+    "theme": "system",
+    "accent": "hotline",
+    "fontSize": null,
+    "fontFamily": null,
+    "scrollbar": "auto",
+    "backdrop": "acrylicThin",
+    "tintOpacity": 0.15,
+    "luminosityOpacity": 0.35
+  },
+  "diagnostics": {
+    "verboseLogging": false,
+    "testLinks": false
+  },
+  "chat": {
+    "defaultConnection": "",
+    "defaultPrompt": "default",
+    "continueIn": null,
+    "order": [],
+    "saveHistory": true,
+    "notifyWhenDone": true,
+    "notifyShowsText": false,
+    "historyListSize": 300,
+    "thinkingIndicator": true,
+    "thinkingDelayMs": 700,
+    "resumeWhileTyping": true,
+    "cliTranscripts": true,
+    "historyRetentionDays": 30,
+    "maxImagePixels": 2048,
+    "attachSelection": "auto",
+    "ocr": "auto",
+    "voiceAutoSend": false,
+    "memory": true,
+    "memoryTool": "ask"
+  },
+  "tools": {
+    "approvals": {}
+  }
+}

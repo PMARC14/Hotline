@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 15,
+  "general": {
+    "language": "system",
+    "supportReminder": true
+  },
+  "activation": {
+    "tap": "togglePopup",
+    "hold": "newChat",
+    "fallbackHotkey": null
+  },
+  "window": {
+    "widthPercent": 40,
+    "minWidth": 400,
+    "maxWidth": 1200,
+    "height": 0,
+    "maxHeightPercent": 60,
+    "anchor": {
+      "monitor": "active",
+      "x": 0.5,
+      "y": 0.8
+    },
+    "width": null,
+    "chatWidthPercent": 0,
+    "chatWidth": null,
+    "chatHeight": null,
+    "growDirection": "auto",
+    "openSound": "off",
+    "closeSound": "off",
+    "hideOnBlur": true,
+    "alwaysOnTop": true,
+    "theme": "system",
+    "accent": "hotline",
+    "fontSize": null,
+    "fontFamily": null,
+    "scrollbar": "auto",
+    "backdrop": "acrylicThin",
+    "tintOpacity": 0.15,
+    "luminosityOpacity": 0.35
+  },
+  "diagnostics": {
+    "verboseLogging": false,
+    "testLinks": false
+  },
+  "chat": {
+    "defaultBackend": "claude-work",
+    "defaultPrompt": "default",
+    "continueIn": null,
+    "order": ["claude-work", "local"],
+    "growMode": "grow",
+    "saveHistory": true,
+    "notifyWhenDone": true,
+    "historyListSize": 300,
+    "thinkingIndicator": true,
+    "thinkingDelayMs": 700,
+    "resumeWhileTyping": true,
+    "cliTranscripts": true,
+    "historyRetentionDays": 30,
+    "maxImagePixels": 2048,
+    "attachSelection": "auto",
+    "ocr": "auto",
+    "voiceAutoSend": false,
+    "stopShortcut": "Ctrl+.",
+    "memory": true,
+    "memoryTool": "ask"
+  }
+}

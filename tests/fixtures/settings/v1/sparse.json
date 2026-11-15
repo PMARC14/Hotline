@@ -1,0 +1,9 @@
+{
+  "version": 1,
+  "window": {
+    "width": 520
+  },
+  "chat": {
+    "defaultConnection": "claude"
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "version": 99,
+  "bottom": {
+    "left": ["pin"],
+    "right": ["settings"]
+  },
+  "futureLayout": "grid"
+}

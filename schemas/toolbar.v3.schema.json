@@ -1,0 +1,241 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "toolbar.v3.schema.json",
+  "title": "Hotline toolbar layout and shortcuts (v3)",
+  "description": "Toolbar rows, style, overrides, custom buttons and panel shortcuts in toolbar.json (unit: JSON object).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 3,
+      "default": 3,
+      "description": "Toolbar schema version (unit: integer)."
+    },
+    "shortcuts": {
+      "type": ["object", "null"],
+      "additionalProperties": { "type": ["string", "null"] },
+      "description": "In-panel keyboard shortcuts keyed by command id; empty string disables (unit: hotkey map).",
+      "properties": {
+        "stop": { "type": ["string", "null"], "default": "Esc", "description": "Stop streaming answer shortcut; bare keys allowed (unit: hotkey string)." },
+        "newChat": { "type": ["string", "null"], "default": "Ctrl+N", "description": "Start a new chat shortcut (unit: hotkey string)." },
+        "recent": { "type": ["string", "null"], "default": "Ctrl+H", "description": "Open recent chats list shortcut (unit: hotkey string)." },
+        "settings": { "type": ["string", "null"], "default": "Ctrl+,", "description": "Open settings window shortcut (unit: hotkey string)." },
+        "pin": { "type": ["string", "null"], "default": "Ctrl+P", "description": "Toggle panel pin shortcut (unit: hotkey string)." },
+        "copyLastAnswer": { "type": ["string", "null"], "default": "Ctrl+Shift+C", "description": "Copy last completed answer shortcut (unit: hotkey string)." },
+        "captureRegion": { "type": ["string", "null"], "default": "Ctrl+Shift+R", "description": "Capture screen region shortcut (unit: hotkey string)." },
+        "prompt": { "type": ["string", "null"], "default": "Ctrl+Shift+P", "description": "Open prompt picker shortcut (unit: hotkey string)." },
+        "effort": { "type": ["string", "null"], "default": "Ctrl+E", "description": "Cycle effort picker shortcut (unit: hotkey string)." },
+        "model": { "type": ["string", "null"], "default": "Ctrl+M", "description": "Cycle model picker shortcut (unit: hotkey string)." },
+        "provider": { "type": ["string", "null"], "default": "Ctrl+Shift+M", "description": "Cycle provider picker shortcut (unit: hotkey string)." },
+        "captureWindow": { "type": ["string", "null"], "default": "Ctrl+Shift+W", "description": "Capture foreground window shortcut (unit: hotkey string)." },
+        "captureScreen": { "type": ["string", "null"], "default": "Ctrl+Shift+S", "description": "Capture screen shortcut (unit: hotkey string)." },
+        "continueIn": { "type": ["string", "null"], "default": "Ctrl+Shift+I", "description": "Open Continue this chat in menu shortcut (unit: hotkey string)." },
+        "more": { "type": ["string", "null"], "default": "Ctrl+Shift+O", "description": "Open overflow/more menu shortcut (unit: hotkey string)." }
+      }
+    },
+    "top": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Top toolbar row above the message box (unit: row object).",
+      "properties": {
+        "left": {
+          "type": ["array", "null"],
+          "maxItems": 40,
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["effort"],
+          "description": "Item ids in the top-left group (unit: id array)."
+        },
+        "center": {
+          "type": ["array", "null"],
+          "maxItems": 40,
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["model"],
+          "description": "Item ids in the top-center group (unit: id array)."
+        },
+        "right": {
+          "type": ["array", "null"],
+          "maxItems": 40,
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["provider"],
+          "description": "Item ids in the top-right group (unit: id array)."
+        }
+      }
+    },
+    "bottom": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Bottom toolbar row below the message box (unit: row object).",
+      "properties": {
+        "left": {
+          "type": ["array", "null"],
+          "maxItems": 40,
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+          "description": "Item ids in the bottom-left group (unit: id array)."
+        },
+        "center": {
+          "type": ["array", "null"],
+          "maxItems": 40,
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["prompt", "continueIn"],
+          "description": "Item ids in the bottom-center group (unit: id array)."
+        },
+        "right": {
+          "type": ["array", "null"],
+          "maxItems": 40,
+          "items": { "type": "string", "minLength": 1 },
+          "default": ["recent", "newChat", "settings"],
+          "description": "Item ids in the bottom-right group (unit: id array)."
+        }
+      }
+    },
+    "menu": {
+      "type": ["array", "null"],
+      "maxItems": 40,
+      "items": { "type": "string", "minLength": 1 },
+      "default": [],
+      "description": "Button ids placed in the 'more' button menu instead of on the bar (unit: id array)."
+    },
+    "style": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Bar-wide visual style defaults (unit: style object).",
+      "properties": {
+        "width": {
+          "type": ["number", "null"],
+          "enum": [0.5, 1, 2, 3, 4, null],
+          "default": 1,
+          "description": "Button width share in grid cells (unit: cells)."
+        },
+        "fill": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Share spare row room proportionally among items (unit: boolean)."
+        },
+        "outline": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Draw a 1.5 DIP outline border around items (unit: boolean)."
+        },
+        "filled": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Draw a filled background on items (unit: boolean)."
+        },
+        "outlineColor": {
+          "type": ["string", "null"],
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "default": null,
+          "description": "Outline hex colour '#RRGGBB'; null uses accent colour (unit: hex colour)."
+        }
+      }
+    },
+    "overrides": {
+      "type": ["object", "null"],
+      "additionalProperties": { "$ref": "#/$defs/itemOverride" },
+      "default": { "provider": { "span": 5 } },
+      "description": "Per-item style or picker span overrides keyed by item id (unit: override map)."
+    },
+    "buttons": {
+      "type": ["object", "null"],
+      "maxProperties": 24,
+      "propertyNames": { "pattern": "^(?!stop$|spacer$)[a-z0-9-]{1,32}$" },
+      "additionalProperties": { "$ref": "#/$defs/customButton" },
+      "default": {},
+      "description": "Custom button definitions keyed by id; 'stop' and 'spacer' are refused (unit: button map)."
+    }
+  },
+  "$defs": {
+    "itemOverride": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "width": {
+          "type": ["number", "null"],
+          "enum": [0.5, 1, 2, 3, 4, null],
+          "description": "Button width override in grid cells; buttons only (unit: cells)."
+        },
+        "span": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Picker width share in grid cells; pickers only (unit: cells)."
+        },
+        "outline": {
+          "type": ["boolean", "null"],
+          "description": "Item outline border override (unit: boolean)."
+        },
+        "filled": {
+          "type": ["boolean", "null"],
+          "description": "Item filled background override (unit: boolean)."
+        },
+        "outlineColor": {
+          "type": ["string", "null"],
+          "pattern": "^#[0-9A-Fa-f]{6}$",
+          "description": "Item outline hex colour '#RRGGBB' (unit: hex colour)."
+        }
+      }
+    },
+    "customButton": {
+      "type": "object",
+      "additionalProperties": true,
+      "oneOf": [
+        {
+          "required": ["quickAction"],
+          "properties": {
+            "quickAction": { "type": "string" },
+            "text": { "type": "null" }
+          }
+        },
+        {
+          "required": ["text"],
+          "properties": {
+            "text": { "type": "string" },
+            "quickAction": { "type": "null" }
+          }
+        }
+      ],
+      "properties": {
+        "label": {
+          "type": ["string", "null"],
+          "maxLength": 40,
+          "description": "Tooltip and accessibility label (unit: string)."
+        },
+        "icon": {
+          "type": ["string", "null"],
+          "pattern": "^0{0,2}([Ee][0-9A-Fa-f]{3}|[Ff][0-8][0-9A-Fa-f]{2})$",
+          "description": "Segoe Fluent Icons glyph codepoint E000-F8FF (unit: hex codepoint)."
+        },
+        "iconFile": {
+          "type": ["string", "null"],
+          "pattern": "^[a-z0-9-]{1,32}\\.png$",
+          "description": "Custom PNG filename in icons\\ matching '<id>.png' (unit: filename)."
+        },
+        "quickAction": {
+          "type": ["string", "null"],
+          "maxLength": 64,
+          "pattern": "^[\\p{L}\\p{Mn}\\p{Nd}\\p{Pc}_-]+$",
+          "description": "Quick action name in actions\\ (unit: action name)."
+        },
+        "text": {
+          "type": ["string", "null"],
+          "minLength": 1,
+          "maxLength": 2000,
+          "description": "Message text inserted when clicked (unit: string)."
+        },
+        "send": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Send inserted text immediately (unit: boolean)."
+        },
+        "shortcut": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Optional in-panel keyboard shortcut combo (unit: hotkey string)."
+        }
+      }
+    }
+  }
+}
