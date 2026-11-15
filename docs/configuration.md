@@ -214,22 +214,34 @@ and no import (its chats are undocumented files), so it opens with the chat copi
 
 ```jsonc
 {
+  "version": 1, // optional; absent means 1
   "mcpServers": {
     // same format as other MCP apps
     "files": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\you\\Documents"] },
-    "off":   { "command": "some-server.exe", "disabled": true, "env": { "TOKEN": "..." }, "cwd": "C:\\work" }
-  },
-  // "allow" (no prompt) | "ask" (prompt in the panel) | "deny"; "server/*" covers a whole server
-  "approvals": { "files/write_file": "ask", "files/*": "allow" }
+    "off":   { "command": "some-server.exe", "disabled": true, "env": { "TOKEN": "${hotline:secret:some_token}" }, "cwd": "C:\\work" }
+  }
 }
 ```
 
-A connection uses these tools when its `tools` is `inherit` ("Use Hotline's tools" in Settings › AI connections).
-Without a rule, tools the server marks read-only run and everything else asks; denied tools aren't offered at all.
-"Always allow" in the panel writes an `allow` rule here. When Windows has the on-device agent registry (`odr.exe`,
-build 26220.7262+), its connectors are added as `windows-…` servers. Settings › **Tools** shows each server's status.
-Servers start on first use and stop with Hotline, even if it crashes (they run in its kill-on-close job); their stderr
-goes to `logs\hotline.log` (at most 20 lines a minute per server).
+`mcp.json` lists only MCP servers (`approvals` in `mcp.json` is ignored with a warning; non-string `env` values are skipped
+with a warning). Hotline writes `mcp.json` only for its starter file, upgrade, or when you click **Move to Credential Locker**
+in Settings › **Tools** (after a confirm dialog, backed up under `backups\<time>-save\mcp.json`).
+
+**Secrets:** an `env` value matching `${hotline:secret:<name>}` (letters, digits, `.`, `_`, `-`) is resolved from the Windows
+Credential Locker entry `mcp:secret:<name>` when that server starts. A missing secret, or any other value starting with
+`${hotline:`, prevents that server from starting and reports an error without affecting other servers.
+
+**Approvals and grants:** A connection uses these tools when its `tools` is `inherit` ("Use Hotline's tools" in
+Settings › AI connections). Policy comes from `tools.approvals` rules in `settings.json` (`"deny"` always wins, then
+`server/tool`, then `server/*`): `"deny"` and `"ask"` match without regard to case, whereas `"allow"` rules (exact tool or
+`server/*`) require exact server and tool case (a case-only match is ignored with a warning). When no rule matches,
+**Always allow** grants saved per `(server, tool, launchHash)` in `state.json` apply while `command`, `args` and `cwd` match
+the running server. Without a rule or matching grant, tools marked read-only run automatically and everything else asks (`ask`
+rules hide the **Always allow** button). Settings › **Tools** lists grants with **Revoke**, shows plaintext `env` keys with
+**Move to Credential Locker**, and shows server status. When Windows has the on-device agent registry (`odr.exe`, build
+26220.7262+), its connectors are added as `windows-…` servers. Servers start on first use and stop with Hotline, even if it
+crashes (they run in its kill-on-close job); their stderr goes to `logs\hotline.log` (at most 20 lines a minute per server,
+with resolved secrets and 8+ character `env` values masked).
 
 ## Quick actions (actions\<name>.md)
 

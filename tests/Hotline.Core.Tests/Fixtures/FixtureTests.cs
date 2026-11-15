@@ -275,9 +275,8 @@ public sealed class FixtureTests
         Assert.Equal("allow", approvalsEl.GetProperty("files/read_file").GetString());
         Assert.Equal("ask", approvalsEl.GetProperty("files/write_file").GetString());
         var mcp = McpConfig.Parse(mcpJson);
-        Assert.Empty(mcp.Warnings);
+        Assert.Single(mcp.Warnings);
         Assert.Single(mcp.Servers);
-        Assert.Equal(2, mcp.Approvals.Count);
     }
 
     [Theory]

@@ -14,7 +14,7 @@ public sealed class BrokenFilesTests : TempDirTest
         var config = McpConfig.Parse("""
             {
               "mcpServers": {
-                "good": { "command": "npx", "args": ["-y", 5, null, { "a": 1 }], "env": { "N": 5, "T": true, "Z": null }, "disabled": "true", "cwd": 7, "displayName": ["x"] },
+                "good": { "command": "npx", "args": ["-y", 5, null, { "a": 1 }], "env": { "OK": "yes", "N": 5, "T": true, "Z": null }, "disabled": "true", "cwd": 7, "displayName": ["x"] },
                 "noCommand": { "args": [] },
                 "numberCommand": { "command": 5 },
                 "notAnObject": 5,
@@ -30,22 +30,21 @@ public sealed class BrokenFilesTests : TempDirTest
         Assert.Null(good.WorkingDirectory);
         Assert.Null(good.DisplayName);
         Assert.Equal(4, good.Args.Count);
-        Assert.Equal("5", good.Env["N"]);
-        Assert.Equal(ToolApproval.Allow, config.Approvals["a/b"]);
-        Assert.Equal(ToolApproval.Deny, config.Approvals["c/d"]); // unknown words deny
-        Assert.Equal(3, config.Warnings.Count);
+        Assert.Equal(["OK"], good.Env.Keys);
+        Assert.Equal("yes", good.Env["OK"]);
+        Assert.Equal(4, config.Warnings.Count); // 3 non-string env entries + 1 ignored approvals key
     }
 
     [Theory]
-    [InlineData("""{ "mcpServers": [] }""")]
-    [InlineData("""{ "mcpServers": "x", "approvals": {} }""")]
-    [InlineData("""{ "mcpServers": null }""")]
-    [InlineData("{}")]
-    public void Wrong_server_kinds_with_missing_or_object_approvals_give_an_empty_valid_config(string json)
+    [InlineData("""{ "mcpServers": [] }""", 0)]
+    [InlineData("""{ "mcpServers": "x", "approvals": {} }""", 1)]
+    [InlineData("""{ "mcpServers": null }""", 0)]
+    [InlineData("{}", 0)]
+    public void Wrong_server_kinds_give_an_empty_valid_config_and_warn_on_approvals(string json, int expectedWarnings)
     {
         var config = McpConfig.Parse(json);
         Assert.Empty(config.Servers);
-        Assert.Empty(config.Approvals);
+        Assert.Equal(expectedWarnings, config.Warnings.Count);
         Assert.Null(config.Error);
     }
 

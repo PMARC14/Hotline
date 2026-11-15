@@ -25,13 +25,15 @@ public sealed class StdioMcpSession : IMcpSession
 
     private static async Task<IMcpSession> ConnectAsync(McpServerConfig server, Action<Process>? onStarted, Action<string> log, TimeProvider clock, Func<bool>? verbose, CancellationToken ct)
     {
-        var stderr = new StderrThrottle(server.Name, log, clock, verbose: verbose);
+        var scrubValues = McpSecrets.GetScrubValues(server);
+        string Scrub(string s) => McpSecrets.Scrub(s, scrubValues);
+        var stderr = new StderrThrottle(server.Name, log, clock, verbose: verbose, scrub: Scrub);
         var startInfo = McpProcess.CreateStartInfo(server, OperatingSystem.IsWindows());
         // Not on this PC (no Node.js for npx, …): say what to install, rather than start cmd for "is not recognized".
         if (OperatingSystem.IsWindows() && !string.Equals(Path.GetFileName(server.Command), "cmd.exe", StringComparison.OrdinalIgnoreCase)
             && Platform.CommandResolver.Find(server.Command, server.WorkingDirectory, startInfo.Environment.TryGetValue("PATH", out var path) ? path : null,
                 startInfo.Environment.TryGetValue("PATHEXT", out var ext) ? ext : null, File.Exists) is null)
-            throw new IOException(Platform.CommandResolver.MissingMessage(server.Name, server.Command));
+            throw new IOException(Scrub(Platform.CommandResolver.MissingMessage(server.Name, server.Command)));
         var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
         process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
         bool started;
@@ -40,12 +42,12 @@ public sealed class StdioMcpSession : IMcpSession
         catch (Exception ex)
         {
             process.Dispose();
-            throw new IOException(L.F(Strings.Mcp_StartFailed, server.Command) + ": " + ex.Message, ex);
+            throw new IOException(Scrub(L.F(Strings.Mcp_StartFailed, server.Command) + ": " + ex.Message), ex);
         }
         if (!started)
         {
             process.Dispose();
-            throw new IOException(L.F(Strings.Mcp_StartFailed, server.Command));
+            throw new IOException(Scrub(L.F(Strings.Mcp_StartFailed, server.Command)));
         }
         McpClient? client = null;
         using var exitedOrCancelled = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -61,7 +63,7 @@ public sealed class StdioMcpSession : IMcpSession
             process.Exited -= onExited;
             return new StdioMcpSession(client, process);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             process.Exited -= onExited;
             if (!ct.IsCancellationRequested)
@@ -71,9 +73,9 @@ public sealed class StdioMcpSession : IMcpSession
                 try { await process.WaitForExitAsync(flush.Token); } catch (OperationCanceledException) { }
             }
             var exited = HasExited(process);
-            var message = exited ? ExitMessage(process, stderr) : null;
+            var message = exited ? Scrub(ExitMessage(process, stderr)) : null;
             await ShutdownAsync(process, client, TimeSpan.Zero);
-            if (message is not null && !ct.IsCancellationRequested) throw new IOException(message, ex);
+            if (message is not null && !ct.IsCancellationRequested) throw new IOException(message);
             throw;
         }
     }

@@ -898,8 +898,6 @@ public sealed class SettingsPackageTests : TempDirTest
         Assert.Contains("C:\\Work", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("NODE_ENV=production", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("enabled: true", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
-        Assert.Contains("fs/*", plan.ExecutionReview, StringComparison.Ordinal);
-        Assert.Contains("allow", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connections/claude-dev.json", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("claudeCode", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("inherit", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);

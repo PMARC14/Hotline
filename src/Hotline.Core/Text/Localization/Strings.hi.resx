@@ -431,6 +431,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" इंस्टॉल नहीं है या PATH में नहीं है, इसलिए {1} सर्वर शुरू नहीं हो सकता। mcp.json में "command" जाँचें।</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json पढ़ी नहीं जा सकी: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>स्वीकृति "{0}" का मान अज्ञात है, इसलिए इसे "deny" माना गया है।</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>सर्वर के नाम में '/' या '*' नहीं हो सकता।</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} सेकंड में शुरू नहीं हुआ</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} इसे ठीक किए जाने तक कोई टूल नहीं चलेगा।</value></data>

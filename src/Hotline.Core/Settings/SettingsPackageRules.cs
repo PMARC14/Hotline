@@ -278,7 +278,6 @@ public static partial class SettingsPackage
                 sb.Append($"\n  env: {string.Join(", ", s.Env.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => $"{kv.Key}={kv.Value}"))}");
             blocks.Add(sb.ToString());
         }
-        foreach (var (key, approval) in mcp.Approvals.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase))
-            blocks.Add($"{location} › approvals.{key}: {approval.ToString().ToLowerInvariant()}");
+        // TODO: U1: import review shows settings.json tools.approvals
     }
 }

@@ -129,11 +129,11 @@ internal sealed class NoticeArea(PopupWindow popup, FileLog log)
             b.Click += (_, _) => Answer(d);
             return b;
         }
-        details.Children.Add(new StackPanel
-        {
-            Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 8),
-            Children = { B(Strings.Tool_AllowOnce, ToolDecision.AllowOnce, accent: true), B(Strings.Tool_AllowAlways, ToolDecision.AllowAlways), B(Strings.Tool_Deny, ToolDecision.Deny) },
-        });
+        var buttons = new StackPanel { Orientation = Orientation.Horizontal, Spacing = 8, Margin = new Thickness(0, 4, 0, 8) };
+        buttons.Children.Add(B(Strings.Tool_AllowOnce, ToolDecision.AllowOnce, accent: true));
+        if (request.AllowAlways) buttons.Children.Add(B(Strings.Tool_AllowAlways, ToolDecision.AllowAlways));
+        buttons.Children.Add(B(Strings.Tool_Deny, ToolDecision.Deny));
+        details.Children.Add(buttons);
         bar.Content = details;
         Panel.Children.Add(bar);
         if (!popup.IsShown) popup.ShowPopup(readSelection: false);

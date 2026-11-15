@@ -4,7 +4,7 @@ namespace Hotline.Core.Tools;
 
 /// <summary>Logs stderr counts (cleaned excerpts only with verbose logging), throttles bursts, and keeps a short tail for errors.</summary>
 public sealed class StderrThrottle(string server, Action<string> log, TimeProvider clock, int perMinute = 20, int tailLines = 5,
-    Func<bool>? verbose = null)
+    Func<bool>? verbose = null, Func<string, string>? scrub = null)
 {
     private readonly Lock _gate = new();
     private readonly Queue<string> _tail = new();
@@ -16,12 +16,13 @@ public sealed class StderrThrottle(string server, Action<string> log, TimeProvid
 
     public void Line(string line)
     {
+        var safeLine = scrub is null ? line : scrub(line);
         string? skippedNote = null;
         string? note = null;
         var showText = verbose?.Invoke() ?? false;
         lock (_gate)
         {
-            _tail.Enqueue(line);
+            _tail.Enqueue(safeLine);
             while (_tail.Count > tailLines) _tail.Dequeue();
             var now = clock.GetUtcNow();
             var count = _lines + 1;
@@ -39,7 +40,7 @@ public sealed class StderrThrottle(string server, Action<string> log, TimeProvid
             if (pass) _inWindow++; else _skipped++;
             if (pass && showText)
             {
-                var clean = LogText.Clean(line);
+                var clean = LogText.Clean(safeLine);
                 note = $"{server}: stderr line {_lines}: {clean[..Math.Min(120, clean.Length)]}";
             }
             else if (pass && now - _hiddenAt >= TimeSpan.FromMinutes(1))

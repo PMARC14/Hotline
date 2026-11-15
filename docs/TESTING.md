@@ -212,6 +212,10 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
 ### Tools (API connections, `mcp.json`)
 - [ ] Add a server (e.g. the filesystem server) in `mcp.json`, set a connection's Tool use to "Use Hotline's tools".
 - [ ] A read-only tool runs; a writing tool asks (Allow once / Always / Deny) with its full arguments.
+- [ ] With an `ask` rule matching the tool or server in `tools.approvals`, the prompt hides "Always allow".
+- [ ] Click "Always allow" → the next call runs without asking; edit the server's `command`, `args`, or `cwd` → it asks again.
+- [ ] Settings › Tools lists grants under Always-allow grants → **Revoke** removes the grant and the next call asks again.
+- [ ] Add a plaintext `env` value in `mcp.json` → Settings › Tools shows the key under Environment secrets → **Move to Credential Locker** opens confirm dialog, saves a `backups\<time>-save\mcp.json` copy, replaces it with `${hotline:secret:...}`, and the server starts with the secret; if the Locker entry is deleted, only that server fails to start and **Check servers** recovers once restored.
 - [ ] Settings › Tools shows the server Ready. Kill Hotline in Task Manager → the server's node process is gone too.
 
 ### App Actions (Click to Do)
