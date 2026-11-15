@@ -2,6 +2,13 @@
 
 Why [s1-design.md](s1-design.md) is the way it is. Owner decisions of 2026-11-14 that change the 2026-11-12 ones.
 
+## R6 (2026-11-15): settled, not sealed
+
+- **Decision:** the formats may keep improving after 1.0. A change is free when every existing file stays valid and keeps its
+  meaning (a new key, a wider rule). A change that breaks an existing file needs a version bump and a conversion.
+- **Why now is different:** before 1.0 one hard break is taken without converting old settings, so 1.0 ships no legacy readers.
+- **Example:** custom button ids gained upper-case letters on 2026-11-15; lowercase ids are unaffected.
+
 ## R5 (2026-11-14): the upgrade runs without a backup if it must
 
 - **Decision:** the upgrade tries the backup folder and replaces the files even when the copy fails.

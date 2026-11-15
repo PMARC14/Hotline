@@ -18,7 +18,9 @@ nothing is built.** Reasons are in [s1-design.reasoning.md](s1-design.reasoning.
 
 ## Goals
 
-- **Goal:** from 1.0, a file written by any 1.x loads in every later 1.x without loss.
+- **Goal:** from 1.0, a file written by any 1.x loads in every later 1.x without loss. The formats are settled, not sealed: a
+  change that keeps every existing file valid is allowed at any time; a change that breaks one needs a conversion `(R6)`.
+- **Now:** one hard break before 1.0, with no conversion of old settings (see [the one-time upgrade](#the-one-time-upgrade)).
 - **Non-goals:** plan steps 5 and 6 (Core decisions out of WinUI, class splits), warnings as codes, new languages.
 - **Anti-goals:** a second mechanism beside an existing one; a load that writes; a save that drops a key it does not know.
 
@@ -26,7 +28,7 @@ nothing is built.** Reasons are in [s1-design.reasoning.md](s1-design.reasoning.
 
 | Rule | Detail |
 |---|---|
-| Version | Each file has `"version": N`. Adding a key never bumps it. A rename, removal or change of meaning bumps it and needs a migration in `SettingsMigrations` (empty at 1.0) |
+| Version | Each file has `"version": N`. Adding a key or accepting more values never bumps it (lowercase ids still work once mixed case is allowed). A rename, removal, narrower rule or change of meaning bumps it and needs a migration in `SettingsMigrations` (empty at 1.0) |
 | Newer file | A file with a higher `version` than the app knows is read as far as possible and never written |
 | Unknown keys | Survive every save, in place, at every level |
 | Loading | Never writes. A missing key takes its default in memory |
@@ -105,7 +107,8 @@ Removed: `schemaVersion`, `window.widthPercent`, `window.chatWidthPercent`, `win
 
 - `bottom` replaces `items`. `width` is a number only: 0.5, 1, 2, 3 or 4. `size`, `cells`, `height`, `spacer` and the width words are gone.
 - **Shortcuts:** one map for every panel command, `stop` included. `stop` alone may be a bare key. An omitted id takes its default,
-  `""` disables. `stop` is refused as a custom button id. Custom buttons keep `buttons.<id>.shortcut`.
+  `""` disables. Every command may be a bare F1-F24. `stop` is refused as a custom button id. Custom buttons keep `buttons.<id>.shortcut`.
+- **Custom button ids:** letters in either case, digits and `-`, 1-32 characters, matched without case; the file keeps its spelling.
 - **Conflicts:** `stop` wins, then the built-in commands in their fixed list order, then custom buttons in file order. The loser is
   disabled with a warning; the file keeps what was asked.
 - **`style.fill`** (default `true`): see [Button fill](#button-fill). Default layout: every button is width 1.
