@@ -93,18 +93,17 @@ public sealed class ToolbarGridTests
     [Fact]
     public void The_default_bottom_row_fits_a_480_room_with_nothing_in_the_menu()
     {
-        // pin, three captures, prompt and continue-in are 6 cells; recent, new chat and settings two cells each: 12.
+        // Nine shipped buttons take one cell each.
         var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: false, 480, ToolbarPlan.CellGap);
         Assert.Empty(f.Menu);
-        Assert.Equal(12 * 40, f.Used);
+        Assert.Equal(9 * 40, f.Used);
     }
 
     [Fact]
-    public void Shipped_default_bottom_row_fits_200px_at_200_percent_by_shrinking_last_button()
+    public void Shipped_default_bottom_row_fits_200px_at_200_percent_with_last_button_and_overflow()
     {
         // Window width 200 px at 200% scale leaves 80 DIP of room (100 DIP window - 2 * 10 DIP padding).
-        // The shipped 2-cell right buttons (recent, newChat, settings) normally need 120 DIP (80 + 40 overflow).
-        // When settings shrinks to one cell (40 DIP), settings (40) + overflow (40) = 80 DIP fits without clipping.
+        // Settings (40 DIP) plus overflow (40 DIP) fits without clipping.
         const double room = (200.0 / 2.0) - 2 * ToolbarPlan.PanelPadding;
         Assert.Equal(80.0, room);
 

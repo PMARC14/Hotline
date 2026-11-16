@@ -379,7 +379,7 @@ public sealed class SettingsPackageTests : TempDirTest
     [InlineData("actions/fix.md.")]
     [InlineData("sounds/a..wav")]
     [InlineData("sounds/.wav")]
-    [InlineData("icons/Upper.png")]
+    [InlineData("icons/Not Valid.png")]
     [InlineData("icons/spacer.png")]
     [InlineData("icons/a_b.png")]
     [InlineData("icons/sub/a.png")]
@@ -705,11 +705,29 @@ public sealed class SettingsPackageTests : TempDirTest
     }
 
     private const string CompatToolbar = """
-        {"version":2,"items":{"left":["quick","hello"],"right":[]},
+        {"version":3,"bottom":{"left":["quick","hello"],"right":[]},
          "buttons":{
            "quick":{"label":"Summarize","quickAction":"summarize","iconFile":"quick.png","shortcut":"Ctrl+Alt+1"},
            "hello":{"label":"Hello","text":"Hello!","send":true,"shortcut":"Ctrl+Alt+2"}}}
         """;
+
+    [Fact]
+    public void Mixed_case_toolbar_icons_import_export_and_load()
+    {
+        const string json = """{"version":3,"buttons":{"MiNe":{"text":"hi","iconFile":"mine.pNg"}}}""";
+        using var incoming = Zip([E("toolbar.json", json), ("icons/MINE.PNG", Png16)]);
+        var imported = Import(incoming);
+        Assert.Equal(new[] { "icons/MINE.PNG", "toolbar.json" }, imported.Written.Order(StringComparer.Ordinal));
+        var model = ToolbarFile.Load(Path.Combine(Target, "toolbar.json")).Model;
+        Assert.Empty(model.Warnings);
+        var button = Assert.Single(model.Buttons);
+        Assert.Equal("MiNe", button.Id);
+        Assert.Equal(Png16, CustomIcons.Read(CustomIcons.IconPath(CustomIcons.Folder(Target), button.IconFile)!).Bytes);
+        using var outgoing = Export(Target, [SettingsCategory.Toolbar], out _);
+        using var archive = new ZipArchive(outgoing);
+        Assert.NotNull(archive.GetEntry("icons/MINE.PNG"));
+        Assert.Equal(json, ReadEntry(archive, "toolbar.json"));
+    }
 
     [Fact]
     public void Compat_custom_buttons_icons_and_button_shortcuts_survive_a_style_edit()
@@ -731,7 +749,7 @@ public sealed class SettingsPackageTests : TempDirTest
         Assert.Equal("Ctrl+Alt+2", (string)saved["buttons"]!["hello"]!["shortcut"]!);
         Assert.Equal("Hello!", (string)saved["buttons"]!["hello"]!["text"]!);
         Assert.True((bool)saved["buttons"]!["hello"]!["send"]!);
-        Assert.Equal(["quick", "hello"], saved["items"]!["left"]!.AsArray().Select(n => (string)n!));
+        Assert.Equal(["quick", "hello"], saved["bottom"]!["left"]!.AsArray().Select(n => (string)n!));
         using var icon = archive.GetEntry("icons/quick.png")!.Open();
         using var bytes = new MemoryStream();
         icon.CopyTo(bytes);
@@ -751,7 +769,7 @@ public sealed class SettingsPackageTests : TempDirTest
     [InlineData(true)]
     public void Compat_unknown_top_level_key_after_an_unrelated_edit(bool editToolbar)
     {
-        const string original = """{"version":2,"futureKey":{"x":1}}""";
+        const string original = """{"version":3,"futureKey":{"x":1}}""";
         using var incoming = Zip([E("toolbar.json", original)]);
         Assert.Equal(["toolbar.json"], Import(incoming).Written);
         var store = new SettingsStore(Target);
@@ -768,12 +786,9 @@ public sealed class SettingsPackageTests : TempDirTest
         using var outgoing = Export(Target, [SettingsCategory.Toolbar], out _);
         using var archive = new ZipArchive(outgoing);
         var saved = ExportedJson(archive, "toolbar.json");
-        // Compatibility gap (schema-freeze job): a toolbar edit drops unknown keys.
-        // A settings-only edit preserves the imported bytes, including this unknown key.
-        // Assert current behaviour deliberately; do not fix the toolbar schema here.
-        Assert.Equal(!editToolbar, saved.AsObject().ContainsKey("futureKey"));
+        Assert.True(saved.AsObject().ContainsKey("futureKey"));
         if (!editToolbar) Assert.Equal(original, ReadEntry(archive, "toolbar.json"));
-        else Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(Target, "toolbar.json.*.bak"))));
+        else Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(Path.Combine(Target, "backups"), "toolbar.json", SearchOption.AllDirectories))));
     }
 
     [Theory]
@@ -787,7 +802,7 @@ public sealed class SettingsPackageTests : TempDirTest
         var existing = SettingsStore.Normalize(new HotlineSettings());
         existing.Window.WidthPercent = 35;
         Put(Target, "settings.json", SettingsStore.Serialize(existing));
-        const string originalToolbar = """{"version":2,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
+        const string originalToolbar = """{"version":3,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
         Put(Target, "toolbar.json", originalToolbar);
         Put(Target, "actions/summarize.md", "existing action");
         var imported = Import(incoming, selected);

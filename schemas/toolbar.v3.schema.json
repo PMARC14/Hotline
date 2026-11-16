@@ -141,10 +141,10 @@
     "buttons": {
       "type": ["object", "null"],
       "maxProperties": 24,
-      "propertyNames": { "pattern": "^(?!stop$|spacer$)[a-z0-9-]{1,32}$" },
+      "propertyNames": { "pattern": "^(?!(?:[Ss][Tt][Oo][Pp]|[Ss][Pp][Aa][Cc][Ee][Rr]|[Nn][Ee][Ww][Cc][Hh][Aa][Tt]|[Rr][Ee][Cc][Ee][Nn][Tt]|[Ss][Ee][Tt][Tt][Ii][Nn][Gg][Ss]|[Pp][Ii][Nn]|[Cc][Oo][Pp][Yy][Ll][Aa][Ss][Tt][Aa][Nn][Ss][Ww][Ee][Rr]|[Cc][Aa][Pp][Tt][Uu][Rr][Ee][Rr][Ee][Gg][Ii][Oo][Nn]|[Pp][Rr][Oo][Mm][Pp][Tt]|[Ee][Ff][Ff][Oo][Rr][Tt]|[Mm][Oo][Dd][Ee][Ll]|[Pp][Rr][Oo][Vv][Ii][Dd][Ee][Rr]|[Cc][Aa][Pp][Tt][Uu][Rr][Ee][Ww][Ii][Nn][Dd][Oo][Ww]|[Cc][Aa][Pp][Tt][Uu][Rr][Ee][Ss][Cc][Rr][Ee][Ee][Nn]|[Cc][Oo][Nn][Tt][Ii][Nn][Uu][Ee][Ii][Nn]|[Mm][Oo][Rr][Ee])$)[A-Za-z0-9-]{1,32}$" },
       "additionalProperties": { "$ref": "#/$defs/customButton" },
       "default": {},
-      "description": "Custom button definitions keyed by id; 'stop' and 'spacer' are refused (unit: button map)."
+      "description": "Custom button definitions keyed by 1-32 ASCII letters (either case), digits or hyphens; ids match without case, first definition wins, built-ins and stop/spacer are reserved (unit: button map)."
     }
   },
   "$defs": {
@@ -210,8 +210,8 @@
         },
         "iconFile": {
           "type": ["string", "null"],
-          "pattern": "^[a-z0-9-]{1,32}\\.png$",
-          "description": "Custom PNG filename in icons\\ matching '<id>.png' (unit: filename)."
+          "pattern": "^[A-Za-z0-9-]{1,32}\\.[Pp][Nn][Gg]$",
+          "description": "Custom PNG filename in icons\\ matching '<id>.png' without regard to id or extension case (unit: filename)."
         },
         "quickAction": {
           "type": ["string", "null"],

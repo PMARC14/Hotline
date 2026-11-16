@@ -227,8 +227,8 @@ public sealed class ToolbarRobustnessTests
         var overrides = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 4, "height": 80 } """));
         var ids = string.Join(", ", Enumerable.Range(1, 24).Select(i => $"\"c{i}\""));
         var m = ToolbarModel.Resolve($$"""
-            { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] }, "items": { "left": [{{ids}}], "right": ["settings"] },
-              "style": { "width": "wide", "cells": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
+            { "version": 3, "top": { "left": ["effort", "model", "provider"], "right": [] }, "bottom": { "left": [{{ids}}], "right": ["settings"] },
+              "style": { "width": 2, "cells": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
             """);
         Assert.Equal(24, m.Buttons.Count);
         AssertMetricsInRange(m);

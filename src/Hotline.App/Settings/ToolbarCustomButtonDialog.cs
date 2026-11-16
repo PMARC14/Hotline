@@ -192,7 +192,7 @@ internal static class ToolbarCustomButtonDialog
             var unchanged = button == existing;
             if (unchanged && picked is null) return; // nothing changed
             // Report a collision before the editor's lenient round-trip could silently remove a shortcut on save.
-            if (!ChatShortcuts.CanBind(model, chat, button.Id, combo))
+            if (!ChatShortcuts.CanBind(model, button.Id, combo))
             {
                 error.Message = Strings.Shortcuts_InvalidOrConflict;
                 error.Severity = InfoBarSeverity.Warning;

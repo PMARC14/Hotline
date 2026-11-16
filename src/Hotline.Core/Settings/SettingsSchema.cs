@@ -188,19 +188,14 @@ public static class SettingsSchema
         Choice(SettingsPage.Chat, nameof(Strings.Set_Selection), nameof(Strings.Set_Selection_Desc),
             [(AttachSelectionMode.Auto, nameof(Strings.Set_Selection_Auto)), (AttachSelectionMode.Clipboard, nameof(Strings.Set_Selection_Clipboard)), (AttachSelectionMode.Off, nameof(Strings.Set_Selection_Off))],
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
-        new TextItem(SettingsPage.Chat, nameof(Strings.Set_Stop), nameof(Strings.Set_Stop_Desc),
-            "Esc", s => s.Chat.StopShortcut, (s, v) => s.Chat.StopShortcut = string.IsNullOrWhiteSpace(v) ? "Esc" : v.Trim())
-        {
-            Validate = v => Activation.Hotkey.TryParseShortcut(v, out _), Invalid = nameof(Strings.Set_Stop_Invalid),
-            ValidateFor = (s, v) => ChatShortcuts.StopConflict(s.Chat.Toolbar, v) is null, InvalidFor = nameof(Strings.Set_Stop_Conflict),
-        },
-        .. ChatShortcuts.Defaults.Select(pair => new TextItem(SettingsPage.Chat, "Bar_" + pair.Key, nameof(Strings.Set_Shortcuts_Desc),
+        .. ChatShortcuts.Defaults.Select(pair => new TextItem(SettingsPage.Chat, pair.Key == "stop" ? nameof(Strings.Set_Stop) : "Bar_" + pair.Key,
+            pair.Key == "stop" ? nameof(Strings.Set_Stop_Desc) : nameof(Strings.Set_Shortcuts_Desc),
             pair.Value, s => s.Chat.Toolbar.ShortcutText(pair.Key),
             (s, v) => s.Chat.Toolbar = Windowing.ToolbarEditor.SetShortcut(s.Chat.Toolbar, pair.Key, v?.Trim() ?? ""))
         {
             ToolbarShortcutId = pair.Key,
-            Validate = v => string.IsNullOrWhiteSpace(v) || Activation.Hotkey.TryParseToolbarShortcut(v, out _),
-            ValidateFor = (s, v) => ChatShortcuts.CanBind(s.Chat.Toolbar, s.Chat, pair.Key, v),
+            Validate = v => string.IsNullOrWhiteSpace(v) || ChatShortcuts.TryParse(pair.Key, v, out _),
+            ValidateFor = (s, v) => ChatShortcuts.CanBind(s.Chat.Toolbar, pair.Key, v),
             Reset = s => s.Chat.Toolbar = Windowing.ToolbarEditor.SetShortcut(s.Chat.Toolbar, pair.Key, null),
             Invalid = nameof(Strings.Shortcuts_InvalidOrConflict),
         }),

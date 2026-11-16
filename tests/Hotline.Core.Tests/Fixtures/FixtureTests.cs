@@ -67,6 +67,7 @@ public sealed class FixtureTests
     [InlineData("toolbar", 3, "default")]
     [InlineData("toolbar", 3, "sparse")]
     [InlineData("toolbar", 3, "unknown-keys")]
+    [InlineData("toolbar", 3, "mixed-case")]
     [InlineData("mcp", 1, "default")]
     [InlineData("mcp", 1, "sparse")]
     [InlineData("mcp", 1, "unknown-keys")]
@@ -255,10 +256,9 @@ public sealed class FixtureTests
         var toolbarDoc = ParseLenient(toolbarJson);
         Assert.Equal(2, toolbarDoc.GetProperty("version").GetInt32());
         Assert.True(toolbarDoc.TryGetProperty("items", out var itemsEl) && itemsEl.ValueKind == JsonValueKind.Object);
-        var toolbar = ToolbarModel.Resolve(toolbarJson, parsedSettings.Chat);
-        Assert.Empty(toolbar.Warnings);
-        Assert.Single(toolbar.Buttons);
-        Assert.Equal(toolbar.ToJson().ReplaceLineEndings("\n"), toolbarJson.ReplaceLineEndings("\n"));
+        var toolbar = ToolbarModel.Resolve(toolbarJson);
+        Assert.Equal(ToolbarModel.Defaults, toolbar);
+        Assert.Single(toolbar.Warnings);
 
         var mineJson = File.ReadAllText(Path.Combine(dir, "connections", "mine.json"));
         var mineDoc = ParseLenient(mineJson);
@@ -318,7 +318,6 @@ public sealed class FixtureTests
         Assert.Equal("Esc", shortcuts["stop"]!.GetValue<string>());
 
         var fileShortcuts = shortcuts
-            .Where(p => p.Key != "stop")
             .ToDictionary(p => p.Key, p => p.Value!.GetValue<string>());
         Assert.Equal(ChatShortcuts.Defaults.Count, fileShortcuts.Count);
         foreach (var (id, combo) in ChatShortcuts.Defaults)
@@ -356,6 +355,9 @@ public sealed class FixtureTests
     [InlineData("toolbar", 3, """{"version":3,"style":{"width":5}}""")]
     [InlineData("toolbar", 3, """{"version":3,"overrides":{"effort":{"span":9}}}""")]
     [InlineData("toolbar", 3, """{"version":3,"buttons":{"stop":{"label":"Stop","text":"x"}}}""")]
+    [InlineData("toolbar", 3, """{"version":3,"buttons":{"STOP":{"text":"x"}}}""")]
+    [InlineData("toolbar", 3, """{"version":3,"buttons":{"PiN":{"text":"x"}}}""")]
+    [InlineData("toolbar", 3, """{"version":3,"buttons":{"MoRe":{"text":"x"}}}""")]
     [InlineData("toolbar", 3, """{"version":3,"buttons":{"spacer":{"label":"Space","text":"x"}}}""")]
     [InlineData("toolbar", 3, """{"version":3,"buttons":{"mine":{"label":"Both","quickAction":"fix","text":"x"}}}""")]
     [InlineData("toolbar", 3, """{"version":3,"buttons":{"mine":{"label":"Neither"}}}""")]

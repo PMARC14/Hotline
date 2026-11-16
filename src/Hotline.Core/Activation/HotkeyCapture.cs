@@ -19,17 +19,19 @@ public static class HotkeyCapture
 
     /// <param name="panel">Capture a toolbar shortcut (Ctrl, Alt or Win required, except F1-F24; Enter reserved).</param>
     /// <param name="rightAltDown">AltGr input must keep waiting; the runtime ignores shortcuts while right Alt is down.</param>
-    public static Result Press(HotkeyModifiers held, uint virtualKey, bool panel = false, bool rightAltDown = false)
+    /// <param name="stop">Use the Stop parser, including bare Esc/Backspace as bindings rather than capture controls.</param>
+    public static Result Press(HotkeyModifiers held, uint virtualKey, bool panel = false, bool rightAltDown = false, bool stop = false)
     {
         if (rightAltDown) return new(Outcome.Waiting);
         if (ModifierKeys.Contains(virtualKey)) return new(Outcome.Waiting);
-        if (held == HotkeyModifiers.None && virtualKey == VkEsc) return new(Outcome.Cancel);
-        if (held == HotkeyModifiers.None && virtualKey is VkBackspace or VkDelete) return new(Outcome.Clear);
+        if (!stop && held == HotkeyModifiers.None && virtualKey == VkEsc) return new(Outcome.Cancel);
+        if (!stop && held == HotkeyModifiers.None && virtualKey is VkBackspace or VkDelete) return new(Outcome.Clear);
         var text = new Hotkey(held, virtualKey).ToString();
-        var valid = panel ? Hotkey.TryParseToolbarShortcut(text, out var parsed) : Hotkey.TryParse(text, out parsed);
+        var valid = stop ? Settings.ChatShortcuts.TryParse("stop", text, out var parsed)
+            : panel ? Hotkey.TryParseToolbarShortcut(text, out parsed) : Hotkey.TryParse(text, out parsed);
         if (valid && parsed == new Hotkey(held, virtualKey)) return new(Outcome.Bound, text);
         // Text the setting can't hold back (an unnamed key) is refused; a nameable key alone needs a modifier.
-        return (held == HotkeyModifiers.None || panel && held == HotkeyModifiers.Shift) && Hotkey.TryParseShortcut(text, out _)
+        return !stop && (held == HotkeyModifiers.None || panel && held == HotkeyModifiers.Shift) && Hotkey.TryParseShortcut(text, out _)
             ? new(Outcome.NeedsModifier) : new(Outcome.Unsupported);
     }
 }

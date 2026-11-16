@@ -13,7 +13,9 @@ public sealed class JsonMergeTests
     [InlineData("{\"o\":{\"future\":{\"a\":1},\"deep\":{\"unknown\":8,\"x\":1}}}", "{\"o\":{\"deep\":{\"x\":1}}}", "{\"o\":{\"deep\":{\"x\":2}}}", "{\"o\":{\"future\":{\"a\":1},\"deep\":{\"unknown\":8,\"x\":2}}}")]
     [InlineData("{}", "{\"x\":1}", "{\"x\":null}", "{}")]
     [InlineData("{\"x\":1,\"future\":7}", "{\"x\":1}", "{\"x\":null}", "{\"x\":null,\"future\":7}")]
-    [InlineData("{\"x\":1}", "{\"x\":1}", "{}", "{\"x\":null}")]
+    [InlineData("{\"x\":1}", "{\"x\":1}", "{}", "{}")]
+    [InlineData("{\"x\":7}", "{}", "{\"x\":null}", "{\"x\":null}")]
+    [InlineData("{}", "{}", "{\"x\":null}", "{}")]
     [InlineData("{}", "{\"o\":{\"x\":1,\"default\":2}}", "{\"o\":{\"x\":3,\"default\":2}}", "{\"o\":{\"x\":3}}")]
     [InlineData("{\"o\":null}", "{\"o\":{\"x\":1}}", "{\"o\":{\"x\":2}}", "{\"o\":{\"x\":2}}")]
     [InlineData("{\"o\":{\"future\":7}}", "{\"o\":null}", "{\"o\":{\"x\":2}}", "{\"o\":{\"future\":7,\"x\":2}}")]
@@ -32,6 +34,16 @@ public sealed class JsonMergeTests
         Assert.Equal(expected, result.ToJsonString());
         Assert.Equal(before, oldModel.ToJsonString());
         Assert.Equal(after, newModel.ToJsonString());
+    }
+
+    [Fact]
+    public void Absent_keys_are_removed_while_explicit_nulls_follow_the_disk_presence_rule()
+    {
+        var tree = JsonNode.Parse("""{"remove":null,"nested":{"remove":1,"future":7},"explicit":2}""")!.AsObject();
+        var before = JsonNode.Parse("""{"remove":null,"nested":{"remove":1},"explicit":2,"missing":3}""")!.AsObject();
+        var after = JsonNode.Parse("""{"nested":{},"explicit":null,"missing":null}""")!.AsObject();
+        JsonMerge.Apply(tree, before, after);
+        Assert.Equal("""{"nested":{"future":7},"explicit":null}""", tree.ToJsonString());
     }
 
     [Fact]

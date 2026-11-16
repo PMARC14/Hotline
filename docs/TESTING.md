@@ -43,7 +43,7 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
 - [ ] Hand-edit custom shortcuts to invalid types/keys, Enter, duplicate aliases, built-in combos and the Stop combo. Check warnings:
       Stop wins even idle, then built-ins (including defaults), then customs in JSON order; losing shortcuts disappear, actions survive.
       Remap/disable a built-in or change Stop live: a freed custom combo works again; the old combo and tooltip update immediately.
-      Save/reload and export/import the toolbar: shortcuts survive; the toolbar version stays 2.
+      Save/reload and export/import the toolbar: shortcuts survive; the toolbar version is 3.
 - [ ] With the message box focused, try each default in configuration.md's Panel shortcuts table; compare with clicking its button.
       Picker keys cycle, stop while an answer streams, and resume afterwards. Copy with no completed answer shows a short notice;
       cancelled/failed partial answers are skipped, and an earlier completed answer can still be copied.
@@ -55,10 +55,17 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
       export/import preserves custom bindings and disabled entries. Spot-check translated shortcut tooltips.
 - [ ] Type and capture Space, Tab, A and Shift+A: toolbar bindings reject them; F1–F24 and Ctrl/Alt/Win combinations work.
       Stop still accepts bare keys. Settings rows reject conflicts with Stop, built-ins and custom buttons; the custom dialog warns.
-- [ ] Blank a built-in row: toolbar.json contains `""`; Reset removes that override. settings.json's legacy map stays untouched.
-      Start with a toolbar without `shortcuts` and an explicit legacy map: migrate raw values once, then save the map in toolbar.json.
-      An explicit empty toolbar map prevents migration; invalid/unknown values survive edits and round trips; duplicate ids use the last.
-      Move/style buttons and export/import the toolbar, then inspect the shortcut map and stamped backup for preservation.
+- [ ] Blank any command row, including Stop: toolbar.json contains `""`; Reset removes that override. Set Stop to a bare key
+      and a modified combo. Verify settings.json has no effect on shortcuts and Settings refuses conflicts.
+      Move/style buttons and inspect unknown keys at each JSON level, key order and the `backups/<stamp>-save/toolbar.json` original.
+- [ ] Capture Esc, F1, a letter and Backspace in Stop: each binds; Enter and editing combos are refused. Save one shortcut card
+      then another before the page refreshes: both changes survive. Remove a custom button or clear an override: no null stub remains.
+- [ ] Hand-edit a `MiNe` custom button, list it as `mine`, use `MINE` for its override and `mine.PNG` for its icon. Check its action,
+      menu and icon; edit and save with original definition spelling kept. Add `mine` as a second definition: first wins with a warning.
+- [ ] Toggle **Fill available row space** at several narrow and wide panel sizes with mixed buttons and pickers. Check proportional
+      widths, button minima, overflow, picker shrinking/hiding, and fill-off layout. Repeat at 100% and 200% scale.
+- [ ] Load a v2 toolbar and a newer-version toolbar: check warnings, defaults for v2, and no file writes. Hand-edit toolbar.json
+      while a shortcut page is open; a stale save must reload it and show the changed-on-disk notice.
 - [ ] Hold a toolbar shortcut: it runs once. Stop keeps its repeat behavior. On an AltGr keyboard, Ctrl + right Alt + a toolbar key
       types text without invoking the toolbar; a deliberate left Ctrl+Alt binding still works.
 - [ ] Compose text with an IME and press toolbar combos, Stop and Esc: none invokes an action or hides the panel; test normal keys
@@ -77,7 +84,7 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
 - [ ] Outline on the whole bar outlines the three drop-downs too, in the same colour (accent or `outlineColor`) and thickness, and they keep
       their height; hover, press and open each: the outline stays and the usual hover/press background shows. Filled on the bar fills them like
       the buttons. A picker's own style button (next to its width box) offers Outline, Outline color and Filled, no width; an override
-      (`"model": { "outline": false }`) switches one off; an old `toolbar.json` with `"style": { "size": "normal" }` loads with no warning.
+      (`"model": { "outline": false }`) switches one off; a v3 `toolbar.json` uses numeric `"style": { "width": 1 }`.
       Repeat with outline, filled and the widths in light, dark and contrast themes.
 
 ### A4. Window-close, rename, flyout and tray guards (PR #48)
@@ -137,11 +144,11 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
 - [ ] Edit `toolbar.json` by hand (a wrong value, a repeated key, a half-saved file): the bar keeps working, Settings › About › This PC
       lists what was ignored; a file Hotline can't read is left as it is.
 - [ ] Hand-edit `toolbar.json` (add a comment) and save a change in Settings › Button rows: the edited file is kept once as
-      `toolbar.json.<time>.bak` (a second edit in Settings makes no new copy). With the page open, edit the file by hand, then drag an item:
+      `backups/<stamp>-save/toolbar.json` (a second edit in Settings makes no new copy). With the page open, edit the file by hand, then drag an item:
       the page reloads the file, shows "toolbar.json changed while this page was open" and does not overwrite it.
 - [ ] Settings › Button rows: replace a custom button's picture with another PNG of the same name: the bar shows it at once (no other edit).
       Make toolbar.json read-only first and replace the picture: the old picture comes back and a save error is shown.
-- [ ] A version 1 `toolbar.json` is left untouched: the default bar runs with the "version 1 files are no longer read" warning;
+- [ ] A v2 or older `toolbar.json` is left untouched: the default bar and shortcuts run with one older-format warning;
       Settings › Advanced › Reset settings puts the default bar back (a backup is made first).
 - [ ] `"backdrop": "glass"` in the `window` section of `settings.json`, saved: a notice "Part of your settings was ignored" appears in the
       panel at once (naming `window.backdrop`), the look doesn't change, Settings › Advanced shows the same at the top. Fix the word → the

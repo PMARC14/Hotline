@@ -508,6 +508,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} не є 0.5, 1, 2, 3 або 4 (cells — стара назва width); використано ширину за замовчуванням</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>не вдалося спочатку створити копію поточного файлу, тому нічого не змінено ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json змінився, поки ця сторінка була відкрита. Його було перезавантажено, і вашу останню зміну не застосовано: виконайте її знову.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Fill available row space</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Could not back up the button rows and shortcuts.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Could not save the button rows and shortcuts.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Зображення не змінено: не вдалося зберегти toolbar.json.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Більше</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Тут нічого немає</value></data>
@@ -692,7 +716,7 @@
   <data name="Nav_Backup" xml:space="preserve"><value>Резервне копіювання</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Перенесіть налаштування Hotline на інший ПК або збережіть копію. Резервна копія — це один .zip-файл із вибраними елементами; нічого іншого (історія чату, пам'ять, журнали) не включається.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Налаштування</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Рядки кнопок і власні зображення кнопок</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Інструменти (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Звуки</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>З'єднання ШІ</value></data>

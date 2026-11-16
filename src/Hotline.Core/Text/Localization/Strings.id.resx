@@ -508,6 +508,30 @@ Tolak:
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} bukan 0.5, 1, 2, 3 atau 4 (cells adalah nama lama dari width); lebar default digunakan</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>salinan file saat ini tidak dapat dibuat terlebih dahulu, jadi tidak ada yang diubah ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json berubah saat halaman ini terbuka. File dimuat ulang, dan perubahan terakhir Anda tidak diterapkan: buat perubahan lagi.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Fill available row space</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Could not back up the button rows and shortcuts.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Could not save the button rows and shortcuts.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Gambar tidak diubah: toolbar.json tidak dapat disimpan.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Lainnya</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Tidak ada apa-apa di sini</value></data>
@@ -692,7 +716,7 @@ Tolak:
   <data name="Nav_Backup" xml:space="preserve"><value>Cadangan</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Pindahkan konfigurasi Hotline Anda ke PC lain, atau simpan salinannya. Cadangan adalah satu file .zip yang berisi bagian-bagian yang Anda centang; tidak ada hal lain (riwayat obrolan, memori, log) yang disertakan.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Pengaturan</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Baris tombol dan gambar tombol kustom</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Alat (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Suara</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>Koneksi AI</value></data>

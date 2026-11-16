@@ -10,7 +10,7 @@ public sealed class ToolbarMoreMenuTests
 
     private static ToolbarModel Read(string bottomLeft, string bottomRight, string menu, string extra = "") =>
         ToolbarModel.Resolve($$"""
-            { "version": 2, "items": { "left": [{{bottomLeft}}], "right": [{{bottomRight}}] }, "menu": [{{menu}}] {{extra}} }
+            { "version": 3, "top": {"left":[],"center":[],"right":[]}, "bottom": { "left": [{{bottomLeft}}], "center": [], "right": [{{bottomRight}}] }, "menu": [{{menu}}] {{extra}} }
             """);
 
     private static void AssertValid(ToolbarModel m) => Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
@@ -57,11 +57,11 @@ public sealed class ToolbarMoreMenuTests
     [Fact]
     public void A_menu_that_is_not_a_list_is_ignored_and_custom_buttons_can_be_in_it()
     {
-        var bad = ToolbarModel.Resolve("""{ "version": 2, "items": { "left": ["pin", "more"] }, "menu": "recent" }""");
+        var bad = ToolbarModel.Resolve("""{ "version": 3, "bottom": { "left": ["pin", "more"] }, "menu": "recent" }""");
         Assert.Empty(bad.Menu);
         Assert.Contains(bad.Warnings, w => w.Contains("menu"));
         var custom = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["pin", "more"] }, "menu": ["c1", "recent"],
+            { "version": 3, "bottom": { "left": ["pin", "more"], "center": [], "right": [] }, "menu": ["c1", "recent"],
               "buttons": { "c1": { "label": "One", "text": "1" } } }
             """);
         Assert.Equal(["c1", "recent"], custom.Menu);
@@ -74,8 +74,8 @@ public sealed class ToolbarMoreMenuTests
     public void A_row_with_more_has_no_second_menu_button_and_merges_its_overflow_after_the_user_menu()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2,
-              "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn"], "right": ["settings", "more"] },
+            { "version": 3,
+              "bottom": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "prompt", "recent", "continueIn"], "right": ["settings", "more"] },
               "menu": ["newChat"] }
             """);
         var wide = ToolbarPlan.PlanRow(m, top: false, 2000, Spacing);
@@ -105,7 +105,7 @@ public sealed class ToolbarMoreMenuTests
             Placed = ToolbarModel.Defaults.Placed.ToDictionary(p => p.Key, p => p.Key == Quadrant.TopCenter ? ["more"] : p.Value),
             Menu = ["recent", "effort", "more", "pin"],
         };
-        Assert.Empty(ToolbarPlan.MenuItems(withMore).Where(id => id is "effort" or "more" or "pin" or "recent")); // pin and recent are on the bar; pickers and more never
+        Assert.DoesNotContain(ToolbarPlan.MenuItems(withMore), id => id is "effort" or "more" or "pin" or "recent");
     }
 
     [Fact]
@@ -204,12 +204,12 @@ public sealed class ToolbarMoreMenuTests
     }
 
     [Fact]
-    public void An_override_is_dropped_when_an_item_goes_into_the_menu_and_a_removed_custom_button_leaves_it()
+    public void An_override_stays_in_the_menu_and_a_removed_custom_button_leaves_it()
     {
         var m = ToolbarEditor.SetStyle(WithMore(), "pin", new ButtonStyle(Outline: true));
         var inMenu = ToolbarEditor.MoveToMenu(m, "pin", 0);
         AssertEdit(m, inMenu);
-        Assert.DoesNotContain("pin", inMenu.Overrides.Keys);
+        Assert.Equal(m.Overrides["pin"], inMenu.Overrides["pin"]);
         var withCustom = ToolbarEditor.AddCustom(inMenu, new CustomButton("c1", "One", "E8A5", null, "t", false));
         var custom = ToolbarEditor.MoveToMenu(withCustom, "c1", 0);
         Assert.Equal(["c1", "pin"], custom.Menu);

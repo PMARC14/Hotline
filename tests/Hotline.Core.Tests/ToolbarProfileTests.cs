@@ -369,7 +369,7 @@ public sealed class ToolbarProfileTests
         var m = Sized("pickers-bottom-left-after", 1);
         var f = Plan(m, top: false, 1600, ["model", "provider"]);
         Assert.Equal(0, f.PickerWidths["effort"]);
-        Assert.Equal((160.0, 160.0), (f.PickerWidths["model"], f.PickerWidths["provider"]));
+        Assert.Equal((160.0, 200.0), (f.PickerWidths["model"], f.PickerWidths["provider"]));
         var none = Plan(m, top: false, 1600, []);
         Assert.All(none.PickerWidths.Values, w => Assert.Equal(0, w));
         Assert.False(none.Fit.PickersKept);

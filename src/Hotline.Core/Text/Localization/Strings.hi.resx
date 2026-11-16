@@ -508,6 +508,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} 0.5, 1, 2, 3 या 4 नहीं है (cells चौड़ाई width का पुराना नाम है); डिफ़ॉल्ट चौड़ाई का उपयोग किया गया है</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>पहले वर्तमान फ़ाइल की प्रतिलिपि नहीं बनाई जा सकी, इसलिए कुछ भी नहीं बदला गया ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>यह पृष्ठ खुला होने के दौरान toolbar.json बदल गया। इसे पुनः लोड किया गया, और आपका अंतिम परिवर्तन लागू नहीं हुआ: इसे फिर से करें।</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Fill available row space</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Could not back up the button rows and shortcuts.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Could not save the button rows and shortcuts.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>तस्वीर नहीं बदली गई: toolbar.json को सहेजा नहीं जा सका।</value></data>
   <data name="Bar_more" xml:space="preserve"><value>अधिक</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>यहाँ कुछ नहीं है</value></data>
@@ -692,7 +716,7 @@
   <data name="Nav_Backup" xml:space="preserve"><value>बैकअप</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>अपने Hotline सेटअप को दूसरे PC पर ले जाएँ, या एक प्रति सुरक्षित रखें। बैकअप एक .zip फ़ाइल होती है जिसमें आपके द्वारा चुने गए भाग होते हैं; इसके अलावा कुछ भी (चैट इतिहास, मेमोरी, लॉग) शामिल नहीं है।</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>सेटिंग्स</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियाँ और कस्टम बटन छवियां</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>टूल्स (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>

@@ -207,7 +207,8 @@ internal sealed class ChatPresenter
     {
         if (_chat.IsBusy)
         {
-            _notices.ShowTagged("stop-hint", null, L.F(Strings.Chat_StillAnswering, _settings.Chat.StopShortcut),
+            var shortcut = _popup.ToolbarShortcuts.GetValueOrDefault("stop", "");
+            _notices.ShowTagged("stop-hint", null, shortcut.Length > 0 ? L.F(Strings.Chat_StillAnswering, shortcut) : Strings.Bar_StillAnsweringNoShortcut,
                 InfoBarSeverity.Informational, closable: true);
             return;
         }
@@ -219,7 +220,7 @@ internal sealed class ChatPresenter
     {
         if (_popup.IsComposing || (uint)e.Key == 0xE5 || (uint)e.OriginalKey == 0xE5) return;
         var held = HeldModifiers();
-        if (_chat.IsBusy && Hotline.Core.Activation.Hotkey.TryParseShortcut(_settings.Chat.StopShortcut, out var stop)
+        if (_chat.IsBusy && Hotline.Core.Activation.Hotkey.TryParseShortcut(_popup.ToolbarShortcuts.GetValueOrDefault("stop"), out var stop)
             && stop.Matches((uint)e.Key, held))
         {
             _chat.Cancel();
@@ -233,6 +234,7 @@ internal sealed class ChatPresenter
                 .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)) return;
         foreach (var (id, text) in _popup.ToolbarShortcuts)
         {
+            if (id == "stop") continue;
             if (!Hotline.Core.Activation.Hotkey.TryParseToolbarShortcut(text, out var shortcut) || !shortcut.Matches((uint)e.Key, held)) continue;
             e.Handled = true;
             _tasks.Guard("toolbar shortcut " + id, () => _popup.InvokeToolbarShortcut(id));

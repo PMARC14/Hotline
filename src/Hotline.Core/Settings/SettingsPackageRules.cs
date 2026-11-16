@@ -66,8 +66,8 @@ public static partial class SettingsPackage
             SettingsCategory.Connections => ".json",
             _ => ".md",
         };
-        // A .wav may be spelled .WAV by whatever made it; the rest are written by Hotline in lower case.
-        var comparison = cat == SettingsCategory.Sounds ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        // Sound and custom icon extensions are matched without case.
+        var comparison = cat is SettingsCategory.Sounds or SettingsCategory.Toolbar ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         if (file.Length <= extension.Length || !file.EndsWith(extension, comparison)) return null;
         var stem = file[..^extension.Length];
         if (Reserved.Contains(stem.Split('.')[0].TrimEnd())) return null;

@@ -508,6 +508,30 @@ Zabroń:
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} to nie 0.5, 1, 2, 3 ani 4 (cells to stara nazwa parametru width); użyto domyślnej szerokości</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>nie można było najpierw utworzyć kopii bieżącego pliku, więc nic nie zostało zmienione ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>Plik toolbar.json został zmieniony, gdy ta strona była otwarta. Został przeładowany, a Twoja ostatnia zmiana nie została zastosowana: wprowadź ją ponownie.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Fill available row space</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Could not back up the button rows and shortcuts.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Could not save the button rows and shortcuts.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Obraz nie został zmieniony: nie udało się zapisać pliku toolbar.json.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Więcej</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nic tu nie ma</value></data>
@@ -692,7 +716,7 @@ Zabroń:
   <data name="Nav_Backup" xml:space="preserve"><value>Kopia zapasowa</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Przenieś konfigurację Hotline na inny komputer lub zachowaj kopię. Kopia zapasowa to pojedynczy plik .zip zawierający zaznaczone elementy; nic innego (historia czatu, pamięć, dzienniki) nie jest dołączane.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Ustawienia</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Wiersze przycisków i niestandardowe obrazy przycisków</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Narzędzia (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>Połączenia AI</value></data>

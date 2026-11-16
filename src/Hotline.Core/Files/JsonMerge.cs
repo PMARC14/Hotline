@@ -5,7 +5,8 @@ namespace Hotline.Core.Files;
 
 public static class JsonMerge
 {
-    /// <summary>Applies serialized model differences in place. Arrays are replaced whole; unchanged keys retain their order.</summary>
+    /// <summary>Applies model differences in place. Absent keys are removed; explicit nulls require a disk key.
+    /// Arrays are replaced whole; unchanged keys retain their order.</summary>
     public static JsonObject Apply(JsonObject tree, JsonObject before, JsonObject after)
     {
         ArgumentNullException.ThrowIfNull(tree);
@@ -28,9 +29,14 @@ public static class JsonMerge
         var keys = after.Select(p => p.Key).Concat(before?.Select(p => p.Key) ?? []).Distinct(StringComparer.Ordinal).ToArray();
         foreach (var key in keys)
         {
+            if (!after.ContainsKey(key))
+            {
+                tree.Remove(key);
+                continue;
+            }
             var previous = before?[key];
             var next = after[key];
-            if (JsonNode.DeepEquals(previous, next)) continue;
+            if (before?.ContainsKey(key) == true && JsonNode.DeepEquals(previous, next)) continue;
             if (next is JsonObject nextObject)
             {
                 if (tree[key] is JsonObject existing) Merge(existing, previous as JsonObject, nextObject);

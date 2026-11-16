@@ -10,7 +10,7 @@ namespace Hotline.App.Settings;
 /// <summary>The shared key capture control for global hotkeys and panel shortcuts.</summary>
 internal static class ShortcutBinder
 {
-    public static Button Create(Func<string?> read, Action<string?> save, Func<string, bool>? accept = null, bool panel = false)
+    public static Button Create(Func<string?> read, Action<string?> save, Func<string, bool>? accept = null, bool panel = false, bool stop = false)
     {
         var button = new Button { MinWidth = 200, HorizontalContentAlignment = HorizontalAlignment.Center };
         AutomationProperties.SetLiveSetting(button, AutomationLiveSetting.Polite);
@@ -37,7 +37,7 @@ internal static class ShortcutBinder
             if (Down(VirtualKey.Shift)) held |= HotkeyModifiers.Shift;
             if (Down(VirtualKey.LeftWindows) || Down(VirtualKey.RightWindows)) held |= HotkeyModifiers.Win;
             var key = e.Key != VirtualKey.None ? e.Key : e.OriginalKey;
-            var result = HotkeyCapture.Press(held, (uint)key, panel, rightAltDown: Down(VirtualKey.RightMenu));
+            var result = HotkeyCapture.Press(held, (uint)key, panel, rightAltDown: Down(VirtualKey.RightMenu), stop: stop);
             switch (result.Outcome)
             {
                 case HotkeyCapture.Outcome.Waiting: return;

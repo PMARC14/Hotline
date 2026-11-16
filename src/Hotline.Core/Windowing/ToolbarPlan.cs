@@ -109,17 +109,17 @@ public static class ToolbarPlan
         [.. Enum.GetValues<Quadrant>().SelectMany(model.Items).Where(IsPicker).Distinct()];
 
     private static bool Known(ToolbarModel model, string id) =>
-        ToolbarModel.BuiltIn.Contains(id) || model.Buttons.Any(b => b.Id == id);
+        ToolbarModel.BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase) || model.Buttons.Any(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
 
     private static Dictionary<Quadrant, List<string>> Placement(ToolbarModel model)
     {
         var placed = Enum.GetValues<Quadrant>().ToDictionary(q => q, _ => new List<string>());
-        var seen = new HashSet<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var q in Enum.GetValues<Quadrant>())
             foreach (var id in model.Items(q))
             {
                 if (!Known(model, id) || !seen.Add(id)) continue;
-                placed[q].Add(id);
+                placed[q].Add(ToolbarModel.BuiltIn.Concat(model.Buttons.Select(b => b.Id)).First(k => k.Equals(id, StringComparison.OrdinalIgnoreCase)));
             }
         return placed;
     }

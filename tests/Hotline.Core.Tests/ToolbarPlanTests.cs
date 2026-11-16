@@ -50,8 +50,8 @@ public sealed class ToolbarPlanTests
     public void Custom_and_built_in_buttons_are_sized_alike_and_one_cell_high()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["pin", "mine"], "right": [] }, "style": { "width": "wide" },
-              "overrides": { "mine": { "width": "compact" } },
+            { "version": 3, "bottom": { "left": ["pin", "mine"], "right": [] }, "style": { "width": 2 },
+              "overrides": { "mine": { "width": 0.5 } },
               "buttons": { "mine": { "label": "Mine", "text": "hi" } } }
             """);
         Assert.Equal(ToolbarPlan.Metrics(new ButtonStyle(2)), ToolbarPlan.Metrics(m, "pin"));
@@ -342,7 +342,7 @@ public sealed class ToolbarPlanTests
 
     [Theory]
     [InlineData(212, 56, 84, 72)]
-    [InlineData(211, 0, 106, 105)]
+    [InlineData(211, 0, 94, 117)]
     [InlineData(156, 0, 84, 72)]
     [InlineData(155, 0, 155, 0)]
     [InlineData(84, 0, 84, 0)]

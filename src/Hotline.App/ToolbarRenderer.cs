@@ -43,7 +43,7 @@ internal sealed class ToolbarRenderer
     private readonly Action<CustomButton> _custom;
     private readonly FileLog _log;
     private readonly Dictionary<string, ButtonBase> _builtIn;
-    private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = [];
+    private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = new(StringComparer.OrdinalIgnoreCase);
     private readonly Row _top, _bottom;
     /// <summary>The placed "more" item (toolbar.json): the menu button of the row that holds it, in place of that row's automatic "⋯".</summary>
     private readonly Button _moreItem = MoreButton();
@@ -110,14 +110,14 @@ internal sealed class ToolbarRenderer
     public void SetShortcuts(Hotline.Core.Settings.ChatSettings settings)
     {
         _chatSettings = settings;
-        var resolved = Model.ResolveShortcuts(settings);
+        var resolved = Model.ResolveShortcuts();
         var warnings = resolved.Warnings.Except(Model.Warnings).ToList();
         if (!warnings.SequenceEqual(_shortcutWarnings))
         {
             _shortcutWarnings = warnings;
             foreach (var warning in warnings) _log.Info("toolbar.json: " + warning);
         }
-        var shortcuts = Model.EffectiveShortcuts(settings.StopShortcut);
+        var shortcuts = Model.EffectiveShortcuts();
         foreach (var b in resolved.Buttons)
             if (b.Shortcut is { } combo) shortcuts[b.Id] = combo;
         _shortcuts = shortcuts;
@@ -287,9 +287,9 @@ internal sealed class ToolbarRenderer
             if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
             // The same call the tests make: which buttons stay, and the widths of the row's pickers from what they leave. The
             // row's column gap lies between any two items, pickers too.
-            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers, fill: true);
+            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers, fill: Model.Style.Fill == true);
             var hidden = layout.PickerWidths.Where(p => p.Value <= 0).Select(p => p.Key).ToList();
-            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden, fill: true);
+            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden, fill: Model.Style.Fill == true);
             (row.Widths, row.ShrunkLastRight) = (layout.ButtonWidths, layout.Fit.ShrunkLastRight);
             ApplyWidths(row);
             foreach (var (id, width) in layout.PickerWidths) widths[id] = width;

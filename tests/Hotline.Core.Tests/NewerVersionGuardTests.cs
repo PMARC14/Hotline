@@ -107,9 +107,9 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "version": 3,
+              "version": 99,
               "futureToolbarOption": { "enabled": true },
-              "items": { "left": ["pin"], "center": [], "right": [] }
+              "bottom": { "left": ["pin"], "center": [], "right": [] }
             }
             """;
         File.WriteAllText(path, json);
@@ -121,7 +121,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         var problem = ToolbarFile.Save(path, ToolbarModel.Defaults);
 
         Assert.NotNull(problem);
-        var expectedProblem = L.F(Strings.Toolbar_NewerVersion, 3);
+        var expectedProblem = L.F(Strings.Toolbar_NewerVersion, 99);
         Assert.Equal(expectedProblem, problem);
 
         var afterBytes = File.ReadAllBytes(path);
@@ -135,8 +135,8 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "version": 2,
-              "items": { "left": ["pin"], "center": [], "right": [] }
+              "version": 3,
+              "bottom": { "left": ["pin"], "center": [], "right": [] }
             }
             """;
         File.WriteAllText(path, json);
@@ -145,6 +145,6 @@ public sealed class NewerVersionGuardTests : TempDirTest
 
         Assert.Null(problem);
         var textAfter = File.ReadAllText(path);
-        Assert.Contains("\"version\": 2", textAfter);
+        Assert.Contains("\"version\": 3", textAfter);
     }
 }

@@ -8,13 +8,13 @@ public class ToolbarCentreTests
     private const Quadrant BL = Quadrant.BottomLeft, BC = Quadrant.BottomCenter, BR = Quadrant.BottomRight;
     private const Quadrant TL = Quadrant.TopLeft, TC = Quadrant.TopCenter, TR = Quadrant.TopRight;
 
-    private static ToolbarModel Bar(string items, string top) => ToolbarModel.Resolve($$"""{ "version": 2, "items": {{items}}, "top": {{top}} }""");
+    private static ToolbarModel Bar(string items, string top) => ToolbarModel.Resolve($$"""{ "version": 3, "bottom": {{items}}, "top": {{top}} }""");
 
     [Theory]
     [InlineData("""{ "left": ["pin"], "center": ["prompt", "recent"], "right": ["settings"] }""", """{ "left": ["effort", "model", "provider"], "center": ["newChat"], "right": [] }""",
         "prompt,recent", "newChat", null)]
-    [InlineData("""{ "left": ["pin"], "right": ["settings"] }""", """{ "left": ["effort"], "right": [] }""", "", "", null)] // no centre groups: an empty centre is written
-    [InlineData("""{ "left": ["pin"], "center": 5, "right": [] }""", """{ "left": ["effort"], "right": [] }""", "", "", "items.center")] // not a list: ignored with a warning
+    [InlineData("""{ "left": ["pin"], "right": ["settings"] }""", """{ "left": ["effort"], "right": [] }""", "prompt,continueIn", "model", null)] // Missing groups take embedded defaults.
+    [InlineData("""{ "left": ["pin"], "center": 5, "right": [] }""", """{ "left": ["effort"], "right": [] }""", "", "model", "bottom.center")] // not a list: ignored with a warning
     public void The_centre_group_is_read_in_both_rows_and_written_back(string items, string top, string bottomCentre, string topCentre, string? warning)
     {
         var m = Bar(items, top);
@@ -30,14 +30,13 @@ public class ToolbarCentreTests
     }
 
     [Fact]
-    public void An_explicit_empty_bar_needs_no_centre_group()
+    public void An_explicit_empty_bar_needs_empty_centre_groups()
     {
-        var m = Bar("""{ "left": [], "right": [] }""", """{ "left": [], "right": [] }""");
+        var m = Bar("""{ "left": [], "center": [], "right": [] }""", """{ "left": [], "center": [], "right": [] }""");
         Assert.All(Enum.GetValues<Quadrant>(), q => Assert.Empty(m.Items(q)));
-        Assert.DoesNotContain(m.Warnings, w => w.Contains("no items"));
-        // but a missing left or right group is still "not explicit": the defaults apply
-        var broken = Bar("""{ "left": [], "center": [] }""", """{ "left": [], "right": [] }""");
-        Assert.Equal(ToolbarModel.Defaults.Items(BL), broken.Items(BL));
+        Assert.Empty(m.Warnings);
+        var sparse = Bar("""{ "left": [], "center": [] }""", """{ "left": [], "center": [], "right": [] }""");
+        Assert.Equal(ToolbarModel.Defaults.Items(BR), sparse.Items(BR));
     }
 
     [Fact]

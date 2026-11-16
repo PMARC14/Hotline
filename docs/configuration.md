@@ -11,7 +11,7 @@ same files). Comments and trailing commas are allowed.
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/bullets`, `/explain`, `/fix`, `/formal`, `/reply`, `/shorter`, `/summarize`, `/translate` are created on first run) |
 | `mcp.json` | MCP servers and tool approvals (tools for API connections) |
-| `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons (version 2; see *toolbar.json*) |
+| `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons and panel shortcuts (version 3; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
 | `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file). Deleting the button leaves them; a new button with that id adds to them (they are never read as its picture) |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
@@ -25,7 +25,7 @@ same files). Comments and trailing commas are allowed.
 | `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
 | `connections\<id>.json.<time>.bak` | The previous connection file, kept when Settings rewrites a hand-edited file or removes a connection. A failed backup or deletion keeps the file and its API key |
 | `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it |
-| `toolbar.json.<time>.bak`, `toolbar.json.old` | The previous toolbar.json, kept when Settings replaces a file Hotline did not write itself (a hand edit, with its comments). `.old`, then `.old2`, `.old3`…: Settings buttons that rewrite it (an archive is never overwritten) |
+| `backups\<yyyyMMdd-HHmmss>-save\toolbar.json` | Toolbar originals preserved before changed saves; newest 20 save sets kept |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
 
 **An old inline connection list** (a `chat.backends` array in `settings.json`, from before connections were files) is split into `connections\` files the first time such a file is read; `settings.json` is copied to a stamped `.bak` first and the connection files are never overwritten.
@@ -77,7 +77,6 @@ reuses its saved key.
 | `chat.resumeWhileTyping` | `true` | Typing `/resume` and a space opens the history list at once and the search continues there (best match selected, Enter opens it). Not in the Settings window |
 | `chat.cliTranscripts` | `true` | Reopening a CLI chat Hotline kept only a record of (`keepInHotline` off) shows its earlier messages from the CLI's own history (read-only; see *Chats with a CLI*). Not in the Settings window |
 | `chat.saveHistory` / `historyRetentionDays` | `true` / `30` | Conversation history on/off and how long it's kept |
-| `chat.stopShortcut` | `Esc` | Stops an answer while it's being written: a key alone (`Esc`) or a combo (`Ctrl+.`, `Ctrl+Shift+Backspace`). Enter never stops an answer (it waits in the box); the Stop button always does. When nothing is being answered, Esc hides the panel |
 | `chat.memory` | `true` | Add `memory.md` to every chat's system prompt (all connections, CLIs included) |
 | `chat.memoryTool` | `ask` | Whether API models may save to `memory.md` with Hotline's remember tool (Anthropic and Gemini even in chat-only mode; OpenAI-style connections once Tool use is on; never while `chat.memory` is off; every save shows a notice): `ask` (approve each; "Always" switches to `allow`), `allow`, `off` |
 | `chat.continueIn` | *(llama.cpp of a Local connection)* | The shared "Continue this chat in" targets (see *Continue in* below). Missing = the llama.cpp web UI at your first Local connection's address, or none |
@@ -265,187 +264,118 @@ you unpin it, click into another app, or Hotline restarts.
 
 ## toolbar.json
 
-The button rows around the message box. There are two rows, **top** (above the message box) and **items** (below it), each with
-three groups: **left**, **center** (the free space between the other two) and **right**. Items run left to right within a group.
-Settings › **Window** › **Button rows** edits this file; you can also edit it by hand.
+Version 3 stores the button rows, their appearance, custom buttons and every panel shortcut, including Stop.
+Settings > Window > Button rows edits the layout; Settings > Chat and history edits shortcuts. Changes apply live.
 
-```jsonc
+```json
 {
-  "version": 2,
-  "shortcuts": { "pin": "Ctrl+K", "model": "F6", "captureScreen": "" },
-  "top":   { "left": ["effort"], "center": ["model"], "right": ["provider"] },
-  "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
-             "center": ["prompt", "continueIn"],
-             "right": ["recent", "newChat", "settings"] },
+  "version": 3,
+  "shortcuts": { "stop": "Esc", "pin": "Ctrl+K", "captureScreen": "" },
+  "top": { "left": ["effort"], "center": ["model"], "right": ["provider"] },
+  "bottom": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+              "center": ["prompt", "continueIn"], "right": ["recent", "newChat", "settings"] },
   "menu": [],
-  "style": { "width": "normal", "outline": false, "filled": false },
-  "overrides": { "pin": { "outline": true } },
+  "style": { "width": 1, "fill": true, "outline": false, "filled": false },
+  "overrides": { "provider": { "span": 5 }, "pin": { "outline": true } },
   "buttons": {
     "summarize": { "label": "Summarize", "icon": "E8A5", "quickAction": "summarize", "shortcut": "Ctrl+Shift+1" },
-    "thanks":    { "label": "Say thanks", "icon": "E8BD", "text": "Thanks!", "send": false }
+    "thanks": { "label": "Say thanks", "text": "Thanks!", "send": false }
   }
 }
 ```
 
 | Key | Meaning |
 |---|---|
-| `shortcuts` | Optional built-in/picker id → combo map; omitted ids use shipped defaults, `""` disables. See [Panel shortcuts](#panel-shortcuts) for defaults, validation and legacy migration. Custom bindings stay under `buttons.<id>.shortcut` |
-| `top`, `items` | Objects with `left`, `center` (optional) and `right` arrays of item ids. Leave an id out to hide it. An item sits in one place only |
-| built-in ids | `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`, `recent`, `continueIn`, `newChat`, `settings`, `more`, `copyLastAnswer`. `continueIn` opens the "Continue this chat in" menu; `more` is the "..." button you place yourself (below); `copyLastAnswer` copies the latest completed answer |
-| `menu` | Ids of buttons (built-in or custom; no pickers, not `more`, no repeats) shown in the `more` button's menu instead of on the bar, in this order |
-| `style` | The look of the whole bar: `width` (the button width in cells: 0.5, 1, 2, 3 or 4, or the words `compact`, `normal`, `wide`), `outline` and `filled` (`true`/`false`), `outlineColor` (`"#RRGGBB"`; left out: the accent colour) |
-| `overrides` | Per item id: the same `width`, `outline`, `outlineColor`, `filled`. A key you leave out comes from `style`, then the defaults. A picker takes `span` (its width), `outline`, `outlineColor` and `filled`, never `width`. The placed `more` button takes overrides like any item |
-| `buttons` | Your own buttons, by id (below) |
+| `top`, `bottom` | Rows above and below the message box. Each has `left`, `center` and `right` arrays, in display order. An item appears at its first place in bottom-left, bottom-center, bottom-right, top-left, top-center, top-right order. Leave an id out of all groups to hide it; use empty arrays for empty groups |
+| `shortcuts` | Command id to keyboard binding; see [Panel shortcuts](#panel-shortcuts) |
+| `menu` | Ordered button ids in a placed `more` button's menu; no pickers, `more`, repeats or items already on the bar. Without a placed `more`, the list is ignored with a warning |
+| `style` | Whole-bar `width`, `fill`, `outline`, `filled` and optional `outlineColor` |
+| `overrides` | Per-item `width`, `outline`, `filled`, `outlineColor`. Pickers take `span` in place of `width`. Unset fields inherit the bar's style. Known items keep overrides while hidden or in a menu; unknown ids warn and stay on disk |
+| `buttons` | Custom definitions keyed by id (below) |
 
-**Width.** Every item is a **cell** of a grid whose unit is 40 × 36 DIPs, and every button is one cell high, so every row is 36 DIPs
-high. `width` says how many cells across: 0.5, 1, 2, 3 or 4 (20 to 160 DIPs; the icon is 13 for half a cell, else 16). `compact`,
-`normal` and `wide` are words for 0.5, 1 and 2 (Hotline writes the word for those three, a number for 3 and 4). An item's own `width`
-beats the bar's, which beats the default of 1. Any other value (including the DIP numbers of older files such as 80) is ignored with a
-warning. The old names `size` (the words) and `cells` (the numbers) are still read silently; if an entry has both, `width` wins with
-one warning; saving writes `width` only. `height` is ignored (one warning per file). A cell touches its neighbours; the visible button
-is the cell less 1 DIP on each side (a normal button shows 38 × 34). A row is the sum of its cells, and the bar's room is the panel's
-width less its padding (10 DIPs on every side). The automatic "..." button is always one cell. In Settings the bar's **Width** list
-and each button's flyout offer Compact, Normal, Wide, 3 and 4 cells (a button's also "Like the whole bar"); the bar's list shows
-**Custom** while a button's width differs, and picking a width there clears every button's own width.
+Built-in layout ids are `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `effort`, `model`, `provider`, `prompt`,
+`recent`, `continueIn`, `newChat`, `settings`, `more` and `copyLastAnswer`. `stop` is a shortcut command only.
 
-**Outline.** `"outline": true` draws a 1.5-DIP border in the accent colour (a contrast theme: the system highlight colour) or in
-`outlineColor` (`#` and six hex digits; anything else is ignored with a warning). With `filled` a button keeps both its background and outline.
-The pickers take the same three keys (`outline`, `outlineColor`, `filled`) from the bar's `style` and from their own `overrides` entry, per key
-(own entry, then the bar, then false), so an outlined bar outlines the drop-downs too, in the same colour and 1.5 DIPs thick, drawn inside their
-height; `filled` gives a drop-down the background a filled button has. A picker's width is not part of this: it stays its `span`.
+**Width and fill.** A grid cell is 40 × 36 scaled pixels; a button is always one cell high. Numeric `width` accepts 0.5, 1, 2, 3 or 4.
+Every shipped button has width 1. Width words and the old `items`, `size`, `cells`, `height` and `spacer` names have no meaning in v3.
+With `style.fill` (default `true`), spare row room is shared by button `width` and picker `span`. A button stays at least one cell
+wide (half a cell for width 0.5); buttons that cannot fit move into overflow. A picker's span is a share, without a maximum width.
+With fill off, buttons use their cell widths and pickers use their preferred span as a maximum. Buttons have a 1-pixel inset on each side.
+Settings offers Compact (0.5), Normal (1), Wide (2), 3 and 4; choosing the bar's width clears per-button width overrides.
 
-**Pickers.** `effort`, `model` and `provider` are three independent items: each can sit in any group of either row and be moved,
-hidden or sized on its own; an id listed twice is shown at its first place. They take the bar's look (`outline`, `outlineColor`,
-`filled`) but not its `width`, are one cell high (the drop-down is 34 DIPs with the 1 DIP inset), and are `span` cells wide (1-8,
-whatever the bar's width). `span` and the three look keys are the only `overrides` keys a picker takes (anything else is dropped with
-a warning):
+**Pickers.** Effort, model and provider can sit in any group, between buttons, and keep their span and appearance while hidden.
+Their default spans are 3, 4 and 5. Their minimum outer widths are 56, 84 and 72 scaled pixels, capped at their span when fill is off.
+In a narrow row they shrink, then hide in effort, provider, model order. Pickers never enter overflow menus.
 
-```jsonc
-"overrides": { "model": { "span": 6 }, "effort": { "span": 1, "outline": true, "outlineColor": "#E81123" } }
-```
+**Appearance.** `outline: true` draws a 1.5-pixel border in the accent colour, or `outlineColor` (`#RRGGBB`). `filled: true` draws
+a background. Buttons and pickers inherit these fields separately from their own override, then the bar, then the embedded defaults.
+`fill` controls spacing and is separate from `filled`, which controls appearance.
 
-| Picker | Base `span` (when omitted) | Width (DIPs) | Narrowest before it hides (outer width) |
-|---|---|---|---|
-| `effort` | 3 | 120 | 56 |
-| `model` | 4 | 160 | 84 |
-| `provider` | 4 (shipped layout: 5) | 160 (shipped layout: 200) | 72 |
+**Overflow.** A short row moves the center and left groups' last buttons into an automatic “...” menu first, then the right group's
+first buttons. At least the rightmost button stays. A placed `more` button stays as long as possible; automatic overflow joins its
+`menu` after the explicit entries and a separator. The other row is fitted independently. Settings' **Move what doesn't fit into
+the menu** moves current overflow into a placed `more` menu, adding `more` at bottom right when needed.
+`ToolbarProfiles.cs` contains reference layouts exercised by the automatic tests and panel self-test.
 
-A span equal to the default is not written to the file; a hidden picker keeps its span and look. A span is a maximum as well as the
-preferred width (the drop-down is 1 DIP narrower on each side). In a short row the pickers shrink evenly down to the narrowest width
-above; when that is not enough they hide one at a time: `effort`, then `provider`, then `model`. Pickers never go into an overflow
-menu: the row first moves buttons there (left group, then center, from their ends, then the right group's first buttons), and only
-when not even one right button, the "..." button and the pickers' narrowest widths fit do the pickers shrink and hide. Pickers of one
-row share what is left evenly; the other row is fitted on its own.
+**Custom buttons.** Up to 24 definitions; each group holds up to 40 ids.
 
-**Overflow and the `more` button.** A row too narrow for its buttons moves them into an automatic "..." menu: the center group's
-and left group's last buttons first; if the right group alone is too wide it gives up its first buttons (from its left end), so the
-rightmost (typically Settings) stay, and at least one right button always stays. The menu lists buttons in bar order. Only a panel
-narrower than about two buttons can make a row stick out.
-List `more` in any group to place that "..." button yourself, with a menu you fill: the ids in `menu` are not drawn on the bar and
-appear in that menu (a toggle such as Pin stays a toggle). If a row holds `more`, that row's automatic overflow joins the same menu
-after your entries and a separator, with no second "..." button; a row without `more` keeps its own. `more` is the last button to
-leave a short row; with nothing in the menu it still opens a disabled "Nothing here". A `menu` id that is also in a group stays in the
-group (warning); unknown ids, pickers, `more` and repeats are dropped (warning); `menu` without a `more` button is ignored (one
-warning). Settings › Button rows has a card for this box (drag items in and out, **Move to the ... button's box** on each item) and a
-button **Move what doesn't fit into the menu**, which plans the bar at the narrowest width it is shown at (the smaller of the opening width on the
-monitor the panel would open on and the live width) and moves what would overflow into the box. It adds `more` (at the end of the bottom-right group) only
-when something really overflows; a bar that fits is left as it is.
+- The id is 1–32 characters from `A-Z`, `a-z`, `0-9` and `-`. Ids match without case throughout placement, menus, overrides, shortcuts, icons and editing. Definition key spelling survives saves; for definitions differing only by case, the first is used and the second warns and stays on disk. Built-in ids, `stop` and `spacer` are reserved in any case. Settings generates lowercase ids.
+- `label` is at most 40 characters (default: id). `icon` is a hexadecimal Segoe Fluent Icons code from E000 to F8FF (default: star).
+- Exactly one action: `quickAction` names a file in `actions\` (up to 64 characters, never a path); `text` inserts up to 2000 characters.
+  `send: true` sends inserted text as plain text. A missing quick action shows a notice.
+- Optional `iconFile` is `<id>.png` in `icons\`, matched without regard to id or extension case: PNG, at most 256 KB and 16–256 pixels per side. Missing or invalid pictures use the glyph.
+  Settings copies a chosen picture and restores the previous one if saving the toolbar fails. Removing a button removes its picture.
+- Optional `shortcut` invokes the action even when hidden or in a menu. Empty or null means no custom shortcut.
 
-**Reference layouts.** `ToolbarProfiles.cs` holds complete `toolbar.json` examples (pickers in each group, `more` menus, spans,
-widths, outlined and filled bars, 24 custom buttons, empty and damaged files), tried at every panel width and drawn by the panel's
-self-test (steps P01-P47); use any as a starting point.
+**Reading and saving.** Comments and trailing commas are accepted; duplicate keys keep their last value with a warning.
+Missing or null fields take embedded defaults in memory. Bad values default individually with warnings. Unknown ids are inactive.
+A missing or unreadable file uses defaults; loading never creates or rewrites a file. A file below v3, or without a version, uses
+defaults with one warning and is left for the upgrade step. A higher version is read as far as understood and cannot be saved.
+Settings checks for outside edits before saving and reloads a changed file with a notice.
 
-**Custom buttons.** Each entry in `buttons` can be listed in any group by its id:
-
-| Optional field | Format | Effect |
-|---|---|---|
-| `shortcut` | String, e.g. `"Ctrl+Shift+1"`; omitted or `""` for none | Runs the same quick action or text/send action while the panel has focus, even when hidden or in More/overflow. Uses the [panel shortcut](#panel-shortcuts) parser and conflict order; Ctrl, Alt or Win required except F1–F24; Enter is reserved. Settings › Window › custom button › Shortcut accepts typed keys or key capture; Esc cancels capture and Backspace clears it. The tooltip and accessibility accelerator key show the effective combo. |
-
-- The id is 1-32 characters from `a-z`, `0-9` and `-`, and not a built-in id (built-in ids in the groups are case-insensitive).
-- `label` is the name (at most 40 characters; default the id). `icon` is a Segoe Fluent Icons code in hex (four to six digits,
-  E000-F8FF); anything else gives a default star.
-- `iconFile` (optional) shows a picture instead: always `"<id>.png"` in `%USERPROFILE%\.hotline\icons\` (any other name is ignored with
-  a warning). It must be a PNG of at most 256 KB, 16-256 pixels per side (no SVG, ICO or animation); it is drawn at about 60% of the
-  button's smaller side. If it is missing, damaged or outside those limits, the button shows its `icon` and the log says why (by file
-  name). Settings (add or edit a custom button) › **Choose a picture…** copies your PNG to that name when you save (the original is never
-  changed); **Use a built-in icon instead** removes it; deleting the button deletes its picture. Replacing a picture under the same name redraws the bar at once (Hotline also watches `icons\*.png`), and if toolbar.json can't be saved with it, the previous picture is put back.
-- Exactly one of `quickAction` and `text`. `quickAction` is the **name** of a file in `actions\` (`"summarize"` for `actions\summarize.md`;
-  at most 64 characters, never a path); it runs on the current message and attachments, and a missing file shows a notice. `text` (up to
-  2000 characters) is put in the message box, and `"send": true` also sends it.
-- Nothing else can be run from a button: no URLs, files, programs or shell commands.
-
-**Limits.** At most 24 custom buttons and 40 items per group. An invalid `width` is ignored (one cell); labels lose control characters.
-
-**A hand-edited file.** Comments and trailing commas are allowed. A bad value is replaced by its default alone, a key written twice
-uses the last, and the rest of the file still applies. An unknown id, an id that isn't text, or an item in two places is ignored (the
-first place wins, in the order above); a `spacer` item (it no longer exists) is ignored; an invalid custom button is skipped; an override
-for an item that isn't shown is ignored. A file that shows nothing by mistake gets the default layout; an empty bar is kept only when
-the `left` and `right` groups of both rows are present and empty. A file that isn't valid JSON or an object is left untouched and the
-defaults run (a half-written file keeps the bar it had). A `version` above 2 is read as far as it makes sense and never rewritten, and
-so is a version 2 file with warnings; Hotline never rewrites a version 2 file by itself. A missing file is created with the defaults.
-**A version 1 file** (`top` and `items` as plain arrays, with a `spacer`; before 0.4) is not converted: the defaults run with a
-warning and the file is left as it is. To change the bar, write the version 2 format or delete the file. What was ignored is listed in
-the panel, under Settings › About › This PC and in the log. Saving from Settings writes the corrected file and keeps the one it replaces
-as `toolbar.json.<time>.bak` (comments are not carried over); a file you edit while Settings › Button rows is open is never overwritten: the page reloads it and says so.
-
-**Files from a newer Hotline.** When `toolbar.json` has a `version` greater than 2, Hotline reads it leniently with a warning, but refuses to overwrite the file on save. Update Hotline, or edit the file by hand.
-
-**Defaults.** Settings › Advanced › **Reset settings** restores `toolbar.json` too (see *Switching settings* above); `.defaults\toolbar.json` is
-rewritten at every start. New installs get the owner's layout: effort, model and provider across the top row (spans 3, 4, 5); pin and
-the three captures on the bottom left, prompt and Continue in in the centre, recent, new chat and settings (two cells wide each) on the right.
+An unchanged save preserves exact bytes. An edited save changes only model values that changed, preserves unknown keys at every
+level and keeps key order; comments are not retained after an edit. A hand-added `$schema` survives, but Hotline never adds it.
+Before replacing outside edits, Hotline copies the original to `backups\<yyyyMMdd-HHmmss>-save\toolbar.json`; same-second sets
+receive numeric suffixes. The newest 20 save sets are kept. Files matching `state.json`'s last-written hash need no backup.
+A backup failure prevents the write. Other backup reasons and old `.bak`, `.old` and `.bad` files are untouched.
 
 ### Panel shortcuts
 
-These keys work anywhere in the panel, including the message box; they are separate from the global `activation.*` hotkeys.
-Store built-in and picker bindings in the optional top-level `shortcuts` map in **toolbar.json** (version stays 2).
-Settings › Chat and history has a row for each command. English key names are case-insensitive; Ctrl, Alt or Win is required,
-except F1–F24, which may stand alone. Shift alone is insufficient; bare letters, Space and Tab are refused, including during
-key capture. Enter (with any modifiers) and the message box's editing keys (`Ctrl+A/C/V/X/Y/Z`, `Ctrl+Tab`, `Ctrl+Backspace`,
-`Ctrl+Shift+Z`, `Ctrl+Shift+Tab`) are reserved for the message box: such a binding is refused with a warning. `chat.stopShortcut`
-stays in settings.json and keeps its separate rule allowing Esc and bare keys; Settings refuses a Stop that a panel command asked for.
-Toolbar shortcuts ignore key auto-repeat and Ctrl with right Alt (AltGr). During IME composition, toolbar shortcuts, Stop
-and Esc-to-hide are suspended; virtual key 0xE5 is also ignored.
+All panel commands use `toolbar.json`'s `shortcuts` map. Custom button bindings remain under `buttons.<id>.shortcut`.
+These bindings work only while the panel has focus and are separate from global `activation.*` hotkeys.
 
-| Button id | Default | Action |
+| Command id | Default | Action |
 |---|---|---|
+| `stop` | `Esc` | Stop a streaming answer |
 | `newChat` | `Ctrl+N` | New chat |
-| `recent` | `Ctrl+H` | Recent chats / history |
+| `recent` | `Ctrl+H` | Recent chats |
 | `settings` | `Ctrl+,` | Settings |
 | `pin` | `Ctrl+P` | Toggle pin |
-| `copyLastAnswer` | `Ctrl+Shift+C` | Copy the latest completed, nonempty answer (optional toolbar button; add it in Settings › Window) |
+| `copyLastAnswer` | `Ctrl+Shift+C` | Copy the latest completed, nonempty answer |
 | `captureRegion` | `Ctrl+Shift+R` | Capture a region |
-| `prompt` | `Ctrl+Shift+P` | Open the prompt library picker |
+| `prompt` | `Ctrl+Shift+P` | Open the prompt library |
 | `effort` | `Ctrl+E` | Cycle effort |
 | `model` | `Ctrl+M` | Cycle model |
 | `provider` | `Ctrl+Shift+M` | Cycle provider / connection |
 | `captureWindow` | `Ctrl+Shift+W` | Capture the previous window |
 | `captureScreen` | `Ctrl+Shift+S` | Capture the screen |
 | `continueIn` | `Ctrl+Shift+I` | Open Continue in |
-| `more` | `Ctrl+Shift+O` | Open the row with a placed More button, otherwise the first automatic overflow menu |
+| `more` | `Ctrl+Shift+O` | Open a placed More menu, otherwise the first automatic overflow menu |
 
-For example, `"shortcuts": { "pin": "Ctrl+K", "captureScreen": "" }` in toolbar.json changes Pin and disables Capture screen's key;
-omitted commands keep their defaults. Blank fields in Settings disable a binding (write `""`); Reset removes that override.
-The first toolbar load without a `shortcuts` key reads the raw explicit legacy `settings.json` → `chat.shortcuts` values once
-per process, before settings normalization. The first toolbar save writes that map; subsequent loads use toolbar.json.
-An explicit `"shortcuts": {}` selects shipped defaults and prevents legacy fallback. Other settings saves leave the legacy key
-untouched; new settings files do not include it. There is no separate
-quick-actions toolbar button: quick actions remain in the message box's `/` list. Disabled controls stay disabled for shortcuts,
-including the three pickers while an answer streams. Hidden buttons still work by shortcut; a picker cycles only while it is drawn on the bar (a hidden one would change the model or connection unseen).
+The table is the fixed command conflict order. Stop wins every conflict, including while idle; built-ins claim keys in table order,
+then custom buttons in file order. Aliases such as `Control+Q` and `Ctrl+Q` are the same combo. A loser is disabled with a warning;
+the requested value stays in the file. Invalid values warn and use the command's default; null and omitted ids default silently.
+Unknown command ids are preserved but inactive. Empty strings disable bindings. Settings rejects conflicting combinations.
+Reset removes the override. No shortcut is read from settings.json.
 
-**Conflicts:** `chat.stopShortcut` always has priority, even while idle. Otherwise the first shortcut in JSON order keeps the combo
-(aliases such as `Control+Q` and `Ctrl+Q` count as the same). Later conflicting entries use their own default if it is free, otherwise
-their shortcut is disabled. Omitted defaults are filled last, under the same rule. Bad values fall back to that command's default
-with a warning and preserve the raw value; duplicate shortcut ids keep the last entry with a warning; unknown ids are kept
-inactive with a warning. An empty string
-explicitly disables a shortcut. Custom buttons use their own optional `shortcut` field in `toolbar.json` (see *Custom buttons*
-above). Stop wins first, then all effective built-in `shortcuts` (including defaults), then custom buttons in `buttons` JSON
-order. A custom button with a bad or conflicting shortcut keeps its action but loses the shortcut, with a warning; it has no default.
-Runtime conflict resolution never saves its replacement over the requested value, including conflict-disabled bindings.
-Settings rejects combinations already used by Stop, another built-in or a custom button; the custom-button dialog shows a
-warning for those conflicts too. Omit a custom `shortcut` or set it to `""` for none. User-defined bindings can override editing
-or system keys, so choose them carefully; Windows may intercept system combinations. Idle Esc hides the panel.
-Tooltips and accessibility accelerator keys expose effective bindings. Copy last answer skips cancelled/failed partials and
-shows a short notice when no completed, nonempty answer is available.
+Names are case-insensitive. Only Stop allows bare typing keys. Other commands require Ctrl, Alt or Win, except F1–F24.
+Enter with any modifiers is reserved. Every command, including Stop, reserves the message box's editing keys: Ctrl+A/C/V/X/Y/Z,
+Ctrl+Tab, Ctrl+Backspace, Ctrl+Shift+Z and Ctrl+Shift+Tab. Stop capture accepts the same keys as the file, including bare Esc and
+Backspace. In other shortcut rows, Esc cancels capture and Backspace clears it. All cards on a page share the latest toolbar model
+and file fingerprint; another card's save is accepted, while an outside edit reloads the page with a notice.
+Shortcuts ignore auto-repeat and AltGr; Stop retains its repeat behavior. IME composition suspends shortcuts, Stop and Esc-to-hide.
+Idle Esc hides the panel. Hidden buttons still work; pickers cycle only when visible and enabled. Tooltips and accessibility
+accelerator keys show effective bindings. Copy last answer skips cancelled or failed partial answers and reports an empty history.
 
 ## Backup (Settings > Backup)
 

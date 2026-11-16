@@ -20,13 +20,13 @@ public static class CustomIcons
 
     public static string Folder(string dataDirectory) => Path.Combine(dataDirectory, "icons");
 
-    /// <summary>The one name a button's picture can have: its id + ".png", exactly (ids are lower case, so is the extension).</summary>
+    /// <summary>The one name a button's picture can have: its id + ".png", matched without regard to case.</summary>
     public static bool IsFileName(string? name, string? buttonId) =>
-        name is not null && ToolbarModel.IsCustomId(buttonId) && string.Equals(name, buttonId + ".png", StringComparison.Ordinal);
+        name is not null && ToolbarModel.IsCustomId(buttonId) && string.Equals(name, buttonId + ".png", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>The path of a stored picture, or null when <paramref name="fileName"/> isn't a name Hotline makes.</summary>
     public static string? IconPath(string iconsFolder, string? fileName) =>
-        fileName is { Length: > 4 } && fileName.EndsWith(".png", StringComparison.Ordinal) && IsFileName(fileName, fileName[..^4])
+        fileName is { Length: > 4 } && fileName.EndsWith(".png", StringComparison.OrdinalIgnoreCase) && IsFileName(fileName, fileName[..^4])
             ? Path.Combine(iconsFolder, fileName)
             : null;
 

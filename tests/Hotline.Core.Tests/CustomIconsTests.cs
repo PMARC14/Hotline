@@ -140,8 +140,8 @@ public sealed class CustomIconsTests : TempDirTest
     [Theory]
     [InlineData("b1.png", "b1", true)]
     [InlineData("my-button.png", "my-button", true)]
-    [InlineData("b1.PNG", "b1", false)]
-    [InlineData("B1.png", "b1", false)]
+    [InlineData("b1.PNG", "b1", true)]
+    [InlineData("B1.png", "b1", true)]
     [InlineData("b2.png", "b1", false)]
     [InlineData("../b1.png", "b1", false)]
     [InlineData("..\\b1.png", "b1", false)]
@@ -149,7 +149,7 @@ public sealed class CustomIconsTests : TempDirTest
     [InlineData("b1", "b1", false)]
     [InlineData("", "", false)]
     [InlineData(null, "b1", false)]
-    [InlineData("pin.png", "Pin", false)]
+    [InlineData("pin.png", "Pin", true)]
     public void IsFileName_is_the_button_id_dot_png_only(string? name, string id, bool expected) =>
         Assert.Equal(expected, CustomIcons.IsFileName(name, id));
 
@@ -159,7 +159,7 @@ public sealed class CustomIconsTests : TempDirTest
         Assert.Equal(Path.Combine(Icons, "b1.png"), CustomIcons.IconPath(Icons, "b1.png"));
         Assert.Null(CustomIcons.IconPath(Icons, "../b1.png"));
         Assert.Null(CustomIcons.IconPath(Icons, "C:\\x.png"));
-        Assert.Null(CustomIcons.IconPath(Icons, "b1.PNG"));
+        Assert.Equal(Path.Combine(Icons, "b1.PNG"), CustomIcons.IconPath(Icons, "b1.PNG"));
         Assert.Null(CustomIcons.IconPath(Icons, null));
         Assert.Equal(Path.Combine("data", "icons"), CustomIcons.Folder("data"));
     }
@@ -304,7 +304,7 @@ public sealed class CustomIconsTests : TempDirTest
         Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(Path.Combine(_dir, "missing.png"), Icons, "b1"));
         var source = Write("a.png", Real16);
         Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "../evil"));
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "B1"));
+        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "B 1"));
         Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, null!));
         Assert.False(Directory.Exists(Icons));
     }

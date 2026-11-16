@@ -166,7 +166,7 @@ public static partial class SettingsPackage
             foreach (var (path, data) in files)
             {
                 // Pictures and sounds are compressed already (and a stored entry keeps the import's ratio check out of the way).
-                var level = path.EndsWith(".png", StringComparison.Ordinal) || path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+                var level = path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
                             || WouldTripRatioCheck(data)
                     ? CompressionLevel.NoCompression : CompressionLevel.Optimal;
                 var entry = zip.CreateEntry(path, level);

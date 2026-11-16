@@ -10,31 +10,31 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Last_duplicate_position_decides_file_order_for_conflicts()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"items":{"left":["pin"]},"shortcuts":{"pin":"Ctrl+K","recent":"Ctrl+Q","pin":"Ctrl+Q"}}""");
+        var model = ToolbarModel.Resolve("""{"version":3,"bottom":{"left":["pin"]},"shortcuts":{"pin":"Ctrl+K","recent":"Ctrl+Q","pin":"Ctrl+Q"}}""");
         Assert.Equal("Ctrl+Q", model.ShortcutText("pin"));
         Assert.Equal("Ctrl+Q", model.EffectiveShortcuts()["recent"]);
-        Assert.Equal("Ctrl+P", model.EffectiveShortcuts()["pin"]);
+        Assert.Equal("", model.EffectiveShortcuts()["pin"]);
     }
 
     [Fact]
     public void Resolving_again_removes_stale_conflict_warnings_when_a_binding_is_freed()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"items":{"left":["pin"]},"shortcuts":{"newChat":""},"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+N"}}}""", new ChatSettings { StopShortcut = "Ctrl+N" });
+        var model = ToolbarModel.Resolve("""{"version":3,"bottom":{"left":["pin"]},"shortcuts":{"newChat":"","stop":"Ctrl+N"},"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+N"}}}""");
         Assert.Single(model.Warnings);
-        var freed = model.ResolveShortcuts(new ChatSettings());
+        var freed = ToolbarEditor.SetShortcut(model, "stop", "Esc").ResolveShortcuts();
         Assert.Equal("Ctrl+N", freed.Buttons[0].Shortcut);
         Assert.Empty(freed.Warnings);
     }
 
     [Theory]
-    [InlineData("""{"CHAT":{"SHORTCUTS":{"PIN":"Ctrl+Q"}}}""", "Ctrl+Q")]
+    [InlineData("""{"CHAT":{"SHORTCUTS":{"PIN":"Ctrl+Q"}}}""", "Ctrl+P")]
     [InlineData("{broken", "Ctrl+P")]
-    public void Legacy_read_is_case_insensitive_and_bad_settings_do_not_break_toolbar(string settings, string expected)
+    public void Legacy_settings_are_ignored_even_when_toolbar_has_no_map(string settings, string expected)
     {
         Directory.CreateDirectory(_dir);
         File.WriteAllText(Path.Combine(_dir, "settings.json"), settings);
         var path = Path.Combine(_dir, "toolbar.json");
-        File.WriteAllText(path, """{"version":2,"items":{"left":["pin"]}}""");
+        File.WriteAllText(path, """{"version":3,"bottom":{"left":["pin"]}}""");
         var load = ToolbarFile.Load(path);
         Assert.Null(load.Error);
         Assert.Equal(expected, load.Model.ShortcutText("pin"));
@@ -44,7 +44,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Case_variant_toolbar_ids_show_and_save_the_last_requested_value()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"shortcuts":{"PIN":"Ctrl+K","pin":"Ctrl+Q"}}""");
+        var model = ToolbarModel.Resolve("""{"version":3,"shortcuts":{"PIN":"Ctrl+K","pin":"Ctrl+Q"}}""");
         Assert.Equal("Ctrl+Q", model.ShortcutText("pin"));
         Assert.Equal("Ctrl+Q", model.EffectiveShortcuts()["pin"]);
         Assert.Contains(model.Warnings, w => w.Contains("pin", StringComparison.OrdinalIgnoreCase));
@@ -54,14 +54,14 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Settings_conflicts_include_defaults_restored_for_invalid_values()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"shortcuts":{"model":"Space"}}""");
-        Assert.False(ChatShortcuts.CanBind(model, new ChatSettings(), "pin", "Ctrl+M"));
+        var model = ToolbarModel.Resolve("""{"version":3,"shortcuts":{"model":"Space"}}""");
+        Assert.False(ChatShortcuts.CanBind(model, "pin", "Ctrl+M"));
     }
 
     [Fact]
     public void Absent_toolbar_map_reserves_shipped_defaults_and_editor_keeps_requested_custom_combo()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+N"}}}""");
+        var model = ToolbarModel.Resolve("""{"version":3,"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+N"}}}""");
         Assert.Null(model.Buttons[0].Shortcut);
         Assert.Equal("Ctrl+N", model.Buttons[0].RequestedShortcut);
         var moved = ToolbarEditor.Show(model, "mine", Quadrant.TopLeft);
@@ -74,10 +74,10 @@ public sealed class ShortcutHardeningTests : TempDirTest
     {
         Directory.CreateDirectory(_dir);
         var path = Path.Combine(_dir, "toolbar.json");
-        const string original = """{"version":2,"shortcuts":{"pin":"Shift+A","future":"Ctrl+K","recent":""}}""";
+        const string original = """{"version":3,"shortcuts":{"pin":"Shift+A","future":"Ctrl+K","recent":""}}""";
         File.WriteAllText(path, original);
         ToolbarFile.Save(path, ToolbarEditor.SetShortcut(ToolbarFile.Load(path).Model, "model", "Ctrl+Q"));
-        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "toolbar.json.*.bak"))));
+        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "toolbar.json", SearchOption.AllDirectories))));
         var again = ToolbarFile.Load(path).Model;
         Assert.Equal("Shift+A", again.ShortcutText("pin"));
         Assert.Equal("Ctrl+Q", again.ShortcutText("model"));
@@ -152,7 +152,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Every_default_toolbar_binding_is_allowed()
     {
-        foreach (var (id, text) in ChatShortcuts.Defaults) Assert.True(Hotkey.TryParseToolbarShortcut(text, out _), id + ": " + text);
+        foreach (var (id, text) in ChatShortcuts.Defaults) Assert.True(ChatShortcuts.TryParse(id, text, out _), id + ": " + text);
         Assert.True(Hotkey.TryParseToolbarShortcut("Ctrl+Shift+V", out _)); // only the exact editing combos are taken
     }
 
@@ -173,7 +173,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Toolbar_map_preserves_disabled_invalid_unknown_and_last_duplicate_through_editor()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"shortcuts":{"pin":"Ctrl+Q","pin":"Shift+A","recent":"","future":"Ctrl+K","model":42}}""");
+        var model = ToolbarModel.Resolve("""{"version":3,"shortcuts":{"pin":"Ctrl+Q","pin":"Shift+A","recent":"","future":"Ctrl+K","model":42}}""");
         Assert.NotEmpty(model.Warnings);
         var moved = ToolbarEditor.MoveTo(model, "pin", Quadrant.TopLeft, 0);
         using var document = JsonDocument.Parse(moved.ToJson(), new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip });
@@ -187,7 +187,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Runtime_custom_conflict_does_not_overwrite_requested_value_on_save()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"shortcuts":{},"buttons":{"one":{"text":"one","shortcut":"Ctrl+K"},"two":{"text":"two","shortcut":"Ctrl+K"}}}""");
+        var model = ToolbarModel.Resolve("""{"version":3,"shortcuts":{},"buttons":{"one":{"text":"one","shortcut":"Ctrl+K"},"two":{"text":"two","shortcut":"Ctrl+K"}}}""");
         Assert.Null(model.Buttons[1].Shortcut);
         using var document = JsonDocument.Parse(model.ToJson(), new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip });
         Assert.Equal("Ctrl+K", document.RootElement.GetProperty("buttons").GetProperty("two").GetProperty("shortcut").GetString());
@@ -205,46 +205,9 @@ public sealed class ShortcutHardeningTests : TempDirTest
     }
 
     [Fact]
-    public void Legacy_explicit_values_survive_other_settings_saves()
-    {
-        Directory.CreateDirectory(_dir);
-        var path = Path.Combine(_dir, "settings.json");
-        File.WriteAllText(path, """{"chat":{"shortcuts":{"pin":"Shift+A","recent":"Ctrl+P","newChat":"Ctrl+P","future":"Ctrl+K"}}}""");
-        var store = new SettingsStore(_dir);
-        var settings = store.Load();
-        store.Save(settings);
-        using var doc = JsonDocument.Parse(File.ReadAllText(path));
-        var map = doc.RootElement.GetProperty("chat").GetProperty("shortcuts");
-        Assert.Equal(4, map.EnumerateObject().Count());
-        Assert.Equal("Shift+A", map.GetProperty("pin").GetString());
-        Assert.Equal("Ctrl+P", map.GetProperty("newChat").GetString());
-        Assert.Equal("Ctrl+K", map.GetProperty("future").GetString());
-    }
-
-    [Fact]
-    public void Legacy_fallback_is_raw_follows_settings_and_toolbar_key_takes_precedence()
-    {
-        Directory.CreateDirectory(_dir);
-        var settingsPath = Path.Combine(_dir, "settings.json");
-        var toolbarPath = Path.Combine(_dir, "toolbar.json");
-        File.WriteAllText(settingsPath, """{"chat":{"shortcuts":{"pin":"Shift+A","recent":"","future":"Ctrl+K"}}}""");
-        File.WriteAllText(toolbarPath, """{"version":2}""");
-        var model = ToolbarFile.Load(toolbarPath).Model;
-        Assert.Equal("Shift+A", model.ShortcutText("pin"));
-        Assert.Equal("Ctrl+P", model.EffectiveShortcuts()["pin"]);
-        Assert.Equal("", model.EffectiveShortcuts()["recent"]);
-        File.WriteAllText(settingsPath, """{"chat":{"shortcuts":{"pin":"Ctrl+Q"}}}""");
-        Assert.Equal("Ctrl+Q", ToolbarFile.Load(toolbarPath).Model.ShortcutText("pin")); // read anew, never cached
-        ToolbarFile.Save(toolbarPath, model);
-        Assert.Equal("Shift+A", ToolbarFile.Load(toolbarPath).Model.ShortcutText("pin"));
-        File.WriteAllText(toolbarPath, """{"version":2,"shortcuts":{}}""");
-        Assert.Equal("Ctrl+P", ToolbarFile.Load(toolbarPath).Model.ShortcutText("pin"));
-    }
-
-    [Fact]
     public void Conflicts_resolve_only_effective_builtins_and_raw_values_survive_save()
     {
-        var model = ToolbarModel.Resolve("""{"version":2,"items":{"left":["pin"]},"shortcuts":{"recent":"Ctrl+P","pin":"Ctrl+P","model":"Space","future":"Ctrl+K"}}""");
+        var model = ToolbarModel.Resolve("""{"version":3,"bottom":{"left":["pin"]},"shortcuts":{"recent":"Ctrl+P","pin":"Ctrl+P","model":"Space","future":"Ctrl+K"}}""");
         Assert.Equal("", model.EffectiveShortcuts()["pin"]);
         Assert.Equal("Ctrl+P", model.ShortcutText("pin"));
         Assert.Equal("Ctrl+M", model.EffectiveShortcuts()["model"]);
@@ -266,8 +229,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     public void Settings_row_rejects_stop_builtin_custom_conflicts_and_reset_removes_override()
     {
         var settings = new HotlineSettings();
-        settings.Chat.StopShortcut = "Ctrl+J";
-        settings.Chat.Toolbar = ToolbarModel.Resolve("""{"version":2,"shortcuts":{},"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+K"}}}""");
+        settings.Chat.Toolbar = ToolbarModel.Resolve("""{"version":3,"shortcuts":{"stop":"Ctrl+J"},"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+K"}}}""");
         var row = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == "Bar_pin"));
         Assert.False(row.ValidateFor!(settings, "Ctrl+J"));
         Assert.False(row.ValidateFor(settings, "Ctrl+N"));
@@ -275,7 +237,6 @@ public sealed class ShortcutHardeningTests : TempDirTest
         Assert.True(row.ValidateFor(settings, "Ctrl+Q"));
         row.Set(settings, "Ctrl+Q");
         Assert.Equal("Ctrl+Q", settings.Chat.Toolbar.ShortcutText("pin"));
-        Assert.Equal("Ctrl+P", settings.Chat.Shortcuts["pin"]);
         row.Reset!(settings);
         Assert.False(settings.Chat.Toolbar.Shortcuts!.ContainsKey("pin"));
     }
@@ -284,7 +245,7 @@ public sealed class ShortcutHardeningTests : TempDirTest
     public void Backup_export_import_retains_toolbar_shortcut_map()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, "toolbar.json"), """{"version":2,"shortcuts":{"pin":"Ctrl+Q","model":""}}""");
+        File.WriteAllText(Path.Combine(_dir, "toolbar.json"), """{"version":3,"shortcuts":{"pin":"Ctrl+Q","model":""}}""");
         using var zip = new MemoryStream();
         SettingsPackage.Export(_dir, [SettingsCategory.Toolbar], zip, DateTimeOffset.UtcNow, "test");
         zip.Position = 0;

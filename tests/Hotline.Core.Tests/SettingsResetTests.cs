@@ -42,7 +42,7 @@ public sealed class SettingsResetTests : TempDirTest
         Assert.Equal(before, File.ReadAllBytes(path));
         Assert.Equal(handEdited, File.ReadAllText(connection));
         Assert.Empty(result.Removed);
-        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json"))); // other files still reset
+        Assert.Contains("toolbar.json", result.Failed); // An old toolbar awaits the upgrade task.
     }
 
     [Theory]
@@ -88,7 +88,7 @@ public sealed class SettingsResetTests : TempDirTest
     {
         var (store, s, _) = Customised();
         var toolbar = Path.Combine(_dir, "toolbar.json");
-        const string newer = """{ "version": 3, "bottom": { "left": ["pin"] } }""";
+        const string newer = """{ "version": 99, "bottom": { "left": ["pin"] } }""";
         File.WriteAllText(toolbar, newer);
         var result = SettingsReset.Reset(store, _dir, s, everything: false, Now);
         Assert.Contains("toolbar.json", result.Failed);
@@ -178,16 +178,17 @@ public sealed class SettingsResetTests : TempDirTest
     }
 
     [Theory]
-    [InlineData("7B2276657273696F6E223A322C22637573746F6D223A747275657D")] // a customised toolbar
-    [InlineData("7B2262FF007B")]                                           // broken: the backup must be byte for byte
-    public void Reset_settings_restores_the_toolbar_after_backing_it_up(string toolbarHex)
+    [InlineData("7B2276657273696F6E223A322C22637573746F6D223A747275657D", true)] // v2 awaits upgrade
+    [InlineData("7B2262FF007B", false)] // broken: backup must be byte for byte
+    public void Reset_preserves_old_toolbar_until_upgrade_and_restores_broken_toolbar_after_backup(string toolbarHex, bool oldVersion)
     {
         var (store, s, _) = Customised();
         var before = Convert.FromHexString(toolbarHex);
         File.WriteAllBytes(Path.Combine(_dir, "toolbar.json"), before);
         var (backup, _) = SettingsReset.Reset(store, _dir, s, everything: false, Now);
         Assert.Equal(before, File.ReadAllBytes(Path.Combine(backup, "toolbar.json")));
-        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json")));
+        if (oldVersion) Assert.Equal(before, File.ReadAllBytes(Path.Combine(_dir, "toolbar.json")));
+        else Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(Path.Combine(_dir, "toolbar.json")));
     }
 }
 

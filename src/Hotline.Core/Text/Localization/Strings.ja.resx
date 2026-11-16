@@ -508,6 +508,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} は 0.5、1、2、3、4 のいずれでもありません (cells は width の古い名前です)。デフォルトの幅が使用されます</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>現在のファイルのコピーを先に作成できなかったため、何も変更されませんでした ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>このページを開いている間に toolbar.json が変更されました。再読み込みされたため前回の変更は適用されませんでした。もう一度やり直してください。</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Fill available row space</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Could not back up the button rows and shortcuts.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Could not save the button rows and shortcuts.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>画像は変更されませんでした: toolbar.json を保存できませんでした。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>その他</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>ここには何もありません</value></data>
@@ -692,7 +716,7 @@
   <data name="Nav_Backup" xml:space="preserve"><value>バックアップ</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Hotline の設定を別の PC に移行するか、コピーを保持します。バックアップはチェックした項目のみを含む 1 つの .zip ファイルです。その他のデータ (チャット履歴、メモリ、ログ) は含まれません。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>ボタンの行とカスタム ボタン画像</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>ツール (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>サウンド</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 接続</value></data>
