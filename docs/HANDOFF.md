@@ -6,7 +6,7 @@ review outputs are **outside the repo**, in `~/.claude/briefs/hotline/` (the 1.0
 
 ## Contents
 
-[What Hotline is](#what-hotline-is) | [State](#state-2026-11-14) | [Open items](#open-items) |
+[What Hotline is](#what-hotline-is) | [State](#state-2026-11-16) | [S1 in progress](#s1-in-progress-branch-s1schema-freeze) | [Open items](#open-items) |
 [Next work](#next-work) | [Architecture](#architecture-map) | [Hard-won facts](#hard-won-facts-dont-relearn-these) |
 [Deferred](#deferred-not-bugs-to-rediscover-from-the-reviews) | [Process](#process-that-worked) | [Glossary](#glossary)
 
@@ -16,7 +16,7 @@ A Windows 11 app that takes over the Copilot key: a native WinUI 3 popup (acryli
 user picks: Claude Code CLI, OpenAI Codex CLI, Antigravity CLI (agy), Anthropic / Gemini / OpenAI-compatible APIs, or local
 OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.hotline` and applies live.
 
-## State (2026-11-14)
+## State (2026-11-16)
 
 - **Released:** v0.6.3 is stable on GitHub (`version.txt` says `0.6`). PR #60 is squash-merged as `ce7b7fd`; it ships the review-fix
   wave below, Fable toolbar fixes T1-T8 and a Settings nav pane that widens to its longest label. Releases use Hotline's self-signed
@@ -24,13 +24,15 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **Release channel:** PR #63 (`beb8bab`) is merged. Pushes to `main` publish GitHub prereleases; **Actions > Promote** with a tag
   makes a release stable without rebuilding. Only stable releases move sideload users: `.appinstaller` follows `releases/latest`.
   The #63 merge itself publishes the next patch as a prerelease; v0.6.3 stays stable until the owner promotes a newer release.
-- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`). The owner is uploading the earlier 0.6.3.0 bundle (Actions run 43164221390,
-  artifact `hotline-store-0.6.3.0`), built before T1-T8 and the Settings nav fix. The next upload must be **0.6.4.0 or higher**.
-  Uploads are manual; each language's listing comes from `store/listing.md` and `store/listings/`.
-- **Schema freeze (S1) is first:** owner decisions are final, reviewed with Fable 5.2, in
-  [simplification-plan.md](simplification-plan.md#owner-decisions-2026-11-12-reviewed-with-fable-52).
-- **Tests:** 2,757 Core unit tests (`dotnet test`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`; commands and the hand-test
-  checklists: [TESTING.md](TESTING.md).
+- **Microsoft Store:** **Hotline AI** (`9PMW5CR6G3BC`). Last uploaded bundle 0.3.0.0; 0.6.3.0 was never submitted. The next
+  submission is **0.7.x.0**, built from the S1 branch once the owner has hand-tested it. Uploads are manual; the owner pastes each
+  language's listing from `store/listing.md` and `store/listings/` (the "What's new" text covers 0.2.24 to 0.7 in all 17
+  languages) and reuses the 0.6.3 images in `artifacts/store/<lang>/` as they are.
+- **Schema freeze (S1) is under way** on `s1/schema-freeze`: see [S1 in progress](#s1-in-progress-branch-s1schema-freeze).
+- **Workflows:** PR #65 (`ci/actions-update`) moves every action to its Node 24 release; its CI passed on x64, ARM64 and the Store
+  build. It is **open**; merging it publishes a prerelease. GitHub's runner offers no newer runtime than `node24`.
+- **Tests:** 3,080 Core unit tests on the S1 branch (2,757 on `main`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`;
+  commands and the hand-test checklists: [TESTING.md](TESTING.md).
 - **Reviews:** 2026-11-12 whole-codebase review by Fable 5.2 and Astra (bugs), Sol and Sonnet (design, testing, simplification, merged
   into [simplification-plan.md](simplification-plan.md)). Findings were confirmed by Sol, fixed in worktrees and combined in PR #60.
 - **Review-fix wave in PR #60** (all with tests; App-only parts need the hand tests under *Open items*): attachments and links
@@ -49,6 +51,76 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **Security pass** (earlier, verified): UNC/device paths refused, history ids validated, response-size caps, chat-only isolation flags
   always applied, CLI output capped, `ShellOpen` limited, MCP `.exe` started directly, SVG `style` allow-listed, secrets redacted in logs.
 - Hotline's own Right Ctrl mode is gone (Windows' Copilot-key remap replaces it, [copilot-key.md](copilot-key.md)).
+
+### S1 in progress (branch `s1/schema-freeze`)
+
+Design: [s1-design.md](s1-design.md) (final, owner-approved 2026-11-14 and amended 2026-11-15), reasons in
+[s1-design.reasoning.md](s1-design.reasoning.md). It replaces the "Owner decisions" in [simplification-plan.md](simplification-plan.md)
+where they differ. Do not reopen it. Worker briefs and results are outside the repo: `~/.claude/briefs/hotline/s1-common.md`,
+`s1-briefs.md` and `s1-results/` (patches and worker reports).
+
+**Decisions made in this work (all in the design):**
+
+- Formats are settled, not sealed: a change that keeps every existing file valid is free at any time; a breaking change needs a
+  version bump and a conversion. One hard break is taken now.
+- No migration of old settings. The one-time upgrade replaces `settings.json` and `toolbar.json` with defaults (keeping
+  `chat.defaultConnection` and `chat.order`), rewrites connection files and `mcp.json` in the new format, and backs the originals
+  up to `backups\<stamp>-upgrade\`; it runs even if that backup fails.
+- Every pixel setting is in scaled pixels. `window.width` and `chatWidth` take a number or `"N%"`; `minWidth` 320, `maxWidth` 800.
+- Defaults come from `src/Hotline.Core/Defaults/*.json`. Missing files are recreated at startup; `.defaults\` is kept.
+- Buttons share a row's spare room (`style.fill`, default on); all default buttons are width 1.
+- Custom button ids may use either case; any command may be a bare F1-F24; only Stop may be another bare key.
+- "Save position and size as default" writes `state.json`, never `settings.json`.
+
+**Done and pushed** (each reviewed by a different vendor, confirmed findings fixed, full test run green):
+
+| Task | Content | Commit |
+|---|---|---|
+| F0 | Defaults files, JSON Schemas, fixtures | `636f843` |
+| F1 | `SafeFile`, backup sets, `IFileSystem`, `JsonMerge` | `a639739` |
+| F2 | `StateStore` | `6e0d3e1` |
+| F3 | Button fill | `93da261` |
+| S3 | Tool rules and grants, secret tokens, `mcp.json` servers only | `d78db04`, `e52b45c` |
+| S2 | `toolbar.json` v3, shortcuts with Stop, lossless save | `7c6ef61` |
+| S1 | Settings and connections v1, width, tool rules read from `settings.json` | `b25746b` |
+| Store | "What's new" for 0.7 in 17 languages | `866dc5e`, `d1e8a15` |
+
+**Left to do, in order:**
+
+1. **Wave 3.** U1 (one-time upgrade, starter files, Reset and Import on the one backup policy, export and import rules, delete
+   `BackupFiles`, `FileArchive`, `ScreenScale.Line`) and A1 (one `StateStore` for the process, saved spot in `state.json`, notes and
+   toast). Check `agent_list` for the jobs `s1-u1-upgrade` and `s1-a1-app-state` and for worktrees under `Git/hotline.worktrees/`.
+   If a job is gone, take the patch from its worktree (`git add -A`, `git diff --cached --binary HEAD`), or rerun the task from
+   its section in `s1-briefs.md`. Then: cross-vendor review, fix confirmed findings, `git apply --3way --index`, build, test, commit.
+2. **Integration edits.** Make the App create one `StateStore` and pass it everywhere if A1 did not; check that an API key stored
+   under a mixed-case connection id is reachable after the upgrade (keys now use the lower-cased id; U1 copies them).
+3. **Rename commit:** `BackendProfile` to `ConnectionProfile`, `ChatSettings.Backends` to `Connections`. Mechanical, last.
+4. **Docs and version:** [configuration.md](configuration.md) read through once against the design; `version.txt` to `0.7`;
+   translate the new interface strings (about 60 keys are English placeholders in the 16 other languages; [TRANSLATING.md](TRANSLATING.md)).
+5. **Whole-branch review** before the PR: Argon high and Sol high (Astra if the Codex 5-hour window is under 40%).
+6. **Install and check on the owner's PC.** The owner allowed a full reset of `~\.hotline` as long as the result is the default
+   setup with the connections back and working. Back the folder up first; confirm each connection still finds its API key.
+   Ask before `smoke.ps1` (keystrokes) or any screen capture; `hotline://selftest` needs `diagnostics.testLinks` and a byte-for-byte
+   restore of `settings.json`.
+7. **Store bundle 0.7.x.0**, built locally: `scripts/build-msix.sh --store --arch all --version <x>` with the identity values from
+   the repo's Actions variables (`store.yml` shows the call). Then open for the owner: the bundle folder, `store/listing.md`,
+   `store/listings/` and `artifacts/store/`.
+8. **PR** from `s1/schema-freeze` to `main`. Merging publishes a prerelease; the owner promotes it after the desktop hand tests.
+
+**Owner hand tests for S1** (desktop): the upgrade notice and backup folder; button fill at several panel widths and at 100% and
+200% scaling; width as `%` and as pixels on two screens; drag minimum; saved spot and "Back to the default spot"; Stop and other
+shortcuts set in Settings (Esc, a bare F-key); grants list and Revoke; "Move to Credential Locker"; no "Always allow" for a tool
+with an `ask` rule; the answer toast with and without `chat.notifyShowsText`.
+
+**Traps met in this work:**
+
+- Codex and agy jobs paused for quota resume by themselves at the reset, also after their work was integrated: stop them
+  (`agent_stop`) before removing a worktree.
+- A new `agents` server does not know jobs from the old store: collect from the worktree by hand; the workers' own sessions are in
+  `~/.codex/sessions/` and `~/.gemini/antigravity-cli/conversations/`.
+- A Codex worker can report "another writer" after its own multi-file patch applied in part: check the process list and file
+  times, then tell it to patch one file per call.
+- No Claude subagents for reviews this week (owner, 2026-11-15): Sol reviews Hydrogen's patches and Hydrogen reviews Sol's.
 
 ### Where things are documented (this file does not repeat them)
 
@@ -133,18 +205,12 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 
 ### Road to 1.0
 
-Owner decisions: everything below is in 1.0; the file formats are frozen from 1.0 (migrations, never breaking changes); the one
+Owner decisions: everything below is in 1.0; the file formats are settled from 1.0 (compatible changes are free, breaking ones need a conversion); the one
 exception is Windows agent connectors verification, which moves to 1.1 if they cannot be tested. Work in this order:
 
-1. **S1 schema freeze** comes first. Follow the final owner decisions in [simplification-plan.md](simplification-plan.md):
-   fixtures and JSON schemas first, then one writer and `backups\<stamp>-<reason>\<relative path>` policy, round-trip safety,
-   the one migration, then **plan step 5: Core decisions out of WinUI**. Step 5 closes the deferred test gaps:
-   `ClipboardCopy`/`SelectionReader`, `OnPanelKey` routing, attachment intake, flyout hold counting and packaging checks.
-   Unknown keys survive every save; loading never rewrites files; newer versions are never overwritten. The `toolbar.json`
-   lossless writer and version-aware saves for every family are S1 work; 0.6.3 only supplies the overwrite guard.
-   Use one `version` rule, the file stem as connection id, and `state.json` for shown flags, MCP grants and dragged sizes;
-   the support-reminder preference stays in settings.json. Apply renames, shortcut consolidation and MCP approval/secret handling
-   in the single migration. The toast-text settings key defaults to title-only (text off). Do not reopen owner decisions.
+1. **S1 schema freeze** is under way: [S1 in progress](#s1-in-progress-branch-s1schema-freeze). After it, **plan step 5:
+   Core decisions out of WinUI** (plan only so far), which closes the deferred test gaps: `ClipboardCopy`/`SelectionReader`,
+   `OnPanelKey` routing, attachment intake, flyout hold counting and packaging checks.
 2. After S1, in parallel (disjoint files): **E1** security leftovers (see *Deferred*); **F1** chat basics (edit/resend, regenerate,
    history search, pin, export, context meter); **D2** support bundle, first-run flow, accessibility; **P1** panel memory with long
    chats and notices in one style across resize and monitors (both in *Open items*).
