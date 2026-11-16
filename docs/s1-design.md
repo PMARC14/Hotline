@@ -160,7 +160,7 @@ tests replace with a fake that can fail on demand.
 | Place | `backups\<yyyyMMdd-HHmmss>-<reason>\<relative path>`; one folder per operation; `-2`, `-3` in the same second |
 | Reasons | `save`, `reset`, `import`, `upgrade` |
 | Pruning | Newest 20 `save` folders kept. Other reasons are never pruned |
-| Skipped | When the file on disk matches `state.json` `lastWritten` |
+| Skipped | For `save` only, when the file on disk matches `state.json` `lastWritten`. Reset, import and upgrade always copy |
 | Failure | No backup, no write. Exception: [the upgrade](#the-one-time-upgrade) `(R5)` |
 | Old backups | `.bak`, `.old`, `.bad`, `backups\reset-*`, `backups\import-*` stay and are never pruned |
 
