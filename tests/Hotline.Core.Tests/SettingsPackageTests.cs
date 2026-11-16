@@ -27,7 +27,7 @@ public sealed class SettingsPackageTests : TempDirTest
     private static string Wav(string marker = "") => "RIFF\0\0\0\0WAVEfmt " + marker;
     private static byte[] WavBytes(string marker = "") => Encoding.Latin1.GetBytes(Wav(marker));
 
-    private static string Conn(string id, string type = "openAiCompatible") => $"{{\"id\":\"{id}\",\"type\":\"{type}\",\"name\":\"{id}\"}}";
+    private static string Conn(string id, string type = "openAiCompatible") => $"{{\"version\":1,\"id\":\"{id}\",\"type\":\"{type}\",\"name\":\"{id}\"}}";
 
     private static void Put(string dir, string rel, string text) => PutBytes(dir, rel, Encoding.UTF8.GetBytes(text));
 
@@ -45,7 +45,7 @@ public sealed class SettingsPackageTests : TempDirTest
         Put(dir, "settings.json", SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings())));
         Put(dir, "toolbar.json", """{ "version": 2 }""");
         PutBytes(dir, "icons/my-btn.png", Png16);
-        Put(dir, "mcp.json", """{ "mcpServers": {}, "approvals": {} }""");
+        Put(dir, "mcp.json", """{ "version": 1, "mcpServers": {}, "approvals": {} }""");
         PutBytes(dir, "sounds/ding.wav", WavBytes());
         PutBytes(dir, "sounds/hotline.wav", WavBytes("b"));
         Put(dir, "connections/work.json", Conn("work"));
@@ -534,7 +534,7 @@ public sealed class SettingsPackageTests : TempDirTest
     public void A_connection_file_with_no_id_takes_its_file_name_and_one_with_a_safe_form_of_its_id_is_kept()
     {
         using var zip = Zip([
-            E("connections/noid.json", """{ "type": "local", "name": "n" }"""),
+            E("connections/noid.json", """{ "version": 1, "type": "local", "name": "n" }"""),
             E("connections/My-Conn.json", Conn("My Conn")), // the store names this file My-Conn.json
         ]);
         var result = Import(zip);
@@ -549,7 +549,7 @@ public sealed class SettingsPackageTests : TempDirTest
         FillData(Data);
         using var zip = Export(Data, [SettingsCategory.Actions, SettingsCategory.Mcp, SettingsCategory.Sounds], out _);
         Put(Target, "actions/fix.md", "MY OWN FIX");
-        Put(Target, "mcp.json", """{"mcpServers":{"mine":{"command":"x"}}}""");
+        Put(Target, "mcp.json", """{ "version": 1,"mcpServers":{"mine":{"command":"x"}}}""");
         Put(Target, "settings.json", "untouched");        // category not in the package
         Put(Target, "actions/unrelated.md", "keep me");   // not in the package
         Put(Target, "memory.md", "notes");
@@ -682,9 +682,9 @@ public sealed class SettingsPackageTests : TempDirTest
     }
 
     [Fact]
-    public void Compat_pre_v14_widths_after_a_diagnostics_edit()
+    public void V1_scaled_widths_survive_a_diagnostics_edit()
     {
-        const string original = """{"schemaVersion":13,"window":{"minWidth":600,"maxWidth":1000},"chat":{"memory":false}}""";
+        const string original = """{"version": 1,"window":{"minWidth":600,"maxWidth":1000},"chat":{"memory":false}}""";
         using var incoming = Zip([E("settings.json", original)]);
         Assert.Equal(["settings.json"], Import(incoming).Written);
         var store = new SettingsStore(Target);
@@ -694,14 +694,12 @@ public sealed class SettingsPackageTests : TempDirTest
         using var outgoing = Export(Target, [SettingsCategory.Settings], out _);
         using var archive = new ZipArchive(outgoing);
         var saved = ExportedJson(archive, "settings.json");
-        // Document the existing pre-v14 migration: 600/1000 were scaled-unit defaults,
-        // so loading replaces them with 400/1200 real-pixel defaults before exporting.
-        Assert.Equal(400, (int)saved["window"]!["minWidth"]!);
-        Assert.Equal(1200, (int)saved["window"]!["maxWidth"]!);
-        Assert.Equal(15, (int)saved["schemaVersion"]!);
+        Assert.Equal(600, (int)saved["window"]!["minWidth"]!);
+        Assert.Equal(1000, (int)saved["window"]!["maxWidth"]!);
+        Assert.Equal(1, (int)saved["version"]!);
         Assert.False((bool)saved["chat"]!["memory"]!);
         Assert.True((bool)saved["diagnostics"]!["verboseLogging"]!);
-        Assert.Contains(Directory.GetFiles(Target, "settings.json.*.bak"), path => File.ReadAllText(path) == original);
+        Assert.Contains(SettingsTestFiles.Backups(Target, "settings.json"), path => File.ReadAllText(path) == original);
     }
 
     private const string CompatToolbar = """
@@ -797,10 +795,10 @@ public sealed class SettingsPackageTests : TempDirTest
     public void Compat_partial_categories_keep_unselected_files_through_load_edit_export(SettingsCategory selected)
     {
         var source = SettingsStore.Normalize(new HotlineSettings());
-        source.Window.WidthPercent = 55;
+        source.Window.Width = new Hotline.Core.Windowing.PanelWidth(55, true);
         using var incoming = Zip([E("settings.json", SettingsStore.Serialize(source)), E("toolbar.json", CompatToolbar), ("icons/quick.png", Png16), E("actions/summarize.md", "incoming action")]);
         var existing = SettingsStore.Normalize(new HotlineSettings());
-        existing.Window.WidthPercent = 35;
+        existing.Window.Width = new Hotline.Core.Windowing.PanelWidth(35, true);
         Put(Target, "settings.json", SettingsStore.Serialize(existing));
         const string originalToolbar = """{"version":3,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
         Put(Target, "toolbar.json", originalToolbar);
@@ -809,7 +807,7 @@ public sealed class SettingsPackageTests : TempDirTest
         Assert.Equal(selected == SettingsCategory.Settings ? new[] { "settings.json" } : ["icons/quick.png", "toolbar.json"], imported.Written.Order(StringComparer.Ordinal));
         var store = new SettingsStore(Target);
         var settings = store.Load();
-        Assert.Equal(selected == SettingsCategory.Settings ? 55 : 35, settings.Window.WidthPercent);
+        Assert.Equal(selected == SettingsCategory.Settings ? 55 : 35, settings.Window.Width.Value);
         settings.Diagnostics.VerboseLogging = true;
         store.Save(settings);
         var loaded = ToolbarFile.Load(Path.Combine(Target, "toolbar.json"));
@@ -839,36 +837,26 @@ public sealed class SettingsPackageTests : TempDirTest
     [Fact]
     public void Import_ExecutableConfigurationWithoutConfirmation_WritesNothing()
     {
-        const string existingSettings = """{"window":{"widthPercent":45}}""";
-        const string existingMcp = """{"mcpServers":{},"approvals":{}}""";
+        const string existingSettings = """{ "version": 1,"window":{"widthPercent":45}}""";
+        const string existingMcp = """{ "version": 1,"mcpServers":{},"approvals":{}}""";
         Put(Target, "settings.json", existingSettings);
         Put(Target, "mcp.json", existingMcp);
 
         const string incomingSettings = """
             // custom comment
             {
+              "version": 1,
               "unknownTop": 42,
               "chat": {
                 "continueIn": [
                   { "kind": "app", "name": "Run Tool", "command": "C:\\Tools\\runner.exe --chat {file}" }
                 ],
-                "backends": [
-                  {
-                    "id": "legacy-cli",
-                    "type": "codex",
-                    "name": "Legacy Codex",
-                    "tools": "inherit",
-                    "approveAllTools": true,
-                    "cliPath": "C:\\CLI\\codex-custom.exe",
-                    "extraArgs": "--search",
-                    "args": ["--full-auto"]
-                  }
-                ]
+                "defaultConnection": "claude-dev"
               }
             }
             """;
         const string incomingMcp = """
-            {
+            { "version": 1,
               "mcpServers": {
                 "fs": {
                   "command": "npx",
@@ -884,14 +872,14 @@ public sealed class SettingsPackageTests : TempDirTest
             }
             """;
         const string incomingConn = """
-            {
+            { "version": 1,
               "id": "claude-dev",
               "type": "claudeCode",
               "name": "Claude Dev",
               "tools": "inherit",
               "approveAllTools": true,
               "cliPath": "C:\\Tools\\claude.exe",
-              "extraArgs": "--mcp-config C:\\mcp.json",
+              "extraArgs": ["--mcp-config", "C:\\mcp.json"],
               "args": ["--verbose"],
               "continueIn": [
                 { "kind": "app", "name": "Local Editor", "command": "C:\\Tools\\edit.exe {file}" }
@@ -923,7 +911,6 @@ public sealed class SettingsPackageTests : TempDirTest
         Assert.Contains("C:\\Tools\\edit.exe {file}", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("settings.json", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("C:\\Tools\\runner.exe --chat {file}", plan.ExecutionReview, StringComparison.Ordinal);
-        Assert.Contains("C:\\CLI\\codex-custom.exe", plan.ExecutionReview, StringComparison.Ordinal);
 
         Assert.False(Directory.Exists(Backups));
         Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
@@ -950,7 +937,7 @@ public sealed class SettingsPackageTests : TempDirTest
     [Fact]
     public void Import_ConfirmedExecutableConfiguration_PreservesReviewedBytesEvenIfSourceChanges()
     {
-        Put(Target, "mcp.json", """{"mcpServers":{},"approvals":{}}""");
+        Put(Target, "mcp.json", """{ "version": 1,"mcpServers":{},"approvals":{}}""");
         const string reviewedMcp = "// reviewed comment\n{\"mcpServers\":{\"s\":{\"command\":\"npx\",\"args\":[\"a\"]}},\"approvals\":{\"s/*\":\"allow\"},\"extraField\":123}";
         const string tamperedMcp = "{\"mcpServers\":{\"s\":{\"command\":\"evil.exe\"}},\"approvals\":{}}";
 
@@ -980,9 +967,9 @@ public sealed class SettingsPackageTests : TempDirTest
     public void PrepareImport_UnselectedExecutableCategories_DoNotEnterPlanOrRequireConfirmation()
     {
         using var zip = Zip([
-            E("mcp.json", """{"mcpServers":{"s":{"command":"npx"}},"approvals":{"s/*":"allow"}}"""),
-            E("connections/cli.json", """{"id":"cli","type":"claudeCode","name":"CLI","tools":"inherit","approveAllTools":true,"cliPath":"claude.exe"}"""),
-            E("settings.json", """{"chat":{"continueIn":[{"kind":"app","name":"App","command":"app.exe"}]}}"""),
+            E("mcp.json", """{ "version": 1,"mcpServers":{"s":{"command":"npx"}},"approvals":{"s/*":"allow"}}"""),
+            E("connections/cli.json", """{ "version": 1,"id":"cli","type":"claudeCode","name":"CLI","tools":"inherit","approveAllTools":true,"cliPath":"claude.exe"}"""),
+            E("settings.json", """{ "version": 1,"chat":{"continueIn":[{"kind":"app","name":"App","command":"app.exe"}]}}"""),
             E("prompts/default.md", "Safe prompt."),
         ]);
 
@@ -999,9 +986,9 @@ public sealed class SettingsPackageTests : TempDirTest
     [Fact]
     public void PrepareImport_ExistingMcpInteractingWithImportedInheritConnection_RequiresConfirmation()
     {
-        Put(Target, "mcp.json", """{"mcpServers":{"existing":{"command":"existing-server.exe"}},"approvals":{}}""");
+        Put(Target, "mcp.json", """{ "version": 1,"mcpServers":{"existing":{"command":"existing-server.exe"}},"approvals":{}}""");
         using var zip = Zip([
-            E("connections/api.json", """{"id":"api","type":"openAiCompatible","name":"API","tools":"inherit"}"""),
+            E("connections/api.json", """{ "version": 1,"id":"api","type":"openAiCompatible","name":"API","tools":"inherit"}"""),
         ]);
 
         var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Connections]);

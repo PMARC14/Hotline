@@ -634,11 +634,10 @@ public sealed partial class PopupWindow : Window
     /// <summary>The panel is wider than the bar it opened at (the chat width): a move then keeps the start width as the bar's.</summary>
     private bool _widthGrown;
 
-    /// <summary>The width the panel grows to when a chat starts (physical pixels), or null: no growth is set, a width was fixed in the
-    /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
+    /// <summary>The chat width in real pixels, or null when disabled, manually resized or no wider than the opening width.</summary>
     private int? ChatWidthPx => _fixedPx is not null ? null
-        : PopupGeometry.ChatWidthPx(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width,
-            _settings.MinWidth, _settings.MaxWidth, _bar.Width, _fixedWidth);
+        : (_fixedWidth || _settings.ChatWidth is null ? null
+            : Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, _work.Width, _scale, chat: true) is var width && width > _bar.Width ? width : null);
 
     private bool _animating;
     private double _animatedHeight;
@@ -723,8 +722,8 @@ public sealed partial class PopupWindow : Window
     public RectI WindowRect => new(AppWindow.Position.X, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
     public RectI WorkArea => _work;
     public bool IsResizeHeld => _resizeHolds > 0;
-    /// <summary>Real pixels, the same floor Normalize gives window.minWidth (the width setting is not in scaled units).</summary>
-    public int MinDragWidthPx => Math.Max(200, _settings.MinWidth);
+    /// <summary>The scaled window.minWidth converted to real pixels on this monitor.</summary>
+    public int MinDragWidthPx => Hotline.Core.Windowing.PanelWidth.MinimumPixels(_settings, _scale);
     /// <summary>A resize may go down to the bar alone (the panel as it first opens).</summary>
     public int MinDragHeightPx => Hotline.Core.Windowing.PanelPlacement.MinResizeHeight(BarPx);
     private bool _dragging;
@@ -761,7 +760,7 @@ public sealed partial class PopupWindow : Window
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
         if (widthChanged) _fixedWidth = true;
-        var h = (int)Math.Round(_settings.Height * _scale);
+        var h = (int)Math.Round(_settings.MinHeight * _scale);
         // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
         var (barX, barW) = !resized && !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
         _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
@@ -868,8 +867,8 @@ public sealed partial class PopupWindow : Window
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
-        var widthPx = _settings.Width ?? PopupGeometry.RelativeWidthPx(wa.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.Height, scale, _settings.Anchor);
+        var widthPx = Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, wa.Width, scale);
+        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.MinHeight, scale, _settings.Anchor);
         (_bar, _work, _scale) = (r, work, scale);
         _displayMonitor = monitor;
         ChooseDirection();
@@ -877,14 +876,14 @@ public sealed partial class PopupWindow : Window
         ApplyHeight(force: true);
     }
 
-    /// <summary>The width (scaled units; the setting is in real pixels) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
+    /// <summary>The width (scaled pixels) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
     /// monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
     public double OpeningWidthDip()
     {
         var (area, monitor, _) = HomeMonitor();
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        var px = Math.Min(area.WorkArea.Width, _settings.Width ?? PopupGeometry.RelativeWidthPx(area.WorkArea.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth));
-        return px / scale; // the width is in real pixels; the button cells are in scaled units
+        var px = Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, area.WorkArea.Width, scale);
+        return px / scale;
     }
 
     /// <summary>Settings' line above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>

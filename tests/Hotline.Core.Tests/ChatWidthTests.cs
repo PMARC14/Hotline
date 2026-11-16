@@ -15,46 +15,21 @@ public sealed class ChatWidthTests : TempDirTest
         return new SettingsStore(_dir).Load();
     }
 
-    // ---- settings ----
-
     [Fact]
-    public void By_default_the_panel_does_not_grow_wider()
-    {
-        var w = new HotlineSettings().Window;
-        Assert.Equal(0, w.ChatWidthPercent);
-        Assert.Null(w.ChatWidth);
-    }
+    public void By_default_the_panel_does_not_grow_wider() => Assert.Null(new HotlineSettings().Window.ChatWidth);
 
     [Theory]
-    [InlineData(0, 0)]
-    [InlineData(-5, 0)]
-    [InlineData(5, 20)]
-    [InlineData(45, 45)]
-    [InlineData(500, 90)]
-    public void The_chat_width_percent_is_zero_or_twenty_to_ninety(double given, double kept)
-        => Assert.Equal(kept, LoadJson($$"""{ "window": { "chatWidthPercent": {{given}} } }""").Window.ChatWidthPercent);
-
-    [Fact]
-    public void An_explicit_chat_width_is_clamped_and_null_stays_null()
+    [InlineData("50%")]
+    [InlineData("640")]
+    public void One_chat_width_box_accepts_pixels_or_percent(string text)
     {
-        Assert.Equal(200, LoadJson("""{ "window": { "chatWidth": 10 } }""").Window.ChatWidth);
-        Assert.Equal(16000, LoadJson("""{ "window": { "chatWidth": 99999 } }""").Window.ChatWidth);
-        Assert.Equal(700, LoadJson("""{ "window": { "chatWidth": 700 } }""").Window.ChatWidth);
-        Assert.Null(LoadJson("""{ "window": { "chatWidth": null } }""").Window.ChatWidth);
-    }
-
-    [Fact]
-    public void The_settings_page_has_both_items_and_writes_them()
-    {
-        var s = new HotlineSettings();
-        var percent = SettingsSchema.Items.OfType<NumberItem>().Single(i => i.Header == nameof(Strings.Set_ChatWidthPercent));
-        var width = SettingsSchema.Items.OfType<NumberItem>().Single(i => i.Header == nameof(Strings.Set_ChatWidth));
-        percent.Set(s, 50);
-        width.Set(s, 640);
-        Assert.Equal((50.0, 640), (s.Window.ChatWidthPercent, s.Window.ChatWidth));
-        Assert.Equal(640, width.Get(s));
-        width.Set(s, 0);
-        Assert.Null(s.Window.ChatWidth);
+        var settings = new HotlineSettings();
+        var width = SettingsSchema.Items.OfType<TextItem>().Single(i => i.Header == nameof(Strings.Set_ChatWidth));
+        Assert.True(width.Validate!(text));
+        width.Set(settings, text);
+        Assert.Equal(text, width.Get(settings));
+        width.Set(settings, "");
+        Assert.Null(settings.Window.ChatWidth);
     }
 
     // ---- which width ----

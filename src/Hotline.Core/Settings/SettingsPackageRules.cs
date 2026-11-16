@@ -232,7 +232,7 @@ public static partial class SettingsPackage
         || p.Tools == ToolMode.Inherit
         || p.ApproveAllTools
         || !string.IsNullOrWhiteSpace(p.CliPath)
-        || !string.IsNullOrWhiteSpace(p.ExtraArgs)
+        || p.ExtraArgs is { Count: > 0 }
         || p.Args is { Count: > 0 }
         || !string.IsNullOrWhiteSpace(p.WorkingDirectory)
         || (p.ContinueIn is { } list && list.Any(IsExecutableContinueTarget));
@@ -257,7 +257,7 @@ public static partial class SettingsPackage
         sb.Append($"\n  approveAllTools: {(p.ApproveAllTools ? "true" : "false")}");
         if (!string.IsNullOrWhiteSpace(p.CliPath)) sb.Append($"\n  cliPath: {p.CliPath}");
         if (!string.IsNullOrWhiteSpace(p.WorkingDirectory)) sb.Append($"\n  workingDirectory: {p.WorkingDirectory}");
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) sb.Append($"\n  extraArgs: {p.ExtraArgs}");
+        if (p.ExtraArgs is { Count: > 0 }) sb.Append($"\n  extraArgs: {CliArguments.Join(p.ExtraArgs)}");
         if (p.Args is { Count: > 0 }) sb.Append($"\n  args: {string.Join(" ", p.Args)}");
         blocks.Add(sb.ToString());
         if (p.ContinueIn is { } list)

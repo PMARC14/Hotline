@@ -59,4 +59,18 @@ internal sealed class FakeFileSystem : IFileSystem
         foreach (var file in Files.Keys.Where(p => p.StartsWith(prefix, StringComparison.OrdinalIgnoreCase)).ToArray()) Files.Remove(file);
         Directories.RemoveWhere(p => p.Equals(path, StringComparison.OrdinalIgnoreCase) || p.StartsWith(prefix, StringComparison.OrdinalIgnoreCase));
     }
+
+    public IEnumerable<string> EnumerateFiles(string path, string pattern)
+    {
+        Record(nameof(EnumerateFiles), path);
+        if (!Directories.Contains(path)) throw new DirectoryNotFoundException();
+        return Files.Keys.Where(p => string.Equals(Path.GetDirectoryName(p), path, StringComparison.OrdinalIgnoreCase)
+            && System.IO.Enumeration.FileSystemName.MatchesSimpleExpression(pattern, Path.GetFileName(p), true)).ToArray();
+    }
+
+    public void DeleteFile(string path)
+    {
+        Record(nameof(DeleteFile), path, write: true);
+        Files.Remove(path);
+    }
 }

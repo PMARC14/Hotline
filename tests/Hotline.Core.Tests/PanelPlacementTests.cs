@@ -90,14 +90,14 @@ public class PanelPlacementTests : TempDirTest
         => Assert.Equal(new RectI(100, 100, 1050, 150), PanelPlacement.Rescale(new RectI(100, 100, 700, 100), 1.0, 1.5));
 
     [Fact]
-    public void Old_vertical_position_moves_into_the_anchor()
+    public void Removed_vertical_position_is_an_unknown_key()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 12, "window": { "verticalPosition": 0.3 } }""");
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "version": 1, "window": { "verticalPosition": 0.3 } }""");
         var s = new SettingsStore(_dir).Load();
-        Assert.Equal(0.3, s.Window.Anchor.Y);
-        Assert.DoesNotContain("verticalPosition", File.ReadAllText(Path.Combine(_dir, SettingsStore.FileName)));
-        Assert.Equal((GrowDirection.Auto, (int?)null, (int?)null, "active"), (s.Window.GrowDirection, s.Window.Width, s.Window.ChatHeight, s.Window.Anchor.Monitor));
+        Assert.Equal(0.8, s.Window.Anchor.Y);
+        Assert.Contains("verticalPosition", File.ReadAllText(Path.Combine(_dir, SettingsStore.FileName)));
+        Assert.Equal((GrowDirection.Auto, new PanelWidth(40, true), (int?)null, "active"), (s.Window.GrowDirection, s.Window.Width, s.Window.ChatHeight, s.Window.Anchor.Monitor));
     }
 
     [Fact]

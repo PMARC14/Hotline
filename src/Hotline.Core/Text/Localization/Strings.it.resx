@@ -73,6 +73,14 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Solo testo, nella tua cartella .hotline.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Avvisa quando una risposta termina in background</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Una notifica di Windows quando una risposta termina mentre il pannello è nascosto o un'altra app è in primo piano. Fai clic per aprire la risposta.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} ha risposto</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} non è riuscito a completare la risposta</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Conserva la cronologia per</value></data>

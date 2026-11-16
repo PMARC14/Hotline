@@ -5,6 +5,39 @@ namespace Hotline.Core.Tests;
 
 public sealed class SettingsServiceTests : TempDirTest
 {
+    private readonly SettingsFileSystem _files = new();
+    [Theory]
+    [InlineData("{}")]
+    [InlineData("{\"window\":{\"theme\":\"dark\"}}")]
+    [InlineData("{\"version\":null}")]
+    [InlineData("{\"version\":\"1\"}")]
+    [InlineData("{\"version\":0}")]
+    [InlineData("{\"version\":0.5}")]
+    [InlineData("{\"version\":-1}")]
+    [InlineData("{\"version\":true}")]
+    [InlineData("{\"version\":{}}")]
+    public void Unusable_version_defers_live_reload_and_automatic_updates(string incomplete)
+    {
+        var service = New(out var store);
+        service.Update(s => s.Window.FontSize = 24);
+        var valid = File.ReadAllText(store.FilePath);
+        File.WriteAllText(store.FilePath, incomplete);
+        Assert.Null(store.TryRead());
+        Assert.NotNull(store.SettingsError);
+        Assert.Single(store.SettingsProblems);
+        Assert.Equal(24, service.Current.Window.FontSize);
+        Assert.NotEmpty(service.Update(s => s.Window.HideOnBlur = false, UpdateSource.Automatic));
+        Assert.Equal(24, service.Current.Window.FontSize);
+        Assert.Equal(incomplete, File.ReadAllText(store.FilePath));
+        Assert.Equal(new WindowSettings().FontSize, store.Load().Window.FontSize);
+        Assert.Single(store.SettingsProblems);
+        Assert.Equal(incomplete, File.ReadAllText(store.FilePath));
+        File.WriteAllText(store.FilePath, valid);
+        service.Reload(store.TryRead()!);
+        Assert.False(store.Load().Window.HideOnBlur);
+        Assert.Equal(24, service.Current.Window.FontSize);
+    }
+
     [Theory]
     [InlineData(false)]
     [InlineData(true)]
@@ -28,12 +61,12 @@ public sealed class SettingsServiceTests : TempDirTest
         File.WriteAllText(store.FilePath, "{");
         service.Update(s => s.Window.FontSize++, UpdateSource.Automatic);
         File.WriteAllText(store.FilePath, valid + " ");
-        store.BackupOverride = _ => throw new IOException("blocked");
+        _files.BeforeCopy = _ => throw new IOException("blocked");
         service.Reload(store.TryRead()!);
         Assert.Equal(21, service.Current.Window.FontSize);
         service.Reload(store.TryRead()!);
         Assert.Equal(21, service.Current.Window.FontSize);
-        store.BackupOverride = null;
+        _files.BeforeCopy = null;
         service.Update(s => s.General.Language = "ja");
         Assert.Equal(21, store.TryRead()!.Window.FontSize);
         Assert.Equal("ja", store.TryRead()!.General.Language);
@@ -73,11 +106,11 @@ public sealed class SettingsServiceTests : TempDirTest
         File.WriteAllText(store.FilePath, "{");
         service.Update(s => s.Window.FontSize = 23, UpdateSource.Automatic);
         File.WriteAllText(store.FilePath, valid + " ");
-        store.BackupOverride = _ => throw new IOException("blocked");
+        _files.BeforeCopy = _ => throw new IOException("blocked");
         service.Reload(store.TryRead()!);
         Assert.NotEqual(23, store.TryRead()!.Window.FontSize);
         Assert.Equal(23, service.Current.Window.FontSize);
-        store.BackupOverride = null;
+        _files.BeforeCopy = null;
         service.Reload(store.TryRead()!);
         Assert.Equal(23, store.TryRead()!.Window.FontSize);
     }
@@ -86,7 +119,7 @@ public sealed class SettingsServiceTests : TempDirTest
     {
         var service = New(out var store);
         File.AppendAllText(store.FilePath, " "); // hand edit requires a backup
-        store.BackupOverride = path => { if (path == store.FilePath) throw new IOException("blocked"); };
+        _files.BeforeCopy = path => { if (path == store.FilePath) throw new IOException("blocked"); };
         Assert.NotEmpty(service.Update(s => { s.Window.FontSize = 24; s.Chat.Backends[0].Model = "new"; }));
         var notifications = 0;
         service.Changed += () => notifications++;
@@ -94,7 +127,7 @@ public sealed class SettingsServiceTests : TempDirTest
         Assert.Equal(24, service.Current.Window.FontSize);
         Assert.Equal("new", store.TryRead()!.Chat.Backends[0].Model);
         Assert.Equal(0, notifications);
-        store.BackupOverride = null;
+        _files.BeforeCopy = null;
         Assert.Empty(service.Reset(false).Failed);
         Assert.Equal(new HotlineSettings().Window.FontSize, service.Current.Window.FontSize);
     }
@@ -114,8 +147,9 @@ public sealed class SettingsServiceTests : TempDirTest
     private SettingsService New(out SettingsStore store)
     {
         Directory.CreateDirectory(Path.Combine(_dir, "connections"));
-        File.WriteAllText(Path.Combine(_dir, "connections", "agy.json"), """{ "type": "antigravity", "name": "Gemini (Antigravity)", "agent": "hotline" }""");
-        store = new SettingsStore(_dir);
+        File.WriteAllText(Path.Combine(_dir, "connections", "agy.json"), """{ "version": 1, "type": "antigravity", "name": "Gemini (Antigravity)", "agent": "hotline" }""");
+        store = new SettingsStore(_dir, _files);
+        store.Save(store.Load());
         return new SettingsService(store, store.Load(), new FileLog(Path.Combine(_dir, "h.log")));
     }
 
@@ -191,7 +225,7 @@ public sealed class SettingsServiceTests : TempDirTest
         var service = New(out var store);
         File.WriteAllText(store.FilePath, "{ \"window\": ");
         service.Update(s => s.Window.HideOnBlur = false);
-        Assert.Contains(Directory.GetFiles(_dir, "settings.json.*.bak"), f => File.ReadAllText(f) == "{ \"window\": ");
+        Assert.Contains(SettingsTestFiles.Backups(_dir, "settings.json"), f => File.ReadAllText(f) == "{ \"window\": ");
         Assert.NotNull(store.TryRead());
     }
 

@@ -21,5 +21,5 @@ public sealed class InMemorySecretStore : ISecretStore
 
 public static class SecretKeys
 {
-    public static string ApiKey(string connectionId) => $"connection:{connectionId}:apiKey";
+    public static string ApiKey(string connectionId) => $"connection:{connectionId.ToLowerInvariant()}:apiKey";
 }

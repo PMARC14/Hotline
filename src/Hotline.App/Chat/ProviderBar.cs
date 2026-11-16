@@ -17,7 +17,7 @@ internal sealed class ProviderBar(
 
     /// <summary>Effort picker: shown (translated) label → effort level.</summary>
     private readonly Dictionary<string, string> _effortByLabel = [];
-    private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = [];
+    private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _providerIds = [];
 
     private IReadOnlyList<ModelFamily> Families(BackendProfile? profile) =>
@@ -69,7 +69,7 @@ internal sealed class ProviderBar(
     private bool _updating;
     private bool _enabled = true;
 
-    private BackendProfile? Current => settings.Current.Chat.Backends.FirstOrDefault(b => b.Id == chat.BackendId);
+    private BackendProfile? Current => settings.Current.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase));
 
     public void Initialize()
     {
@@ -114,7 +114,7 @@ internal sealed class ProviderBar(
                 _providerIds[label] = p.Id;
                 popup.ProviderBox.Items.Add(label);
             }
-            popup.ProviderBox.SelectedItem = _providerIds.FirstOrDefault(kv => kv.Value == chat.BackendId).Key;
+            popup.ProviderBox.SelectedItem = _providerIds.FirstOrDefault(kv => string.Equals(kv.Value, chat.BackendId, StringComparison.OrdinalIgnoreCase)).Key;
             popup.ProviderBox.PlaceholderText = Strings.Bar_ChooseConnection; // first run: nothing chosen yet
 
             var current = Current;
@@ -193,8 +193,8 @@ internal sealed class ProviderBar(
 
     private void OnProviderChanged()
     {
-        if (popup.ProviderBox.SelectedItem is not string label || !_providerIds.TryGetValue(label, out var id) || id == chat.BackendId) return;
-        if (settings.Current.Chat.Backends.FirstOrDefault(b => b.Id == id) is { } target && !BackendFactory.IsAvailable(target.Type))
+        if (popup.ProviderBox.SelectedItem is not string label || !_providerIds.TryGetValue(label, out var id) || string.Equals(id, chat.BackendId, StringComparison.OrdinalIgnoreCase)) return;
+        if (settings.Current.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } target && !BackendFactory.IsAvailable(target.Type))
         {
             notify(L.F(Strings.Bar_NotYet, target.Name), InfoBarSeverity.Informational);
             popup.DispatcherQueue.TryEnqueue(Refresh); // back to the current connection, after this SelectionChanged

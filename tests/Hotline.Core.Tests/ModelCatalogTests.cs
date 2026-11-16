@@ -80,6 +80,21 @@ public class ModelCatalogTests
     }
 
     [Fact]
+    public async Task Cache_ignores_connection_id_case_but_preserves_endpoint_path_case()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var (catalog, http, _, _) = New(_ => Json("""{"data":[{"id":"x"}]}"""));
+        var p = new BackendProfile { Id = "Claude", Type = BackendType.Local, Endpoint = "http://localhost/v1" };
+        var first = await catalog.GetAsync(p, false, ct);
+        p.Id = "CLAUDE";
+        Assert.Same(first, await catalog.GetAsync(p, false, ct));
+        Assert.Single(http.Requests);
+        p.Endpoint = "http://localhost/V1";
+        await catalog.GetAsync(p, false, ct);
+        Assert.Equal(2, http.Requests.Count);
+    }
+
+    [Fact]
     public async Task Results_are_cached_until_refresh_or_ttl()
     {
         var (catalog, http, _, clock) = New(_ => Json("""{"data":[{"id":"x"}]}"""));

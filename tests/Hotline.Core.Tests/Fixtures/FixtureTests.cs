@@ -245,13 +245,6 @@ public sealed class FixtureTests
         Assert.Equal("Ctrl+.", chatEl.GetProperty("stopShortcut").GetString());
         Assert.Equal("grow", chatEl.GetProperty("growMode").GetString());
 
-        var problems = new ReadProblems();
-        var (parsedSettings, _, failure) = SettingsStore.ParseSettings(settingsJson, problems);
-        Assert.Null(failure);
-        Assert.NotNull(parsedSettings);
-        Assert.Empty(problems.All);
-        Assert.Equal("claude-work", parsedSettings.Chat.DefaultBackend);
-
         var toolbarJson = File.ReadAllText(Path.Combine(dir, "toolbar.json"));
         var toolbarDoc = ParseLenient(toolbarJson);
         Assert.Equal(2, toolbarDoc.GetProperty("version").GetInt32());

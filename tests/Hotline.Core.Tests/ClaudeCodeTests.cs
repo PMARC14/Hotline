@@ -86,7 +86,7 @@ public sealed class ClaudeCodeTests : TempDirTest
 
     [Fact]
     public void Extra_args_cannot_smuggle_in_dangerous_flags()
-        => Assert.DoesNotContain(ClaudeCodeProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--dangerously-skip-permissions --allow-dangerously-skip-permissions --permission-mode bypassPermissions" }, "x"),
+        => Assert.DoesNotContain(ClaudeCodeProtocol.BuildArgs(new BackendProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-skip-permissions --allow-dangerously-skip-permissions --permission-mode bypassPermissions").ToList() }, "x"),
             a => a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a == "bypassPermissions");
 
     [Fact]

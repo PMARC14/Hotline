@@ -50,7 +50,7 @@ public sealed class ReviewFixesTests : TempDirTest
     [InlineData("--PERMISSION-MODE=acceptEdits")]
     public void Permission_flags_with_equals_are_dropped(string flag)
     {
-        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { ExtraArgs = flag, Args = [flag] }, "x").ToList();
+        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra(flag).ToList(), Args = [flag] }, "x").ToList();
         Assert.DoesNotContain(args, a => a.StartsWith("--permission-mode", StringComparison.OrdinalIgnoreCase));
         Assert.Single(args, a => a.StartsWith("--permission-prompts", StringComparison.OrdinalIgnoreCase));
         Assert.Equal("none", args[args.IndexOf("--permission-prompts") + 1]);

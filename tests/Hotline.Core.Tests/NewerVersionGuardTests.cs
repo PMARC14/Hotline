@@ -13,7 +13,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "schemaVersion": 99,
+              "version": 99,
               "unrecognizedFutureKey": "preserve-this-payload",
               "window": {
                 "fontSize": 16
@@ -47,7 +47,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "schemaVersion": 99,
+              "version": 99,
               "newField": 42
             }
             """;
@@ -78,7 +78,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = $$"""
             {
-              "schemaVersion": {{HotlineSettings.CurrentSchemaVersion}},
+              "version": {{HotlineSettings.CurrentSchemaVersion}},
               "window": {
                 "fontSize": 14
               }

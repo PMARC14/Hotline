@@ -113,9 +113,9 @@ public sealed class ConnectionOptionsTests : TempDirTest
     [Fact]
     public void Out_of_range_values_are_corrected_on_load()
     {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName),
-            """{ "chat": { "defaultBackend": "x", "backends": [ { "id": "x", "type": "local", "name": "x", "maxTokens": 0, "temperature": 9 } ] } }""");
+        Directory.CreateDirectory(Path.Combine(_dir, "connections"));
+        File.WriteAllText(Path.Combine(_dir, "connections", "x.json"),
+            """{ "version": 1, "type": "local", "name": "x", "maxTokens": 0, "temperature": 9 }""");
         var p = Assert.Single(new SettingsStore(_dir).Load().Chat.Backends, b => b.Id == "x");
         Assert.Null(p.MaxTokens);
         Assert.Equal(2, p.Temperature);

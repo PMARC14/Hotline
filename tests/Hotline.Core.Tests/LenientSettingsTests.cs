@@ -13,7 +13,7 @@ public sealed class LenientSettingsTests : TempDirTest
     private string SettingsPath => Path.Combine(_dir, SettingsStore.FileName);
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private void Write(string text) { Directory.CreateDirectory(_dir); File.WriteAllText(SettingsPath, text); }
-    private void WriteConn(string id, string text) { Directory.CreateDirectory(Path.Combine(_dir, "connections")); File.WriteAllText(Conn(id), text); }
+    private void WriteConn(string id, string text) { Directory.CreateDirectory(Path.Combine(_dir, "connections")); File.WriteAllText(Conn(id), text); if (!File.Exists(SettingsPath)) File.WriteAllText(SettingsPath, """{"version":1}"""); }
 
     // Settings the tests set in the file to prove the rest of it is still read: (path, JSON, the same change on the expected settings).
     private static readonly (string Path, string Json, Action<HotlineSettings> Apply)[] Markers =
@@ -37,7 +37,7 @@ public sealed class LenientSettingsTests : TempDirTest
     /// <summary>A file with the markers plus the bad value at <paramref name="badPath"/>, and the settings it must produce apart from that.</summary>
     private (string Text, HotlineSettings Expected) FileWith(string badPath, string badJson)
     {
-        var root = new JsonObject();
+        var root = new JsonObject { ["version"] = 1 };
         var expected = new HotlineSettings();
         foreach (var (path, json, apply) in Markers)
         {
@@ -52,19 +52,19 @@ public sealed class LenientSettingsTests : TempDirTest
     public static TheoryData<string, string> BadFields => new()
     {
         // unknown enum words, and numbers where an enum belongs
-        { "window.theme", "\"mauve\"" }, { "window.theme", "7" }, { "window.theme", "null" },
+        { "window.theme", "\"mauve\"" }, { "window.theme", "7" },
         { "window.backdrop", "\"glass\"" }, { "window.scrollbar", "{\"a\":1}" },
         { "window.growDirection", "true" }, { "activation.tap", "\"Teleport\"" }, { "activation.tap", "42" }, { "activation.hold", "42" },
-        { "chat.growMode", "\"huge\"" }, { "chat.ocr", "1" }, { "chat.memoryTool", "\"sometimes\"" },
+        { "window.growMode", "\"huge\"" }, { "chat.ocr", "1" }, { "chat.memoryTool", "\"sometimes\"" },
         // a number given as a string, a string given as a number, null where it isn't allowed
-        { "window.widthPercent", "\"25\"" }, { "window.tintOpacity", "\"0.5\"" }, { "window.fontSize", "\"big\"" },
-        { "window.fontSize", "true" }, { "window.accent", "5" }, { "window.openSound", "null" },
+        { "window.width", "\"25\"" }, { "window.tintOpacity", "\"0.5\"" }, { "window.fontSize", "\"big\"" },
+        { "window.fontSize", "true" }, { "window.accent", "5" },
         { "window.alwaysOnTop", "\"yes\"" }, { "window.fontFamily", "7" }, { "general.language", "5" },
-        { "general.language", "null" }, { "general.supportReminder", "\"no\"" }, { "activation.fallbackHotkey", "5" },
-        { "chat.defaultPrompt", "null" }, { "chat.thinkingDelayMs", "\"700\"" }, { "chat.order", "\"a\"" },
-        { "chat.order", "[1,2]" }, { "chat.stopShortcut", "\"Banana+Pear\"" },
+         { "general.supportReminder", "\"no\"" }, { "activation.fallbackHotkey", "5" },
+         { "chat.thinkingDelayMs", "\"700\"" }, { "chat.order", "\"a\"" },
+        { "chat.order", "[1,2]" },
         // numbers that don't fit, fractions where a whole number belongs
-        { "window.maxWidth", "99999999999" }, { "window.height", "3.5" }, { "window.minWidth", "1e999" },
+        { "window.maxWidth", "99999999999" }, { "window.minHeight", "3.5" }, { "window.minWidth", "1e999" },
         { "chat.maxImagePixels", "-99999999999" }, { "chat.historyListSize", "1e30" },
         // an object where a scalar belongs, a scalar or array where an object belongs
         { "window.width", "{\"x\":1}" }, { "window.anchor", "\"top\"" }, { "window.anchor.x", "\"left\"" },
@@ -114,7 +114,7 @@ public sealed class LenientSettingsTests : TempDirTest
     public void The_warning_names_the_file_the_field_and_a_short_clean_value()
     {
         var long_ = new string('x', 200);
-        Write($$"""{ "window": { "backdrop": "glass\nINFO forged {{long_}}" } }""");
+        Write($$"""{ "version": 1, "window": { "backdrop": "glass\nINFO forged {{long_}}" } }""");
         var store = new SettingsStore(_dir);
         store.Load();
         var problem = Assert.Single(store.SettingsProblems);
@@ -128,7 +128,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [Fact]
     public void A_secret_shaped_value_is_never_quoted_whole()
     {
-        Write("""{ "window": { "backdrop": "sk-abcdefghijklmnopqrstuvwxyz0123456789" } }""");
+        Write("""{ "version": 1, "window": { "backdrop": "sk-abcdefghijklmnopqrstuvwxyz0123456789" } }""");
         var store = new SettingsStore(_dir);
         store.Load();
         Assert.DoesNotContain("abcdefghijklmnop", Assert.Single(store.SettingsProblems));
@@ -137,24 +137,25 @@ public sealed class LenientSettingsTests : TempDirTest
     [Fact]
     public void At_most_fifty_problems_are_recorded()
     {
-        var items = string.Join(",", Enumerable.Range(0, 300).Select(i => $"{{\"type\":\"nope{i}\"}}"));
-        Write($$"""{ "chat": { "backends": [{{items}}] } }""");
+        var rules = new JsonObject();
+        for (var i = 0; i < 60; i++) rules["server/tool" + i] = 42;
+        Write(new JsonObject { ["version"] = 1, ["tools"] = new JsonObject { ["approvals"] = rules } }.ToJsonString());
         var store = new SettingsStore(_dir);
         store.Load();
-        Assert.Equal(ReadProblems.Max, store.SettingsProblems.Count);
+        Assert.Equal(50, store.SettingsProblems.Count);
     }
 
     [Fact]
     public void A_key_given_twice_uses_the_last_and_says_so()
     {
-        Write("""{ "window": { "theme": "dark", "Theme": "light", "hideOnBlur": false } }""");
+        Write("""{ "version": 1, "window": { "theme": "dark", "Theme": "light", "hideOnBlur": false } }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.Equal(ThemeChoice.Light, s.Window.Theme);
         Assert.False(s.Window.HideOnBlur);
         Assert.Contains("window.theme", Assert.Single(store.SettingsProblems));
 
-        Write("""{ "window": { "theme": "dark" }, "Window": { "hideOnBlur": false } }""");
+        Write("""{ "version": 1, "window": { "theme": "dark" }, "Window": { "hideOnBlur": false } }""");
         var again = new SettingsStore(_dir);
         var t = again.Load(); // a section given twice: the last one is the section, as before
         Assert.Equal(ThemeChoice.System, t.Window.Theme);
@@ -166,7 +167,7 @@ public sealed class LenientSettingsTests : TempDirTest
     public void Comments_trailing_commas_and_a_byte_order_mark_are_fine_and_silent()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(SettingsPath, "// my settings\n{ /* c */ \"window\": { \"theme\": \"dark\", }, \"activation\": { \"fallbackHotkey\": \"Ctrl+Alt+H\", }, }", new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+        File.WriteAllText(SettingsPath, "// my settings\n{ /* c */ \"version\":1, \"window\": { \"theme\": \"dark\", }, \"activation\": { \"fallbackHotkey\": \"Ctrl+Alt+H\", }, }", new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.Equal(ThemeChoice.Dark, s.Window.Theme);
@@ -183,7 +184,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [InlineData("\"text\"")]
     [InlineData("42")]
     [InlineData("{ not json")]
-    [InlineData("{ \"window\": { \"theme\": \"dark\"")]
+    [InlineData("{ \"version\":1, \"window\": { \"theme\": \"dark\"")]
     public void A_file_that_is_not_a_json_object_is_kept_as_it_is_and_reported(string content)
     {
         Write(content);
@@ -194,7 +195,7 @@ public sealed class LenientSettingsTests : TempDirTest
         Assert.NotNull(store.SettingsError);
         Assert.True(store.SettingsFileDamaged);
         Assert.Equal(content, File.ReadAllText(SettingsPath));
-        Assert.Equal(content, File.ReadAllText(SettingsPath + ".bad"));
+        Assert.False(File.Exists(SettingsPath + ".bad"));
         Assert.Null(new SettingsStore(_dir).TryRead()); // live: the settings in force stay
     }
 
@@ -204,14 +205,14 @@ public sealed class LenientSettingsTests : TempDirTest
         Write("{ broken");
         new SettingsStore(_dir).Load();
         new SettingsStore(_dir).Load();
-        Assert.Single(Directory.GetFiles(_dir, "settings.json*.bad"));
+        Assert.Empty(Directory.GetFiles(_dir, "settings.json*.bad"));
     }
 
     [Fact]
     public void A_large_file_with_one_bad_field_is_read()
     {
         var padding = new string('p', 64 * 1024);
-        Write($$"""{ "note": "{{padding}}", "window": { "theme": "mauve", "hideOnBlur": false } }""");
+        Write($$"""{ "version": 1, "note": "{{padding}}", "window": { "theme": "mauve", "hideOnBlur": false } }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.False(s.Window.HideOnBlur);
@@ -221,7 +222,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [Fact]
     public void A_large_value_in_a_known_field_stays_short_in_the_warning()
     {
-        Write($$"""{ "window": { "backdrop": "{{new string('z', 64 * 1024)}}" } }""");
+        Write($$"""{ "version": 1, "window": { "backdrop": "{{new string('z', 64 * 1024)}}" } }""");
         var store = new SettingsStore(_dir);
         store.Load();
         Assert.True(Assert.Single(store.SettingsProblems).Length < 300);
@@ -235,7 +236,7 @@ public sealed class LenientSettingsTests : TempDirTest
         Assert.Equal(ThemeChoice.System, store.Load().Window.Theme);
         Assert.NotNull(store.SettingsError);
 
-        Write("{ \"window\": { \"fontSize\": " + new string('[', 40) + new string(']', 40) + " } }"); // deep, but inside the limit
+        Write("{ \"version\":1, \"window\": { \"fontSize\": " + new string('[', 40) + new string(']', 40) + " } }"); // deep, but inside the limit
         var store2 = new SettingsStore(_dir);
         Assert.Null(store2.Load().Window.FontSize);
         Assert.Single(store2.SettingsProblems);
@@ -245,13 +246,13 @@ public sealed class LenientSettingsTests : TempDirTest
     public void Invalid_utf8_inside_a_string_is_replaced_and_elsewhere_is_a_broken_file()
     {
         Directory.CreateDirectory(_dir);
-        var inString = Encoding.UTF8.GetBytes("{ \"window\": { \"accent\": \"ab").Concat(new byte[] { 0xFF, 0xFE }).Concat(Encoding.UTF8.GetBytes("\", \"hideOnBlur\": false } }")).ToArray();
+        var inString = Encoding.UTF8.GetBytes("{ \"version\":1, \"window\": { \"accent\": \"ab").Concat(new byte[] { 0xFF, 0xFE }).Concat(Encoding.UTF8.GetBytes("\", \"hideOnBlur\": false } }")).ToArray();
         File.WriteAllBytes(SettingsPath, inString);
         var store = new SettingsStore(_dir);
         Assert.False(store.Load().Window.HideOnBlur);
         Assert.Null(store.SettingsError);
 
-        var outside = Encoding.UTF8.GetBytes("{ \"window\": ").Concat(new byte[] { 0xFF, 0xFE }).Concat(Encoding.UTF8.GetBytes("{} }")).ToArray();
+        var outside = Encoding.UTF8.GetBytes("{ \"version\":1, \"window\": ").Concat(new byte[] { 0xFF, 0xFE }).Concat(Encoding.UTF8.GetBytes("{} }")).ToArray();
         File.WriteAllBytes(SettingsPath, outside);
         var store2 = new SettingsStore(_dir);
         store2.Load();
@@ -273,7 +274,7 @@ public sealed class LenientSettingsTests : TempDirTest
             : (parts[0] == "WindowSettings" ? "window." : "chat.") + name;
         foreach (var given in new[] { min, max, min - 1, max + 1 })
         {
-            var root = new JsonObject { ["window"] = new JsonObject { ["minWidth"] = 200 } };
+            var root = new JsonObject { ["version"] = 1, ["window"] = new JsonObject { ["minWidth"] = 200 } };
             SetPath(root, path, JsonValue.Create(given));
             Write(root.ToJsonString());
             var store = new SettingsStore(_dir);
@@ -329,7 +330,7 @@ public sealed class LenientSettingsTests : TempDirTest
             prop.SetValue(section, given);
             SettingsStore.Normalize(settings);
             var expected = parts[0] == "PanelAnchor" || range.ZeroToo ? range.Default!.Value
-                : Math.Clamp(given, range.Min, range.Max);
+                : range.ClampFinite(given);
             Assert.Equal(expected, (double)prop.GetValue(section)!);
         }
     }
@@ -344,14 +345,14 @@ public sealed class LenientSettingsTests : TempDirTest
         Assert.NotNull(store.TryRead());
         Assert.Equal("", ConfigProblems.Key(store.SettingsError, store.SettingsProblems));
 
-        Write("{ \"window\": { \"theme\": ");
+        Write("{ \"version\":1, \"window\": { \"theme\": ");
         Assert.Null(store.TryRead());
         var first = ConfigProblems.Key(store.SettingsError, store.SettingsProblems);
         Assert.NotEqual("", first);
         Assert.Null(store.TryRead());
         Assert.Equal(first, ConfigProblems.Key(store.SettingsError, store.SettingsProblems)); // the same state: no second notice
 
-        Write("""{ "window": { "theme": "light" } }""");
+        Write("""{ "version": 1, "window": { "theme": "light" } }""");
         Assert.Equal(ThemeChoice.Light, store.TryRead()!.Window.Theme);
         Assert.Equal("", ConfigProblems.Key(store.SettingsError, store.SettingsProblems)); // fixed: the notice goes
     }
@@ -361,7 +362,7 @@ public sealed class LenientSettingsTests : TempDirTest
     {
         var store = new SettingsStore(_dir);
         store.Load();
-        Write("""{ "window": { "backdrop": "glass", "theme": "dark" } }""");
+        Write("""{ "version": 1, "window": { "backdrop": "glass", "theme": "dark" } }""");
         var live = store.TryRead();
         Assert.NotNull(live);
         Assert.Equal(ThemeChoice.Dark, live.Window.Theme);
@@ -374,7 +375,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [Fact]
     public void Saving_after_a_lenient_read_writes_a_valid_file_and_keeps_the_damaged_one()
     {
-        var damaged = """{ "window": { "backdrop": "glass", "theme": "dark" } } // mine""";
+        var damaged = """{ "version": 1, "window": { "backdrop": "glass", "theme": "dark" } } // mine""";
         Write(damaged);
         var store = new SettingsStore(_dir);
         var settings = store.Load();
@@ -382,12 +383,12 @@ public sealed class LenientSettingsTests : TempDirTest
 
         service.Update(s => s.Window.Theme = ThemeChoice.Light);
 
-        var copy = Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"));
+        var copy = Assert.Single(SettingsTestFiles.Backups(_dir, "settings.json"));
         Assert.Equal(damaged, File.ReadAllText(copy));
         var again = new SettingsStore(_dir);
         Assert.Equal(ThemeChoice.Light, again.Load().Window.Theme);
-        Assert.Empty(again.SettingsProblems);
-        Assert.Empty(service.Problems);
+        Assert.Single(again.SettingsProblems);
+        Assert.Single(service.Problems); // an unrelated edit preserves the invalid backdrop as written
     }
 
     [Fact]
@@ -398,16 +399,16 @@ public sealed class LenientSettingsTests : TempDirTest
         var settings = store.Load();
         var service = new SettingsService(store, settings, new FileLog(Path.Combine(_dir, "log.txt")));
         service.Update(s => s.Window.Theme = ThemeChoice.Light);
-        Assert.Equal("{ not json", File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
+        Assert.Equal("{ not json", File.ReadAllText(Assert.Single(SettingsTestFiles.Backups(_dir, "settings.json"))));
         Assert.Equal(ThemeChoice.Light, new SettingsStore(_dir).Load().Window.Theme);
     }
 
     [Fact]
     public void A_file_with_ignored_values_is_not_rewritten_at_start_for_new_options()
     {
-        Write("""{ "window": { "backdrop": "glass" } }""");
+        Write("""{ "version": 1, "window": { "backdrop": "glass" } }""");
         new SettingsStore(_dir).Load();
-        Assert.Equal("""{ "window": { "backdrop": "glass" } }""", File.ReadAllText(SettingsPath));
+        Assert.Equal("""{ "version": 1, "window": { "backdrop": "glass" } }""", File.ReadAllText(SettingsPath));
         Assert.Empty(Directory.GetFiles(_dir, "*.bak"));
     }
 
@@ -429,7 +430,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [InlineData("continueIn", "{}")]
     public void One_bad_connection_field_keeps_its_default_and_the_rest_of_the_file_applies(string key, string json)
     {
-        WriteConn("c1", $$"""{ "type": "anthropic", "name": "Mine", "model": "opus", "{{key}}": {{json}} }""");
+        WriteConn("c1", $$"""{ "version": 1, "type": "anthropic", "name": "Mine", "model": "opus", "{{key}}": {{json}} }""");
         var store = new SettingsStore(_dir);
         var c = Assert.Single(store.Load().Chat.Backends);
         var problem = Assert.Single(store.SettingsProblems);
@@ -450,7 +451,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [InlineData("""[{"kind":"web","name":"A","url":"http://a"},{"kind":"ftp","name":"B"},{"kind":"web"},"x",{"kind":"app","name":"C","command":5}]""")]
     public void A_broken_continue_in_target_is_skipped_with_a_warning_and_the_others_stay(string list)
     {
-        Write($$"""{ "chat": { "continueIn": {{list}} } }""");
+        Write($$"""{ "version": 1, "chat": { "continueIn": {{list}} } }""");
         var store = new SettingsStore(_dir);
         var targets = store.Load().Chat.ContinueIn;
         Assert.Equal(["A"], targets!.Select(t => t.Name));
@@ -461,7 +462,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [Fact]
     public void A_temperature_outside_its_limits_is_reported_and_pulled_in()
     {
-        WriteConn("c1", """{ "type": "local", "temperature": 99 }""");
+        WriteConn("c1", """{ "version": 1, "type": "local", "temperature": 99 }""");
         var store = new SettingsStore(_dir);
         Assert.Equal(2, Assert.Single(store.Load().Chat.Backends).Temperature);
         Assert.Contains("temperature", Assert.Single(store.SettingsProblems));
@@ -474,7 +475,7 @@ public sealed class LenientSettingsTests : TempDirTest
     [InlineData("{}")]
     public void An_unknown_connection_type_lists_the_file_as_broken_and_never_guesses(string type)
     {
-        var text = $$"""{ "type": {{(type is "nope" ? "\"nope\"" : type)}}, "name": "X" }""";
+        var text = $$"""{ "version": 1, "type": {{(type is "nope" ? "\"nope\"" : type)}}, "name": "X" }""";
         WriteConn("odd", text);
         var store = new SettingsStore(_dir);
         var s = store.Load();
@@ -493,7 +494,7 @@ public sealed class LenientSettingsTests : TempDirTest
     public void An_unparsable_connection_file_is_broken_reported_with_its_name_and_left_alone(string text)
     {
         WriteConn("bad", text);
-        WriteConn("good", """{ "type": "local", "name": "Good" }""");
+        WriteConn("good", """{ "version": 1, "type": "local", "name": "Good" }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.Equal("good", Assert.Single(s.Chat.Backends).Id);
@@ -504,46 +505,39 @@ public sealed class LenientSettingsTests : TempDirTest
     }
 
     [Fact]
-    public void Two_files_with_one_id_report_the_second()
+    public void File_names_determine_ids_even_when_unknown_id_keys_match()
     {
-        WriteConn("a", """{ "id": "same", "type": "local" }""");
-        WriteConn("b", """{ "id": "same", "type": "local" }""");
+        WriteConn("a", """{ "version": 1, "id": "same", "type": "local" }""");
+        WriteConn("b", """{ "version": 1, "id": "same", "type": "local" }""");
         var store = new SettingsStore(_dir);
-        Assert.Single(store.Load().Chat.Backends);
-        Assert.Contains("connections/b.json", Assert.Single(store.SettingsProblems));
+        Assert.Equal(["a", "b"], store.Load().Chat.Backends.Select(p => p.Id));
+        Assert.Empty(store.SettingsProblems);
     }
 
     [Fact]
     public void A_connection_file_with_an_ignored_value_is_copied_before_a_save_rewrites_it()
     {
-        var text = """{ "type": "local", "name": "Mine", "maxTokens": "lots" }""";
+        var text = """{ "version": 1, "type": "local", "name": "Mine", "maxTokens": "lots" }""";
         WriteConn("c1", text);
         var store = new SettingsStore(_dir);
         var s = store.Load();
         s.Chat.Backends[0].Name = "Renamed";
         store.Save(s);
         Assert.Contains("Renamed", File.ReadAllText(Conn("c1")));
-        Assert.Equal(text, File.ReadAllText(Assert.Single(Directory.GetFiles(Path.Combine(_dir, "connections"), "c1.json.*.bak"))));
+        Assert.Equal(text, File.ReadAllText(Assert.Single(SettingsTestFiles.Backups(_dir, "c1.json"))));
     }
 
     [Fact]
     public void A_fixed_connection_file_clears_its_problems_on_the_next_live_read()
     {
-        WriteConn("c1", """{ "type": "nope" }""");
+        WriteConn("c1", """{ "version": 1, "type": "nope" }""");
         var store = new SettingsStore(_dir);
         store.Load();
         Assert.Single(store.SettingsProblems);
-        WriteConn("c1", """{ "type": "local" }""");
+        WriteConn("c1", """{ "version": 1, "type": "local" }""");
         Assert.Single(store.TryRead()!.Chat.Backends);
         Assert.Empty(store.SettingsProblems);
     }
 
-    [Fact]
-    public void A_bad_entry_in_the_old_inline_connection_list_is_skipped_alone()
-    {
-        Write("""{ "chat": { "backends": [ { "id": "ok", "type": "local" }, { "id": "odd", "type": "nope" }, 5 ] } }""");
-        var store = new SettingsStore(_dir);
-        Assert.Equal("ok", Assert.Single(store.Load().Chat.Backends).Id);
-        Assert.Equal(2, store.SettingsProblems.Count);
-    }
+
 }

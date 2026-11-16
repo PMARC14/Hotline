@@ -153,7 +153,7 @@ public sealed partial class LocalizationTests : TempDirTest
     public void Language_defaults_to_windows_and_round_trips()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 8 }""");
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "version": 1 }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
         Assert.Equal(Languages.System, s.General.Language);

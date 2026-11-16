@@ -12,5 +12,7 @@ public interface IFileSystem
     /// <summary>Flushes complete contents before atomically publishing them at the destination.</summary>
     void WriteDurable(string path, byte[] bytes);
     IEnumerable<string> EnumerateDirectories(string path);
+    IEnumerable<string> EnumerateFiles(string path, string pattern);
+    void DeleteFile(string path);
     void DeleteDirectory(string path, bool recursive);
 }

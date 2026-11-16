@@ -119,7 +119,7 @@ public static class CliArguments
 
     /// <summary>
     /// Reversibly joins argument tokens into a command-line string for display and editing in Settings.
-    /// Arguments containing whitespace or starting with a quote are quoted; internal quotes and trailing
+    /// Arguments containing whitespace or quotes are quoted; internal quotes and trailing
     /// backslashes are escaped.
     /// </summary>
     public static string Join(IEnumerable<string>? args)
@@ -136,7 +136,7 @@ public static class CliArguments
 
     private static void AppendJoinedArgument(StringBuilder sb, string arg)
     {
-        bool needsQuotes = arg.Length == 0 || arg.Any(char.IsWhiteSpace) || arg.StartsWith('"');
+        bool needsQuotes = arg.Length == 0 || arg.Any(char.IsWhiteSpace) || arg.Contains('"');
         if (!needsQuotes)
         {
             sb.Append(arg);

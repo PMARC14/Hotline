@@ -30,7 +30,7 @@ public partial class App : Application
     private PromptLibrary? _prompts;
     private ModelCatalog? _models;
     private ISecretStore? _secrets;
-    private readonly HashSet<string> _pendingInvalidations = [];
+    private readonly HashSet<string> _pendingInvalidations = new(StringComparer.OrdinalIgnoreCase);
     private SettingsHost? _settingsHost;
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
@@ -125,7 +125,7 @@ public partial class App : Application
 
         var job = new ChildProcessJob(_log);
         _foreground = new ForegroundWindowTracker(_log, job.Owns);
-        _popup = new PopupWindow(settings.Window, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground);
+        _popup = new PopupWindow(settings.Window, settings.Window.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground);
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log,
             testLinksEnabled: () => _settingsService.Current.Diagnostics.TestLinks);
@@ -165,12 +165,12 @@ public partial class App : Application
         }
         // CLI chats live in the CLI's own history; Hotline keeps the messages too only for API/local connections or when asked.
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log,
-            id => settings.Chat.Backends.FirstOrDefault(b => b.Id == id) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
+            id => settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
         {
             BackendId = settings.Chat.DefaultBackend,
             // A chat Hotline kept only a record of shows its messages from the CLI's own history (chat.cliTranscripts).
             CliTranscript = (backendId, sessionId) => settings.Chat.CliTranscripts
-                && settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } owner
+                && settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } owner
                 ? CliTranscripts.Read(owner.Type, sessionId, home, backendId) : null,
         };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
@@ -213,7 +213,7 @@ public partial class App : Application
         chat.Event += e => { if (e is ConversationReset) _ = InvalidateBackend(chat.BackendId).AsTask(); };
         _settingsService.Changed += () =>
         {
-            if (chat.BackendId == lastBackend) return;
+            if (string.Equals(chat.BackendId, lastBackend, StringComparison.OrdinalIgnoreCase)) return;
             _ = InvalidateBackend(lastBackend).AsTask();
             lastBackend = chat.BackendId;
         };
@@ -239,7 +239,7 @@ public partial class App : Application
         _settingsService.ConnectionsChanged += ids =>
         {
             foreach (var id in ids) _ = InvalidateBackend(id).AsTask();
-            if (settings.Chat.Backends.All(b => b.Id != chat.BackendId)) chat.BackendId = settings.Chat.DefaultBackend;
+            if (settings.Chat.Backends.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase))) chat.BackendId = settings.Chat.DefaultBackend;
         };
         SystemTheme.Changed += () => _popup.DispatcherQueue.TryEnqueue(() =>
         {
@@ -252,11 +252,11 @@ public partial class App : Application
             {
                 // First run: a default chosen in Settings › Connections or settings.json connects the panel too. The
                 // panel's connection removed (Settings or its file): move to the default, not a blank picker.
-                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Backends.All(b => b.Id != chat.BackendId))
-                    && settings.Chat.Backends.Any(b => b.Id == settings.Chat.DefaultBackend))
-                    chat.BackendId = settings.Chat.DefaultBackend;
+                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Backends.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase)))
+                    && settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, settings.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase)) is { } def)
+                    chat.BackendId = def.Id;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
-                _popup.GrowMode = settings.Chat.GrowMode;
+                _popup.GrowMode = settings.Window.GrowMode;
                 _popup.ApplyAppearance();
                 _presenter.ApplyAppearance();
                 _providerBar.Refresh();

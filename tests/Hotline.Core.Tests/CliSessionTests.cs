@@ -34,6 +34,25 @@ public sealed class CliSessionTests : TempDirTest
 
     private HistoryStore History() => new(Path.Combine(_dir, "history"), new ManualTimeProvider());
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Connection_id_case_changes_keep_the_cli_session(bool keepTranscript)
+    {
+        var history = History();
+        var original = New(new FakeCli("Claude"), history, keepTranscript);
+        await original.SendAsync("remember this", []);
+        var cli = new FakeCli("claude");
+        var reopened = new ChatController(_ => cli, history, new ManualTimeProvider(), new FileLog(Path.Combine(_dir, "h.log")), _ => keepTranscript);
+        Assert.True(reopened.Resume(original.ConversationId));
+        var destination = reopened.DestinationVersion;
+        reopened.BackendId = "CLAUDE";
+        Assert.Equal(destination, reopened.DestinationVersion);
+        await reopened.SendAsync("continue", []);
+        Assert.Equal("session-0001", Assert.Single(cli.ResumeSeen)?.Id);
+        Assert.Equal(4, history.LoadMeta(original.ConversationId)!.MessageCount);
+    }
+
     private ChatController New(IChatBackend backend, HistoryStore? history, bool keepTranscript = true)
     {
         var c = new ChatController(id => id == backend.Id ? backend : null, history, new ManualTimeProvider(), new FileLog(Path.Combine(_dir, "h.log")),

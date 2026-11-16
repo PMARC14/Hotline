@@ -15,6 +15,8 @@ public sealed class RealFileSystem : IFileSystem
     public void CreateDirectory(string path) => Directory.CreateDirectory(path);
     public void WriteDurable(string path, byte[] bytes) => DurableFile.WriteBytes(path, bytes);
     public IEnumerable<string> EnumerateDirectories(string path) => Directory.EnumerateDirectories(path);
+    public IEnumerable<string> EnumerateFiles(string path, string pattern) => Directory.EnumerateFiles(path, pattern);
+    public void DeleteFile(string path) => File.Delete(path);
     public void DeleteDirectory(string path, bool recursive) => Directory.Delete(path, recursive);
 
     public void CopyFile(string source, string destination)

@@ -52,16 +52,16 @@ public static class BackendFactory
 public sealed class BackendCache(Func<IReadOnlyList<BackendProfile>> profiles, Func<BackendProfile, IChatBackend?> create)
 {
     private readonly Lock _gate = new();
-    private readonly Dictionary<string, IChatBackend?> _instances = [];
+    private readonly Dictionary<string, IChatBackend?> _instances = new(StringComparer.OrdinalIgnoreCase);
 
     public IChatBackend? Get(string id)
     {
         lock (_gate)
         {
             if (_instances.TryGetValue(id, out var existing)) return existing;
-            var profile = profiles().FirstOrDefault(p => p.Id == id);
+            var profile = profiles().FirstOrDefault(p => p.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (profile is null) return null;
-            return _instances[id] = create(profile);
+            return _instances[profile.Id] = create(profile);
         }
     }
 

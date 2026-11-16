@@ -83,7 +83,7 @@ public sealed class CodexTests : TempDirTest
     [Fact]
     public void Extra_args_cannot_bypass_the_sandbox()
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--search --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --yolo -s danger-full-access -c \"approval_policy\"=\"on-request\" --config=sandbox_mode=workspace-write -c model=\"o3\"" }, "x", null, []);
+        var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--search --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --yolo -s danger-full-access -c \"approval_policy\"=\"on-request\" --config=sandbox_mode=workspace-write -c model=\"o3\"").ToList() }, "x", null, []);
         Assert.Contains("model=\"o3\"", args); // other config overrides pass
         Assert.DoesNotContain(args, a => a.Contains("on-request", StringComparison.Ordinal) || a.Contains("sandbox_mode", StringComparison.Ordinal));
         Assert.Contains("--search", args);
@@ -109,7 +109,7 @@ public sealed class CodexTests : TempDirTest
     [Fact]
     public void Attached_short_flags_and_folder_flags_are_dropped_too()
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = "-sworkspace-write -csandbox_mode=\"workspace-write\" -C C:\\ --cd=D:\\ --add-dir C:\\Windows -cmodel=\"o3\"" }, "x", null, []);
+        var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("-sworkspace-write -csandbox_mode=\"workspace-write\" -C C:\\ --cd=D:\\ --add-dir C:\\Windows -cmodel=\"o3\"").ToList() }, "x", null, []);
         Assert.DoesNotContain(args, a => a.Contains("workspace-write", StringComparison.Ordinal) || a.Contains(":\\", StringComparison.Ordinal));
         Assert.DoesNotContain("-C", args);
         Assert.Contains("-cmodel=\"o3\"", args);

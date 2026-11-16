@@ -27,8 +27,8 @@ public sealed partial class SettingsWindow
     {
         var chat = _settings.Current.Chat;
         // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
-        if (chat.Backends.All(b => b.Id != _selectedConnection))
-            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends.FirstOrDefault()?.Id;
+        if (chat.Backends.All(b => !string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)))
+            _selectedConnection = chat.Backends.FirstOrDefault(b => string.Equals(b.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))?.Id ?? chat.Backends.FirstOrDefault()?.Id;
         var any = _selectedConnection is not null; // every connection can be removed; then there's nothing to act on
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
@@ -67,7 +67,7 @@ public sealed partial class SettingsWindow
             try
             {
                 // The list can have changed under this page (an external reload): a connection that vanished is simply not removed.
-                if (chat.Backends.FirstOrDefault(b => b.Id == id) is not { } target) return;
+                if (chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } target) return;
                 var dialog = new ContentDialog
                 {
                     XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
@@ -90,7 +90,7 @@ public sealed partial class SettingsWindow
             }
             catch (Exception ex) { Fail("removing a connection failed", ex); }
         };
-        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
+        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && !string.Equals(_selectedConnection, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase) };
         makeDefault.Click += (_, _) =>
         {
             try { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); }
@@ -102,7 +102,7 @@ public sealed partial class SettingsWindow
             var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
             void UpdateName() => AutomationProperties.SetName(b, L.F(delta < 0 ? Strings.Conn_MoveNamedUp : Strings.Conn_MoveNamedDown,
-                chat.Backends.FirstOrDefault(p => p.Id == _selectedConnection)?.Name ?? ""));
+                chat.Backends.FirstOrDefault(p => string.Equals(p.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase))?.Name ?? ""));
             UpdateName();
             updateOrderNames += UpdateName;
             b.Click += (_, _) =>
@@ -124,28 +124,28 @@ public sealed partial class SettingsWindow
         foreach (var p in chat.Backends)
         {
             var info = ConnectionTypes.Of(p.Type);
-            var subtitle = p.Id == chat.DefaultBackend ? L.F(Strings.Conn_DefaultSuffix, info.DisplayName) : info.DisplayName;
+            var subtitle = string.Equals(p.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase) ? L.F(Strings.Conn_DefaultSuffix, info.DisplayName) : info.DisplayName;
             list.Items.Add(new ListViewItem
             {
                 Tag = p.Id,
                 Content = new StackPanel { Spacing = 2, Children = { new TextBlock { Text = p.Name }, new TextBlock { Text = subtitle, FontSize = 12, Opacity = 0.7 } } },
             });
         }
-        list.SelectedItem = list.Items.OfType<ListViewItem>().FirstOrDefault(i => (string)i.Tag == _selectedConnection);
+        list.SelectedItem = list.Items.OfType<ListViewItem>().FirstOrDefault(i => string.Equals((string)i.Tag, _selectedConnection, StringComparison.OrdinalIgnoreCase));
         var editorHost = new StackPanel { Spacing = 8 };
         list.SelectionChanged += (_, _) =>
         {
             if (list.SelectedItem is not ListViewItem { Tag: string id }) return;
             _selectedConnection = id;
             updateOrderNames?.Invoke();
-            makeDefault.IsEnabled = id != chat.DefaultBackend;
+            makeDefault.IsEnabled = !string.Equals(id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase);
             // A connection removed by an external reload while this page was open: show no editor (never the previous one).
-            if (chat.Backends.FirstOrDefault(b => b.Id == id) is { } picked) BuildEditor(editorHost, picked);
+            if (chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } picked) BuildEditor(editorHost, picked);
             else { editorHost.Children.Clear(); makeDefault.IsEnabled = false; }
         };
         PageHost.Children.Add(list);
         PageHost.Children.Add(editorHost);
-        if (chat.Backends.FirstOrDefault(b => b.Id == _selectedConnection) is { } selected) BuildEditor(editorHost, selected);
+        if (chat.Backends.FirstOrDefault(b => string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)) is { } selected) BuildEditor(editorHost, selected);
     }
 
     /// <summary>
@@ -338,7 +338,7 @@ public sealed partial class SettingsWindow
         }
         if (info.Has(ConnectionField.ExtraArgs))
         {
-            host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
+            host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(CliArguments.Join(p.ExtraArgs), "", v => p.ExtraArgs = CliArguments.SplitExtra(v).ToList())));
             // Advanced: replaces the mode's flags (the protocol flags are always added; dangerous ones never come from here).
             host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : CliArguments.Join(p.Args), Strings.Conn_LaunchArgs_Default,
                 v => p.Args = string.IsNullOrWhiteSpace(v) ? null : CliArguments.Split(v).ToList())));

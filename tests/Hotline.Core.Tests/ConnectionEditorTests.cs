@@ -5,6 +5,34 @@ namespace Hotline.Core.Tests;
 
 public class ConnectionEditorTests
 {
+    [Theory]
+    [InlineData("remove")]
+    [InlineData("default")]
+    [InlineData("duplicate")]
+    [InlineData("move")]
+    public void Connection_operations_match_ids_without_case(string operation)
+    {
+        var chat = new ChatSettings { DefaultBackend = "CLAUDE", Backends = [new() { Id = "Claude", Name = "Claude" }, new() { Id = "Other" }] };
+        switch (operation)
+        {
+            case "remove":
+                Assert.True(ConnectionEditor.Remove(chat, "claude"));
+                Assert.Equal("Other", chat.DefaultBackend);
+                break;
+            case "default":
+                ConnectionEditor.SetDefault(chat, "claude");
+                Assert.Equal("Claude", chat.DefaultBackend);
+                break;
+            case "duplicate":
+                Assert.Equal("Claude (copy)", ConnectionEditor.Duplicate(chat, "claude").Name);
+                break;
+            case "move":
+                Assert.True(ConnectionEditor.Move(chat, "claude", 1));
+                Assert.Equal(["Other", "Claude"], chat.Order);
+                break;
+        }
+    }
+
     private static ChatSettings Chat() => new() { Backends = [new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" }] };
 
     [Fact]

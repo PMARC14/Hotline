@@ -24,18 +24,18 @@ public sealed class AppearanceSettingsTests : TempDirTest
         Assert.Null(s.Window.FontSize); // Windows default
         Assert.Null(s.Window.FontFamily);
         Assert.Equal(ScrollbarStyle.Auto, s.Window.Scrollbar);
-        Assert.Equal(GrowMode.Grow, s.Chat.GrowMode);
+        Assert.Equal(GrowMode.Grow, s.Window.GrowMode);
     }
 
     [Fact]
     public void Schema2_customized_hold_is_kept()
-        => Assert.Equal(KeyAction.CaptureWindow, LoadJson("""{ "schemaVersion": 2, "activation": { "hold": "captureWindow" } }""").Activation.Hold);
+        => Assert.Equal(KeyAction.CaptureWindow, LoadJson("""{ "version": 1, "activation": { "hold": "captureWindow" } }""").Activation.Hold);
 
     [Theory]
     [InlineData(4, 10)]
     [InlineData(99, 32)]
     public void Font_size_is_clamped(int value, int expected)
-        => Assert.Equal(expected, LoadJson($$"""{ "window": { "fontSize": {{value}} } }""").Window.FontSize);
+        => Assert.Equal(expected, LoadJson($$"""{ "version": 1, "window": { "fontSize": {{value}} } }""").Window.FontSize);
 
     [Fact]
     public void Theme_tokens_follow_font_settings()
@@ -56,13 +56,11 @@ public sealed class AppearanceSettingsTests : TempDirTest
     [Fact]
     public void Number_boxes_step_up_from_automatic_and_clamp_instead_of_switching_off()
     {
-        var width = SettingsSchema.Items.OfType<NumberItem>().Single(i => i.Header == nameof(Strings.Set_FixedWidth));
         var chat = SettingsSchema.Items.OfType<NumberItem>().Single(i => i.Header == nameof(Strings.Set_ChatHeight));
         var s = new HotlineSettings();
-        width.Set(s, 10);
         chat.Set(s, 10);
-        Assert.Equal((200, 60), (s.Window.Width, s.Window.ChatHeight));
-        width.Set(s, 0);
-        Assert.Null(s.Window.Width);
+        Assert.Equal(60, s.Window.ChatHeight);
+        chat.Set(s, 0);
+        Assert.Null(s.Window.ChatHeight);
     }
 }

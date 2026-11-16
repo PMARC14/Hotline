@@ -3,9 +3,13 @@
 Everything lives in `%USERPROFILE%\.hotline` and applies **live** when you save a file (the settings window edits the
 same files). Comments and trailing commas are allowed.
 
+## Contents
+
+[Settings](#settingsjson) | [Connections](#connectionsidjson) | [CLI chats](#chats-with-a-cli-agy-claude-code-codex) | [Continue in](#continue-in-chat-apps-and-web-pages) | [Tools](#mcpjson-tools-for-api-connections) | [Quick actions](#quick-actions-actionsnamemd) | [Moving and resizing](#moving-and-resizing-the-panel) | [Toolbar](#toolbarjson) | [Backup](#backup-settings--backup) | [Codex](#codex) | [agy permissions](#agy-permissions) | [App Actions](#app-actions-click-to-do) | [Links](#links) | [Glossary](#glossary)
+
 | File | What |
 |---|---|
-| `settings.json` | General options (window, appearance, chat, key actions), `chat.order` (Provider dropdown order) and `chat.defaultBackend` |
+| `settings.json` | General options (window, appearance, chat, key actions), `chat.order` (Provider dropdown order) and `chat.defaultConnection` |
 | `connections\<id>.json` | One file per AI connection. Add a connection by dropping in a file; remove one by deleting it. A new install has none (the panel offers the CLIs it finds); every connection can be removed |
 | `prompts\<name>.md` | System prompts (`default.md` is created on first run) |
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
@@ -21,14 +25,10 @@ same files). Comments and trailing commas are allowed.
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
 | `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
 | `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
-| `settings.json.<time>.bak` | The previous settings.json (`yyyyMMdd-HHmmss`), kept when Hotline replaces a file it did not write itself (a hand edit it rewrites, a damaged file, an older run's file) |
-| `settings.json.bad` | The syntax-damaged settings.json found at startup (a second copy is `settings.json.<time>.bad`) |
-| `connections\<id>.json.<time>.bak` | The previous connection file, kept when Settings rewrites a hand-edited file or removes a connection. A failed backup or deletion keeps the file and its API key |
+| `backups\<yyyyMMdd-HHmmss>-save\` | Settings and connection originals from one save operation, under their relative paths; newest 20 save folders are kept |
 | `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it |
 | `backups\<yyyyMMdd-HHmmss>-save\toolbar.json` | Toolbar originals preserved before changed saves; newest 20 save sets kept |
 | `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
-
-**An old inline connection list** (a `chat.backends` array in `settings.json`, from before connections were files) is split into `connections\` files the first time such a file is read; `settings.json` is copied to a stamped `.bak` first and the connection files are never overwritten.
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current one and
 Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset settings** puts
@@ -43,17 +43,19 @@ reuses its saved key.
 
 ## settings.json
 
+The frozen format has `"version": 1`. Defaults come from the embedded `Defaults/settings.json`.
+Missing values and `null` use those defaults in memory. Loading creates no files, backups or directories.
+
 | Key | Default | Meaning |
 |---|---|---|
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
-| `general.supportReminder` | `true` | Shows the "Enjoying Hotline?" donation note once, at the top of the panel the next time you open it after an answer, then turns itself off. Settings › About switches it back on |
-| `window.widthPercent` / `minWidth` / `maxWidth` | `40` / `400` / `1200` | Panel width at opening: % of the screen's **real pixels**, clamped to `minWidth`/`maxWidth` (also **real pixels**: the owner's defaults, 400 and 1200). Windows' display scaling is ignored: the same screen gives the same pixel width at 100% and at 200%. Scaling still decides how big buttons and text are (a cell stays 40 scaled units), so a narrow panel simply moves buttons into the "..." box. Settings > Window shows a note above the button rows with this screen's pixels, the scaling and the scaled interface size. Heights (`height`, `chatHeight`) stay in scaled units |
-| `window.height` / `maxHeightPercent` | `0` / `60` | Minimum height (0 = just the message bar) and how much of the screen it may grow to |
-| `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom (`y` was `window.verticalPosition` before 0.3) |
-| `window.width` | `null` | Panel width in real pixels (200-16000; a resize by hand saves it as pixels); `null` = the `widthPercent` rule. A width you saved yourself is kept |
+| `general.supportReminder` | `true` | Preference for showing the support reminder |
+| `window.minHeight` / `maxHeightPercent` | `0` / `60` | Minimum height in scaled pixels (0 fits the message bar), and maximum height as a percentage of the work area |
+| `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom  |
+| `window.width` | `"40%"` | Opening width: a number of scaled pixels (200–4000) or a string `"N%"` (20–90, decimals allowed), clamped to the width limits and available work area |
+| `window.minWidth` / `maxWidth` | `320` / `800` | Width clamps in scaled pixels (200–4000); the maximum cannot be below the minimum |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
-| `window.chatWidthPercent` | `0` | The panel grows this wide (% of the screen, 20-90, clamped to `minWidth`..`maxWidth`) when a chat starts and shrinks back on a new chat, around its centre. `0` = it keeps its width; a value no wider than the opening width does the same |
-| `window.chatWidth` | `null` | The chat width in real pixels (200-16000, kept within `minWidth`..`maxWidth`, as the percentage is); `null` = `chatWidthPercent`. A fixed `window.width` (a resize by hand saves one) or a panel you resized this opening never grows, like a manual height |
+| `window.chatWidth` | `null` | Chat width in the same number-or-percent forms as `width`. Null keeps the opening width; chat only grows when this resolves wider. Resizing this opening keeps the manual width |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
 | `window.backdrop` | `acrylicThin` | `acrylic`, `acrylicThin`, `mica`, `solid` |
@@ -63,14 +65,15 @@ reuses its saved key.
 | `window.hideOnBlur` / `alwaysOnTop` | `true` / `true` | Hide when you click elsewhere; keep on top |
 | `window.fontSize` / `fontFamily` | Windows default / Segoe UI Variable | Text size (10–32; empty follows Windows' text size) and font |
 | `window.scrollbar` | `auto` | `auto` (appears when you scroll or point at the right edge), `visible`, `hidden` |
-| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice`: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Needs the microphone allowed and Settings › Privacy & security › Speech › Online speech recognition on. Settings › General › **Voice input** switches the long press between `voice` and `newChat` |
+| `activation.tap` / `hold` | `togglePopup` / `newChat` | Copilot key short / long press. Also `showPopup`, `captureWindow`, `regionSelect`, `voice`, `none`. `voice`: talk while you hold the key, let go to stop (Esc cancels); as the short press it starts/stops. Needs the microphone allowed and Settings › Privacy & security › Speech › Online speech recognition on. Settings › General › **Long press** selects the Hold action |
 | `activation.fallbackHotkey` | `null` | Extra hotkey, e.g. `"Ctrl+Alt+H"` |
-| `chat.defaultBackend` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
-| `chat.order` | all | Provider dropdown order (connection ids); unlisted connections follow by name |
+| `chat.defaultConnection` | empty | Connection that answers by default (its `id`). Empty on a new install: the panel opens on a "Choose how Hotline connects" card and runs no CLI until one is picked |
+| `chat.order` | `[]` | Provider dropdown order (connection ids); unlisted connections follow by name |
 | `chat.defaultPrompt` | `default` | System prompt used by connections that don't pick one |
-| `chat.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
+| `window.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.notifyWhenDone` | `true` | A Windows notification when an answer finishes while the panel is hidden or another app is in front; clicking it opens the answer |
+| `chat.notifyShowsText` | `false` | Include answer text in completion notifications; off shows the chat title only |
 | `chat.thinkingIndicator` | `true` | While an answer is on its way but no text has come for `chat.thinkingDelayMs`, the cursor spins (so a slow model doesn't look stalled) |
 | `chat.thinkingDelayMs` | `700` | How long without new text before the cursor spins (0–10000 ms). Not in the Settings window |
 | `chat.historyListSize` | `300` | How many saved chats the history list reads (10–5000). Not in the Settings window |
@@ -85,6 +88,7 @@ reuses its saved key.
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: also permits the restricted Ctrl+C fallback described below (opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
 | `diagnostics.testLinks` | `false` | Enables the diagnostic protocol links (`hotline://demo`, `hotline://selftest`, `hotline://grips`). Not in the Settings window |
+| `tools.approvals` | `{}` | String-to-string map keyed by `server/tool` or `server/*`; spelling and values are kept as written. Tool policy interprets the words |
 
 **Selection clipboard fallback.** Ctrl+C is sent only when UI Automation reports no text pattern, and never to terminals
 (Windows Terminal, console hosts, PuTTY, WezTerm, Alacritty, mintty, ConEmu and similar), remote desktop clients, virtual machine
@@ -99,23 +103,22 @@ process, without attaching their text. A changed clipboard from another process 
 owner are checked again before restoration. Copies arriving after that watch, copies with no identifiable owner,
 and a clipboard that cannot be reopened for restoration remain unrestored. The target's copy can appear in clipboard history.
 
-settings.json is schema version 15. Upgrading a file below 14 converts widths from scaled units to real pixels: the old default
-`minWidth` 600 / `maxWidth` 1000 become 400 / 1200, other limits keep their numbers, and saved `width` / `chatWidth` are cleared (one
-notice; check Settings > Window). A lower version alone does not rewrite the file; a missing option or a Settings save does. An old
-`activation.copilotKey` and `window.layout` are dropped then ([copilot-key.md](copilot-key.md)).
+**Widths and pixels.** Pixel settings use scaled pixels (DIPs). At 200% scaling, 640 scaled pixels occupy
+1280 real pixels. Percent widths use the monitor's work area before the scaled-pixel minimum and maximum apply.
+Settings › Window has one opening-width box and one optional chat-width box; each accepts either form.
 
-**Files from a newer Hotline.** When `settings.json` has a `schemaVersion` greater than 15, Hotline reads it leniently so settings remain usable in memory, but refuses to overwrite the file on save (connection files continue to save separately). Update Hotline, or edit the file by hand.
+**Safe edits.** Saving changes only values edited in memory, retaining unknown keys at every level and their order.
+An unchanged file stays byte-identical, including comments; comments are discarded when that file changes.
+Hotline never adds `$schema`; a hand-added one survives. Removed v0.6 fields are unknown keys, never migrated by the loader.
+A settings file without `version` uses defaults with one problem line and stays untouched; the separate upgrade handles it.
 
-**Nothing is replaced without a copy.** Before Hotline overwrites settings.json or a connection file whose content would change, and
-that is not exactly what Hotline itself last wrote, it copies it to `<file>.<time>.bak` (never over an older copy; the newest 10 per
-file are kept). If the copy can't be made (disk full, locked) that file is left as it is and the panel and Settings › Advanced list
-the problem. Hotline's own output replacing Hotline's own output makes no copies.
+**Newer files.** Settings and connection files with `version` above 1 load as far as possible and are never overwritten
+or deleted. Settings and connection files are guarded independently.
 
-**A connection keeps its file.** A connection is saved back to the file it was read from, whatever that file is called or whatever
-`id` it holds (`mine.json` with `"id": "local"` stays `mine.json`); only a new connection gets `<id>.json` (characters other than
-letters, digits, `-`, `_` and `.` become `-`). Two connections that would share one file (`work a` and `work-a`) are not allowed:
-the second is not saved and a problem is listed. Removing a connection in Settings deletes its own file; a file you drop in
-while Hotline runs is picked up before the next save and is never deleted unless you remove that connection.
+**Backups.** Each save operation shares one `backups/<yyyyMMdd-HHmmss>-save/` folder, keeping the original relative paths.
+Same-second folders gain `-2`, `-3`, and so on. Only the newest 20 save folders are pruned; other backup reasons and old backups stay.
+A file matching its last-written hash in `state.json` needs no replacement backup. A failed backup prevents that file's write.
+Removing a connection always backs up its original first; a failed backup or deletion retains the file and its ownership.
 
 ### Broken files
 
@@ -125,15 +128,21 @@ and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the
 
 | File | What happens |
 |---|---|
-| `settings.json`, one value wrong (a mistyped word for an option, text where a number belongs, `null`, a number too large, an object where a value belongs) | That one setting keeps its default; every other setting applies. The file is not rewritten. A value outside the allowed range is reported too and pulled in to the nearest allowed value. A key given twice uses the last one |
-| `settings.json`, not a JSON object, empty, or a syntax error (also a half-saved file) | At startup: defaults run in memory and the file is copied to `settings.json.bad` (not copied again while it has the same text). While Hotline runs: the settings in force stay and the problem is reported once. The file itself is left as it is until you change something in Settings; that writes a valid file and first keeps the damaged one as `settings.json.<time>.bak` |
+| `settings.json`, one value wrong (a mistyped word for an option, text where a number belongs, a number too large, an object where a value belongs) | That one setting keeps its default; every other setting applies. The file is not rewritten. A value outside the allowed range is reported too and pulled in to the nearest allowed value. A key given twice uses the last one |
+| `settings.json`, not a JSON object, empty, or a syntax error (also a half-saved file) | Startup uses defaults in memory; live reload keeps the settings in force. Loading writes nothing. An explicit Settings edit can replace a broken file after backing it up in the save folder |
 | `connections\<id>.json`, one value wrong | That value keeps its default (a wrong `approveAllTools` is off, a wrong `tools` is chat-only); the connection loads |
-| `connections\<id>.json`, unreadable, not an object, an unknown `type`, or an id already used by another file | The file is not used and not touched (never overwritten or deleted); the notice names it. A file with an ignored value is copied to `<id>.json.<time>.bak` before Settings rewrites it |
+| `connections\<id>.json`, unreadable, not an object, an unknown `type`, or an invalid file-name id | The file is not used and not touched (never overwritten or deleted); the notice names it. An explicit edit preserves ignored fields unless that field itself changes; the original is kept in the save backup set |
 | `mcp.json` | A server entry or approval of the wrong kind is skipped alone (an unknown approval word counts as "deny", with a warning). A syntax error or a key given twice makes the whole file unreadable: no servers run and the file is left as it is |
 | `prompts\*.md`, `actions\*.md` | A file that is locked, too large (actions), unreadable or badly named is skipped; the rest are listed. A prompt that can't be read falls back to `default.md` |
 | `toolbar.json` | See *toolbar.json* below |
 
 ## connections\<id>.json
+
+Each file has `"version": 1`. The file stem is the connection id, compared without case; no `id` key is written.
+Ids are 1–64 ASCII letters, digits, dots, underscores or hyphens. Windows device names, trailing dots, `.` and `..`
+are refused. Invalid ids are never rewritten into a different name. Credential Locker keys use the lower-cased id.
+New files omit unset options. Existing files retain unknown keys and unchanged values, including explicit nulls.
+
 
 | Key | Applies to | Meaning |
 |---|---|---|
@@ -148,7 +157,7 @@ and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the
 | `workingDirectory` | agy, Claude Code, Codex | Folder for `inherit` mode (empty = your user folder) |
 | `approveAllTools` | agy, Claude Code, Codex | ⚠ Dangerous: auto-approve every tool request (inherit mode only; agy/Claude Code `--dangerously-skip-permissions`, Codex `--dangerously-bypass-approvals-and-sandbox`). Settings › AI connections asks before turning it on |
 | `args` | agy, Claude Code, Codex | Settings: *Launch flags (advanced)*. Replaces Hotline's usual extra launch flags for the mode. The stream/print flags Hotline needs, and in chat-only mode the flags that keep the program from using its own tools, are always added; flags that approve tools or skip permission checks (`--allowedTools`, `--yolo`, `--trust`, …) are dropped from this list: only `approveAllTools` turns them on |
-| `extraArgs` | agy, Claude Code, Codex | Added on top, e.g. Claude Code `--mcp-config C:\mcp\servers.json`, Codex `--search` or `-c model_verbosity="low"` (Codex: sandbox, approval and folder flags are dropped) |
+| `extraArgs` | agy, Claude Code, Codex | List of individual argument strings, e.g. `["--search", "-c", "model_verbosity=low"]`. Arguments containing spaces remain one argument; permission and isolation filters still apply |
 | `keepCliSessions` | agy, Claude Code, Codex | Default `true`: each Hotline chat is one conversation in the CLI's own history, grouped under **Hotline** (see *Chats with a CLI* below), resumed after a restart and from Recent chats. `false`: Hotline keeps the chat and replays it to a new CLI session (Claude Code then keeps nothing; agy always records its runs) |
 | `keepInHotline` | agy, Claude Code, Codex | Default `false`: with `keepCliSessions`, Hotline keeps only a small record of the chat (title, connection, session ID, folder). `true`: also its messages in `history\`. Reopened, a record-only chat still shows its messages: they're read from the CLI's own history (`chat.cliTranscripts`) |
 | `continueIn` | any | This connection's own "Continue this chat in" targets, replacing `chat.continueIn`; `[]` = none; missing = the shared list |
@@ -432,3 +441,10 @@ in `settings.json`, `hotline://demo` shows an example conversation, `hotline://g
 `hotline://selftest` renders a scripted conversation off-screen and builds every settings page (used by the smoke test; its variants
 are in [TESTING.md](TESTING.md)). Protocol `hotline://key` links never start or stop voice input; when a key action is set to `voice`,
 a protocol press opens the panel (without reading the selection) and dictation requires a physical key press.
+
+## Glossary
+
+- **DIP / scaled pixel:** Windows interface unit; multiply by monitor scale to get real pixels.
+- **Work area:** monitor area available above the taskbar.
+- **Connection id:** file stem of a connection, compared without case.
+- **Backup set:** originals replaced by one operation, kept together under `backups/`.

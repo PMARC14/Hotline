@@ -30,7 +30,7 @@ public sealed class SettingsResetTests : TempDirTest
         var path = store.FilePath;
         var connection = store.SourcePath(local)!;
         var before = File.ReadAllBytes(path); // exactly what this process last wrote: Save would skip its own backup
-        var handEdited = """{ "id": "local-model", "type": "local", "name": "Hand edited", "extra": "keep" }""";
+        var handEdited = """{ "version": 1, "id": "local-model", "type": "local", "name": "Hand edited", "extra": "keep" }""";
         File.WriteAllText(connection, handEdited);
         var result = SettingsReset.Reset(store, _dir, settings, everything: false, Now, (file, to) =>
         {

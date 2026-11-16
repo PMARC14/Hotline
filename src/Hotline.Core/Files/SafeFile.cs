@@ -46,9 +46,11 @@ public sealed class SafeFile(IFileSystem? fileSystem = null)
             ReadOnlyMemory<byte> json = bytes;
             if (json.Span.StartsWith(new byte[] { 0xef, 0xbb, 0xbf })) json = json[3..];
             using var document = JsonDocument.Parse(json, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
-            return document.RootElement.ValueKind == JsonValueKind.Object &&
-                   document.RootElement.TryGetProperty("version", out var found) &&
-                   found.ValueKind == JsonValueKind.Number && found.TryGetDouble(out var number) && number > version;
+            if (document.RootElement.ValueKind != JsonValueKind.Object) return false;
+            JsonElement? found = null;
+            foreach (var member in document.RootElement.EnumerateObject())
+                if (member.Name.Equals("version", StringComparison.OrdinalIgnoreCase)) found = member.Value;
+            return found is { ValueKind: JsonValueKind.Number } v && v.TryGetDouble(out var number) && number > version;
         }
         catch (JsonException) { return false; }
     }

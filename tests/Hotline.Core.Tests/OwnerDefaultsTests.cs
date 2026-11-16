@@ -28,7 +28,7 @@ public sealed class OwnerDefaultsTests
     public void Default_window_sizes_are_the_owners()
     {
         var w = new HotlineSettings().Window;
-        Assert.Equal((40.0, 60.0, 400, 1200), (w.WidthPercent, w.MaxHeightPercent, w.MinWidth, w.MaxWidth));
+        Assert.Equal((new PanelWidth(40, true), 60.0, 320, 800), (w.Width, w.MaxHeightPercent, w.MinWidth, w.MaxWidth));
         Assert.Equal((0.5, 0.8), (w.Anchor.X, w.Anchor.Y));
     }
 }

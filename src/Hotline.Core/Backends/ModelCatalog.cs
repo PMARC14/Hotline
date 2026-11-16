@@ -22,7 +22,7 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
 
     public async Task<IReadOnlyList<ModelInfo>> GetAsync(BackendProfile p, bool refresh, CancellationToken ct)
     {
-        var key = $"{p.Type}|{p.Id}|{p.Endpoint}|{p.CliPath}";
+        var key = $"{p.Type}|{p.Id.ToLowerInvariant()}|{p.Endpoint}|{p.CliPath}";
         if (!refresh && _cache.TryGetValue(key, out var hit) && clock.GetUtcNow() - hit.At < Ttl) return hit.Models;
         var models = await FetchAsync(p, ct);
         _cache[key] = (clock.GetUtcNow(), models);

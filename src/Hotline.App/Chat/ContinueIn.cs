@@ -26,7 +26,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
         // The chat's own CLI comes from its connection, with or without a conversation yet (CliHandoff.Choices). Its
         // CLI conversation counts only while the chat is still on that connection: after a switch, later turns aren't in
         // it, so the chat goes over as a handoff instead.
-        var own = chat.CurrentSession is { } s && s.BackendId == chat.BackendId ? s : ((CliSession Session, string BackendId)?)null;
+        var own = chat.CurrentSession is { } s && string.Equals(s.BackendId, chat.BackendId, StringComparison.OrdinalIgnoreCase) ? s : ((CliSession Session, string BackendId)?)null;
         var profile = Profile(chat.BackendId);
         var exes = new Dictionary<BackendType, (BackendProfile Profile, string Exe)>();
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
@@ -126,7 +126,7 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
 
     private void CopyChat(string title) => MarkdownRenderer.SetClipboardText(CliHandoff.Markdown(title, chat.Messages));
 
-    private BackendProfile? Profile(string id) => settings.Chat.Backends.FirstOrDefault(b => b.Id == id);
+    private BackendProfile? Profile(string id) => settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase));
 
     private static string? Locate(BackendProfile p)
     {

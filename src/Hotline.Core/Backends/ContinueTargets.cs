@@ -17,7 +17,11 @@ public sealed record ContinueTarget(ContinueKind Kind, string Name,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Url = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Command = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Model = null,
-    bool CopyChat = false);
+    bool CopyChat = false)
+{
+    [JsonExtensionData]
+    public Dictionary<string, System.Text.Json.JsonElement>? ExtensionData { get; init; }
+}
 
 /// <summary>The values a target's placeholders take: {chat}, {last}, {file}, {model}.</summary>
 public sealed record ContinueValues(string Chat, string Last, string? File, string Model);

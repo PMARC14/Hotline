@@ -43,7 +43,7 @@ public static class ChatShortcuts
         return result;
     }
 
-    // Kept until the parallel settings task removes its legacy reader and normalizer.
+    /// <summary>The same, with Stop given apart from the other entries.</summary>
     public static Dictionary<string, string> Normalize(IEnumerable<KeyValuePair<string, string>>? entries, string stopShortcut,
         Action<string>? warn = null) => Normalize((entries ?? []).Where(p => !p.Key.Equals("stop", StringComparison.OrdinalIgnoreCase))
             .Append(new("stop", stopShortcut)), warn);

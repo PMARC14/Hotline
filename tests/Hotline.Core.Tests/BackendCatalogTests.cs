@@ -8,6 +8,22 @@ namespace Hotline.Core.Tests;
 
 public sealed class BackendCatalogTests : TempDirTest
 {
+    [Theory]
+    [InlineData("claude", "CLAUDE")]
+    [InlineData("CLAUDE", "claude")]
+    public async Task Cache_lookup_and_invalidation_ignore_connection_id_case(string lookup, string invalidate)
+    {
+        var created = 0;
+        var cache = new BackendCache(() => [new BackendProfile { Id = "Claude" }], _ => { created++; return new FakeBackend(); });
+        var first = cache.Get(lookup);
+        Assert.NotNull(first);
+        Assert.Same(first, cache.Get("Claude"));
+        Assert.Equal(1, created);
+        await cache.InvalidateAsync(invalidate);
+        Assert.NotSame(first, cache.Get(lookup));
+        Assert.Equal(2, created);
+        await cache.DisposeAllAsync();
+    }
 
     private BackendDeps Deps() => new(new FakeLineProcessFactory(), new AgyWorkspace(_dir, new ManualTimeProvider()),
         new FileLog(Path.Combine(_dir, "h.log")), _ => false, null, null, _ => "prompt", _dir);

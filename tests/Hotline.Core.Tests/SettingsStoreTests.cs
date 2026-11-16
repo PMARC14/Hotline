@@ -23,7 +23,7 @@ public sealed class SettingsStoreTests : TempDirTest
     [InlineData("chatHeight")]
     [InlineData("fontSize")]
     [InlineData("fontFamily")]
-    public void A_missing_null_option_does_not_hide_a_later_missing_non_null_option(string nullableKey)
+    public void Missing_options_use_defaults_without_writing(string nullableKey)
     {
         var root = System.Text.Json.Nodes.JsonNode.Parse(SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings())))!;
         var window = root["window"]!.AsObject();
@@ -34,25 +34,26 @@ public sealed class SettingsStoreTests : TempDirTest
 
         New().Load();
 
-        Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
-        var saved = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(SettingsPath))!;
-        Assert.True(saved["window"]!.AsObject().ContainsKey("backdrop"));
+        Assert.Equal(original, File.ReadAllText(SettingsPath));
+        Assert.Empty(SettingsTestFiles.Backups(_dir, "settings.json"));
+        var saved = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(SettingsPath), documentOptions: new() { CommentHandling = System.Text.Json.JsonCommentHandling.Skip })!;
+        Assert.False(saved["window"]!.AsObject().ContainsKey("backdrop"));
     }
 
     [Fact]
-    public void Missing_file_returns_defaults_and_writes_file()
+    public void Missing_file_returns_defaults_without_writing()
     {
         var store = New();
         var s = store.Load();
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
-        Assert.Equal((40.0, 400, 1200, 0, 60.0), (s.Window.WidthPercent, s.Window.MinWidth, s.Window.MaxWidth, s.Window.Height, s.Window.MaxHeightPercent));
+        Assert.Equal(("40%", 320, 800, 0, 60.0), (s.Window.Width.ToString(), s.Window.MinWidth, s.Window.MaxWidth, s.Window.MinHeight, s.Window.MaxHeightPercent));
         Assert.Equal(BackdropKind.AcrylicThin, s.Window.Backdrop);
         Assert.InRange(s.Window.TintOpacity, 0.0, 0.3);
         Assert.False(s.Diagnostics.VerboseLogging);
         Assert.Equal(0.8, s.Window.Anchor.Y);
-        Assert.Equal(15, s.SchemaVersion);
-        Assert.Equal(15, HotlineSettings.CurrentSchemaVersion);
-        Assert.True(File.Exists(store.FilePath));
+        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
+        Assert.Equal(1, s.SchemaVersion);
+        Assert.False(File.Exists(store.FilePath));
         Assert.False(File.Exists(store.FilePath + ".old"));
     }
 
@@ -74,54 +75,84 @@ public sealed class SettingsStoreTests : TempDirTest
     public void File_uses_readable_enum_names()
     {
         var store = New();
-        store.Load();
+        store.Save(store.Load());
         Assert.Contains("\"togglePopup\"", File.ReadAllText(store.FilePath), StringComparison.OrdinalIgnoreCase);
     }
 
     [Fact]
     public void Missing_properties_keep_defaults()
     {
-        WriteSettings("""{ "window": { "minWidth": 800 } }""");
+        WriteSettings("""{ "version": 1, "window": { "minWidth": 800 } }""");
         var s = New().Load();
         Assert.Equal(800, s.Window.MinWidth);
-        Assert.Equal(0, s.Window.Height);
+        Assert.Equal(0, s.Window.MinHeight);
         Assert.Equal(KeyAction.TogglePopup, s.Activation.Tap);
     }
 
     [Fact]
     public void Null_sections_are_replaced_with_defaults()
     {
-        WriteSettings("""{ "activation": null, "window": null, "diagnostics": null }""");
+        WriteSettings("""{ "version": 1, "activation": null, "window": null, "diagnostics": null }""");
         var s = New().Load();
         Assert.NotNull(s.Activation);
         Assert.NotNull(s.Window);
         Assert.NotNull(s.Diagnostics);
     }
 
-    [Fact]
-    public void Percentages_and_widths_are_clamped()
+    [Theory]
+    [InlineData("250", "3000", 320, 800)]
+    [InlineData("\"20%\"", "\"90%\"", 320, 800)]
+    public void Percentages_and_widths_are_clamped(string width, string chatWidth, int openingPixels, int chatPixels)
     {
-        WriteSettings("""{ "window": { "widthPercent": 500, "maxHeightPercent": 5, "minWidth": 50, "maxWidth": 10 } }""");
+        WriteSettings($$$"""{ "version": 1, "window": { "width": {{{width}}}, "chatWidth": {{{chatWidth}}}, "maxHeightPercent": 5 } }""");
         var w = New().Load().Window;
-        Assert.Equal(90, w.WidthPercent);
         Assert.Equal(30, w.MaxHeightPercent);
-        Assert.Equal(200, w.MinWidth);
-        Assert.Equal(200, w.MaxWidth); // never below MinWidth
+        Assert.Equal(openingPixels, Windowing.PanelWidth.ResolvePixels(w, 1000, 1));
+        Assert.Equal(chatPixels, Windowing.PanelWidth.ResolvePixels(w, 1000, 1, chat: true));
+    }
+
+    [Fact]
+    public void Default_connection_matches_connection_file_case_insensitively()
+    {
+        WriteSettings("""{ "version": 1, "chat": { "defaultConnection": "claude" } }""");
+        Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
+        File.WriteAllText(Conn("Claude"), """{ "version": 1, "type": "claudeCode", "name": "Claude" }""");
+        var loaded = New().Load();
+        Assert.Equal("Claude", loaded.Chat.DefaultBackend);
+        Assert.Single(loaded.Chat.Backends);
+        Assert.Equal("Claude", loaded.Chat.Backends[0].Id);
+    }
+
+    [Theory]
+    [InlineData("100")]
+    [InlineData("5000")]
+    [InlineData("\"5%\"")]
+    [InlineData("\"95%\"")]
+    public void Out_of_range_v1_widths_use_defaults_and_report_problems(string width)
+    {
+        WriteSettings($$$"""{"version":1,"window":{"width":{{{width}}},"chatWidth":{{{width}}},"minWidth":50,"maxWidth":10}}""");
+        var store = New();
+        var w = store.Load().Window;
+        Assert.Equal(new WindowSettings().Width, w.Width);
+        Assert.Null(w.ChatWidth);
+        Assert.Equal((200, 200), (w.MinWidth, w.MaxWidth));
+        Assert.Contains(store.SettingsProblems, p => p.Contains("window.width", StringComparison.Ordinal));
+        Assert.Contains(store.SettingsProblems, p => p.Contains("window.chatWidth", StringComparison.Ordinal));
     }
 
     [Fact]
     public void Locked_file_yields_in_memory_defaults_without_throwing()
     {
-        WriteSettings("""{ "window": { "minWidth": 900 } }""");
+        WriteSettings("""{ "version": 1, "window": { "minWidth": 900 } }""");
         using var lockHandle = new FileStream(SettingsPath, FileMode.Open, FileAccess.ReadWrite, FileShare.None);
 
         var s = New().Load();
 
-        Assert.Equal(400, s.Window.MinWidth);
+        Assert.Equal(320, s.Window.MinWidth);
     }
 
     [Fact]
-    public void New_options_are_written_into_an_existing_file_with_backup()
+    public void Missing_options_are_never_written_on_load()
     {
         var store = new SettingsStore(_dir);
         store.Save(new HotlineSettings());
@@ -129,8 +160,8 @@ public sealed class SettingsStoreTests : TempDirTest
         var json = File.ReadAllText(path).Replace("\"defaultPrompt\": \"default\",", "");
         File.WriteAllText(path, json);
         store.Load();
-        Assert.Contains("\"defaultPrompt\"", File.ReadAllText(path));
-        Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak")); // timestamped, never over an older copy
+        Assert.DoesNotContain("\"defaultPrompt\"", File.ReadAllText(path));
+        Assert.Empty(SettingsTestFiles.Backups(_dir, "settings.json"));
     }
 
     [Fact]
@@ -156,62 +187,8 @@ public sealed class SettingsStoreTests : TempDirTest
         Assert.False(File.Exists(store.FilePath + ".bad"));
     }
 
-    [Fact]
-    public void An_old_schema_file_migrates_width_defaults_and_connections_stay_untouched()
-    {
-        Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
-        var conn = Path.Combine(_dir, SettingsStore.ConnectionsFolder, "a.json");
-        const string connText = "{ \"id\": \"a\", \"type\": \"gemini\", \"name\": \"A\" } // mine";
-        File.WriteAllText(conn, connText);
-        // Values the removed upgrade steps used to move: hold, font size 14, heights 120/320/520, min width 600, no default backend.
-        WriteSettings("""
-            { "schemaVersion": 3,
-              "activation": { "hold": "showPopup" },
-              "window": { "fontSize": 14, "height": 520, "minWidth": 600 },
-              "chat": { "defaultBackend": "" } }
-            """);
 
-        var s = New().Load();
 
-        Assert.Equal(KeyAction.ShowPopup, s.Activation.Hold);
-        Assert.Equal(14, s.Window.FontSize);
-        Assert.Equal(520, s.Window.Height);
-        Assert.Equal(400, s.Window.MinWidth);
-        Assert.Equal("", s.Chat.DefaultBackend);
-        Assert.Equal("a", Assert.Single(s.Chat.Backends).Id); // no built-in connection added for an old file
-        Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion); // stamped in memory, written with the next save
-        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
-        Assert.Equal(connText, File.ReadAllText(conn));
-    }
-
-    [Fact]
-    public void An_inline_backends_list_is_still_split_into_connection_files_without_an_old_archive()
-    {
-        WriteSettings("""{ "schemaVersion": 3, "chat": { "defaultBackend": "g", "backends": [ { "id": "g", "type": "gemini", "name": "G" } ] } }""");
-
-        var store = New();
-        var s = store.Load();
-
-        Assert.Equal("g", Assert.Single(s.Chat.Backends).Id);
-        Assert.True(File.Exists(store.ConnectionPath("g")));
-        Assert.DoesNotContain("backends", File.ReadAllText(SettingsPath));
-        Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak")); // the hand-edited file is still backed up before the rewrite
-        Assert.Empty(Directory.GetFiles(_dir, "*.old*"));
-    }
-
-    // ---- connection files (regressions from the full-codebase review) ---------------------------
-
-    [Fact]
-    public void Duplicate_connection_ids_in_an_old_backends_list_do_not_break_a_reload()
-    {
-        WriteSettings("""{ "schemaVersion": 7, "chat": { "backends": [ { "id": "a", "type": "local", "name": "One" }, { "id": "A", "type": "local", "name": "Two" } ] } }""");
-        var store = new SettingsStore(_dir);
-        var service = new SettingsService(store, store.Load(), new FileLog(Path.Combine(_dir, "h.log")));
-        var edited = store.TryRead()!;
-        edited.Window.FontSize = 20;
-        Assert.True(service.Reload(edited));
-        Assert.Single(service.Current.Chat.Backends);
-    }
 
     [Fact]
     public void A_connection_file_added_while_running_is_deleted_with_its_connection()
@@ -219,8 +196,9 @@ public sealed class SettingsStoreTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var store = new SettingsStore(_dir);
         var s = store.Load();
+        store.Save(s);
         Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
-        File.WriteAllText(Conn("late"), """{ "type": "local", "name": "Late" }""");
+        File.WriteAllText(Conn("late"), """{ "version": 1, "type": "local", "name": "Late" }""");
         s.Chat.Backends = store.TryRead()!.Chat.Backends; // what a live reload takes in
         Assert.Contains(s.Chat.Backends, b => b.Id == "late");
         ConnectionEditor.Remove(s.Chat, "late");
@@ -232,7 +210,7 @@ public sealed class SettingsStoreTests : TempDirTest
     public void A_read_only_connection_file_does_not_stop_saving()
     {
         Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
-        File.WriteAllText(Conn("ro"), """{ "type": "local", "name": "Ro" }""");
+        File.WriteAllText(Conn("ro"), """{ "version": 1, "type": "local", "name": "Ro" }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
         File.SetAttributes(Conn("ro"), FileAttributes.ReadOnly);
@@ -242,40 +220,55 @@ public sealed class SettingsStoreTests : TempDirTest
     }
 
     [Fact]
-    public void Saving_never_exposes_a_null_connection_list_to_other_threads()
+    public async Task Saving_never_exposes_a_null_connection_list_to_other_threads()
     {
-        Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
-        File.WriteAllText(Conn("a"), """{ "type": "local", "name": "A" }""");
-        var store = new SettingsStore(_dir);
-        var s = store.Load();
-        var seenNull = false;
-        using var stop = new CancellationTokenSource();
-        var reader = Task.Run(() => { while (!stop.IsCancellationRequested) if (s.Chat.Backends is null) seenNull = true; });
-        for (var i = 0; i < 500; i++) SettingsStore.Serialize(s);
-        stop.Cancel();
-        reader.Wait();
-        Assert.False(seenNull);
+        var files = new Files.FakeFileSystem();
+        var store = new SettingsStore(_dir, files);
+        var s = new HotlineSettings { Chat = new() { Backends = [new() { Id = "a", Type = BackendType.Local }] } };
+        var connections = s.Chat.Backends;
+        var writing = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
+        using var inspected = new ManualResetEventSlim();
+        files.Fail = call =>
+        {
+            if (call.Operation == nameof(Core.Files.IFileSystem.WriteDurable) && call.Path == store.FilePath)
+            {
+                writing.TrySetResult();
+                if (!inspected.Wait(TimeSpan.FromSeconds(10))) throw new TimeoutException("Reader did not inspect the live list.");
+            }
+            return false;
+        };
+        var save = Task.Run(() => store.Save(s), TestContext.Current.CancellationToken);
+        try
+        {
+            await writing.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            Assert.Same(connections, s.Chat.Backends);
+            Assert.Equal("a", Assert.Single(s.Chat.Backends).Id);
+        }
+        finally { inspected.Set(); }
+        await save;
+        Assert.Empty(store.WriteProblems);
+        Assert.True(files.Files.ContainsKey(Conn("a")));
     }
 
     [Fact]
     public void TestLinks_DefaultsFalseAndReadsExplicitTrue()
     {
-        WriteSettings("""{ "diagnostics": { "verboseLogging": false } }""");
+        WriteSettings("""{ "version": 1, "diagnostics": { "verboseLogging": false } }""");
         var absent = New();
         Assert.False(absent.Load().Diagnostics.TestLinks);
         Assert.Empty(absent.SettingsProblems);
 
-        WriteSettings("""{ "diagnostics": { "testLinks": false } }""");
+        WriteSettings("""{ "version": 1, "diagnostics": { "testLinks": false } }""");
         var explicitFalse = New();
         Assert.False(explicitFalse.Load().Diagnostics.TestLinks);
         Assert.Empty(explicitFalse.SettingsProblems);
 
-        WriteSettings("""{ "diagnostics": { "testLinks": true } }""");
+        WriteSettings("""{ "version": 1, "diagnostics": { "testLinks": true } }""");
         var explicitTrue = New();
         Assert.True(explicitTrue.Load().Diagnostics.TestLinks);
         Assert.Empty(explicitTrue.SettingsProblems);
 
-        WriteSettings("""{ "diagnostics": { "testLinks": "yes" } }""");
+        WriteSettings("""{ "version": 1, "diagnostics": { "testLinks": "yes" } }""");
         var invalid = New();
         Assert.False(invalid.Load().Diagnostics.TestLinks);
         Assert.Contains(invalid.SettingsProblems, p => p.Contains("diagnostics.testLinks", StringComparison.Ordinal));

@@ -56,7 +56,7 @@ public class AgyProtocolTests
     [Fact]
     public void Args_use_stream_json_the_default_agent_and_never_skip_permissions()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Model = "gemini-3.8-flash-low", ExtraArgs = "--effort low" });
+        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Model = "gemini-3.8-flash-low", ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--effort low").ToList() });
         Assert.Equal(["--input-format", "stream-json", "--output-format", "stream-json", "-p=", "--agent", "hotline",
                       "--model", "gemini-3.8-flash-low", "--effort", "low"], args);
     }
@@ -115,7 +115,7 @@ public class AgyProtocolTests
     [InlineData("--DANGEROUSLY-skip-permissions")]
     [InlineData("--skip-permissions")]
     public void Dangerous_flag_variants_in_extra_args_are_dropped(string flag)
-        => Assert.DoesNotContain(AgyProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--foo " + flag }), a => a.Contains("permission", StringComparison.OrdinalIgnoreCase));
+        => Assert.DoesNotContain(AgyProtocol.BuildArgs(new BackendProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--foo " + flag).ToList() }), a => a.Contains("permission", StringComparison.OrdinalIgnoreCase));
 
     [Fact]
     public void Custom_args_replace_the_agent_flags_but_keep_the_protocol()

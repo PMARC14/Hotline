@@ -5,99 +5,42 @@ namespace Hotline.Core.Tests;
 /// <summary>Each connection lives in ~/.hotline/connections/&lt;id&gt;.json; settings.json holds order and default.</summary>
 public sealed class ConnectionFilesTests : TempDirTest
 {
-    [Fact]
-    public void Failed_connection_migration_preserves_inline_list_on_retry()
-    {
-        Directory.CreateDirectory(Conn("b"));
-        const string original = """{"chat":{"backends":[{"id":"a","type":"local"},{"id":"b","type":"local"}]}}""";
-        File.WriteAllText(SettingsFile, original);
-        var store = new SettingsStore(_dir);
-        var settings = store.Load();
-        Assert.Equal(original, File.ReadAllText(SettingsFile));
-        Assert.NotEmpty(store.WriteProblems);
-        store.Save(settings);
-        Assert.Equal(original, File.ReadAllText(SettingsFile));
-        Assert.NotEmpty(store.WriteProblems);
-        Assert.Equal(2, new SettingsStore(_dir).Load().Chat.Backends.Count);
-    }
-
+    private readonly SettingsFileSystem _files = new();
     private string Conn(string id) => Path.Combine(_dir, "connections", id + ".json");
     private string SettingsFile => Path.Combine(_dir, SettingsStore.FileName);
-
-    /// <summary>An install with the agy connection (new installs start with none).</summary>
     private void WithAgy()
     {
         Directory.CreateDirectory(Path.Combine(_dir, "connections"));
-        File.WriteAllText(Conn("agy"), """{ "type": "antigravity", "name": "Gemini (Antigravity)", "agent": "hotline" }""");
+        File.WriteAllText(Conn("agy"), """{"version":1,"type":"antigravity","name":"Gemini (Antigravity)","agent":"hotline"}""");
+        File.WriteAllText(SettingsFile, """{"version":1}""");
     }
 
     [Fact]
     public void Fresh_install_writes_no_connection_and_no_backends_in_settings()
     {
-        var s = new SettingsStore(_dir).Load();
+        var s = new SettingsStore(_dir, _files).Load();
         Assert.False(Directory.Exists(Path.Combine(_dir, "connections")) && Directory.EnumerateFiles(Path.Combine(_dir, "connections")).Any());
-        Assert.DoesNotContain("\"backends\"", File.ReadAllText(SettingsFile));
-        Assert.Contains("\"order\"", File.ReadAllText(SettingsFile));
+        Assert.False(File.Exists(SettingsFile));
+        Assert.False(Directory.Exists(_dir));
         Assert.Empty(s.Chat.Backends);
     }
 
-    [Fact]
-    public void Old_backends_list_moves_into_files_keeping_its_order()
-    {
-        Directory.CreateDirectory(_dir);
-        File.WriteAllText(SettingsFile, """{ "schemaVersion": 7, "chat": { "defaultBackend": "b", "backends": [ { "id": "b", "type": "claudeCode", "name": "B" }, { "id": "a", "type": "antigravity", "name": "A" } ] } }""");
-        var s = new SettingsStore(_dir).Load();
-        Assert.Equal(["b", "a"], s.Chat.Backends.Select(b => b.Id));
-        Assert.True(File.Exists(Conn("a")) && File.Exists(Conn("b")));
-        Assert.DoesNotContain("\"backends\"", File.ReadAllText(SettingsFile));
-        Assert.Equal(["b", "a"], new SettingsStore(_dir).Load().Chat.Backends.Select(b => b.Id)); // order survives
-        Assert.Equal("b", s.Chat.DefaultBackend);
-    }
 
-    [Fact]
-    public void Legacy_migration_writes_only_new_connections_and_preserves_existing_bytes()
-    {
-        WithAgy();
-        var originalConnection = File.ReadAllBytes(Conn("agy"));
-        File.WriteAllText(SettingsFile, """{"schemaVersion":7,"chat":{"backends":[{"id":"agy","type":"local","name":"Old"},{"id":"new","type":"local","name":"New"}]}}""");
-        var originalSettings = File.ReadAllText(SettingsFile);
 
-        var loaded = new SettingsStore(_dir).Load();
-
-        Assert.Equal(originalConnection, File.ReadAllBytes(Conn("agy")));
-        Assert.Empty(Directory.GetFiles(Path.Combine(_dir, "connections"), "agy.json.*.bak"));
-        Assert.True(File.Exists(Conn("new")));
-        Assert.Equal(BackendType.Antigravity, loaded.Chat.Backends.Single(p => p.Id == "agy").Type);
-        Assert.Equal(originalSettings, File.ReadAllText(Assert.Single(Directory.GetFiles(_dir, "settings.json.*.bak"))));
-    }
-
-    [Fact]
-    public void Legacy_migration_creates_no_connection_when_the_settings_backup_fails()
-    {
-        Directory.CreateDirectory(_dir);
-        const string original = """{"chat":{"backends":[{"id":"new","type":"local","name":"New"}]}}""";
-        File.WriteAllText(SettingsFile, original);
-        var store = new SettingsStore(_dir) { BackupOverride = _ => throw new IOException("backup failed") };
-
-        store.Load();
-
-        Assert.False(File.Exists(Conn("new")));
-        Assert.Equal(original, File.ReadAllText(SettingsFile));
-        Assert.NotEmpty(store.WriteProblems);
-    }
 
     [Fact]
     public void Order_comes_from_settings_and_unlisted_files_follow_by_name()
     {
         WithAgy();
-        var store = new SettingsStore(_dir);
-        store.Load();
-        File.WriteAllText(Conn("zeta"), """{ "type": "local", "name": "Zeta" }""");
-        File.WriteAllText(Conn("alpha"), """{ "type": "local", "name": "Alpha" }""");
-        var root = System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllText(SettingsFile))!;
+        var store = new SettingsStore(_dir, _files);
+        store.Save(store.Load());
+        Directory.CreateDirectory(store.ConnectionsDirectory);
+        File.WriteAllText(Conn("zeta"), """{ "version": 1, "type": "local", "name": "Zeta" }""");
+        File.WriteAllText(Conn("alpha"), """{ "version": 1, "type": "local", "name": "Alpha" }""");
+        var root = System.Text.Json.Nodes.JsonNode.Parse(SettingsStore.Serialize(store.Load()))!;
         root["chat"]!["order"] = new System.Text.Json.Nodes.JsonArray("zeta", "agy");
         File.WriteAllText(SettingsFile, root.ToJsonString());
-        var s = new SettingsStore(_dir).Load();
+        var s = new SettingsStore(_dir, _files).Load();
         Assert.Equal(["zeta", "agy", "alpha"], s.Chat.Backends.Select(b => b.Id)); // id from the file name
     }
 
@@ -105,13 +48,13 @@ public sealed class ConnectionFilesTests : TempDirTest
     public void Removing_a_hand_written_connection_keeps_its_exact_bytes_in_a_backup()
     {
         WithAgy();
-        var store = new SettingsStore(_dir);
+        var store = new SettingsStore(_dir, _files);
         var settings = store.Load();
         var original = File.ReadAllBytes(Conn("agy"));
         settings.Chat.Backends.Clear();
         store.Save(settings, ["agy"]);
         Assert.False(File.Exists(Conn("agy")));
-        Assert.Equal(original, File.ReadAllBytes(Assert.Single(Directory.GetFiles(store.ConnectionsDirectory, "agy.json.*.bak"))));
+        Assert.Equal(original, File.ReadAllBytes(Assert.Single(SettingsTestFiles.Backups(_dir, "agy.json"))));
         Assert.DoesNotContain("agy", store.KnownConnectionIds);
         Assert.Empty(store.WriteProblems);
     }
@@ -122,13 +65,13 @@ public sealed class ConnectionFilesTests : TempDirTest
     public void Failed_removal_keeps_the_connection_file_and_ownership(bool backupFails)
     {
         WithAgy();
-        var store = new SettingsStore(_dir);
+        var store = new SettingsStore(_dir, _files);
         var settings = store.Load();
         var path = Conn("agy");
         var original = File.ReadAllBytes(path);
         var blocked = Path.Combine(_dir, "blocked");
         File.WriteAllText(blocked, "not a directory");
-        if (backupFails) store.BackupOverride = file => File.Copy(file, Path.Combine(blocked, "backup"));
+        if (backupFails) _files.BeforeCopy = file => File.Copy(file, Path.Combine(blocked, "backup"));
         else File.SetAttributes(path, FileAttributes.ReadOnly);
         try
         {
@@ -140,7 +83,7 @@ public sealed class ConnectionFilesTests : TempDirTest
             Assert.Contains("agy", store.KnownConnectionIds);
         }
         finally { if (File.Exists(path)) File.SetAttributes(path, FileAttributes.Normal); }
-        store.BackupOverride = null;
+        _files.BeforeCopy = null;
         store.Save(settings, ["agy"]); // ownership survived: a retry can finish removing it
         Assert.False(File.Exists(path));
     }
@@ -149,7 +92,7 @@ public sealed class ConnectionFilesTests : TempDirTest
     public void Removing_a_connection_deletes_its_file()
     {
         WithAgy();
-        var store = new SettingsStore(_dir);
+        var store = new SettingsStore(_dir, _files);
         var s = store.Load();
         Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Local);
         store.Save(s);
@@ -163,10 +106,11 @@ public sealed class ConnectionFilesTests : TempDirTest
     [Fact]
     public void A_broken_connection_file_is_never_overwritten_or_deleted()
     {
-        var store = new SettingsStore(_dir);
-        store.Load();
+        var store = new SettingsStore(_dir, _files);
+        store.Save(store.Load());
+        Directory.CreateDirectory(store.ConnectionsDirectory);
         File.WriteAllText(Conn("agy"), "{ broken");
-        var s2 = new SettingsStore(_dir);
+        var s2 = new SettingsStore(_dir, _files);
         var loaded = s2.Load();
         Assert.Single(s2.BrokenConnectionFiles);
         s2.Save(loaded);
@@ -177,7 +121,7 @@ public sealed class ConnectionFilesTests : TempDirTest
     public void A_file_broken_while_running_survives_a_live_read_and_the_next_save()
     {
         WithAgy();
-        var store = new SettingsStore(_dir);
+        var store = new SettingsStore(_dir, _files);
         store.Load(); // agy.json was fine at start
         File.WriteAllText(Conn("agy"), "{ half-saved"); // the user's editor, mid-save
         var live = store.TryRead()!; // a live reload drops the unreadable connection...
@@ -188,11 +132,12 @@ public sealed class ConnectionFilesTests : TempDirTest
     [Fact]
     public void A_broken_file_fixed_while_running_saves_normally_again()
     {
-        var store = new SettingsStore(_dir);
-        store.Load();
+        var store = new SettingsStore(_dir, _files);
+        store.Save(store.Load());
+        Directory.CreateDirectory(store.ConnectionsDirectory);
         File.WriteAllText(Conn("agy"), "{ broken");
-        var s = new SettingsStore(_dir); s.Load();
-        File.WriteAllText(Conn("agy"), """{ "type": "antigravity", "name": "Fixed" }""");
+        var s = new SettingsStore(_dir, _files); s.Load();
+        File.WriteAllText(Conn("agy"), """{ "version": 1, "type": "antigravity", "name": "Fixed" }""");
         var live = s.TryRead()!;
         Assert.Empty(s.BrokenConnectionFiles);
         live.Chat.Backends.Single(b => b.Id == "agy").Name = "Renamed";
@@ -203,9 +148,10 @@ public sealed class ConnectionFilesTests : TempDirTest
     [Fact]
     public void Live_read_sees_hand_added_files_without_writing_anything()
     {
-        var store = new SettingsStore(_dir);
-        store.Load();
-        File.WriteAllText(Conn("mine"), """{ "type": "claudeCode", "name": "Mine", "model": "opus" }""");
+        var store = new SettingsStore(_dir, _files);
+        store.Save(store.Load());
+        Directory.CreateDirectory(store.ConnectionsDirectory);
+        File.WriteAllText(Conn("mine"), """{ "version": 1, "type": "claudeCode", "name": "Mine", "model": "opus" }""");
         var before = File.ReadAllText(SettingsFile);
         var read = store.TryRead()!;
         Assert.Contains(read.Chat.Backends, b => b.Id == "mine" && b.Model == "opus");
@@ -215,7 +161,7 @@ public sealed class ConnectionFilesTests : TempDirTest
     [Fact]
     public void Connection_files_omit_unset_options()
     {
-        var store = new SettingsStore(_dir);
+        var store = new SettingsStore(_dir, _files);
         var s = store.Load();
         var agy = Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Antigravity);
         store.Save(s);
@@ -227,15 +173,15 @@ public sealed class ConnectionFilesTests : TempDirTest
     // ---- a hand-edited settings.json with null list elements must not crash start-up or a live reload ----
 
     [Theory]
-    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "order": [null] } }""")]
-    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "order": [null, "", "  ", "a"] } }""")]
-    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "backends": [null] } }""")]
-    [InlineData("""{ "schemaVersion": 14, "window": { "minWidth": 800 }, "chat": { "backends": [null, { "id": null }, { "id": "x", "name": "X" }] } }""")]
+    [InlineData("""{ "version": 1, "window": { "minWidth": 800 }, "chat": { "order": [null] } }""")]
+    [InlineData("""{ "version": 1, "window": { "minWidth": 800 }, "chat": { "order": [null, "", "  ", "a"] } }""")]
+    [InlineData("""{ "version": 1, "window": { "minWidth": 800 }, "chat": { "backends": [null] } }""")]
+    [InlineData("""{ "version": 1, "window": { "minWidth": 800 }, "chat": { "backends": [null, { "id": null }, { "id": "x", "name": "X" }] } }""")]
     public void Null_list_elements_do_not_crash_load_or_try_read(string json)
     {
         Directory.CreateDirectory(_dir);
         File.WriteAllText(SettingsFile, json);
-        var store = new SettingsStore(_dir);
+        var store = new SettingsStore(_dir, _files);
         var loaded = store.Load();
         Assert.Equal(800, loaded.Window.MinWidth);
         var again = store.TryRead();

@@ -60,13 +60,16 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         }
         if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); }
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
-        var previous = System.Text.Json.JsonSerializer.Serialize(Current, options);
-        if (_automatic.Count == 0 && System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == previous) return false;
+        string Snapshot(HotlineSettings s) => System.Text.Json.JsonSerializer.Serialize(new
+            { Settings = s, Connections = s.Chat.Backends.Select(p => new { p.Id, Profile = p }) }, options);
+        var previous = Snapshot(Current);
+        if (_automatic.Count == 0 && Snapshot(fromDisk) == previous) return false;
         var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
         CopyInto(fromDisk.Activation, Current.Activation);
         CopyInto(fromDisk.Diagnostics, Current.Diagnostics);
         CopyInto(fromDisk.Window, Current.Window);
         CopyInto(fromDisk.General, Current.General);
+        CopyInto(fromDisk.Tools, Current.Tools);
         MergeChat(fromDisk.Chat, Current.Chat);
         Current.SchemaVersion = fromDisk.SchemaVersion;
         if (_automatic.Count > 0)
@@ -74,7 +77,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             foreach (var change in _automatic) ApplyAutomatic(change);
             SaveCurrent(_automaticRemoved);
         }
-        if (System.Text.Json.JsonSerializer.Serialize(Current, options) == previous) return false;
+        if (Snapshot(Current) == previous) return false;
         var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id.Equals(kv.Key, StringComparison.OrdinalIgnoreCase)) is not { } now
                                          || System.Text.Json.JsonSerializer.Serialize(now, options) != kv.Value)
             .Select(kv => kv.Key).ToList();
@@ -167,8 +170,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         IReadOnlyList<string> problems;
         try
         {
-            // A file that isn't what this process wrote (a hand edit, half-finished or with ignored values) is copied to
-            // <file>.<time>.bak by the store before it is replaced; without that copy it is left alone and a problem is listed.
+            // A file that differs from its last-written hash is backed up before replacement.
             store.Save(Current, removed);
             _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
             problems = [.. store.WriteProblems];

@@ -29,7 +29,7 @@ public static class ConnectionEditor
         {
             Id = UniqueId(chat, source.Id), Type = source.Type, Name = UniqueName(chat, source.Name + " (copy)"),
             Model = source.Model, Effort = source.Effort, Endpoint = source.Endpoint, CliPath = source.CliPath,
-            Agent = source.Agent, ExtraArgs = source.ExtraArgs, Args = source.Args is null ? null : [.. source.Args], KeepCliSessions = source.KeepCliSessions, KeepInHotline = source.KeepInHotline, MaxTokens = source.MaxTokens, Temperature = source.Temperature, Images = source.Images, RefusalFallback = source.RefusalFallback, Tools = source.Tools, // ApproveAllTools is never copied: it needs its own confirmation
+            Agent = source.Agent, ExtraArgs = source.ExtraArgs is null ? null : [.. source.ExtraArgs], Args = source.Args is null ? null : [.. source.Args], KeepCliSessions = source.KeepCliSessions, KeepInHotline = source.KeepInHotline, MaxTokens = source.MaxTokens, Temperature = source.Temperature, Images = source.Images, RefusalFallback = source.RefusalFallback, Tools = source.Tools, // ApproveAllTools is never copied: it needs its own confirmation
             WorkingDirectory = source.WorkingDirectory, Prompt = source.Prompt,
         };
         chat.Backends.Insert(chat.Backends.IndexOf(source) + 1, copy);
@@ -42,8 +42,8 @@ public static class ConnectionEditor
     /// </summary>
     public static bool Remove(ChatSettings chat, string id)
     {
-        if (chat.Backends.RemoveAll(b => b.Id == id) == 0) return false;
-        if (chat.DefaultBackend == id) chat.DefaultBackend = chat.Backends.FirstOrDefault()?.Id ?? "";
+        if (chat.Backends.RemoveAll(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase)) == 0) return false;
+        if (string.Equals(chat.DefaultBackend, id, StringComparison.OrdinalIgnoreCase)) chat.DefaultBackend = chat.Backends.FirstOrDefault()?.Id ?? "";
         return true;
     }
 
@@ -52,7 +52,7 @@ public static class ConnectionEditor
     /// <summary>Moves a connection up (-1) or down (+1) in the Provider dropdown; saved as chat.order. False at either end.</summary>
     public static bool Move(ChatSettings chat, string id, int delta)
     {
-        var index = chat.Backends.FindIndex(b => b.Id == id);
+        var index = chat.Backends.FindIndex(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
         var target = index + delta;
         if (index < 0 || target < 0 || target >= chat.Backends.Count) return false;
         (chat.Backends[index], chat.Backends[target]) = (chat.Backends[target], chat.Backends[index]);
@@ -61,7 +61,7 @@ public static class ConnectionEditor
     }
 
     private static BackendProfile Find(ChatSettings chat, string id) =>
-        chat.Backends.FirstOrDefault(b => b.Id == id) ?? throw new KeyNotFoundException($"No connection '{id}'.");
+        chat.Backends.FirstOrDefault(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase)) ?? throw new KeyNotFoundException($"No connection '{id}'.");
 
     private static string Slug(string name)
     {

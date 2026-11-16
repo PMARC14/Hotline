@@ -32,6 +32,17 @@ a web page cannot). Without it the log says `selftest ?tools refused: ...` and t
 
 Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list.
 
+### Settings v1 and scaled widths
+
+- [ ] Settings › General has the Hold action picker and no Voice toggle. Select Voice in Hold and verify dictation still works.
+- [ ] On monitors at 100% and 200%, set opening width to `640`, then `40%`; check scaled size, work-area percentage and the 320/800 clamps.
+      Set chat width to `700` and `60%`, start a chat, then clear it; check growth and return to opening width. Resize by hand and verify it wins for that opening.
+- [ ] At 200% scaling with `minWidth: 320`, mouse and keyboard resizing stop at 640 real pixels.
+- [ ] Set `chat.defaultConnection` to `claude` with `connections/Claude.json`; verify selection, CLI resume and Continue in survive an id case change.
+- [ ] Enter invalid width text (`19%`, `4001`, words); check validation. Save/reopen Settings and verify both accepted forms survive.
+- [ ] Edit one setting with unknown keys in settings and connection files; verify those keys survive and the originals share one `-save` backup folder.
+      Try a newer version and a pre-freeze settings file; verify the original stays untouched and the problem is shown.
+
 ## 2A. The 0.6 checklist (run first)
 
 ### A1. Panel shortcuts (Settings › Chat and history)
