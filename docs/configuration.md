@@ -14,32 +14,53 @@ same files). Comments and trailing commas are allowed.
 | `prompts\<name>.md` | System prompts (`default.md` is created on first run) |
 | `memory.md` | Notes every chat sees: edit freely, or type `/remember something` in the message box (Settings › Chat and history › Edit memory) |
 | `actions\<name>.md` | Quick actions (`/bullets`, `/explain`, `/fix`, `/formal`, `/reply`, `/shorter`, `/summarize`, `/translate` are created on first run) |
-| `mcp.json` | MCP servers and tool approvals (tools for API connections) |
+| `mcp.json` | MCP servers (tools for API connections); approval rules live in `settings.json` |
 | `toolbar.json` | The button rows around the message box: which items, in what order, how they look, and your own buttons and panel shortcuts (version 3; see *toolbar.json*) |
 | `icons\<id>.png` | Pictures of custom buttons |
-| `icons\<id>.png.<time>.bak` | The previous picture, kept before a replacement (newest 10 per file). Deleting the button leaves them; a new button with that id adds to them (they are never read as its picture) |
 | `sounds\` | .wav files for `window.openSound` / `closeSound` (Hotline's own `hotline.wav` is put here) |
 | `history\*.jsonl` | Saved conversations (text only; deleted after `chat.historyRetentionDays`). CLI chats: only when `keepInHotline` |
 | `history\*.meta.json` | A CLI chat's record: title, connection, the CLI's session ID and folder, used by Recent chats to resume it |
 | `logs\hotline.log` | Log (crashes are logged as `FATAL`) |
 | `scratch\` | Working files for CLI chats: agy's `hotline` agent and attached images (pruned after a day), Codex images, Continue-in handoff files |
-| `backups\reset-<time>\` | What Settings › Advanced › Reset replaced |
-| `backups\import-<time>\` | The files an import (Settings › Backup) replaced, under the same relative paths |
-| `backups\<yyyyMMdd-HHmmss>-save\` | Settings and connection originals from one save operation, under their relative paths; newest 20 save folders are kept |
-| `mcp.json.bak-<time>` | The previous mcp.json, kept when Hotline rewrites it |
-| `backups\<yyyyMMdd-HHmmss>-save\toolbar.json` | Toolbar originals preserved before changed saves; newest 20 save sets kept |
-| `.defaults\settings.json`, `.defaults\toolbar.json` | (hidden) The default settings.json and toolbar.json of this version, rewritten at every start |
+| `backups\<yyyyMMdd-HHmmss>-<reason>\` | Originals from one `save`, `reset`, `import` or `upgrade` operation, under their relative paths |
+| `.defaults\settings.json`, `.defaults\toolbar.json`, `.defaults\mcp.json` | Hidden reference copies of the embedded defaults, refreshed at startup |
+| `state.json` | Shown notices, saved panel spot, tool grants, last-written hashes and upgrade record; never exported or backed up |
 
 **Switching settings** is replacing files: copy another `settings.json` (or a file in `connections\`) over the current one and
 Hotline applies it right away; `.defaults\settings.json` is a clean start. Settings › Advanced › **Reset settings** puts
 settings.json and toolbar.json back to the defaults (connections stay); **Reset everything** also removes the connections and their
-API keys, `mcp.json`. Prompts, quick actions, memory and history are never reset; replaced files go to `backups\reset-<time>\`.
+API keys and resets `mcp.json` to its starter contents. Both resets clear `state.json`. Prompts, quick actions, memory and history
+are never reset; replaced files go to one `backups\<time>-reset\` folder. A newer-version file is left untouched and reported.
 Settings › **Backup** exports and imports these files (see *Backup*).
 
 API keys are **not** in these files: they are stored in Windows Credential Locker.
 Open WebUI's Continue in keys are stored per address, separately from connection API keys. Both resets leave those
 Open WebUI keys in Credential Locker, including keys for targets removed by the reset; adding the same address again
 reuses its saved key.
+
+### Startup and upgrading
+
+Startup runs the pre-freeze upgrade, then creates missing `settings.json`, `toolbar.json` and `mcp.json` from embedded defaults
+and refreshes `.defaults\`, then loads configuration. Loading itself never writes.
+
+| Pre-freeze file | Upgrade |
+|---|---|
+| Settings without `version` | Embedded defaults, carrying only `chat.defaultConnection` (or old `defaultBackend`) and `chat.order` |
+| Toolbar below v3 | Embedded defaults |
+| Connection with `id` or without `version` | v1, id from `id` before the file stem, invalid ids repaired and collisions numbered; string `extraArgs` split into arguments |
+| MCP with `approvals` | Servers retained, approvals removed |
+| `.first-run-shown`, `.support-note-shown` | Shown flags moved into `state.json`, markers deleted |
+
+Connection selections follow renamed ids. Changed connection Locker keys are copied to the lower-cased new id, read back,
+then the old key is deleted. Originals are copied to one `backups\<time>-upgrade\` folder before conversion; conversion still
+runs if that backup fails. Unreadable or locked files stay untouched and retry at the next start. A completed second start
+makes no upgrade backup. A notice on the next panel opening lists resets, the backup or its absence, and failures.
+Settings > Guide > Upgrading from 0.6 explains the conversion.
+
+Save sets keep the newest 20 folders; reset, import and upgrade sets are never pruned. Same-second operations get `-2`, `-3`
+suffixes. Only `save` skips an original matching `state.json`'s last-written hash. Reset, import and upgrade preserve originals
+even when that hash matches. A failed backup prevents a write except during upgrade. Old `.bak`, `.old`, `.bad`, `.prev`
+and old-style backup folders are left where they are.
 
 ## settings.json
 
@@ -390,20 +411,25 @@ accelerator keys show effective bindings. Copy last answer skips cancelled or fa
 
 Settings > Backup exports the parts you tick to one `hotline-settings-<yyyyMMdd-HHmm>.zip` and imports such a file on
 another PC. A package holds `hotline-export.json` (format, app version, date, and every file's size and SHA-256) plus,
-per tick: Settings (`settings.json`), Button rows (`toolbar.json` and `icons\*.png`), Tools (`mcp.json`), Sounds
+per tick: Settings (`settings.json`), Button rows and shortcuts (`toolbar.json` and `icons\*.png`), Tools (`mcp.json`), Sounds
 (`sounds\*.wav`), AI connections (`connections\*.json`), Quick actions (`actions\*.md`) and Prompts (`prompts\*.md`).
 
-Never included: logs, chat history, `memory.md`, `backups\`, `.defaults`, `.bak`/`.old` files, and **API keys** (they stay in
+Never included: `state.json`, logs, chat history, `memory.md`, `backups\`, `.defaults`, `.bak`/`.old` files, and **API keys** (they stay in
 the Windows Credential Locker; enter them again on the new PC, the import lists the connections that have none yet).
-`mcp.json` is exported exactly as written, and its `env` values can hold secrets: keep such a package private.
+`mcp.json` is exported exactly as written, including secret token text. Export never reads Credential Locker.
+The export result lists server and variable names with plaintext `env` values and suggests **Move to Credential Locker**
+in Settings > Tools before sharing the package. Plaintext values remain in the package.
 
 An import only accepts the file names above (anything else, `..` paths and oversized or damaged files refuse the package),
 checks every file's content, adds and replaces files and never deletes. When the selected categories contain or activate
 executable configuration (MCP server commands, arguments, working directories, environment overrides or approval rules,
 CLI or tool-enabled connections, `approveAllTools`, `cliPath`, `extraArgs`, `args`, or `Continue in` `app` commands),
-Settings > Backup shows the details for review and asks for confirmation before anything is written (Cancel is the default,
+Settings > Backup shows the details for review, masks every `env` value, lists `tools.approvals` with allow rules first,
+and asks for confirmation before anything is written (Cancel is the default,
 and confirming writes the exact bytes that were reviewed). Each file it replaces is first copied to
-`backups\import-<time>\` with the same relative path; if that copy fails, nothing is written. The content check is the one
+one `backups\<time>-import\` folder with the same relative path; if any copy fails, nothing is written. Newer files on disk
+are left untouched and reported. Import lists MCP servers whose secret tokens have no Locker entry on this PC.
+The content check is the one
 loading uses: a file with a wrong value or a word from a newer version is accepted (the app warns and goes on, as with a hand edit),
 a connection file whose `id` differs from its file name is accepted; only a file that is not a JSON object (or a connection with an
 unknown `type`) is skipped. A folder that can't be listed is reported as left out, not silently empty. The export keeps every file it

@@ -192,11 +192,11 @@ public sealed partial class SettingsWindow
                 var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
                 var updated = Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
                     Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules);
-                // Keep the file as it was (.old, .old2, ...: hand edits made since an earlier press are never lost), then replace atomically.
-                if (json is not null && updated != json && FileArchive.KeepOld(agySettings) is null)
-                    throw new IOException(L.F(Strings.Settings_ProblemBackupFailed, Path.GetFileName(agySettings), nameof(IOException)));
-                File.WriteAllText(agySettings + ".tmp", updated);
-                File.Move(agySettings + ".tmp", agySettings, overwrite: true);
+                var root = Path.GetDirectoryName(agySettings)!;
+                var backup = new Hotline.Core.Files.BackupSet(root, Hotline.Core.Files.BackupReason.Save);
+                var written = new Hotline.Core.Files.SafeFile().Replace(agySettings, System.Text.Encoding.UTF8.GetBytes(updated), backup, 1);
+                if (written is not (Hotline.Core.Files.SafeFileResult.Written or Hotline.Core.Files.SafeFileResult.Unchanged))
+                    throw new IOException(L.F(Strings.Settings_ProblemWriteFailed, Path.GetFileName(agySettings), written));
                 summary.Text = Summary();
                 await _invalidate(p.Id);
             }

@@ -9,6 +9,9 @@ using Hotline.Core.Processes;
 using Hotline.Core.Activation;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Files;
+using Hotline.Core.State;
+using Hotline.Core.Upgrade;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
@@ -105,11 +108,14 @@ public partial class App : Application
         // If the move failed, keep using the old settings this session (never write defaults over the user data).
         if (migrationFailed) dataDir = privateDir;
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
-        var state = new Hotline.Core.State.StateStore(Path.Combine(dataDir, Hotline.Core.State.StateStore.FileName));
+        _secrets = new PasswordVaultSecretStore(_log);
+        var state = new StateStore(Path.Combine(dataDir, StateStore.FileName));
+        var files = new RealFileSystem();
+        var upgrade = PreFreezeUpgrade.Run(dataDir, files, state, _secrets);
+        var starterFailures = StarterFiles.Ensure(dataDir, files, state, _secrets);
+        foreach (var name in starterFailures) _log.Error($"starter file could not be written: {name}");
         var store = new SettingsStore(dataDir, state: state);
         var settings = store.Load();
-        try { SettingsReset.WriteDefaults(dataDir); } // the hidden copy of the defaults (Settings › Advanced › Reset)
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Debug.WriteLine(ex); }
         ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
@@ -120,7 +126,6 @@ public partial class App : Application
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
         try { _prompts.EnsureDefault(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("prompt folder setup failed", ex); }
-        _secrets = new PasswordVaultSecretStore(_log);
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var prompts = _prompts;
 
@@ -231,8 +236,23 @@ public partial class App : Application
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath,
-            () => BarRoom(settings.Window), () => _popup?.ScreenLine() ?? "", state), _log);
+            () => BarRoom(settings.Window), state), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
+        void ShowUpgradeOnce()
+        {
+            _popup.Shown -= ShowUpgradeOnce;
+            if (state.IsShown(ShownFlag.UpgradeNotice)) return;
+            if (!upgrade.Changed && upgrade.Failed.Count == 0 && state.GetUpgrade() is null) return;
+            var lines = new List<string> { Strings.Upgrade_Notice };
+            if (upgrade.Reset.Count > 0) lines.Add(L.F(Strings.Upgrade_Reset, string.Join(", ", upgrade.Reset)));
+            var backup = upgrade.Changed ? upgrade.Backup : state.GetUpgrade()?.Backup;
+            lines.Add(backup is null ? Strings.Upgrade_NoBackup : L.F(Strings.Upgrade_Backup, backup));
+            if (upgrade.Failed.Count > 0) lines.Add(L.F(Strings.Upgrade_Retry, string.Join(", ", upgrade.Failed)));
+            _presenter.Notices.ShowTagged("upgrade", Strings.Guide_Upgrade_Title, string.Join("\n", lines),
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational, closable: true);
+            state.MarkShown(ShownFlag.UpgradeNotice);
+        }
+        _popup.Shown += ShowUpgradeOnce;
         _router.OpenSettingsRequested += page => _settingsHost.Show(page);
         ApplyToolbarFile(dataDir);
         ReportSettingsProblems(store);

@@ -659,8 +659,6 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>螢幕 {0} × {1} px，縮放比例 {2}%：Windows 繪製介面大小為 {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>螢幕 {0} × {1} px（100% 縮放）</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>螢幕實際像素，忽略 Windows 縮放</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>螢幕的實際像素，忽略 Windows 縮放</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
@@ -726,6 +724,16 @@
   <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>工具 (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>音效</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 連線</value></data>

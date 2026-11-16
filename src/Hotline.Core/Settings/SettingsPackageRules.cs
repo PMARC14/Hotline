@@ -91,7 +91,7 @@ public static partial class SettingsPackage
         IsPlainStem(stem, 64) && stem.All(c => char.IsLetterOrDigit(c) || c is ' ' or '-' or '_' or '(' or ')' or '.');
 
     private static bool IsConnectionStem(string stem) =>
-        IsPlainStem(stem, 100) && stem.All(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.');
+        SettingsStore.ValidConnectionId(stem);
 
     /// <summary>Why a file's content can't be written, or null when it is fine. The path has already passed <see cref="Classify"/>.</summary>
     internal static string? Validate(string dataDirectory, SettingsCategory category, string path, byte[] bytes)
@@ -160,10 +160,21 @@ public static partial class SettingsPackage
 
         var blocks = new List<string>();
         var anyInherit = false;
+        if (!hasSettings)
+        {
+            var existing = Path.Combine(rootDirectory, SettingsStore.FileName);
+            try
+            {
+                if (File.Exists(existing) && SettingsStore.ParseSettings(File.ReadAllText(existing), new ReadProblems()).Settings is { } current)
+                    AppendRules(blocks, current.Tools.Approvals);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { }
+        }
 
         if (hasSettings && planned.TryGetValue("settings.json", out var settingsBytes))
         {
             var (settings, legacy, _) = SettingsStore.ParseSettings(DecodeUtf8(settingsBytes), new ReadProblems());
+            if (settings is not null) AppendRules(blocks, settings.Tools.Approvals);
             if (settings?.Chat?.ContinueIn is { } shared)
                 AppendContinueTargets(blocks, "settings.json › chat.continueIn", shared);
             if (legacy is not null)
@@ -275,9 +286,17 @@ public static partial class SettingsPackage
             if (s.Args.Count > 0) sb.Append($"\n  args: {string.Join(" ", s.Args)}");
             if (!string.IsNullOrWhiteSpace(s.WorkingDirectory)) sb.Append($"\n  cwd: {s.WorkingDirectory}");
             if (s.Env.Count > 0)
-                sb.Append($"\n  env: {string.Join(", ", s.Env.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => $"{kv.Key}={kv.Value}"))}");
+                sb.Append($"\n  env: {string.Join(", ", s.Env.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => $"{kv.Key}=***"))}");
             blocks.Add(sb.ToString());
         }
-        // TODO: U1: import review shows settings.json tools.approvals
+    }
+
+    private static void AppendRules(List<string> blocks, IReadOnlyDictionary<string, string> rules)
+    {
+        if (rules.Count == 0) return;
+        blocks.Add("settings.json › tools.approvals\n" + string.Join("\n", rules
+            .OrderBy(p => string.Equals(p.Value, "allow", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenBy(p => p.Key, StringComparer.Ordinal)
+            .Select(p => $"  {p.Key}: {p.Value}")));
     }
 }

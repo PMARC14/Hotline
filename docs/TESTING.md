@@ -41,10 +41,24 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
 - [ ] Set `chat.defaultConnection` to `claude` with `connections/Claude.json`; verify selection, CLI resume and Continue in survive an id case change.
 - [ ] Enter invalid width text (`19%`, `4001`, words); check validation. Save/reopen Settings and verify both accepted forms survive.
 - [ ] Edit one setting with unknown keys in settings and connection files; verify those keys survive and the originals share one `-save` backup folder.
-      Try a newer version and a pre-freeze settings file; verify the original stays untouched and the problem is shown.
+      Try a newer version during a live reload; verify the original stays untouched and the problem is shown.
 - [ ] Move and resize the panel at 200% scaling, then **Save position and size as default**: verify `settings.json` is untouched and `state.json` records `panel.width`, `panel.chatHeight` (in scaled pixels) and `panel.anchor` with `over` values; reopen at 100% and 200% and verify **Back to the default spot** returns there; change `window.width` in Settings and verify only width steps aside while `anchor` and `chatHeight` still apply.
 - [ ] Clear `shown.firstRun` and `shown.supportNote` in `state.json`, open the panel and finish an answer: verify both notes show once, write only `state.json` (no marker files), and leave `general.supportReminder` unchanged.
 - [ ] Finish an answer while another app is in front with `chat.notifyShowsText` off (toast shows "Answer ready" and the chat title) and on (toast shows the answer text).
+
+### Upgrade, Reset and Backup
+
+- [ ] In an isolated test profile, start with the synthetic pre-freeze fixture. Verify the notice appears once on panel opening,
+      names the reset files and backup, and Settings > Guide includes Upgrading from 0.6. Restart: no new upgrade backup.
+- [ ] Deny the upgrade backup, then lock one old file. Verify conversion continues without a complete backup, the notice names
+      the locked file, and the next start retries it. Check mixed-case, invalid and colliding connection ids and their test Locker keys.
+- [ ] Remove each starter file in turn and restart: it returns from embedded defaults; existing files stay intact and all three
+      hidden .defaults copies refresh. The button rows page has no screen/scaling explanation line.
+- [ ] Exercise both Reset choices. Verify one timestamp-first reset folder, embedded settings/toolbar defaults, state cleared,
+      connections retained for Reset settings and removed for Reset everything, and MCP reset for Reset everything. Newer files stay intact.
+- [ ] Export a test MCP file with secret tokens and plaintext env. Verify the note lists server/variable names without values and
+      suggests Move to Credential Locker. Import on a fresh test profile: review masks all env values, allow rules appear first,
+      missing-secret servers are listed, Cancel writes nothing, and confirmed replacement makes one timestamp-first import folder.
 
 ## 2A. The 0.6 checklist (run first)
 

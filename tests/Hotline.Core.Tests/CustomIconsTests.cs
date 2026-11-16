@@ -208,22 +208,22 @@ public sealed class CustomIconsTests : TempDirTest
     }
 
     [Fact]
-    public void Replacing_a_picture_keeps_the_newest_ten_backups_after_commit()
+    public void Replacing_a_picture_keeps_save_sets_after_commit()
     {
         var source = Write("source.png", Png(16, 16));
         CustomIcons.Import(source, Icons, "b1");
         CustomIcons.Commit(Icons, "b1");
-        for (uint side = 17; side <= 28; side++)
+        for (uint side = 17; side <= 38; side++)
         {
             var previous = File.ReadAllBytes(Path.Combine(Icons, "b1.png"));
             File.WriteAllBytes(source, Png(side, side));
             Assert.Equal("b1.png", CustomIcons.Import(source, Icons, "b1").FileName);
             CustomIcons.Commit(Icons, "b1");
-            var backups = Directory.GetFiles(Icons, "b1.png.*.bak");
-            Assert.Equal(Math.Min((int)side - 16, 10), backups.Length);
+            var backups = Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories);
+            Assert.Equal(Math.Min((int)side - 16, 20), backups.Length);
             Assert.Contains(backups, file => File.ReadAllBytes(file).SequenceEqual(previous));
         }
-        Assert.DoesNotContain(Directory.GetFiles(Icons, "b1.png.*.bak"), file => File.ReadAllBytes(file).SequenceEqual(Png(16, 16)));
+        Assert.DoesNotContain(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories), file => File.ReadAllBytes(file).SequenceEqual(Png(16, 16)));
     }
 
     [Fact]
@@ -333,17 +333,19 @@ public sealed class CustomIconsTests : TempDirTest
         Assert.True(File.Exists(Path.Combine(_dir, "outside.png")));
     }
 
-    // Deleting a button's picture also drops its rollback copy (.prev: a new button with that id must never roll back to it);
-    // the stamped .bak copies are backups and stay (they are never read as a picture).
     [Fact]
-    public void Delete_drops_the_rollback_copy_and_keeps_the_backups()
+    public void Delete_keeps_old_backups_and_rollback_copies()
     {
         CustomIcons.Import(Write("a.png", Real16), Icons, "b1");
-        CustomIcons.Import(Write("b.png", Real16), Icons, "b1"); // replaced: a .prev until Commit, and a stamped .bak
+        CustomIcons.Import(Write("b.png", Real16), Icons, "b1");
+        File.WriteAllText(Path.Combine(Icons, "b1.png.old.bak"), "old backup");
         Assert.Contains(Directory.GetFiles(Icons, "*", SearchOption.AllDirectories), f => f.EndsWith(".b1.prev"));
         Assert.True(CustomIcons.Delete(Icons, "b1"));
         var left = Directory.GetFiles(Icons).Select(Path.GetFileName).ToList();
-        Assert.DoesNotContain(left, f => f!.EndsWith(".prev") || f == "b1.png");
-        Assert.Contains(left, f => f!.StartsWith("b1.png.") && f.EndsWith(".bak"));
+        Assert.DoesNotContain("b1.png", left);
+        Assert.Contains(".b1.prev", left);
+        Assert.Contains("b1.png.old.bak", left);
+        Assert.False(CustomIcons.Rollback(Icons, "b1")); // the retained .prev is no longer a pending operation
+        Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories));
     }
 }

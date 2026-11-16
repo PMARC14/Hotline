@@ -101,34 +101,30 @@ public static class CustomIcons
         var (bytes, problem) = Read(sourcePath);
         if (bytes is null) return (null, problem);
         var name = buttonId + ".png";
-        var temp = Path.Combine(iconsFolder, $".{buttonId}.{Guid.NewGuid():N}.tmp");
         try
         {
             Directory.CreateDirectory(iconsFolder);
             // The picture being replaced is kept (not as a .png, so nothing lists it) until Commit or Rollback.
             var target = Path.Combine(iconsFolder, name);
             var previous = PreviousPath(iconsFolder, buttonId);
-            if (File.Exists(target)) BackupFiles.CopyStamped(target); // durable history survives Commit's .prev cleanup
-            File.WriteAllBytes(temp, bytes);
+            var backup = new Hotline.Core.Files.BackupSet(Path.GetDirectoryName(Path.GetFullPath(iconsFolder))!, Hotline.Core.Files.BackupReason.Save);
+            if (File.Exists(target) && !backup.TryBackup(target)) return (null, CustomIconProblem.Unreadable);
             File.Delete(previous);
             if (File.Exists(target)) File.Copy(target, previous, overwrite: true);
-            lock (FirstPictures) { if (File.Exists(previous)) FirstPictures.Remove(previous); else FirstPictures.Add(previous); }
-            File.Move(temp, target, overwrite: true);
+            lock (PendingPictures) PendingPictures[previous] = !File.Exists(previous);
+            var result = new Hotline.Core.Files.SafeFile().Replace(target, bytes, backup, 0);
+            if (result is not (Hotline.Core.Files.SafeFileResult.Written or Hotline.Core.Files.SafeFileResult.Unchanged))
+                return (null, CustomIconProblem.Unreadable);
             return (name, CustomIconProblem.None);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
         {
             return (null, CustomIconProblem.Unreadable);
         }
-        finally
-        {
-            try { if (File.Exists(temp)) File.Delete(temp); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-        }
     }
 
-    /// <summary>The .prev paths whose import created the button's first picture (so a rollback deletes it).</summary>
-    private static readonly HashSet<string> FirstPictures = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>Active imports by .prev path; true when rollback must delete the first picture.</summary>
+    private static readonly Dictionary<string, bool> PendingPictures = new(StringComparer.OrdinalIgnoreCase);
 
     private static string PreviousPath(string iconsFolder, string buttonId) => Path.Combine(iconsFolder, $".{buttonId}.prev");
 
@@ -139,7 +135,7 @@ public static class CustomIcons
         try
         {
             var previous = PreviousPath(iconsFolder, buttonId);
-            lock (FirstPictures) FirstPictures.Remove(previous);
+            lock (PendingPictures) PendingPictures.Remove(previous);
             File.Delete(previous);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { }
@@ -155,7 +151,10 @@ public static class CustomIcons
             var previous = PreviousPath(iconsFolder, buttonId);
             var target = Path.Combine(iconsFolder, buttonId + ".png");
             bool first;
-            lock (FirstPictures) first = FirstPictures.Remove(previous);
+            lock (PendingPictures)
+            {
+                if (!PendingPictures.Remove(previous, out first)) return false;
+            }
             if (File.Exists(previous)) File.Move(previous, target, overwrite: true);
             else if (first) File.Delete(target); // there was no picture before this import
             else return false; // nothing pending (committed, or never imported)
@@ -174,11 +173,9 @@ public static class CustomIcons
         if (!ToolbarModel.IsCustomId(buttonId)) return false;
         try
         {
-            // The rollback copy goes too (a new button with this id must never roll back to it); the stamped .bak copies are
-            // backups and stay.
+            // Old backups and rollback copies stay on disk; this button no longer has a pending import.
             var previous = PreviousPath(iconsFolder, buttonId);
-            if (File.Exists(previous)) File.Delete(previous);
-            lock (FirstPictures) FirstPictures.Remove(previous);
+            lock (PendingPictures) PendingPictures.Remove(previous);
             var path = Path.Combine(iconsFolder, buttonId + ".png");
             if (!File.Exists(path)) return false;
             File.Delete(path);

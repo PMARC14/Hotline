@@ -659,8 +659,6 @@ Zabroń:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Poniżej pola wiadomości</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Puste</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Wiersze przycisków</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Ekran {0} × {1} px przy skalowaniu {2}%: system Windows renderuje interfejs w {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Ekran {0} × {1} px przy skalowaniu 100%</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Rzeczywiste piksele ekranu, skalowanie Windows ignorowane</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Rzeczywiste piksele ekranu, skalowanie Windows ignorowane</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Przenieś poniżej pola wiadomości</value></data>
@@ -726,6 +724,16 @@ Zabroń:
   <data name="Backup_Intro" xml:space="preserve"><value>Przenieś konfigurację Hotline na inny komputer lub zachowaj kopię. Kopia zapasowa to pojedynczy plik .zip zawierający zaznaczone elementy; nic innego (historia czatu, pamięć, dzienniki) nie jest dołączane.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Ustawienia</value></data>
   <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Narzędzia (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Dźwięki</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>Połączenia AI</value></data>

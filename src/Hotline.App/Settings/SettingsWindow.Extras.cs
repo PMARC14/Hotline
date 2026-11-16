@@ -78,12 +78,6 @@ public sealed partial class SettingsWindow
         {
             Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        try
-        {
-            if (_screenLine?.Invoke() is { Length: > 0 } screen)
-                PageHost.Children.Add(new TextBlock { Text = screen, TextWrapping = TextWrapping.Wrap, Opacity = 0.7, Margin = new Thickness(0, 0, 0, 8) });
-        }
-        catch (Exception ex) { _log.Error("working out the screen line failed", ex); }
         var load = ToolbarFile.Load(ToolbarPath);
         if (load.Error is { } error)
         {

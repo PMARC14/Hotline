@@ -112,7 +112,8 @@ public sealed class SettingsPackageTests : TempDirTest
 
     private static IEnumerable<string> Relative(string dir) =>
         Directory.Exists(dir)
-            ? Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Select(f => Path.GetRelativePath(dir, f).Replace('\\', '/')).Order(StringComparer.Ordinal)
+            ? Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Select(f => Path.GetRelativePath(dir, f).Replace('\\', '/'))
+                .Where(f => f != "state.json").Order(StringComparer.Ordinal)
             : [];
 
     // ---- export ------------------------------------------------------------------------------
@@ -558,7 +559,7 @@ public sealed class SettingsPackageTests : TempDirTest
 
         var backup = result.BackupFolder;
         Assert.NotNull(backup);
-        Assert.Equal(Path.Combine(Backups, $"import-{Now.ToLocalTime():yyyyMMdd-HHmmss}"), backup);
+        Assert.Equal(Path.Combine(Backups, $"{Now.ToLocalTime():yyyyMMdd-HHmmss}-import"), backup);
         Assert.Equal(["actions/fix.md", "mcp.json"], Relative(backup!));
         Assert.Equal("MY OWN FIX", File.ReadAllText(Path.Combine(backup!, "actions", "fix.md")));
         Assert.Contains("mine", File.ReadAllText(Path.Combine(backup!, "mcp.json")));
@@ -699,7 +700,7 @@ public sealed class SettingsPackageTests : TempDirTest
         Assert.Equal(1, (int)saved["version"]!);
         Assert.False((bool)saved["chat"]!["memory"]!);
         Assert.True((bool)saved["diagnostics"]!["verboseLogging"]!);
-        Assert.Contains(SettingsTestFiles.Backups(Target, "settings.json"), path => File.ReadAllText(path) == original);
+        Assert.Empty(SettingsTestFiles.Backups(Target, "settings.json")); // the imported bytes match lastWritten
     }
 
     private const string CompatToolbar = """
@@ -786,7 +787,7 @@ public sealed class SettingsPackageTests : TempDirTest
         var saved = ExportedJson(archive, "toolbar.json");
         Assert.True(saved.AsObject().ContainsKey("futureKey"));
         if (!editToolbar) Assert.Equal(original, ReadEntry(archive, "toolbar.json"));
-        else Assert.Equal(original, File.ReadAllText(Assert.Single(Directory.GetFiles(Path.Combine(Target, "backups"), "toolbar.json", SearchOption.AllDirectories))));
+        else Assert.False(Directory.Exists(Path.Combine(Target, "backups"))); // own imported bytes need no save backup
     }
 
     [Theory]
@@ -899,7 +900,8 @@ public sealed class SettingsPackageTests : TempDirTest
         Assert.Contains("npx", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("@modelcontextprotocol/server-filesystem", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("C:\\Work", plan.ExecutionReview, StringComparison.Ordinal);
-        Assert.Contains("NODE_ENV=production", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("NODE_ENV=***", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.DoesNotContain("production", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("enabled: true", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
         Assert.Contains("connections/claude-dev.json", plan.ExecutionReview, StringComparison.Ordinal);
         Assert.Contains("claudeCode", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
