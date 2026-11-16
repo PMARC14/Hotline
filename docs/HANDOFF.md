@@ -31,7 +31,7 @@ OpenAI-style servers. Everything is configured in files under `%USERPROFILE%\.ho
 - **Schema freeze (S1) is under way** on `s1/schema-freeze`: see [S1 in progress](#s1-in-progress-branch-s1schema-freeze).
 - **Workflows:** PR #65 (`ci/actions-update`) moves every action to its Node 24 release; its CI passed on x64, ARM64 and the Store
   build. It is **open**; merging it publishes a prerelease. GitHub's runner offers no newer runtime than `node24`.
-- **Tests:** 3,080 Core unit tests on the S1 branch (2,757 on `main`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`;
+- **Tests:** 3,115 Core unit tests on the S1 branch (2,757 on `main`), `tests/smoke/smoke.ps1 -Install` and `hotline://selftest`;
   commands and the hand-test checklists: [TESTING.md](TESTING.md).
 - **Reviews:** 2026-11-12 whole-codebase review by Fable 5.2 and Astra (bugs), Sol and Sonnet (design, testing, simplification, merged
   into [simplification-plan.md](simplification-plan.md)). Findings were confirmed by Sol, fixed in worktrees and combined in PR #60.
@@ -72,7 +72,8 @@ where they differ. Do not reopen it. Worker briefs and results are outside the r
 - Custom button ids may use either case; any command may be a bare F1-F24; only Stop may be another bare key.
 - "Save position and size as default" writes `state.json`, never `settings.json`.
 
-**Done and pushed** (each reviewed by a different vendor, confirmed findings fixed, full test run green):
+**Done and pushed** (each reviewed by a different vendor and its confirmed findings fixed, **except U1**; full test run
+green after every step):
 
 | Task | Content | Commit |
 |---|---|---|
@@ -83,29 +84,37 @@ where they differ. Do not reopen it. Worker briefs and results are outside the r
 | S3 | Tool rules and grants, secret tokens, `mcp.json` servers only | `d78db04`, `e52b45c` |
 | S2 | `toolbar.json` v3, shortcuts with Stop, lossless save | `7c6ef61` |
 | S1 | Settings and connections v1, width, tool rules read from `settings.json` | `b25746b` |
+| A1 | One `StateStore`, saved spot in `state.json`, notes and toast | `5b74ef1` |
+| U1 | One-time upgrade, starter files, Reset and Backup on one backup policy | `0f3d5db` |
 | Store | "What's new" for 0.7 in 17 languages | `866dc5e`, `d1e8a15` |
 
-**Left to do, in order:**
+**Left to do, in order** (every code task of the design is on the branch; nothing is running, no worktrees are left):
 
-1. **Wave 3.** U1 (one-time upgrade, starter files, Reset and Import on the one backup policy, export and import rules, delete
-   `BackupFiles`, `FileArchive`, `ScreenScale.Line`) and A1 (one `StateStore` for the process, saved spot in `state.json`, notes and
-   toast). Check `agent_list` for the jobs `s1-u1-upgrade` and `s1-a1-app-state` and for worktrees under `Git/hotline.worktrees/`.
-   If a job is gone, take the patch from its worktree (`git add -A`, `git diff --cached --binary HEAD`), or rerun the task from
-   its section in `s1-briefs.md`. Then: cross-vendor review, fix confirmed findings, `git apply --3way --index`, build, test, commit.
-2. **Integration edits.** Make the App create one `StateStore` and pass it everywhere if A1 did not; check that an API key stored
-   under a mixed-case connection id is reachable after the upgrade (keys now use the lower-cased id; U1 copies them).
-3. **Rename commit:** `BackendProfile` to `ConnectionProfile`, `ChatSettings.Backends` to `Connections`. Mechanical, last.
-4. **Docs and version:** [configuration.md](configuration.md) read through once against the design; `version.txt` to `0.7`;
-   translate the new interface strings (about 60 keys are English placeholders in the 16 other languages; [TRANSLATING.md](TRANSLATING.md)).
-5. **Whole-branch review** before the PR: Argon high and Sol high (Astra if the Codex 5-hour window is under 40%).
-6. **Install and check on the owner's PC.** The owner allowed a full reset of `~\.hotline` as long as the result is the default
-   setup with the connections back and working. Back the folder up first; confirm each connection still finds its API key.
-   Ask before `smoke.ps1` (keystrokes) or any screen capture; `hotline://selftest` needs `diagnostics.testLinks` and a byte-for-byte
-   restore of `settings.json`.
-7. **Store bundle 0.7.x.0**, built locally: `scripts/build-msix.sh --store --arch all --version <x>` with the identity values from
-   the repo's Actions variables (`store.yml` shows the call). Then open for the owner: the bundle folder, `store/listing.md`,
-   `store/listings/` and `artifacts/store/`.
-8. **PR** from `s1/schema-freeze` to `main`. Merging publishes a prerelease; the owner promotes it after the desktop hand tests.
+1. **Review U1.** Its cross-vendor review failed to run (agy stream error), so `0f3d5db` is unreviewed. It runs once on every
+   user's real files, so review it for data loss before anything is installed: a file replaced without a backup that could
+   have been made, a half-finished upgrade recorded as done, a connection losing its API key (keys now live under the
+   lower-cased id; the upgrade copies them), anything touched that the design leaves alone. The review prompt is in this
+   chat's history; the short form is the "Look especially for" list in the U1 section of `s1-briefs.md` plus those points.
+   Use Hydrogen high or Sol medium, read-only, on the commit; verify each finding against the code; fix with a test.
+2. **Rename commit:** `BackendProfile` to `ConnectionProfile`, `ChatSettings.Backends` to `Connections`. Mechanical, about 56
+   files; build and test.
+3. **Docs and version:** read [configuration.md](configuration.md) once against the design (five workers edited it);
+   `version.txt` to `0.7`; fold the amended decisions into [simplification-plan.md](simplification-plan.md) or point it at the
+   design; translate the new interface strings (about 60 keys are English placeholders in the 16 other languages: Hydrogen
+   medium in batches, [TRANSLATING.md](TRANSLATING.md)).
+4. **Whole-branch review** before the PR: Argon high and Sol high (Astra if the Codex 5-hour window is under 40%).
+5. **Install and check on the owner's PC.** The owner allowed a full reset of `~\.hotline` as long as the result is the default
+   setup with the connections back and working. Copy the folder aside first; after the first start check the upgrade notice,
+   the `backups\<stamp>-upgrade\` folder, and that each connection still finds its API key. Ask before `smoke.ps1` (keystrokes)
+   or any screen capture; `hotline://selftest` needs `diagnostics.testLinks` and a byte-for-byte restore of `settings.json`.
+6. **Store bundle 0.7.x.0**, built locally: `scripts/build-msix.sh --store --arch all --version <x>` with the identity values
+   from the repo's Actions variables (`store.yml` shows the call; `gh variable list`). Then open for the owner: the bundle
+   folder, `store/listing.md`, `store/listings/` and `artifacts/store/` (the 0.6.3 images are reused as they are).
+7. **PR** from `s1/schema-freeze` to `main`. Merging publishes a prerelease; the owner promotes it after the desktop hand tests.
+8. **Then:** plan step 5 (Core decisions out of WinUI), plan only; see *Next work*.
+
+**Open pull requests:** #65 `ci/actions-update` (Hotline, all checks pass; merging publishes a prerelease; its worktree
+`Git/hotline.worktrees/ci-actions` can go once merged) and `agents-jobs` #10 (Node 22 minimum).
 
 **Owner hand tests for S1** (desktop): the upgrade notice and backup folder; button fill at several panel widths and at 100% and
 200% scaling; width as `%` and as pixels on two screens; drag minimum; saved spot and "Back to the default spot"; Stop and other
