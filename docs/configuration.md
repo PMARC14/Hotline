@@ -51,7 +51,7 @@ Missing values and `null` use those defaults in memory. Loading creates no files
 | `general.language` | `system` | Interface language: `system` follows the Windows display language, or one of `en-US`, `es`, `fr`, `de`, `it`, `pt-BR`, `nl`, `pl`, `uk`, `tr`, `ja`, `ko`, `zh-Hans`, `zh-Hant`, `hi`, `id`, `vi`. Applies after restarting Hotline. AI answers follow the language you write in, whatever this says. See [TRANSLATING.md](TRANSLATING.md) |
 | `general.supportReminder` | `true` | Preference for showing the support reminder |
 | `window.minHeight` / `maxHeightPercent` | `0` / `60` | Minimum height in scaled pixels (0 fits the message bar), and maximum height as a percentage of the work area |
-| `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its saved default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (written by the grip's *Save as default*; not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom  |
+| `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom |
 | `window.width` | `"40%"` | Opening width: a number of scaled pixels (200–4000) or a string `"N%"` (20–90, decimals allowed), clamped to the width limits and available work area |
 | `window.minWidth` / `maxWidth` | `320` / `800` | Width clamps in scaled pixels (200–4000); the maximum cannot be below the minimum |
 | `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
@@ -73,7 +73,7 @@ Missing values and `null` use those defaults in memory. Loading creates no files
 | `window.growMode` | `grow` | `grow` = fit the conversation; `full` = jump to the maximum height once you chat |
 | `chat.maxImagePixels` | `2048` | Attached/captured images are scaled to this longest edge |
 | `chat.notifyWhenDone` | `true` | A Windows notification when an answer finishes while the panel is hidden or another app is in front; clicking it opens the answer |
-| `chat.notifyShowsText` | `false` | Include answer text in completion notifications; off shows the chat title only |
+| `chat.notifyShowsText` | `false` | Include answer text in completion notifications; off shows "Answer ready" and the chat title |
 | `chat.thinkingIndicator` | `true` | While an answer is on its way but no text has come for `chat.thinkingDelayMs`, the cursor spins (so a slow model doesn't look stalled) |
 | `chat.thinkingDelayMs` | `700` | How long without new text before the cursor spins (0–10000 ms). Not in the Settings window |
 | `chat.historyListSize` | `300` | How many saved chats the history list reads (10–5000). Not in the Settings window |
@@ -267,7 +267,7 @@ renames and deletes them.
 Hold **Alt** while the panel has focus (or with the pointer over it): a grip appears on the message bar's outer edge
 and handles on the sides. Drag the grip to move the panel; drag a side to change the width, the chat side to change
 how tall the chat gets (that height stays until the panel is closed). Right-click the grip for **Save position and
-size as default** (writes `window.anchor`, `width`, `chatHeight`) or **Back to the default spot**. A moved panel goes
+size as default** (saves `panel.anchor`, `width` and `chatHeight` in scaled pixels to `state.json`, leaving `settings.json` untouched; each saved item applies while its `settings.json` value stays unchanged) or **Back to the default spot**. A moved panel goes
 back to its default the next time it opens, unless it's **pinned**: then the key reopens it where you left it, until
 you unpin it, click into another app, or Hotline restarts.
 

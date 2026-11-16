@@ -3,6 +3,7 @@ using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.State;
 using Hotline.Core.Tools;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,6 +22,7 @@ internal sealed class ChatPresenter
     private readonly ChatController _chat;
     private readonly HotlineSettings _settings;
     private readonly SettingsStore _store;
+    private readonly StateStore _state;
     private readonly FileLog _log;
     private readonly string _dataDirectory;
     private readonly PanelTheme _theme;
@@ -39,6 +41,7 @@ internal sealed class ChatPresenter
     private readonly AnswerNotifier _notifier;
     private readonly ToolbarCustomActions _customButtons;
     private readonly Dictionary<string, string> _answerBackends = [];
+    private string? _chatTitle;
     private string? _lastLook;
     private bool _preparingSend;
 
@@ -46,9 +49,8 @@ internal sealed class ChatPresenter
     public event Action<bool>? BusyChanged;
     public event Action? SettingsRequested;
 
-    /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
-    public Action<Action<HotlineSettings>>? UpdateSettings { set { _support.UpdateSettings = value; _updateSettings = value; } }
-    private Action<Action<HotlineSettings>>? _updateSettings;
+    /// <summary>Retained for caller wiring; notes and saved panel spots now write state.json directly.</summary>
+    public Action<Action<HotlineSettings>>? UpdateSettings { get; set; }
 
     /// <summary>hotline://grips: shows the Alt grips on the open panel until hidden again (tests, screenshots).</summary>
     internal void ShowGrips(bool show) => _grips.Force(show);
@@ -62,9 +64,9 @@ internal sealed class ChatPresenter
     internal ContinueIn? ContinueIn { get => _recent.ContinueIn; set => _recent.ContinueIn = value; }
 
     public ChatPresenter(PopupWindow popup, ChatController chat, AttachmentTray tray, HotlineSettings settings, SettingsStore store, FileLog log,
-        string dataDirectory)
+        string dataDirectory, StateStore state)
     {
-        (_popup, _chat, _settings, _store, _log, _dataDirectory) = (popup, chat, settings, store, log, dataDirectory);
+        (_popup, _chat, _settings, _store, _log, _dataDirectory, _state) = (popup, chat, settings, store, log, dataDirectory, state);
         _theme = new PanelTheme(settings, OpenLink);
         _notices = new NoticeArea(popup, log);
         _tasks = new UiTasks(log, _notices);
@@ -81,8 +83,8 @@ internal sealed class ChatPresenter
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
         popup.KeepOnKeyPress = () => _voice.Active || settings.Activation.Tap != Hotline.Core.Activation.KeyAction.TogglePopup;
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log, () => settings.Chat.HistoryListSize);
-        _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
-        _support = new SupportNote(popup, _notices, settings, dataDirectory);
+        _firstRun = new FirstRunNote(popup, _notices, state);
+        _support = new SupportNote(popup, _notices, settings, state);
         _notifier = new AnswerNotifier(popup, settings, log);
         _customButtons = new ToolbarCustomActions(_composer, actions, () => _attachments.Items.Count > 0, _notices, () => _tasks.Run("send", () => SendAsync(plain: true)), log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
@@ -119,12 +121,16 @@ internal sealed class ChatPresenter
         {
             SaveAsDefault = () =>
             {
-                var (anchor, width, chat) = _popup.CurrentSpot();
-                _updateSettings?.Invoke(s => { s.Window.Anchor = anchor; s.Window.Width = width; s.Window.ChatHeight = chat; });
-                if (_store.SettingsError is null && _store.WriteProblems.Count == 0)
+                var spot = _popup.CurrentSpot();
+                if (_state.SavePanelSpot(spot))
                 {
-                    _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
+                    _popup.RefreshSavedSpot();
+                    _log.Info($"saved as default to state.json: {spot.Anchor?.Value.Monitor} {spot.Anchor?.Value.X:0.###},{spot.Anchor?.Value.Y:0.###} width {spot.Width?.Value} chat {spot.ChatHeight?.Value.ToString() ?? "auto"}");
                     Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                }
+                else
+                {
+                    _log.Error("saving default panel spot to state.json failed");
                 }
             },
         };
@@ -332,11 +338,16 @@ internal sealed class ChatPresenter
 
     private string BackendOf(string answerId) => _answerBackends.Remove(answerId, out var name) ? name : "";
 
+    private string CurrentChatTitle() =>
+        _chatTitle ?? HistoryStore.TitleOf(_chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User && !string.IsNullOrWhiteSpace(m.Text))?.Text ?? "");
+
     private void OnChatEvent(ChatEvent e)
     {
         switch (e)
         {
             case UserMessageAdded u:
+                if (_chatTitle is null && !string.IsNullOrWhiteSpace(u.Message.Text))
+                    _chatTitle = HistoryStore.TitleOf(u.Message.Text);
                 _transcript.AddUser(u.Message);
                 break;
             case AssistantStarted s:
@@ -359,7 +370,7 @@ internal sealed class ChatPresenter
                 if (IsRealAnswer(c.Id))
                 {
                     _support.AnswerCompleted();
-                    _notifier.Finished(answeredBy, _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
+                    _notifier.Finished(answeredBy, CurrentChatTitle(), _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
                 }
                 break;
             case AssistantCancelled c:
@@ -374,7 +385,7 @@ internal sealed class ChatPresenter
                 _transcript.ShowError(f.Id, f.Message);
                 SetBusy(false);
                 var failedOn = BackendOf(f.Id);
-                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, f.Message, failed: true);
+                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, CurrentChatTitle(), f.Message, failed: true);
                 break;
             case MessageRestored r when r.Message.Role == ChatRole.User:
                 _transcript.AddUser(r.Message);
@@ -384,14 +395,19 @@ internal sealed class ChatPresenter
                 _transcript.RestoreAnswer(r.Message, name, ReportFor(r.Message.BackendId));
                 break;
             case ConversationReset:
+                _chatTitle = null;
                 _transcript.Clear();
                 _notices.Clear();
                 SetBusy(false);
                 break;
-            case ConversationResumed { HasTranscript: false } resumed:
-                // Only the record was kept: the earlier messages are in the CLI's own history.
-                var holder = _settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, resumed.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? resumed.BackendId ?? "";
-                _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
+            case ConversationResumed resumed:
+                _chatTitle = string.IsNullOrWhiteSpace(resumed.Title) ? null : resumed.Title;
+                if (!resumed.HasTranscript)
+                {
+                    // Only the record was kept: the earlier messages are in the CLI's own history.
+                    var holder = _settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, resumed.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? resumed.BackendId ?? "";
+                    _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
+                }
                 break;
         }
     }

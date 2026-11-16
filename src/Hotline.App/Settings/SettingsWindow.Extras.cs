@@ -19,7 +19,7 @@ public sealed partial class SettingsWindow
 
     private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
     {
-        var page = _pageToolbar ??= new ToolbarShortcutSession(ToolbarPath);
+        var page = _pageToolbar ??= new ToolbarShortcutSession(ToolbarPath, state: _state);
         if (page.Load.Error is { } problem) return Card(header, problem, null);
         var id = row.ToolbarShortcutId!;
         var box = new TextBox { Text = page.Load.Model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
@@ -105,7 +105,7 @@ public sealed partial class SettingsWindow
         void Save(ToolbarModel model)
         {
             if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-            var problem = ToolbarFile.Save(ToolbarPath, model);
+            var problem = ToolbarFile.Save(ToolbarPath, model, state: _state);
             if (problem is not null) throw new IOException(problem);
             stamp = ToolbarFile.Fingerprint(ToolbarPath);
         }
@@ -187,7 +187,7 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults, state: _state);
                 if (problem is not null) throw new IOException(problem);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("saving toolbar.json failed", ex); }
@@ -222,7 +222,11 @@ public sealed partial class SettingsWindow
                 return button;
             }
             var reminder = new ToggleSwitch { IsOn = _settings.Current.General.SupportReminder, OnContent = "", OffContent = "", MinWidth = 0 };
-            reminder.Toggled += (_, _) => _settings.Update(s => s.General.SupportReminder = reminder.IsOn);
+            reminder.Toggled += (_, _) =>
+            {
+                _settings.Update(s => s.General.SupportReminder = reminder.IsOn);
+                if (reminder.IsOn) _state?.SetShown(Hotline.Core.State.ShownFlag.SupportNote, null); // asked for again: show it once more
+            };
             PageHost.Children.Add(Card(Strings.About_Support, Strings.About_Support_Desc,
                 new StackPanel
                 {

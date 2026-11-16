@@ -16,7 +16,7 @@ public sealed class PanelWidthTests
 
     [Theory]
     [InlineData("200", 200, false)]
-    [InlineData("640.5", 640.5, false)]
+    [InlineData("1280", 1280, false)]
     [InlineData("4000", 4000, false)]
     [InlineData("20%", 20, true)]
     [InlineData("40.5%", 40.5, true)]
@@ -55,5 +55,15 @@ public sealed class PanelWidthTests
         PanelWidth.TryParse(opening, out var width);
         var settings = new WindowSettings { Width = width, ChatWidth = PanelWidth.TryParse(chat, out var chatWidth) ? chatWidth : null };
         Assert.Equal(expected, PanelWidth.ResolvePixels(settings, work, scale, chatting));
+    }
+
+    [Theory]
+    [InlineData("640.4", 640, false)]
+    [InlineData("640.5", 640, false)] // banker's rounding: still a whole pixel
+    [InlineData("40.5%", 40.5, true)]
+    public void A_pixel_width_is_whole_and_a_percent_keeps_its_fraction(string text, double value, bool percent)
+    {
+        Assert.True(PanelWidth.TryParse(text, out var width));
+        Assert.Equal((value, percent), (width.Value, width.IsPercent));
     }
 }

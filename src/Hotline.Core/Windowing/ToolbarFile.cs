@@ -14,13 +14,15 @@ public sealed class ToolbarShortcutSession
 {
     private readonly string _path;
     private readonly IFileSystem? _files;
+    private readonly StateStore? _state;
     private string? _stamp;
     public ToolbarLoad Load { get; private set; }
 
-    public ToolbarShortcutSession(string path, IFileSystem? fileSystem = null)
+    public ToolbarShortcutSession(string path, IFileSystem? fileSystem = null, StateStore? state = null)
     {
         _path = path;
         _files = fileSystem;
+        _state = state;
         Load = ToolbarFile.Load(path, fileSystem);
         _stamp = ToolbarFile.Fingerprint(path, fileSystem);
     }
@@ -29,7 +31,7 @@ public sealed class ToolbarShortcutSession
     {
         if (ToolbarFile.Fingerprint(_path, _files) != _stamp) return (true, null);
         var next = ToolbarEditor.SetShortcut(Load.Model, id, text);
-        var error = ToolbarFile.Save(_path, next, _files);
+        var error = ToolbarFile.Save(_path, next, _files, _state);
         if (error is not null) return (false, error);
         Load = new(next, null);
         _stamp = ToolbarFile.Fingerprint(_path, _files);

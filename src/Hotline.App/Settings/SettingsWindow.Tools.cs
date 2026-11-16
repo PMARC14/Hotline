@@ -10,8 +10,7 @@ public sealed partial class SettingsWindow
     private void BuildToolsGrantsAndSecrets()
     {
         var dataDir = !string.IsNullOrEmpty(_mcpPath) ? Path.GetDirectoryName(_mcpPath) : Path.GetDirectoryName(_settingsFile);
-        if (string.IsNullOrEmpty(dataDir)) return;
-        var state = new StateStore(Path.Combine(dataDir, StateStore.FileName));
+        if (string.IsNullOrEmpty(dataDir) || _state is not { } state) return;
 
         BuildGrantsSection(state);
         if (!string.IsNullOrEmpty(_mcpPath))

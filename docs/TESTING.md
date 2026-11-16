@@ -42,6 +42,9 @@ Run **2A (the 0.6 checklist)** first, in order; **2B** is the older, longer list
 - [ ] Enter invalid width text (`19%`, `4001`, words); check validation. Save/reopen Settings and verify both accepted forms survive.
 - [ ] Edit one setting with unknown keys in settings and connection files; verify those keys survive and the originals share one `-save` backup folder.
       Try a newer version and a pre-freeze settings file; verify the original stays untouched and the problem is shown.
+- [ ] Move and resize the panel at 200% scaling, then **Save position and size as default**: verify `settings.json` is untouched and `state.json` records `panel.width`, `panel.chatHeight` (in scaled pixels) and `panel.anchor` with `over` values; reopen at 100% and 200% and verify **Back to the default spot** returns there; change `window.width` in Settings and verify only width steps aside while `anchor` and `chatHeight` still apply.
+- [ ] Clear `shown.firstRun` and `shown.supportNote` in `state.json`, open the panel and finish an answer: verify both notes show once, write only `state.json` (no marker files), and leave `general.supportReminder` unchanged.
+- [ ] Finish an answer while another app is in front with `chat.notifyShowsText` off (toast shows "Answer ready" and the chat title) and on (toast shows the answer text).
 
 ## 2A. The 0.6 checklist (run first)
 

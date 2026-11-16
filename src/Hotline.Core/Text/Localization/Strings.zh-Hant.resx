@@ -82,6 +82,7 @@
   <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
   <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} 已回答</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} 無法完成回答</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>聊天記錄保留期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>

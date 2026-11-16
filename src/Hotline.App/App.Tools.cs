@@ -10,10 +10,9 @@ public partial class App
     /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
     /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
     /// </summary>
-    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job)
+    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job, Hotline.Core.State.StateStore state)
     {
         var mcpPath = Path.Combine(dataDir, "mcp.json");
-        var grants = new Hotline.Core.State.StateStore(Path.Combine(dataDir, Hotline.Core.State.StateStore.FileName));
         _odrPath = Hotline.Core.Tools.OdrDiscovery.FindOdr(File.Exists, Environment.GetEnvironmentVariable("WINDIR"), Environment.GetEnvironmentVariable("LOCALAPPDATA"));
         _log?.Info(_odrPath is null ? "Windows agent registry: not available on this Windows" : $"Windows agent registry: {_odrPath}");
         if (_odrPath is { } odr)
@@ -36,7 +35,7 @@ public partial class App
         _toolHost = new Hotline.Core.Tools.McpToolHost(
             () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers,
             ToolRules, // settings.json tools.approvals, read anew for every check
-            grants, _secrets!,
+            state, _secrets!,
             Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}"), verbose: () => _log?.Verbose == true),
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             _log!);

@@ -15,7 +15,8 @@ public readonly record struct PanelWidth
     {
         if (!double.IsFinite(value) || value < (isPercent ? 20 : 200) || value > (isPercent ? 90 : 4000))
             throw new ArgumentOutOfRangeException(nameof(value));
-        (Value, IsPercent) = (value, isPercent);
+        // A pixel width is whole: a fraction of a scaled pixel shows nothing, and the saved spot compares widths exactly.
+        (Value, IsPercent) = (isPercent ? value : Math.Round(value), isPercent);
     }
 
     public static bool TryParse(string? text, out PanelWidth width)

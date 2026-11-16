@@ -25,16 +25,28 @@ internal sealed class AnswerNotifier(PopupWindow popup, HotlineSettings settings
         popup.Activated += (_, e) => { if (e.WindowActivationState != Microsoft.UI.Xaml.WindowActivationState.Deactivated) Clear(); };
     }
 
-    public void Finished(string backendName, string text, bool failed)
+    public void Finished(string backendName, string chatTitle, string text, bool failed)
     {
         if (!settings.Chat.NotifyWhenDone) return;
         if (popup.IsShown && Native.GetForegroundWindow() == popup.Hwnd) return; // they're looking at it
-        var title = NotificationText.Snippet(L.F(failed ? Strings.Notify_Failed : Strings.Notify_Answered, string.IsNullOrWhiteSpace(backendName) ? "Hotline" : backendName), max: 80);
-        var body = NotificationText.Snippet(text);
+        var source = string.IsNullOrWhiteSpace(backendName) ? "Hotline" : backendName;
+        string title;
+        string body;
+        if (settings.Chat.NotifyShowsText)
+        {
+            title = NotificationText.Snippet(L.F(failed ? Strings.Notify_Failed : Strings.Notify_Answered, source), max: 80);
+            body = NotificationText.Snippet(text);
+        }
+        else
+        {
+            title = failed ? NotificationText.Snippet(L.F(Strings.Notify_Failed, source), max: 80) : Strings.Notify_AnswerReady;
+            body = NotificationText.Snippet(chatTitle, max: 80);
+        }
         try
         {
+            var bodyXml = string.IsNullOrEmpty(body) ? "" : $"<text>{SecurityElement.Escape(body)}</text>";
             var xml = new XmlDocument();
-            xml.LoadXml($"""<toast activationType="protocol" launch="hotline://answer"><visual><binding template="ToastGeneric"><text>{SecurityElement.Escape(title)}</text><text>{SecurityElement.Escape(body)}</text></binding></visual></toast>""");
+            xml.LoadXml($"""<toast activationType="protocol" launch="hotline://answer"><visual><binding template="ToastGeneric"><text>{SecurityElement.Escape(title)}</text>{bodyXml}</binding></visual></toast>""");
             ToastNotificationManager.CreateToastNotifier().Show(new ToastNotification(xml)
             {
                 Tag = Tag, Group = Group, ExpirationTime = DateTimeOffset.Now.AddHours(4),

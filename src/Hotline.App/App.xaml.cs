@@ -105,7 +105,8 @@ public partial class App : Application
         // If the move failed, keep using the old settings this session (never write defaults over the user data).
         if (migrationFailed) dataDir = privateDir;
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
-        var store = new SettingsStore(dataDir);
+        var state = new Hotline.Core.State.StateStore(Path.Combine(dataDir, Hotline.Core.State.StateStore.FileName));
+        var store = new SettingsStore(dataDir, state: state);
         var settings = store.Load();
         try { SettingsReset.WriteDefaults(dataDir); } // the hidden copy of the defaults (Settings › Advanced › Reset)
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Debug.WriteLine(ex); }
@@ -125,7 +126,7 @@ public partial class App : Application
 
         var job = new ChildProcessJob(_log);
         _foreground = new ForegroundWindowTracker(_log, job.Owns);
-        _popup = new PopupWindow(settings.Window, settings.Window.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground);
+        _popup = new PopupWindow(settings.Window, settings.Window.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground, state);
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log,
             testLinksEnabled: () => _settingsService.Current.Diagnostics.TestLinks);
@@ -144,7 +145,7 @@ public partial class App : Application
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
         // Hotline's own tools (remember) + the MCP tools; saving a memory asks in the panel unless chat.memoryTool says otherwise.
-        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
+        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job, state), memory,
             () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow, UpdateSource.Automatic)), // Update may Reload: UI thread
@@ -173,7 +174,7 @@ public partial class App : Application
                 && settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } owner
                 ? CliTranscripts.Read(owner.Type, sessionId, home, backendId) : null,
         };
-        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
+        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir, state)
         {
             UpdateSettings = change => _settingsService!.Update(change, UpdateSource.Automatic),
         };
@@ -230,7 +231,7 @@ public partial class App : Application
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath,
-            () => BarRoom(settings.Window), () => _popup?.ScreenLine() ?? ""), _log);
+            () => BarRoom(settings.Window), () => _popup?.ScreenLine() ?? "", state), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
         _router.OpenSettingsRequested += page => _settingsHost.Show(page);
         ApplyToolbarFile(dataDir);
