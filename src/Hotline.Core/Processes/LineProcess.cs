@@ -62,16 +62,23 @@ public sealed class SystemLineProcess : ILineProcess
         {
             onStarted?.Invoke(_process);
             _stdout = new BoundedLineReader(_process.StandardOutput, maxLineChars);
-            _process.ErrorDataReceived += (_, e) =>
+            // Read in chunks, not lines: a child that writes endless text with no newline must not grow memory.
+            var stderr = _process.StandardError;
+            _ = Task.Run(async () =>
             {
-                if (e.Data is null) return;
-                lock (_stderr)
+                var buffer = new char[4096];
+                try
                 {
-                    _stderr.AppendLine(e.Data);
-                    if (_stderr.Length > StderrKeep) _stderr.Remove(0, _stderr.Length - StderrKeep);
+                    int n;
+                    while ((n = await stderr.ReadAsync(buffer)) > 0)
+                        lock (_stderr)
+                        {
+                            _stderr.Append(buffer, 0, n);
+                            if (_stderr.Length > StderrKeep) _stderr.Remove(0, _stderr.Length - StderrKeep);
+                        }
                 }
-            };
-            _process.BeginErrorReadLine();
+                catch (Exception ex) when (ex is IOException or ObjectDisposedException or InvalidOperationException) { }
+            });
         }
         catch
         {

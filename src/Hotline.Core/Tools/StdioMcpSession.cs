@@ -35,7 +35,6 @@ public sealed class StdioMcpSession : IMcpSession
                 startInfo.Environment.TryGetValue("PATHEXT", out var ext) ? ext : null, File.Exists) is null)
             throw new IOException(Scrub(Platform.CommandResolver.MissingMessage(server.Name, server.Command)));
         var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
-        process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
         bool started;
         Processes.ProcessLaunches.Noted();
         try { started = process.Start(); }
@@ -55,7 +54,7 @@ public sealed class StdioMcpSession : IMcpSession
         try
         {
             onStarted?.Invoke(process);
-            process.BeginErrorReadLine();
+            PumpStderr(process.StandardError, stderr.Line);
             process.Exited += onExited;
             if (process.HasExited) exitedOrCancelled.Cancel();
             client = await McpClient.CreateAsync(new StreamClientTransport(process.StandardInput.BaseStream, process.StandardOutput.BaseStream),
@@ -141,4 +140,25 @@ public sealed class StdioMcpSession : IMcpSession
         if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
         await ShutdownAsync(_process, _client, ShutdownGrace);
     }
+
+    /// <summary>Reads stderr in chunks and hands on lines of at most 4000 chars: a server that never writes a newline can't grow memory.</summary>
+    internal static void PumpStderr(TextReader reader, Action<string> line) => _ = Task.Run(async () =>
+    {
+        const int MaxLine = 4000;
+        var buffer = new char[4096];
+        var current = new System.Text.StringBuilder();
+        try
+        {
+            int n;
+            while ((n = await reader.ReadAsync(buffer)) > 0)
+                for (var i = 0; i < n; i++)
+                {
+                    var c = buffer[i];
+                    if (c == '\n') { line(current.ToString().TrimEnd('\r')); current.Clear(); }
+                    else if (current.Length < MaxLine) current.Append(c);
+                }
+            if (current.Length > 0) line(current.ToString().TrimEnd('\r'));
+        }
+        catch (Exception ex) when (ex is IOException or ObjectDisposedException or InvalidOperationException) { }
+    });
 }
