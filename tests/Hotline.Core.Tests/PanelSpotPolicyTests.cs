@@ -145,6 +145,17 @@ public sealed class PanelSpotPolicyTests : TempDirTest
     }
 
     [Fact]
+    public void A_saved_width_beyond_maxWidth_opens_at_that_width()
+    {
+        var store = new StateStore(StatePath);
+        var settings = new WindowSettings(); // maxWidth 800
+        Assert.True(store.SavePanelSpot(PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 1000, 120), Work, 1.0, null, 120, null, settings, store)));
+        var effective = PanelSpotPolicy.Resolve(store, settings);
+        Assert.True(effective.WidthApplied);
+        Assert.Equal(1000, effective.OpeningWidthPixels(settings, 1920, 1.0));
+    }
+
+    [Fact]
     public void Resolve_handles_null_state_and_pixel_over_width()
     {
         var settings = new WindowSettings { Width = new PanelWidth(640) };

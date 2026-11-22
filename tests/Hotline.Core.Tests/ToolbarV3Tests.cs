@@ -29,6 +29,19 @@ public sealed class ToolbarV3Tests : TempDirTest
         Assert.Empty(fs.Writes);
     }
 
+    [Fact]
+    public void Resetting_the_bar_keeps_shortcuts_and_unknown_shortcut_keys()
+    {
+        var fs = new FakeFileSystem();
+        var path = Path.Combine(_dir, "toolbar.json");
+        fs.Files[path] = File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "fixtures", "toolbar", "v3", "unknown-keys.json"));
+        Assert.Null(ToolbarFile.Save(path, ToolbarModel.ResetLayout(ToolbarFile.Load(path, fs).Model), fileSystem: fs));
+        var shortcuts = JsonNode.Parse(fs.Files[path])!["shortcuts"]!;
+        Assert.Equal("Ctrl+Shift+Y", shortcuts["futureCommand"]!.GetValue<string>());
+        Assert.Equal("Ctrl+K", shortcuts["pin"]!.GetValue<string>());
+        Assert.DoesNotContain("summarize", JsonNode.Parse(fs.Files[path])!["bottom"]!["left"]!.AsArray().Select(n => n!.GetValue<string>()));
+    }
+
     [Theory]
     [InlineData("{}")]
     [InlineData("{\"version\":1}")]

@@ -32,7 +32,8 @@ public sealed partial class SettingsWindow
         }
         void Save(string? value)
         {
-            if (value is not null && !Accept(value)) return;
+            // Reset (null) is checked too: the default may be taken by another command meanwhile.
+            if (!Accept(value ?? Hotline.Core.Settings.ChatShortcuts.Defaults.GetValueOrDefault(id, ""))) return;
             try
             {
                 var result = page.SetShortcut(id, value);
@@ -181,7 +182,8 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults, state: _state);
+                var current = ToolbarFile.Load(ToolbarPath);
+                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.ResetLayout(current.Error is null ? current.Model : null), state: _state);
                 if (problem is not null) throw new IOException(problem);
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("saving toolbar.json failed", ex); }

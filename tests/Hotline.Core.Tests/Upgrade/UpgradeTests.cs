@@ -230,20 +230,39 @@ public sealed class UpgradeTests : TempDirTest
     }
 
     [Fact]
-    public void A_rename_interrupted_after_writing_the_new_file_resumes_without_a_duplicate()
+    public void A_repaired_id_never_takes_the_id_or_key_of_a_connection_that_already_had_it()
     {
-        Put("connections/source.json", """{"id":"bad id","type":"local","extraArgs":"--a b"}""");
-        Put("settings.json", """{"chat":{"defaultBackend":"bad id"}}""");
-        _secrets.Set("connection:bad id:apiKey", "test-secret");
-        // Writing bad_id.json works but no delete does: the same state as a crash between the two.
-        _files.Fail = c => c.Operation == "DeleteFile";
-        Assert.Contains("connections/source.json", PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
+        Put("connections/a.json", """{"id":"bad id","type":"local","n":1}""");
+        Put("connections/b.json", """{"id":"bad_id","type":"local","n":2}""");
+        _secrets.Set("connection:bad id:apiKey", "first-secret");
+        _secrets.Set("connection:bad_id:apiKey", "second-secret");
+        Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
+        Assert.Equal(2, Read("connections/bad_id.json")["n"]!.GetValue<int>());
+        Assert.Equal(1, Read("connections/bad_id-2.json")["n"]!.GetValue<int>());
+        Assert.Equal("second-secret", _secrets.Get("connection:bad_id:apiKey"));
+        Assert.Equal("first-secret", _secrets.Get("connection:bad_id-2:apiKey"));
+    }
+
+    [Fact]
+    public void Identical_connections_sharing_an_id_both_survive_a_retry()
+    {
+        Put("connections/a.json", """{"id":"same","type":"local"}""");
+        Put("connections/b.json", """{"id":"same","type":"local"}""");
+        _files.Fail = c => c.Operation == "WriteDurable" && c.Path == PathOf("connections/same-2.json");
+        Assert.Contains("connections/b.json", PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
         _files.Fail = null;
         Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
-        Assert.False(_files.Files.ContainsKey(PathOf("connections/source.json")));
-        Assert.False(_files.Files.ContainsKey(PathOf("connections/bad_id-2.json")));
-        Assert.Equal("bad_id", Read("settings.json")["chat"]!["defaultConnection"]!.GetValue<string>());
-        Assert.Equal("test-secret", _secrets.Get("connection:bad_id:apiKey"));
+        Assert.True(_files.Files.ContainsKey(PathOf("connections/same.json")));
+        Assert.True(_files.Files.ContainsKey(PathOf("connections/same-2.json")));
+    }
+
+    [Fact]
+    public void A_current_settings_file_with_VERSION_in_capitals_is_not_reset()
+    {
+        const string text = """{"VERSION":1,"window":{"theme":"dark"}}""";
+        Put("settings.json", text);
+        Assert.False(PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Changed);
+        Assert.Equal(text, Encoding.UTF8.GetString(_files.Files[PathOf("settings.json")]));
     }
 
     [Fact]

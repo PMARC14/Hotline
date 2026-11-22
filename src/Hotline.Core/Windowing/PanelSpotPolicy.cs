@@ -16,11 +16,13 @@ public sealed record EffectivePanelSpot(
     public int OpeningWidthPixels(WindowSettings settings, int workAreaPixels, double scale)
     {
         ArgumentNullException.ThrowIfNull(settings);
+        // A saved width is a size the user dragged to (dragging ignores minWidth/maxWidth): only the range limits it.
+        var range = SettingsRanges.All["WindowSettings.MinWidth"];
         var effective = new WindowSettings
         {
             Width = Width,
-            MinWidth = settings.MinWidth,
-            MaxWidth = settings.MaxWidth,
+            MinWidth = WidthApplied ? (int)range.Min : settings.MinWidth,
+            MaxWidth = WidthApplied ? (int)range.Max : settings.MaxWidth,
         };
         return PanelWidth.ResolvePixels(effective, workAreaPixels, scale);
     }

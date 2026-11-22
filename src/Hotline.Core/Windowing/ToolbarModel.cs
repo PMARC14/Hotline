@@ -111,6 +111,9 @@ public sealed record ToolbarModel(
     /// <summary>The embedded default layout and style.</summary>
     public static ToolbarModel Defaults { get; } = Read(DefaultTree(), []) with { Shortcuts = null };
 
+    /// <summary>"Reset the bar": the default layout and style. Panel shortcuts (also in toolbar.json) are kept.</summary>
+    public static ToolbarModel ResetLayout(ToolbarModel? current) => Defaults with { Shortcuts = current?.Shortcuts };
+
     private static IReadOnlyDictionary<Quadrant, IReadOnlyList<string>> Layout(Func<Quadrant, IReadOnlyList<string>> items) =>
         Order.ToDictionary(q => q, items);
 

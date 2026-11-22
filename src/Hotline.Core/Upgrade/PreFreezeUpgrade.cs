@@ -43,7 +43,7 @@ public static class PreFreezeUpgrade
 
         var settingsPath = Path.Combine(directory, "settings.json");
         var settings = Read(settingsPath);
-        var oldSettings = settings is not null && !settings.ContainsKey("version");
+        var oldSettings = settings is not null && !HasVersion(settings);
         if (oldSettings) originals.Add(settingsPath);
         var toolbarPath = Path.Combine(directory, "toolbar.json");
         var toolbar = Read(toolbarPath);
@@ -64,7 +64,7 @@ public static class PreFreezeUpgrade
         {
             var tree = Read(path);
             if (tree is null || Version(tree) > 1) continue;
-            var old = tree.ContainsKey("id") || !tree.ContainsKey("version");
+            var old = tree.ContainsKey("id") || !HasVersion(tree);
             connections.Add((path, tree, old));
             if (old) originals.Add(path);
         }
@@ -90,43 +90,23 @@ public static class PreFreezeUpgrade
             return true;
         }
 
-        bool WrittenByUs(string path)
-        {
-            try { return state.GetLastWritten(Relative(path)) == SafeFile.Hash(files.ReadAllBytes(path)); }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
-        }
-
         var reserved = paths.Select(Path.GetFileNameWithoutExtension).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var renames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (path, _, old) in connections)
             if (!old) renames[Path.GetFileNameWithoutExtension(path)] = Path.GetFileNameWithoutExtension(path);
         var plannedIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
-        var converted = new Dictionary<string, JsonObject>(StringComparer.OrdinalIgnoreCase);
-        var resumed = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // sources whose v1 file was already written
-        foreach (var (path, tree, old) in connections)
+        string OldId((string Path, JsonObject Tree, bool Old) c) =>
+            c.Old ? Text(c.Tree["id"]) ?? Path.GetFileNameWithoutExtension(c.Path) : Path.GetFileNameWithoutExtension(c.Path);
+        // Valid ids are placed first, so a repaired id ("bad id" -> bad_id) never takes the id, and the Locker key, of a
+        // connection whose id already was bad_id.
+        foreach (var c in connections.OrderBy(c => SettingsStore.ValidConnectionId(OldId(c)) ? 0 : 1))
         {
+            var (path, _, old) = c;
             var stem = Path.GetFileNameWithoutExtension(path);
-            var oldId = old ? Text(tree["id"]) ?? stem : stem;
+            var oldId = OldId(c);
             var id = stem;
             if (old)
             {
-                converted[path] = ToV1(tree);
-                // A start that stopped after writing the new file but before deleting this one: finish that rename. Only a
-                // file this upgrade wrote (its hash in state.json) counts; an identical connection of the user's own stays.
-                var basis = MakeId(oldId, []);
-                var written = connections.FirstOrDefault(c => !c.Old
-                    && Path.GetFileNameWithoutExtension(c.Path).Equals(basis, StringComparison.OrdinalIgnoreCase));
-                if (written.Path is not null && !resumed.Contains(written.Path) && JsonNode.DeepEquals(written.Tree, converted[path])
-                    && WrittenByUs(written.Path))
-                {
-                    resumed.Add(written.Path);
-                    resumed.Add(path);
-                    id = Path.GetFileNameWithoutExtension(written.Path);
-                    plannedIds[path] = id;
-                    renames[oldId] = id;
-                    renames.TryAdd(stem, id);
-                    continue;
-                }
                 reserved.Remove(stem);
                 id = MakeId(oldId, reserved);
                 reserved.Add(stem); // a failed delete must never let another connection overwrite this original
@@ -187,7 +167,7 @@ public static class PreFreezeUpgrade
                 continue;
             }
             var target = Path.Combine(folder, id + ".json");
-            if (!resumed.Contains(path) && !Write(target, Encoding.UTF8.GetBytes(converted[path].ToJsonString(WriteOptions)), 1))
+            if (!Write(target, Encoding.UTF8.GetBytes(ToV1(tree).ToJsonString(WriteOptions)), 1))
             { Retry(); continue; }
             if (!path.Equals(target, StringComparison.OrdinalIgnoreCase))
             {
@@ -238,7 +218,11 @@ public static class PreFreezeUpgrade
         return new(changed, backupPath, reset, failed.ToList());
     }
 
-    private static double Version(JsonObject tree) => tree["version"] is JsonValue v && v.TryGetValue<double>(out var n) ? n : 0;
+    /// <summary>The last <c>version</c> key in any case, as the loader reads it.</summary>
+    private static JsonNode? VersionNode(JsonObject tree) =>
+        tree.LastOrDefault(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase)).Value;
+    private static bool HasVersion(JsonObject tree) => tree.Any(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase));
+    private static double Version(JsonObject tree) => VersionNode(tree) is JsonValue v && v.TryGetValue<double>(out var n) ? n : 0;
     private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<string>(out var text) ? text : null;
 
     private static string MakeId(string oldId, HashSet<string?> reserved)
@@ -260,6 +244,7 @@ public static class PreFreezeUpgrade
     {
         var next = (JsonObject)tree.DeepClone();
         next.Remove("id");
+        foreach (var key in next.Select(p => p.Key).Where(k => k.Equals("version", StringComparison.OrdinalIgnoreCase)).ToArray()) next.Remove(key);
         next["version"] = 1;
         if (Text(next["extraArgs"]) is { } args)
             next["extraArgs"] = new JsonArray(CliArguments.SplitExtra(args).Select(s => (JsonNode?)JsonValue.Create(s)).ToArray());

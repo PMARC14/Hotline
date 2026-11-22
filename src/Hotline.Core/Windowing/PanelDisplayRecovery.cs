@@ -11,8 +11,8 @@ public static class PanelDisplayRecovery
         var rect = PanelPlacement.Clamp(actual, newWork);
         var ratio = newScale / oldScale;
         var height = Math.Min(newWork.Height, Math.Max(1, (int)Math.Round(cachedBar.Height * ratio)));
-        // Width settings are physical pixels; only DIP-sized cached heights change with DPI.
-        var width = Math.Min(cachedBar.Width, rect.Width);
+        // Widths are scaled pixels (S1) like heights, so the cached bar width follows the new scale too.
+        var width = Math.Min(rect.Width, Math.Max(1, (int)Math.Round(cachedBar.Width * ratio)));
         var bar = PanelPlacement.Clamp(new RectI(rect.X + (rect.Width - width) / 2,
             growsUp ? rect.Y + rect.Height - height : rect.Y, width, height), newWork);
         int? fixedPx = fixedHeight is { } f ? Math.Min(newWork.Height, Math.Max(1, (int)Math.Round(f * ratio))) : null;

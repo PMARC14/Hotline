@@ -640,10 +640,9 @@ public sealed partial class PopupWindow : Window
     /// <summary>The panel is wider than the bar it opened at (the chat width): a move then keeps the start width as the bar's.</summary>
     private bool _widthGrown;
 
-    /// <summary>The chat width in real pixels, or null when disabled, manually resized or no wider than the opening width.</summary>
-    private int? ChatWidthPx => _fixedPx is not null ? null
-        : (_fixedWidth || _settings.ChatWidth is null ? null
-            : Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, _work.Width, _scale, chat: true) is var width && width > _bar.Width ? width : null);
+    /// <summary>The chat width in real pixels, or null when disabled, the width was resized by hand, or no wider than the opening width.</summary>
+    private int? ChatWidthPx => _fixedWidth || _settings.ChatWidth is null ? null
+        : Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, _work.Width, _scale, chat: true) is var width && width > _bar.Width ? width : null;
 
     private bool _animating;
     private double _animatedHeight;
@@ -767,8 +766,8 @@ public sealed partial class PopupWindow : Window
         if (resized) _fixedPx = rect.Height;
         if (widthChanged) _fixedWidth = true;
         var h = (int)Math.Round(_settings.MinHeight * _scale);
-        // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
-        var (barX, barW) = !resized && !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
+        // A move or height drag of a panel widened for a chat keeps the bar's own width (centred), so it shrinks back to it later.
+        var (barX, barW) = !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
         _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
         // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
         void BarAt(bool up)

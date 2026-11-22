@@ -221,8 +221,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             // Bar looks, the ⋯ menu and a damaged file, from models resolved in memory (the user's toolbar.json is never touched).
             const string builtIn = "\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\"";
             static string Bar(string style, string moreLeft = "", string buttons = "", string overrides = "") => $$"""
-                { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] },
-                  "items": { "left": [{{builtIn}}{{moreLeft}}], "right": ["newChat", "settings"] },
+                { "version": 3, "top": { "left": ["effort", "model", "provider"], "right": [] },
+                  "bottom": { "left": [{{builtIn}}{{moreLeft}}], "right": ["newChat", "settings"] },
                   "style": {{style}}, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
                 """;
             async Task Look(string name, string json, int width)
@@ -258,30 +258,30 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                 "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
                 """));
             var customIds = string.Concat(Enumerable.Range(1, 24).Select(i => $", \"c{i}\""));
-            await Look("9-wide-outline", Bar("""{ "width": "wide", "outline": true }"""), 720);
-            await Look("10-compact-filled", Bar("""{ "width": "compact", "filled": true }"""), 720);
+            await Look("9-wide-outline", Bar("""{ "width": 2, "outline": true }"""), 720);
+            await Look("10-compact-filled", Bar("""{ "width": 0.5, "filled": true }"""), 720);
             // 24 custom buttons: at the narrowest width the left ones go into the ⋯ menu; wider they come back (no layout cycle either way).
             await Look("11-custom-720", Bar("{}", customIds, customButtons), 720);
             await Look("12-custom-320", Bar("{}", customIds, customButtons), 320);
             await Look("13-custom-1000", Bar("{}", customIds, customButtons), 1000);
             await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
             // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
-            await Look("15-damaged-file", Bar("""{ "width": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
+            await Look("15-damaged-file", Bar("""{ "width": "huge", "outline": "yes" }""").Replace("\"version\": 3", "\"version\": 3, \"version\": 3"), 720);
             // Wide (two cells across, one cell high) at the narrowest width: the left buttons go into the ⋯ menu (one cell); then mixed widths.
-            await Look("16-wide-320", Bar("""{ "width": "wide", "outline": true }"""), 320);
-            await Look("17-mixed-widths-720", Bar("""{ "width": "normal" }""", overrides: """ "pin": { "width": "compact" }, "prompt": { "width": "wide" } """), 720);
+            await Look("16-wide-320", Bar("""{ "width": 2, "outline": true }"""), 320);
+            await Look("17-mixed-widths-720", Bar("""{ "width": 1 }""", overrides: """ "pin": { "width": 0.5 }, "prompt": { "width": 2 } """), 720);
             // Custom buttons at their widest (4 cells) on a wide bar: still one cell high (ToolbarPlan.Metrics).
             var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 4 } """));
-            await Look("18-custom-4-cells-320", Bar("""{ "width": "wide" }""", customIds, customButtons, biggest), 320);
+            await Look("18-custom-4-cells-320", Bar("""{ "width": 2 }""", customIds, customButtons, biggest), 320);
             // A coloured outline bar-wide, and one item in another colour.
-            await Look("19-outline-colour", Bar("""{ "width": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            await Look("19-outline-colour", Bar("""{ "width": 2, "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
             // Very narrow with a four-cell last right button: the fit shrinks it to one cell, and it must be drawn that way (CheckGrid).
-            await Look("21-shrunk-last-right-200", Bar("{}", overrides: """ "settings": { "width": 4 } """), 200);
+            await Look("21-shrunk-last-right-200", Bar("""{ "fill": false }""", overrides: """ "settings": { "width": 4 } """), 200);
             if (!popup.ToolbarDrawnWidths().AnyShrunk) log.Error("selftest FAILED: 21-shrunk-last-right-200: the fit did not shrink the last right button");
             // Items in the left, centre and right groups of both rows.
             await Look("20-centre-group", """
-                { "version": 2, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
-                  "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
+                { "version": 3, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
+                  "bottom": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
                   "style": { "outline": true } }
                 """, 720);
             // The reference layouts (ToolbarProfiles; the unit tests run all of them at many widths): the ones that mix the pickers
