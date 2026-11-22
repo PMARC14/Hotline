@@ -190,16 +190,18 @@ internal sealed class ChatPresenter
     /// </summary>
     public void RunAppAction(Hotline.Core.Activation.AppActionRequest action) => _tasks.Run("run the action", async () =>
     {
+        // Something already in the box or the tray: never send it along unasked; the user presses Enter.
+        var draft = _attachments.Items.Count > 0 || !string.IsNullOrWhiteSpace(_composer.Text);
         _attachments.AttachActionText(action);
-        if (action.ImagePath is { } path)
+        if (action.ImagePath is { } path && new FileInfo(path).Length <= Hotline.App.ActivationRouter.MaxActionImageBytes)
         {
             var bytes = await File.ReadAllBytesAsync(path);
             await _attachments.AddBytesAsync($"image-{DateTime.Now:HHmmss}{Path.GetExtension(path)}", null, bytes);
-            if (path.StartsWith(Hotline.App.ActivationRouter.ActionImagesFolder, StringComparison.OrdinalIgnoreCase))
+            if (Hotline.App.ActivationRouter.IsOwnActionImage(path))
                 try { File.Delete(path); } catch (IOException) { } // our copy; the original stays where it was
         }
         _composer.Text = action.DraftAfter(_composer.Text);
-        if (action.AutoSend) await SendAsync();
+        if (action.AutoSend && !draft) await SendAsync();
     });
 
     public void Demo(string? scene) => _ = _selfTest.DemoAsync(scene);

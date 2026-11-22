@@ -257,6 +257,19 @@ public sealed class UpgradeTests : TempDirTest
     }
 
     [Fact]
+    public void A_stray_broken_connection_file_never_holds_back_the_others()
+    {
+        Put("settings.json", """{"chat":{"defaultBackend":"claude"}}""");
+        Put("connections/claude.json", """{"id":"claude","type":"claudeCode"}""");
+        Put("connections/stray.json", "{ not json");
+        var result = PreFreezeUpgrade.Run(_dir, _files, State, _secrets);
+        Assert.Equal(["connections/stray.json"], result.Failed);
+        Assert.Equal(1, Read("settings.json")["version"]!.GetValue<int>());
+        Assert.Equal(1, Read("connections/claude.json")["version"]!.GetValue<int>());
+        Assert.Equal("{ not json", Encoding.UTF8.GetString(_files.Files[PathOf("connections/stray.json")]));
+    }
+
+    [Fact]
     public void A_current_settings_file_with_VERSION_in_capitals_is_not_reset()
     {
         const string text = """{"VERSION":1,"window":{"theme":"dark"}}""";

@@ -100,6 +100,8 @@ public sealed class AnthropicBackend(ConnectionProfile profile, HttpClient http,
             }
             finally { await stream.DisposeAsync(); }
 
+            if (stopReason == "max_tokens")
+                yield return ChatDelta.StatusNote(L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), stopReason));
             var toolUses = blocks.Values.Where(b => b.Type == "tool_use").ToList();
             if (stopReason != "tool_use" || toolUses.Count == 0 || offered.Count == 0) yield break;
 

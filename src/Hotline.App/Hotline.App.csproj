@@ -23,6 +23,8 @@
   <ItemGroup>
     <Content Include="Assets\**" />
     <Content Include="Public\**" />
+    <!-- The JSON Schemas of the file formats (s1-design.md), shipped for editors and tools. -->
+    <Content Include="..\..\schemas\*.json" Link="schemas\%(Filename)%(Extension)" />
     <Manifest Include="$(ApplicationManifest)" />
   </ItemGroup>
   <ItemGroup>

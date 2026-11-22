@@ -45,6 +45,16 @@ public sealed class AnthropicBackendTests : TempDirTest
         new() { Id = "claude-api", Name = "Claude API", Type = BackendType.Anthropic, Model = model, Effort = effort };
 
     [Fact]
+    public async Task Max_tokens_keeps_the_text_and_adds_a_note()
+    {
+        var (b, _) = New(Claude(), _ => Stream("max_tokens", "Partial"));
+        var deltas = new List<ChatDelta>();
+        await foreach (var d in b.StreamAsync([U("1", "hi")], default)) deltas.Add(d);
+        Assert.Equal("Partial", string.Concat(deltas.Where(d => d.Status is null).Select(d => d.Text)));
+        Assert.Contains(deltas, d => d.Status?.Contains("max_tokens", StringComparison.Ordinal) == true);
+    }
+
+    [Fact]
     public async Task Streams_text_with_default_model_system_prompt_image_and_fallback()
     {
         var (b, handler) = New(Claude(), _ => Stream(texts: ["Hel", "lo"]));

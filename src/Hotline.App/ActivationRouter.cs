@@ -52,6 +52,14 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
     /// <summary>Folder for images handed over by App Actions (deleted after they're attached).</summary>
     public static string ActionImagesFolder => Path.Combine(Path.GetTempPath(), "hotline-actions");
 
+    /// <summary>The largest action image Hotline reads.</summary>
+    public const long MaxActionImageBytes = 20 * 1024 * 1024;
+
+    /// <summary>True for a copy <see cref="KeepImage"/> made (directly in <see cref="ActionImagesFolder"/>), never the original.</summary>
+    public static bool IsOwnActionImage(string path) =>
+        string.Equals(Path.GetDirectoryName(Path.GetFullPath(path)), Path.GetFullPath(ActionImagesFolder).TrimEnd(Path.DirectorySeparatorChar),
+            StringComparison.OrdinalIgnoreCase);
+
     /// <summary>Copies an action's image (png/jpg, at most 20 MB) to <see cref="ActionImagesFolder"/> and points the input there.</summary>
     private static void KeepImage(Dictionary<string, string>? inputs)
     {
@@ -61,7 +69,8 @@ public sealed class ActivationRouter(PopupWindow popup, ActivationSettings setti
         try
         {
             var ext = Path.GetExtension(path).ToLowerInvariant();
-            if (!File.Exists(path) || new FileInfo(path).Length > 20 * 1024 * 1024) return;
+            if (!File.Exists(path)) return;
+            if (new FileInfo(path).Length > MaxActionImageBytes) { inputs.Remove("image"); return; } // never read whole
             Directory.CreateDirectory(ActionImagesFolder);
             var copy = Path.Combine(ActionImagesFolder, Guid.NewGuid().ToString("N") + ext);
             File.Copy(path, copy);

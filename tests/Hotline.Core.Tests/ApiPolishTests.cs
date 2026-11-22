@@ -205,6 +205,15 @@ public sealed class ApiPolishTests : TempDirTest
         Assert.Equal([Strings.Api_AnswerCutOff], status);
     }
 
+    [Fact]
+    public async Task OpenAi_text_answer_at_the_token_limit_keeps_its_text_and_says_so()
+    {
+        var handler = new Handler(_ => Sse(OpenAiChunk("Partial answer."), """{"choices":[{"delta":{},"finish_reason":"length"}]}""", "[DONE]"));
+        var (text, status) = await Collect(OpenAi(handler).StreamAsync([User("hi")], default));
+        Assert.Equal("Partial answer.", text);
+        Assert.Contains(status, s => s.Contains("length", StringComparison.Ordinal));
+    }
+
     [Theory]
     [InlineData("openai_done")]
     [InlineData("openai_stop")]

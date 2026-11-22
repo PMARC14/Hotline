@@ -19,6 +19,7 @@ public sealed partial class SettingsWindow
     {
         if (_dialogOpen) return ContentDialogResult.None;
         _dialogOpen = true;
+        dialog.XamlRoot ??= Root.XamlRoot; // WinUI throws on ShowAsync without one
         try { return await dialog.ShowAsync(); }
         finally { _dialogOpen = false; }
     }

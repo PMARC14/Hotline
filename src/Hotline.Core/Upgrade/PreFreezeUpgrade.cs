@@ -124,7 +124,9 @@ public static class PreFreezeUpgrade
         var oldKeys = new List<(string Key, string Name)>();
         var neededKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // old keys a connection left for the next start still needs
 
-        var selectionReady = !failed.Contains("settings.json") && !failed.Any(p => p == "connections" || p.StartsWith("connections/", StringComparison.OrdinalIgnoreCase));
+        // An unreadable connection file is left for the next start on its own; only an unreadable settings.json or connections
+        // folder holds the rest back (a later run still renames the selection when that file converts).
+        var selectionReady = !failed.Contains("settings.json") && !failed.Contains("connections");
         if (selectionReady && settings is not null && Version(settings) <= 1)
         {
             var next = oldSettings ? JsonNode.Parse(StarterFiles.DefaultBytes("settings"))!.AsObject() : (JsonObject)settings.DeepClone();

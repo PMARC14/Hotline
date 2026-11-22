@@ -95,6 +95,9 @@ public sealed class OpenAiBackend(ConnectionProfile profile, HttpClient http, IS
 
             if ((calls.Count == 0 || offered.Count == 0) && !done && finish is null)
                 yield return ChatDelta.StatusNote(Strings.Api_AnswerCutOff);
+            // A text answer that hit the token limit is kept, and says so (Gemini's MAX_TOKENS does the same).
+            if ((calls.Count == 0 || offered.Count == 0) && finish is "length")
+                yield return ChatDelta.StatusNote(L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish));
             if (calls.Count == 0 || offered.Count == 0) yield break;
             // Never run tool calls from a cut-off stream: their arguments may be incomplete.
             if (finish is "length" or "content_filter")

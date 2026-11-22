@@ -59,11 +59,12 @@ public sealed partial class SettingsWindow
                 var result = await Task.Run(() =>
                 {
                     // Written beside the target and moved over it when complete: a failure half way never destroys an earlier backup.
-                    var temp = file.Path + ".tmp";
+                    // A name of its own (CreateNew): an unrelated "<name>.tmp" beside it is never truncated or deleted.
+                    var temp = $"{file.Path}.{Guid.NewGuid():N}.tmp";
                     try
                     {
                         ExportResult written;
-                        using (var stream = new FileStream(temp, FileMode.Create, FileAccess.Write, FileShare.None))
+                        using (var stream = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                             written = SettingsPackage.Export(data, chosen, stream);
                         File.Move(temp, file.Path, overwrite: true);
                         return written;

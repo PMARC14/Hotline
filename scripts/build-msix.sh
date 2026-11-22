@@ -74,7 +74,7 @@ trap 'exit 143' TERM
 
 # Copy the working files, including uncommitted/untracked source edits. Never stage certificates,
 # previous build products, or the shared obj/bin trees. Keep root-level MSBuild/NuGet/SDK settings.
-stage_files=(src)
+stage_files=(src schemas)
 for file in "$ROOT"/*.props "$ROOT"/*.targets "$ROOT"/*.json "$ROOT"/*.config; do
     [ ! -f "$file" ] || stage_files+=("$(basename "$file")")
 done
