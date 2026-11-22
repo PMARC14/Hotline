@@ -4,6 +4,12 @@ namespace Hotline.Core.Backends;
 public interface ISecretStore
 {
     string? Get(string key);
+    /// <summary>Like <see cref="Get"/>, but false when the store could not be read (a missing key is true with null).</summary>
+    bool TryGet(string key, out string? value)
+    {
+        value = Get(key);
+        return true;
+    }
     /// <summary>Stores the value; null or empty deletes it.</summary>
     void Set(string key, string? value);
 }

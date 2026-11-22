@@ -90,11 +90,19 @@ public static class PreFreezeUpgrade
             return true;
         }
 
+        bool WrittenByUs(string path)
+        {
+            try { return state.GetLastWritten(Relative(path)) == SafeFile.Hash(files.ReadAllBytes(path)); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return false; }
+        }
+
         var reserved = paths.Select(Path.GetFileNameWithoutExtension).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var renames = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (path, _, old) in connections)
             if (!old) renames[Path.GetFileNameWithoutExtension(path)] = Path.GetFileNameWithoutExtension(path);
         var plannedIds = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var converted = new Dictionary<string, JsonObject>(StringComparer.OrdinalIgnoreCase);
+        var resumed = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // sources whose v1 file was already written
         foreach (var (path, tree, old) in connections)
         {
             var stem = Path.GetFileNameWithoutExtension(path);
@@ -102,6 +110,23 @@ public static class PreFreezeUpgrade
             var id = stem;
             if (old)
             {
+                converted[path] = ToV1(tree);
+                // A start that stopped after writing the new file but before deleting this one: finish that rename. Only a
+                // file this upgrade wrote (its hash in state.json) counts; an identical connection of the user's own stays.
+                var basis = MakeId(oldId, []);
+                var written = connections.FirstOrDefault(c => !c.Old
+                    && Path.GetFileNameWithoutExtension(c.Path).Equals(basis, StringComparison.OrdinalIgnoreCase));
+                if (written.Path is not null && !resumed.Contains(written.Path) && JsonNode.DeepEquals(written.Tree, converted[path])
+                    && WrittenByUs(written.Path))
+                {
+                    resumed.Add(written.Path);
+                    resumed.Add(path);
+                    id = Path.GetFileNameWithoutExtension(written.Path);
+                    plannedIds[path] = id;
+                    renames[oldId] = id;
+                    renames.TryAdd(stem, id);
+                    continue;
+                }
                 reserved.Remove(stem);
                 id = MakeId(oldId, reserved);
                 reserved.Add(stem); // a failed delete must never let another connection overwrite this original
@@ -114,7 +139,10 @@ public static class PreFreezeUpgrade
                 renames.TryAdd(stem, id);
             }
         }
-        var retainedKeys = plannedIds.Values.Select(SecretKeys.ApiKey).ToHashSet(StringComparer.Ordinal);
+        // Credential Locker matches names without case, so a key differing only by case is the same entry.
+        var retainedKeys = plannedIds.Values.Select(SecretKeys.ApiKey).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var oldKeys = new List<(string Key, string Name)>();
+        var neededKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // old keys a connection left for the next start still needs
 
         var selectionReady = !failed.Contains("settings.json") && !failed.Any(p => p == "connections" || p.StartsWith("connections/", StringComparison.OrdinalIgnoreCase));
         if (selectionReady && settings is not null && Version(settings) <= 1)
@@ -145,31 +173,42 @@ public static class PreFreezeUpgrade
             var stem = Path.GetFileNameWithoutExtension(path);
             var oldId = old ? Text(tree["id"]) ?? stem : stem;
             var id = plannedIds[path];
-            if (old && !selectionReady)
-            { failed.Add(Relative(path)); continue; }
-            if (!TryCopyKey(secrets, oldId, id, out var oldKey))
-            { failed.Add(Relative(path)); continue; }
-            if (!old) { DeleteOldKey(secrets, oldKey, retainedKeys, Relative(path), failed); continue; }
+            void Retry()
+            {
+                failed.Add(Relative(path));
+                neededKeys.Add($"connection:{oldId}:apiKey");
+                neededKeys.Add(SecretKeys.ApiKey(oldId));
+            }
+            if (old && !selectionReady) { Retry(); continue; }
+            if (!TryCopyKey(secrets, oldId, id, out var oldKey)) { Retry(); continue; }
+            if (!old)
+            {
+                if (oldKey is not null) oldKeys.Add((oldKey, Relative(path)));
+                continue;
+            }
             var target = Path.Combine(folder, id + ".json");
-            tree.Remove("id");
-            tree["version"] = 1;
-            if (Text(tree["extraArgs"]) is { } args)
-                tree["extraArgs"] = new JsonArray(CliArguments.SplitExtra(args).Select(s => (JsonNode?)JsonValue.Create(s)).ToArray());
-            var bytes = Encoding.UTF8.GetBytes(tree.ToJsonString(WriteOptions));
-            if (!Write(target, bytes, 1)) continue;
+            if (!resumed.Contains(path) && !Write(target, Encoding.UTF8.GetBytes(converted[path].ToJsonString(WriteOptions)), 1))
+            { Retry(); continue; }
             if (!path.Equals(target, StringComparison.OrdinalIgnoreCase))
             {
-                try { files.DeleteFile(path); }
+                try { files.DeleteFile(path); changed = true; }
                 catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
                 {
-                    failed.Add(Relative(path));
+                    Retry();
                     // Keep the old file retryable without creating a numbered duplicate on the next start.
                     try { files.DeleteFile(target); }
                     catch (Exception cleanup) when (cleanup is IOException or UnauthorizedAccessException) { failed.Add(Relative(target)); }
                     continue;
                 }
             }
-            DeleteOldKey(secrets, oldKey, retainedKeys, Relative(target), failed);
+            if (oldKey is not null) oldKeys.Add((oldKey, Relative(target)));
+        }
+        // Old entries go only after every connection has its copy: two connections can share one old key.
+        foreach (var (key, name) in oldKeys)
+        {
+            if (retainedKeys.Contains(key) || neededKeys.Contains(key)) continue;
+            try { secrets.Set(key, null); }
+            catch (Exception) { failed.Add(name); }
         }
         if (oldToolbar && Write(toolbarPath, StarterFiles.DefaultBytes("toolbar"), 3)) reset.Add("toolbar.json");
         if (oldMcp)
@@ -189,6 +228,10 @@ public static class PreFreezeUpgrade
         var backupPath = backup.HasFailures || backup.DirectoryPath is null ? null : Path.GetRelativePath(directory, backup.DirectoryPath);
         if (changed)
         {
+            // A retry before the notice was seen: keep the first run's folder (it holds the replaced settings), or its
+            // "no backup", so the notice never claims more than was saved.
+            if (state.GetUpgrade() is { } earlier && !state.IsShown(ShownFlag.UpgradeNotice))
+                backupPath = earlier.Backup is null || backupPath is null ? null : earlier.Backup;
             state.RecordUpgrade(backupPath);
             state.SetShown(ShownFlag.UpgradeNotice, null);
         }
@@ -213,6 +256,20 @@ public static class PreFreezeUpgrade
         return id;
     }
 
+    private static JsonObject ToV1(JsonObject tree)
+    {
+        var next = (JsonObject)tree.DeepClone();
+        next.Remove("id");
+        next["version"] = 1;
+        if (Text(next["extraArgs"]) is { } args)
+            next["extraArgs"] = new JsonArray(CliArguments.SplitExtra(args).Select(s => (JsonNode?)JsonValue.Create(s)).ToArray());
+        return next;
+    }
+
+    /// <summary>
+    /// Copies the old key to the lower-cased id and reads it back. False when the Locker can't be read or the copy doesn't
+    /// read back. <paramref name="oldKey"/> is the entry that may be deleted afterwards, or null.
+    /// </summary>
     private static bool TryCopyKey(ISecretStore secrets, string oldId, string id, out string? oldKey)
     {
         oldKey = $"connection:{oldId}:apiKey";
@@ -220,30 +277,23 @@ public static class PreFreezeUpgrade
         if (oldKey == key) { oldKey = null; return true; }
         try
         {
-            var previous = secrets.Get(oldKey);
+            if (!secrets.TryGet(oldKey, out var previous)) return false;
             if (string.IsNullOrEmpty(previous) && oldKey != SecretKeys.ApiKey(oldId))
             {
                 oldKey = SecretKeys.ApiKey(oldId);
-                previous = secrets.Get(oldKey);
+                if (!secrets.TryGet(oldKey, out previous)) return false;
             }
             if (oldKey == key) { oldKey = null; return true; }
             if (string.IsNullOrEmpty(previous)) { oldKey = null; return true; }
-            var current = secrets.Get(key);
+            if (!secrets.TryGet(key, out var current)) return false;
             if (string.IsNullOrEmpty(current))
             {
                 secrets.Set(key, previous);
-                if (secrets.Get(key) != previous) return false;
+                if (!secrets.TryGet(key, out var copy) || copy != previous) return false;
             }
             else if (current != previous) { oldKey = null; } // keep an existing distinct credential and the old entry
             return true;
         }
         catch (Exception) { return false; }
-    }
-
-    private static void DeleteOldKey(ISecretStore secrets, string? oldKey, HashSet<string> retainedKeys, string name, HashSet<string> failed)
-    {
-        if (oldKey is null || retainedKeys.Contains(oldKey)) return;
-        try { secrets.Set(oldKey, null); }
-        catch (Exception) { failed.Add(name); }
     }
 }

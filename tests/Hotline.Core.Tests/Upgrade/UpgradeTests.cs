@@ -99,7 +99,7 @@ public sealed class UpgradeTests : TempDirTest
         var result = PreFreezeUpgrade.Run(_dir, _files, State, _secrets);
         Assert.Empty(result.Failed);
         Assert.Equal("test-secret", _secrets.Get(SecretKeys.ApiKey(expected)));
-        if (oldKey != SecretKeys.ApiKey(expected)) Assert.Null(_secrets.Get(oldKey));
+        if (!oldKey.Equals(SecretKeys.ApiKey(expected), StringComparison.OrdinalIgnoreCase)) Assert.Null(_secrets.Get(oldKey));
         Assert.Equal(expected, Read("settings.json")["chat"]!["defaultConnection"]!.GetValue<string>());
         Assert.Equal(expected, Read("settings.json")["chat"]!["order"]![0]!.GetValue<string>());
         Assert.Equal(new[] { "--name", "two words" }, Read($"connections/{expected}.json")["extraArgs"]!.AsArray().Select(x => x!.GetValue<string>()));
@@ -165,11 +165,101 @@ public sealed class UpgradeTests : TempDirTest
         secrets.IgnoreCopies = false;
         Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, secrets).Failed);
         Assert.Equal("test-secret", secrets.Get("connection:mixed:apiKey"));
-        Assert.Null(secrets.Get("connection:Mixed:apiKey"));
+        // Kept: in the real Locker a name differing only by case is the same entry.
+        Assert.Equal("test-secret", secrets.Get("connection:Mixed:apiKey"));
         _files.Writes.Clear();
         Assert.False(PreFreezeUpgrade.Run(_dir, _files, State, secrets).Changed);
         Assert.Empty(_files.Writes);
         Assert.Equal("test-secret", secrets.Get("connection:mixed:apiKey"));
+    }
+
+    /// <summary>Credential Locker matches names without case, like Windows Credential Manager.</summary>
+    private sealed class CaseInsensitiveSecrets : ISecretStore
+    {
+        internal readonly Dictionary<string, string> Values = new(StringComparer.OrdinalIgnoreCase);
+        internal bool FailReads;
+        public string? Get(string key) => TryGet(key, out var value) ? value : null;
+        public bool TryGet(string key, out string? value)
+        {
+            value = FailReads ? null : Values.GetValueOrDefault(key);
+            return !FailReads;
+        }
+        public void Set(string key, string? value)
+        {
+            if (string.IsNullOrEmpty(value)) Values.Remove(key);
+            else Values[key] = value;
+        }
+    }
+
+    [Theory]
+    [InlineData("""{"version":1,"type":"local"}""")]
+    [InlineData("""{"id":"Mixed","type":"local"}""")]
+    public void A_case_insensitive_Locker_never_loses_a_key_whose_name_differs_only_by_case(string file)
+    {
+        Put("connections/Mixed.json", file);
+        var secrets = new CaseInsensitiveSecrets();
+        secrets.Values["connection:Mixed:apiKey"] = "test-secret";
+        Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, secrets).Failed);
+        Assert.Equal("test-secret", secrets.Get("connection:mixed:apiKey"));
+    }
+
+    [Fact]
+    public void Connections_sharing_an_old_id_both_keep_its_key()
+    {
+        Put("connections/a.json", """{"id":"bad id","type":"local","n":1}""");
+        Put("connections/b.json", """{"id":"bad id","type":"local","n":2}""");
+        _secrets.Set("connection:bad id:apiKey", "shared-secret");
+        Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
+        Assert.Equal("shared-secret", _secrets.Get("connection:bad_id:apiKey"));
+        Assert.Equal("shared-secret", _secrets.Get("connection:bad_id-2:apiKey"));
+        Assert.Null(_secrets.Get("connection:bad id:apiKey"));
+    }
+
+    [Fact]
+    public void A_Locker_read_failure_leaves_the_connection_for_the_next_start()
+    {
+        Put("connections/source.json", """{"id":"bad id","type":"local"}""");
+        var secrets = new CaseInsensitiveSecrets { FailReads = true };
+        secrets.Values["connection:bad id:apiKey"] = "test-secret";
+        Assert.Contains("connections/source.json", PreFreezeUpgrade.Run(_dir, _files, State, secrets).Failed);
+        Assert.True(Read("connections/source.json").ContainsKey("id"));
+        Assert.False(_files.Files.ContainsKey(PathOf("connections/bad_id.json")));
+        secrets.FailReads = false;
+        Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, secrets).Failed);
+        Assert.Equal("test-secret", secrets.Get("connection:bad_id:apiKey"));
+    }
+
+    [Fact]
+    public void A_rename_interrupted_after_writing_the_new_file_resumes_without_a_duplicate()
+    {
+        Put("connections/source.json", """{"id":"bad id","type":"local","extraArgs":"--a b"}""");
+        Put("settings.json", """{"chat":{"defaultBackend":"bad id"}}""");
+        _secrets.Set("connection:bad id:apiKey", "test-secret");
+        // Writing bad_id.json works but no delete does: the same state as a crash between the two.
+        _files.Fail = c => c.Operation == "DeleteFile";
+        Assert.Contains("connections/source.json", PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
+        _files.Fail = null;
+        Assert.Empty(PreFreezeUpgrade.Run(_dir, _files, State, _secrets).Failed);
+        Assert.False(_files.Files.ContainsKey(PathOf("connections/source.json")));
+        Assert.False(_files.Files.ContainsKey(PathOf("connections/bad_id-2.json")));
+        Assert.Equal("bad_id", Read("settings.json")["chat"]!["defaultConnection"]!.GetValue<string>());
+        Assert.Equal("test-secret", _secrets.Get("connection:bad_id:apiKey"));
+    }
+
+    [Fact]
+    public void A_retry_keeps_the_record_that_an_earlier_run_had_no_backup()
+    {
+        Put("settings.json", """{"chat":{}}""");
+        Put("connections/source.json", """{"id":"bad id","type":"local"}""");
+        _files.Fail = c => (c.Operation == "CopyFile" && c.Path == PathOf("settings.json"))
+            || (c.Operation == "WriteDurable" && c.Path == PathOf("connections/bad_id.json"));
+        var first = PreFreezeUpgrade.Run(_dir, _files, State, _secrets);
+        Assert.Null(first.Backup);
+        _files.Fail = null;
+        var second = PreFreezeUpgrade.Run(_dir, _files, State, _secrets);
+        Assert.True(second.Changed);
+        Assert.Null(second.Backup);
+        Assert.Null(State.GetUpgrade()!.Backup);
     }
 
     [Fact]
