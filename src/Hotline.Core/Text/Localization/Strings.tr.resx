@@ -73,16 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Yalnızca metin, .hotline klasörünüzde.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Bir yanıt arka planda bitince bildir</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Panel gizliyken veya önde başka bir uygulama varken bir yanıt bittiğinde Windows bildirimi gösterir. Yanıtı açmak için tıklayın.</value></data>
-  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
-  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
-  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
-  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
-  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
-  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
-  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
-  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Ölçekli piksel (200–4000) veya çalışma alanının bir oranı (%20–%90).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Ölçekli piksel (200–4000) veya çalışma alanının bir oranı (%20–%90); boş bırakılırsa açılış genişliği korunur.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Ölçekli pikseller (DIP).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>200–4000 ölçekli piksel veya %20–%90 girin.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Bildirimlerde yanıt metnini göster</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Tamamlanma bildirimine yanıt metnini ekle; kapalıysa yalnızca sohbet başlığı gösterilir.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>Bu dosya dondurma öncesi biçimi kullanıyor. Yükseltme çalışana kadar varsayılanlar geçerlidir; dosya değiştirilmedi.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Bağlantı kimliği {0} geçersiz. 1–64 harf, rakam, nokta, alt çizgi veya tire kullanın; Windows aygıt adları ve sondaki noktalar kabul edilmez.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} yanıtladı</value></data>
-  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Yanıt hazır</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} yanıtı tamamlayamadı</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Geçmişi şu süre sakla</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>gün</value></data>
@@ -440,34 +440,34 @@ Reddet:
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" yüklü değil veya PATH'te yok, bu yüzden {1} sunucusu başlayamıyor. mcp.json içindeki "command" değerini kontrol edin.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json okunamadı: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>"{0}" onayı bilinmeyen bir değere sahip, bu yüzden "deny" olarak değerlendiriliyor.</value></data>
-  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
-  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
-  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
-  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
-  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
-  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
-  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
-  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
-  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
-  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
-  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
-  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
-  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
-  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
-  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
-  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
-  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
-  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
-  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
-  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
-  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
-  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
-  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
-  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
-  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
-  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
-  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
-  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>mcp.json dosyasındaki "approvals" bölümü yok sayıldı; kuralları settings.json (tools.approvals) dosyasına taşıyın.</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>"{0}" sunucusunda "{1}" için dize olmayan bir env değeri var, bu nedenle atlandı.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>"{0}" sunucusunda "{1}" env girişinde geçersiz bir gizli dizi başvurusu var.</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>"{0}" sunucusu, "{2}" env girişinde Kimlik Bilgisi Kasası'nda bulunmayan "{1}" gizli dizisine başvuruyor.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>"{0}" izin kuralı "{1}" ile yalnızca büyük/küçük harf bakımından farklı olduğundan yok sayıldı.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json daha yeni bir sürüm ({0}) kullanıyor ve güvenli bir şekilde güncelleştirilemiyor.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Güncelleştirme öncesinde mcp.json yedeklenemedi.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Güncelleştirilmiş mcp.json dosyası kaydedilemedi.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>mcp.json dosyasında "{0}" sunucusunda "{1}" env girişi bulunamadı.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Bu env girişi değişmiş veya zaten taşınmış; hiçbir şey değiştirilmedi.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>Değer artık Windows Kimlik Bilgisi Kasası'na "{0}" ({1}) olarak kaydedildi, ancak kaydetme ve geri alma başarısız olduğu için mcp.json değiştirilmedi.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Her zaman izin ver izinleri</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Kayıtlı araç izni yok.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · başlatma {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>İptal et</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Araç izni iptal edilemedi.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Ortam gizli dizileri</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>mcp.json içinde düz metin env girişi bulunamadı.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json içinde düz metin)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Kimlik Bilgisi Kasası'na Taşı</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>env değeri Kimlik Bilgisi Kasası'na taşınsın mı?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>{0} › {1} değerini Windows Kimlik Bilgisi Kasası'nda depolar ve mcp.json dosyasında değiştirir. Önceki mcp.json (düz metin değer dahil) backups\&lt;time&gt;-save içinde kalır ve mcp.json içindeki açıklamalar korunmaz.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Gizli dizi adı</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Harf, rakam, nokta, alt çizgi veya tire kullanın.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Bu ada sahip bir gizli dizi Kimlik Bilgisi Kasası'nda zaten var ve üzerine yazılacak.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Taşı</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} Kimlik Bilgisi Kasası'na taşındı. Önceki mcp.json (düz metin değer dahil) backups\&lt;time&gt;-save konumuna kaydedildi.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>env değeri Kimlik Bilgisi Kasası'na taşınamadı.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Sunucu adı '/' veya '*' içeremez.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} sn içinde başlamadı</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Düzeltilene kadar hiçbir araç çalışmaz.</value></data>
@@ -518,28 +518,28 @@ Reddet:
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>önce geçerli dosyanın bir kopyası oluşturulamadı, bu nedenle hiçbir şey değiştirilmedi ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>Bu sayfa açıkken toolbar.json değiştirildi. Yeniden yüklendi ve son değişikliğiniz uygulanmadı: lütfen tekrar yapın.</value></data>
   <data name="Bar_DuplicateButton" xml:space="preserve">
-    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+    <value>Yinelenen özel düğme kimliği "{0}" (büyük/küçük harf duyarsız); ilk tanım kullanılır.</value>
   </data>
   <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
-    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+    <value>Hâlâ yanıtlanıyor. Durdur düğmesi işlemi durdurur; iletiniz kutuda bekler.</value>
   </data>
   <data name="Bar_WidthInvalid" xml:space="preserve">
-    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+    <value>"{0}" {1}, 0.5, 1, 2, 3 veya 4 sayısal genişliklerinden biri değil; varsayılan genişlik kullanılır.</value>
   </data>
   <data name="Bar_CommandConflict" xml:space="preserve">
-    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+    <value>shortcuts.{0}: tuş birleşimi zaten kullanımda; bu kısayol devre dışı bırakıldı.</value>
   </data>
   <data name="Bar_OldVersionUnsupported" xml:space="preserve">
-    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+    <value>Bu araç çubuğu dosyası daha eski bir biçim kullanıyor. Varsayılan düğme satırları ve kısayollar etkin; dosya değiştirilmedi.</value>
   </data>
   <data name="Bar_Fill" xml:space="preserve">
-    <value>Fill available row space</value>
+    <value>Kullanılabilir satır alanını doldur</value>
   </data>
   <data name="Bar_BackupFailed" xml:space="preserve">
-    <value>Could not back up the button rows and shortcuts.</value>
+    <value>Düğme satırları ve kısayollar yedeklenemedi.</value>
   </data>
   <data name="Bar_WriteFailed" xml:space="preserve">
-    <value>Could not save the button rows and shortcuts.</value>
+    <value>Düğme satırları ve kısayollar kaydedilemedi.</value>
   </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Resim değiştirilmedi: toolbar.json kaydedilemedi.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Daha fazla</value></data>
@@ -723,17 +723,17 @@ Reddet:
   <data name="Nav_Backup" xml:space="preserve"><value>Yedekleme</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Hotline kurulumunuzu başka bir bilgisayara taşıyın veya bir kopyasını saklayın. Yedek, işaretlediğiniz bölümleri içeren tek bir .zip dosyasıdır; başka hiçbir şey (sohbet geçmişi, bellek, günlükler) dahil edilmez.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Ayarlar</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
-  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
-  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
-  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
-  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
-  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
-  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
-  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
-  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
-  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
-  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Düğme satırları ve kısayollar</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline'ın yapılandırma biçimi değişti. Eski sürümlerdeki ayarlar ve düğme satırları varsayılanlara döner. Yapay zeka bağlantıları ve MCP sunucuları korunur.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Sıfırlandı: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Özgün dosyalar: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Tam bir yükseltme yedeği oluşturulamadı.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Yükseltilemedi: {0}. Hotline bir sonraki başlangıçta bu dosyaları yeniden deneyecek.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>0.6 sürümünden yükseltme</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Yükseltmeden sonraki ilk başlangıçta eski ayarlar ve düğme satırları yerleşik varsayılanlara döner. Yalnızca varsayılan yapay zeka bağlantısı ve bağlantı sırası aktarılır. Yapay zeka bağlantıları ve MCP sunucuları korunur; eski MCP onayları kaldırılır. Özgün dosyalar dönüştürmeden önce backups/&lt;time&gt;-upgrade konumuna kopyalanır. Bu yedekleme başarısız olsa bile dönüştürme çalıştırılır. Dönüştürülemeyen dosyalar dokunulmadan bırakılır ve bir sonraki başlangıçta yeniden denenir. Başlangıçta .defaults içindeki başvuru varsayılanları yenilenir.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Bu yedek, {0} için düz metin ortam değerleri içeriyor. Bu yedeği paylaşmadan önce Ayarlar &gt; Araçlar bölümünden Kimlik Bilgisi Kasası'na Taşı'yı kullanın.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Bu MCP sunucuları bu bilgisayarda Kimlik Bilgisi Kasası gizli dizilerine ihtiyaç duyuyor: {0}. Gizli dizilerini Ayarlar &gt; Araçlar bölümünden ekleyin.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Daha yeni bir sürüme dokunulmadı.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Araçlar (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sesler</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI bağlantıları</value></data>

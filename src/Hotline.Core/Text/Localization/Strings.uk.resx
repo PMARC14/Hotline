@@ -73,16 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Лише текст, у вашій папці .hotline.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Сповіщати, коли відповідь завершується у фоні</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Сповіщення Windows, коли відповідь завершується, а панель прихована або попереду інша програма. Клацніть його, щоб відкрити відповідь.</value></data>
-  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
-  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
-  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
-  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
-  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
-  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
-  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
-  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Масштабовані пікселі (200–4000) або частка робочої області (20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Масштабовані пікселі (200–4000) або частка робочої області (20%–90%); якщо порожньо, зберігається початкова ширина.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Масштабовані пікселі (DIP).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Введіть 200–4000 масштабованих пікселів або 20%–90%.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Показувати текст відповіді у сповіщеннях</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Додавати текст відповіді до сповіщення про завершення; якщо вимкнено, показується лише назва чату.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>Цей файл використовує формат до заморожування. До запуску оновлення діють стандартні параметри; файл не змінено.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Ідентифікатор підключення {0} неприпустимий. Використовуйте 1–64 літери, цифри, крапки, підкреслення або дефіси; імена пристроїв Windows і крапки в кінці заборонено.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} відповів</value></data>
-  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Відповідь готова</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} не вдалося завершити відповідь</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Зберігати історію протягом</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>днів</value></data>
@@ -440,34 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>«{0}» не встановлено або його немає в PATH, тож сервер {1} не може запуститися. Перевірте «command» у mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>Не вдалося прочитати mcp.json: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>Дозвіл «{0}» має невідоме значення, тому вважається «deny».</value></data>
-  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
-  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
-  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
-  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
-  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
-  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
-  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
-  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
-  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
-  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
-  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
-  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
-  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
-  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
-  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
-  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
-  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
-  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
-  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
-  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
-  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
-  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
-  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
-  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
-  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
-  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
-  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
-  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>Розділ "approvals" у mcp.json проігноровано; перенесіть правила до settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Сервер "{0}" має нерядкове значення env для "{1}", тому його пропущено.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Сервер "{0}" містить неприпустиме посилання на секрет у env "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Сервер "{0}" посилається на секрет "{1}" у env "{2}", якого немає у Сховищі облікових даних.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Правило дозволу "{0}" відрізняється від "{1}" лише регістром, тому його проігноровано.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json використовує новішу версію ({0}) і не може бути безпечно оновлений.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Не вдалося створити резервну копію mcp.json перед оновленням.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Не вдалося зберегти оновлений файл mcp.json.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Не вдалося знайти запис env "{1}" на сервері "{0}" у mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Цей запис env змінився або вже переміщений; нічого не змінено.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>Значення тепер збережено у Сховищі облікових даних Windows як "{0}" ({1}), але mcp.json не змінено через помилку збереження та відкату.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Постійні дозволи</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Немає збережених дозволів для інструментів.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · запуск {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Відкликати</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Не вдалося відкликати дозвіл для інструмента.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Секрети середовища</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>У mcp.json не знайдено відкритих записів env.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (відкритий текст у mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Перемістити до Сховища облікових даних</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Перемістити значення env до Сховища облікових даних?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Зберігає {0} › {1} у Сховищі облікових даних Windows і замінює його в mcp.json. Попередній mcp.json (включно з відкритим текстом) залишається в backups\&lt;time&gt;-save, а коментарі в mcp.json не зберігаються.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Назва секрету</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Використовуйте літери, цифри, крапки, підкреслення або дефіси.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Секрет із такою назвою вже існує у Сховищі облікових даних і буде перезаписаний.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Перемістити</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Переміщено {0} › {1} до Сховища облікових даних. Попередній mcp.json (включно з відкритим текстом) збережено в backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Не вдалося перемістити значення env до Сховища облікових даних.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Назва сервера не може містити «/» або «*».</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>не запустився протягом {0:0} с</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Жоден інструмент не працюватиме, доки це не виправлено.</value></data>
@@ -518,28 +518,28 @@
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>не вдалося спочатку створити копію поточного файлу, тому нічого не змінено ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json змінився, поки ця сторінка була відкрита. Його було перезавантажено, і вашу останню зміну не застосовано: виконайте її знову.</value></data>
   <data name="Bar_DuplicateButton" xml:space="preserve">
-    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+    <value>Повторюваний ідентифікатор спеціальної кнопки "{0}" (без урахування регістру); використано перше визначення.</value>
   </data>
   <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
-    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+    <value>Відповідь ще триває. Кнопка «Зупинити» зупинить її; ваше повідомлення чекає в полі введення.</value>
   </data>
   <data name="Bar_WidthInvalid" xml:space="preserve">
-    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+    <value>"{0}" {1} не є числовою шириною 0.5, 1, 2, 3 або 4; використано ширину за замовчуванням.</value>
   </data>
   <data name="Bar_CommandConflict" xml:space="preserve">
-    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+    <value>shortcuts.{0}: комбінація вже використовується; це сполучення клавіш вимкнено.</value>
   </data>
   <data name="Bar_OldVersionUnsupported" xml:space="preserve">
-    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+    <value>Цей файл панелі інструментів використовує старіший формат. Діють стандартні рядки кнопок і сполучення клавіш; файл не змінено.</value>
   </data>
   <data name="Bar_Fill" xml:space="preserve">
-    <value>Fill available row space</value>
+    <value>Заповнити доступний простір рядка</value>
   </data>
   <data name="Bar_BackupFailed" xml:space="preserve">
-    <value>Could not back up the button rows and shortcuts.</value>
+    <value>Не вдалося створити резервну копію рядків кнопок і сполучень клавіш.</value>
   </data>
   <data name="Bar_WriteFailed" xml:space="preserve">
-    <value>Could not save the button rows and shortcuts.</value>
+    <value>Не вдалося зберегти рядки кнопок і сполучення клавіш.</value>
   </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Зображення не змінено: не вдалося зберегти toolbar.json.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Більше</value></data>
@@ -723,17 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>Резервне копіювання</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Перенесіть налаштування Hotline на інший ПК або збережіть копію. Резервна копія — це один .zip-файл із вибраними елементами; нічого іншого (історія чату, пам'ять, журнали) не включається.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Налаштування</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
-  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
-  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
-  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
-  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
-  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
-  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
-  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
-  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
-  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
-  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Рядки кнопок і сполучення клавіш</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Формат конфігурації Hotline змінився. Параметри та рядки кнопок зі старіших версій повертаються до значень за замовчуванням. Підключення ШІ та сервери MCP збережено.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Скинуто: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Оригінальні файли: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Не вдалося створити повну резервну копію оновлення.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Не вдалося оновити: {0}. Hotline повторить спробу для цих файлів під час наступного запуску.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Оновлення з 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Під час першого запуску після оновлення старі параметри та рядки кнопок повертаються до вбудованих значень за замовчуванням. Переносяться лише основне підключення ШІ та порядок підключень. Підключення ШІ та сервери MCP зберігаються; старі дозволи MCP видаляються. Оригінальні файли копіюються до backups/&lt;time&gt;-upgrade перед перетворенням. Якщо резервне копіювання не вдасться, перетворення все одно виконається. Файли, які не вдалося перетворити, залишаються без змін і обробляються повторно під час наступного запуску. Еталонні значення за замовчуванням оновлюються в .defaults під час запуску.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Ця резервна копія містить відкриті значення середовища для {0}. Використайте «Перемістити до Сховища облікових даних» у Параметри &gt; Інструменти, перш ніж ділитися цією резервною копією.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Цим серверам MCP потрібні секрети Сховища облікових даних на цьому ПК: {0}. Додайте їхні секрети в Параметри &gt; Інструменти.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Новішу версію залишено без змін.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Інструменти (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Звуки</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>З'єднання ШІ</value></data>

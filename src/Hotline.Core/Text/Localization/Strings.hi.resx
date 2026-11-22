@@ -73,16 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>केवल टेक्स्ट, आपके .hotline फ़ोल्डर में।</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>उत्तर बैकग्राउंड में पूरा होने पर सूचित करें</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>जब पैनल छिपा हो या कोई दूसरा ऐप सामने हो और उत्तर पूरा हो जाए, तो Windows सूचना दिखाता है। उत्तर खोलने के लिए उस पर क्लिक करें।</value></data>
-  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
-  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
-  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
-  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
-  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
-  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
-  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
-  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>स्केल किए गए पिक्सेल (200–4000) या कार्य क्षेत्र का हिस्सा (20%–90%)।</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>स्केल किए गए पिक्सेल (200–4000) या कार्य क्षेत्र का हिस्सा (20%–90%); खाली छोड़ने पर खुलने वाली चौड़ाई बनी रहती है।</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>स्केल किए गए पिक्सेल (DIPs)।</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>200–4000 स्केल किए गए पिक्सेल या 20%–90% दर्ज करें।</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>सूचनाओं में उत्तर का टेक्स्ट दिखाएं</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>पूर्ण होने की सूचना में उत्तर का टेक्स्ट शामिल करें; बंद करने पर केवल चैट का शीर्षक दिखता है।</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>यह फ़ाइल पुराने (pre-freeze) फ़ॉर्मेट का उपयोग करती है। अपग्रेड चलने तक डिफ़ॉल्ट लागू रहेंगे; फ़ाइल अपरिवर्तित है।</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>कनेक्शन आईडी {0} अमान्य है। 1–64 अक्षर, अंक, डॉट, अंडरस्कोर या हाइफ़न का उपयोग करें; Windows डिवाइस नाम और अंत में डॉट स्वीकार नहीं किए जाते।</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} ने उत्तर दिया</value></data>
-  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>उत्तर तैयार है</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} उत्तर पूरा नहीं कर सका</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>इतिहास इतने समय रखें</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>दिन</value></data>
@@ -440,34 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" इंस्टॉल नहीं है या PATH में नहीं है, इसलिए {1} सर्वर शुरू नहीं हो सकता। mcp.json में "command" जाँचें।</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json पढ़ी नहीं जा सकी: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>स्वीकृति "{0}" का मान अज्ञात है, इसलिए इसे "deny" माना गया है।</value></data>
-  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
-  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
-  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
-  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
-  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
-  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
-  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
-  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
-  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
-  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
-  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
-  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
-  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
-  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
-  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
-  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
-  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
-  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
-  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
-  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
-  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
-  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
-  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
-  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
-  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
-  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
-  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
-  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>mcp.json में "approvals" अनुभाग को अनदेखा किया गया है; नियमों को settings.json (tools.approvals) में ले जाएं।</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>सर्वर "{0}" में "{1}" के लिए गैर-स्ट्रिंग env मान है, इसलिए इसे छोड़ दिया गया।</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>सर्वर "{0}" के env "{1}" में अमान्य सीक्रेट संदर्भ है।</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>सर्वर "{0}" env "{2}" में सीक्रेट "{1}" का संदर्भ देता है, जो क्रेडेंशियल लॉकर में नहीं है।</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>अनुमति नियम "{0}" केवल बड़े-छोटे अक्षरों में "{1}" से भिन्न है, इसलिए इसे अनदेखा किया गया।</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json एक नए संस्करण ({0}) का उपयोग करता है और इसे सुरक्षित रूप से अपडेट नहीं किया जा सकता।</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>अपडेट करने से पहले mcp.json का बैकअप नहीं लिया जा सका।</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>अपडेट की गई mcp.json फ़ाइल सहेजी नहीं जा सकी।</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>mcp.json में सर्वर "{0}" पर env प्रविष्टि "{1}" नहीं मिली।</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>वह env प्रविष्टि बदल गई है या पहले ही ले जाई जा चुकी है; कुछ भी नहीं बदला गया।</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>मान अब Windows क्रेडेंशियल लॉकर में "{0}" ({1}) के रूप में सहेजा गया है, लेकिन सहेजने और रोलबैक विफल होने के कारण mcp.json नहीं बदला गया।</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>हमेशा अनुमति वाली स्वीकृतियां</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>कोई सहेजी गई टूल स्वीकृति नहीं है।</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · लॉन्च {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>निरस्त करें</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>टूल स्वीकृति निरस्त नहीं की जा सकी।</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>एनवायरनमेंट सीक्रेट्स</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>mcp.json में कोई सादा टेक्स्ट env प्रविष्टि नहीं मिली।</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json में सादा टेक्स्ट)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>क्रेडेंशियल लॉकर में ले जाएं</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>env मान को क्रेडेंशियल लॉकर में ले जाएं?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>{0} › {1} को Windows क्रेडेंशियल लॉकर में संग्रहीत करता है और mcp.json में इसे बदलता है। पिछला mcp.json (सादा टेक्स्ट मान सहित) backups\&lt;time&gt;-save में रहता है, और mcp.json में टिप्पणियां सहेजी नहीं जातीं।</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>सीक्रेट नाम</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>अक्षर, अंक, डॉट, अंडरस्कोर या हाइफ़न का उपयोग करें।</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>इस नाम का एक सीक्रेट क्रेडेंशियल लॉकर में पहले से मौजूद है और उसे ओवरराइट कर दिया जाएगा।</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>ले जाएं</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} को क्रेडेंशियल लॉकर में ले जाया गया। पिछला mcp.json (सादा टेक्स्ट मान सहित) backups\&lt;time&gt;-save में सहेजा गया।</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>env मान को क्रेडेंशियल लॉकर में नहीं ले जाया जा सका।</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>सर्वर के नाम में '/' या '*' नहीं हो सकता।</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} सेकंड में शुरू नहीं हुआ</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} इसे ठीक किए जाने तक कोई टूल नहीं चलेगा।</value></data>
@@ -518,28 +518,28 @@
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>पहले वर्तमान फ़ाइल की प्रतिलिपि नहीं बनाई जा सकी, इसलिए कुछ भी नहीं बदला गया ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>यह पृष्ठ खुला होने के दौरान toolbar.json बदल गया। इसे पुनः लोड किया गया, और आपका अंतिम परिवर्तन लागू नहीं हुआ: इसे फिर से करें।</value></data>
   <data name="Bar_DuplicateButton" xml:space="preserve">
-    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+    <value>डुप्लिकेट कस्टम बटन आईडी "{0}" (केस-असंवेदनशील); पहली परिभाषा का उपयोग किया जाता है।</value>
   </data>
   <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
-    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+    <value>अभी उत्तर दे रहा है। रोकें बटन इसे रोकता है; आपका संदेश बॉक्स में प्रतीक्षा कर रहा है।</value>
   </data>
   <data name="Bar_WidthInvalid" xml:space="preserve">
-    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+    <value>"{0}" {1} 0.5, 1, 2, 3 या 4 की संख्यात्मक चौड़ाई नहीं है; डिफ़ॉल्ट चौड़ाई का उपयोग किया जाता है।</value>
   </data>
   <data name="Bar_CommandConflict" xml:space="preserve">
-    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+    <value>shortcuts.{0}: संयोजन पहले से उपयोग में है; यह शॉर्टकट अक्षम है।</value>
   </data>
   <data name="Bar_OldVersionUnsupported" xml:space="preserve">
-    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+    <value>यह टूलबार फ़ाइल पुराने फ़ॉर्मेट का उपयोग करती है। डिफ़ॉल्ट बटन पंक्तियां और शॉर्टकट सक्रिय हैं; फ़ाइल को बदला नहीं गया है।</value>
   </data>
   <data name="Bar_Fill" xml:space="preserve">
-    <value>Fill available row space</value>
+    <value>उपलब्ध पंक्ति स्थान भरें</value>
   </data>
   <data name="Bar_BackupFailed" xml:space="preserve">
-    <value>Could not back up the button rows and shortcuts.</value>
+    <value>बटन पंक्तियों और शॉर्टकट का बैकअप नहीं लिया जा सका।</value>
   </data>
   <data name="Bar_WriteFailed" xml:space="preserve">
-    <value>Could not save the button rows and shortcuts.</value>
+    <value>बटन पंक्तियां और शॉर्टकट सहेजे नहीं जा सके।</value>
   </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>तस्वीर नहीं बदली गई: toolbar.json को सहेजा नहीं जा सका।</value></data>
   <data name="Bar_more" xml:space="preserve"><value>अधिक</value></data>
@@ -723,17 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>बैकअप</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>अपने Hotline सेटअप को दूसरे PC पर ले जाएँ, या एक प्रति सुरक्षित रखें। बैकअप एक .zip फ़ाइल होती है जिसमें आपके द्वारा चुने गए भाग होते हैं; इसके अलावा कुछ भी (चैट इतिहास, मेमोरी, लॉग) शामिल नहीं है।</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>सेटिंग्स</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
-  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
-  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
-  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
-  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
-  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
-  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
-  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
-  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
-  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
-  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियां और शॉर्टकट</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline का कॉन्फ़िगरेशन फ़ॉर्मेट बदल गया है। पुराने संस्करणों की सेटिंग और बटन पंक्तियां डिफ़ॉल्ट पर लौट आती हैं। AI कनेक्शन और MCP सर्वर सुरक्षित रखे जाते हैं।</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>रीसेट: {0}।</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>मूल फ़ाइलें: {0}।</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>पूर्ण अपग्रेड बैकअप नहीं बनाया जा सका।</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>अपग्रेड नहीं किया जा सका: {0}। Hotline अगले प्रारंभ पर इन फ़ाइलों का पुनः प्रयास करेगा।</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>0.6 से अपग्रेड करना</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>अपग्रेड के बाद पहले प्रारंभ पर, पुरानी सेटिंग और बटन पंक्तियां अंतर्निहित डिफ़ॉल्ट पर लौट आती हैं। केवल डिफ़ॉल्ट AI कनेक्शन और कनेक्शन क्रम आगे बढ़ते हैं। AI कनेक्शन और MCP सर्वर सुरक्षित रखे जाते हैं; पुरानी MCP स्वीकृतियां हटा दी जाती हैं। रूपांतरण से पहले मूल फ़ाइलें backups/&lt;time&gt;-upgrade में कॉपी की जाती हैं। यदि वह बैकअप विफल हो जाता है, तब भी रूपांतरण चलता है। जिन फ़ाइलों को परिवर्तित नहीं किया जा सकता वे अछूती रहती हैं और अगले प्रारंभ पर पुनः प्रयास की जाती हैं। संदर्भ डिफ़ॉल्ट स्टार्टअप पर .defaults में रीफ़्रेश किए जाते हैं।</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>इस बैकअप में {0} के लिए सादा टेक्स्ट एनवायरनमेंट मान शामिल हैं। इस बैकअप को साझा करने से पहले सेटिंग &gt; टूल्स में क्रेडेंशियल लॉकर में ले जाएं का उपयोग करें।</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>इन MCP सर्वरों को इस PC पर क्रेडेंशियल लॉकर सीक्रेट्स की आवश्यकता है: {0}। सेटिंग &gt; टूल्स में उनके सीक्रेट्स जोड़ें।</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>एक नया संस्करण अछूता छोड़ दिया गया।</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>टूल्स (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>

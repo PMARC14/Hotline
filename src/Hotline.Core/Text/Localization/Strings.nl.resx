@@ -73,16 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Alleen tekst, in je .hotline-map.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Melden wanneer een antwoord op de achtergrond klaar is</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Een Windows-melding wanneer een antwoord klaar is terwijl het paneel verborgen is of een andere app op de voorgrond staat. Klik erop om het antwoord te openen.</value></data>
-  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
-  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
-  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
-  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
-  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
-  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
-  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
-  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Geschaalde pixels (200–4000) of een deel van het werkgebied (20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Geschaalde pixels (200–4000) of een deel van het werkgebied (20%–90%); leeg laat de beginbreedte staan.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Geschaalde pixels (DIP's).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Voer 200–4000 geschaalde pixels of 20%–90% in.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Antwoordtekst tonen in meldingen</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Antwoordtekst opnemen in de voltooiingsmelding; uit toont alleen de chattitel.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>Dit bestand gebruikt de oude indeling van vóór de bevriezing. Standaardwaarden gelden totdat de upgrade wordt uitgevoerd; het bestand is ongewijzigd.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Verbindings-id {0} is ongeldig. Gebruik 1–64 letters, cijfers, punten, onderstrepingstekens of koppeltekens; Windows-apparaatnamen en afsluitende punten worden geweigerd.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} heeft geantwoord</value></data>
-  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Antwoord gereed</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} kon het antwoord niet afmaken</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Geschiedenis bewaren gedurende</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>dagen</value></data>
@@ -440,34 +440,34 @@ Weigeren:
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" is niet geïnstalleerd of staat niet in PATH, dus de server {1} kan niet starten. Controleer "command" in mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json kon niet worden gelezen: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>Goedkeuring "{0}" heeft een onbekende waarde en wordt daarom als "deny" behandeld.</value></data>
-  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
-  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
-  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
-  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
-  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
-  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
-  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
-  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
-  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
-  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
-  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
-  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
-  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
-  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
-  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
-  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
-  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
-  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
-  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
-  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
-  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
-  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
-  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
-  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
-  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
-  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
-  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
-  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>De sectie "approvals" in mcp.json wordt genegeerd; verplaats regels naar settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" heeft een omgevingswaarde voor "{1}" die geen tekenreeks is, en is daarom overgeslagen.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" heeft een ongeldige geheimverwijzing in omgevingsvariabele "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" verwijst naar geheim "{1}" in omgevingsvariabele "{2}", dat niet in de Referentiekluis staat.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Toestaan-regel "{0}" verschilt alleen in hoofdlettergebruik van "{1}" en is daarom genegeerd.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json gebruikt een nieuwere versie ({0}) en kan niet veilig worden bijgewerkt.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Kan geen back-up maken van mcp.json vóór het bijwerken.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Kan het bijgewerkte bestand mcp.json niet opslaan.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Kan omgevingsvermelding "{1}" op server "{0}" niet vinden in mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Die omgevingsvermelding is gewijzigd of al verplaatst; er is niets veranderd.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>De waarde is nu opgeslagen in Windows Referentiekluis als "{0}" ({1}), maar mcp.json is niet gewijzigd omdat opslaan en terugdraaien zijn mislukt.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Machtigingen voor altijd toestaan</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Geen opgeslagen hulpmiddelmachtigingen.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · starten {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Intrekken</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Kan hulpmiddelmachtiging niet intrekken.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Omgevingsgeheimen</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>Geen env-vermeldingen in platte tekst gevonden in mcp.json.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (platte tekst in mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Verplaatsen naar Referentiekluis</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Omgevingswaarde verplaatsen naar Referentiekluis?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Slaat {0} › {1} op in Windows Referentiekluis en vervangt deze in mcp.json. De vorige mcp.json (inclusief de waarde in platte tekst) blijft staan in backups\&lt;time&gt;-save en opmerkingen in mcp.json blijven niet behouden.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Naam van geheim</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Gebruik letters, cijfers, punten, onderstrepingstekens of koppeltekens.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Er bestaat al een geheim met deze naam in de Referentiekluis; dit wordt overschreven.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Verplaatsen</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} verplaatst naar Referentiekluis. De vorige mcp.json (inclusief de waarde in platte tekst) is opgeslagen in backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Kan omgevingswaarde niet verplaatsen naar Referentiekluis.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Een servernaam mag geen '/' of '*' bevatten.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>is niet binnen {0:0} s gestart</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Er worden geen hulpmiddelen uitgevoerd tot dit is hersteld.</value></data>
@@ -518,28 +518,28 @@ Weigeren:
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>er kon niet eerst een kopie van het huidige bestand worden gemaakt, dus er is niets gewijzigd ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json is gewijzigd terwijl deze pagina geopend was. Het bestand is opnieuw geladen en uw laatste wijziging is niet toegepast: voer deze opnieuw uit.</value></data>
   <data name="Bar_DuplicateButton" xml:space="preserve">
-    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+    <value>Dubbele aangepaste knop-id "{0}" (niet hoofdlettergevoelig); de eerste definitie wordt gebruikt.</value>
   </data>
   <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
-    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+    <value>Bezig met antwoorden. De knop Stoppen stopt dit; je bericht wacht in het vak.</value>
   </data>
   <data name="Bar_WidthInvalid" xml:space="preserve">
-    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+    <value>"{0}" {1} is geen numerieke breedte van 0.5, 1, 2, 3 of 4; de standaardbreedte wordt gebruikt.</value>
   </data>
   <data name="Bar_CommandConflict" xml:space="preserve">
-    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+    <value>shortcuts.{0}: toetscombinatie is al in gebruik; deze sneltoets is uitgeschakeld.</value>
   </data>
   <data name="Bar_OldVersionUnsupported" xml:space="preserve">
-    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+    <value>Dit werkbalkbestand gebruikt een oudere indeling. De standaard knoppenrijen en sneltoetsen zijn actief; het bestand is niet gewijzigd.</value>
   </data>
   <data name="Bar_Fill" xml:space="preserve">
-    <value>Fill available row space</value>
+    <value>Beschikbare rijruimte opvullen</value>
   </data>
   <data name="Bar_BackupFailed" xml:space="preserve">
-    <value>Could not back up the button rows and shortcuts.</value>
+    <value>Kan geen back-up maken van de knoppenrijen en sneltoetsen.</value>
   </data>
   <data name="Bar_WriteFailed" xml:space="preserve">
-    <value>Could not save the button rows and shortcuts.</value>
+    <value>Kan de knoppenrijen en sneltoetsen niet opslaan.</value>
   </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>De afbeelding is niet gewijzigd: toolbar.json kon niet worden opgeslagen.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
@@ -723,17 +723,17 @@ Weigeren:
   <data name="Nav_Backup" xml:space="preserve"><value>Back-up</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Verplaats uw Hotline-configuratie naar een andere pc of bewaar een kopie. Een back-up is één .zip-bestand met de onderdelen die u aanvinkt; niets anders (chatgeschiedenis, geheugen, logboeken) wordt meegenomen.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Instellingen</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
-  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
-  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
-  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
-  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
-  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
-  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
-  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
-  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
-  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
-  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en sneltoetsen</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>De configuratie-indeling van Hotline is gewijzigd. Instellingen en knoppenrijen uit oudere versies keren terug naar de standaardwaarden. AI-verbindingen en MCP-servers blijven behouden.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Opnieuw ingesteld: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Originele bestanden: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Er kon geen volledige upgrade-back-up worden gemaakt.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Kan niet upgraden: {0}. Hotline probeert deze bestanden bij de volgende start opnieuw.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgraden vanaf 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Bij de eerste start na de upgrade keren oude instellingen en knoppenrijen terug naar de ingebouwde standaardwaarden. Alleen de standaard AI-verbinding en verbindingsvolgorde worden overgenomen. AI-verbindingen en MCP-servers blijven behouden; oude MCP-goedkeuringen worden verwijderd. Originele bestanden worden vóór conversie gekopieerd naar backups/&lt;time&gt;-upgrade. Als die back-up mislukt, wordt de conversie toch uitgevoerd. Bestanden die niet kunnen worden geconverteerd blijven ongemoeid en worden bij de volgende start opnieuw geprobeerd. Referentiestandaarden worden bij het opstarten vernieuwd in .defaults.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Deze back-up bevat omgevingswaarden in platte tekst voor {0}. Gebruik Verplaatsen naar Referentiekluis in Instellingen &gt; Hulpprogramma's voordat je deze back-up deelt.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Deze MCP-servers hebben geheimen uit de Referentiekluis nodig op deze pc: {0}. Voeg hun geheimen toe in Instellingen &gt; Hulpprogramma's.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Een nieuwere versie is ongemoeid gelaten.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>

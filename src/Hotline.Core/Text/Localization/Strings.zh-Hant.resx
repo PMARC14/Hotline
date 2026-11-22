@@ -73,16 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>僅文字,儲存在你的 .hotline 資料夾中。</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>回答在背景完成時通知</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>面板隱藏或其他應用程式在前景時,回答完成後顯示 Windows 通知。按一下即可開啟回答。</value></data>
-  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
-  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
-  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
-  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
-  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
-  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
-  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
-  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>縮放像素 (200–4000) 或工作區比例 (20%–90%)。</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>縮放像素 (200–4000) 或工作區比例 (20%–90%)；留空則保持開啟時的寬度。</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>縮放像素 (DIP)。</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>請輸入 200–4000 縮放像素或 20%–90%。</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>在通知中顯示回答文字</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>在完成通知中包含回答文字；關閉則只顯示聊天標題。</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>此檔案使用凍結前格式。在執行升級前將套用預設值；檔案維持不變。</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>連線 ID {0} 無效。請使用 1–64 個字母、數字、點、底線或連字號；不允許使用 Windows 裝置名稱及結尾的點。</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} 已回答</value></data>
-  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>回答已就緒</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} 無法完成回答</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>聊天記錄保留期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>
@@ -440,34 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>未安裝「{0}」或其不在 PATH 中,因此 {1} 伺服器無法啟動。請檢查 mcp.json 中的「command」。</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>無法讀取 mcp.json:{0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>核准「{0}」的值不明,因此視為「deny」。</value></data>
-  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
-  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
-  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
-  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
-  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
-  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
-  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
-  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
-  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
-  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
-  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
-  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
-  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
-  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
-  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
-  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
-  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
-  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
-  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
-  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
-  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
-  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
-  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
-  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
-  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
-  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
-  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
-  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>已忽略 mcp.json 中的 "approvals" 區段；請將規則移至 settings.json (tools.approvals)。</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>伺服器 "{0}" 的 "{1}" 包含非字串 env 值，因此已略過。</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>伺服器 "{0}" 在 env "{1}" 中包含無效的祕密參考。</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>伺服器 "{0}" 在 env "{2}" 中參考了祕密 "{1}"，但該祕密不在認證存放區中。</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>允許規則 "{0}" 與 "{1}" 僅大小寫不同，因此已忽略。</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json 使用較新版本 ({0})，無法安全更新。</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>更新前無法備份 mcp.json。</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>無法儲存更新後的 mcp.json 檔案。</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>在 mcp.json 中的伺服器 "{0}" 上找不到 env 項目 "{1}"。</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>該 env 項目已變更或已移動；未變更任何內容。</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>該值現已作為 "{0}" ({1}) 儲存在 Windows 認證存放區中，但因儲存和復原失敗，mcp.json 未變更。</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>一律允許授與</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>沒有已儲存的工具授與。</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · 啟動 {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>撤銷</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>無法撤銷工具授與。</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>環境祕密</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>在 mcp.json 中找不到純文字 env 項目。</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json 中的純文字)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>移至認證存放區</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>要將 env 值移至認證存放區嗎?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>將 {0} › {1} 儲存在 Windows 認證存放區中，並在 mcp.json 中取代它。先前的 mcp.json (包含純文字值) 會保留在 backups\&lt;time&gt;-save 中，且不會保留 mcp.json 中的註解。</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>祕密名稱</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>請使用字母、數字、點、底線或連字號。</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>認證存放區中已存在此名稱的祕密，將會覆寫。</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>移動</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>已將 {0} › {1} 移至認證存放區。先前的 mcp.json (包含純文字值) 已儲存至 backups\&lt;time&gt;-save。</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>無法將 env 值移至認證存放區。</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>伺服器名稱不能包含「/」或「*」。</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>未在 {0:0} 秒內啟動</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 修正前不會執行任何工具。</value></data>
@@ -518,28 +518,28 @@
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>無法先建立目前檔案的複本，因此未變更任何內容 ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>開啟此頁面時 toolbar.json 已變更。已重新載入，且您上次所做的變更未套用：請重新變更。</value></data>
   <data name="Bar_DuplicateButton" xml:space="preserve">
-    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+    <value>自訂按鈕 ID "{0}" 重複 (不區分大小寫)；將使用第一個定義。</value>
   </data>
   <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
-    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+    <value>仍在回答。使用停止按鈕可停止；你的訊息會在方塊中等待。</value>
   </data>
   <data name="Bar_WidthInvalid" xml:space="preserve">
-    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+    <value>"{0}" {1} 不是 0.5、1、2、3 或 4 的數值寬度；將使用預設寬度。</value>
   </data>
   <data name="Bar_CommandConflict" xml:space="preserve">
-    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+    <value>shortcuts.{0}: 快速鍵組合已被使用；此快速鍵已停用。</value>
   </data>
   <data name="Bar_OldVersionUnsupported" xml:space="preserve">
-    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+    <value>此工具列檔案使用較舊格式。預設按鈕列和快速鍵已啟用；檔案未變更。</value>
   </data>
   <data name="Bar_Fill" xml:space="preserve">
-    <value>Fill available row space</value>
+    <value>填滿可用列空間</value>
   </data>
   <data name="Bar_BackupFailed" xml:space="preserve">
-    <value>Could not back up the button rows and shortcuts.</value>
+    <value>無法備份按鈕列和快速鍵。</value>
   </data>
   <data name="Bar_WriteFailed" xml:space="preserve">
-    <value>Could not save the button rows and shortcuts.</value>
+    <value>無法儲存按鈕列和快速鍵。</value>
   </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>圖片未變更：無法儲存 toolbar.json。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
@@ -723,17 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>備份</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
-  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
-  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
-  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
-  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
-  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
-  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
-  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
-  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
-  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
-  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與快速鍵</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline 的設定格式已變更。舊版本的設定和按鈕列將回復為預設值。AI 連線和 MCP 伺服器會保留。</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>已重設: {0}。</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>原始檔案: {0}。</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>無法建立完整的升級備份。</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>無法升級: {0}。Hotline 將在下次啟動時重試這些檔案。</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>從 0.6 升級</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>升級後首次啟動時，舊設定和按鈕列將回復為內建預設值。僅保留預設 AI 連線和連線順序。AI 連線和 MCP 伺服器會保留；舊的 MCP 核准會移除。轉換前，原始檔案會複製到 backups/&lt;time&gt;-upgrade。即使該備份失敗，轉換仍會執行。無法轉換的檔案會維持原狀，並在下次啟動時重試。參考預設值會在啟動時於 .defaults 中重新整理。</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>此備份包含 {0} 的純文字環境值。分享此備份前，請在 [設定] &gt; [工具] 中使用 [移至認證存放區]。</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>這些 MCP 伺服器需要此電腦上的認證存放區祕密: {0}。請在 [設定] &gt; [工具] 中新增其祕密。</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>較新版本已維持原狀。</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>工具 (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>音效</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 連線</value></data>
