@@ -1,7 +1,7 @@
 # S1: schema freeze design
 
-The file formats Hotline freezes for 1.0, the mechanisms that keep them safe, and the work split. Status: **awaiting owner approval;
-nothing is built.** Reasons are in [s1-design.reasoning.md](s1-design.reasoning.md), cited `(R#)`. This file replaces the
+The file formats Hotline freezes for 1.0, the mechanisms that keep them safe, and the work split. Status: **approved 2026-11-14, amended
+2026-11-15; built on `s1/schema-freeze` (0.7).** Reasons are in [s1-design.reasoning.md](s1-design.reasoning.md), cited `(R#)`. This file replaces the
 "Owner decisions" section of [simplification-plan.md](simplification-plan.md) where they differ.
 
 ## Contents

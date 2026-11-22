@@ -6,6 +6,10 @@ stack another; design and review the whole system before building; live-test eac
 
 ## Order of work
 
+Steps 1-4 and 7 are built on `s1/schema-freeze` (0.7) to [s1-design.md](s1-design.md), which overrides the owner decisions
+below where they differ (for example: pixel settings are scaled pixels, Hotline writes `mcp.json` for the explicit "Move to
+Credential Locker" action, the backup reason is `upgrade` and there is no migration of old settings). Steps 5 and 6 are open.
+
 1. **Owner decisions** (below), then **S1**: fixtures first, then the code.
 2. **One writer and one backup policy.** One `SafeFile.Replace(path, bytes, backup)` and one `backups\<stamp>\<relative path>` policy
    replace the seven hand-written writers (`SettingsStore`, `ToolbarFile`, `McpConfig`, `SettingsReset`, `SettingsPackageImport`,
@@ -36,6 +40,8 @@ stack another; design and review the whole system before building; live-test eac
 7. **Freeze** the formats with the fixtures as the gate.
 
 ## Owner decisions (2026-11-12, reviewed with Fable 5.2)
+
+Historical: [s1-design.md](s1-design.md) is the current record.
 
 - **Shortcuts:** one `toolbar.json` `shortcuts` map for every panel command, **Stop included** (`"stop": "Esc"`, bare keys allowed for
   Stop only, Stop wins every conflict); custom buttons keep `buttons.<id>.shortcut`; `chat.shortcuts` and `chat.stopShortcut` migrate

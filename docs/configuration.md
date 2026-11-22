@@ -75,7 +75,7 @@ Missing values and `null` use those defaults in memory. Loading creates no files
 | `window.anchor` | `{ "monitor": "active", "x": 0.5, "y": 0.8 }` | Where the panel opens (its default spot). `monitor`: `active` (where you're working), `primary`, or a monitor's name (not connected = `active`). `x`/`y`: fractions of the free space, 0 = left/top, 1 = right/bottom |
 | `window.width` | `"40%"` | Opening width: a number of scaled pixels (200–4000) or a string `"N%"` (20–90, decimals allowed), clamped to the width limits and available work area |
 | `window.minWidth` / `maxWidth` | `320` / `800` | Width clamps in scaled pixels (200–4000); the maximum cannot be below the minimum |
-| `window.chatHeight` | `null` | The most the chat grows to, in DIPs; `null` = `maxHeightPercent` |
+| `window.chatHeight` | `null` | The most the chat grows to, in scaled pixels; `null` = `maxHeightPercent` |
 | `window.chatWidth` | `null` | Chat width in the same number-or-percent forms as `width`. Null keeps the opening width; chat only grows when this resolves wider. Resizing this opening keeps the manual width |
 | `window.growDirection` | `auto` | Which way the chat grows from the message bar: `auto` = up, unless there's no room above (then down); `up` / `down` keep it that way. The message bar never moves |
 | `window.openSound` / `closeSound` | `off` | `off`, `windows:<event>` (a sound from the Windows sound scheme, e.g. `windows:Notification.Default`), or a .wav file name in `sounds\` (only that folder) |
@@ -109,7 +109,7 @@ Missing values and `null` use those defaults in memory. Loading creates no files
 | `chat.attachSelection` | `auto` | Text selected in the app you came from becomes a removable chip when the key opens the panel. `auto`: read through UI Automation (no keystrokes, clipboard untouched; works in most editors, browsers and Office, not in every app). `clipboard`: also permits the restricted Ctrl+C fallback described below (opening can take ~0.5 s). `off`. Password fields are never read |
 | `diagnostics.verboseLogging` | `false` | Detailed log (also shows cleaned MCP server stderr excerpts) + key-status line in the panel |
 | `diagnostics.testLinks` | `false` | Enables the diagnostic protocol links (`hotline://demo`, `hotline://selftest`, `hotline://grips`). Not in the Settings window |
-| `tools.approvals` | `{}` | String-to-string map keyed by `server/tool` or `server/*`; spelling and values are kept as written. Tool policy interprets the words |
+| `tools.approvals` | `{}` | Tool rules keyed by `server/tool` or `server/*`: `allow`, `ask` or `deny` (see *mcp.json*). An unknown word counts as `deny`, with a warning; the file keeps what was written |
 
 **Selection clipboard fallback.** Ctrl+C is sent only when UI Automation reports no text pattern, and never to terminals
 (Windows Terminal, console hosts, PuTTY, WezTerm, Alacritty, mintty, ConEmu and similar), remote desktop clients, virtual machine
@@ -153,7 +153,7 @@ and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the
 | `settings.json`, not a JSON object, empty, or a syntax error (also a half-saved file) | Startup uses defaults in memory; live reload keeps the settings in force. Loading writes nothing. An explicit Settings edit can replace a broken file after backing it up in the save folder |
 | `connections\<id>.json`, one value wrong | That value keeps its default (a wrong `approveAllTools` is off, a wrong `tools` is chat-only); the connection loads |
 | `connections\<id>.json`, unreadable, not an object, an unknown `type`, or an invalid file-name id | The file is not used and not touched (never overwritten or deleted); the notice names it. An explicit edit preserves ignored fields unless that field itself changes; the original is kept in the save backup set |
-| `mcp.json` | A server entry or approval of the wrong kind is skipped alone (an unknown approval word counts as "deny", with a warning). A syntax error or a key given twice makes the whole file unreadable: no servers run and the file is left as it is |
+| `mcp.json` | A server entry of the wrong kind is skipped alone; an `approvals` key is ignored with a warning (rules live in `settings.json`). A syntax error or a key given twice makes the whole file unreadable: no servers run and the file is left as it is |
 | `prompts\*.md`, `actions\*.md` | A file that is locked, too large (actions), unreadable or badly named is skipped; the rest are listed. A prompt that can't be read falls back to `default.md` |
 | `toolbar.json` | See *toolbar.json* below |
 
@@ -161,7 +161,7 @@ and in the log (`settings:` lines, values cut to 40 cleaned characters). Fix the
 
 Each file has `"version": 1`. The file stem is the connection id, compared without case; no `id` key is written.
 Ids are 1–64 ASCII letters, digits, dots, underscores or hyphens. Windows device names, trailing dots, `.` and `..`
-are refused. Invalid ids are never rewritten into a different name. Credential Locker keys use the lower-cased id.
+are refused. Loading never renames a file with an invalid id (only the one-time upgrade repairs ids). Credential Locker keys use the lower-cased id.
 New files omit unset options. Existing files retain unknown keys and unchanged values, including explicit nulls.
 
 
