@@ -42,7 +42,7 @@ public class CliArgumentsTests
 
         // 2. Dangerous-flag cases across the three protocols
         // ClaudeCodeProtocol: dangerous skip permissions and blocked flags
-        var claudeSafe = ClaudeCodeProtocol.BuildArgs(new BackendProfile
+        var claudeSafe = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile
         {
             Tools = ToolMode.ChatOnly,
             ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--allowedTools Bash Edit --dangerously-skip-permissions --mcp-config \"C:\\My Files\\m.json\" --verbose").ToList()
@@ -54,7 +54,7 @@ public class CliArgumentsTests
         Assert.Contains("--verbose", claudeSafe);
 
         // CodexProtocol: dangerous bypass and custom settings
-        var codexSafe = CodexProtocol.BuildArgs(new BackendProfile
+        var codexSafe = CodexProtocol.BuildArgs(new ConnectionProfile
         {
             Tools = ToolMode.ChatOnly,
             ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access -c model_verbosity=\"low\"").ToList()
@@ -65,7 +65,7 @@ public class CliArgumentsTests
         Assert.Contains("model_verbosity=\"low\"", codexSafe);
 
         // AgyProtocol: dangerous skip permissions and agent override
-        var agySafe = AgyProtocol.BuildArgs(new BackendProfile
+        var agySafe = AgyProtocol.BuildArgs(new ConnectionProfile
         {
             Tools = ToolMode.ChatOnly,
             ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-skip-permissions --agent malicious --model gemini-3.8-flash").ToList()

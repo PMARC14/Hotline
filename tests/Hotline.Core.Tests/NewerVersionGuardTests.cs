@@ -58,7 +58,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         var settings = store.Load();
 
         // Add a connection
-        settings.Chat.Backends.Add(new BackendProfile { Id = "test-backend", Name = "Test Connection", Type = BackendType.OpenAiCompatible });
+        settings.Chat.Connections.Add(new ConnectionProfile { Id = "test-backend", Name = "Test Connection", Type = BackendType.OpenAiCompatible });
         store.Save(settings);
 
         // settings.json is still protected

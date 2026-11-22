@@ -432,13 +432,13 @@ public sealed class LenientSettingsTests : TempDirTest
     {
         WriteConn("c1", $$"""{ "version": 1, "type": "anthropic", "name": "Mine", "model": "opus", "{{key}}": {{json}} }""");
         var store = new SettingsStore(_dir);
-        var c = Assert.Single(store.Load().Chat.Backends);
+        var c = Assert.Single(store.Load().Chat.Connections);
         var problem = Assert.Single(store.SettingsProblems);
         Assert.Contains("connections/c1.json", problem);
         Assert.Contains(key, problem);
         Assert.Equal(BackendType.Anthropic, c.Type);
         Assert.Equal("opus", c.Model);
-        var fresh = new BackendProfile();
+        var fresh = new ConnectionProfile();
         Assert.False(c.ApproveAllTools);
         Assert.Equal(ToolMode.ChatOnly, c.Tools);
         Assert.Equal(fresh.KeepCliSessions, c.KeepCliSessions);
@@ -464,7 +464,7 @@ public sealed class LenientSettingsTests : TempDirTest
     {
         WriteConn("c1", """{ "version": 1, "type": "local", "temperature": 99 }""");
         var store = new SettingsStore(_dir);
-        Assert.Equal(2, Assert.Single(store.Load().Chat.Backends).Temperature);
+        Assert.Equal(2, Assert.Single(store.Load().Chat.Connections).Temperature);
         Assert.Contains("temperature", Assert.Single(store.SettingsProblems));
     }
 
@@ -479,7 +479,7 @@ public sealed class LenientSettingsTests : TempDirTest
         WriteConn("odd", text);
         var store = new SettingsStore(_dir);
         var s = store.Load();
-        Assert.Empty(s.Chat.Backends);
+        Assert.Empty(s.Chat.Connections);
         Assert.Single(store.BrokenConnectionFiles);
         Assert.Contains("connections/odd.json", Assert.Single(store.SettingsProblems));
         store.Save(s);
@@ -497,7 +497,7 @@ public sealed class LenientSettingsTests : TempDirTest
         WriteConn("good", """{ "version": 1, "type": "local", "name": "Good" }""");
         var store = new SettingsStore(_dir);
         var s = store.Load();
-        Assert.Equal("good", Assert.Single(s.Chat.Backends).Id);
+        Assert.Equal("good", Assert.Single(s.Chat.Connections).Id);
         Assert.Equal(Conn("bad"), Assert.Single(store.BrokenConnectionFiles));
         Assert.Contains("connections/bad.json", Assert.Single(store.SettingsProblems));
         store.Save(s);
@@ -510,7 +510,7 @@ public sealed class LenientSettingsTests : TempDirTest
         WriteConn("a", """{ "version": 1, "id": "same", "type": "local" }""");
         WriteConn("b", """{ "version": 1, "id": "same", "type": "local" }""");
         var store = new SettingsStore(_dir);
-        Assert.Equal(["a", "b"], store.Load().Chat.Backends.Select(p => p.Id));
+        Assert.Equal(["a", "b"], store.Load().Chat.Connections.Select(p => p.Id));
         Assert.Empty(store.SettingsProblems);
     }
 
@@ -521,7 +521,7 @@ public sealed class LenientSettingsTests : TempDirTest
         WriteConn("c1", text);
         var store = new SettingsStore(_dir);
         var s = store.Load();
-        s.Chat.Backends[0].Name = "Renamed";
+        s.Chat.Connections[0].Name = "Renamed";
         store.Save(s);
         Assert.Contains("Renamed", File.ReadAllText(Conn("c1")));
         Assert.Equal(text, File.ReadAllText(Assert.Single(SettingsTestFiles.Backups(_dir, "c1.json"))));
@@ -535,7 +535,7 @@ public sealed class LenientSettingsTests : TempDirTest
         store.Load();
         Assert.Single(store.SettingsProblems);
         WriteConn("c1", """{ "version": 1, "type": "local" }""");
-        Assert.Single(store.TryRead()!.Chat.Backends);
+        Assert.Single(store.TryRead()!.Chat.Connections);
         Assert.Empty(store.SettingsProblems);
     }
 

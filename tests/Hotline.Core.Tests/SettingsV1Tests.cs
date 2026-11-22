@@ -27,15 +27,15 @@ public sealed class SettingsV1Tests : TempDirTest
         var store = new SettingsStore(_dir);
         var settings = Assert.IsType<HotlineSettings>(store.TryRead());
         Assert.Equal(ThemeChoice.Dark, settings.Window.Theme);
-        Assert.Equal("Future", Assert.Single(settings.Chat.Backends).Name);
+        Assert.Equal("Future", Assert.Single(settings.Chat.Connections).Name);
         Assert.True(store.NewerVersionFile > 1);
         Assert.DoesNotContain(store.SettingsProblems, p => p.Contains(Text.Localization.Strings.Settings_PreFreeze, StringComparison.Ordinal));
         settings.Window.Theme = ThemeChoice.Light;
-        settings.Chat.Backends[0].Name = "Edited";
+        settings.Chat.Connections[0].Name = "Edited";
         store.Save(settings);
         Assert.Equal(main, File.ReadAllText(settingsPath));
         Assert.Equal(connection, File.ReadAllText(connectionPath));
-        settings.Chat.Backends.Clear();
+        settings.Chat.Connections.Clear();
         store.Save(settings, ["future"]);
         Assert.Equal(connection, File.ReadAllText(connectionPath));
         Assert.False(Directory.Exists(Path.Combine(_dir, "backups")));
@@ -67,7 +67,7 @@ public sealed class SettingsV1Tests : TempDirTest
         var original = JsonNode.Parse(File.ReadAllText(path))!;
         var store = new SettingsStore(_dir);
         var settings = store.Load();
-        var targets = family == "settings" ? settings.Chat.ContinueIn! : settings.Chat.Backends[0].ContinueIn!;
+        var targets = family == "settings" ? settings.Chat.ContinueIn! : settings.Chat.Connections[0].ContinueIn!;
         targets[0] = targets[0] with { Name = "Edited target" };
         store.Save(settings);
         var edited = JsonNode.Parse(File.ReadAllText(path))!;
@@ -106,7 +106,7 @@ public sealed class SettingsV1Tests : TempDirTest
         File.WriteAllText(path, original);
         var store = new SettingsStore(_dir);
         var settings = store.Load();
-        if (changeName) settings.Chat.Backends[0].Name = "Edited";
+        if (changeName) settings.Chat.Connections[0].Name = "Edited";
         store.Save(settings);
         var result = JsonNode.Parse(File.ReadAllText(path))!;
         Assert.Equal(99, result["temperature"]!.GetValue<int>());
@@ -151,7 +151,7 @@ public sealed class SettingsV1Tests : TempDirTest
         files.Files[path] = original;
         var store = new SettingsStore(_dir, files);
         var settings = store.Load();
-        if (connection) settings.Chat.Backends[0].Name = "changed";
+        if (connection) settings.Chat.Connections[0].Name = "changed";
         else settings.General.SupportReminder = false;
         files.Fail = c => c.Operation == nameof(IFileSystem.CopyFile);
         store.Save(settings);
@@ -194,7 +194,7 @@ public sealed class SettingsV1Tests : TempDirTest
         var settings = store.Load();
         files.Fail = c => c.Operation == operation;
         if (operation == nameof(IFileSystem.EnumerateFiles)) settings = store.Load();
-        else settings.Chat.Backends.Clear();
+        else settings.Chat.Connections.Clear();
         store.Save(settings);
         Assert.NotEmpty(store.SettingsProblems);
         Assert.True(files.FileExists(path));
@@ -241,7 +241,7 @@ public sealed class SettingsV1Tests : TempDirTest
         }
         else
         {
-            settings.Chat.Backends[0].Model = "changed";
+            settings.Chat.Connections[0].Model = "changed";
             expected["model"] = "changed";
         }
         store.Save(settings);
@@ -302,7 +302,7 @@ public sealed class SettingsV1Tests : TempDirTest
         File.WriteAllBytes(path, original);
         var store = new SettingsStore(_dir);
         var settings = store.Load();
-        if (family == "connection") Assert.Single(settings.Chat.Backends);
+        if (family == "connection") Assert.Single(settings.Chat.Connections);
         else Assert.Equal(fixture == "newer-version" ? 99 : 1, settings.SchemaVersion);
         store.Save(settings);
         Assert.Equal(original, File.ReadAllBytes(path));

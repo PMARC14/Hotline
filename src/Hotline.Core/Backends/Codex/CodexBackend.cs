@@ -14,8 +14,8 @@ namespace Hotline.Core.Backends.Codex;
 /// (`exec resume`) in the folder it began in and send only the new message. Otherwise sessions are ephemeral and every
 /// turn replays the conversation as text. Images go as temporary files, deleted after the turn.
 /// </summary>
-public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe, string workspace, ILineProcessFactory processes,
-    FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
+public sealed class CodexBackend(ConnectionProfile profile, Func<string?> locateExe, string workspace, ILineProcessFactory processes,
+    FileLog log, Func<ConnectionProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
     private readonly SemaphoreSlim _turnGate = new(1, 1);

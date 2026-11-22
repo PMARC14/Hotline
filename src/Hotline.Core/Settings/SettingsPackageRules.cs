@@ -238,7 +238,7 @@ public static partial class SettingsPackage
     private static bool IsExecutableContinueTarget(ContinueTarget? t) =>
         t is not null && (t.Kind == ContinueKind.App || !string.IsNullOrWhiteSpace(t.Command));
 
-    private static bool IsExecutableConnection(BackendProfile p) =>
+    private static bool IsExecutableConnection(ConnectionProfile p) =>
         ConnectionTypes.IsCli(p.Type)
         || p.Tools == ToolMode.Inherit
         || p.ApproveAllTools
@@ -258,7 +258,7 @@ public static partial class SettingsPackage
         }
     }
 
-    private static void AppendConnection(List<string> blocks, string location, BackendProfile p)
+    private static void AppendConnection(List<string> blocks, string location, ConnectionProfile p)
     {
         var sb = new StringBuilder();
         var idSuffix = string.IsNullOrWhiteSpace(p.Id) ? "" : $" ({p.Id})";

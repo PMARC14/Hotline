@@ -18,7 +18,7 @@ namespace Hotline.Core.Backends.Api;
 /// is sent each turn. Default model Claude Opus 5.5 with its default adaptive thinking; effort from the picker.
 /// Refusal fallbacks are on by default where supported (a declined request is re-served by a suitable model).
 /// </summary>
-public sealed class AnthropicBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
+public sealed class AnthropicBackend(ConnectionProfile profile, HttpClient http, ISecretStore secrets, Func<ConnectionProfile, string> systemPrompt,
     FileLog log, IToolHost? tools = null) : IChatBackend
 {
     public const string DefaultModel = "claude-opus-5-5";

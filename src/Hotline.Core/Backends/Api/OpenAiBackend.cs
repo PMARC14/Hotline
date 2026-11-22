@@ -16,7 +16,7 @@ namespace Hotline.Core.Backends.Api;
 /// Stateless: the whole conversation (with images as data URLs) is sent each turn; the reply streams as SSE. With
 /// Tool use on, Hotline's MCP tools are offered as functions; tool calls run through the tool host and loop.
 /// </summary>
-public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
+public sealed class OpenAiBackend(ConnectionProfile profile, HttpClient http, ISecretStore secrets, Func<ConnectionProfile, string> systemPrompt,
     FileLog log, IToolHost? tools = null) : IChatBackend
 {
     public string Id => profile.Id;

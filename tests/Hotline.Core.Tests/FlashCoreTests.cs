@@ -14,7 +14,7 @@ public sealed class FlashCoreTests : TempDirTest
         var path = store.ConnectionPath("missing");
         const string text = """{ "name": "Remote Server" }""";
         File.WriteAllText(path, text);
-        Assert.Empty(store.Load().Chat.Backends);
+        Assert.Empty(store.Load().Chat.Connections);
         Assert.Contains(path, store.BrokenConnectionFiles);
         Assert.Single(store.SettingsProblems);
         Assert.Equal(text, File.ReadAllText(path));

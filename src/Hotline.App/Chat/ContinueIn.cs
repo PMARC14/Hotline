@@ -28,11 +28,11 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
         // it, so the chat goes over as a handoff instead.
         var own = chat.CurrentSession is { } s && string.Equals(s.BackendId, chat.BackendId, StringComparison.OrdinalIgnoreCase) ? s : ((CliSession Session, string BackendId)?)null;
         var profile = Profile(chat.BackendId);
-        var exes = new Dictionary<BackendType, (BackendProfile Profile, string Exe)>();
+        var exes = new Dictionary<BackendType, (ConnectionProfile Profile, string Exe)>();
         foreach (var type in new[] { BackendType.ClaudeCode, BackendType.Antigravity, BackendType.Codex })
         {
             var p = profile?.Type == type ? profile
-                : settings.Chat.Backends.FirstOrDefault(b => b.Type == type) ?? new BackendProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
+                : settings.Chat.Connections.FirstOrDefault(b => b.Type == type) ?? new ConnectionProfile { Id = "", Type = type, Name = ConnectionTypes.Of(type).DisplayName };
             if (Locate(p) is { } exe) exes[type] = (p, exe);
         }
         var targets = new List<Target>();
@@ -126,9 +126,9 @@ internal sealed class ContinueIn(ChatController chat, HotlineSettings settings, 
 
     private void CopyChat(string title) => MarkdownRenderer.SetClipboardText(CliHandoff.Markdown(title, chat.Messages));
 
-    private BackendProfile? Profile(string id) => settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase));
+    private ConnectionProfile? Profile(string id) => settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase));
 
-    private static string? Locate(BackendProfile p)
+    private static string? Locate(ConnectionProfile p)
     {
         var path = Environment.GetEnvironmentVariable("PATH");
         try

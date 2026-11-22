@@ -17,7 +17,7 @@ public static class CodexProtocol
 
     /// <param name="resumeThread">Thread id to continue (only when the user keeps Codex sessions), else a new session.</param>
     /// <param name="imagePaths">Image files to attach (codex takes paths, not data).</param>
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string systemPrompt, string? resumeThread, IReadOnlyList<string> imagePaths)
+    public static IReadOnlyList<string> BuildArgs(ConnectionProfile p, string systemPrompt, string? resumeThread, IReadOnlyList<string> imagePaths)
     {
         var args = new List<string> { "exec", "--json", "--skip-git-repo-check", "--color", "never" };
         if (!p.KeepCliSessions) args.Add("--ephemeral"); // Hotline keeps its own history

@@ -43,7 +43,7 @@ public static class AgyProtocol
         return sb.ToString();
     }
 
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string? addDir = null)
+    public static IReadOnlyList<string> BuildArgs(ConnectionProfile p, string? addDir = null)
     {
         var args = new List<string> { "--input-format", "stream-json", "--output-format", "stream-json", "-p=" };
         var chatOnly = p.Tools == ToolMode.ChatOnly;

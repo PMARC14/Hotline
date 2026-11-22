@@ -33,7 +33,7 @@ public sealed class AnthropicBackendTests : TempDirTest
         return new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(sb.ToString(), Encoding.UTF8, "text/event-stream") };
     }
 
-    private (AnthropicBackend, RecordingHandler) New(BackendProfile profile, Func<HttpRequestMessage, HttpResponseMessage> respond, string? key = "sk-ant-test")
+    private (AnthropicBackend, RecordingHandler) New(ConnectionProfile profile, Func<HttpRequestMessage, HttpResponseMessage> respond, string? key = "sk-ant-test")
     {
         var handler = new RecordingHandler(respond);
         var secrets = new InMemorySecretStore();
@@ -41,7 +41,7 @@ public sealed class AnthropicBackendTests : TempDirTest
         return (new AnthropicBackend(profile, new HttpClient(handler), secrets, _ => "Be brief.", new FileLog(Path.Combine(_dir, "h.log"))), handler);
     }
 
-    private static BackendProfile Claude(string? model = null, string? effort = null) =>
+    private static ConnectionProfile Claude(string? model = null, string? effort = null) =>
         new() { Id = "claude-api", Name = "Claude API", Type = BackendType.Anthropic, Model = model, Effort = effort };
 
     [Fact]

@@ -34,7 +34,7 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         {
             newChat(); // a real reset (stops any answer, clears the controller), not just the view
             popup.ShowPopup();
-            var backend = settings.Chat.Backends.FirstOrDefault()?.Name ?? "Gemini (Antigravity)";
+            var backend = settings.Chat.Connections.FirstOrDefault()?.Name ?? "Gemini (Antigravity)";
             switch (scene?.ToLowerInvariant())
             {
                 case "summary":

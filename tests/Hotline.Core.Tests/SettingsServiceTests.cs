@@ -120,12 +120,12 @@ public sealed class SettingsServiceTests : TempDirTest
         var service = New(out var store);
         File.AppendAllText(store.FilePath, " "); // hand edit requires a backup
         _files.BeforeCopy = path => { if (path == store.FilePath) throw new IOException("blocked"); };
-        Assert.NotEmpty(service.Update(s => { s.Window.FontSize = 24; s.Chat.Backends[0].Model = "new"; }));
+        Assert.NotEmpty(service.Update(s => { s.Window.FontSize = 24; s.Chat.Connections[0].Model = "new"; }));
         var notifications = 0;
         service.Changed += () => notifications++;
         Assert.False(service.Reload(store.TryRead()!));
         Assert.Equal(24, service.Current.Window.FontSize);
-        Assert.Equal("new", store.TryRead()!.Chat.Backends[0].Model);
+        Assert.Equal("new", store.TryRead()!.Chat.Connections[0].Model);
         Assert.Equal(0, notifications);
         _files.BeforeCopy = null;
         Assert.Empty(service.Reset(false).Failed);
@@ -135,12 +135,12 @@ public sealed class SettingsServiceTests : TempDirTest
     public void Reload_case_only_id_edit_preserves_profile_instance()
     {
         var service = New(out var store);
-        var profile = service.Current.Chat.Backends[0];
+        var profile = service.Current.Chat.Connections[0];
         var edited = store.Load();
-        edited.Chat.Backends[0].Id = profile.Id.ToUpperInvariant();
-        edited.Chat.Backends[0].Model = "changed";
+        edited.Chat.Connections[0].Id = profile.Id.ToUpperInvariant();
+        edited.Chat.Connections[0].Model = "changed";
         service.Reload(edited);
-        Assert.Same(profile, service.Current.Chat.Backends[0]);
+        Assert.Same(profile, service.Current.Chat.Connections[0]);
         Assert.Equal("changed", profile.Model);
     }
 
@@ -173,7 +173,7 @@ public sealed class SettingsServiceTests : TempDirTest
         var service = New(out var store);
         var window = service.Current.Window;
         var general = service.Current.General;
-        var backends = service.Current.Chat.Backends;
+        var backends = service.Current.Chat.Connections;
         Assert.True(general.SupportReminder); // on for new installs: the donation note shows once
         var raised = 0;
         service.Changed += () => raised++;
@@ -183,7 +183,7 @@ public sealed class SettingsServiceTests : TempDirTest
             s.Window.FontSize = 18;
             s.General.SupportReminder = false;
             s.General.Language = "ja";
-            s.Chat.Backends[0].Model = "gemini-3.1-pro-high";
+            s.Chat.Connections[0].Model = "gemini-3.1-pro-high";
         }
         Assert.True(service.Reload(store.Load().Also(Edit)));
         Assert.Equal(18, window.FontSize);                       // same object other components hold
@@ -203,19 +203,19 @@ public sealed class SettingsServiceTests : TempDirTest
     {
         var service = New(out var store);
         service.Update(s => Hotline.Core.Backends.ConnectionEditor.Add(s.Chat, BackendType.Local));
-        var agy = service.Current.Chat.Backends[0];
-        var local = service.Current.Chat.Backends[1];
+        var agy = service.Current.Chat.Connections[0];
+        var local = service.Current.Chat.Connections[1];
         IReadOnlyList<string>? changed = null;
         service.ConnectionsChanged += ids => changed = ids;
 
         var edited = store.Load();
-        edited.Chat.Backends[0].ApproveAllTools = true;  // agy changed
-        edited.Chat.Backends.RemoveAt(1);                 // local removed
+        edited.Chat.Connections[0].ApproveAllTools = true;  // agy changed
+        edited.Chat.Connections.RemoveAt(1);                 // local removed
         Assert.True(service.Reload(edited));
 
-        Assert.Same(agy, service.Current.Chat.Backends[0]); // live instance kept
+        Assert.Same(agy, service.Current.Chat.Connections[0]); // live instance kept
         Assert.True(agy.ApproveAllTools);
-        Assert.Single(service.Current.Chat.Backends);
+        Assert.Single(service.Current.Chat.Connections);
         Assert.Equal(["agy", local.Id], changed!.Order());
     }
 

@@ -171,7 +171,7 @@ public sealed class ReviewX1Tests : TempDirTest
     [Fact]
     public void A_connection_of_an_undefined_type_has_info_instead_of_throwing()
     {
-        var p = new BackendProfile { Id = "x", Type = (BackendType)99, Name = "x" };
+        var p = new ConnectionProfile { Id = "x", Type = (BackendType)99, Name = "x" };
         Assert.NotNull(ConnectionTypes.Of(p.Type));
         _ = ConnectionTypes.TakesImages(p);
     }

@@ -331,7 +331,7 @@ internal sealed class ChatPresenter
     // ---- chat events ------------------------------------------------------------------------------
 
     private ReportTarget? ReportFor(string? backendId) =>
-        _settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } profile ? ReportLinks.For(profile.Type) : null;
+        _settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } profile ? ReportLinks.For(profile.Type) : null;
 
     /// <summary>Not the self-test or demo.</summary>
     private static bool IsRealAnswer(string id) => !id.StartsWith("st-", StringComparison.Ordinal) && !id.StartsWith("demo-", StringComparison.Ordinal);
@@ -391,7 +391,7 @@ internal sealed class ChatPresenter
                 _transcript.AddUser(r.Message);
                 break;
             case MessageRestored r:
-                var name = _settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, r.Message.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? r.Message.BackendId ?? "";
+                var name = _settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, r.Message.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? r.Message.BackendId ?? "";
                 _transcript.RestoreAnswer(r.Message, name, ReportFor(r.Message.BackendId));
                 break;
             case ConversationReset:
@@ -405,7 +405,7 @@ internal sealed class ChatPresenter
                 if (!resumed.HasTranscript)
                 {
                     // Only the record was kept: the earlier messages are in the CLI's own history.
-                    var holder = _settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, resumed.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? resumed.BackendId ?? "";
+                    var holder = _settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, resumed.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? resumed.BackendId ?? "";
                     _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
                 }
                 break;

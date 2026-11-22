@@ -34,7 +34,7 @@ public sealed class SafetyG3Tests : TempDirTest
     {
         Put("a.json", HandEdited);
         var service = Service(out _);
-        service.Update(s => s.Chat.Backends[0].Model = "m1");
+        service.Update(s => s.Chat.Connections[0].Model = "m1");
         Assert.Contains("m1", File.ReadAllText(Conn("a.json")));
         Assert.Equal(HandEdited, File.ReadAllText(Assert.Single(SettingsTestFiles.Backups(_dir, "a.json"))));
     }
@@ -58,7 +58,7 @@ public sealed class SafetyG3Tests : TempDirTest
         Put("a.json", HandEdited);
         var service = Service(out var store);
         _files.BeforeCopy = _ => throw new IOException("disk full"); // the copy can't be made
-        service.Update(s => s.Chat.Backends[0].Model = "m1");
+        service.Update(s => s.Chat.Connections[0].Model = "m1");
         Assert.Equal(HandEdited, File.ReadAllText(Conn("a.json")));
         Assert.Contains(store.WriteProblems, p => p.Contains("a.json"));
         Assert.Contains(service.Problems, p => p.Contains("a.json"));
@@ -73,7 +73,7 @@ public sealed class SafetyG3Tests : TempDirTest
         for (var i = 0; i < 24; i++)
         {
             File.WriteAllText(Conn("a.json"), $$"""{ "version": 1,"id":"a","type":"local","name":"v{{i}}"}"""); // a hand edit between saves
-            service.Update(s => s.Chat.Backends[0].Model = "m" + i);
+            service.Update(s => s.Chat.Connections[0].Model = "m" + i);
         }
         var copies = SettingsTestFiles.Backups(_dir, "a.json");
         Assert.Equal(20, copies.Length);
@@ -92,7 +92,7 @@ public sealed class SafetyG3Tests : TempDirTest
         Put("late.json", """{ "version": 1, "type": "local", "name": "Late" }"""); // the watcher hasn't reloaded it yet
         service.Update(s => s.Window.FontSize = 20);
         Assert.True(File.Exists(Conn("late.json")));
-        Assert.Contains(service.Current.Chat.Backends, b => b.Id == "late");
+        Assert.Contains(service.Current.Chat.Connections, b => b.Id == "late");
     }
 
     [Fact]
@@ -114,13 +114,13 @@ public sealed class SafetyG3Tests : TempDirTest
         var raised = new List<string>();
         service.SaveFailed += raised.AddRange;
         _files.BeforeCopy = _ => throw new IOException("disk full");
-        var problems = service.Update(s => s.Chat.Backends[0].Name = "Edited");
+        var problems = service.Update(s => s.Chat.Connections[0].Name = "Edited");
         Assert.NotEmpty(problems);
         Assert.Equal(problems, raised);
         Assert.Equal(HandEdited, File.ReadAllText(Conn("a.json"))); // left alone
         _files.BeforeCopy = null;
         service.Update(s => s.Window.FontSize = 20); // the disk still has the old name: memory must not be replaced by it
-        Assert.Equal("Edited", service.Current.Chat.Backends[0].Name);
+        Assert.Equal("Edited", service.Current.Chat.Connections[0].Name);
         Assert.Contains("Edited", File.ReadAllText(Conn("a.json"))); // and now it is written (with its copy)
     }
 
@@ -131,11 +131,11 @@ public sealed class SafetyG3Tests : TempDirTest
     {
         Put("mine.json", """{ "version": 1,"id":"local","type":"local","name":"Mine"}""");
         var service = Service(out var store);
-        service.Update(s => s.Chat.Backends[0].Model = "x");
+        service.Update(s => s.Chat.Connections[0].Model = "x");
         Assert.Contains("\"x\"", File.ReadAllText(Conn("mine.json")));
         Assert.False(File.Exists(Conn("local.json")));
         Assert.Empty(service.Problems); // no "duplicate id" notice from a second copy
-        Assert.Single(new SettingsStore(_dir, _files).Load().Chat.Backends);
+        Assert.Single(new SettingsStore(_dir, _files).Load().Chat.Connections);
         Assert.Equal(Path.GetFullPath(Conn("mine.json")), store.SourcePath("mine"));
     }
 
@@ -153,7 +153,7 @@ public sealed class SafetyG3Tests : TempDirTest
     {
         var store = new SettingsStore(_dir, _files);
         var settings = store.Load();
-        settings.Chat.Backends = [new() { Id = "work-a", Name = "One" }, new() { Id = "WORK-A", Name = "Two" }];
+        settings.Chat.Connections = [new() { Id = "work-a", Name = "One" }, new() { Id = "WORK-A", Name = "Two" }];
         store.Save(settings);
         Assert.Contains("One", File.ReadAllText(Conn("work-a.json")));
         Assert.NotEmpty(store.WriteProblems);
@@ -165,7 +165,7 @@ public sealed class SafetyG3Tests : TempDirTest
         Put("mine.json", """{"version":1,"type":"local","name":"Mine"}""");
         var store = new SettingsStore(_dir, _files);
         var settings = store.Load();
-        settings.Chat.Backends.Add(new BackendProfile { Id = "MINE", Name = "New" });
+        settings.Chat.Connections.Add(new ConnectionProfile { Id = "MINE", Name = "New" });
         store.Save(settings);
         Assert.Contains("Mine", File.ReadAllText(Conn("mine.json")));
         Assert.NotEmpty(store.WriteProblems);
@@ -218,7 +218,7 @@ public sealed class SafetyG3Tests : TempDirTest
         HotlineSettings s;
         using (new FileStream(Main, FileMode.Open, FileAccess.Read, FileShare.None))
             s = store.Load();
-        Assert.Equal("a", Assert.Single(s.Chat.Backends).Id);
+        Assert.Equal("a", Assert.Single(s.Chat.Connections).Id);
         Assert.NotNull(store.SettingsError);
         Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
     }

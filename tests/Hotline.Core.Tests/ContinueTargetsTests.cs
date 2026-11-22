@@ -8,18 +8,18 @@ namespace Hotline.Core.Tests;
 public sealed class ContinueTargetsTests : TempDirTest
 {
 
-    private static HotlineSettings With(params BackendProfile[] profiles)
+    private static HotlineSettings With(params ConnectionProfile[] profiles)
     {
         var s = new HotlineSettings();
-        s.Chat.Backends.Clear();
-        s.Chat.Backends.AddRange(profiles);
+        s.Chat.Connections.Clear();
+        s.Chat.Connections.AddRange(profiles);
         return s;
     }
 
-    private static BackendProfile Local(string endpoint = "http://127.0.0.1:8080/v1") =>
+    private static ConnectionProfile Local(string endpoint = "http://127.0.0.1:8080/v1") =>
         new() { Id = "local", Type = BackendType.Local, Name = "Local", Endpoint = endpoint };
 
-    private static BackendProfile Api() => new() { Id = "claude", Type = BackendType.Anthropic, Name = "Claude" };
+    private static ConnectionProfile Api() => new() { Id = "claude", Type = BackendType.Anthropic, Name = "Claude" };
 
     [Fact]
     public void Shared_defaults_to_the_llama_cpp_web_ui_at_the_local_connection()
@@ -74,7 +74,7 @@ public sealed class ContinueTargetsTests : TempDirTest
         var s = store.Load();
         var api = Api();
         api.ContinueIn = [new ContinueTarget(ContinueKind.OpenWebUi, "Open WebUI", Url: "http://localhost:3000")];
-        s.Chat.Backends.Add(api);
+        s.Chat.Connections.Add(api);
         s.Chat.ContinueIn = [new ContinueTarget(ContinueKind.App, "LM Studio", Command: "x.exe", CopyChat: true)];
         store.Save(s);
 
@@ -82,7 +82,7 @@ public sealed class ContinueTargetsTests : TempDirTest
         Assert.Contains("\"app\"", File.ReadAllText(Path.Combine(_dir, SettingsStore.FileName)));
         var back = new SettingsStore(_dir).Load();
         Assert.True(Assert.Single(back.Chat.ContinueIn!).CopyChat);
-        Assert.Equal(ContinueKind.OpenWebUi, Assert.Single(back.Chat.Backends.Single(b => b.Id == "claude").ContinueIn!).Kind);
+        Assert.Equal(ContinueKind.OpenWebUi, Assert.Single(back.Chat.Connections.Single(b => b.Id == "claude").ContinueIn!).Kind);
     }
 
     // ---- filling (Task 2) ----------------------------------------------------------------------

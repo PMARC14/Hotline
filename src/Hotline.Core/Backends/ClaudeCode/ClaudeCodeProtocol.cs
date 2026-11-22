@@ -14,7 +14,7 @@ public static class ClaudeCodeProtocol
 {
     public static IReadOnlyList<string> EffortLevels { get; } = ["low", "medium", "high", "xhigh", "max"];
 
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string systemPrompt)
+    public static IReadOnlyList<string> BuildArgs(ConnectionProfile p, string systemPrompt)
     {
         var args = new List<string>
         {

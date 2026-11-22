@@ -162,7 +162,7 @@ public partial class App : Application
             home, _secrets, BackendFactory.CreateApiHttpClient(), tools,
             new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home), Path.Combine(privateDir, "agy", "Hotline")),
             Path.Combine(scratchDir, "codex", "Hotline"));
-        _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
+        _backends = new BackendCache(() => settings.Chat.Connections, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
         {
@@ -171,12 +171,12 @@ public partial class App : Application
         }
         // CLI chats live in the CLI's own history; Hotline keeps the messages too only for API/local connections or when asked.
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log,
-            id => settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
+            id => settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
         {
             BackendId = settings.Chat.DefaultBackend,
             // A chat Hotline kept only a record of shows its messages from the CLI's own history (chat.cliTranscripts).
             CliTranscript = (backendId, sessionId) => settings.Chat.CliTranscripts
-                && settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } owner
+                && settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } owner
                 ? CliTranscripts.Read(owner.Type, sessionId, home, backendId) : null,
         };
         _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir, state)
@@ -260,7 +260,7 @@ public partial class App : Application
         _settingsService.ConnectionsChanged += ids =>
         {
             foreach (var id in ids) _ = InvalidateBackend(id).AsTask();
-            if (settings.Chat.Backends.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase))) chat.BackendId = settings.Chat.DefaultBackend;
+            if (settings.Chat.Connections.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase))) chat.BackendId = settings.Chat.DefaultBackend;
         };
         SystemTheme.Changed += () => _popup.DispatcherQueue.TryEnqueue(() =>
         {
@@ -273,8 +273,8 @@ public partial class App : Application
             {
                 // First run: a default chosen in Settings › Connections or settings.json connects the panel too. The
                 // panel's connection removed (Settings or its file): move to the default, not a blank picker.
-                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Backends.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase)))
-                    && settings.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, settings.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase)) is { } def)
+                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Connections.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase)))
+                    && settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, settings.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase)) is { } def)
                     chat.BackendId = def.Id;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
                 _popup.GrowMode = settings.Window.GrowMode;

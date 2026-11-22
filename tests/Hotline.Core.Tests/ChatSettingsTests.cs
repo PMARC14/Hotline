@@ -34,8 +34,8 @@ public sealed class ChatSettingsTests : TempDirTest
     {
         var s = new SettingsStore(_dir).Load();
         Assert.Equal("", s.Chat.DefaultBackend); // the panel asks on first open
-        Assert.Empty(s.Chat.Backends);
-        Assert.Empty(new SettingsStore(_dir).Load().Chat.Backends); // and nothing is made up on the next start
+        Assert.Empty(s.Chat.Connections);
+        Assert.Empty(new SettingsStore(_dir).Load().Chat.Connections); // and nothing is made up on the next start
     }
 
     [Fact]
@@ -49,14 +49,14 @@ public sealed class ChatSettingsTests : TempDirTest
         Assert.True(ConnectionEditor.Remove(s.Chat, agy.Id));
         store.Save(s);
         var back = new SettingsStore(_dir).Load();
-        Assert.Empty(back.Chat.Backends);
+        Assert.Empty(back.Chat.Connections);
         Assert.Equal("", back.Chat.DefaultBackend);
-        Assert.Empty(new SettingsStore(_dir).TryRead()!.Chat.Backends);
+        Assert.Empty(new SettingsStore(_dir).TryRead()!.Chat.Connections);
     }
 
     [Fact]
     public void Older_settings_without_connection_files_get_no_connection_added()
-        => Assert.Empty(LoadJson("""{ "version": 1, "chat": { "defaultConnection": "agy" } }""").Chat.Backends);
+        => Assert.Empty(LoadJson("""{ "version": 1, "chat": { "defaultConnection": "agy" } }""").Chat.Connections);
 
     [Theory]
     [InlineData("""{ "version": 1, "chat": { "defaultConnection": "nope", "backends": [ { "id": "g", "type": "gemini" } ] } }""", "nope")] // preserved even before its connection is installed

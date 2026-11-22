@@ -20,11 +20,11 @@ internal sealed class ProviderBar(
     private readonly Dictionary<string, IReadOnlyList<ModelInfo>> _loaded = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, string> _providerIds = [];
 
-    private IReadOnlyList<ModelFamily> Families(BackendProfile? profile) =>
+    private IReadOnlyList<ModelFamily> Families(ConnectionProfile? profile) =>
         profile is not null && _loaded.TryGetValue(profile.Id, out var list) ? ModelFamilies.Group(list) : [];
 
     /// <summary>Model picker: clean family names ("Gemini 3.8 Flash"); the effort picker picks the variant.</summary>
-    private void FillModels(BackendProfile? profile)
+    private void FillModels(ConnectionProfile? profile)
     {
         var families = Families(profile);
         popup.ModelBox.Items.Clear();
@@ -40,7 +40,7 @@ internal sealed class ProviderBar(
     /// every model has every level, so a choice maps to the closest level that model has (ModelFamilies.Resolve).
     /// Models without levels (e.g. Claude through agy) leave the picker disabled.
     /// </summary>
-    private void FillEffort(BackendProfile? profile)
+    private void FillEffort(ConnectionProfile? profile)
     {
         popup.EffortBox.Items.Clear();
         if (profile is null) return;
@@ -69,7 +69,7 @@ internal sealed class ProviderBar(
     private bool _updating;
     private bool _enabled = true;
 
-    private BackendProfile? Current => settings.Current.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase));
+    private ConnectionProfile? Current => settings.Current.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase));
 
     public void Initialize()
     {
@@ -107,7 +107,7 @@ internal sealed class ProviderBar(
             // Plain string items (so the shrink-to-fit item template applies); label → connection id.
             popup.ProviderBox.Items.Clear();
             _providerIds.Clear();
-            foreach (var p in settings.Current.Chat.Backends)
+            foreach (var p in settings.Current.Chat.Connections)
             {
                 var label = p.Name;
                 while (_providerIds.ContainsKey(label)) label += " ";
@@ -194,7 +194,7 @@ internal sealed class ProviderBar(
     private void OnProviderChanged()
     {
         if (popup.ProviderBox.SelectedItem is not string label || !_providerIds.TryGetValue(label, out var id) || string.Equals(id, chat.BackendId, StringComparison.OrdinalIgnoreCase)) return;
-        if (settings.Current.Chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } target && !BackendFactory.IsAvailable(target.Type))
+        if (settings.Current.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } target && !BackendFactory.IsAvailable(target.Type))
         {
             notify(L.F(Strings.Bar_NotYet, target.Name), InfoBarSeverity.Informational);
             popup.DispatcherQueue.TryEnqueue(Refresh); // back to the current connection, after this SelectionChanged

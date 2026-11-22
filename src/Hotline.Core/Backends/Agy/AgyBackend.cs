@@ -14,8 +14,8 @@ namespace Hotline.Core.Backends.Agy;
 /// can't be resumed (cancel, crash, new chat, unknown ID) the next turn starts a new conversation and replays the
 /// transcript Hotline has.
 /// </summary>
-public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, AgyWorkspace workspace, ILineProcessFactory processes, FileLog log,
-    Func<BackendProfile, string> systemPrompt, string homeDirectory, AgyProjects? projects = null)
+public sealed class AgyBackend(ConnectionProfile profile, Func<string?> locateExe, AgyWorkspace workspace, ILineProcessFactory processes, FileLog log,
+    Func<ConnectionProfile, string> systemPrompt, string homeDirectory, AgyProjects? projects = null)
     : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;

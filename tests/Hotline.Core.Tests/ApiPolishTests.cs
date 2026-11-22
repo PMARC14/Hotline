@@ -55,7 +55,7 @@ public sealed class ApiPolishTests : TempDirTest
     {
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "gpt-x", Effort = effort };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "gpt-x", Effort = effort };
         return new OpenAiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")));
     }
 
@@ -63,7 +63,7 @@ public sealed class ApiPolishTests : TempDirTest
     {
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "AIza-test");
-        var p = new BackendProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model, Effort = effort };
+        var p = new ConnectionProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model, Effort = effort };
         return new GeminiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")));
     }
 

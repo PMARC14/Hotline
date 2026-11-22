@@ -39,19 +39,19 @@ public sealed class OcrPlanTests : TempDirTest
     [Fact]
     public void Local_connections_take_no_images_unless_set()
     {
-        Assert.False(ConnectionTypes.TakesImages(new BackendProfile { Type = BackendType.Local }));
-        Assert.True(ConnectionTypes.TakesImages(new BackendProfile { Type = BackendType.Local, Images = true }));
-        Assert.True(ConnectionTypes.TakesImages(new BackendProfile { Type = BackendType.OpenAiCompatible }));
-        Assert.False(ConnectionTypes.TakesImages(new BackendProfile { Type = BackendType.Gemini, Images = false }));
+        Assert.False(ConnectionTypes.TakesImages(new ConnectionProfile { Type = BackendType.Local }));
+        Assert.True(ConnectionTypes.TakesImages(new ConnectionProfile { Type = BackendType.Local, Images = true }));
+        Assert.True(ConnectionTypes.TakesImages(new ConnectionProfile { Type = BackendType.OpenAiCompatible }));
+        Assert.False(ConnectionTypes.TakesImages(new ConnectionProfile { Type = BackendType.Gemini, Images = false }));
     }
 
     [Fact]
     public void Api_backends_report_image_support_from_the_connection()
     {
         var log = new FileLog(Path.Combine(_dir, "h.log"));
-        var local = new OpenAiBackend(new BackendProfile { Id = "l", Type = BackendType.Local }, new HttpClient(), new InMemorySecretStore(), _ => "", log);
+        var local = new OpenAiBackend(new ConnectionProfile { Id = "l", Type = BackendType.Local }, new HttpClient(), new InMemorySecretStore(), _ => "", log);
         Assert.False(local.Capabilities.Images);
-        var profile = new BackendProfile { Id = "g", Type = BackendType.Gemini, Images = false };
+        var profile = new ConnectionProfile { Id = "g", Type = BackendType.Gemini, Images = false };
         var gemini = new GeminiBackend(profile, new HttpClient(), new InMemorySecretStore(), _ => "", log);
         Assert.False(gemini.Capabilities.Images);
         profile.Images = null; // edited live in Settings
@@ -63,11 +63,11 @@ public sealed class OcrPlanTests : TempDirTest
     {
         var store = new SettingsStore(_dir);
         var s = store.Load();
-        s.Chat.Backends.Add(new BackendProfile { Id = "llama", Type = BackendType.Local, Name = "llama", Images = true });
+        s.Chat.Connections.Add(new ConnectionProfile { Id = "llama", Type = BackendType.Local, Name = "llama", Images = true });
         s.Chat.Ocr = OcrMode.Always;
         store.Save(s);
         var loaded = new SettingsStore(_dir).Load();
-        Assert.True(loaded.Chat.Backends.Single(b => b.Id == "llama").Images);
+        Assert.True(loaded.Chat.Connections.Single(b => b.Id == "llama").Images);
         Assert.Equal(OcrMode.Always, loaded.Chat.Ocr);
     }
 

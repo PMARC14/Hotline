@@ -22,7 +22,7 @@ public sealed class ConnectionFilesTests : TempDirTest
         Assert.False(Directory.Exists(Path.Combine(_dir, "connections")) && Directory.EnumerateFiles(Path.Combine(_dir, "connections")).Any());
         Assert.False(File.Exists(SettingsFile));
         Assert.False(Directory.Exists(_dir));
-        Assert.Empty(s.Chat.Backends);
+        Assert.Empty(s.Chat.Connections);
     }
 
 
@@ -41,7 +41,7 @@ public sealed class ConnectionFilesTests : TempDirTest
         root["chat"]!["order"] = new System.Text.Json.Nodes.JsonArray("zeta", "agy");
         File.WriteAllText(SettingsFile, root.ToJsonString());
         var s = new SettingsStore(_dir, _files).Load();
-        Assert.Equal(["zeta", "agy", "alpha"], s.Chat.Backends.Select(b => b.Id)); // id from the file name
+        Assert.Equal(["zeta", "agy", "alpha"], s.Chat.Connections.Select(b => b.Id)); // id from the file name
     }
 
     [Fact]
@@ -51,7 +51,7 @@ public sealed class ConnectionFilesTests : TempDirTest
         var store = new SettingsStore(_dir, _files);
         var settings = store.Load();
         var original = File.ReadAllBytes(Conn("agy"));
-        settings.Chat.Backends.Clear();
+        settings.Chat.Connections.Clear();
         store.Save(settings, ["agy"]);
         Assert.False(File.Exists(Conn("agy")));
         Assert.Equal(original, File.ReadAllBytes(Assert.Single(SettingsTestFiles.Backups(_dir, "agy.json"))));
@@ -75,7 +75,7 @@ public sealed class ConnectionFilesTests : TempDirTest
         else File.SetAttributes(path, FileAttributes.ReadOnly);
         try
         {
-            settings.Chat.Backends.Clear();
+            settings.Chat.Connections.Clear();
             store.Save(settings, ["agy"]);
             Assert.NotEmpty(store.WriteProblems);
             Assert.Equal(original, File.ReadAllBytes(path));
@@ -140,7 +140,7 @@ public sealed class ConnectionFilesTests : TempDirTest
         File.WriteAllText(Conn("agy"), """{ "version": 1, "type": "antigravity", "name": "Fixed" }""");
         var live = s.TryRead()!;
         Assert.Empty(s.BrokenConnectionFiles);
-        live.Chat.Backends.Single(b => b.Id == "agy").Name = "Renamed";
+        live.Chat.Connections.Single(b => b.Id == "agy").Name = "Renamed";
         s.Save(live);
         Assert.Contains("Renamed", File.ReadAllText(Conn("agy")));
     }
@@ -154,7 +154,7 @@ public sealed class ConnectionFilesTests : TempDirTest
         File.WriteAllText(Conn("mine"), """{ "version": 1, "type": "claudeCode", "name": "Mine", "model": "opus" }""");
         var before = File.ReadAllText(SettingsFile);
         var read = store.TryRead()!;
-        Assert.Contains(read.Chat.Backends, b => b.Id == "mine" && b.Model == "opus");
+        Assert.Contains(read.Chat.Connections, b => b.Id == "mine" && b.Model == "opus");
         Assert.Equal(before, File.ReadAllText(SettingsFile));
     }
 

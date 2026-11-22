@@ -119,7 +119,7 @@ public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Ant
 /// <summary>ChatOnly: answers only (attachments readable). Inherit: the CLI's own tools and permission rules.</summary>
 public enum ToolMode { ChatOnly, Inherit }
 
-public sealed class BackendProfile
+public sealed class ConnectionProfile
 {
     [JsonIgnore]
     public string Id { get; set; } = "";
@@ -188,7 +188,7 @@ public sealed class ChatSettings
     /// The connections in dropdown order, stored one file each in connections/&lt;id&gt;.json.
     /// </summary>
     [JsonIgnore]
-    public List<BackendProfile> Backends { get; set; } = [];
+    public List<ConnectionProfile> Connections { get; set; } = [];
     /// <summary>Dropdown order: connection ids. Connections not listed follow, by name.</summary>
     public List<string> Order { get; set; } = SettingsDefaults.Get<List<string>>("chat", "order");
     public bool SaveHistory { get; set; } = SettingsDefaults.Get<bool>("chat", "saveHistory");

@@ -22,7 +22,7 @@ public sealed class SettingsResetTests : TempDirTest
         settings.Window.FontSize = 20;
         settings.Chat.Memory = false;
         settings.Chat.ContinueIn = [new(ContinueKind.OpenWebUi, "Open WebUI", Url: "http://localhost:3000")];
-        settings.Chat.Backends[0].ContinueIn = settings.Chat.ContinueIn;
+        settings.Chat.Connections[0].ContinueIn = settings.Chat.ContinueIn;
         store.Save(settings);
         File.WriteAllBytes(Path.Combine(_dir, "toolbar.json"), "{\"version\":3,\"buttons\":{}}"u8.ToArray());
         File.WriteAllText(Path.Combine(_dir, "memory.md"), "keep me");
@@ -57,13 +57,13 @@ public sealed class SettingsResetTests : TempDirTest
         Assert.Equal(everything ? new[] { local } : [], result.Removed);
         if (everything)
         {
-            Assert.Empty(back.Chat.Backends);
+            Assert.Empty(back.Chat.Connections);
             Assert.Equal(StarterFiles.DefaultBytes("mcp"), File.ReadAllBytes(Path.Combine(_dir, "mcp.json")));
             Assert.True(File.Exists(Path.Combine(result.Backup, "connections", local + ".json")));
         }
         else
         {
-            Assert.Single(Assert.Single(back.Chat.Backends).ContinueIn!);
+            Assert.Single(Assert.Single(back.Chat.Connections).ContinueIn!);
             Assert.False(Directory.Exists(Path.Combine(result.Backup, "connections")));
             Assert.Equal("{\"mcpServers\":{}}", File.ReadAllText(Path.Combine(_dir, "mcp.json")));
         }

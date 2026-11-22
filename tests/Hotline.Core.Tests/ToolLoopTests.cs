@@ -67,7 +67,7 @@ public sealed class ToolLoopTests : TempDirTest
     private static string TextChunk(string text) => JsonSerializer.Serialize(new { choices = new[] { new { delta = new { content = text } } } });
 
     private OpenAiBackend Local(Handler handler, IToolHost host, ToolMode tools = ToolMode.Inherit) =>
-        new(new BackendProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = tools }, new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
+        new(new ConnectionProfile { Id = "l", Name = "Local", Type = BackendType.Local, Tools = tools }, new HttpClient(handler), new InMemorySecretStore(), _ => "", Log, host);
 
     [Fact]
     public async Task OpenAi_runs_streamed_tool_calls_and_feeds_results_back()
@@ -162,7 +162,7 @@ public sealed class ToolLoopTests : TempDirTest
             : Sse(GeminiParts(new { text = "Done." })));
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "k");
-        var backend = new GeminiBackend(new BackendProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
+        var backend = new GeminiBackend(new ConnectionProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
             new HttpClient(handler), secrets, _ => "", Log, host);
         var deltas = new List<ChatDelta>();
         var error = await Record.ExceptionAsync(async () =>
@@ -202,7 +202,7 @@ public sealed class ToolLoopTests : TempDirTest
             : separateChunk ? Sse(GeminiParts(parts), finish) : Sse(stopped));
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "k");
-        var backend = new GeminiBackend(new BackendProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
+        var backend = new GeminiBackend(new ConnectionProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
             new HttpClient(handler), secrets, _ => "", Log, host);
 
         var error = await Record.ExceptionAsync(() => Collect(backend.StreamAsync([U("read a.txt")], default)));
@@ -222,7 +222,7 @@ public sealed class ToolLoopTests : TempDirTest
             : Sse(GeminiParts(new { text = "It says hi." })));
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "k");
-        var b = new GeminiBackend(new BackendProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
+        var b = new GeminiBackend(new ConnectionProfile { Id = "g", Name = "Gemini", Type = BackendType.Gemini, Model = "gemini-3.8-flash", Tools = ToolMode.Inherit },
             new HttpClient(handler), secrets, _ => "", Log, host);
 
         var text = await Collect(b.StreamAsync([U("read a.txt")], default));

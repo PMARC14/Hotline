@@ -78,16 +78,16 @@ public sealed class SettingsStore
         if (settings is null && keepOnFailure) return null;
         settings ??= new HotlineSettings();
         NewerVersionFile = settings.SchemaVersion > HotlineSettings.CurrentSchemaVersion ? settings.SchemaVersion : null;
-        settings.Chat.Backends = ReadConnections(settings.Chat.Order);
+        settings.Chat.Connections = ReadConnections(settings.Chat.Order);
         Normalize(settings);
         _before[FilePath] = Model(settings, Options);
-        foreach (var profile in settings.Chat.Backends)
+        foreach (var profile in settings.Chat.Connections)
             _before[_sources[profile.Id]] = Model(profile, ConnectionOptions);
-        _connectionOrder = settings.Chat.Backends.Select(p => p.Id).ToList();
+        _connectionOrder = settings.Chat.Connections.Select(p => p.Id).ToList();
         return settings;
     }
 
-    internal static (HotlineSettings? Settings, List<BackendProfile>? Legacy, string? Failure) ParseSettings(string text, ReadProblems problems)
+    internal static (HotlineSettings? Settings, List<ConnectionProfile>? Legacy, string? Failure) ParseSettings(string text, ReadProblems problems)
     {
         if (!LenientReader.TryParse(text, FileName, out var document, out var failure)) return (null, null, failure);
         using (document)
@@ -105,7 +105,7 @@ public sealed class SettingsStore
         }
     }
 
-    internal static BackendProfile? ParseConnection(string text, string label, string fileStem, ReadProblems problems, out string? failure)
+    internal static ConnectionProfile? ParseConnection(string text, string label, string fileStem, ReadProblems problems, out string? failure)
     {
         failure = null;
         if (!ValidConnectionId(fileStem)) { failure = L.F(Strings.Settings_InvalidConnectionId, LenientReader.Quote(fileStem)); return null; }
@@ -138,9 +138,9 @@ public sealed class SettingsStore
         && version.TryGetDouble(out var number) && number >= 1
             ? (int)Math.Min(int.MaxValue, Math.Ceiling(number)) : 0;
 
-    private List<BackendProfile> ReadConnections(List<string> order)
+    private List<ConnectionProfile> ReadConnections(List<string> order)
     {
-        var profiles = new List<BackendProfile>();
+        var profiles = new List<ConnectionProfile>();
         var broken = new List<string>();
         var problems = new ReadProblems();
         try
@@ -214,10 +214,10 @@ public sealed class SettingsStore
     {
         _writeProblems = [];
         var backup = new BackupSet(_directory, BackupReason.Save, _files, Clock);
-        var ids = settings.Chat.Backends.Select(p => p.Id).ToList();
+        var ids = settings.Chat.Connections.Select(p => p.Id).ToList();
         if (!_connectionOrder.SequenceEqual(ids, StringComparer.OrdinalIgnoreCase)) settings.Chat.Order = ids;
         var claimed = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-        foreach (var profile in settings.Chat.Backends)
+        foreach (var profile in settings.Chat.Connections)
         {
             if (!ValidConnectionId(profile.Id))
             { _writeProblems.Add(L.F(Strings.Settings_InvalidConnectionId, LenientReader.Quote(profile.Id))); continue; }
@@ -337,8 +337,8 @@ public sealed class SettingsStore
     public static HotlineSettings Normalize(HotlineSettings s)
     {
         s.General ??= new(); s.Activation ??= new(); s.Window ??= new(); s.Diagnostics ??= new(); s.Chat ??= new(); s.Tools ??= new();
-        s.Chat.Backends = (s.Chat.Backends ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).DistinctBy(b => b.Id, StringComparer.OrdinalIgnoreCase).ToList();
-        foreach (var b in s.Chat.Backends)
+        s.Chat.Connections = (s.Chat.Connections ?? []).Where(b => b is not null && !string.IsNullOrWhiteSpace(b.Id)).DistinctBy(b => b.Id, StringComparer.OrdinalIgnoreCase).ToList();
+        foreach (var b in s.Chat.Connections)
         {
             if (string.IsNullOrWhiteSpace(b.Name)) b.Name = b.Id;
             if (b.MaxTokens is { } max) b.MaxTokens = max < 1 ? null : Math.Min(max, 1_000_000);
@@ -346,7 +346,7 @@ public sealed class SettingsStore
         }
         s.Chat.Order ??= [];
         s.Chat.DefaultBackend ??= SettingsDefaults.Get<string>("chat", "defaultConnection");
-        s.Chat.DefaultBackend = s.Chat.Backends.FirstOrDefault(b => b.Id.Equals(s.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))?.Id ?? s.Chat.DefaultBackend;
+        s.Chat.DefaultBackend = s.Chat.Connections.FirstOrDefault(b => b.Id.Equals(s.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))?.Id ?? s.Chat.DefaultBackend;
         s.Tools.Approvals ??= [];
         s.Window.Anchor ??= new();
         foreach (var section in new object[] { s.Chat, s.Window, s.Window.Anchor })

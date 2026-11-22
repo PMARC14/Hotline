@@ -27,8 +27,8 @@ public sealed partial class SettingsWindow
     {
         var chat = _settings.Current.Chat;
         // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
-        if (chat.Backends.All(b => !string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)))
-            _selectedConnection = chat.Backends.FirstOrDefault(b => string.Equals(b.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))?.Id ?? chat.Backends.FirstOrDefault()?.Id;
+        if (chat.Connections.All(b => !string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)))
+            _selectedConnection = chat.Connections.FirstOrDefault(b => string.Equals(b.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))?.Id ?? chat.Connections.FirstOrDefault()?.Id;
         var any = _selectedConnection is not null; // every connection can be removed; then there's nothing to act on
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
@@ -67,11 +67,11 @@ public sealed partial class SettingsWindow
             try
             {
                 // The list can have changed under this page (an external reload): a connection that vanished is simply not removed.
-                if (chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } target) return;
+                if (chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } target) return;
                 var dialog = new ContentDialog
                 {
                     XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
-                    Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
+                    Content = chat.Connections.Count == 1 // the last one: say what that means before it goes
                         ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, target.Name), TextWrapping = TextWrapping.Wrap }
                         : target.Name,
                     PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
@@ -102,7 +102,7 @@ public sealed partial class SettingsWindow
             var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
             void UpdateName() => AutomationProperties.SetName(b, L.F(delta < 0 ? Strings.Conn_MoveNamedUp : Strings.Conn_MoveNamedDown,
-                chat.Backends.FirstOrDefault(p => string.Equals(p.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase))?.Name ?? ""));
+                chat.Connections.FirstOrDefault(p => string.Equals(p.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase))?.Name ?? ""));
             UpdateName();
             updateOrderNames += UpdateName;
             b.Click += (_, _) =>
@@ -121,7 +121,7 @@ public sealed partial class SettingsWindow
         if (!any)
             PageHost.Children.Add(new TextBlock { Text = Strings.Conn_None, TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 8, 0, 0) });
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, Margin = new Thickness(0, 8, 0, 8) };
-        foreach (var p in chat.Backends)
+        foreach (var p in chat.Connections)
         {
             var info = ConnectionTypes.Of(p.Type);
             var subtitle = string.Equals(p.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase) ? L.F(Strings.Conn_DefaultSuffix, info.DisplayName) : info.DisplayName;
@@ -140,19 +140,19 @@ public sealed partial class SettingsWindow
             updateOrderNames?.Invoke();
             makeDefault.IsEnabled = !string.Equals(id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase);
             // A connection removed by an external reload while this page was open: show no editor (never the previous one).
-            if (chat.Backends.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } picked) BuildEditor(editorHost, picked);
+            if (chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } picked) BuildEditor(editorHost, picked);
             else { editorHost.Children.Clear(); makeDefault.IsEnabled = false; }
         };
         PageHost.Children.Add(list);
         PageHost.Children.Add(editorHost);
-        if (chat.Backends.FirstOrDefault(b => string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)) is { } selected) BuildEditor(editorHost, selected);
+        if (chat.Connections.FirstOrDefault(b => string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)) is { } selected) BuildEditor(editorHost, selected);
     }
 
     /// <summary>
     /// agy runs in the background, where any tool call that would ask for permission is denied. Its allow/deny rules
     /// (in agy's own settings.json) decide what works; "approve everything" skips all checks and is dangerous.
     /// </summary>
-    private void AddAgyPermissions(StackPanel host, BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    private void AddAgyPermissions(StackPanel host, ConnectionProfile p, Func<Action<ConnectionProfile>, Task> save)
     {
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var agySettings = Hotline.Core.Backends.Agy.AgyPermissions.SettingsPath(home);
@@ -213,7 +213,7 @@ public sealed partial class SettingsWindow
     /// ⚠ Approve everything (every CLI, inherit mode only): skips the CLI's permission checks (agy/Claude Code
     /// --dangerously-skip-permissions, Codex --dangerously-bypass-approvals-and-sandbox). Turning it on asks first.
     /// </summary>
-    private void AddApproveAll(StackPanel host, BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    private void AddApproveAll(StackPanel host, ConnectionProfile p, Func<Action<ConnectionProfile>, Task> save)
     {
         var cliName = ConnectionTypes.Of(p.Type).DisplayName;
         var approveAll = new ToggleSwitch { IsOn = p.ApproveAllTools, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.Tools == ToolMode.Inherit };
@@ -263,13 +263,13 @@ public sealed partial class SettingsWindow
         return box;
     }
 
-    private void BuildEditor(StackPanel host, BackendProfile p)
+    private void BuildEditor(StackPanel host, ConnectionProfile p)
     {
         host.Children.Clear();
         var info = ConnectionTypes.Of(p.Type);
         host.Children.Add(new TextBlock { Text = info.Description, Opacity = 0.75, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
 
-        async Task Save(Action<BackendProfile> change)
+        async Task Save(Action<ConnectionProfile> change)
         {
             try
             {

@@ -33,7 +33,7 @@ public sealed record FilledUrl(Uri Uri, bool Shortened);
 public static partial class ContinueTargets
 {
     /// <summary>The targets for a chat on <paramref name="profile"/> (null profile = the shared list).</summary>
-    public static IReadOnlyList<ContinueTarget> For(BackendProfile? profile, HotlineSettings settings) =>
+    public static IReadOnlyList<ContinueTarget> For(ConnectionProfile? profile, HotlineSettings settings) =>
         profile?.ContinueIn ?? Shared(settings);
 
     /// <summary>
@@ -43,7 +43,7 @@ public static partial class ContinueTargets
     public static IReadOnlyList<ContinueTarget> Shared(HotlineSettings settings)
     {
         if (settings.Chat.ContinueIn is { } list) return list;
-        var local = settings.Chat.Backends.FirstOrDefault(b => b.Type == BackendType.Local && Uri.TryCreate(b.Endpoint, UriKind.Absolute, out _));
+        var local = settings.Chat.Connections.FirstOrDefault(b => b.Type == BackendType.Local && Uri.TryCreate(b.Endpoint, UriKind.Absolute, out _));
         return local is null ? [] : [LlamaCpp(new Uri(local.Endpoint!).GetLeftPart(UriPartial.Authority))];
     }
 

@@ -108,10 +108,10 @@ public sealed class MemoryTests : TempDirTest
         var (host, _, _, _) = Host(MemoryToolMode.Ask);
         foreach (var type in new[] { BackendType.Anthropic, BackendType.Gemini })
         {
-            var tools = await ToolLoop.ToolsFor(new BackendProfile { Type = type, Tools = ToolMode.ChatOnly }, host, default);
+            var tools = await ToolLoop.ToolsFor(new ConnectionProfile { Type = type, Tools = ToolMode.ChatOnly }, host, default);
             Assert.Equal([HotlineToolHost.RememberApiName], tools.Select(t => t.ApiName));
         }
-        var all = await ToolLoop.ToolsFor(new BackendProfile { Type = BackendType.Gemini, Tools = ToolMode.Inherit }, host, default);
+        var all = await ToolLoop.ToolsFor(new ConnectionProfile { Type = BackendType.Gemini, Tools = ToolMode.Inherit }, host, default);
         Assert.Equal(["files__read_file", HotlineToolHost.RememberApiName], all.Select(t => t.ApiName));
     }
 
@@ -122,8 +122,8 @@ public sealed class MemoryTests : TempDirTest
     {
         // Some of those models reject any request that lists tools; they get the tool once they opt into tools.
         var (host, _, _, _) = Host(MemoryToolMode.Ask);
-        Assert.Empty(await ToolLoop.ToolsFor(new BackendProfile { Type = type, Tools = ToolMode.ChatOnly }, host, default));
-        Assert.Contains(await ToolLoop.ToolsFor(new BackendProfile { Type = type, Tools = ToolMode.Inherit }, host, default),
+        Assert.Empty(await ToolLoop.ToolsFor(new ConnectionProfile { Type = type, Tools = ToolMode.ChatOnly }, host, default));
+        Assert.Contains(await ToolLoop.ToolsFor(new ConnectionProfile { Type = type, Tools = ToolMode.Inherit }, host, default),
             t => t.ApiName == HotlineToolHost.RememberApiName);
     }
 
@@ -167,7 +167,7 @@ public sealed class MemoryTests : TempDirTest
     public async Task Off_offers_no_remember_tool()
     {
         var (host, _, _, _) = Host(MemoryToolMode.Off);
-        Assert.Empty(await ToolLoop.ToolsFor(new BackendProfile { Tools = ToolMode.ChatOnly }, host, default));
+        Assert.Empty(await ToolLoop.ToolsFor(new ConnectionProfile { Tools = ToolMode.ChatOnly }, host, default));
         Assert.Equal(["files__read_file"], (await host.GetToolsAsync(default)).Select(t => t.ApiName));
     }
 

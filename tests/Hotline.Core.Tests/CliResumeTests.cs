@@ -41,7 +41,7 @@ public sealed class CliResumeTests : TempDirTest
     ];
 
     private ClaudeCodeBackend Claude(bool keep = true) =>
-        new(new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode, KeepCliSessions = keep }, () => @"C:\claude.exe",
+        new(new ConnectionProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode, KeepCliSessions = keep }, () => @"C:\claude.exe",
             _factory, new FileLog(Path.Combine(_dir, "h.log")), _ => "SYSTEM", Path.Combine(_dir, "home"));
 
     [Fact]
@@ -149,7 +149,7 @@ public sealed class CliResumeTests : TempDirTest
     private string ProjectsDir => Path.Combine(_dir, "home", ".gemini", "config", "projects");
 
     private AgyBackend Agy(bool keep = true, ToolMode tools = ToolMode.ChatOnly, Func<string>? prompt = null) =>
-        new(new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline", KeepCliSessions = keep, Tools = tools }, () => @"C:\agy.exe",
+        new(new ConnectionProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline", KeepCliSessions = keep, Tools = tools }, () => @"C:\agy.exe",
             new AgyWorkspace(Path.Combine(_dir, "agy", "Hotline"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")),
             _ => prompt?.Invoke() ?? "SYSTEM", Path.Combine(_dir, "home"), new AgyProjects(ProjectsDir, Path.Combine(_dir, "old", "agy", "Hotline")));
 
@@ -313,12 +313,12 @@ public sealed class CliResumeTests : TempDirTest
     [InlineData(BackendType.Anthropic, true, false, true)]
     [InlineData(BackendType.Local, true, false, true)]
     public void Hotline_keeps_the_transcript_for_api_chats_or_when_asked(BackendType type, bool keepCli, bool keepInHotline, bool expected) =>
-        Assert.Equal(expected, ConnectionTypes.HotlineKeepsTranscript(new BackendProfile { Type = type, KeepCliSessions = keepCli, KeepInHotline = keepInHotline }));
+        Assert.Equal(expected, ConnectionTypes.HotlineKeepsTranscript(new ConnectionProfile { Type = type, KeepCliSessions = keepCli, KeepInHotline = keepInHotline }));
 
     [Fact]
     public void New_cli_connections_keep_chats_in_the_cli_and_only_a_record_in_hotline()
     {
-        var p = new BackendProfile { Type = BackendType.ClaudeCode };
+        var p = new ConnectionProfile { Type = BackendType.ClaudeCode };
         Assert.True(p.KeepCliSessions);
         Assert.False(p.KeepInHotline);
     }

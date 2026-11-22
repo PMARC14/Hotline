@@ -9,7 +9,7 @@ public class PanelLayoutSettingsTests
     public void Theme_change_keeps_layout_equal()
     {
         var settings = new HotlineSettings();
-        settings.Chat.Backends.Add(new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Model = "gemini-3.8-flash-low" });
+        settings.Chat.Connections.Add(new ConnectionProfile { Id = "agy", Type = BackendType.Antigravity, Model = "gemini-3.8-flash-low" });
         settings.Chat.DefaultBackend = "agy";
 
         var before = PanelLayoutSettings.From(settings.Window);
@@ -26,8 +26,8 @@ public class PanelLayoutSettingsTests
         settings.Window.HideOnBlur = false;
         settings.Window.OpenSound = "chime.wav";
         settings.Window.CloseSound = "chime.wav";
-        settings.Chat.Backends[0].Model = "gemini-3.8-flash-high";
-        settings.Chat.Backends[0].Effort = "high";
+        settings.Chat.Connections[0].Model = "gemini-3.8-flash-high";
+        settings.Chat.Connections[0].Effort = "high";
 
         var after = PanelLayoutSettings.From(settings.Window);
 

@@ -61,10 +61,10 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
         if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); }
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
         string Snapshot(HotlineSettings s) => System.Text.Json.JsonSerializer.Serialize(new
-            { Settings = s, Connections = s.Chat.Backends.Select(p => new { p.Id, Profile = p }) }, options);
+            { Settings = s, Connections = s.Chat.Connections.Select(p => new { p.Id, Profile = p }) }, options);
         var previous = Snapshot(Current);
         if (_automatic.Count == 0 && Snapshot(fromDisk) == previous) return false;
-        var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
+        var before = Current.Chat.Connections.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
         CopyInto(fromDisk.Activation, Current.Activation);
         CopyInto(fromDisk.Diagnostics, Current.Diagnostics);
         CopyInto(fromDisk.Window, Current.Window);
@@ -78,7 +78,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             SaveCurrent(_automaticRemoved);
         }
         if (Snapshot(Current) == previous) return false;
-        var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id.Equals(kv.Key, StringComparison.OrdinalIgnoreCase)) is not { } now
+        var changed = before.Where(kv => Current.Chat.Connections.FirstOrDefault(b => b.Id.Equals(kv.Key, StringComparison.OrdinalIgnoreCase)) is not { } now
                                          || System.Text.Json.JsonSerializer.Serialize(now, options) != kv.Value)
             .Select(kv => kv.Key).ToList();
         Changed?.Invoke();
@@ -92,16 +92,16 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     /// </summary>
     private static void MergeChat(ChatSettings from, ChatSettings to)
     {
-        var existing = to.Backends.ToDictionary(b => b.Id, StringComparer.OrdinalIgnoreCase);
-        var merged = new List<BackendProfile>();
-        foreach (var profile in from.Backends)
+        var existing = to.Connections.ToDictionary(b => b.Id, StringComparer.OrdinalIgnoreCase);
+        var merged = new List<ConnectionProfile>();
+        foreach (var profile in from.Connections)
         {
             if (existing.TryGetValue(profile.Id, out var live)) { CopyInto(profile, live); merged.Add(live); }
             else merged.Add(profile);
         }
-        var backends = to.Backends;
+        var backends = to.Connections;
         CopyInto(from, to);
-        to.Backends = backends; // keep the list instance
+        to.Connections = backends; // keep the list instance
         backends.Clear();
         backends.AddRange(merged);
     }
@@ -127,10 +127,10 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
 
     private void ApplyAutomatic(Action<HotlineSettings> change)
     {
-        var before = Current.Chat.Backends.Select(b => b.Id).ToList();
+        var before = Current.Chat.Connections.Select(b => b.Id).ToList();
         change(Current);
         SettingsStore.Normalize(Current);
-        var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var kept = Current.Chat.Connections.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         _automaticRemoved.UnionWith(before.Where(id => !kept.Contains(id)));
     }
 
@@ -154,11 +154,11 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             return deferred;
         }
         if (fromDisk is not null && !_unsaved) Reload(fromDisk);
-        var before = Current.Chat.Backends.Select(b => b.Id).ToList();
+        var before = Current.Chat.Connections.Select(b => b.Id).ToList();
         change(Current);
         SettingsStore.Normalize(Current);
         // Only a connection the change removed loses its file; one that merely isn't in memory yet is never deleted.
-        var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var kept = Current.Chat.Connections.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var removed = before.Where(id => !kept.Contains(id)).ToList();
         var problems = SaveCurrent(removed.Concat(_automaticRemoved).ToList());
         Changed?.Invoke();

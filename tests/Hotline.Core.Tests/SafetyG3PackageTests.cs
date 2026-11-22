@@ -59,7 +59,7 @@ public sealed class SafetyG3PackageTests : TempDirTest
         var (_, import, _) = RoundTrip(SettingsCategory.Connections);
         Assert.Equal(["connections/renamed.json"], import.Written);
         Assert.Empty(import.Skipped);
-        Assert.Equal("renamed", Assert.Single(new SettingsStore(Target).Load().Chat.Backends).Id);
+        Assert.Equal("renamed", Assert.Single(new SettingsStore(Target).Load().Chat.Connections).Id);
     }
 
     [Fact]

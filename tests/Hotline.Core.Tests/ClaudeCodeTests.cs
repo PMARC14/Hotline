@@ -26,8 +26,8 @@ public sealed class ClaudeCodeTests : TempDirTest
             .Append($$$"""{"type":"assistant","message":{"content":[{"type":"text","text":{{{JsonSerializer.Serialize(string.Concat(pieces))}}}}]}}""")
             .Append(Result(string.Concat(pieces)));
 
-    private ClaudeCodeBackend New(string? exe = @"C:\claude.exe", BackendProfile? profile = null, Func<BackendProfile, string>? prompt = null) =>
-        new(profile ?? new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode }, () => exe,
+    private ClaudeCodeBackend New(string? exe = @"C:\claude.exe", ConnectionProfile? profile = null, Func<ConnectionProfile, string>? prompt = null) =>
+        new(profile ?? new ConnectionProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode }, () => exe,
             _factory, new FileLog(Path.Combine(_dir, "h.log")), prompt ?? (_ => "SYSTEM"), Path.Combine(_dir, "home"));
 
     private static JsonElement Message(string line) => JsonDocument.Parse(line).RootElement.GetProperty("message");
@@ -46,7 +46,7 @@ public sealed class ClaudeCodeTests : TempDirTest
     [Fact]
     public void Chat_only_is_isolated_from_the_users_tools_hooks_and_mcp()
     {
-        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Type = BackendType.ClaudeCode }, "Be brief.").ToList();
+        var args = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { Type = BackendType.ClaudeCode }, "Be brief.").ToList();
         Assert.Contains("-p", args);
         Assert.Equal("stream-json", args[args.IndexOf("--input-format") + 1]);
         Assert.Equal("stream-json", args[args.IndexOf("--output-format") + 1]);
@@ -60,17 +60,17 @@ public sealed class ClaudeCodeTests : TempDirTest
         Assert.DoesNotContain("--bare", args); // --bare never reads the user's Claude login
         // Sessions are kept in claude by default and not when switched off.
         Assert.DoesNotContain("--no-session-persistence", args);
-        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new BackendProfile { KeepCliSessions = false }, "x"));
+        Assert.Contains("--no-session-persistence", ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { KeepCliSessions = false }, "x"));
     }
 
     [Fact]
     public void Inherit_mode_uses_the_users_setup_and_approve_all_only_there()
     {
-        var inherit = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }, "x").ToList();
+        var inherit = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }, "x").ToList();
         Assert.DoesNotContain("--setting-sources", inherit);
         Assert.DoesNotContain("--tools", inherit);
         Assert.Contains("--dangerously-skip-permissions", inherit);
-        Assert.DoesNotContain("--dangerously-skip-permissions", ClaudeCodeProtocol.BuildArgs(new BackendProfile { ApproveAllTools = true }, "x"));
+        Assert.DoesNotContain("--dangerously-skip-permissions", ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { ApproveAllTools = true }, "x"));
     }
 
     [Theory]
@@ -79,14 +79,14 @@ public sealed class ClaudeCodeTests : TempDirTest
     [InlineData(null, "bogus", null, null)]
     public void Model_and_effort(string? model, string? effort, string? expectedModel, string? expectedEffort)
     {
-        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Model = model, Effort = effort }, "x").ToList();
+        var args = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { Model = model, Effort = effort }, "x").ToList();
         Assert.Equal(expectedModel, args.Contains("--model") ? args[args.IndexOf("--model") + 1] : null);
         Assert.Equal(expectedEffort, args.Contains("--effort") ? args[args.IndexOf("--effort") + 1] : null);
     }
 
     [Fact]
     public void Extra_args_cannot_smuggle_in_dangerous_flags()
-        => Assert.DoesNotContain(ClaudeCodeProtocol.BuildArgs(new BackendProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-skip-permissions --allow-dangerously-skip-permissions --permission-mode bypassPermissions").ToList() }, "x"),
+        => Assert.DoesNotContain(ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-skip-permissions --allow-dangerously-skip-permissions --permission-mode bypassPermissions").ToList() }, "x"),
             a => a.Contains("dangerous", StringComparison.OrdinalIgnoreCase) || a == "bypassPermissions");
 
     [Fact]
@@ -198,7 +198,7 @@ public sealed class ClaudeCodeTests : TempDirTest
     {
         var work = Directory.CreateDirectory(Path.Combine(_dir, "project")).FullName;
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
-        await Collect(New(profile: new BackendProfile { Id = "cc", Name = "C", Type = BackendType.ClaudeCode, Tools = ToolMode.Inherit, WorkingDirectory = work })
+        await Collect(New(profile: new ConnectionProfile { Id = "cc", Name = "C", Type = BackendType.ClaudeCode, Tools = ToolMode.Inherit, WorkingDirectory = work })
             .StreamAsync([U("1", "list files")], default));
         Assert.Equal(work, _factory.Started[0].Cwd);
     }
@@ -247,7 +247,7 @@ public sealed class ClaudeCodeTests : TempDirTest
     [Fact]
     public void Custom_args_replace_the_mode_flags_but_not_the_protocol_or_safety()
     {
-        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, Args = ["--tools", "Read", "--mcp-config", @"C:\mcp.json", "--dangerously-skip-permissions"] }, "x").ToList();
+        var args = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { Tools = ToolMode.Inherit, Args = ["--tools", "Read", "--mcp-config", @"C:\mcp.json", "--dangerously-skip-permissions"] }, "x").ToList();
         Assert.Equal("Read", args[args.IndexOf("--tools") + 1]);
         Assert.Contains(@"C:\mcp.json", args);
         Assert.DoesNotContain("--setting-sources", args);               // mode defaults replaced

@@ -119,8 +119,8 @@ public sealed class SettingsStoreTests : TempDirTest
         File.WriteAllText(Conn("Claude"), """{ "version": 1, "type": "claudeCode", "name": "Claude" }""");
         var loaded = New().Load();
         Assert.Equal("Claude", loaded.Chat.DefaultBackend);
-        Assert.Single(loaded.Chat.Backends);
-        Assert.Equal("Claude", loaded.Chat.Backends[0].Id);
+        Assert.Single(loaded.Chat.Connections);
+        Assert.Equal("Claude", loaded.Chat.Connections[0].Id);
     }
 
     [Theory]
@@ -199,8 +199,8 @@ public sealed class SettingsStoreTests : TempDirTest
         store.Save(s);
         Directory.CreateDirectory(Path.Combine(_dir, SettingsStore.ConnectionsFolder));
         File.WriteAllText(Conn("late"), """{ "version": 1, "type": "local", "name": "Late" }""");
-        s.Chat.Backends = store.TryRead()!.Chat.Backends; // what a live reload takes in
-        Assert.Contains(s.Chat.Backends, b => b.Id == "late");
+        s.Chat.Connections = store.TryRead()!.Chat.Connections; // what a live reload takes in
+        Assert.Contains(s.Chat.Connections, b => b.Id == "late");
         ConnectionEditor.Remove(s.Chat, "late");
         store.Save(s);
         Assert.False(File.Exists(Conn("late")));
@@ -224,8 +224,8 @@ public sealed class SettingsStoreTests : TempDirTest
     {
         var files = new Files.FakeFileSystem();
         var store = new SettingsStore(_dir, files);
-        var s = new HotlineSettings { Chat = new() { Backends = [new() { Id = "a", Type = BackendType.Local }] } };
-        var connections = s.Chat.Backends;
+        var s = new HotlineSettings { Chat = new() { Connections = [new() { Id = "a", Type = BackendType.Local }] } };
+        var connections = s.Chat.Connections;
         var writing = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         using var inspected = new ManualResetEventSlim();
         files.Fail = call =>
@@ -241,8 +241,8 @@ public sealed class SettingsStoreTests : TempDirTest
         try
         {
             await writing.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
-            Assert.Same(connections, s.Chat.Backends);
-            Assert.Equal("a", Assert.Single(s.Chat.Backends).Id);
+            Assert.Same(connections, s.Chat.Connections);
+            Assert.Equal("a", Assert.Single(s.Chat.Connections).Id);
         }
         finally { inspected.Set(); }
         await save;

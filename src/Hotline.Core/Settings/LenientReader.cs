@@ -31,8 +31,8 @@ internal static class LenientReader
     /// <summary>The file's limits that Normalize would otherwise clamp silently: a value outside them is reported.</summary>
     private static readonly Dictionary<string, SettingRange> Ranges = new(SettingsRanges.All)
     {
-        ["BackendProfile.MaxTokens"] = new(1, 1_000_000, null),
-        ["BackendProfile.Temperature"] = new(0, 2, null),
+        ["ConnectionProfile.MaxTokens"] = new(1, 1_000_000, null),
+        ["ConnectionProfile.Temperature"] = new(0, 2, null),
     };
 
     private static readonly Dictionary<Type, PropertyInfo[]> PropertyCache = [];
@@ -127,7 +127,7 @@ internal static class LenientReader
     /// One connection file (or old inline entry). Null when it can't be used: an unknown or non-text "type" would otherwise
     /// fall back to the first type, which starts a CLI.
     /// </summary>
-    public static BackendProfile? ReadProfile(JsonElement obj, string label, ReadProblems problems)
+    public static ConnectionProfile? ReadProfile(JsonElement obj, string label, ReadProblems problems)
     {
         if (!obj.EnumerateObject().Any(m => m.Name.Equals("type", StringComparison.OrdinalIgnoreCase)))
         {
@@ -142,7 +142,7 @@ internal static class LenientReader
             problems.Add(L.F(Strings.Settings_ProblemConnectionType, label, Describe(member.Value)));
             return null;
         }
-        var profile = new BackendProfile();
+        var profile = new ConnectionProfile();
         Populate(obj, profile, label, "", problems);
         return profile;
     }

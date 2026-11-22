@@ -87,7 +87,7 @@ internal sealed class ConnectionChooser(PopupWindow popup, NoticeArea notices, S
 
     private void Pick(BackendType type)
     {
-        var id = settings.Current.Chat.Backends.FirstOrDefault(b => b.Type == type)?.Id;
+        var id = settings.Current.Chat.Connections.FirstOrDefault(b => b.Type == type)?.Id;
         if (id is null) settings.Update(s => id = ConnectionEditor.Add(s.Chat, type).Id);
         log.Info($"first connection chosen: {type}");
         notices.Remove(Tag);
