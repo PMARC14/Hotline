@@ -198,12 +198,19 @@ public static partial class McpSecrets
             || !envObj.TryGetPropertyValue(envKey, out var envNode)
             || envNode is not JsonValue envVal
             || !envVal.TryGetValue<string>(out var plaintext)
+            || plaintext.Length == 0 // an empty value would delete the Locker entry, not store it
             || plaintext.StartsWith(HotlinePrefix, StringComparison.Ordinal))
             return new McpMoveResult(false, McpMoveStatus.ChangedNothingMoved, SafeFileResult.Unchanged, Strings.Mcp_MoveChangedNothingMoved);
 
         var lockerKey = LockerKey(secretName);
-        string? previous = null;
-        try { previous = secrets.Get(lockerKey); } catch (Exception) { previous = null; }
+        // The rollback restores this value, so an entry that can't be read must stop the move (a rollback would delete it).
+        string? previous;
+        try
+        {
+            if (!secrets.TryGet(lockerKey, out previous))
+                return new McpMoveResult(false, McpMoveStatus.Failed, SafeFileResult.Unchanged, Strings.Tools_MoveToLockerFailed);
+        }
+        catch (Exception) { return new McpMoveResult(false, McpMoveStatus.Failed, SafeFileResult.Unchanged, Strings.Tools_MoveToLockerFailed); }
 
         try { secrets.Set(lockerKey, plaintext); }
         catch (Exception) { return new McpMoveResult(false, McpMoveStatus.Failed, SafeFileResult.Unchanged, Strings.Tools_MoveToLockerFailed); }

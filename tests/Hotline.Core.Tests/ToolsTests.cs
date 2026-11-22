@@ -400,6 +400,38 @@ public sealed class ToolsTests : TempDirTest
         Assert.Null(secrets.Get("mcp:secret:k_sec"));
     }
 
+    private sealed class UnreadableSecretStore : ISecretStore
+    {
+        internal readonly InMemorySecretStore Values = new();
+        public string? Get(string key) => null;
+        public bool TryGet(string key, out string? value) { value = null; return false; }
+        public void Set(string key, string? value) => Values.Set(key, value);
+    }
+
+    [Fact]
+    public void MoveToLocker_never_touches_an_unreadable_entry_or_moves_an_empty_value()
+    {
+        var files = new FakeFileSystem();
+        var dataDir = Path.Combine("C:", "fake", "data");
+        var mcpPath = Path.Combine(dataDir, "mcp.json");
+        files.CreateDirectory(dataDir);
+        var text = """{ "mcpServers": { "a": { "command": "x", "env": { "K": "V", "E": "" } } } }""";
+        files.WriteDurable(mcpPath, Encoding.UTF8.GetBytes(text));
+        var state = new StateStore(StatePath);
+        var unreadable = new UnreadableSecretStore();
+        unreadable.Values.Set("mcp:secret:k", "EXISTING");
+        // A backup failure would roll back to "previous": an unreadable previous must stop the move before anything changes.
+        files.Fail = call => call.Operation == nameof(FakeFileSystem.CopyFile);
+        var moved = McpSecrets.MoveToLocker(dataDir, "a", "K", "k", unreadable, state, files, () => DateTime.UtcNow);
+        Assert.Equal(McpMoveStatus.Failed, moved.Status);
+        Assert.Equal("EXISTING", unreadable.Values.Get("mcp:secret:k"));
+        files.Fail = null;
+        var secrets = new InMemorySecretStore();
+        var empty = McpSecrets.MoveToLocker(dataDir, "a", "E", "e", secrets, state, files, () => DateTime.UtcNow);
+        Assert.Equal(McpMoveStatus.ChangedNothingMoved, empty.Status);
+        Assert.Equal(text, Encoding.UTF8.GetString(files.Files[mcpPath]));
+    }
+
     private sealed class FailOnSetSecretStore : ISecretStore
     {
         private readonly Dictionary<string, string?> _store = new(StringComparer.Ordinal);

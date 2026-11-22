@@ -67,7 +67,7 @@ public sealed class StateStoreTests : TempDirTest
     [Theory]
     [InlineData(2)]
     [InlineData(99)]
-    public void Newer_version_file_gives_empty_state_and_is_never_written(int version)
+    public void Newer_version_file_is_read_as_far_as_understood_and_never_written(int version)
     {
         Directory.CreateDirectory(_dir);
         var original = $$"""
@@ -84,10 +84,10 @@ public sealed class StateStoreTests : TempDirTest
         var store = CreateStore();
 
         Assert.Equal(version, store.NewerVersionFile);
-        Assert.Equal(new ShownState(), store.GetShown());
-        Assert.Empty(store.GetGrants());
-        Assert.Null(store.GetLastWritten("settings.json"));
-        Assert.Null(store.GetUpgrade());
+        Assert.True(store.IsShown(ShownFlag.FirstRun));
+        Assert.Single(store.GetGrants());
+        Assert.Equal("deadbeef", store.GetLastWritten("settings.json"));
+        Assert.Equal(@"backups\up", store.GetUpgrade()!.Backup);
 
         Assert.False(store.MarkShown(ShownFlag.FirstRun));
         Assert.False(store.SavePanelSpot(640, "40%", 500, null, new PanelAnchor(), new PanelAnchor()));

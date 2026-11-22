@@ -35,7 +35,9 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
     private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
 
     private readonly TimeProvider _time = time ?? TimeProvider.System;
-    private readonly Lock _gate = new();
+    // One lock per file, shared by every instance: import, reset and the App each hold their own store.
+    private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Lock> Gates = new(StringComparer.OrdinalIgnoreCase);
+    private readonly Lock _gate = Gates.GetOrAdd(Path.GetFullPath(filePath), _ => new Lock());
     private JsonObject _root = CreateEmptyTree();
     private byte[]? _lastDiskBytes;
     private int? _newerVersionFile;
@@ -532,8 +534,8 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
             _corruptOnDisk = false;
             if (TryGetVersion(obj, out var ver) && ver > CurrentVersion)
             {
-                _newerVersionFile = ver;
-                _root = CreateEmptyTree();
+                _newerVersionFile = ver; // read as far as understood; SaveLocked never writes it
+                _root = obj;
                 return;
             }
 

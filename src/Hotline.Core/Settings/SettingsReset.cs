@@ -48,15 +48,7 @@ public static class SettingsReset
                     {
                         try
                         {
-                            try
-                            {
-                                var bytes = files.ReadAllBytes(path);
-                                using var doc = JsonDocument.Parse(bytes, new JsonDocumentOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
-                                if (doc.RootElement.ValueKind == JsonValueKind.Object && doc.RootElement.TryGetProperty("version", out var v)
-                                    && v.ValueKind == JsonValueKind.Number && v.TryGetDouble(out var n) && n > 1)
-                                { failed.Add(Path.GetFileName(path)); continue; }
-                            }
-                            catch (JsonException) { }
+                            if (SafeFile.IsNewer(files.ReadAllBytes(path), 1)) { failed.Add(Path.GetFileName(path)); continue; }
                             if (!backup.TryBackup(path)) { failed.Add(Path.GetFileName(path)); continue; }
                             files.DeleteFile(path);
                             removed.Add(Path.GetFileNameWithoutExtension(path));

@@ -39,7 +39,8 @@ public sealed class SafeFile(IFileSystem? fileSystem = null)
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return SafeFileResult.WriteFailed; }
     }
 
-    private static bool IsNewer(byte[] bytes, int version)
+    /// <summary>True when the JSON object's <c>version</c> (any case, BOM allowed) is above <paramref name="version"/>.</summary>
+    internal static bool IsNewer(byte[] bytes, int version)
     {
         try
         {

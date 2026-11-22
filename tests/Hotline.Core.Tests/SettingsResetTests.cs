@@ -100,20 +100,21 @@ public sealed class SettingsResetTests : TempDirTest
     }
 
     [Theory]
-    [InlineData("settings.json")]
-    [InlineData("toolbar.json")]
-    [InlineData("mcp.json")]
-    [InlineData("connections/local.json")]
-    public void Reset_refuses_newer_files(string name)
+    [InlineData("settings.json", "{\"version\":99}")]
+    [InlineData("toolbar.json", "{\"version\":99}")]
+    [InlineData("mcp.json", "{\"version\":99}")]
+    [InlineData("connections/local.json", "{\"version\":99}")]
+    [InlineData("connections/local.json", "﻿{\"version\":99}")]
+    [InlineData("connections/local.json", "{\"VERSION\":99}")]
+    public void Reset_refuses_newer_files(string name, string newer)
     {
         var (store, settings, _) = Customised();
         var path = Path.Combine(_dir, name.Replace('/', Path.DirectorySeparatorChar));
         Directory.CreateDirectory(Path.GetDirectoryName(path)!);
-        const string newer = "{\"version\":99}";
-        File.WriteAllText(path, newer);
+        File.WriteAllBytes(path, Encoding.UTF8.GetBytes(newer));
         var result = SettingsReset.Reset(store, _dir, settings, true, Now);
         Assert.Contains(Path.GetFileName(path), result.Failed);
-        Assert.Equal(newer, File.ReadAllText(path));
+        Assert.Equal(Encoding.UTF8.GetBytes(newer), File.ReadAllBytes(path));
     }
 
     [Fact]

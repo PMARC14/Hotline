@@ -42,6 +42,24 @@ public sealed class SettingsV1Tests : TempDirTest
     }
 
     [Fact]
+    public void An_unedited_newer_connection_never_blocks_saving_settings()
+    {
+        Directory.CreateDirectory(Path.Combine(_dir, "connections"));
+        var settingsPath = Path.Combine(_dir, "settings.json");
+        var connectionPath = Path.Combine(_dir, "connections", "future.json");
+        File.WriteAllText(settingsPath, """{"version":1}""");
+        const string connection = """{"version":2,"type":"local","name":"Future"}""";
+        File.WriteAllText(connectionPath, connection);
+        var store = new SettingsStore(_dir);
+        var settings = store.Load();
+        settings.Window.Theme = ThemeChoice.Dark;
+        store.Save(settings);
+        Assert.Empty(store.WriteProblems);
+        Assert.Equal("dark", JsonNode.Parse(File.ReadAllText(settingsPath))!["window"]!["theme"]!.GetValue<string>());
+        Assert.Equal(connection, File.ReadAllText(connectionPath));
+    }
+
+    [Fact]
     public void Removing_an_approval_rule_removes_only_that_map_entry()
     {
         Directory.CreateDirectory(_dir);

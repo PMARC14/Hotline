@@ -272,17 +272,6 @@ public sealed class SettingsStore
                 }
                 catch (JsonException) { }
             }
-            if (tree is not null)
-            {
-                var version = DiskVersion(path);
-                if (version == 0) { _writeProblems.Add(Strings.Settings_PreFreeze); return false; }
-                if (version > 1)
-                {
-                    if (path == FilePath) NewerVersionFile = version;
-                    _writeProblems.Add(L.F(Strings.Settings_NewerVersion, version, 1));
-                    return false;
-                }
-            }
             var before = _before.GetValueOrDefault(path);
             if (before is null && tree is not null)
             {
@@ -292,6 +281,19 @@ public sealed class SettingsStore
                     before = Model(profile, options);
             }
             var unchanged = tree is not null && before is not null && JsonNode.DeepEquals(before, after);
+            if (tree is not null)
+            {
+                var version = DiskVersion(path);
+                if (version == 0) { _writeProblems.Add(Strings.Settings_PreFreeze); return false; }
+                if (version > 1)
+                {
+                    if (path == FilePath) NewerVersionFile = version;
+                    // An unedited newer file is simply left alone; it must not block saving the other files.
+                    if (unchanged) return true;
+                    _writeProblems.Add(L.F(Strings.Settings_NewerVersion, version, 1));
+                    return false;
+                }
+            }
             tree = tree is null ? (JsonObject)after.DeepClone() : JsonMerge.Apply(tree, MatchKeys(before ?? new JsonObject(), tree), MatchKeys(after, tree));
             // Removing a string-map entry removes the rule, rather than leaving an invalid null rule.
             if (path == FilePath && before?["tools"]?["approvals"] is JsonObject oldRules && after["tools"]?["approvals"] is JsonObject newRules

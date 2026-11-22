@@ -144,6 +144,21 @@ public sealed class SettingsServiceTests : TempDirTest
         Assert.Equal("changed", profile.Model);
     }
 
+    [Fact]
+    public void A_failed_connection_removal_is_retried_by_the_next_save()
+    {
+        var service = New(out var store);
+        var path = Path.Combine(_dir, "connections", "agy.json");
+        _files.BeforeCopy = source => { if (source == path) throw new IOException("blocked"); };
+        Assert.NotEmpty(service.Update(s => s.Chat.Connections.Clear()));
+        Assert.True(File.Exists(path));
+        _files.BeforeCopy = null;
+        Assert.Empty(service.Update(s => s.Window.FontSize = 19));
+        Assert.False(File.Exists(path));
+        service.Reload(store.TryRead()!);
+        Assert.Empty(service.Current.Chat.Connections);
+    }
+
     private SettingsService New(out SettingsStore store)
     {
         Directory.CreateDirectory(Path.Combine(_dir, "connections"));

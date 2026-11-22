@@ -58,7 +58,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             if (_automatic.Count > 0) SaveCurrent(_automaticRemoved);
             return false;
         }
-        if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); }
+        if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); _pendingRemoved.Clear(); }
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
         string Snapshot(HotlineSettings s) => System.Text.Json.JsonSerializer.Serialize(new
             { Settings = s, Connections = s.Chat.Connections.Select(p => new { p.Id, Profile = p }) }, options);
@@ -124,6 +124,7 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     private bool _unsaved; // the last save failed: memory is newer than the disk, so a re-read must not replace it
     private readonly List<Action<HotlineSettings>> _automatic = [];
     private readonly HashSet<string> _automaticRemoved = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _pendingRemoved = new(StringComparer.OrdinalIgnoreCase); // removals not yet done on disk
 
     private void ApplyAutomatic(Action<HotlineSettings> change)
     {
@@ -168,13 +169,17 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     private IReadOnlyList<string> SaveCurrent(IEnumerable<string> removed)
     {
         IReadOnlyList<string> problems;
+        // A removal that failed is retried with every later save until it succeeds; a connection added back stays.
+        var alive = Current.Chat.Connections.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _pendingRemoved.UnionWith(removed);
+        _pendingRemoved.RemoveWhere(alive.Contains);
         try
         {
             // A file that differs from its last-written hash is backed up before replacement.
-            store.Save(Current, removed);
+            store.Save(Current, _pendingRemoved.ToList());
             _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
             problems = [.. store.WriteProblems];
-            if (!_unsaved) { _automatic.Clear(); _automaticRemoved.Clear(); }
+            if (!_unsaved) { _automatic.Clear(); _automaticRemoved.Clear(); _pendingRemoved.Clear(); }
             foreach (var problem in problems) log.Info($"settings: {problem}");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
