@@ -163,6 +163,23 @@ public sealed class ToolHostLifecycleTests : TempDirTest
     }
 
     [Fact]
+    public async Task An_offer_from_a_replaced_server_is_never_sent_to_its_replacement()
+    {
+        WriteConfig("""{ "mcpServers": { "a": { "command": "old-cmd" } } }""");
+        var sessions = new List<FakeMcpSession>();
+        await using var host = CreateHost(() => [], (_, _) => { var s = new FakeMcpSession(("read", true)); sessions.Add(s); return Task.FromResult<IMcpSession>(s); },
+            (_, _) => Task.FromResult(ToolDecision.AllowOnce));
+        var offered = Assert.Single(await host.GetToolsAsync(TestContext.Current.CancellationToken));
+        // "Check servers" after the command changed: a new session replaces the old one while the answer still holds the old offer.
+        WriteConfig("""{ "mcpServers": { "a": { "command": "new-cmd" } } }""");
+        await host.GetToolsAsync(TestContext.Current.CancellationToken);
+        Assert.Equal(2, sessions.Count);
+        var result = await host.CallAsync(offered, JsonDocument.Parse("{}").RootElement, TestContext.Current.CancellationToken);
+        Assert.True(result.IsError);
+        Assert.Equal(0, sessions[1].Calls);
+    }
+
+    [Fact]
     public async Task Server_errors_and_stderr_scrub_resolved_secrets_and_long_env_values()
     {
         WriteConfig("""
@@ -590,7 +607,11 @@ public sealed class ToolHostLifecycleTests : TempDirTest
         File.WriteAllText(McpPath, """{ "mcpServers": { "a": { "command": "x", "args": ["v2"] } } }"""); // restart -> fresh list
         await host.GetToolsAsync(TestContext.Current.CancellationToken);
         var result = await host.CallAsync(old, JsonDocument.Parse("{}").RootElement, TestContext.Current.CancellationToken);
-        Assert.Equal(1, asked);
+        // The old spec came from the replaced process: refused outright (never run, nothing to ask). A fresh spec asks.
+        Assert.Equal(0, asked);
         Assert.True(result.IsError);
+        var fresh = (await host.GetToolsAsync(TestContext.Current.CancellationToken))[0];
+        Assert.True((await host.CallAsync(fresh, JsonDocument.Parse("{}").RootElement, TestContext.Current.CancellationToken)).IsError);
+        Assert.Equal(1, asked);
     }
 }

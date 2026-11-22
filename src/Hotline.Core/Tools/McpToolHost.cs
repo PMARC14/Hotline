@@ -7,7 +7,8 @@ using Hotline.Core.Text.Localization;
 namespace Hotline.Core.Tools;
 
 /// <summary>A tool offered to an API model. ApiName is what the model calls; Server/Tool identify the MCP tool.</summary>
-public sealed record ToolSpec(string ApiName, string Server, string Tool, string Description, JsonElement InputSchema, bool ReadOnly);
+/// <param name="Launch">The launch hash of the server process that offered the tool; a call never goes to a replacement.</param>
+public sealed record ToolSpec(string ApiName, string Server, string Tool, string Description, JsonElement InputSchema, bool ReadOnly, string? Launch = null);
 
 public sealed record ToolResult(string Text, bool IsError);
 
@@ -155,7 +156,7 @@ public sealed class McpToolHost(
                     var decision = ToolPolicy.Evaluate(rules, grants, server.Name, t.Name, t.ReadOnly, running.LaunchHash);
                     WarnIfCaseMismatch(server.Name, t.Name, decision.CaseMismatchAllowRule);
                     if (decision.Approval == ToolApproval.Deny) continue; // never offered
-                    tools.Add(new ToolSpec(ToolNames.ForApi(server.Name, t.Name, used), server.Name, t.Name, McpSecrets.Scrub(t.Description, running.SensitiveValues), t.InputSchema, t.ReadOnly));
+                    tools.Add(new ToolSpec(ToolNames.ForApi(server.Name, t.Name, used), server.Name, t.Name, McpSecrets.Scrub(t.Description, running.SensitiveValues), t.InputSchema, t.ReadOnly, running.LaunchHash));
                     offered++;
                 }
                 SetStatus(new(server.Name, display, McpServerState.Ready, offered, null));
@@ -206,7 +207,8 @@ public sealed class McpToolHost(
         var snapshot = Volatile.Read(ref _snapshot);
         // The current entry, not the caller's copy: if the server now marks the tool as not read-only, that must ask.
         if (snapshot.Tools.FirstOrDefault(t => Same(t.Server, tool.Server) && t.Tool == tool.Tool) is not { } current
-            || !snapshot.Sessions.TryGetValue(tool.Server, out var running))
+            || !snapshot.Sessions.TryGetValue(tool.Server, out var running)
+            || (tool.Launch is not null && tool.Launch != running.LaunchHash)) // offered by a process that has been replaced
             return new ToolResult($"{tool.Server}/{tool.Tool} is no longer available.", true);
         tool = current;
         // Policy is checked against live rules, grants, and the launch hash of the running process.
