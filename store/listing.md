@@ -10,9 +10,7 @@ and trailer, captured from the installed app); output in `artifacts/store/`. Per
 (the demo conversation is interface text). The logos have no text and are shared. For the English panel alone,
 `scripts/make-store-media.sh --no-video` is enough.
 
-The English **Short description** and **Description** are the owner's own text (the Partner Center version of 2026-11-08), with
-the real 0.6 features from the earlier longer description added in the same plain voice (Codex, Continue in, shortcuts,
-bar layout, Backup). `store/listings/<language>.md` carry translations of both.
+The English **Short description** and **Description** match Partner Center, with translations in `store/listings/<language>.md`.
 
 ---
 
@@ -64,7 +62,7 @@ below, 0.7.N.0 stands for the bundle you built, and it must be higher than the l
 ### 4. The other languages (one listing per package language)
 
 The Store listing languages are the ones the package declares: English (United States) plus the 16 below, which come from the
-`src/Hotline.App/Strings/<tag>/` folders ([TRANSLATING.md](../docs/TRANSLATING.md)). There is no separate "additional languages"
+`src/Hotline.App/Strings/<tag>/` folders ([Translations](../README.md#translations)). There is no separate "additional languages"
 section any more (that was for region-specific listings, and it was removed): every language in the package list gets its own
 listing, and Partner Center asks for all of them before you can submit. Open each language from the **Store listings** page and
 paste, from `store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**,
@@ -166,7 +164,6 @@ NATIVE, LIGHT AND YOURS
   up first.
 • Tools, carefully: API connections can use tools from your MCP servers; anything that changes something asks you
   first.
-• The Copilot key can also act as a Right Ctrl key, if you'd rather have that.
 
 PRIVATE BY DESIGN
 Hotline AI has no server and collects nothing: no account, no analytics, no ads. Your messages go only to the AI
