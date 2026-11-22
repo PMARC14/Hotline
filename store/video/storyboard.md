@@ -1,7 +1,7 @@
 # Hotline AI: in-depth video storyboard
 
-A video that shows everything, about 3 to 4 minutes, 1920x1080, no audio, English captions burned in. Not part of the 0.6
-Store submission (that uses the 38 s trailer); this is ready for when you want it, for example for 1.0.
+A video that shows everything, about 3 to 4 minutes, 1920x1080, no audio, English captions burned in. Not part of the
+Store submission (which uses the 38 s trailer).
 
 How it is made:
 
@@ -50,16 +50,15 @@ How it is made:
 | M8 | Shortcuts: Ctrl+N, Ctrl+H, Ctrl+Shift+C, tooltip with the key | 8 | Shortcuts for the bar's buttons while the panel has focus. | by hand |
 | M9 | Hold Alt: move and resize, pin; grows up or down | 10 | Move it, resize it, pin it. | by hand |
 | M10 | A tool approval bar (MCP) | 8 | Anything that changes something asks you first. | by hand (a real MCP server) |
-| M11 | Two monitors: the panel opens on the one you are working on | 8 | It opens on the monitor you're working on. | by hand (needs the window-capture fix in HANDOFF first) |
-| M12 | The Copilot key as a Right Ctrl key, if you prefer | 5 | The Copilot key can also act as a Right Ctrl key. | by hand |
+| M11 | Two monitors: the panel opens on the one you are working on | 8 | It opens on the monitor you're working on. | by hand |
 
-Suggested order: T, 1, M1, 2, M2, M3, 3, M5, M4, M6, M7, M8, M9, M10, M11, 4, 5, 6, 7, 8, 9, 10, 11, M12, E.
+Suggested order: T, 1, M1, 2, M2, M3, 3, M5, M4, M6, M7, M8, M9, M10, M11, 4, 5, 6, 7, 8, 9, 10, 11, E.
 
 ## Other languages
 
 The tour and these captions are English. A language version needs the captions translated (the strings are in the `steps` list of
 `scripts/make-store-tour.sh`) and the interface switched with `scripts/make-store-panels.sh`'s method (set `general.language`,
-restart, record). Not planned for 0.6: the Store accepts one trailer for all languages.
+restart, record). The Store accepts one trailer for all languages.
 
 ## Notes
 
