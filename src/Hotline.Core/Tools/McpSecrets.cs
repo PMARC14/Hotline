@@ -178,7 +178,7 @@ public static partial class McpSecrets
         {
             if (!fs.FileExists(mcpPath))
                 return new McpMoveResult(false, McpMoveStatus.ChangedNothingMoved, SafeFileResult.Unchanged, Strings.Mcp_MoveChangedNothingMoved);
-            var text = Encoding.UTF8.GetString(fs.ReadAllBytes(mcpPath));
+            var text = Encoding.UTF8.GetString(fs.ReadAllBytes(mcpPath)).TrimStart('﻿'); // Notepad's BOM, as McpConfig.Load allows
             root = JsonNode.Parse(text, documentOptions: McpConfig.ReadOptions) as JsonObject;
         }
         catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException or InvalidOperationException or FormatException or ArgumentException)

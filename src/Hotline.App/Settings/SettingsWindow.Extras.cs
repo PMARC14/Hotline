@@ -185,9 +185,9 @@ public sealed partial class SettingsWindow
                 var current = ToolbarFile.Load(ToolbarPath);
                 var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.ResetLayout(current.Error is null ? current.Model : null), state: _state);
                 if (problem is not null) throw new IOException(problem);
+                ShowPage(_currentPage); // only on success: a rebuilt page would hide the error
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("saving toolbar.json failed", ex); }
-            ShowPage(_currentPage);
         };
         return reset;
     }

@@ -43,7 +43,7 @@ public sealed class SettingsPackageTests : TempDirTest
     {
         Directory.CreateDirectory(dir);
         Put(dir, "settings.json", SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings())));
-        Put(dir, "toolbar.json", """{ "version": 2 }""");
+        Put(dir, "toolbar.json", """{ "version": 3 }""");
         PutBytes(dir, "icons/my-btn.png", Png16);
         Put(dir, "mcp.json", """{ "version": 1, "mcpServers": {}, "approvals": {} }""");
         PutBytes(dir, "sounds/ding.wav", WavBytes());
@@ -524,7 +524,7 @@ public sealed class SettingsPackageTests : TempDirTest
     [Fact]
     public void A_toolbar_that_resolves_with_warnings_is_written_as_is()
     {
-        const string odd = "{ \"version\": 2, \"buttons\": { \"x\": 7 }, \"mystery\": true, // comment\n}";
+        const string odd = "{ \"version\": 3, \"buttons\": { \"x\": 7 }, \"mystery\": true, // comment\n}";
         using var zip = Zip([E("toolbar.json", odd)]);
         var result = Import(zip);
         Assert.Equal(["toolbar.json"], result.Written);

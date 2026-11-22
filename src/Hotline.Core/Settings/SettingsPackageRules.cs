@@ -115,9 +115,13 @@ public static partial class SettingsPackage
             {
                 case SettingsCategory.Settings:
                     // The very reading loading uses: a wrong value or a newer enum word only costs that field (the app warns and goes on).
-                    return SettingsStore.ParseSettings(text, new ReadProblems()).Settings is null ? "not readable as settings" : null;
+                    // A 0.6 file would replace a current one and then be reset by the upgrade: refuse it instead.
+                    var parsed = SettingsStore.ParseSettings(text, new ReadProblems());
+                    return parsed.Settings is null ? "not readable as settings" : parsed.Failure is not null ? "from Hotline 0.6 or older" : null;
                 case SettingsCategory.Toolbar:
-                    return ToolbarModel.Parse(text, []) is JsonObject ? null : "not a JSON object"; // field-level problems are the reader's warnings
+                    if (ToolbarModel.Parse(text, []) is not JsonObject toolbar) return "not a JSON object"; // field-level problems are the reader's warnings
+                    return toolbar.LastOrDefault(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase)).Value is JsonValue v
+                        && v.TryGetValue<double>(out var version) && version >= ToolbarModel.CurrentVersion ? null : "from Hotline 0.6 or older";
                 case SettingsCategory.Mcp:
                     McpConfig.Parse(text);
                     return null;

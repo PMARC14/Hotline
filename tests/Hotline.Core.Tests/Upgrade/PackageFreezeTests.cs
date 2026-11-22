@@ -38,6 +38,19 @@ public sealed class PackageFreezeTests : TempDirTest
     }
 
     [Fact]
+    public void Import_refuses_settings_and_toolbar_from_0_6()
+    {
+        Put("settings.json", """{"schemaVersion":15,"window":{"theme":"dark"}}""");
+        Put("toolbar.json", """{"version":2}""");
+        using var zip = new MemoryStream();
+        SettingsPackage.Export(_dir, SettingsPackage.All, zip);
+        zip.Position = 0;
+        var plan = SettingsPackage.PrepareImport(Path.Combine(_dir, "target"), zip, SettingsPackage.All);
+        Assert.Contains(plan.Skipped, s => s.Path == "settings.json");
+        Assert.Contains(plan.Skipped, s => s.Path == "toolbar.json");
+    }
+
+    [Fact]
     public void Import_masks_env_orders_allow_rules_and_lists_missing_secret_servers()
     {
         Put("settings.json", """{"version":1,"tools":{"approvals":{"server/z":"deny","server/a":"allow","server/b":"ask"}}}""");

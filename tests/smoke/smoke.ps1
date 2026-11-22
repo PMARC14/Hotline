@@ -76,7 +76,7 @@ try {
     } elseif ($json -match '^\s*\{') {
         $json = [regex]::Replace($json.TrimEnd(), '(?s)\}\s*$', ",`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}")
     } else {
-        $json = "{`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}"
+        $json = "{`r`n  `"version`": 1,`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}"
     }
     [IO.File]::WriteAllText($settingsFile, $json)
 
@@ -163,11 +163,11 @@ try {
     Expect-Log 'invalid hotkey is reported' $n "fallback hotkey 'Banana' is not valid"
     Check 'runs with invalid hotkey' ([bool](Get-Process Hotline -ErrorAction SilentlyContinue))
 
-    # 7. Corrupt settings: app starts on defaults and keeps the bad file
+    # 7. Corrupt settings: app starts on defaults in memory and never touches the file (loading never writes)
     [IO.File]::WriteAllText($settingsFile, '{ not json')
     Restart-Hotline
     Check 'starts with corrupt settings' ([bool](Get-Process Hotline -ErrorAction SilentlyContinue))
-    Check 'corrupt settings backed up' (Test-Path "$settingsFile.bad")
+    Check 'corrupt settings left as they are' ([IO.File]::ReadAllText($settingsFile) -eq '{ not json')
 
     # 8. Tray quit command exits cleanly
     [SmokeWin]::PostMessage([SmokeWin]::Popup([uint32](Get-Process Hotline).Id), 0x0111, [IntPtr]4, [IntPtr]0) | Out-Null
