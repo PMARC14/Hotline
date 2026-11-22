@@ -165,7 +165,7 @@ public sealed class ClaudeCodeBackend(ConnectionProfile profile, Func<string?> l
     {
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
-        return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
+        return Platform.SafeDirectory.IsLocal(dir) && Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
             L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

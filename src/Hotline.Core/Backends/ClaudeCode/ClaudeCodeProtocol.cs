@@ -106,7 +106,8 @@ public static class ClaudeLocator
         if (!string.IsNullOrWhiteSpace(configuredPath))
         {
             var expanded = Environment.ExpandEnvironmentVariables(configuredPath);
-            return exists(expanded) ? expanded : null;
+            // Checked before any File.Exists: a share path would make Windows connect to it (and send the user's hash).
+            return !Platform.SafeDirectory.IsShareOrDevice(expanded) && exists(expanded) ? expanded : null;
         }
         if (!string.IsNullOrEmpty(userProfile))
         {

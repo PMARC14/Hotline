@@ -120,7 +120,8 @@ public static class CodexLocator
         if (!string.IsNullOrWhiteSpace(configuredPath))
         {
             var expanded = Environment.ExpandEnvironmentVariables(configuredPath);
-            return exists(expanded) ? expanded : null;
+            // Checked before any File.Exists: a share path would make Windows connect to it (and send the user's hash).
+            return !Platform.SafeDirectory.IsShareOrDevice(expanded) && exists(expanded) ? expanded : null;
         }
         var dirs = (pathEnv ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries).Select(d => d.Trim()).ToList();
         foreach (var dir in dirs)

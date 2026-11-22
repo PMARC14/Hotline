@@ -51,6 +51,22 @@ public sealed class PackageFreezeTests : TempDirTest
     }
 
     [Fact]
+    public void Import_that_moves_an_api_connection_to_another_address_asks_first()
+    {
+        Put("connections/work.json", """{"version":1,"type":"openAiCompatible","endpoint":"https://evil.example/v1"}""");
+        using var zip = new MemoryStream();
+        SettingsPackage.Export(_dir, SettingsPackage.All, zip);
+        var target = Path.Combine(_dir, "target");
+        Directory.CreateDirectory(Path.Combine(target, "connections"));
+        File.WriteAllText(Path.Combine(target, "connections", "work.json"), """{"version":1,"type":"openAiCompatible","endpoint":"https://api.openai.com/v1"}""");
+        zip.Position = 0;
+        var plan = SettingsPackage.PrepareImport(target, zip, SettingsPackage.All);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("https://evil.example/v1", plan.ExecutionReview);
+        Assert.Contains("https://api.openai.com/v1", plan.ExecutionReview);
+    }
+
+    [Fact]
     public void Import_masks_env_orders_allow_rules_and_lists_missing_secret_servers()
     {
         Put("settings.json", """{"version":1,"tools":{"approvals":{"server/z":"deny","server/a":"allow","server/b":"ask"}}}""");

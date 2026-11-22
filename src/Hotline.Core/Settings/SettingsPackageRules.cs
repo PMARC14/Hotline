@@ -198,6 +198,7 @@ public static partial class SettingsPackage
             if (profile is null) continue;
             if (profile.Tools == ToolMode.Inherit) anyInherit = true;
             if (IsExecutableConnection(profile)) AppendConnection(blocks, path, profile);
+            AppendEndpointChange(blocks, rootDirectory, path, profile);
         }
 
         if (hasSettings || hasMcp)
@@ -262,6 +263,26 @@ public static partial class SettingsPackage
         }
     }
 
+    /// <summary>
+    /// A replaced API connection that points somewhere else: its saved API key (kept in Credential Locker under the id) would
+    /// go to the new address, so the review shows the change and asks.
+    /// </summary>
+    private static void AppendEndpointChange(List<string> blocks, string rootDirectory, string path, ConnectionProfile incoming)
+    {
+        if (ConnectionTypes.IsCli(incoming.Type)) return;
+        var existing = Path.Combine(rootDirectory, path.Replace('/', Path.DirectorySeparatorChar));
+        try
+        {
+            if (!File.Exists(existing)) return;
+            var current = SettingsStore.ParseConnection(File.ReadAllText(existing), path, Path.GetFileNameWithoutExtension(path), new ReadProblems(), out _);
+            if (current is null) return;
+            static string Where(ConnectionProfile p) => $"{p.Type} {(p.Endpoint ?? "").Trim().TrimEnd('/')}".Trim();
+            if (string.Equals(Where(current), Where(incoming), StringComparison.OrdinalIgnoreCase)) return;
+            blocks.Add($"{path} ({incoming.Id})\n  endpoint: {Where(current)} -> {Where(incoming)}\n  the API key saved for this connection is sent to the new address");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+    }
+
     private static void AppendConnection(List<string> blocks, string location, ConnectionProfile p)
     {
         var sb = new StringBuilder();
@@ -271,6 +292,7 @@ public static partial class SettingsPackage
         sb.Append($"\n  tools: {JsonNamingPolicy.CamelCase.ConvertName(p.Tools.ToString())}");
         sb.Append($"\n  approveAllTools: {(p.ApproveAllTools ? "true" : "false")}");
         if (!string.IsNullOrWhiteSpace(p.CliPath)) sb.Append($"\n  cliPath: {p.CliPath}");
+        if (p.Type == BackendType.Antigravity && !string.IsNullOrWhiteSpace(p.Agent)) sb.Append($"\n  agent: {p.Agent}");
         if (!string.IsNullOrWhiteSpace(p.WorkingDirectory)) sb.Append($"\n  workingDirectory: {p.WorkingDirectory}");
         if (p.ExtraArgs is { Count: > 0 }) sb.Append($"\n  extraArgs: {CliArguments.Join(p.ExtraArgs)}");
         if (p.Args is { Count: > 0 }) sb.Append($"\n  args: {string.Join(" ", p.Args)}");

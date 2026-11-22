@@ -641,7 +641,10 @@ public sealed class SettingsPackageTests : TempDirTest
         Import(zip, SettingsCategory.Actions);
         Assert.Contains("local", File.ReadAllText(Path.Combine(Target, "connections", "work.json")));
         zip.Position = 0;
-        Import(zip, SettingsCategory.Connections);
+        // The connection changes type (and so where its saved key goes): the review asks, and confirming replaces it.
+        var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Connections]);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        SettingsPackage.Import(plan, Backups, executionConfirmed: true, Now);
         Assert.Contains("openAiCompatible", File.ReadAllText(Path.Combine(Target, "connections", "work.json")));
     }
 
