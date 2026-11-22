@@ -129,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>隨 Windows 啟動</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>「工具使用」設為「使用 Hotline 的工具」的 API 連線可以呼叫這些 MCP 伺服器的工具。唯讀工具會直接執行;其他動作會在面板中詢問你 (允許一次 / 一律 / 拒絕)。</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP 伺服器</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} —— 與其他 MCP 應用程式相同的「mcpServers」格式;核准設定儲存在同一個檔案中</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 與其他 MCP 應用程式相同的 "mcpServers" 格式；核准規則為 settings.json 中的 tools.approvals</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>編輯 mcp.json</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>開啟資料夾</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows 代理程式登錄</value></data>
@@ -819,7 +819,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列 將工具列顯示為六個區域：訊息方塊上方列的左側、中央與右側，以及下方相同的這三個區域。拖曳按鈕或選擇器可在區域內移動或移至另一個區域，或使用其方向鍵按鈕（Alt+方向鍵切換區域，Ctrl+方向鍵變更順序）。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的寬度、外框或填滿（下拉式選單也支援外框和填滿），您也可以新增執行快速動作或插入文字的自訂按鈕。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 機碼）則存放您選擇保留在該處的按鈕。寬度以儲存格計算：按鈕寬度為 0.5、1、2、3 或 4 個儲存格（width 機碼，其中 compact、normal 和 wide 代表 0.5、1 和 2），且每個選擇器都有自己的寬度。設定 › 備份 也會儲存 toolbar.json 和您的按鈕圖片。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列會將工具列顯示為六個區域：訊息方塊上方一列的左、中、右，以及下方一列的相同三個區域。拖曳按鈕或選擇器即可在同區域內或跨區域移動，或使用其方向按鈕（Alt+方向鍵變更區域，Ctrl+方向鍵變更順序）。隱藏的項目會留在「未顯示」中。每個按鈕都能有各自的寬度、外框或填滿（下拉式選單也會套用外框與填滿），你也可以新增自己的按鈕來執行快速動作或插入文字。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 鍵）會保留你選擇放在那裡的按鈕。按鈕寬度為數字 0.5、1、2、3 或 4（width 鍵），每個選擇器都有各自的跨度，而 style.fill（預設開啟）會分配該列的剩餘空間。設定 › 備份也會儲存 toolbar.json 與你的按鈕圖片。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>

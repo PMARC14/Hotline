@@ -129,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Windows 시작 시 실행</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>도구 사용을 "Hotline 도구 사용"으로 설정한 API 연결은 이 MCP 서버의 도구를 호출할 수 있습니다. 읽기 전용 도구는 바로 실행되고, 그 밖의 도구는 패널에서 묻습니다(한 번 허용 / 항상 / 거부).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP 서버</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 다른 MCP 앱과 같은 "mcpServers" 형식이며 승인도 같은 파일에 저장됩니다</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 다른 MCP 앱과 동일한 "mcpServers" 형식이며, 승인 규칙은 settings.json의 tools.approvals입니다</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json 편집</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>폴더 열기</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows 에이전트 레지스트리</value></data>
@@ -819,7 +819,7 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>위 또는 아래</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>채팅은 메시지 표시줄을 기준으로 확장됩니다. 위쪽에 공간이 없는 경우가 아니면 위로, 공간이 없으면 아래로 확장됩니다. 설정 › 창에서 위 또는 아래로 고정할 수 있으며 위치, 너비 및 채팅 높이도 설정할 수 있습니다.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 버튼 행은 표시줄을 6개 영역(메시지 상자 위 행의 왼쪽, 가운데, 오른쪽 및 아래의 동일한 3개)으로 표시합니다. 버튼이나 선택기를 드래그하여 영역 내 또는 다른 영역으로 이동하거나 화살표 버튼을 사용하세요(Alt+화살표는 영역 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “표시 안 됨”에서 대기합니다. 각 버튼은 고유한 너비, 윤곽선 또는 채우기를 가질 수 있으며(드롭다운에도 윤곽선과 채우기가 적용됨), 빠른 작업을 실행하거나 텍스트를 삽입하는 사용자 정의 버튼을 추가할 수 있습니다. 맞지 않는 버튼은 ⋯ 메뉴로 이동하고 “… 버튼 상자”(toolbar.json의 menu 키)에는 그곳에 유지하도록 선택한 버튼이 들어갑니다. 너비는 셀 단위로 계산됩니다. 버튼은 0.5, 1, 2, 3 또는 4셀 너비이며(width 키, compact, normal, wide는 각각 0.5, 1, 2를 의미), 각 선택기는 고유한 너비를 가집니다. 설정 › 백업은 toolbar.json과 버튼 그림도 함께 저장합니다.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 단추 행에서는 표시줄을 메시지 상자 위 행의 왼쪽, 가운데, 오른쪽과 아래 행의 동일한 세 영역 등 여섯 개 영역으로 보여 줍니다. 단추나 선택기를 끌어 같은 영역 내 또는 다른 영역으로 이동하거나 화살표 단추를 사용하세요(Alt+화살표는 영역 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “표시 안 함”에 보관됩니다. 모든 단추는 고유한 너비, 윤곽선 또는 채우기를 가질 수 있으며(드롭다운에도 윤곽선과 채우기가 적용됨), 빠른 작업을 실행하거나 텍스트를 삽입하는 사용자 지정 단추를 추가할 수 있습니다. 공간에 맞지 않는 단추는 ⋯ 메뉴로 이동하며, “… 단추 상자”(toolbar.json의 menu 키)에는 그곳에 두기로 선택한 단추가 보관됩니다. 단추 너비는 0.5, 1, 2, 3 또는 4의 숫자(width 키)이고, 각 선택기는 고유한 범위를 가지며, style.fill(기본값 켜짐)은 행의 여유 공간을 나눕니다. 설정 › 백업은 toolbar.json과 단추 이미지도 함께 저장합니다.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>소리</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>설정 › 모양 › 사운드에서 패널이 열리거나 닫힐 때 소리를 재생합니다: Windows 소리 또는 소리 폴더의 .wav 파일. 기본적으로 꺼져 있습니다.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>설정 파일</value></data>

@@ -20,7 +20,7 @@ review outputs live outside the repo in `~/.claude/briefs/hotline/`.
 | Branch | `s1/schema-freeze`, `version.txt` 0.7, 3,140 Core tests green |
 | Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; next is 0.7.x.0, uploaded by hand |
 | Open PRs | #65 `ci/actions-update` (Node 24 actions; green; merging publishes a prerelease); agents-jobs #10 |
-| Installed here | a 0.1.319 dev build (pre-S1) |
+| Installed here | the 0.7 candidate (dev-signed); the upgrade ran on the owner's files on 2026-11-22 and `hotline://selftest` passed (96 checks) |
 
 S1 replaced every config format with a versioned one, one writer (`SafeFile`), backup sets, `state.json`, toolbar v3 and a
 one-time upgrade. Reviews on 2026-11-22: Sol (U1, Core), Argon (App), Astra and Neon (whole codebase); every confirmed finding is
@@ -28,10 +28,8 @@ fixed with a test.
 
 ## Finish 0.7
 
-1. **Install on the owner's PC.** Copy `~\.hotline` aside first (a full reset is allowed if the result is the default setup with
-   the connections back and working). After the first start check the upgrade notice, `backups\<stamp>-upgrade\`, and that each
-   connection still finds its API key. Run `hotline://selftest` (needs `diagnostics.testLinks`; restore `settings.json` byte for
-   byte after). Ask before `smoke.ps1` (keystrokes) or screen captures.
+1. **Owner hand tests** in [TESTING.md](TESTING.md) › "Not yet checked by hand" (the install and self-test are done). Ask before
+   `smoke.ps1` (keystrokes) or screen captures.
 2. **Store bundle 0.7.x.0:** `scripts/build-msix.sh --store --arch all --version <x>` with the identity values from the repo's
    Actions variables (`gh variable list`; `store.yml` shows the call). Open for the owner: the bundle folder, `store/listing.md`,
    `store/listings/`, `artifacts/store/` (0.6.3 images reused; recapture `fr/screenshot-4.png` first: `scripts/make-store-panels.sh fr`,

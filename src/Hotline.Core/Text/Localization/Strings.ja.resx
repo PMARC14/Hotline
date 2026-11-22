@@ -129,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Windows の起動時に開始</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>ツールの使用を「Hotline のツールを使う」にした API 接続は、これらの MCP サーバーのツールを呼び出せます。読み取り専用のツールはそのまま実行され、それ以外はパネルで確認されます (今回のみ許可 / 常に許可 / 拒否)。</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP サーバー</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — ほかの MCP アプリと同じ「mcpServers」形式。承認も同じファイルに保存されます</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 他の MCP アプリと同じ "mcpServers" 形式。承認ルールは settings.json の tools.approvals です</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json を編集</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>フォルダーを開く</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows エージェント レジストリ</value></data>
@@ -819,7 +819,7 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが6つの領域（メッセージ ボックスの上の行の左、中央、右、およびその下の行の同様の3つ）として表示されます。ボタンやピッカーをドラッグして領域内や別の領域へ移動するか、矢印ボタンを使用します (Alt+矢印で領域を移動、Ctrl+矢印で順序を変更)。非表示にしたものは「非表示」に待機します。各ボタンには独自の幅、枠線または塗りつぶしを設定でき (ドロップダウンにも枠線と塗りつぶしが適用されます)、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まらないボタンは ⋯ メニューに移動し、「… ボタンのボックス」(toolbar.json の menu キー) には保持することを選択したボタンが入ります。幅はセル数でカウントされます。ボタンの幅は 0.5、1、2、3、4 セル (width キー、compact、normal、wide は 0.5、1、2 に対応) で、各ピッカーには独自の幅があります。設定 › バックアップ では toolbar.json とボタン画像も保存されます。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行では、バーが 6 つの領域（メッセージ ボックスの上の行の左・中央・右と、下の行の同じ 3 つ）として表示されます。ボタンやピッカーをドラッグして同じ領域内または別の領域へ移動するか、矢印ボタンを使います（Alt+矢印で領域を変更、Ctrl+矢印で順序を変更）。非表示にした項目は「非表示」に入ります。各ボタンには独自の幅、枠線または塗りつぶしを設定でき（ドロップダウンにも枠線と塗りつぶしが適用されます）、クイック アクションの実行やテキストの挿入を行う独自のボタンを追加できます。収まらないボタンは ⋯ メニューに移動し、「… ボタンのボックス」（toolbar.json の menu キー）にはそこに残すよう選んだボタンが入ります。ボタンの幅は数値 0.5、1、2、3、4（width キー）で、各ピッカーには固有のスパンがあり、style.fill（既定でオン）は行の空きスペースを共有します。設定 › バックアップでは、toolbar.json とボタン画像も保存されます。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>
