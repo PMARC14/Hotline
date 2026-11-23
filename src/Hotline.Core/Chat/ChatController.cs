@@ -30,7 +30,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         get => _backendId;
         set
         {
-            if (_backendId == value) return;
+            if (string.Equals(_backendId, value, StringComparison.OrdinalIgnoreCase)) return;
             _backendId = value;
             DestinationVersion++;
         }
@@ -156,13 +156,13 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
         // A different connection's turns aren't in the old CLI session: replay the whole chat on returning.
         // A record-only chat must keep resuming: its earlier turns live only in that CLI, but detour turns
         // won't be in the CLI's context when it resumes.
-        if (HasWholeTranscript && _sessionBackendId != backend.Id)
+        if (HasWholeTranscript && !string.Equals(_sessionBackendId, backend.Id, StringComparison.OrdinalIgnoreCase))
         {
             _session = null;
             _sessionBackendId = null;
         }
         // Resume this chat's CLI conversation; null (new chat, other connection) starts a new one.
-        if (backend is ICliSessionBackend cli) cli.Resume = _sessionBackendId == backend.Id ? _session : null;
+        if (backend is ICliSessionBackend cli) cli.Resume = string.Equals(_sessionBackendId, backend.Id, StringComparison.OrdinalIgnoreCase) ? _session : null;
         Emit(new AssistantStarted(assistantId, backend.DisplayName, BackendId));
         var cts = _cts = new CancellationTokenSource();
         // After New chat the old turn unwinds on its own: none of its events may reach the new chat (a late
@@ -237,7 +237,7 @@ public sealed class ChatController(Func<string, IChatBackend?> resolveBackend, H
             _messages.Add(assistant);
             if (transcript) TryHistory(conversationId, assistant);
         }
-        if (HasWholeTranscript || _sessionBackendId == backend.Id)
+        if (HasWholeTranscript || string.Equals(_sessionBackendId, backend.Id, StringComparison.OrdinalIgnoreCase))
             TryMeta(conversationId, _session, _sessionBackendId ?? backend.Id, added: keepEmptyReply ? 2 : 1);
     }
 

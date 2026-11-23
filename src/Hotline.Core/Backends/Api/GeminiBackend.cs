@@ -16,7 +16,7 @@ namespace Hotline.Core.Backends.Api;
 /// Hotline's MCP tools are offered as function declarations; the model's parts are echoed back unchanged (they may
 /// carry thought signatures) followed by the function responses.
 /// </summary>
-public sealed partial class GeminiBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
+public sealed partial class GeminiBackend(ConnectionProfile profile, HttpClient http, ISecretStore secrets, Func<ConnectionProfile, string> systemPrompt,
     FileLog log, IToolHost? tools = null) : IChatBackend
 {
     public string Id => profile.Id;

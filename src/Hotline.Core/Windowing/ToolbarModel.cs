@@ -14,7 +14,7 @@ public enum Quadrant { BottomLeft, BottomCenter, BottomRight, TopLeft, TopCenter
 /// <see cref="Width"/> is the width in cells (0.5, 1, 2, 3 or 4; a button is always one cell high) and applies to icon
 /// buttons only: a picker takes the look (<see cref="Outline"/>, <see cref="OutlineColor"/>, <see cref="Filled"/>) but its
 /// width is its span. <see cref="OutlineColor"/> is a validated "#RRGGBB" (upper case) for the outline, null for the accent colour.</summary>
-public sealed record ButtonStyle(double? Width = null, bool? Outline = null, bool? Filled = null, string? OutlineColor = null);
+public sealed record ButtonStyle(double? Width = null, bool? Outline = null, bool? Filled = null, string? OutlineColor = null, bool? Fill = null);
 
 /// <summary>A user-defined button: runs the quick action of that name (a file in actions\) or inserts <see cref="Text"/>
 /// in the message box (and sends it when <see cref="Send"/>). Exactly one of the two is set. <see cref="IconFile"/> is
@@ -29,7 +29,7 @@ public sealed record CustomButton(string Id, string Label, string Icon, string? 
 }
 
 /// <summary>
-/// ~/.hotline/toolbar.json v2, resolved: what each quadrant shows, the bar's look, per-item overrides and the custom buttons.
+/// ~/.hotline/toolbar.json v3, resolved: what each quadrant shows, the bar's look, per-item overrides and the custom buttons.
 /// <see cref="Resolve"/> is the only reader: it never throws, falls back per field (noting each fix in
 /// <see cref="Warnings"/>) and clamps everything, so the renderer and Settings only ever see a valid model.
 /// Equality ignores <see cref="Warnings"/>.
@@ -41,7 +41,7 @@ public sealed record ToolbarModel(
     IReadOnlyList<CustomButton> Buttons,
     IReadOnlyList<string> Warnings)
 {
-    public const int CurrentVersion = 2;
+    public const int CurrentVersion = 3;
     /// <summary>A picker is this many button widths wide, at least 1 and at most 8 (see <see cref="EffectiveSpan"/>).</summary>
     public const int MinSpan = 1, MaxSpan = 8;
     /// <summary>The glyph of a custom button whose icon is missing or invalid (Segoe Fluent Icons "FavoriteStar").</summary>
@@ -58,12 +58,6 @@ public sealed record ToolbarModel(
     /// <summary>Whether <paramref name="cells"/> is one of <see cref="CellChoices"/>.</summary>
     public static bool IsCells(double cells) => CellChoices.Contains(cells);
 
-    /// <summary>The words that stand for a width: compact 0.5, normal 1, wide 2 cells.</summary>
-    private static readonly (string Word, double Cells)[] WidthWords = [("compact", 0.5), ("normal", 1), ("wide", 2)];
-
-    /// <summary>The word of a width (compact, normal, wide) or null for 3 and 4 cells and for anything else.</summary>
-    public static string? WidthWord(double cells) => WidthWords.FirstOrDefault(w => w.Cells == cells).Word;
-
     /// <summary>A warning's text in the current language (<see cref="Resolve"/> stays pure: the text is the only thing that varies).</summary>
     private static string W(string format, params object[] args) => L.F(format, args);
 
@@ -79,7 +73,8 @@ public sealed record ToolbarModel(
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
     /// <summary>Each picker's width in button widths when the file doesn't say.</summary>
-    private static int DefaultSpan(string id) => id.ToLowerInvariant() switch { "effort" => 3, "model" => 4, "provider" => 4, _ => 1 };
+    private static int DefaultSpan(string id) => EmbeddedDefaults.Tree["overrides"]?[id.ToLowerInvariant()]?["span"]?.GetValue<int>()
+        ?? (id.ToLowerInvariant() switch { "effort" => 3, "model" => 4, "provider" => 4, _ => 1 });
 
     /// <summary>The pickers' own widths, in button widths, for the ones that differ from the default (lower-case id to
     /// <see cref="MinSpan"/>-<see cref="MaxSpan"/>). Kept for a picker that is hidden, too.</summary>
@@ -96,31 +91,28 @@ public sealed record ToolbarModel(
     public string ShortcutText(string id) => Shortcuts?.LastOrDefault(p => p.Key.Equals(id, StringComparison.OrdinalIgnoreCase)).Value
         is JsonValue v && v.TryGetValue<string>(out var text) ? text : ChatShortcuts.Defaults.GetValueOrDefault(id, "");
 
-    public Dictionary<string, string> EffectiveShortcuts(string stop = "Esc", Action<string>? warn = null) =>
+    public Dictionary<string, string> EffectiveShortcuts(Action<string>? warn = null) =>
         ChatShortcuts.Normalize(Shortcuts?.Select(p => new KeyValuePair<string, string>(p.Key,
-            p.Value is JsonValue v && v.TryGetValue<string>(out var text) ? text : null!)), stop, warn);
+            p.Value is null ? null! : p.Value is JsonValue v && v.TryGetValue<string>(out var text) ? text : "\0")), warn);
 
-    /// <summary>The shipped layout: the three pickers across the top row (effort 3, model 4, provider 5
-    /// cells wide); capture buttons, prompt and continue-in, and recent / new chat / settings (two cells wide each) in the bottom row.</summary>
-    public static ToolbarModel Defaults { get; } = new(
-        Layout(q => q switch
+    internal static JsonObject DefaultTree()
+        => (JsonObject)EmbeddedDefaults.Tree.DeepClone();
+
+    private static class EmbeddedDefaults
+    {
+        internal static readonly JsonObject Tree = Read();
+        private static JsonObject Read()
         {
-            Quadrant.BottomLeft => ["pin", "captureWindow", "captureScreen", "captureRegion"],
-            Quadrant.BottomCenter => ["prompt", "continueIn"],
-            Quadrant.BottomRight => ["recent", "newChat", "settings"],
-            Quadrant.TopLeft => ["effort"],
-            Quadrant.TopCenter => ["model"],
-            Quadrant.TopRight => ["provider"],
-            _ => [],
-        }),
-        new ButtonStyle(1, false, false),
-        new Dictionary<string, ButtonStyle>(StringComparer.OrdinalIgnoreCase)
-        {
-            ["recent"] = new ButtonStyle(2), ["newChat"] = new ButtonStyle(2), ["settings"] = new ButtonStyle(2), // two cells across
-        },
-        [],
-        [])
-    { PickerSpans = new Dictionary<string, int> { ["provider"] = 5 } };
+            using var stream = typeof(ToolbarModel).Assembly.GetManifestResourceStream("Hotline.Core.Defaults.toolbar.json")!;
+            return JsonNode.Parse(stream)!.AsObject();
+        }
+    }
+
+    /// <summary>The embedded default layout and style.</summary>
+    public static ToolbarModel Defaults { get; } = Read(DefaultTree(), []) with { Shortcuts = null };
+
+    /// <summary>"Reset the bar": the default layout and style. Panel shortcuts (also in toolbar.json) are kept.</summary>
+    public static ToolbarModel ResetLayout(ToolbarModel? current) => Defaults with { Shortcuts = current?.Shortcuts };
 
     private static IReadOnlyDictionary<Quadrant, IReadOnlyList<string>> Layout(Func<Quadrant, IReadOnlyList<string>> items) =>
         Order.ToDictionary(q => q, items);
@@ -140,7 +132,7 @@ public sealed record ToolbarModel(
             o?.OutlineColor ?? Style.OutlineColor);
     }
 
-    /// <summary>How many button widths a picker is wide: its span, else its default (effort 3, model 4, provider 4), clamped to
+    /// <summary>How many button widths a picker is wide: its span, else its embedded default (effort 3, model 4, provider 5), clamped to
     /// 1-8. 1 for anything that is not a picker.</summary>
     public int EffectiveSpan(string? id)
     {
@@ -159,7 +151,7 @@ public sealed record ToolbarModel(
         && PickerSpans.Count == other.PickerSpans.Count
         && PickerSpans.All(p => other.PickerSpans.TryGetValue(p.Key, out var n) && n == p.Value)
         && Menu.SequenceEqual(other.Menu)
-        && (Shortcuts?.ToJsonString() ?? "{}") == (other.Shortcuts?.ToJsonString() ?? "{}");
+        && JsonNode.DeepEquals(Shortcuts ?? new JsonObject(), other.Shortcuts ?? new JsonObject());
 
     public override int GetHashCode() =>
         HashCode.Combine(Style, Overrides.Count, Buttons.Count, string.Join(",", Order.SelectMany(Items)));
@@ -171,15 +163,15 @@ public sealed record ToolbarModel(
     private static readonly JsonDocumentOptions RepeatedKeys = ParseOptions with { AllowDuplicateProperties = true };
 
     /// <summary>Reads toolbar.json text. Never throws: unparsable text or a root that isn't an object gives
-    /// <see cref="Defaults"/>; anything else is fixed per field. With chat settings, Stop and built-in shortcut conflicts
-    /// are checked too. Built-in bindings always come from this toolbar's map.</summary>
-    public static ToolbarModel Resolve(string json, ChatSettings? chat = null)
+    /// <see cref="Defaults"/>; anything else is fixed per field. Stop and built-in shortcut conflicts
+    /// are checked too. All bindings come from this toolbar's map.</summary>
+    public static ToolbarModel Resolve(string json)
     {
         try
         {
             var warnings = new List<string>();
             var root = Parse(json, warnings);
-            return root is JsonObject o ? Resolve(o, warnings, chat) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
+            return root is JsonObject o ? Resolve(o, warnings) : Defaults with { Warnings = [W(Strings.BarW_NotObject)] };
         }
         catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {
@@ -187,11 +179,11 @@ public sealed record ToolbarModel(
         }
     }
 
-    internal static ToolbarModel Resolve(JsonObject root, List<string> warnings, ChatSettings? chat = null)
+    internal static ToolbarModel Resolve(JsonObject root, List<string> warnings)
     {
         try
         {
-            return Read(root, warnings).ResolveShortcuts(chat);
+            return Read(root, warnings).ResolveShortcuts();
         }
         catch (Exception ex) when (ex is JsonException or InvalidCastException or InvalidOperationException)
         {
@@ -199,15 +191,13 @@ public sealed record ToolbarModel(
         }
     }
 
-    /// <summary>Resolves custom shortcut conflicts against the current chat settings without changing the source model.
-    /// Without chat settings, Stop uses its shipped default.</summary>
-    public ToolbarModel ResolveShortcuts(ChatSettings? chat)
+    /// <summary>Resolves conflicts against the toolbar commands without changing the requested bindings.</summary>
+    public ToolbarModel ResolveShortcuts()
     {
         var warnings = Warnings.Except(ShortcutWarnings).ToList();
         var sourceCount = warnings.Count;
-        var effective = EffectiveShortcuts(chat?.StopShortcut ?? "Esc", warnings.Add);
-        var context = new ChatSettings { StopShortcut = chat?.StopShortcut ?? "Esc", Shortcuts = effective };
-        var buttons = ChatShortcuts.NormalizeCustom(Buttons, context, warnings.Add);
+        var effective = EffectiveShortcuts(warnings.Add);
+        var buttons = ChatShortcuts.NormalizeCustom(Buttons, effective, warnings.Add);
         return this with { Buttons = buttons, Warnings = warnings, ShortcutWarnings = warnings.Skip(sourceCount).ToList() };
     }
 
@@ -252,13 +242,25 @@ public sealed record ToolbarModel(
     private static ToolbarModel Read(JsonObject root, List<string> warnings)
     {
         int? version = root["version"] is JsonValue v && v.TryGetValue<int>(out var n) ? n : null;
-        // The old format (no version or an older one, rows as plain arrays) is not converted any more: the defaults run and
-        // the file is left as it is. A version 2 file with a bad row is read per field like any other.
-        if ((root["version"] is null || version < CurrentVersion) && (root["items"] is JsonArray || root["top"] is JsonArray))
-            return Defaults with { Warnings = [Strings.Bar_VersionOneUnsupported] };
-        if (root["version"] is not null && version != CurrentVersion)
+        if (version is null || version < CurrentVersion)
+            return Defaults with { Warnings = [Strings.Bar_OldVersionUnsupported] };
+        if (version != CurrentVersion)
             warnings.Add(W(Strings.BarW_Version, Show(root["version"]), CurrentVersion));
 
+        var shortcuts = ReadShortcuts(root, warnings);
+        var defaults = DefaultTree();
+        var input = (JsonObject)root.DeepClone();
+        void Inherit(JsonObject target, JsonObject source, bool ids = false)
+        {
+            foreach (var (key, value) in source)
+            {
+                var own = ids ? target.Select(p => p.Key).FirstOrDefault(k => k.Equals(key, StringComparison.OrdinalIgnoreCase)) ?? key : key;
+                if (target[own] is null) target[own] = value?.DeepClone();
+                else if (target[own] is JsonObject child && value is JsonObject parent) Inherit(child, parent, key is "shortcuts" or "overrides" or "buttons");
+            }
+        }
+        Inherit(input, defaults);
+        root = input;
         var buttons = ReadButtons(root["buttons"], warnings);
         var known = BuiltIn.Concat(buttons.Select(b => b.Id)).ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
         var (placed, explicitlyEmpty) = ReadQuadrants(root, known, warnings);
@@ -272,20 +274,20 @@ public sealed record ToolbarModel(
 
         var menu = ReadMenu(root["menu"], known, placed, warnings);
         var style = ReadStyle(root["style"], "style", warnings);
-        var overrides = ReadOverrides(root["overrides"], placed.Values.SelectMany(l => l), warnings, out var spans);
-        // A bar that fell back to the shipped layout also gets the shipped look of it (its wide buttons, the provider's width), unless the file set its own.
+        var overrides = ReadOverrides(root["overrides"], known.Keys, warnings, out var spans);
+        // A defaulted layout also takes the embedded overrides when none were set.
         if (layoutDefaulted && overrides.Count == 0 && spans.Count == 0) (overrides, spans) = (Defaults.Overrides, Defaults.PickerSpans);
         return new ToolbarModel(
             Layout(q => placed[q]),
-            style with { Width = style.Width ?? 1, Outline = style.Outline ?? false, Filled = style.Filled ?? false },
+            style with { Width = style.Width ?? defaults["style"]!["width"]!.GetValue<double>(), Outline = style.Outline ?? defaults["style"]!["outline"]!.GetValue<bool>(), Filled = style.Filled ?? defaults["style"]!["filled"]!.GetValue<bool>(), Fill = style.Fill ?? defaults["style"]!["fill"]!.GetValue<bool>() },
             overrides,
             buttons,
-            warnings) { PickerSpans = spans, Menu = menu, Shortcuts = ReadShortcuts(root, warnings) };
+            warnings) { PickerSpans = spans, Menu = menu, Shortcuts = shortcuts };
     }
 
     private static JsonObject? ReadShortcuts(JsonObject root, List<string> warnings)
     {
-        if (!root.ContainsKey("shortcuts")) return null;
+        if (root["shortcuts"] is null) return null;
         if (root["shortcuts"] is JsonObject map) return ReadShortcutMap(map, warnings);
         warnings.Add(W(Strings.BarW_Object, "shortcuts"));
         return new JsonObject();
@@ -296,7 +298,7 @@ public sealed record ToolbarModel(
         var result = new JsonObject();
         foreach (var (name, value) in map)
         {
-            var id = ChatShortcuts.Defaults.Keys.FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase)) ?? name;
+            var id = BuiltIn.Prepend("stop").FirstOrDefault(k => k.Equals(name, StringComparison.OrdinalIgnoreCase)) ?? name;
             var previous = result.Select(p => p.Key).FirstOrDefault(k => k.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (previous is not null)
             {
@@ -314,12 +316,12 @@ public sealed record ToolbarModel(
         var placed = Order.ToDictionary(q => q, _ => new List<string>());
         var seen = new HashSet<string>();
         var explicitlyEmpty = true;
-        foreach (var rowName in new[] { "items", "top" })
+        foreach (var rowName in new[] { "bottom", "top" })
             if (root[rowName] is { } row && row is not JsonObject)
                 warnings.Add(W(Strings.BarW_RowObject, rowName));
         foreach (var q in Order)
         {
-            var rowName = q is Quadrant.BottomLeft or Quadrant.BottomCenter or Quadrant.BottomRight ? "items" : "top";
+            var rowName = q is Quadrant.BottomLeft or Quadrant.BottomCenter or Quadrant.BottomRight ? "bottom" : "top";
             var side = q is Quadrant.BottomLeft or Quadrant.TopLeft ? "left" : q is Quadrant.BottomCenter or Quadrant.TopCenter ? "center" : "right";
             if ((root[rowName] as JsonObject)?[side] is not JsonArray list)
             {
@@ -332,7 +334,6 @@ public sealed record ToolbarModel(
             foreach (var entry in list.Take(MaxItems))
             {
                 if (entry is not JsonValue value || !value.TryGetValue<string>(out var s)) { warnings.Add(W(Strings.BarW_NotItemId, rowName + "." + side, Show(entry))); continue; }
-                if (s.Equals("spacer", StringComparison.OrdinalIgnoreCase)) continue; // v1 leftover: groups replace it
                 if (!known.TryGetValue(s, out var id)) warnings.Add(W(Strings.BarW_Unknown, Clean(s, MaxLabel, false)));
                 else if (seen.Add(id)) placed[q].Add(id); // listed again later: the first place wins
             }
@@ -372,6 +373,7 @@ public sealed record ToolbarModel(
         var buttons = new List<CustomButton>();
         if (node is null) return buttons;
         if (node is not JsonObject all) { warnings.Add(W(Strings.BarW_Object, "buttons")); return buttons; }
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (id, def) in all)
         {
             if (buttons.Count == MaxButtons) { warnings.Add(W(Strings.BarW_TooManyButtons, MaxButtons)); break; }
@@ -379,6 +381,7 @@ public sealed record ToolbarModel(
             if (!IsCustomId(id))
                 { warnings.Add(W(Strings.BarW_ButtonId, name, MaxId)); continue; }
             if (BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase)) { warnings.Add(W(Strings.BarW_ButtonBuiltIn, name)); continue; }
+            if (!seen.Add(id)) { warnings.Add(W(Strings.Bar_DuplicateButton, name)); continue; }
             if (def is not JsonObject b) { warnings.Add(W(Strings.BarW_ButtonObject, id)); continue; }
 
             var label = Clean(String(b, "label", id, warnings) ?? "", MaxLabel, false);
@@ -397,16 +400,15 @@ public sealed record ToolbarModel(
             buttons.Add(new CustomButton(id, label.Length > 0 ? label : id, Icon(b["icon"], id, warnings), quickAction, text,
                 text is not null && (Bool(b["send"], $"buttons.{id}.send", warnings) ?? false), iconFile,
                 String(b, "shortcut", id, warnings)));
-            if (b.ContainsKey("shortcut") && b["shortcut"] is null) warnings.Add(W(Strings.BarW_ShortcutInvalid, id));
         }
         return buttons;
     }
 
-    /// <summary>The form of a custom button id: 1-32 characters a-z, 0-9 or - (whether it collides with a built-in is checked apart).
-    /// "spacer" is reserved: the old v1 layout item of that name is ignored in the layout lists, so a button with it could never be shown.</summary>
+    /// <summary>The form of a custom button id: 1-32 ASCII letters, digits or - (built-in collisions are checked apart).
+    /// "stop" and "spacer" are reserved.</summary>
     internal static bool IsCustomId(string? id) =>
-        id is { Length: > 0 and <= MaxId } && id.All(c => c is >= 'a' and <= 'z' or >= '0' and <= '9' or '-')
-        && !id.Equals("spacer", StringComparison.OrdinalIgnoreCase);
+        id is { Length: > 0 and <= MaxId } && id.All(c => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '-')
+        && !id.Equals("spacer", StringComparison.OrdinalIgnoreCase) && !id.Equals("stop", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>The name of a file in actions\ as QuickActions reads and parses it (never a path), at most 64 characters.</summary>
     internal static bool IsActionName(string name) => name.Length <= MaxActionName && Chat.QuickActions.IsName(name);
@@ -431,14 +433,14 @@ public sealed record ToolbarModel(
     }
 
     private static IReadOnlyDictionary<string, ButtonStyle> ReadOverrides(
-        JsonNode? node, IEnumerable<string> shown, List<string> warnings, out IReadOnlyDictionary<string, int> spans)
+        JsonNode? node, IEnumerable<string> knownIds, List<string> warnings, out IReadOnlyDictionary<string, int> spans)
     {
         var overrides = new Dictionary<string, ButtonStyle>(StringComparer.OrdinalIgnoreCase);
         var picked = new Dictionary<string, int>();
         spans = picked;
         if (node is null) return overrides;
         if (node is not JsonObject all) { warnings.Add(W(Strings.BarW_Object, "overrides")); return overrides; }
-        var ids = shown.ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
+        var ids = knownIds.ToDictionary(id => id, StringComparer.OrdinalIgnoreCase);
         var seenPickers = new HashSet<string>();
         foreach (var (key, value) in all)
         {
@@ -447,8 +449,8 @@ public sealed record ToolbarModel(
             {
                 if (!seenPickers.Add(picker)) { warnings.Add(W(Strings.BarW_OverrideTwice, picker)); continue; }
                 if (value is not JsonObject own) { warnings.Add(W(Strings.BarW_PickerSpanOnly, picker)); continue; }
-                if (own.Any(p => p.Key is not ("span" or "outline" or "outlineColor" or "filled"))) warnings.Add(W(Strings.BarW_PickerNoStyles, picker));
-                if (own.ContainsKey("span") && Span(own["span"], picker, warnings) is { } span && span != DefaultSpan(picker)) picked[picker] = span;
+                if (own.ContainsKey("width")) warnings.Add(W(Strings.BarW_PickerNoStyles, picker));
+                if (own["span"] is not null && Span(own["span"], picker, warnings) is { } span && span != DefaultSpan(picker)) picked[picker] = span;
                 var look = new ButtonStyle(null, Bool(own["outline"], $"overrides.{picker}.outline", warnings), Bool(own["filled"], $"overrides.{picker}.filled", warnings),
                     Color(own["outlineColor"], $"overrides.{picker}.outlineColor", warnings));
                 if (look != new ButtonStyle()) overrides[picker] = look;
@@ -470,51 +472,20 @@ public sealed record ToolbarModel(
         return null;
     }
 
-    /// <summary>A style object; a bad field is left null (inherit) with a warning. The width is <c>width</c> (a number 0.5, 1, 2, 3 or 4, or
-    /// the word compact, normal or wide); <c>size</c> (the words) and <c>cells</c> (the numbers) are read as its old names, silently, but
-    /// <c>width</c> wins when both are there (one warning).</summary>
+    /// <summary>A style object; a bad field is left null (inherit) with a warning. The width is a number: 0.5, 1, 2, 3 or 4.</summary>
     private static ButtonStyle ReadStyle(JsonNode? node, string where, List<string> warnings)
     {
         if (node is null) return new ButtonStyle();
         if (node is not JsonObject o) { warnings.Add(W(Strings.BarW_Object, where)); return new ButtonStyle(); }
-        if (o.ContainsKey("height")) { var gone = W(Strings.BarW_WidthHeightGone); if (!warnings.Contains(gone)) warnings.Add(gone); }
         return new ButtonStyle(ReadWidth(o, where, warnings), Bool(o["outline"], $"{where}.outline", warnings), Bool(o["filled"], $"{where}.filled", warnings),
-            Color(o["outlineColor"], $"{where}.outlineColor", warnings));
+            Color(o["outlineColor"], $"{where}.outlineColor", warnings), where == "style" ? Bool(o["fill"], "style.fill", warnings) : null);
     }
 
     private static double? ReadWidth(JsonObject o, string where, List<string> warnings)
     {
-        if (o["width"] is { } widthNode)
-        {
-            if (WidthOf(widthNode, true, true) is { } w)
-            {
-                if (o.ContainsKey("size") || o.ContainsKey("cells")) warnings.Add(W(Strings.BarW_WidthAlias, where));
-                return w;
-            }
-            warnings.Add(W(Strings.BarW_WidthBad, where + ".width", Show(widthNode)));
-        }
-        // The old names: cells (numbers) won over size (words) when an item had both.
-        double? result = null;
-        if (o["cells"] is { } cellsNode)
-        {
-            result = WidthOf(cellsNode, false, true);
-            if (result is null) warnings.Add(W(Strings.BarW_CellsBad, where + ".cells", Show(cellsNode)));
-        }
-        if (o["size"] is { } sizeNode)
-        {
-            var size = WidthOf(sizeNode, true, false);
-            if (size is null) warnings.Add(W(Strings.BarW_SizeBad, where + ".size", Show(sizeNode)));
-            result ??= size;
-        }
-        return result;
-    }
-
-    /// <summary>A width in cells from a JSON value: one of <see cref="CellChoices"/> as a number, or compact, normal or wide as a word; null otherwise.</summary>
-    private static double? WidthOf(JsonNode node, bool words, bool numbers)
-    {
-        if (node is not JsonValue v) return null;
-        if (numbers && v.TryGetValue<double>(out var d) && IsCells(d)) return d;
-        if (words && v.TryGetValue<string>(out var s) && WidthWords.FirstOrDefault(x => x.Word.Equals(s, StringComparison.OrdinalIgnoreCase)) is { Word: not null } hit) return hit.Cells;
+        if (o["width"] is null) return null;
+        if (o["width"] is JsonValue v && v.TryGetValue<double>(out var width) && IsCells(width)) return width;
+        warnings.Add(W(Strings.Bar_WidthInvalid, where + ".width", Show(o["width"])));
         return null;
     }
 
@@ -564,11 +535,12 @@ public sealed record ToolbarModel(
 
     private static string Str(string s) => JsonSerializer.Serialize(s, WriteOptions);
 
-    /// <summary>The key-value texts of a style: the width as its word for 0.5, 1 and 2 cells and as a number for 3 and 4 (a width that is none of them is left out).</summary>
+    /// <summary>The style fields, with numeric widths; invalid widths are left out.</summary>
     private static IEnumerable<string> StyleParts(ButtonStyle s)
     {
         if (s.Width is { } w && IsCells(w))
-            yield return "\"width\": " + (WidthWord(w) is { } word ? $"\"{word}\"" : w.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture));
+            yield return "\"width\": " + w.ToString("0.##", System.Globalization.CultureInfo.InvariantCulture);
+        if (s.Fill is { } fill) yield return $"\"fill\": {(fill ? "true" : "false")}";
         if (s.Outline is { } outline) yield return $"\"outline\": {(outline ? "true" : "false")}";
         if (s.Filled is { } filled) yield return $"\"filled\": {(filled ? "true" : "false")}";
         if (s.OutlineColor is { } c) yield return $"\"outlineColor\": {Str(c)}";
@@ -595,7 +567,7 @@ public sealed record ToolbarModel(
         .. Overrides.TryGetValue(picker, out var look) ? StyleParts(look with { Width = null }) : [],
     ];
 
-    /// <summary>The model as a v2 file with the comment header (what Settings saves; the renderer never writes).</summary>
+    /// <summary>The model as a v3 file (what Settings saves; the renderer never writes).</summary>
     public string ToJson()
     {
         string Row(Quadrant left, Quadrant center, Quadrant right) =>
@@ -603,31 +575,10 @@ public sealed record ToolbarModel(
             + $"\"right\": [{string.Join(", ", Items(right).Select(Str))}] }}";
         return $$"""
             {
-              // The button rows around the message box: "top" above it, "items" below it. Each row has a "left", a "center"
-              // and a "right" group, listed left to right (the centre sits in the free space between the other two).
-              // Leave an item out to hide it; an item sits in one place only.
-              // Built-in items: {{string.Join(", ", BuiltIn)}}, plus the ids under "buttons".
-              // The effort, model and provider pickers are items like any other (each can sit in any area, between any buttons).
-              // They take the bar's look (outline, outlineColor, filled) but not its width: their width is the "span" override, in button
-              // widths ({{MinSpan}}-{{MaxSpan}}; effort 3, model 4, provider 4; a span equal to that is not written).
-              // "style": the whole bar. "width" is the width of a button in cells (0.5, 1, 2, 3 or 4; every button is one cell high);
-              // the words compact, normal and wide are shortcuts for 0.5, 1 and 2. outline and filled are true | false,
-              // outlineColor is "#RRGGBB" (left out: the accent colour).
-              // "overrides": one item's own "width", "outline", "filled" and "outlineColor" (a picker's: "span", "outline", "filled", "outlineColor").
-              // "buttons": up to {{MaxButtons}} custom buttons; id a-z, 0-9 and -, label up to {{MaxLabel}} characters, icon a Segoe
-              // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
-              // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from
-              // icons\ instead of the icon (PNG, at most 256 KB, 16-256 px a side; Settings copies it there).
-              // Optional buttons.<id>."shortcut": "Ctrl+Shift+1" runs the button while the panel has focus (Enter is reserved).
-              // "shortcuts": built-in/picker overrides; omitted ids use defaults, "" disables. Ctrl, Alt or Win required, except F1-F24.
-              // Stop wins, then built-ins, then custom buttons in file order; conflicts affect runtime only, preserving requested values.
-              // "menu": ids of buttons (built-in or custom, no pickers) listed in the "more" item's menu instead of on the bar. A row with a
-              // "more" item sends the buttons that don't fit into that menu too (after these), and then has no separate "…" button.
-              // Needs "more" placed in one of the groups; it is ignored otherwise.
               "version": {{CurrentVersion}},
               "shortcuts": {{Shortcuts?.ToJsonString(WriteOptions) ?? "{}"}},
               "top": {{Row(Quadrant.TopLeft, Quadrant.TopCenter, Quadrant.TopRight)}},
-              "items": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},
+              "bottom": {{Row(Quadrant.BottomLeft, Quadrant.BottomCenter, Quadrant.BottomRight)}},
               "menu": [{{string.Join(", ", Menu.Select(Str))}}],
               "style": {{StyleText(Style)}},
               "overrides": {{Entries(OverrideTexts(), text => text)}},

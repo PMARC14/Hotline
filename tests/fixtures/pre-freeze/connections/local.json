@@ -1,0 +1,13 @@
+{
+  "id": "local",
+  "type": "local",
+  "name": "Local model",
+  "endpoint": "http://127.0.0.1:8080/v1",
+  "keepCliSessions": true,
+  "keepInHotline": false,
+  "refusalFallback": true,
+  "tools": "chatOnly",
+  "approveAllTools": false,
+  "temperature": 0.7,
+  "images": false
+}

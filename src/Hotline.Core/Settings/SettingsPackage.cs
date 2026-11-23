@@ -6,6 +6,7 @@ using System.Text.Json;
 using Hotline.Core.Backends;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Text.Localization;
+using Hotline.Core.Tools;
 
 namespace Hotline.Core.Settings;
 
@@ -45,10 +46,15 @@ public static class SkipReasons
         ["not readable"] = nameof(Strings.Backup_Why_NotReadable),
         ["larger than a quick action can be (64 KB)"] = nameof(Strings.Backup_Why_ActionBig),
         ["not readable as a connection"] = nameof(Strings.Backup_Why_NotConnection),
+        ["newer version left untouched"] = nameof(Strings.Backup_NewerFile),
     };
 }
 
-public sealed record ExportResult(int FileCount, IReadOnlyList<SkippedFile> Skipped);
+public sealed record ExportEnvEntry(string Server, string EnvKey);
+public sealed record ExportResult(int FileCount, IReadOnlyList<SkippedFile> Skipped)
+{
+    public IReadOnlyList<ExportEnvEntry> PlaintextEnv { get; init; } = [];
+}
 
 /// <summary>What a package says it is. <see cref="Problems"/> are the reasons it can't be imported at all.</summary>
 public sealed record PackageInfo(int Format, string? AppVersion, DateTimeOffset? Created,
@@ -71,24 +77,26 @@ public sealed class PreparedImport
     internal IReadOnlyList<(string Path, string Full, byte[] Data)> Files { get; }
     internal IReadOnlyList<SkippedFile> Skipped { get; }
     internal string? Error { get; }
+    internal string RootDirectory { get; }
     public string ExecutionReview { get; }
     public bool RequiresExecutionConfirmation => ExecutionReview.Length > 0;
 
     internal PreparedImport(IReadOnlyList<(string Path, string Full, byte[] Data)> files,
-        IReadOnlyList<SkippedFile> skipped, string executionReview, string? error = null)
+        IReadOnlyList<SkippedFile> skipped, string executionReview, string? error = null, string rootDirectory = "")
     {
         Files = files;
         Skipped = skipped;
         ExecutionReview = executionReview;
         Error = error;
+        RootDirectory = rootDirectory;
     }
 }
 
 /// <summary>
 /// Settings export and import: one .zip holding the ticked parts of the data folder plus <c>hotline-export.json</c> (format,
-/// app version, date, and every file's size and SHA-256). Never exported: logs, history, memory, backups, the .defaults copies,
+/// app version, date, and every file's size and SHA-256). Never exported: state, logs, history, memory, backups, the .defaults copies,
 /// .bak/.old files, and API keys (they live in the Credential Locker, not in a file). An import adds and replaces; it never
-/// deletes, and copies every file it replaces to backups\import-&lt;time&gt; first.
+/// deletes, and copies every file it replaces to backups\&lt;time&gt;-import first.
 /// </summary>
 public static partial class SettingsPackage
 {
@@ -166,7 +174,7 @@ public static partial class SettingsPackage
             foreach (var (path, data) in files)
             {
                 // Pictures and sounds are compressed already (and a stored entry keeps the import's ratio check out of the way).
-                var level = path.EndsWith(".png", StringComparison.Ordinal) || path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
+                var level = path.EndsWith(".png", StringComparison.OrdinalIgnoreCase) || path.EndsWith(".wav", StringComparison.OrdinalIgnoreCase)
                             || WouldTripRatioCheck(data)
                     ? CompressionLevel.NoCompression : CompressionLevel.Optimal;
                 var entry = zip.CreateEntry(path, level);
@@ -179,7 +187,18 @@ public static partial class SettingsPackage
             using var m = manifest.Open();
             WriteManifest(m, ticked, files, stamp, appVersion ?? DefaultAppVersion());
         }
-        return new ExportResult(files.Count, skipped);
+        var plaintext = new List<ExportEnvEntry>();
+        foreach (var (_, data) in files.Where(f => f.Path == "mcp.json"))
+        {
+            try
+            {
+                foreach (var server in McpConfig.Parse(DecodeUtf8(data)).Servers)
+                    foreach (var (key, value) in server.Env)
+                        if (!McpSecrets.TryParseToken(value, out _, out _)) plaintext.Add(new(server.Name, key));
+            }
+            catch (Exception ex) when (ex is JsonException or InvalidOperationException or ArgumentException) { }
+        }
+        return new ExportResult(files.Count, skipped) { PlaintextEnv = plaintext };
     }
 
     /// <summary>

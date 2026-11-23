@@ -5,7 +5,35 @@ namespace Hotline.Core.Tests;
 
 public class ConnectionEditorTests
 {
-    private static ChatSettings Chat() => new() { Backends = [new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" }] };
+    [Theory]
+    [InlineData("remove")]
+    [InlineData("default")]
+    [InlineData("duplicate")]
+    [InlineData("move")]
+    public void Connection_operations_match_ids_without_case(string operation)
+    {
+        var chat = new ChatSettings { DefaultBackend = "CLAUDE", Connections = [new() { Id = "Claude", Name = "Claude" }, new() { Id = "Other" }] };
+        switch (operation)
+        {
+            case "remove":
+                Assert.True(ConnectionEditor.Remove(chat, "claude"));
+                Assert.Equal("Other", chat.DefaultBackend);
+                break;
+            case "default":
+                ConnectionEditor.SetDefault(chat, "claude");
+                Assert.Equal("Claude", chat.DefaultBackend);
+                break;
+            case "duplicate":
+                Assert.Equal("Claude (copy)", ConnectionEditor.Duplicate(chat, "claude").Name);
+                break;
+            case "move":
+                Assert.True(ConnectionEditor.Move(chat, "claude", 1));
+                Assert.Equal(["Other", "Claude"], chat.Order);
+                break;
+        }
+    }
+
+    private static ChatSettings Chat() => new() { Connections = [new ConnectionProfile { Id = "agy", Type = BackendType.Antigravity, Name = "Gemini (Antigravity)", Agent = "hotline" }] };
 
     [Fact]
     public void Add_uses_type_defaults_and_unique_ids_and_names()
@@ -15,7 +43,7 @@ public class ConnectionEditorTests
         var b = ConnectionEditor.Add(chat, BackendType.Local);
         Assert.Equal(("local-model", "Local model", "http://127.0.0.1:8080/v1"), (a.Id, a.Name, a.Endpoint));
         Assert.Equal(("local-model-2", "Local model 2"), (b.Id, b.Name));
-        Assert.Equal(3, chat.Backends.Count);
+        Assert.Equal(3, chat.Connections.Count);
     }
 
     [Fact]
@@ -30,11 +58,11 @@ public class ConnectionEditorTests
     public void Duplicate_copies_settings_after_original()
     {
         var chat = Chat();
-        chat.Backends[0].Model = "gemini-3.8-flash-low";
-        chat.Backends[0].Tools = ToolMode.Inherit;
-        chat.Backends[0].ApproveAllTools = true;
+        chat.Connections[0].Model = "gemini-3.8-flash-low";
+        chat.Connections[0].Tools = ToolMode.Inherit;
+        chat.Connections[0].ApproveAllTools = true;
         var copy = ConnectionEditor.Duplicate(chat, "agy");
-        Assert.Equal(1, chat.Backends.IndexOf(copy));
+        Assert.Equal(1, chat.Connections.IndexOf(copy));
         Assert.Equal(("Gemini (Antigravity) (copy)", "gemini-3.8-flash-low", ToolMode.Inherit), (copy.Name, copy.Model, copy.Tools));
         Assert.NotEqual("agy", copy.Id);
         Assert.False(copy.ApproveAllTools);
@@ -50,7 +78,7 @@ public class ConnectionEditorTests
         ConnectionEditor.SetDefault(chat, "agy");
         Assert.True(ConnectionEditor.Remove(chat, "agy"));
         Assert.Equal(local?.Id ?? "", chat.DefaultBackend);
-        Assert.Equal(another ? 1 : 0, chat.Backends.Count);
+        Assert.Equal(another ? 1 : 0, chat.Connections.Count);
     }
 
     [Fact]
@@ -70,7 +98,7 @@ public class ConnectionEditorTests
         var b = ConnectionEditor.Add(chat, BackendType.Gemini);
         var c = ConnectionEditor.Add(chat, BackendType.Anthropic);
         Assert.True(ConnectionEditor.Move(chat, c.Id, -1));
-        Assert.Equal(["agy", c.Id, b.Id], chat.Backends.Select(x => x.Id));
+        Assert.Equal(["agy", c.Id, b.Id], chat.Connections.Select(x => x.Id));
         Assert.Equal(["agy", c.Id, b.Id], chat.Order);
         Assert.False(ConnectionEditor.Move(chat, "agy", -1)); // already first
         Assert.False(ConnectionEditor.Move(chat, b.Id, +1));   // already last

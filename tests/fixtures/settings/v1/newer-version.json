@@ -1,0 +1,10 @@
+{
+  "version": 99,
+  "general": {
+    "language": "system",
+    "supportReminder": true
+  },
+  "futureSection": {
+    "enabled": true
+  }
+}

@@ -9,7 +9,7 @@ public class PanelLayoutSettingsTests
     public void Theme_change_keeps_layout_equal()
     {
         var settings = new HotlineSettings();
-        settings.Chat.Backends.Add(new BackendProfile { Id = "agy", Type = BackendType.Antigravity, Model = "gemini-3.8-flash-low" });
+        settings.Chat.Connections.Add(new ConnectionProfile { Id = "agy", Type = BackendType.Antigravity, Model = "gemini-3.8-flash-low" });
         settings.Chat.DefaultBackend = "agy";
 
         var before = PanelLayoutSettings.From(settings.Window);
@@ -26,8 +26,8 @@ public class PanelLayoutSettingsTests
         settings.Window.HideOnBlur = false;
         settings.Window.OpenSound = "chime.wav";
         settings.Window.CloseSound = "chime.wav";
-        settings.Chat.Backends[0].Model = "gemini-3.8-flash-high";
-        settings.Chat.Backends[0].Effort = "high";
+        settings.Chat.Connections[0].Model = "gemini-3.8-flash-high";
+        settings.Chat.Connections[0].Effort = "high";
 
         var after = PanelLayoutSettings.From(settings.Window);
 
@@ -42,12 +42,12 @@ public class PanelLayoutSettingsTests
         { "Anchor.X", w => w.Anchor.X = 0.25 },
         { "Anchor.Y", w => w.Anchor.Y = 0.35 },
         { "Width", w => w.Width = 900 },
-        { "WidthPercent", w => w.WidthPercent = 55 },
+        { "WidthPercent", w => w.Width = new PanelWidth(55, true) },
         { "MinWidth", w => w.MinWidth = 500 },
         { "MaxWidth", w => w.MaxWidth = 1600 },
-        { "Height", w => w.Height = 120 },
+        { "Height", w => w.MinHeight = 120 },
         { "ChatWidth", w => w.ChatWidth = 1100 },
-        { "ChatWidthPercent", w => w.ChatWidthPercent = 65 },
+        { "ChatWidthPercent", w => w.ChatWidth = new PanelWidth(65, true) },
         { "ChatHeight", w => w.ChatHeight = 700 },
         { "MaxHeightPercent", w => w.MaxHeightPercent = 75 },
         { "GrowDirection", w => w.GrowDirection = GrowDirection.Down },

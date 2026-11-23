@@ -40,7 +40,7 @@ public sealed class StopShortcutTests
     [Fact]
     public void Defaults_to_esc_and_is_editable_in_settings()
     {
-        Assert.Equal("Esc", new ChatSettings().StopShortcut);
+        Assert.Equal("Esc", Hotline.Core.Windowing.ToolbarModel.Defaults.ShortcutText("stop"));
         var item = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Stop)));
         Assert.NotNull(item.Validate);
         Assert.True(item.Validate!("Ctrl+."));
@@ -55,7 +55,7 @@ public sealed class StopShortcutTests
         var item = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == nameof(Strings.Set_Stop)));
         var s = new HotlineSettings();
         s.Chat.Toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""
-            { "version": 2, "shortcuts": { "pin": "Ctrl+Q", "recent": "" },
+            { "version": 3, "shortcuts": { "pin": "Ctrl+Q", "recent": "" },
               "buttons": { "mine": { "label": "Mine", "text": "hi", "shortcut": "Ctrl+J" } } }
             """);
         Assert.NotNull(item.ValidateFor);
@@ -72,20 +72,15 @@ public sealed class StopShortcutTests
     [Fact]
     public void Settings_refuses_a_stop_shortcut_an_invalid_bindings_default_falls_back_to()
     {
-        var toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""{ "version": 2, "shortcuts": { "pin": "Shift+A" } }""");
-        Assert.Equal("pin", ChatShortcuts.StopConflict(toolbar, "Ctrl+P"));
+        var toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""{ "version": 3, "shortcuts": { "pin": "Shift+A" } }""");
+        Assert.Equal("pin", (ChatShortcuts.CanBind(toolbar, "stop", "Ctrl+P") ? null : "pin"));
     }
 
     [Fact]
     public void An_invalid_value_in_the_file_falls_back_to_esc()
     {
-        var dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-        try
-        {
-            Directory.CreateDirectory(dir);
-            File.WriteAllText(Path.Combine(dir, SettingsStore.FileName), """{ "chat": { "stopShortcut": "Ctrl+Bogus" } }""");
-            Assert.Equal("Esc", new SettingsStore(dir).Load().Chat.StopShortcut);
-        }
-        finally { Directory.Delete(dir, recursive: true); }
+        var toolbar = Hotline.Core.Windowing.ToolbarModel.Resolve("""{"version":3,"shortcuts":{"stop":"Ctrl+Bogus"}}""");
+        Assert.Equal("Esc", toolbar.EffectiveShortcuts()["stop"]);
+        Assert.Single(toolbar.Warnings);
     }
 }

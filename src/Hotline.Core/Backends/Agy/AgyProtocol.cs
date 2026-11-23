@@ -43,7 +43,7 @@ public static class AgyProtocol
         return sb.ToString();
     }
 
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string? addDir = null)
+    public static IReadOnlyList<string> BuildArgs(ConnectionProfile p, string? addDir = null)
     {
         var args = new List<string> { "--input-format", "stream-json", "--output-format", "stream-json", "-p=" };
         var chatOnly = p.Tools == ToolMode.ChatOnly;
@@ -57,7 +57,7 @@ public static class AgyProtocol
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model]);
         if (p.Effort?.Trim().ToLowerInvariant() is "low" or "medium" or "high" or "max")
             args.AddRange(["--effort", p.Effort.Trim().ToLowerInvariant()]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, CliArguments.SplitExtra(p.ExtraArgs), chatOnly);
+        if (p.ExtraArgs is { Count: > 0 }) AddSafe(args, p.ExtraArgs, chatOnly);
         return args;
     }
 

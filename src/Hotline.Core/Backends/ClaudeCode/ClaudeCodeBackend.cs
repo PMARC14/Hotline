@@ -14,8 +14,8 @@ namespace Hotline.Core.Backends.ClaudeCode;
 /// unknown ID, prompt change without kept sessions) the next turn starts a fresh process and replays the
 /// conversation as text. Images go inline as base64 content blocks.
 /// </summary>
-public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> locateExe, ILineProcessFactory processes,
-    FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
+public sealed class ClaudeCodeBackend(ConnectionProfile profile, Func<string?> locateExe, ILineProcessFactory processes,
+    FileLog log, Func<ConnectionProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
     private readonly SemaphoreSlim _turnGate = new(1, 1);
@@ -165,7 +165,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     {
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
-        return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
+        return Platform.SafeDirectory.IsLocal(dir) && Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
             L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

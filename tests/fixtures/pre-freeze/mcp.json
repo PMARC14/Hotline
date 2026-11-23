@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "files": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\example\\Documents"]
+    }
+  },
+  "approvals": {
+    "files/read_file": "allow",
+    "files/write_file": "ask"
+  }
+}

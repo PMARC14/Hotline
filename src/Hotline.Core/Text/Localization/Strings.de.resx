@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Nur Text, in deinem .hotline-Ordner.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Benachrichtigen, wenn eine Antwort im Hintergrund fertig ist</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Eine Windows-Benachrichtigung, wenn eine Antwort fertig ist, während das Panel ausgeblendet ist oder eine andere App im Vordergrund steht. Klicke darauf, um die Antwort zu öffnen.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Skalierte Pixel (200–4000) oder Anteil des Arbeitsbereichs (20 %–90 %).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Skalierte Pixel (200–4000) oder Anteil des Arbeitsbereichs (20 %–90 %); leer behält die Öffnungsbreite bei.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Skalierte Pixel (DIPs).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>200–4000 skalierte Pixel oder 20 %–90 % eingeben.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Antworttext in Benachrichtigungen anzeigen</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Antworttext in der Abschlussbenachrichtigung einschließen; deaktiviert zeigt nur den Chattitel.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>Diese Datei verwendet das Vorab-Format. Bis zum Upgrade gelten Standardwerte; die Datei bleibt unverändert.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Verbindungs-ID {0} ist ungültig. 1–64 Buchstaben, Ziffern, Punkte, Unterstriche oder Bindestriche verwenden; Windows-Gerätenamen und abschließende Punkte werden abgelehnt.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} hat geantwortet</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Antwort bereit</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} konnte die Antwort nicht fertigstellen</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Verlauf aufbewahren für</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>Tage</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Mit Windows starten</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>API-Verbindungen, deren Tool-Nutzung auf „Hotlines Tools verwenden“ steht, können die Tools dieser MCP-Server aufrufen. Schreibgeschützte Tools laufen direkt; alles andere fragt dich im Panel (Einmal erlauben / Immer / Ablehnen).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP-Server</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — dasselbe „mcpServers“-Format wie andere MCP-Apps; Freigaben stehen in derselben Datei</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — gleiches "mcpServers"-Format wie bei anderen MCP-Apps; Genehmigungsregeln stehen unter tools.approvals in settings.json</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json bearbeiten</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>Ordner öffnen</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows-Agentenregistrierung</value></data>
@@ -431,6 +440,34 @@ Verweigern:
   <data name="Mcp_Missing" xml:space="preserve"><value>„{0}“ ist nicht installiert oder nicht im PATH, daher kann der Server {1} nicht starten. Prüfe „command“ in mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json konnte nicht gelesen werden: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>Die Freigabe „{0}“ hat einen unbekannten Wert und wird daher als „deny“ behandelt.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>Der Abschnitt "approvals" in mcp.json wird ignoriert; Regeln nach settings.json (tools.approvals) verschieben.</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" hat für "{1}" einen Nicht-Zeichenkettenwert in env und wurde übersprungen.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" hat einen ungültigen Geheimnisverweis in env "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" verweist auf das Geheimnis "{1}" in env "{2}", das sich nicht in der Anmeldeinformationsverwaltung befindet.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Zulassungsregel "{0}" unterscheidet sich nur durch Groß-/Kleinschreibung von "{1}" und wurde ignoriert.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json verwendet eine neuere Version ({0}) und kann nicht sicher aktualisiert werden.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>mcp.json konnte vor dem Aktualisieren nicht gesichert werden.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Die aktualisierte Datei mcp.json konnte nicht gespeichert werden.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>env-Eintrag "{1}" auf Server "{0}" konnte in mcp.json nicht gefunden werden.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Dieser env-Eintrag wurde geändert oder bereits verschoben; es wurde nichts geändert.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>Der Wert ist jetzt als "{0}" ({1}) in der Windows-Anmeldeinformationsverwaltung gespeichert, aber mcp.json wurde nicht geändert, da Speichern und Zurücksetzen fehlgeschlagen sind.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Immer erlaubte Berechtigungen</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Keine gespeicherten Tool-Berechtigungen.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · Start {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Widerrufen</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Tool-Berechtigung konnte nicht widerrufen werden.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Umgebungsgeheimnisse</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>Keine Klartext-env-Einträge in mcp.json gefunden.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (Klartext in mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>In Anmeldeinformationsverwaltung verschieben</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>env-Wert in Anmeldeinformationsverwaltung verschieben?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Speichert {0} › {1} in der Windows-Anmeldeinformationsverwaltung und ersetzt ihn in mcp.json. Die vorherige mcp.json (einschließlich des Klartextwerts) bleibt in backups\&lt;time&gt;-save erhalten, Kommentare in mcp.json werden nicht übernommen.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Geheimnisname</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Buchstaben, Ziffern, Punkte, Unterstriche oder Bindestriche verwenden.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Ein Geheimnis mit diesem Namen ist bereits in der Anmeldeinformationsverwaltung vorhanden und wird überschrieben.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Verschieben</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} wurde in die Anmeldeinformationsverwaltung verschoben. Die vorherige mcp.json (einschließlich des Klartextwerts) wurde in backups\&lt;time&gt;-save gespeichert.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>env-Wert konnte nicht in die Anmeldeinformationsverwaltung verschoben werden.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Ein Servername darf weder „/“ noch „*“ enthalten.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>ist nicht innerhalb von {0:0} s gestartet</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Keine Tools laufen, bis das behoben ist.</value></data>
@@ -480,6 +517,30 @@ Verweigern:
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} ist nicht 0.5, 1, 2, 3 oder 4 (cells ist der alte Name von width); die Standardbreite wird verwendet</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>Vorab konnte keine Kopie der aktuellen Datei erstellt werden, daher wurde nichts geändert ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json wurde geändert, während diese Seite geöffnet war. Sie wurde neu geladen und Ihre letzte Änderung wurde nicht übernommen: bitte wiederholen.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Doppelte benutzerdefinierte Schaltflächen-ID "{0}" (Groß-/Kleinschreibung ignoriert); die erste Definition wird verwendet.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Antwort wird noch erstellt. Die Schaltfläche "Stopp" bricht ab; deine Nachricht wartet im Eingabefeld.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} ist keine numerische Breite von 0.5, 1, 2, 3 oder 4; die Standardbreite wird verwendet.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: Tastenkombination wird bereits verwendet; diese Verknüpfung ist deaktiviert.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>Diese Symbolleistendatei verwendet ein älteres Format. Die Standard-Schaltflächenreihen und Tastenkombinationen sind aktiv; die Datei wurde nicht geändert.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Verfügbaren Zeilenplatz füllen</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Schaltflächenreihen und Tastenkombinationen konnten nicht gesichert werden.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Schaltflächenreihen und Tastenkombinationen konnten nicht gespeichert werden.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Das Bild wurde nicht geändert: toolbar.json konnte nicht gespeichert werden.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Mehr</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Hier ist nichts</value></data>
@@ -598,8 +659,6 @@ Verweigern:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Unter dem Nachrichtenfeld</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leer</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Schaltflächenzeilen</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Bildschirm {0} × {1} px bei {2}% Skalierung: Windows zeichnet die Benutzeroberfläche mit {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Bildschirm {0} × {1} px bei 100 % Skalierung</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Tatsächliche Bildschirmpixel, Windows-Skalierung ignoriert</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Echte Bildschirmpixel, Windows-Skalierung ignoriert</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Unter das Nachrichtenfeld verschieben</value></data>
@@ -664,7 +723,17 @@ Verweigern:
   <data name="Nav_Backup" xml:space="preserve"><value>Sicherung</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Übertragen Sie Ihre Hotline-Konfiguration auf einen anderen PC oder behalten Sie eine Kopie. Eine Sicherung ist eine einzelne .zip-Datei mit den ausgewählten Elementen; nichts anderes (Chatverlauf, Speicher, Protokolle) ist enthalten.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Einstellungen</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Schaltflächenleisten und benutzerdefinierte Schaltflächenbilder</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Schaltflächenreihen und Tastenkombinationen</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Das Konfigurationsformat von Hotline hat sich geändert. Einstellungen und Schaltflächenreihen älterer Versionen werden auf die Standardwerte zurückgesetzt. KI-Verbindungen und MCP-Server bleiben erhalten.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Zurückgesetzt: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Originaldateien: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Es konnte keine vollständige Upgrade-Sicherung erstellt werden.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Upgrade fehlgeschlagen für: {0}. Hotline versucht es beim nächsten Start erneut.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrade von 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Beim ersten Start nach dem Upgrade werden alte Einstellungen und Schaltflächenreihen auf die integrierten Standardwerte zurückgesetzt. Nur die Standard-KI-Verbindung und die Verbindungsreihenfolge werden übernommen. KI-Verbindungen und MCP-Server bleiben erhalten; alte MCP-Genehmigungen werden entfernt. Originaldateien werden vor der Konvertierung nach backups/&lt;time&gt;-upgrade kopiert. Schlägt diese Sicherung fehl, läuft die Konvertierung trotzdem. Nicht konvertierbare Dateien bleiben unberührt und werden beim nächsten Start erneut versucht. Referenzstandards werden beim Start in .defaults aktualisiert.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Diese Sicherung enthält Klartext-Umgebungswerte für {0}. Verwende "In Anmeldeinformationsverwaltung verschieben" unter Einstellungen &gt; Tools, bevor du diese Sicherung teilst.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Diese MCP-Server benötigen Geheimnisse aus der Anmeldeinformationsverwaltung auf diesem PC: {0}. Füge ihre Geheimnisse unter Einstellungen &gt; Tools hinzu.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Eine neuere Version wurde unverändert gelassen.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Töne</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>KI-Verbindungen</value></data>
@@ -750,7 +819,7 @@ Ein verschobenes Panel öffnet sich beim nächsten Mal an seiner Standardpositio
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Nach oben oder unten</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Der Chat wächst ausgehend von der Nachrichtenleiste: nach oben, sofern dort Platz ist, ansonsten nach unten. Unter Einstellungen › Fenster lässt sich die Richtung festlegen sowie Position, Breite und Chathöhe anpassen.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Schaltflächenzeilen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Einstellungen › Fenster › Schaltflächenzeilen zeigt die Leiste in sechs Bereichen: links, zentriert und rechts in der Zeile über dem Nachrichtenfeld sowie dieselben drei darunter. Ziehen Sie eine Schaltfläche oder eine Auswahl, um sie innerhalb eines Bereichs oder in einen anderen zu verschieben, oder verwenden Sie deren Pfeilschaltflächen (Alt+Pfeil wechselt den Bereich, Strg+Pfeil ändert die Reihenfolge). Was Sie ausblenden, wartet in „Nicht angezeigt“. Jede Schaltfläche kann eine eigene Breite, eine Kontur oder eine Füllung haben (die Dropdown-Menüs übernehmen Kontur und Füllung ebenfalls), und Sie können eigene Schaltflächen hinzufügen, die eine Schnellaktion ausführen oder einen Text einfügen. Schaltflächen, die nicht hineinpassen, wandern in ein ⋯-Menü, und „Feld der Schaltfläche …“ (der menu-Schlüssel in toolbar.json) enthält diejenigen, die Sie dort behalten möchten. Breiten werden in Zellen gezählt: Eine Schaltfläche ist 0.5, 1, 2, 3 oder 4 Zellen breit (der width-Schlüssel, bei dem compact, normal und wide für 0.5, 1 und 2 stehen), und jede Auswahl hat ihre eigene Breite. Einstellungen › Sicherung speichert ebenfalls toolbar.json und Ihre Schaltflächenbilder.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Einstellungen › Fenster › Schaltflächenzeilen zeigt die Leiste als sechs Bereiche: links, mittig und rechts in der Zeile über dem Eingabefeld sowie dieselben drei darunter. Ziehen Sie eine Schaltfläche oder Auswahl, um sie innerhalb eines Bereichs oder in einen anderen zu verschieben, oder nutzen Sie die Pfeilschaltflächen (Alt+Pfeil wechselt den Bereich, Strg+Pfeil ändert die Reihenfolge). Ausgeblendetes wartet unter „Nicht angezeigt“. Jede Schaltfläche kann eine eigene Breite, einen Rahmen oder eine Füllung haben (auch die Dropdowns übernehmen Rahmen und Füllung), und Sie können eigene Schaltflächen hinzufügen, die eine Schnellaktion ausführen oder Text einfügen. Schaltflächen, die nicht passen, wandern in ein ⋯-Menü, und „Feld der …-Schaltfläche“ (der Schlüssel menu in toolbar.json) enthält die, die Sie dort behalten möchten. Schaltflächenbreiten sind die Zahlen 0.5, 1, 2, 3 oder 4 (der Schlüssel width), jede Auswahl hat ihre eigene Spanne, und style.fill (standardmäßig aktiv) verteilt den freien Platz einer Zeile. Einstellungen › Sicherung sichert auch toolbar.json und Ihre Schaltflächenbilder.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Töne</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Unter Einstellungen › Darstellung › Sounds wird beim Öffnen oder Schließen des Panels ein Ton abgespielt: ein Windows-Sound oder eine .wav in Ihrem Sounds-Ordner. Standardmäßig deaktiviert.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Einstellungen sind Dateien</value></data>

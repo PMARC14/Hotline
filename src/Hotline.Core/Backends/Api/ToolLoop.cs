@@ -12,7 +12,7 @@ public static class ToolLoop
 
     /// <summary>Tools for this connection: only when Tool use is "use Hotline's tools" and a host exists.</summary>
     /// <remarks>Chat-only connections still get Hotline's own tools (remember), when the host has them.</remarks>
-    public static async Task<IReadOnlyList<ToolSpec>> ToolsFor(BackendProfile profile, IToolHost? host, CancellationToken ct) =>
+    public static async Task<IReadOnlyList<ToolSpec>> ToolsFor(ConnectionProfile profile, IToolHost? host, CancellationToken ct) =>
         host is null ? []
         : profile.Tools == ToolMode.Inherit ? await host.GetToolsAsync(ct)
         // OpenAI-style servers: some models reject any request that lists tools, so only after opting into tools.

@@ -56,7 +56,7 @@ public class AgyProtocolTests
     [Fact]
     public void Args_use_stream_json_the_default_agent_and_never_skip_permissions()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Model = "gemini-3.8-flash-low", ExtraArgs = "--effort low" });
+        var args = AgyProtocol.BuildArgs(new ConnectionProfile { Id = "agy", Model = "gemini-3.8-flash-low", ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--effort low").ToList() });
         Assert.Equal(["--input-format", "stream-json", "--output-format", "stream-json", "-p=", "--agent", "hotline",
                       "--model", "gemini-3.8-flash-low", "--effort", "low"], args);
     }
@@ -79,7 +79,7 @@ public class AgyProtocolTests
     [InlineData(null, false)]
     public void Effort_is_passed_only_when_valid(string? effort, bool expected)
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Effort = effort });
+        var args = AgyProtocol.BuildArgs(new ConnectionProfile { Id = "agy", Effort = effort });
         Assert.Equal(expected, args.Contains("--effort"));
         if (expected) Assert.Equal(effort!.ToLowerInvariant(), args[args.ToList().IndexOf("--effort") + 1]);
     }
@@ -87,7 +87,7 @@ public class AgyProtocolTests
     [Fact]
     public void Inherit_mode_uses_default_agent_and_adds_workspace_dir()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Id = "agy", Agent = "hotline", Tools = ToolMode.Inherit }, addDir: @"C:\ws");
+        var args = AgyProtocol.BuildArgs(new ConnectionProfile { Id = "agy", Agent = "hotline", Tools = ToolMode.Inherit }, addDir: @"C:\ws");
         Assert.DoesNotContain("--agent", args);
         Assert.Equal(@"C:\ws", args[args.ToList().IndexOf("--add-dir") + 1]);
     }
@@ -105,8 +105,8 @@ public class AgyProtocolTests
     [Fact]
     public void Approve_all_only_applies_in_inherit_mode()
     {
-        Assert.Contains("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }));
-        Assert.DoesNotContain("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.ChatOnly, ApproveAllTools = true }));
+        Assert.Contains("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new ConnectionProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }));
+        Assert.DoesNotContain("--dangerously-skip-permissions", AgyProtocol.BuildArgs(new ConnectionProfile { Tools = ToolMode.ChatOnly, ApproveAllTools = true }));
     }
 
     [Theory]
@@ -115,12 +115,12 @@ public class AgyProtocolTests
     [InlineData("--DANGEROUSLY-skip-permissions")]
     [InlineData("--skip-permissions")]
     public void Dangerous_flag_variants_in_extra_args_are_dropped(string flag)
-        => Assert.DoesNotContain(AgyProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--foo " + flag }), a => a.Contains("permission", StringComparison.OrdinalIgnoreCase));
+        => Assert.DoesNotContain(AgyProtocol.BuildArgs(new ConnectionProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--foo " + flag).ToList() }), a => a.Contains("permission", StringComparison.OrdinalIgnoreCase));
 
     [Fact]
     public void Custom_args_replace_the_agent_flags_but_keep_the_protocol()
     {
-        var args = AgyProtocol.BuildArgs(new BackendProfile { Agent = "hotline", Tools = ToolMode.Inherit, Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
+        var args = AgyProtocol.BuildArgs(new ConnectionProfile { Agent = "hotline", Tools = ToolMode.Inherit, Args = ["--agent", "mine", "--mode", "plan"] }).ToList();
         Assert.Equal("mine", args[args.IndexOf("--agent") + 1]);
         Assert.Single(args, "--agent");
         Assert.Contains("stream-json", args);

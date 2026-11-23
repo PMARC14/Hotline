@@ -1,0 +1,6 @@
+{
+  "version": 99,
+  "type": "anthropic",
+  "name": "Claude API",
+  "futureOption": "preserve-me"
+}

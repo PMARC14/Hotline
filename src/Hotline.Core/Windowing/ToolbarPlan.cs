@@ -109,17 +109,17 @@ public static class ToolbarPlan
         [.. Enum.GetValues<Quadrant>().SelectMany(model.Items).Where(IsPicker).Distinct()];
 
     private static bool Known(ToolbarModel model, string id) =>
-        ToolbarModel.BuiltIn.Contains(id) || model.Buttons.Any(b => b.Id == id);
+        ToolbarModel.BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase) || model.Buttons.Any(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
 
     private static Dictionary<Quadrant, List<string>> Placement(ToolbarModel model)
     {
         var placed = Enum.GetValues<Quadrant>().ToDictionary(q => q, _ => new List<string>());
-        var seen = new HashSet<string>();
+        var seen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         foreach (var q in Enum.GetValues<Quadrant>())
             foreach (var id in model.Items(q))
             {
                 if (!Known(model, id) || !seen.Add(id)) continue;
-                placed[q].Add(id);
+                placed[q].Add(ToolbarModel.BuiltIn.Concat(model.Buttons.Select(b => b.Id)).First(k => k.Equals(id, StringComparison.OrdinalIgnoreCase)));
             }
         return placed;
     }
@@ -214,10 +214,12 @@ public static class ToolbarPlan
     /// Everything the renderer decides for one row in <paramref name="room"/> DIPs, in one pure call: which buttons stay or move into "⋯"
     /// (<see cref="FitRow"/>) and the pickers' widths from what is left (<see cref="ToolbarLayout.Compute"/>). <paramref name="spacing"/> is the
     /// column spacing; <paramref name="availablePickers"/> are the pickers with something to show (null = all).
+    /// With <paramref name="fill"/>, visible items share the room by button width or picker span, keeping their minima.
     /// </summary>
     public static RowLayout PlanRow(ToolbarModel model, bool top, double room, double spacing,
-        IReadOnlyCollection<string>? availablePickers = null)
+        IReadOnlyCollection<string>? availablePickers = null, bool fill = false)
     {
+        if (fill) return FillRow(model, top, room, spacing, availablePickers);
         var plan = Row(model, top);
         var rowPickers = plan.Left.Concat(plan.Center).Concat(plan.Right).Where(IsPicker).ToList();
         var hasPickers = rowPickers.Count > 0;
@@ -246,6 +248,54 @@ public static class ToolbarPlan
         if (hasMore) buttons[ToolbarModel.MoreId] = overflowWidth;
         var used = fit.FixedWidth + widths.Values.Sum() + spacing * Math.Max(0, visible - 1);
         return new RowLayout(plan, shown, dropped, widths, buttons, fit, used, rightShown, rightDropped, hasMore ? MenuItems(model) : []);
+    }
+
+    private static RowLayout FillRow(ToolbarModel model, bool top, double room, double spacing, IReadOnlyCollection<string>? availablePickers)
+    {
+        room = double.IsFinite(room) ? Math.Max(0, Math.Floor(room)) : 0;
+        spacing = double.IsFinite(spacing) ? Math.Max(0, spacing) : 0;
+        var plan = Row(model, top);
+        var rowPickers = plan.Left.Concat(plan.Center).Concat(plan.Right).Where(IsPicker).ToList();
+        var specs = PickerSpecs(model, availablePickers ?? ToolbarModel.Pickers).Where(p => rowPickers.Contains(p.Name)).ToList();
+        var visible = specs.Where(p => p.Available).ToList();
+        var left = plan.Droppable.Where(id => !Stays(id)).ToList();
+        var right = plan.Right.Where(id => !Stays(id)).ToList();
+        double Shares(string id) => id == ToolbarModel.MoreId && !plan.HasMore ? 1 : WidthCells(model.EffectiveStyle(id));
+        double Minimum(string id) => BaseWidth * Math.Min(1, Shares(id));
+        var overflowMin = Minimum(ToolbarModel.MoreId);
+        var leftMin = left.Select(Minimum).ToList();
+        var rightMin = right.Select(Minimum).ToList();
+        var reserved = visible.Sum(p => p.Min) + spacing * Math.Max(0, visible.Count - 1);
+        // Preserve today's overflow order and picker reserve, but fit buttons at their fill minima.
+        var (fit, fits) = ToolbarLayout.FitChecked(room, spacing, leftMin, rightMin, reserved, overflowMin, plan.HasMore, shrinkLastRight: false);
+        if (!fits) (fit, _) = ToolbarLayout.FitChecked(room, spacing, leftMin, rightMin, 0, overflowMin, plan.HasMore, shrinkLastRight: false);
+        var (shown, dropped) = Split(plan.Droppable, fit.LeftShown);
+        var (rightShown, rightDropped) = SplitRight(plan.Right, fit.RightDropped);
+        var keptButtons = left.Take(fit.LeftShown).Concat(right.Skip(fit.RightDropped)).ToList();
+        if (fit.Overflow) keptButtons.Add(ToolbarModel.MoreId);
+        var buttonMin = keptButtons.Sum(Minimum);
+        foreach (var id in PickerHideOrder)
+        {
+            if (buttonMin + visible.Sum(p => p.Min) + spacing * Math.Max(0, keptButtons.Count + visible.Count - 1) <= room) break;
+            visible.RemoveAll(p => p.Name == id);
+        }
+
+        // This is the Grid's draw order, including the automatic more between left and centre.
+        var items = shown.Where(plan.Left.Contains)
+            .Concat(fit.Overflow && !plan.HasMore ? [ToolbarModel.MoreId] : [])
+            .Concat(shown.Where(plan.Center.Contains)).Concat(rightShown)
+            .Where(id => !IsPicker(id) || visible.Any(p => p.Name == id)).ToList();
+        var gaps = spacing * Math.Max(0, items.Count - 1);
+        var widths = ToolbarLayout.Fill(room - gaps, items.Select(id => IsPicker(id)
+            ? ((double)model.EffectiveSpan(id), specs.First(p => p.Name == id).Min)
+            : (Shares(id), Minimum(id))).ToList());
+        var pickers = specs.ToDictionary(p => p.Name, _ => 0.0);
+        var buttons = new Dictionary<string, double>();
+        for (var i = 0; i < items.Count; i++)
+            (IsPicker(items[i]) ? pickers : buttons)[items[i]] = widths[i];
+        var fixedWidth = buttons.Values.Sum() + gaps - spacing * Math.Max(0, visible.Count - 1);
+        var rowFit = new RowFit(fit.LeftShown, fit.Overflow, visible.Count > 0 && visible.Count == specs.Count(p => p.Available), fixedWidth, fit.RightDropped);
+        return new RowLayout(plan, shown, dropped, pickers, buttons, rowFit, widths.Sum() + gaps, rightShown, rightDropped, plan.HasMore ? MenuItems(model) : []);
     }
 
     private const int ReportedWarnings = 3;

@@ -47,7 +47,7 @@ public sealed class FlashBackendTests : TempDirTest
     }
 
     private IChatBackend Backend(BackendType type, Factory factory) => BackendFactory.Create(
-        new BackendProfile { Id = "cli", Type = type, CliPath = "cli.exe" },
+        new ConnectionProfile { Id = "cli", Type = type, CliPath = "cli.exe" },
         new BackendDeps(factory, new AgyWorkspace(Path.Combine(_dir, "agy"), TimeProvider.System), new FileLog(Path.Combine(_dir, "log")),
             _ => true, null, null, _ => "prompt", _dir))!;
 

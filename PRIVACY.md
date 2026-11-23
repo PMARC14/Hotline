@@ -57,7 +57,7 @@ Everything is kept in `%USERPROFILE%\.hotline` in your user profile. Hotline upl
 **API keys** are stored in Windows Credential Locker, are never written to files, and only travel over encrypted
 connections (https). The one exception is a model server on your own PC, which may use plain http.
 
-If you turn on "keep Claude Code sessions", Claude Code also keeps those chats in its own history on your PC.
+By default, CLI connections (Claude Code, Codex, agy) keep chats in their own history on your PC; you can turn that off per connection for Claude Code and Codex (agy always records its runs).
 
 To remove everything, uninstall Hotline and delete the `%USERPROFILE%\.hotline` folder. Saved API keys can be removed
 in Hotline's settings, or in Windows Credential Manager.

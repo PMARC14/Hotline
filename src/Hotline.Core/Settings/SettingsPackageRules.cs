@@ -66,8 +66,8 @@ public static partial class SettingsPackage
             SettingsCategory.Connections => ".json",
             _ => ".md",
         };
-        // A .wav may be spelled .WAV by whatever made it; the rest are written by Hotline in lower case.
-        var comparison = cat == SettingsCategory.Sounds ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
+        // Sound and custom icon extensions are matched without case.
+        var comparison = cat is SettingsCategory.Sounds or SettingsCategory.Toolbar ? StringComparison.OrdinalIgnoreCase : StringComparison.Ordinal;
         if (file.Length <= extension.Length || !file.EndsWith(extension, comparison)) return null;
         var stem = file[..^extension.Length];
         if (Reserved.Contains(stem.Split('.')[0].TrimEnd())) return null;
@@ -91,7 +91,7 @@ public static partial class SettingsPackage
         IsPlainStem(stem, 64) && stem.All(c => char.IsLetterOrDigit(c) || c is ' ' or '-' or '_' or '(' or ')' or '.');
 
     private static bool IsConnectionStem(string stem) =>
-        IsPlainStem(stem, 100) && stem.All(c => char.IsAsciiLetterOrDigit(c) || c is '-' or '_' or '.');
+        SettingsStore.ValidConnectionId(stem);
 
     /// <summary>Why a file's content can't be written, or null when it is fine. The path has already passed <see cref="Classify"/>.</summary>
     internal static string? Validate(string dataDirectory, SettingsCategory category, string path, byte[] bytes)
@@ -115,9 +115,13 @@ public static partial class SettingsPackage
             {
                 case SettingsCategory.Settings:
                     // The very reading loading uses: a wrong value or a newer enum word only costs that field (the app warns and goes on).
-                    return SettingsStore.ParseSettings(text, new ReadProblems()).Settings is null ? "not readable as settings" : null;
+                    // A 0.6 file would replace a current one and then be reset by the upgrade: refuse it instead.
+                    var parsed = SettingsStore.ParseSettings(text, new ReadProblems());
+                    return parsed.Settings is null ? "not readable as settings" : parsed.Failure is not null ? "from Hotline 0.6 or older" : null;
                 case SettingsCategory.Toolbar:
-                    return ToolbarModel.Parse(text, []) is JsonObject ? null : "not a JSON object"; // field-level problems are the reader's warnings
+                    if (ToolbarModel.Parse(text, []) is not JsonObject toolbar) return "not a JSON object"; // field-level problems are the reader's warnings
+                    return toolbar.LastOrDefault(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase)).Value is JsonValue v
+                        && v.TryGetValue<double>(out var version) && version >= ToolbarModel.CurrentVersion ? null : "from Hotline 0.6 or older";
                 case SettingsCategory.Mcp:
                     McpConfig.Parse(text);
                     return null;
@@ -160,10 +164,21 @@ public static partial class SettingsPackage
 
         var blocks = new List<string>();
         var anyInherit = false;
+        if (!hasSettings)
+        {
+            var existing = Path.Combine(rootDirectory, SettingsStore.FileName);
+            try
+            {
+                if (File.Exists(existing) && SettingsStore.ParseSettings(File.ReadAllText(existing), new ReadProblems()).Settings is { } current)
+                    AppendRules(blocks, current.Tools.Approvals);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { }
+        }
 
         if (hasSettings && planned.TryGetValue("settings.json", out var settingsBytes))
         {
             var (settings, legacy, _) = SettingsStore.ParseSettings(DecodeUtf8(settingsBytes), new ReadProblems());
+            if (settings is not null) AppendRules(blocks, settings.Tools.Approvals);
             if (settings?.Chat?.ContinueIn is { } shared)
                 AppendContinueTargets(blocks, "settings.json › chat.continueIn", shared);
             if (legacy is not null)
@@ -183,6 +198,7 @@ public static partial class SettingsPackage
             if (profile is null) continue;
             if (profile.Tools == ToolMode.Inherit) anyInherit = true;
             if (IsExecutableConnection(profile)) AppendConnection(blocks, path, profile);
+            AppendEndpointChange(blocks, rootDirectory, path, profile);
         }
 
         if (hasSettings || hasMcp)
@@ -227,12 +243,12 @@ public static partial class SettingsPackage
     private static bool IsExecutableContinueTarget(ContinueTarget? t) =>
         t is not null && (t.Kind == ContinueKind.App || !string.IsNullOrWhiteSpace(t.Command));
 
-    private static bool IsExecutableConnection(BackendProfile p) =>
+    private static bool IsExecutableConnection(ConnectionProfile p) =>
         ConnectionTypes.IsCli(p.Type)
         || p.Tools == ToolMode.Inherit
         || p.ApproveAllTools
         || !string.IsNullOrWhiteSpace(p.CliPath)
-        || !string.IsNullOrWhiteSpace(p.ExtraArgs)
+        || p.ExtraArgs is { Count: > 0 }
         || p.Args is { Count: > 0 }
         || !string.IsNullOrWhiteSpace(p.WorkingDirectory)
         || (p.ContinueIn is { } list && list.Any(IsExecutableContinueTarget));
@@ -247,7 +263,27 @@ public static partial class SettingsPackage
         }
     }
 
-    private static void AppendConnection(List<string> blocks, string location, BackendProfile p)
+    /// <summary>
+    /// A replaced API connection that points somewhere else: its saved API key (kept in Credential Locker under the id) would
+    /// go to the new address, so the review shows the change and asks.
+    /// </summary>
+    private static void AppendEndpointChange(List<string> blocks, string rootDirectory, string path, ConnectionProfile incoming)
+    {
+        if (ConnectionTypes.IsCli(incoming.Type)) return;
+        var existing = Path.Combine(rootDirectory, path.Replace('/', Path.DirectorySeparatorChar));
+        try
+        {
+            if (!File.Exists(existing)) return;
+            var current = SettingsStore.ParseConnection(File.ReadAllText(existing), path, Path.GetFileNameWithoutExtension(path), new ReadProblems(), out _);
+            if (current is null) return;
+            static string Where(ConnectionProfile p) => $"{p.Type} {(p.Endpoint ?? "").Trim().TrimEnd('/')}".Trim();
+            if (string.Equals(Where(current), Where(incoming), StringComparison.OrdinalIgnoreCase)) return;
+            blocks.Add($"{path} ({incoming.Id})\n  endpoint: {Where(current)} -> {Where(incoming)}\n  the API key saved for this connection is sent to the new address");
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
+    }
+
+    private static void AppendConnection(List<string> blocks, string location, ConnectionProfile p)
     {
         var sb = new StringBuilder();
         var idSuffix = string.IsNullOrWhiteSpace(p.Id) ? "" : $" ({p.Id})";
@@ -256,8 +292,9 @@ public static partial class SettingsPackage
         sb.Append($"\n  tools: {JsonNamingPolicy.CamelCase.ConvertName(p.Tools.ToString())}");
         sb.Append($"\n  approveAllTools: {(p.ApproveAllTools ? "true" : "false")}");
         if (!string.IsNullOrWhiteSpace(p.CliPath)) sb.Append($"\n  cliPath: {p.CliPath}");
+        if (p.Type == BackendType.Antigravity && !string.IsNullOrWhiteSpace(p.Agent)) sb.Append($"\n  agent: {p.Agent}");
         if (!string.IsNullOrWhiteSpace(p.WorkingDirectory)) sb.Append($"\n  workingDirectory: {p.WorkingDirectory}");
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) sb.Append($"\n  extraArgs: {p.ExtraArgs}");
+        if (p.ExtraArgs is { Count: > 0 }) sb.Append($"\n  extraArgs: {CliArguments.Join(p.ExtraArgs)}");
         if (p.Args is { Count: > 0 }) sb.Append($"\n  args: {string.Join(" ", p.Args)}");
         blocks.Add(sb.ToString());
         if (p.ContinueIn is { } list)
@@ -275,10 +312,17 @@ public static partial class SettingsPackage
             if (s.Args.Count > 0) sb.Append($"\n  args: {string.Join(" ", s.Args)}");
             if (!string.IsNullOrWhiteSpace(s.WorkingDirectory)) sb.Append($"\n  cwd: {s.WorkingDirectory}");
             if (s.Env.Count > 0)
-                sb.Append($"\n  env: {string.Join(", ", s.Env.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => $"{kv.Key}={kv.Value}"))}");
+                sb.Append($"\n  env: {string.Join(", ", s.Env.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase).Select(kv => $"{kv.Key}=***"))}");
             blocks.Add(sb.ToString());
         }
-        foreach (var (key, approval) in mcp.Approvals.OrderBy(kv => kv.Key, StringComparer.OrdinalIgnoreCase))
-            blocks.Add($"{location} › approvals.{key}: {approval.ToString().ToLowerInvariant()}");
+    }
+
+    private static void AppendRules(List<string> blocks, IReadOnlyDictionary<string, string> rules)
+    {
+        if (rules.Count == 0) return;
+        blocks.Add("settings.json › tools.approvals\n" + string.Join("\n", rules
+            .OrderBy(p => string.Equals(p.Value, "allow", StringComparison.OrdinalIgnoreCase) ? 0 : 1)
+            .ThenBy(p => p.Key, StringComparer.Ordinal)
+            .Select(p => $"  {p.Key}: {p.Value}")));
     }
 }

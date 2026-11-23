@@ -110,7 +110,7 @@ internal sealed partial class ToolbarQuadrantEditor
                 {
                     if (existing is not null) CustomIcons.Rollback(CustomButtonPicture.Folder, existing.Id);
                     _log.Info("button rows: toolbar.json changed on disk; picture rolled back");
-                    if (_reload() is { } fresh) { _model = fresh; _stash.Clear(); }
+                    if (_reload() is { } fresh) _model = fresh;
                     Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
                 }
                 else if (existing is not null)
@@ -138,7 +138,6 @@ internal sealed partial class ToolbarQuadrantEditor
             if (await _showDialog(confirm) != ContentDialogResult.Primary) return;
             if (Edit(m => ToolbarEditor.RemoveCustom(m, b.Id), null, ("bar-custom-add", "bar-custom-add")))
             {
-                _stash.Remove(b.Id);
                 if (!_model.Buttons.Any(x => x.Id == b.Id)) ForgetPicture(b.Id);
             }
         }

@@ -6,14 +6,14 @@ namespace Hotline.Core.Tests;
 public class PanelDisplayRecoveryTests
 {
     [Fact]
-    public void Recovery_preserves_actual_size_and_scales_cached_height_once()
+    public void Recovery_preserves_actual_size_and_scales_cached_bar_once()
     {
         var work = new RectI(0, 0, 1920, 1040);
         var actual = new RectI(100, 200, 900, 600);
         var r = PanelDisplayRecovery.Calculate(work, work, 1, 1.5, actual, new RectI(200, 700, 600, 60), 400, true);
         Assert.Equal(actual, r.Rect);
         Assert.Equal(600, r.FixedHeight);
-        Assert.Equal(new RectI(250, 710, 600, 90), r.Bar);
+        Assert.Equal(new RectI(100, 710, 900, 90), r.Bar); // 600 scaled pixels at 150%
         var again = PanelDisplayRecovery.Calculate(work, work, 1.5, 1.5, r.Rect, r.Bar, r.FixedHeight, true);
         Assert.Equal(r, again);
     }
@@ -24,7 +24,7 @@ public class PanelDisplayRecoveryTests
         var r = PanelDisplayRecovery.Calculate(new RectI(1920, 0, 1920, 1040), new RectI(-1280, 40, 1280, 680),
             1.5, 1, new RectI(2200, 500, 1500, 900), new RectI(2300, 1300, 600, 90), 900, false);
         Assert.Equal(new RectI(-1280, 40, 1280, 680), r.Rect);
-        Assert.Equal(new RectI(-940, 40, 600, 60), r.Bar);
+        Assert.Equal(new RectI(-840, 40, 400, 60), r.Bar);
         Assert.Equal(600, r.FixedHeight);
     }
 

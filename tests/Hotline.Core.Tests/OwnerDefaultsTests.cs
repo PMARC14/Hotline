@@ -16,19 +16,19 @@ public sealed class OwnerDefaultsTests
         Assert.Equal(["pin", "captureWindow", "captureScreen", "captureRegion"], d.Items(Quadrant.BottomLeft));
         Assert.Equal(["prompt", "continueIn"], d.Items(Quadrant.BottomCenter));
         Assert.Equal(["recent", "newChat", "settings"], d.Items(Quadrant.BottomRight));
-        Assert.Equal(new ButtonStyle(1, false, false), d.Style);
-        Assert.Equal(["newChat", "recent", "settings"], d.Overrides.Keys.Order()); // two cells across each
-        Assert.All(d.Overrides.Values, o => Assert.Equal(new ButtonStyle(2), o));
+        Assert.Equal(new ButtonStyle(1, false, false, Fill: true), d.Style);
+        Assert.Empty(d.Overrides);
+        Assert.All(ToolbarModel.BuiltIn.Where(id => !ToolbarPlan.IsPicker(id)), id => Assert.Equal(1, d.EffectiveStyle(id).Width));
         Assert.Equal((3, 4, 5), (d.EffectiveSpan("effort"), d.EffectiveSpan("model"), d.EffectiveSpan("provider")));
         Assert.Empty(d.Buttons);
-        Assert.Equal(2, ToolbarModel.CurrentVersion);
+        Assert.Equal(3, ToolbarModel.CurrentVersion);
     }
 
     [Fact]
     public void Default_window_sizes_are_the_owners()
     {
         var w = new HotlineSettings().Window;
-        Assert.Equal((40.0, 60.0, 400, 1200), (w.WidthPercent, w.MaxHeightPercent, w.MinWidth, w.MaxWidth));
+        Assert.Equal((new PanelWidth(40, true), 60.0, 320, 800), (w.Width, w.MaxHeightPercent, w.MinWidth, w.MaxWidth));
         Assert.Equal((0.5, 0.8), (w.Anchor.X, w.Anchor.Y));
     }
 }

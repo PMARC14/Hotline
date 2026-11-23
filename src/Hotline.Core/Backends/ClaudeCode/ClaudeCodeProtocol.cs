@@ -14,7 +14,7 @@ public static class ClaudeCodeProtocol
 {
     public static IReadOnlyList<string> EffortLevels { get; } = ["low", "medium", "high", "xhigh", "max"];
 
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string systemPrompt)
+    public static IReadOnlyList<string> BuildArgs(ConnectionProfile p, string systemPrompt)
     {
         var args = new List<string>
         {
@@ -29,7 +29,7 @@ public static class ClaudeCodeProtocol
         if (!string.IsNullOrWhiteSpace(p.Model)) args.AddRange(["--model", p.Model.Trim()]);
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort)) args.AddRange(["--effort", effort]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["--append-system-prompt", systemPrompt.Trim()]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, CliArguments.SplitExtra(p.ExtraArgs), chatOnly);
+        if (p.ExtraArgs is { Count: > 0 }) AddSafe(args, p.ExtraArgs, chatOnly);
         if (chatOnly)
         {
             // Chat only: no tools, and none of the user's settings/plugins/hooks/MCP servers. (Not --bare: it never
@@ -106,7 +106,8 @@ public static class ClaudeLocator
         if (!string.IsNullOrWhiteSpace(configuredPath))
         {
             var expanded = Environment.ExpandEnvironmentVariables(configuredPath);
-            return exists(expanded) ? expanded : null;
+            // Checked before any File.Exists: a share path would make Windows connect to it (and send the user's hash).
+            return !Platform.SafeDirectory.IsShareOrDevice(expanded) && exists(expanded) ? expanded : null;
         }
         if (!string.IsNullOrEmpty(userProfile))
         {

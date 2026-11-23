@@ -1,249 +1,93 @@
-using System.Security.AccessControl;
-using System.Security.Principal;
+using System.Text;
+using Hotline.Core.Files;
+using Hotline.Core.State;
+using Hotline.Core.Tests.Files;
 using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
 public sealed class ToolbarFileTests : TempDirTest
 {
-    private string _root => _dir;
-    private string File_ => Path.Combine(_root, "toolbar.json");
+    private string File_ => Path.Combine(_dir, "toolbar.json");
 
-    public ToolbarFileTests() => Directory.CreateDirectory(_root);
-
-    private const string V1Text = "{\n  // rows\n  \"top\": [\"effort\", \"model\", \"provider\"],\n  \"items\": [\"pin\", \"spacer\", \"settings\"]\n}";
-
-    /// <summary>The user's file is byte-for-byte what it was, and nothing (.old, .bak, .tmp) appeared next to it.</summary>
-    private void AssertUntouched(byte[] before)
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData("{broken")]
+    [InlineData("[1,2]")]
+    [InlineData("{\"version\":2,\"items\":{\"left\":[\"pin\"]}}")]
+    [InlineData("{\"version\":99,\"bottom\":{\"left\":[\"pin\"]}}")]
+    public void Every_load_path_is_read_only(string? json)
     {
-        Assert.Equal(before, File.ReadAllBytes(File_));
-        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName));
-    }
-
-    // A toolbar.json without "shortcuts" takes settings.json's old chat.shortcuts as they are now: a reset or a hand edit of
-    // settings.json shows on the next load (no copy kept for the life of the process).
-    [Fact]
-    public void Legacy_shortcuts_follow_settings_json_on_every_load()
-    {
-        var settings = Path.Combine(_root, "settings.json");
-        File.WriteAllText(File_, """{ "version": 2 }""");
-        File.WriteAllText(settings, """{ "chat": { "shortcuts": { "pin": "Ctrl+Q" } } }""");
-        Assert.Equal("Ctrl+Q", ToolbarFile.Load(File_).Model.ShortcutText("pin"));
-        File.WriteAllText(settings, """{ "chat": { } }""");
-        Assert.Equal("Ctrl+P", ToolbarFile.Load(File_).Model.ShortcutText("pin"));
-    }
-
-    [Fact]
-    public void Missing_folder_is_created_and_the_defaults_are_written()
-    {
-        var path = Path.Combine(_root, "sub", "toolbar.json");
-        var load = ToolbarFile.Load(path);
-        Assert.Equal(ToolbarModel.Defaults, load.Model);
-        Assert.Null(load.Error);
-        Assert.Equal(ToolbarModel.Defaults.ToJson(), File.ReadAllText(path));
-    }
-
-    [Fact]
-    public void V1_file_gives_the_defaults_with_a_warning_and_is_never_touched()
-    {
-        File.WriteAllText(File_, V1Text);
-        var before = File.ReadAllBytes(File_);
-
-        foreach (var _ in new[] { 1, 2 }) // a second start behaves the same
-        {
-            var load = ToolbarFile.Load(File_);
-
-            Assert.Null(load.Error);
-            Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.BottomLeft), load.Model.Items(Quadrant.BottomLeft));
-            Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.TopLeft), load.Model.Items(Quadrant.TopLeft));
-            Assert.Equal([Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported], load.Model.Warnings);
-            AssertUntouched(before);
-        }
+        var fs = new FakeFileSystem();
+        if (json is not null) fs.Files[File_] = Encoding.UTF8.GetBytes(json);
+        var load = ToolbarFile.Load(File_, fs);
+        Assert.Empty(fs.Writes);
+        if (json is null) Assert.Equal(ToolbarModel.Defaults, load.Model);
+        else Assert.Equal(Encoding.UTF8.GetBytes(json), fs.Files[File_]);
     }
 
     [Theory]
-    [InlineData(2, false)]
-    [InlineData(3, true)] // a newer version is read as far as it is understood (with a warning), and never rewritten
-    public void V2_and_newer_files_load_and_are_not_rewritten(int version, bool warns)
+    [InlineData("CopyFile")]
+    [InlineData("CreateDirectory")]
+    [InlineData("WriteDurable")]
+    [InlineData("ReadAllBytes")]
+    public void Failed_backup_or_write_preserves_original(string operation)
     {
-        var text = "{ \"version\": " + version + ", \"top\": { \"left\": [\"pin\"], \"right\": [] }, \"items\": { \"left\": [\"settings\"], \"right\": [] } }";
-        File.WriteAllText(File_, text);
-        var before = File.ReadAllBytes(File_);
-
-        var load = ToolbarFile.Load(File_);
-
-        Assert.Null(load.Error);
-        Assert.Equal(warns, load.Model.Warnings.Count > 0);
-        Assert.Equal(["pin"], load.Model.Items(Quadrant.TopLeft));
-        AssertUntouched(before);
-    }
-
-    [Fact]
-    public void V2_file_with_a_bad_value_loads_and_is_not_rewritten()
-    {
-        var text = ToolbarModel.Defaults.ToJson().Replace("\"width\": \"normal\"", "\"width\": 7");
-        Assert.NotEqual(ToolbarModel.Defaults.ToJson(), text);
-        File.WriteAllText(File_, text);
-        var before = File.ReadAllBytes(File_);
-
-        var load = ToolbarFile.Load(File_);
-
-        Assert.Null(load.Error);
-        Assert.NotEmpty(load.Model.Warnings);
-        AssertUntouched(before);
+        var fs = new FakeFileSystem();
+        var bytes = Encoding.UTF8.GetBytes("{\"version\":3,\"shortcuts\":{\"pin\":\"Ctrl+Q\"}}");
+        fs.Files[File_] = bytes;
+        var model = ToolbarFile.Load(File_, fs).Model;
+        fs.Fail = c => c.Operation == operation;
+        Assert.NotNull(ToolbarFile.Save(File_, ToolbarEditor.SetShortcut(model, "pin", "Ctrl+K"), fs));
+        Assert.Equal(bytes, fs.Files[File_]);
+        if (operation != "WriteDurable") Assert.DoesNotContain(fs.Writes, c => c.Operation == "WriteDurable");
     }
 
     [Theory]
-    [InlineData("")] // a zero-byte file
-    [InlineData("   \n")]
-    [InlineData("{ \"version\": 2, \"items\": { \"left\": [\"pin\"")]
-    [InlineData("not json at all")]
-    [InlineData("[1, 2]")]
-    public void Unreadable_file_sets_Error_and_is_left_alone(string text)
+    [InlineData(2)]
+    [InlineData(99)]
+    public void Unsupported_version_is_never_saved_even_after_an_edit(int version)
     {
-        File.WriteAllText(File_, text);
-        var before = File.ReadAllBytes(File_);
-
-        var load = ToolbarFile.Load(File_);
-
-        Assert.False(string.IsNullOrEmpty(load.Error));
-        Assert.Equal(ToolbarModel.Defaults, load.Model);
-        AssertUntouched(before);
-    }
-
-    private IEnumerable<string> Backups() =>
-        Directory.GetFiles(_root, "toolbar.json.*.bak").Select(Path.GetFileName).OrderBy(n => n, StringComparer.Ordinal)!;
-
-    [Fact]
-    public void Save_then_Load_equals_the_model_and_a_file_this_process_wrote_is_not_copied_again()
-    {
-        var model = ToolbarModel.Defaults with { Style = new ButtonStyle(3, true, false) };
-        ToolbarFile.Save(File_, model);
-        ToolbarFile.Save(File_, model);
-        ToolbarFile.Save(File_, ToolbarModel.Defaults);
-
-        Assert.Equal(ToolbarModel.Defaults, ToolbarFile.Load(File_).Model);
-        Assert.Equal(["toolbar.json"], Directory.GetFiles(_root).Select(Path.GetFileName)); // every one replaced our own last write: no copies
+        var fs = new FakeFileSystem();
+        var bytes = Encoding.UTF8.GetBytes("{\"version\":" + version + "}");
+        fs.Files[File_] = bytes;
+        Assert.NotNull(ToolbarFile.Save(File_, ToolbarEditor.SetShortcut(ToolbarFile.Load(File_, fs).Model, "pin", "Ctrl+Q"), fs));
+        Assert.Empty(fs.Writes);
+        Assert.Equal(bytes, fs.Files[File_]);
     }
 
     [Fact]
-    public void Save_keeps_a_hand_edited_file_once_as_a_stamped_copy_and_never_overwrites_it()
+    public void State_hash_skips_own_backups_and_hand_edit_gets_one_save_set()
     {
-        var handEdited = """
-            // my own bar
-            { "version": 2, "top": { "left": ["effort"], "right": [] } }
-            """;
-        File.WriteAllText(File_, handEdited);
-
-        ToolbarFile.Save(File_, ToolbarModel.Defaults);
-        ToolbarFile.Save(File_, ToolbarModel.Defaults with { Style = new ButtonStyle(2) });
-        ToolbarFile.Save(File_, ToolbarModel.Defaults); // the editor's later edits replace Hotline's own writes
-
-        var copy = Assert.Single(Backups());
-        Assert.Matches(@"^toolbar\.json\.\d{8}-\d{6}\.bak$", copy);
-        Assert.Equal(handEdited, File.ReadAllText(Path.Combine(_root, copy)));
-        Assert.False(File.Exists(File_ + ".bak")); // the old rolling copy is gone
+        Directory.CreateDirectory(_dir);
+        var state = new StateStore(Path.Combine(_dir, StateStore.FileName));
+        Assert.Null(ToolbarFile.Save(File_, ToolbarModel.Defaults));
+        Assert.Equal(SafeFile.Hash(File.ReadAllBytes(File_)), state.GetLastWritten("toolbar.json"));
+        Assert.Null(ToolbarFile.Save(File_, ToolbarEditor.SetShortcut(ToolbarModel.Defaults, "pin", "Ctrl+Q")));
+        Assert.False(Directory.Exists(Path.Combine(_dir, "backups")));
+        var edited = "// hand edit\n" + File.ReadAllText(File_);
+        File.WriteAllText(File_, edited);
+        var next = ToolbarEditor.SetShortcut(ToolbarFile.Load(File_).Model, "pin", "Ctrl+K");
+        Assert.Null(ToolbarFile.Save(File_, next));
+        var backup = Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "toolbar.json", SearchOption.AllDirectories));
+        Assert.Contains("-save", backup);
+        Assert.Equal(edited, File.ReadAllText(backup));
+        Assert.Null(ToolbarFile.Save(File_, next));
+        Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "toolbar.json", SearchOption.AllDirectories));
+        Assert.Equal(next, ToolbarFile.Load(File_).Model);
     }
 
     [Fact]
-    public void Save_copies_a_file_edited_after_our_last_write_and_each_copy_is_kept()
-    {
-        ToolbarFile.Save(File_, ToolbarModel.Defaults);
-        File.WriteAllText(File_, "// first edit\n" +ToolbarModel.Defaults.ToJson());
-        ToolbarFile.Save(File_, ToolbarModel.Defaults);
-        File.WriteAllText(File_, "// second edit\n" +ToolbarModel.Defaults.ToJson());
-        ToolbarFile.Save(File_, ToolbarModel.Defaults);
-
-        var copies = Backups().Select(n => File.ReadAllText(Path.Combine(_root, n))).ToList();
-        Assert.Equal(2, copies.Count); // two names even within one second (-002)
-        Assert.Contains(copies, c => c.StartsWith("// first edit"));
-        Assert.Contains(copies, c => c.StartsWith("// second edit"));
-    }
-
-    [Fact]
-    public void Save_keeps_only_the_newest_ten_copies()
-    {
-        for (var i = 0; i < 13; i++)
-        {
-            File.WriteAllText(File_, "// edit " + i);
-            ToolbarFile.Save(File_, ToolbarModel.Defaults);
-        }
-        Assert.Equal(10, Backups().Count());
-    }
-
-    [Fact]
-    public void Save_creates_backup_in_target_folder()
-    {
-        var path = Path.Combine(_root, "bare.json");
-        File.WriteAllText(path, "// mine");
-        ToolbarFile.Save(path, ToolbarModel.Defaults);
-        Assert.True(File.Exists(path));
-        Assert.Single(Directory.GetFiles(_root, "bare.json.*.bak"));
-    }
-
-    [Fact]
-    public void Save_does_not_replace_the_file_when_its_copy_cannot_be_made()
-    {
-        var dir = Path.Combine(_root, "locked2");
-        Directory.CreateDirectory(dir);
-        var path = Path.Combine(dir, "toolbar.json");
-        File.WriteAllText(path, "// mine");
-        var before = File.ReadAllBytes(path);
-
-        var me = WindowsIdentity.GetCurrent().User!;
-        var deny = new FileSystemAccessRule(me, FileSystemRights.CreateFiles, AccessControlType.Deny);
-        var info = new DirectoryInfo(dir);
-        var acl = info.GetAccessControl();
-        acl.AddAccessRule(deny);
-        info.SetAccessControl(acl);
-        try
-        {
-            Assert.ThrowsAny<IOException>(() => ToolbarFile.Save(path, ToolbarModel.Defaults));
-        }
-        finally
-        {
-            acl.RemoveAccessRule(deny);
-            info.SetAccessControl(acl);
-        }
-        Assert.Equal(before, File.ReadAllBytes(path));
-    }
-
-    [Fact]
-    public void Fingerprint_follows_the_bytes_and_is_null_for_a_missing_file()
+    public void Fingerprint_follows_bytes_and_missing_files_return_null()
     {
         Assert.Null(ToolbarFile.Fingerprint(File_));
+        Directory.CreateDirectory(_dir);
         File.WriteAllText(File_, "a");
-        var a = ToolbarFile.Fingerprint(File_);
-        Assert.NotNull(a);
-        Assert.Equal(a, ToolbarFile.Fingerprint(File_));
+        var first = ToolbarFile.Fingerprint(File_);
+        Assert.NotNull(first);
+        Assert.Equal(first, ToolbarFile.Fingerprint(File_));
         File.WriteAllText(File_, "b");
-        Assert.NotEqual(a, ToolbarFile.Fingerprint(File_));
-    }
-
-    [Fact]
-    public void Readonly_folder_returns_the_model_without_throwing()
-    {
-        var dir = Path.Combine(_root, "locked");
-        Directory.CreateDirectory(dir);
-        var path = Path.Combine(dir, "toolbar.json");
-
-        var me = WindowsIdentity.GetCurrent().User!;
-        var deny = new FileSystemAccessRule(me, FileSystemRights.CreateFiles, AccessControlType.Deny);
-        var info = new DirectoryInfo(dir);
-        var acl = info.GetAccessControl();
-        acl.AddAccessRule(deny);
-        info.SetAccessControl(acl);
-        try
-        {
-            var load = ToolbarFile.Load(path);
-            Assert.Equal(ToolbarModel.Defaults, load.Model); // a missing file can't be created here
-            Assert.Null(load.Error);
-            Assert.False(File.Exists(path));
-        }
-        finally
-        {
-            acl.RemoveAccessRule(deny);
-            info.SetAccessControl(acl);
-        }
+        Assert.NotEqual(first, ToolbarFile.Fingerprint(File_));
     }
 }

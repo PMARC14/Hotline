@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>केवल टेक्स्ट, आपके .hotline फ़ोल्डर में।</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>उत्तर बैकग्राउंड में पूरा होने पर सूचित करें</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>जब पैनल छिपा हो या कोई दूसरा ऐप सामने हो और उत्तर पूरा हो जाए, तो Windows सूचना दिखाता है। उत्तर खोलने के लिए उस पर क्लिक करें।</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>स्केल किए गए पिक्सेल (200–4000) या कार्य क्षेत्र का हिस्सा (20%–90%)।</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>स्केल किए गए पिक्सेल (200–4000) या कार्य क्षेत्र का हिस्सा (20%–90%); खाली छोड़ने पर खुलने वाली चौड़ाई बनी रहती है।</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>स्केल किए गए पिक्सेल (DIPs)।</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>200–4000 स्केल किए गए पिक्सेल या 20%–90% दर्ज करें।</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>सूचनाओं में उत्तर का टेक्स्ट दिखाएं</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>पूर्ण होने की सूचना में उत्तर का टेक्स्ट शामिल करें; बंद करने पर केवल चैट का शीर्षक दिखता है।</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>यह फ़ाइल पुराने (pre-freeze) फ़ॉर्मेट का उपयोग करती है। अपग्रेड चलने तक डिफ़ॉल्ट लागू रहेंगे; फ़ाइल अपरिवर्तित है।</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>कनेक्शन आईडी {0} अमान्य है। 1–64 अक्षर, अंक, डॉट, अंडरस्कोर या हाइफ़न का उपयोग करें; Windows डिवाइस नाम और अंत में डॉट स्वीकार नहीं किए जाते।</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} ने उत्तर दिया</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>उत्तर तैयार है</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} उत्तर पूरा नहीं कर सका</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>इतिहास इतने समय रखें</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>दिन</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Windows के साथ शुरू करें</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>जिन API कनेक्शनों में टूल उपयोग "Hotline के टूल का उपयोग करें" पर सेट है, वे इन MCP सर्वरों के टूल कॉल कर सकते हैं। केवल-पढ़ने वाले टूल चलते हैं; बाकी सब के लिए पैनल में पूछा जाता है (एक बार अनुमति दें / हमेशा / अस्वीकार करें)।</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP सर्वर</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — दूसरे MCP ऐप जैसा ही "mcpServers" प्रारूप; स्वीकृतियाँ भी इसी फ़ाइल में रहती हैं</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — अन्य MCP ऐप्स जैसा ही "mcpServers" फ़ॉर्मैट; स्वीकृति नियम settings.json में tools.approvals हैं</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json संपादित करें</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>फ़ोल्डर खोलें</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows एजेंट रजिस्ट्री</value></data>
@@ -431,6 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" इंस्टॉल नहीं है या PATH में नहीं है, इसलिए {1} सर्वर शुरू नहीं हो सकता। mcp.json में "command" जाँचें।</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json पढ़ी नहीं जा सकी: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>स्वीकृति "{0}" का मान अज्ञात है, इसलिए इसे "deny" माना गया है।</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>mcp.json में "approvals" अनुभाग को अनदेखा किया गया है; नियमों को settings.json (tools.approvals) में ले जाएं।</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>सर्वर "{0}" में "{1}" के लिए गैर-स्ट्रिंग env मान है, इसलिए इसे छोड़ दिया गया।</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>सर्वर "{0}" के env "{1}" में अमान्य सीक्रेट संदर्भ है।</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>सर्वर "{0}" env "{2}" में सीक्रेट "{1}" का संदर्भ देता है, जो क्रेडेंशियल लॉकर में नहीं है।</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>अनुमति नियम "{0}" केवल बड़े-छोटे अक्षरों में "{1}" से भिन्न है, इसलिए इसे अनदेखा किया गया।</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json एक नए संस्करण ({0}) का उपयोग करता है और इसे सुरक्षित रूप से अपडेट नहीं किया जा सकता।</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>अपडेट करने से पहले mcp.json का बैकअप नहीं लिया जा सका।</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>अपडेट की गई mcp.json फ़ाइल सहेजी नहीं जा सकी।</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>mcp.json में सर्वर "{0}" पर env प्रविष्टि "{1}" नहीं मिली।</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>वह env प्रविष्टि बदल गई है या पहले ही ले जाई जा चुकी है; कुछ भी नहीं बदला गया।</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>मान अब Windows क्रेडेंशियल लॉकर में "{0}" ({1}) के रूप में सहेजा गया है, लेकिन सहेजने और रोलबैक विफल होने के कारण mcp.json नहीं बदला गया।</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>हमेशा अनुमति वाली स्वीकृतियां</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>कोई सहेजी गई टूल स्वीकृति नहीं है।</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · लॉन्च {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>निरस्त करें</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>टूल स्वीकृति निरस्त नहीं की जा सकी।</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>एनवायरनमेंट सीक्रेट्स</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>mcp.json में कोई सादा टेक्स्ट env प्रविष्टि नहीं मिली।</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json में सादा टेक्स्ट)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>क्रेडेंशियल लॉकर में ले जाएं</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>env मान को क्रेडेंशियल लॉकर में ले जाएं?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>{0} › {1} को Windows क्रेडेंशियल लॉकर में संग्रहीत करता है और mcp.json में इसे बदलता है। पिछला mcp.json (सादा टेक्स्ट मान सहित) backups\&lt;time&gt;-save में रहता है, और mcp.json में टिप्पणियां सहेजी नहीं जातीं।</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>सीक्रेट नाम</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>अक्षर, अंक, डॉट, अंडरस्कोर या हाइफ़न का उपयोग करें।</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>इस नाम का एक सीक्रेट क्रेडेंशियल लॉकर में पहले से मौजूद है और उसे ओवरराइट कर दिया जाएगा।</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>ले जाएं</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} को क्रेडेंशियल लॉकर में ले जाया गया। पिछला mcp.json (सादा टेक्स्ट मान सहित) backups\&lt;time&gt;-save में सहेजा गया।</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>env मान को क्रेडेंशियल लॉकर में नहीं ले जाया जा सका।</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>सर्वर के नाम में '/' या '*' नहीं हो सकता।</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} सेकंड में शुरू नहीं हुआ</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} इसे ठीक किए जाने तक कोई टूल नहीं चलेगा।</value></data>
@@ -480,6 +517,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} 0.5, 1, 2, 3 या 4 नहीं है (cells चौड़ाई width का पुराना नाम है); डिफ़ॉल्ट चौड़ाई का उपयोग किया गया है</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>पहले वर्तमान फ़ाइल की प्रतिलिपि नहीं बनाई जा सकी, इसलिए कुछ भी नहीं बदला गया ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>यह पृष्ठ खुला होने के दौरान toolbar.json बदल गया। इसे पुनः लोड किया गया, और आपका अंतिम परिवर्तन लागू नहीं हुआ: इसे फिर से करें।</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>डुप्लिकेट कस्टम बटन आईडी "{0}" (केस-असंवेदनशील); पहली परिभाषा का उपयोग किया जाता है।</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>अभी उत्तर दे रहा है। रोकें बटन इसे रोकता है; आपका संदेश बॉक्स में प्रतीक्षा कर रहा है।</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} 0.5, 1, 2, 3 या 4 की संख्यात्मक चौड़ाई नहीं है; डिफ़ॉल्ट चौड़ाई का उपयोग किया जाता है।</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: संयोजन पहले से उपयोग में है; यह शॉर्टकट अक्षम है।</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>यह टूलबार फ़ाइल पुराने फ़ॉर्मेट का उपयोग करती है। डिफ़ॉल्ट बटन पंक्तियां और शॉर्टकट सक्रिय हैं; फ़ाइल को बदला नहीं गया है।</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>उपलब्ध पंक्ति स्थान भरें</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>बटन पंक्तियों और शॉर्टकट का बैकअप नहीं लिया जा सका।</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>बटन पंक्तियां और शॉर्टकट सहेजे नहीं जा सके।</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>तस्वीर नहीं बदली गई: toolbar.json को सहेजा नहीं जा सका।</value></data>
   <data name="Bar_more" xml:space="preserve"><value>अधिक</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>यहाँ कुछ नहीं है</value></data>
@@ -598,8 +659,6 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>संदेश बॉक्स के नीचे</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>खाली</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>स्क्रीन {0} × {1} px, {2}% स्केलिंग पर: Windows इंटरफ़ेस को {3} × {4} पर प्रदर्शित करता है</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>स्क्रीन {0} × {1} px 100% स्केलिंग पर</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>स्क्रीन के वास्तविक पिक्सेल, Windows स्केलिंग अनदेखी</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>स्क्रीन के वास्तविक पिक्सेल, Windows स्केलिंग अनदेखी की गई</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>संदेश बॉक्स के नीचे ले जाएँ</value></data>
@@ -664,7 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>बैकअप</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>अपने Hotline सेटअप को दूसरे PC पर ले जाएँ, या एक प्रति सुरक्षित रखें। बैकअप एक .zip फ़ाइल होती है जिसमें आपके द्वारा चुने गए भाग होते हैं; इसके अलावा कुछ भी (चैट इतिहास, मेमोरी, लॉग) शामिल नहीं है।</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>सेटिंग्स</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियाँ और कस्टम बटन छवियां</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>बटन पंक्तियां और शॉर्टकट</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline का कॉन्फ़िगरेशन फ़ॉर्मेट बदल गया है। पुराने संस्करणों की सेटिंग और बटन पंक्तियां डिफ़ॉल्ट पर लौट आती हैं। AI कनेक्शन और MCP सर्वर सुरक्षित रखे जाते हैं।</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>रीसेट: {0}।</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>मूल फ़ाइलें: {0}।</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>पूर्ण अपग्रेड बैकअप नहीं बनाया जा सका।</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>अपग्रेड नहीं किया जा सका: {0}। Hotline अगले प्रारंभ पर इन फ़ाइलों का पुनः प्रयास करेगा।</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>0.6 से अपग्रेड करना</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>अपग्रेड के बाद पहले प्रारंभ पर, पुरानी सेटिंग और बटन पंक्तियां अंतर्निहित डिफ़ॉल्ट पर लौट आती हैं। केवल डिफ़ॉल्ट AI कनेक्शन और कनेक्शन क्रम आगे बढ़ते हैं। AI कनेक्शन और MCP सर्वर सुरक्षित रखे जाते हैं; पुरानी MCP स्वीकृतियां हटा दी जाती हैं। रूपांतरण से पहले मूल फ़ाइलें backups/&lt;time&gt;-upgrade में कॉपी की जाती हैं। यदि वह बैकअप विफल हो जाता है, तब भी रूपांतरण चलता है। जिन फ़ाइलों को परिवर्तित नहीं किया जा सकता वे अछूती रहती हैं और अगले प्रारंभ पर पुनः प्रयास की जाती हैं। संदर्भ डिफ़ॉल्ट स्टार्टअप पर .defaults में रीफ़्रेश किए जाते हैं।</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>इस बैकअप में {0} के लिए सादा टेक्स्ट एनवायरनमेंट मान शामिल हैं। इस बैकअप को साझा करने से पहले सेटिंग &gt; टूल्स में क्रेडेंशियल लॉकर में ले जाएं का उपयोग करें।</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>इन MCP सर्वरों को इस PC पर क्रेडेंशियल लॉकर सीक्रेट्स की आवश्यकता है: {0}। सेटिंग &gt; टूल्स में उनके सीक्रेट्स जोड़ें।</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>एक नया संस्करण अछूता छोड़ दिया गया।</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>टूल्स (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI कनेक्शन</value></data>
@@ -750,7 +819,7 @@ Claude Code, Codex या Antigravity के साथ की गई चैट �
   <data name="Guide_Direction_Title" xml:space="preserve"><value>ऊपर या नीचे</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>चैट संदेश बार से बढ़ती है: ऊपर की ओर, जब तक कि ऊपर जगह न हो, फिर नीचे की ओर। सेटिंग्स › विंडो इसे ऊपर या नीचे रख सकती है और स्थिति, चौड़ाई और चैट की ऊंचाई सेट करती है।</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>बटन पंक्तियाँ</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ बार को छह क्षेत्रों के रूप में दिखाती हैं: संदेश बॉक्स के ऊपर की पंक्ति का बायाँ, मध्य और दायाँ हिस्सा, और उसके नीचे वही तीन। किसी बटन या पिकर को किसी क्षेत्र के अंदर या दूसरे क्षेत्र में ले जाने के लिए उसे खींचें, या उसके तीर बटन का उपयोग करें (Alt+तीर क्षेत्र बदलता है, Ctrl+तीर क्रम बदलता है)। जिसे आप छिपाते हैं वह “दिखाया नहीं गया” में रहता है। प्रत्येक बटन की अपनी चौड़ाई, एक रूपरेखा या भराव हो सकता है (ड्रॉपडाउन भी रूपरेखा और भराव लेते हैं), और आप अपने स्वयं के बटन जोड़ सकते हैं जो त्वरित कार्रवाई चलाते हैं या टेक्स्ट डालते हैं। जो बटन फ़िट नहीं होते हैं वे ⋯ मेनू में चले जाते हैं, और “… बटन का बॉक्स” (toolbar.json में menu कुंजी) उन बटनों को रखता है जिन्हें आप वहाँ रखना चुनते हैं। चौड़ाई की गणना सेल में की जाती है: एक बटन 0.5, 1, 2, 3 या 4 सेल चौड़ा होता है (width कुंजी, जहाँ compact, normal और wide 0.5, 1 और 2 के लिए हैं), और प्रत्येक पिकर की अपनी चौड़ाई होती है। सेटिंग्स › बैकअप toolbar.json और आपके बटन चित्रों को भी सहेजता है।</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>सेटिंग्स › विंडो › बटन पंक्तियाँ बार को छह क्षेत्रों में दिखाती हैं: संदेश बॉक्स के ऊपर की पंक्ति का बायाँ, मध्य और दायाँ, और उसके नीचे के वही तीन। किसी बटन या पिकर को एक क्षेत्र के भीतर या दूसरे क्षेत्र में ले जाने के लिए खींचें, या उसके तीर बटनों का उपयोग करें (Alt+तीर क्षेत्र बदलता है, Ctrl+तीर क्रम बदलता है)। जो आप छिपाते हैं वह “दिखाया नहीं गया” में रहता है। प्रत्येक बटन की अपनी चौड़ाई, आउटलाइन या फ़िल हो सकती है (ड्रॉपडाउन भी आउटलाइन और फ़िल लेते हैं), और आप अपने स्वयं के बटन जोड़ सकते हैं जो त्वरित क्रिया चलाते हैं या टेक्स्ट डालते हैं। जो बटन फ़िट नहीं होते वे ⋯ मेनू में चले जाते हैं, और “… बटन का बॉक्स” (toolbar.json में menu कुंजी) उन बटनों को रखता है जिन्हें आप वहाँ रखना चुनते हैं। बटन की चौड़ाई 0.5, 1, 2, 3 या 4 संख्याएँ होती हैं (width कुंजी), प्रत्येक पिकर का अपना स्पैन होता है, और style.fill (डिफ़ॉल्ट रूप से चालू) पंक्ति की अतिरिक्त जगह साझा करता है। सेटिंग्स › बैकअप toolbar.json और आपके बटन चित्रों को भी सहेजता है।</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>ध्वनियाँ</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>सेटिंग्स › रूप › ध्वनियाँ पैनल खुलने या बंद होने पर ध्वनि बजाती हैं: एक Windows ध्वनि या आपके ध्वनि फ़ोल्डर में कोई .wav फ़ाइल। डिफ़ॉल्ट रूप से बंद।</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>सेटिंग्स फ़ाइलें हैं</value></data>

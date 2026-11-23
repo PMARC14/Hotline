@@ -1,0 +1,17 @@
+{
+  "version": 1,
+  "futureTop": true,
+  "mcpServers": {
+    "files": {
+      "command": "npx",
+      "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\example\\Documents"],
+      "env": {
+        "API_TOKEN": "${hotline:secret:files_token}"
+      },
+      "disabled": false,
+      "cwd": "C:\\work",
+      "displayName": "Files",
+      "futureServerProp": "kept"
+    }
+  }
+}

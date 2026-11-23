@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "shown": {
+    "firstRun": "2026-11-14T20:00:00Z",
+    "supportNote": null,
+    "upgradeNotice": null
+  },
+  "panel": {
+    "width": {
+      "value": 640,
+      "over": "40%"
+    },
+    "chatHeight": {
+      "value": 500,
+      "over": null
+    },
+    "anchor": {
+      "value": {
+        "monitor": "active",
+        "x": 0.3,
+        "y": 0.8
+      },
+      "over": {
+        "monitor": "active",
+        "x": 0.5,
+        "y": 0.8
+      }
+    }
+  },
+  "grants": [
+    {
+      "server": "files",
+      "tool": "read_file",
+      "launch": "a1b2c3d4e5f60718293a4b5c6d7e8f901234567890abcdef1234567890abcdef",
+      "at": "2026-11-14T20:00:00Z"
+    }
+  ],
+  "lastWritten": {
+    "settings.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "connections/claude.json": "2c26b46b68ffc68ff99b453c1d30413413422d706483bfa0f98a5e886266e7ae"
+  },
+  "upgrade": {
+    "at": "2026-11-14T20:00:00Z",
+    "backup": "backups\\20261114-200000-upgrade"
+  }
+}

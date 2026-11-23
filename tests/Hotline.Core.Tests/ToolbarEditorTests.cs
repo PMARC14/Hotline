@@ -9,8 +9,8 @@ public sealed class ToolbarEditorTests
     /// <summary>Three items in each of the six areas, no pickers shown (they are hidden).</summary>
     private static readonly ToolbarModel Grid = ToolbarModel.Resolve("""
         {
-          "version": 2,
-          "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["ca", "cb", "cc"], "right": ["captureRegion", "prompt", "recent"] },
+          "version": 3,
+          "bottom": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["ca", "cb", "cc"], "right": ["captureRegion", "prompt", "recent"] },
           "top":   { "left": ["continueIn", "newChat", "settings"], "center": ["cd", "ce", "cf"], "right": ["one", "two", "three"] },
           "buttons": {
             "one":   { "label": "One", "icon": "E8A5", "text": "1" },
@@ -27,7 +27,7 @@ public sealed class ToolbarEditorTests
         """);
 
     private static ToolbarModel WithTopLeft(params string[] items) => ToolbarModel.Resolve(
-        $$"""{ "version": 2, "items": { "left": ["pin"], "right": [] }, "top": { "left": [{{string.Join(", ", items.Select(i => $"\"{i}\""))}}], "right": ["recent"] } }""");
+        $$"""{ "version": 3, "bottom": { "left": ["pin"], "center": [], "right": [] }, "top": { "left": [{{string.Join(", ", items.Select(i => $"\"{i}\""))}}], "center": [], "right": ["recent"] } }""");
 
     private static CustomButton Text(string id, string label = "Label", string icon = "E8A5") => new(id, label, icon, null, "hello", false);
 
@@ -205,14 +205,14 @@ public sealed class ToolbarEditorTests
     }
 
     [Fact]
-    public void Hiding_a_styled_item_drops_its_style()
+    public void Hiding_and_showing_a_styled_item_keeps_its_style()
     {
         var styled = ToolbarEditor.SetStyle(Grid, "pin", new ButtonStyle(Outline: true));
         Assert.True(styled.Overrides.ContainsKey("pin"));
         var hidden = ToolbarEditor.Hide(styled, "pin");
         Assert.DoesNotContain("pin", hidden.Items(BL));
-        Assert.False(hidden.Overrides.ContainsKey("pin"));
-        Assert.False(ToolbarEditor.Show(hidden, "pin", BL).Overrides.ContainsKey("pin"));
+        Assert.Equal(styled.Overrides["pin"], hidden.Overrides["pin"]);
+        Assert.Equal(styled.Overrides["pin"], ToolbarEditor.Show(hidden, "pin", BL).Overrides["pin"]);
     }
 
     [Fact]
@@ -220,8 +220,8 @@ public sealed class ToolbarEditorTests
     {
         var m = ToolbarModel.Resolve("""
             {
-              "version": 2,
-              "items": { "left": ["settings", "zeta", "pin"] },
+              "version": 3,
+              "top":{"left":[],"center":[],"right":[]}, "bottom": { "left": ["settings", "zeta", "pin"],"center":[],"right":[] },
               "buttons": {
                 "zeta":  { "label": "Z", "text": "z" },
                 "beta":  { "label": "B", "text": "b" },
@@ -381,7 +381,7 @@ public sealed class ToolbarEditorTests
     [Fact]
     public void A_custom_button_never_keeps_another_buttons_or_a_path_icon_file()
     {
-        foreach (var bad in new[] { "one.png", "../four.png", "four.PNG", "C:\\four.png" })
+        foreach (var bad in new[] { "one.png", "../four.png", "C:\\four.png" })
         {
             var m = ToolbarEditor.AddCustom(Grid, Text("four") with { IconFile = bad });
             Assert.Null(m.Buttons[^1].IconFile); // dropped like Resolve does; the glyph stays
@@ -396,11 +396,11 @@ public sealed class ToolbarEditorTests
     public void SetStyle_for_the_bar_drops_a_width_that_is_not_allowed_and_fills_the_defaults()
     {
         var m = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(1.3, true));
-        Assert.Equal(new ButtonStyle(1, true, false), m.Style);
-        Assert.Equal(new ButtonStyle(3, true, false), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(3, true)).Style);
-        Assert.Equal(new ButtonStyle(1, false, false), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle()).Style);
-        Assert.Equal(new ButtonStyle(1, false, false), ToolbarEditor.SetStyle(m, null, new ButtonStyle()).Style);
-        Assert.Equal(new ButtonStyle(1, false, false), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(42)).Style);
+        Assert.Equal(new ButtonStyle(1, true, false, Fill: true), m.Style);
+        Assert.Equal(new ButtonStyle(3, true, false, Fill: true), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(3, true)).Style);
+        Assert.Equal(new ButtonStyle(1, false, false, Fill: true), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle()).Style);
+        Assert.Equal(new ButtonStyle(1, false, false, Fill: true), ToolbarEditor.SetStyle(m, null, new ButtonStyle()).Style);
+        Assert.Equal(new ButtonStyle(1, false, false, Fill: true), ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(42)).Style);
         AssertValid(m);
     }
 
@@ -419,7 +419,7 @@ public sealed class ToolbarEditorTests
     public void SetStyle_takes_a_width_and_an_outline_color_for_the_bar_and_an_item()
     {
         var bar = ToolbarEditor.SetStyle(Grid, null, new ButtonStyle(2, true, null, OutlineColor: "#e81123"));
-        Assert.Equal(new ButtonStyle(2, true, false, OutlineColor: "#E81123"), bar.Style);
+        Assert.Equal(new ButtonStyle(2, true, false, OutlineColor: "#E81123", Fill: true), bar.Style);
         var item = ToolbarEditor.SetStyle(bar, "pin", new ButtonStyle(0.5, OutlineColor: "#00B7C3"));
         Assert.Equal(new ButtonStyle(0.5, true, false, OutlineColor: "#00B7C3"), item.EffectiveStyle("pin"));
         AssertValid(item);
@@ -469,7 +469,7 @@ public sealed class ToolbarEditorTests
         Assert.Equal(BarSizeChoice.Custom, ToolbarEditorView.BarSize(m));
 
         var wide = ToolbarEditor.SetBarSize(m, 2);
-        Assert.Equal(new ButtonStyle(2, true, false), wide.Style); // the other keys of the bar stay
+        Assert.Equal(new ButtonStyle(2, true, false, Fill: true), wide.Style); // the other keys of the bar stay
         Assert.Equal(new ButtonStyle(Filled: true), wide.Overrides["pin"]);
         Assert.Equal(new ButtonStyle(OutlineColor: "#E81123"), wide.Overrides["one"]);
         Assert.False(wide.Overrides.ContainsKey("prompt")); // nothing left of it

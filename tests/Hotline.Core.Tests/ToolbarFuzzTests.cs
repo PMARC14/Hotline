@@ -8,7 +8,7 @@ namespace Hotline.Core.Tests;
 public sealed class ToolbarFuzzTests
 {
     private static readonly string[] Keys =
-        ["version", "top", "items", "left", "right", "style", "overrides", "buttons", "size", "outline", "filled", "width", "height", "span",
+        ["version", "top", "bottom", "left", "right", "style", "overrides", "buttons", "size", "outline", "filled", "width", "height", "span",
          "label", "icon", "iconFile", "quickAction", "text", "send", "pin", "b1", "b-2", "x", "", "Bad Id!"];
 
     private static readonly string[] Strings =
@@ -72,7 +72,7 @@ public sealed class ToolbarFuzzTests
         void Style() => Object(r.Next(6), i => Field(new[] { "size", "outline", "filled", "width", "height", "x", "span", "span" }[r.Next(8)], () => Pick(r, sb)));
         switch (key)
         {
-            case "top" or "items":
+            case "top" or "bottom":
                 Object(r.Next(4) == 0 ? r.Next(3) : 2, i => Field(i == 0 ? "left" : "right", () =>
                 {
                     sb.Append('[');
@@ -94,8 +94,8 @@ public sealed class ToolbarFuzzTests
         var sb = new StringBuilder();
         if (r.Next(10) == 0) sb.Append('\uFEFF');
         if (r.Next(20) == 0) { Value(r, sb, 0); return sb.ToString(); } // any root type
-        sb.Append("{ \"version\": ").Append(r.Next(5) == 0 ? "\"2\"" : r.Next(4).ToString());
-        foreach (var key in new[] { "top", "items", "style", "overrides", "buttons" })
+        sb.Append("{ \"version\": ").Append(r.Next(5) == 0 ? "\"2\"" : (r.Next(5) == 0 ? 99 : 3).ToString());
+        foreach (var key in new[] { "top", "bottom", "style", "overrides", "buttons" })
         {
             if (r.Next(4) == 0) continue;
             sb.Append(", ").Append(JsonSerializer.Serialize(key)).Append(": ");
@@ -121,7 +121,7 @@ public sealed class ToolbarFuzzTests
             var ok = m.Buttons.Count <= 24
                 && Enum.GetValues<Quadrant>().All(q => m.Items(q).Count <= 40
                     && m.Items(q).All(id => (ToolbarModel.BuiltIn.Contains(id) || custom.Contains(id)) && seen.Add(id)))
-                && m.Overrides.Keys.All(seen.Contains)
+                && m.Overrides.Keys.All(id => ToolbarModel.BuiltIn.Contains(id, StringComparer.OrdinalIgnoreCase) || custom.Contains(id))
                 && m.PickerSpans.All(p => ToolbarPlan.IsPicker(p.Key) && p.Value is >= 1 and <= 8 && p.Value == m.EffectiveSpan(p.Key));
             if (!ok) Assert.Fail($"invalid model from {doc}\n{m.ToJson()}");
             var again = ToolbarModel.Resolve(m.ToJson());

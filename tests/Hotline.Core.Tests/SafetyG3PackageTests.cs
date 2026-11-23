@@ -40,7 +40,7 @@ public sealed class SafetyG3PackageTests : TempDirTest
     {
         Put("settings.json", """
             // mine
-            { "window": { "fontSize": "big", "width": 700 }, "activation": { "hold": "aWordFromTheFuture" }, "chat": { "memory": false } }
+            { "version": 1, "window": { "fontSize": "big", "width": 700 }, "activation": { "hold": "aWordFromTheFuture" }, "chat": { "memory": false } }
             """);
         var (export, import, info) = RoundTrip(SettingsCategory.Settings);
         Assert.Equal(1, export.FileCount);
@@ -55,19 +55,19 @@ public sealed class SafetyG3PackageTests : TempDirTest
     [Fact]
     public void A_connection_file_whose_id_differs_from_its_name_round_trips()
     {
-        Put("connections/renamed.json", """{ "id": "other", "type": "local", "name": "Renamed", "maxTokens": "lots" }""");
+        Put("connections/renamed.json", """{ "version": 1, "id": "other", "type": "local", "name": "Renamed", "maxTokens": "lots" }""");
         var (_, import, _) = RoundTrip(SettingsCategory.Connections);
         Assert.Equal(["connections/renamed.json"], import.Written);
         Assert.Empty(import.Skipped);
-        Assert.Equal("other", Assert.Single(new SettingsStore(Target).Load().Chat.Backends).Id);
+        Assert.Equal("renamed", Assert.Single(new SettingsStore(Target).Load().Chat.Connections).Id);
     }
 
     [Fact]
     public void An_unknown_connection_type_and_a_non_object_are_still_refused()
     {
-        Put("connections/future.json", """{ "id": "f", "type": "quantum", "name": "F" }""");
+        Put("connections/future.json", """{ "version": 1, "id": "f", "type": "quantum", "name": "F" }""");
         Put("connections/array.json", "[1, 2]");
-        Put("connections/ok.json", """{ "id": "ok", "type": "local", "name": "Ok" }""");
+        Put("connections/ok.json", """{ "version": 1, "id": "ok", "type": "local", "name": "Ok" }""");
         var (_, import, _) = RoundTrip(SettingsCategory.Connections);
         Assert.Equal(["connections/ok.json"], import.Written);
         Assert.Equal(2, import.Skipped.Count);

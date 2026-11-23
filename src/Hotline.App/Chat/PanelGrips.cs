@@ -37,7 +37,7 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
     private Native.POINT _start;
     private RectI _startRect;
 
-    /// <summary>Saves where the panel is now as its default spot and size (the panel's owner writes the settings).</summary>
+    /// <summary>Saves where the panel is now as its default spot and size (the panel's owner writes state.json).</summary>
     public Action? SaveAsDefault { get; set; }
 
     public void Initialize()

@@ -58,15 +58,18 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             if (_automatic.Count > 0) SaveCurrent(_automaticRemoved);
             return false;
         }
-        if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); }
+        if (force) { _unsaved = false; _automatic.Clear(); _automaticRemoved.Clear(); _pendingRemoved.Clear(); }
         var options = new System.Text.Json.JsonSerializerOptions { Converters = { new System.Text.Json.Serialization.JsonStringEnumConverter() } };
-        var previous = System.Text.Json.JsonSerializer.Serialize(Current, options);
-        if (_automatic.Count == 0 && System.Text.Json.JsonSerializer.Serialize(fromDisk, options) == previous) return false;
-        var before = Current.Chat.Backends.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
+        string Snapshot(HotlineSettings s) => System.Text.Json.JsonSerializer.Serialize(new
+            { Settings = s, Connections = s.Chat.Connections.Select(p => new { p.Id, Profile = p }) }, options);
+        var previous = Snapshot(Current);
+        if (_automatic.Count == 0 && Snapshot(fromDisk) == previous) return false;
+        var before = Current.Chat.Connections.ToDictionary(b => b.Id, b => System.Text.Json.JsonSerializer.Serialize(b, options), StringComparer.OrdinalIgnoreCase);
         CopyInto(fromDisk.Activation, Current.Activation);
         CopyInto(fromDisk.Diagnostics, Current.Diagnostics);
         CopyInto(fromDisk.Window, Current.Window);
         CopyInto(fromDisk.General, Current.General);
+        CopyInto(fromDisk.Tools, Current.Tools);
         MergeChat(fromDisk.Chat, Current.Chat);
         Current.SchemaVersion = fromDisk.SchemaVersion;
         if (_automatic.Count > 0)
@@ -74,8 +77,8 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             foreach (var change in _automatic) ApplyAutomatic(change);
             SaveCurrent(_automaticRemoved);
         }
-        if (System.Text.Json.JsonSerializer.Serialize(Current, options) == previous) return false;
-        var changed = before.Where(kv => Current.Chat.Backends.FirstOrDefault(b => b.Id.Equals(kv.Key, StringComparison.OrdinalIgnoreCase)) is not { } now
+        if (Snapshot(Current) == previous) return false;
+        var changed = before.Where(kv => Current.Chat.Connections.FirstOrDefault(b => b.Id.Equals(kv.Key, StringComparison.OrdinalIgnoreCase)) is not { } now
                                          || System.Text.Json.JsonSerializer.Serialize(now, options) != kv.Value)
             .Select(kv => kv.Key).ToList();
         Changed?.Invoke();
@@ -89,16 +92,16 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     /// </summary>
     private static void MergeChat(ChatSettings from, ChatSettings to)
     {
-        var existing = to.Backends.ToDictionary(b => b.Id, StringComparer.OrdinalIgnoreCase);
-        var merged = new List<BackendProfile>();
-        foreach (var profile in from.Backends)
+        var existing = to.Connections.ToDictionary(b => b.Id, StringComparer.OrdinalIgnoreCase);
+        var merged = new List<ConnectionProfile>();
+        foreach (var profile in from.Connections)
         {
             if (existing.TryGetValue(profile.Id, out var live)) { CopyInto(profile, live); merged.Add(live); }
             else merged.Add(profile);
         }
-        var backends = to.Backends;
+        var backends = to.Connections;
         CopyInto(from, to);
-        to.Backends = backends; // keep the list instance
+        to.Connections = backends; // keep the list instance
         backends.Clear();
         backends.AddRange(merged);
     }
@@ -121,13 +124,14 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     private bool _unsaved; // the last save failed: memory is newer than the disk, so a re-read must not replace it
     private readonly List<Action<HotlineSettings>> _automatic = [];
     private readonly HashSet<string> _automaticRemoved = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _pendingRemoved = new(StringComparer.OrdinalIgnoreCase); // removals not yet done on disk
 
     private void ApplyAutomatic(Action<HotlineSettings> change)
     {
-        var before = Current.Chat.Backends.Select(b => b.Id).ToList();
+        var before = Current.Chat.Connections.Select(b => b.Id).ToList();
         change(Current);
         SettingsStore.Normalize(Current);
-        var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var kept = Current.Chat.Connections.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         _automaticRemoved.UnionWith(before.Where(id => !kept.Contains(id)));
     }
 
@@ -151,11 +155,11 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
             return deferred;
         }
         if (fromDisk is not null && !_unsaved) Reload(fromDisk);
-        var before = Current.Chat.Backends.Select(b => b.Id).ToList();
+        var before = Current.Chat.Connections.Select(b => b.Id).ToList();
         change(Current);
         SettingsStore.Normalize(Current);
         // Only a connection the change removed loses its file; one that merely isn't in memory yet is never deleted.
-        var kept = Current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        var kept = Current.Chat.Connections.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
         var removed = before.Where(id => !kept.Contains(id)).ToList();
         var problems = SaveCurrent(removed.Concat(_automaticRemoved).ToList());
         Changed?.Invoke();
@@ -165,14 +169,17 @@ public sealed class SettingsService(SettingsStore store, HotlineSettings setting
     private IReadOnlyList<string> SaveCurrent(IEnumerable<string> removed)
     {
         IReadOnlyList<string> problems;
+        // A removal that failed is retried with every later save until it succeeds; a connection added back stays.
+        var alive = Current.Chat.Connections.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        _pendingRemoved.UnionWith(removed);
+        _pendingRemoved.RemoveWhere(alive.Contains);
         try
         {
-            // A file that isn't what this process wrote (a hand edit, half-finished or with ignored values) is copied to
-            // <file>.<time>.bak by the store before it is replaced; without that copy it is left alone and a problem is listed.
-            store.Save(Current, removed);
+            // A file that differs from its last-written hash is backed up before replacement.
+            store.Save(Current, _pendingRemoved.ToList());
             _unsaved = store.WriteProblems.Count > 0; // something was skipped: memory is ahead of the disk
             problems = [.. store.WriteProblems];
-            if (!_unsaved) { _automatic.Clear(); _automaticRemoved.Clear(); }
+            if (!_unsaved) { _automatic.Clear(); _automaticRemoved.Clear(); _pendingRemoved.Clear(); }
             foreach (var problem in problems) log.Info($"settings: {problem}");
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)

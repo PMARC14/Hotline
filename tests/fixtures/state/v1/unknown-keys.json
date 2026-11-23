@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "futureTopState": "kept",
+  "shown": {
+    "firstRun": "2026-11-14T20:00:00Z",
+    "supportNote": null,
+    "upgradeNotice": null,
+    "futureShownFlag": "2026-11-14T21:00:00Z"
+  },
+  "panel": {
+    "futurePanelKey": 1,
+    "width": {
+      "value": 640,
+      "over": "40%",
+      "futureWidthMeta": true
+    },
+    "chatHeight": {
+      "value": 500,
+      "over": null,
+      "futureHeightMeta": "ok"
+    },
+    "anchor": {
+      "value": {
+        "monitor": "active",
+        "x": 0.3,
+        "y": 0.8,
+        "futureAnchorValueProp": 7
+      },
+      "over": {
+        "monitor": "active",
+        "x": 0.5,
+        "y": 0.8,
+        "futureAnchorOverProp": 8
+      },
+      "futureAnchorEntryProp": "yes"
+    }
+  },
+  "grants": [
+    {
+      "server": "files",
+      "tool": "read_file",
+      "launch": "a1b2c3d4e5f60718293a4b5c6d7e8f901234567890abcdef1234567890abcdef",
+      "at": "2026-11-14T20:00:00Z",
+      "futureGrantProp": "preserved"
+    }
+  ],
+  "lastWritten": {
+    "settings.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "upgrade": {
+    "at": "2026-11-14T20:00:00Z",
+    "backup": null,
+    "futureUpgradeProp": true
+  }
+}

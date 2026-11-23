@@ -9,7 +9,7 @@ namespace Hotline.Core.Backends;
 public sealed record BackendDeps(
     ILineProcessFactory Processes, AgyWorkspace AgyWorkspace, FileLog Log,
     Func<string, bool> FileExists, string? LocalAppData, string? PathEnv,
-    Func<BackendProfile, string> SystemPrompt, string HomeDirectory,
+    Func<ConnectionProfile, string> SystemPrompt, string HomeDirectory,
     ISecretStore? Secrets = null, HttpClient? Http = null, Tools.IToolHost? ToolHost = null, AgyProjects? AgyProjects = null,
     string? CodexWorkspace = null);
 
@@ -29,7 +29,7 @@ public static class BackendFactory
     private static HttpClient Http(BackendDeps deps) => deps.Http ?? SharedHttp.Value;
     private static ISecretStore Secrets(BackendDeps deps) => deps.Secrets ?? new InMemorySecretStore();
 
-    public static IChatBackend? Create(BackendProfile p, BackendDeps deps) => p.Type switch
+    public static IChatBackend? Create(ConnectionProfile p, BackendDeps deps) => p.Type switch
     {
         BackendType.Antigravity => new AgyBackend(p,
             () => AgyLocator.Find(p.CliPath, deps.FileExists, deps.LocalAppData, deps.PathEnv),
@@ -49,19 +49,19 @@ public static class BackendFactory
 }
 
 /// <summary>One live backend instance per profile id (backends like agy hold a running process).</summary>
-public sealed class BackendCache(Func<IReadOnlyList<BackendProfile>> profiles, Func<BackendProfile, IChatBackend?> create)
+public sealed class BackendCache(Func<IReadOnlyList<ConnectionProfile>> profiles, Func<ConnectionProfile, IChatBackend?> create)
 {
     private readonly Lock _gate = new();
-    private readonly Dictionary<string, IChatBackend?> _instances = [];
+    private readonly Dictionary<string, IChatBackend?> _instances = new(StringComparer.OrdinalIgnoreCase);
 
     public IChatBackend? Get(string id)
     {
         lock (_gate)
         {
             if (_instances.TryGetValue(id, out var existing)) return existing;
-            var profile = profiles().FirstOrDefault(p => p.Id == id);
+            var profile = profiles().FirstOrDefault(p => p.Id.Equals(id, StringComparison.OrdinalIgnoreCase));
             if (profile is null) return null;
-            return _instances[id] = create(profile);
+            return _instances[profile.Id] = create(profile);
         }
     }
 

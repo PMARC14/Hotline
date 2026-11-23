@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>テキストのみ、.hotline フォルダーに保存します。</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>バックグラウンドで回答が完了したら通知する</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>パネルが非表示のときや別のアプリが前面にあるときに回答が完了すると、Windows の通知を表示します。クリックすると回答を開きます。</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>スケーリングされたピクセル (200～4000) または作業領域に対する割合 (20%～90%)。</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>スケーリングされたピクセル (200～4000) または作業領域に対する割合 (20%～90%)。空欄の場合は開いたときの幅が維持されます。</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>スケーリングされたピクセル (DIP)。</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>200～4000 のスケーリングされたピクセルまたは 20%～90% を入力してください。</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>通知に回答テキストを表示</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>完了通知に回答テキストを含めます。オフの場合はチャットタイトルのみ表示されます。</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>このファイルは凍結前の形式を使用しています。アップグレードが実行されるまで既定値が適用され、ファイルは変更されません。</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>接続 ID {0} は無効です。1～64 文字の英数字、ドット、アンダースコア、またはハイフンを使用してください。Windows のデバイス名および末尾のドットは使用できません。</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} が回答しました</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>回答の準備ができました</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} は回答を完了できませんでした</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>履歴の保存期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>日</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Windows の起動時に開始</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>ツールの使用を「Hotline のツールを使う」にした API 接続は、これらの MCP サーバーのツールを呼び出せます。読み取り専用のツールはそのまま実行され、それ以外はパネルで確認されます (今回のみ許可 / 常に許可 / 拒否)。</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP サーバー</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — ほかの MCP アプリと同じ「mcpServers」形式。承認も同じファイルに保存されます</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 他の MCP アプリと同じ "mcpServers" 形式。承認ルールは settings.json の tools.approvals です</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json を編集</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>フォルダーを開く</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows エージェント レジストリ</value></data>
@@ -431,6 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>「{0}」がインストールされていないか PATH にないため、{1} サーバーを起動できません。mcp.json の「command」を確認してください。</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json を読み取れませんでした: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>承認「{0}」の値が不明なため、「deny」として扱います。</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>mcp.json の "approvals" セクションは無視されます。ルールを settings.json (tools.approvals) に移動してください。</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>サーバー "{0}" の "{1}" に文字列以外の env 値があるため、スキップされました。</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>サーバー "{0}" の env "{1}" に無効なシークレット参照があります。</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>サーバー "{0}" が env "{2}" でシークレット "{1}" を参照していますが、資格情報ロッカーにありません。</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>許可ルール "{0}" は "{1}" と大文字・小文字のみが異なるため、無視されました。</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json は新しいバージョン ({0}) を使用しているため、安全に更新できません。</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>更新前に mcp.json をバックアップできませんでした。</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>更新された mcp.json ファイルを保存できませんでした。</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>mcp.json のサーバー "{0}" に env エントリ "{1}" が見つかりませんでした。</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>その env エントリは変更されたか既に移動されています。何も変更されませんでした。</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>値は "{0}" ({1}) として Windows 資格情報ロッカーに保存されましたが、保存とロールバックに失敗したため mcp.json は変更されませんでした。</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>常時許可</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>保存されたツール許可はありません。</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · 起動 {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>取り消す</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>ツール許可を取り消せませんでした。</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>環境シークレット</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>mcp.json に平文の env エントリは見つかりませんでした。</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json 内の平文)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>資格情報ロッカーに移動</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>env 値を資格情報ロッカーに移動しますか?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>{0} › {1} を Windows 資格情報ロッカーに保存し、mcp.json 内を置き換えます。以前の mcp.json (平文の値を含む) は backups\&lt;time&gt;-save に残り、mcp.json 内のコメントは保持されません。</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>シークレット名</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>英数字、ドット、アンダースコア、またはハイフンを使用してください。</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>この名前のシークレットは既に資格情報ロッカーに存在するため、上書きされます。</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>移動</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} を資格情報ロッカーに移動しました。以前の mcp.json (平文の値を含む) は backups\&lt;time&gt;-save に保存されました。</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>env 値を資格情報ロッカーに移動できませんでした。</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>サーバー名に「/」や「*」は使えません。</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0} 秒以内に起動しませんでした</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 修正されるまでツールは実行されません。</value></data>
@@ -480,6 +517,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} は 0.5、1、2、3、4 のいずれでもありません (cells は width の古い名前です)。デフォルトの幅が使用されます</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>現在のファイルのコピーを先に作成できなかったため、何も変更されませんでした ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>このページを開いている間に toolbar.json が変更されました。再読み込みされたため前回の変更は適用されませんでした。もう一度やり直してください。</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>カスタム ボタン ID "{0}" が重複しています (大文字と小文字は区別されません)。最初の定義が使用されます。</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>まだ回答中です。停止ボタンで停止できます。メッセージはボックス内で待機します。</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} は 0.5、1、2、3、4 の数値幅ではありません。既定の幅が使用されます。</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: キーの組み合わせは既に使用されています。このショートカットは無効です。</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>このツールバー ファイルは古い形式を使用しています。既定のボタン行とショートカットが有効です。ファイルは変更されていません。</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>使用可能な行スペースを埋める</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>ボタン行とショートカットをバックアップできませんでした。</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>ボタン行とショートカットを保存できませんでした。</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>画像は変更されませんでした: toolbar.json を保存できませんでした。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>その他</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>ここには何もありません</value></data>
@@ -598,8 +659,6 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>メッセージ ボックスの下</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>画面 {0} × {1} px ({2}% スケーリング): Windows はインターフェイスを {3} × {4} で描画します</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>画面 {0} × {1} px (100% スケーリング)</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>画面の実ピクセル、Windowsのスケーリングを無視</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>画面の実際のピクセル、Windows のスケーリングを無視</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>メッセージ ボックスの下に移動</value></data>
@@ -664,7 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>バックアップ</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Hotline の設定を別の PC に移行するか、コピーを保持します。バックアップはチェックした項目のみを含む 1 つの .zip ファイルです。その他のデータ (チャット履歴、メモリ、ログ) は含まれません。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>ボタンの行とカスタム ボタン画像</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>ボタン行とショートカット</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline の構成形式が変更されました。古いバージョンの設定とボタン行は既定値に戻ります。AI 接続と MCP サーバーは保持されます。</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>リセット: {0}。</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>元のファイル: {0}。</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>完全なアップグレード バックアップを作成できませんでした。</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>アップグレードできませんでした: {0}。Hotline は次回起動時にこれらのファイルを再試行します。</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>0.6 からのアップグレード</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>アップグレード後の初回起動時に、古い設定とボタン行は組み込みの既定値に戻ります。既定の AI 接続と接続順序のみが引き継がれます。AI 接続と MCP サーバーは保持され、古い MCP 承認は削除されます。元のファイルは変換前に backups/&lt;time&gt;-upgrade にコピーされます。そのバックアップが失敗しても、変換は実行されます。変換できないファイルはそのまま残り、次回起動時に再試行されます。参照用の既定値は起動時に .defaults で更新されます。</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>このバックアップには {0} の平文の環境値が含まれています。このバックアップを共有する前に、[設定] &gt; [ツール] で [資格情報ロッカーに移動] を使用してください。</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>次の MCP サーバーにはこの PC 上の資格情報ロッカー シークレットが必要です: {0}。[設定] &gt; [ツール] でシークレットを追加してください。</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>新しいバージョンはそのまま残されました。</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>ツール (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>サウンド</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 接続</value></data>
@@ -750,7 +819,7 @@ Claude Code、Codex、Antigravity でのチャットはそのツール独自の�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>上または下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>チャットはメッセージ バーから伸びます: 上にスペースがない場合を除き上方向に、スペースがない場合は下方向に伸びます。設定 › ウィンドウ で上または下に固定でき、位置、幅、チャットの高さも設定できます。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>ボタン行</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行 では、バーが6つの領域（メッセージ ボックスの上の行の左、中央、右、およびその下の行の同様の3つ）として表示されます。ボタンやピッカーをドラッグして領域内や別の領域へ移動するか、矢印ボタンを使用します (Alt+矢印で領域を移動、Ctrl+矢印で順序を変更)。非表示にしたものは「非表示」に待機します。各ボタンには独自の幅、枠線または塗りつぶしを設定でき (ドロップダウンにも枠線と塗りつぶしが適用されます)、クイック アクションを実行したりテキストを挿入したりする独自のボタンを追加することもできます。収まらないボタンは ⋯ メニューに移動し、「… ボタンのボックス」(toolbar.json の menu キー) には保持することを選択したボタンが入ります。幅はセル数でカウントされます。ボタンの幅は 0.5、1、2、3、4 セル (width キー、compact、normal、wide は 0.5、1、2 に対応) で、各ピッカーには独自の幅があります。設定 › バックアップ では toolbar.json とボタン画像も保存されます。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › ウィンドウ › ボタン行では、バーが 6 つの領域（メッセージ ボックスの上の行の左・中央・右と、下の行の同じ 3 つ）として表示されます。ボタンやピッカーをドラッグして同じ領域内または別の領域へ移動するか、矢印ボタンを使います（Alt+矢印で領域を変更、Ctrl+矢印で順序を変更）。非表示にした項目は「非表示」に入ります。各ボタンには独自の幅、枠線または塗りつぶしを設定でき（ドロップダウンにも枠線と塗りつぶしが適用されます）、クイック アクションの実行やテキストの挿入を行う独自のボタンを追加できます。収まらないボタンは ⋯ メニューに移動し、「… ボタンのボックス」（toolbar.json の menu キー）にはそこに残すよう選んだボタンが入ります。ボタンの幅は数値 0.5、1、2、3、4（width キー）で、各ピッカーには固有のスパンがあり、style.fill（既定でオン）は行の空きスペースを共有します。設定 › バックアップでは、toolbar.json とボタン画像も保存されます。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>サウンド</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外観 › サウンド で、パネルの開閉時にサウンドを再生します: Windows のサウンドまたはサウンド フォルダー内の .wav ファイル。既定ではオフです。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定ファイル</value></data>

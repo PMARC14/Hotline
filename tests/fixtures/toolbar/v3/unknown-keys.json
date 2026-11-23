@@ -1,0 +1,49 @@
+{
+  "version": 3,
+  "futureTop": "kept",
+  "shortcuts": {
+    "stop": "Ctrl+.",
+    "pin": "Ctrl+K",
+    "captureScreen": "",
+    "futureCommand": "Ctrl+Shift+Y"
+  },
+  "top": {
+    "left": ["effort"],
+    "center": ["model"],
+    "right": ["provider"],
+    "futureGroup": []
+  },
+  "bottom": {
+    "left": ["pin", "captureWindow", "summarize"],
+    "center": ["prompt", "continueIn"],
+    "right": ["recent", "newChat", "settings"],
+    "futureRowProp": true
+  },
+  "menu": [],
+  "style": {
+    "width": 1,
+    "fill": true,
+    "outline": false,
+    "filled": false,
+    "futureStyleProp": 42
+  },
+  "overrides": {
+    "provider": {
+      "span": 5,
+      "futureOverrideProp": "ok"
+    },
+    "pin": {
+      "outline": true,
+      "futureBtnOverride": true
+    }
+  },
+  "buttons": {
+    "summarize": {
+      "label": "Summarize",
+      "icon": "E8A5",
+      "quickAction": "summarize",
+      "shortcut": "Ctrl+Shift+1",
+      "futureButtonProp": { "note": "preserved" }
+    }
+  }
+}

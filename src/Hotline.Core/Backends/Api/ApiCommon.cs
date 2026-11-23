@@ -13,11 +13,11 @@ public static partial class ApiCommon
 {
     private const string RateLimited = "rate limited";
 
-    public static string Endpoint(BackendProfile p) =>
+    public static string Endpoint(ConnectionProfile p) =>
         (string.IsNullOrWhiteSpace(p.Endpoint) ? ConnectionTypes.Of(p.Type).DefaultEndpoint! : p.Endpoint.Trim()).TrimEnd('/');
 
     /// <summary>The API key, or a NotConfigured error when the connection needs one and has none.</summary>
-    public static string? Key(BackendProfile p, ISecretStore secrets)
+    public static string? Key(ConnectionProfile p, ISecretStore secrets)
     {
         var key = secrets.Get(SecretKeys.ApiKey(p.Id));
         if (string.IsNullOrEmpty(key) && !ConnectionTypes.Of(p.Type).ApiKeyOptional)
@@ -26,7 +26,7 @@ public static partial class ApiCommon
     }
 
     /// <summary>A key only travels over https, or plain http to this PC (local servers).</summary>
-    public static void RequireSafeTransport(BackendProfile p, string endpoint, string? key)
+    public static void RequireSafeTransport(ConnectionProfile p, string endpoint, string? key)
     {
         // Checked even without a key: a hand-edited endpoint must fail as a normal error, not as a UriFormatException later.
         if (!Uri.TryCreate(endpoint, UriKind.Absolute, out var uri) || uri.Scheme is not ("http" or "https"))
@@ -37,5 +37,5 @@ public static partial class ApiCommon
                 L.F(Strings.Api_PlainHttp, Name(p), uri.Host));
     }
 
-    public static string Name(BackendProfile p) => string.IsNullOrWhiteSpace(p.Name) ? p.Id : p.Name;
+    public static string Name(ConnectionProfile p) => string.IsNullOrWhiteSpace(p.Name) ? p.Id : p.Name;
 }

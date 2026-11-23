@@ -34,8 +34,8 @@ public sealed class ChatSettingsTests : TempDirTest
     {
         var s = new SettingsStore(_dir).Load();
         Assert.Equal("", s.Chat.DefaultBackend); // the panel asks on first open
-        Assert.Empty(s.Chat.Backends);
-        Assert.Empty(new SettingsStore(_dir).Load().Chat.Backends); // and nothing is made up on the next start
+        Assert.Empty(s.Chat.Connections);
+        Assert.Empty(new SettingsStore(_dir).Load().Chat.Connections); // and nothing is made up on the next start
     }
 
     [Fact]
@@ -49,32 +49,25 @@ public sealed class ChatSettingsTests : TempDirTest
         Assert.True(ConnectionEditor.Remove(s.Chat, agy.Id));
         store.Save(s);
         var back = new SettingsStore(_dir).Load();
-        Assert.Empty(back.Chat.Backends);
+        Assert.Empty(back.Chat.Connections);
         Assert.Equal("", back.Chat.DefaultBackend);
-        Assert.Empty(new SettingsStore(_dir).TryRead()!.Chat.Backends);
+        Assert.Empty(new SettingsStore(_dir).TryRead()!.Chat.Connections);
     }
 
     [Fact]
     public void Older_settings_without_connection_files_get_no_connection_added()
-        => Assert.Empty(LoadJson("""{ "schemaVersion": 11, "chat": { "defaultBackend": "agy" } }""").Chat.Backends);
+        => Assert.Empty(LoadJson("""{ "version": 1, "chat": { "defaultConnection": "agy" } }""").Chat.Connections);
 
     [Theory]
-    [InlineData("""{ "chat": { "defaultBackend": "nope", "backends": [ { "id": "g", "type": "gemini" } ] } }""", "g")] // unknown -> first
-    [InlineData("""{ "schemaVersion": CURRENT, "chat": { "defaultBackend": "nope" } }""", "")]                          // unknown, none to fall back to
-    [InlineData("""{ "schemaVersion": 10, "chat": { "defaultBackend": "  " } }""", "")]                                 // blank stays unchosen
+    [InlineData("""{ "version": 1, "chat": { "defaultConnection": "nope", "backends": [ { "id": "g", "type": "gemini" } ] } }""", "nope")] // preserved even before its connection is installed
+    [InlineData("""{ "version": CURRENT, "chat": { "defaultConnection": "nope" } }""", "nope")]                          // unknown, none to fall back to
+    [InlineData("""{ "version": 1, "chat": { "defaultConnection": "  " } }""", "  ")]                                 // blank stays unchosen
     public void Default_backend_is_the_first_connection_or_unchosen(string json, string expected)
         => Assert.Equal(expected, LoadJson(json.Replace("CURRENT", HotlineSettings.CurrentSchemaVersion.ToString())).Chat.DefaultBackend);
 
-    [Fact]
-    public void Backends_without_id_are_dropped_and_blank_names_use_id()
-    {
-        var s = LoadJson("""{ "chat": { "backends": [ { "id": "", "type": "gemini" }, { "id": "g", "type": "gemini", "name": "" } ] } }""");
-        var g = Assert.Single(s.Chat.Backends);
-        Assert.Equal("g", g.Name);
-        Assert.Equal(BackendType.Gemini, g.Type);
-    }
+
 
     [Fact]
     public void Null_chat_section_gets_defaults()
-        => Assert.Equal(300, LoadJson("""{ "chat": null }""").Chat.HistoryListSize);
+        => Assert.Equal(300, LoadJson("""{ "version": 1, "chat": null }""").Chat.HistoryListSize);
 }

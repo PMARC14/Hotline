@@ -55,7 +55,7 @@ public sealed class ApiPolishTests : TempDirTest
     {
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "gpt-x", Effort = effort };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "gpt-x", Effort = effort };
         return new OpenAiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")));
     }
 
@@ -63,7 +63,7 @@ public sealed class ApiPolishTests : TempDirTest
     {
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "AIza-test");
-        var p = new BackendProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model, Effort = effort };
+        var p = new ConnectionProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model, Effort = effort };
         return new GeminiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")));
     }
 
@@ -203,6 +203,15 @@ public sealed class ApiPolishTests : TempDirTest
         var (text, status) = await Collect(b.StreamAsync([User("hi")], default));
         Assert.Equal("Partial answer.", text);
         Assert.Equal([Strings.Api_AnswerCutOff], status);
+    }
+
+    [Fact]
+    public async Task OpenAi_text_answer_at_the_token_limit_keeps_its_text_and_says_so()
+    {
+        var handler = new Handler(_ => Sse(OpenAiChunk("Partial answer."), """{"choices":[{"delta":{},"finish_reason":"length"}]}""", "[DONE]"));
+        var (text, status) = await Collect(OpenAi(handler).StreamAsync([User("hi")], default));
+        Assert.Equal("Partial answer.", text);
+        Assert.Contains(status, s => s.Contains("length", StringComparison.Ordinal));
     }
 
     [Theory]

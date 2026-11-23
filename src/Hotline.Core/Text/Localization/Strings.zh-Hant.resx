@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>僅文字,儲存在你的 .hotline 資料夾中。</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>回答在背景完成時通知</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>面板隱藏或其他應用程式在前景時,回答完成後顯示 Windows 通知。按一下即可開啟回答。</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>縮放像素 (200–4000) 或工作區比例 (20%–90%)。</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>縮放像素 (200–4000) 或工作區比例 (20%–90%)；留空則保持開啟時的寬度。</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>縮放像素 (DIP)。</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>請輸入 200–4000 縮放像素或 20%–90%。</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>在通知中顯示回答文字</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>在完成通知中包含回答文字；關閉則只顯示聊天標題。</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>此檔案使用凍結前格式。在執行升級前將套用預設值；檔案維持不變。</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>連線 ID {0} 無效。請使用 1–64 個字母、數字、點、底線或連字號；不允許使用 Windows 裝置名稱及結尾的點。</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} 已回答</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>回答已就緒</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} 無法完成回答</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>聊天記錄保留期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>隨 Windows 啟動</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>「工具使用」設為「使用 Hotline 的工具」的 API 連線可以呼叫這些 MCP 伺服器的工具。唯讀工具會直接執行;其他動作會在面板中詢問你 (允許一次 / 一律 / 拒絕)。</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP 伺服器</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} —— 與其他 MCP 應用程式相同的「mcpServers」格式;核准設定儲存在同一個檔案中</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 與其他 MCP 應用程式相同的 "mcpServers" 格式；核准規則為 settings.json 中的 tools.approvals</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>編輯 mcp.json</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>開啟資料夾</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows 代理程式登錄</value></data>
@@ -431,6 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>未安裝「{0}」或其不在 PATH 中,因此 {1} 伺服器無法啟動。請檢查 mcp.json 中的「command」。</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>無法讀取 mcp.json:{0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>核准「{0}」的值不明,因此視為「deny」。</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>已忽略 mcp.json 中的 "approvals" 區段；請將規則移至 settings.json (tools.approvals)。</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>伺服器 "{0}" 的 "{1}" 包含非字串 env 值，因此已略過。</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>伺服器 "{0}" 在 env "{1}" 中包含無效的祕密參考。</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>伺服器 "{0}" 在 env "{2}" 中參考了祕密 "{1}"，但該祕密不在認證存放區中。</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>允許規則 "{0}" 與 "{1}" 僅大小寫不同，因此已忽略。</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json 使用較新版本 ({0})，無法安全更新。</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>更新前無法備份 mcp.json。</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>無法儲存更新後的 mcp.json 檔案。</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>在 mcp.json 中的伺服器 "{0}" 上找不到 env 項目 "{1}"。</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>該 env 項目已變更或已移動；未變更任何內容。</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>該值現已作為 "{0}" ({1}) 儲存在 Windows 認證存放區中，但因儲存和復原失敗，mcp.json 未變更。</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>一律允許授與</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>沒有已儲存的工具授與。</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · 啟動 {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>撤銷</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>無法撤銷工具授與。</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>環境祕密</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>在 mcp.json 中找不到純文字 env 項目。</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json 中的純文字)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>移至認證存放區</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>要將 env 值移至認證存放區嗎?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>將 {0} › {1} 儲存在 Windows 認證存放區中，並在 mcp.json 中取代它。先前的 mcp.json (包含純文字值) 會保留在 backups\&lt;time&gt;-save 中，且不會保留 mcp.json 中的註解。</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>祕密名稱</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>請使用字母、數字、點、底線或連字號。</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>認證存放區中已存在此名稱的祕密，將會覆寫。</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>移動</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>已將 {0} › {1} 移至認證存放區。先前的 mcp.json (包含純文字值) 已儲存至 backups\&lt;time&gt;-save。</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>無法將 env 值移至認證存放區。</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>伺服器名稱不能包含「/」或「*」。</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>未在 {0:0} 秒內啟動</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 修正前不會執行任何工具。</value></data>
@@ -480,6 +517,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} 不是 0.5、1、2、3 或 4（cells 是 width 的舊名稱）；將使用預設寬度</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>無法先建立目前檔案的複本，因此未變更任何內容 ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>開啟此頁面時 toolbar.json 已變更。已重新載入，且您上次所做的變更未套用：請重新變更。</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>自訂按鈕 ID "{0}" 重複 (不區分大小寫)；將使用第一個定義。</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>仍在回答。使用停止按鈕可停止；你的訊息會在方塊中等待。</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} 不是 0.5、1、2、3 或 4 的數值寬度；將使用預設寬度。</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: 快速鍵組合已被使用；此快速鍵已停用。</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>此工具列檔案使用較舊格式。預設按鈕列和快速鍵已啟用；檔案未變更。</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>填滿可用列空間</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>無法備份按鈕列和快速鍵。</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>無法儲存按鈕列和快速鍵。</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>圖片未變更：無法儲存 toolbar.json。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>這裡沒有任何內容</value></data>
@@ -598,8 +659,6 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>螢幕 {0} × {1} px，縮放比例 {2}%：Windows 繪製介面大小為 {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>螢幕 {0} × {1} px（100% 縮放）</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>螢幕實際像素，忽略 Windows 縮放</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>螢幕的實際像素，忽略 Windows 縮放</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
@@ -664,7 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>備份</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與自訂按鈕圖片</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與快速鍵</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline 的設定格式已變更。舊版本的設定和按鈕列將回復為預設值。AI 連線和 MCP 伺服器會保留。</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>已重設: {0}。</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>原始檔案: {0}。</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>無法建立完整的升級備份。</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>無法升級: {0}。Hotline 將在下次啟動時重試這些檔案。</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>從 0.6 升級</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>升級後首次啟動時，舊設定和按鈕列將回復為內建預設值。僅保留預設 AI 連線和連線順序。AI 連線和 MCP 伺服器會保留；舊的 MCP 核准會移除。轉換前，原始檔案會複製到 backups/&lt;time&gt;-upgrade。即使該備份失敗，轉換仍會執行。無法轉換的檔案會維持原狀，並在下次啟動時重試。參考預設值會在啟動時於 .defaults 中重新整理。</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>此備份包含 {0} 的純文字環境值。分享此備份前，請在 [設定] &gt; [工具] 中使用 [移至認證存放區]。</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>這些 MCP 伺服器需要此電腦上的認證存放區祕密: {0}。請在 [設定] &gt; [工具] 中新增其祕密。</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>較新版本已維持原狀。</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>工具 (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>音效</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 連線</value></data>
@@ -750,7 +819,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列 將工具列顯示為六個區域：訊息方塊上方列的左側、中央與右側，以及下方相同的這三個區域。拖曳按鈕或選擇器可在區域內移動或移至另一個區域，或使用其方向鍵按鈕（Alt+方向鍵切換區域，Ctrl+方向鍵變更順序）。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的寬度、外框或填滿（下拉式選單也支援外框和填滿），您也可以新增執行快速動作或插入文字的自訂按鈕。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 機碼）則存放您選擇保留在該處的按鈕。寬度以儲存格計算：按鈕寬度為 0.5、1、2、3 或 4 個儲存格（width 機碼，其中 compact、normal 和 wide 代表 0.5、1 和 2），且每個選擇器都有自己的寬度。設定 › 備份 也會儲存 toolbar.json 和您的按鈕圖片。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列會將工具列顯示為六個區域：訊息方塊上方一列的左、中、右，以及下方一列的相同三個區域。拖曳按鈕或選擇器即可在同區域內或跨區域移動，或使用其方向按鈕（Alt+方向鍵變更區域，Ctrl+方向鍵變更順序）。隱藏的項目會留在「未顯示」中。每個按鈕都能有各自的寬度、外框或填滿（下拉式選單也會套用外框與填滿），你也可以新增自己的按鈕來執行快速動作或插入文字。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 鍵）會保留你選擇放在那裡的按鈕。按鈕寬度為數字 0.5、1、2、3 或 4（width 鍵），每個選擇器都有各自的跨度，而 style.fill（預設開啟）會分配該列的剩餘空間。設定 › 備份也會儲存 toolbar.json 與你的按鈕圖片。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>

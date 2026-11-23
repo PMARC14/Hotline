@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Alleen tekst, in je .hotline-map.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Melden wanneer een antwoord op de achtergrond klaar is</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Een Windows-melding wanneer een antwoord klaar is terwijl het paneel verborgen is of een andere app op de voorgrond staat. Klik erop om het antwoord te openen.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Geschaalde pixels (200–4000) of een deel van het werkgebied (20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Geschaalde pixels (200–4000) of een deel van het werkgebied (20%–90%); leeg laat de beginbreedte staan.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Geschaalde pixels (DIP's).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Voer 200–4000 geschaalde pixels of 20%–90% in.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Antwoordtekst tonen in meldingen</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Antwoordtekst opnemen in de voltooiingsmelding; uit toont alleen de chattitel.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>Dit bestand gebruikt de oude indeling van vóór de bevriezing. Standaardwaarden gelden totdat de upgrade wordt uitgevoerd; het bestand is ongewijzigd.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Verbindings-id {0} is ongeldig. Gebruik 1–64 letters, cijfers, punten, onderstrepingstekens of koppeltekens; Windows-apparaatnamen en afsluitende punten worden geweigerd.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} heeft geantwoord</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Antwoord gereed</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} kon het antwoord niet afmaken</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Geschiedenis bewaren gedurende</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>dagen</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Starten met Windows</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>API-verbindingen waarvoor Hulpmiddelen gebruiken op "Hotline-hulpmiddelen gebruiken" staat, kunnen de hulpmiddelen van deze MCP-servers aanroepen. Alleen-lezen hulpmiddelen worden uitgevoerd; voor al het andere vraagt het paneel om toestemming (Eenmaal toestaan / Altijd / Weigeren).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP-servers</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — hetzelfde "mcpServers"-formaat als andere MCP-apps; goedkeuringen staan in hetzelfde bestand</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — zelfde "mcpServers"-indeling als andere MCP-apps; goedkeuringsregels zijn tools.approvals in settings.json</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json bewerken</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>Map openen</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows-agentregister</value></data>
@@ -431,6 +440,34 @@ Weigeren:
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" is niet geïnstalleerd of staat niet in PATH, dus de server {1} kan niet starten. Controleer "command" in mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json kon niet worden gelezen: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>Goedkeuring "{0}" heeft een onbekende waarde en wordt daarom als "deny" behandeld.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>De sectie "approvals" in mcp.json wordt genegeerd; verplaats regels naar settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" heeft een omgevingswaarde voor "{1}" die geen tekenreeks is, en is daarom overgeslagen.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" heeft een ongeldige geheimverwijzing in omgevingsvariabele "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" verwijst naar geheim "{1}" in omgevingsvariabele "{2}", dat niet in de Referentiekluis staat.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Toestaan-regel "{0}" verschilt alleen in hoofdlettergebruik van "{1}" en is daarom genegeerd.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json gebruikt een nieuwere versie ({0}) en kan niet veilig worden bijgewerkt.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Kan geen back-up maken van mcp.json vóór het bijwerken.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Kan het bijgewerkte bestand mcp.json niet opslaan.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Kan omgevingsvermelding "{1}" op server "{0}" niet vinden in mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Die omgevingsvermelding is gewijzigd of al verplaatst; er is niets veranderd.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>De waarde is nu opgeslagen in Windows Referentiekluis als "{0}" ({1}), maar mcp.json is niet gewijzigd omdat opslaan en terugdraaien zijn mislukt.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Machtigingen voor altijd toestaan</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Geen opgeslagen hulpmiddelmachtigingen.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · starten {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Intrekken</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Kan hulpmiddelmachtiging niet intrekken.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Omgevingsgeheimen</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>Geen env-vermeldingen in platte tekst gevonden in mcp.json.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (platte tekst in mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Verplaatsen naar Referentiekluis</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Omgevingswaarde verplaatsen naar Referentiekluis?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Slaat {0} › {1} op in Windows Referentiekluis en vervangt deze in mcp.json. De vorige mcp.json (inclusief de waarde in platte tekst) blijft staan in backups\&lt;time&gt;-save en opmerkingen in mcp.json blijven niet behouden.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Naam van geheim</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Gebruik letters, cijfers, punten, onderstrepingstekens of koppeltekens.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Er bestaat al een geheim met deze naam in de Referentiekluis; dit wordt overschreven.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Verplaatsen</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} verplaatst naar Referentiekluis. De vorige mcp.json (inclusief de waarde in platte tekst) is opgeslagen in backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Kan omgevingswaarde niet verplaatsen naar Referentiekluis.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Een servernaam mag geen '/' of '*' bevatten.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>is niet binnen {0:0} s gestart</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Er worden geen hulpmiddelen uitgevoerd tot dit is hersteld.</value></data>
@@ -480,6 +517,30 @@ Weigeren:
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} is niet 0.5, 1, 2, 3 of 4 (cells is de oude naam van width); de standaardbreedte wordt gebruikt</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>er kon niet eerst een kopie van het huidige bestand worden gemaakt, dus er is niets gewijzigd ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json is gewijzigd terwijl deze pagina geopend was. Het bestand is opnieuw geladen en uw laatste wijziging is niet toegepast: voer deze opnieuw uit.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Dubbele aangepaste knop-id "{0}" (niet hoofdlettergevoelig); de eerste definitie wordt gebruikt.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Bezig met antwoorden. De knop Stoppen stopt dit; je bericht wacht in het vak.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is geen numerieke breedte van 0.5, 1, 2, 3 of 4; de standaardbreedte wordt gebruikt.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: toetscombinatie is al in gebruik; deze sneltoets is uitgeschakeld.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>Dit werkbalkbestand gebruikt een oudere indeling. De standaard knoppenrijen en sneltoetsen zijn actief; het bestand is niet gewijzigd.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Beschikbare rijruimte opvullen</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Kan geen back-up maken van de knoppenrijen en sneltoetsen.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Kan de knoppenrijen en sneltoetsen niet opslaan.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>De afbeelding is niet gewijzigd: toolbar.json kon niet worden opgeslagen.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niets hier</value></data>
@@ -598,8 +659,6 @@ Weigeren:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Onder het berichtvak</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Leeg</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Scherm {0} × {1} px bij {2}% schaling: Windows tekent de interface op {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Scherm {0} × {1} px bij 100% schaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Werkelijke schermpixels, Windows-schaling genegeerd</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Werkelijke schermpixels, Windows-schaling genegeerd</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Naar onder het berichtvak verplaatsen</value></data>
@@ -664,7 +723,17 @@ Weigeren:
   <data name="Nav_Backup" xml:space="preserve"><value>Back-up</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Verplaats uw Hotline-configuratie naar een andere pc of bewaar een kopie. Een back-up is één .zip-bestand met de onderdelen die u aanvinkt; niets anders (chatgeschiedenis, geheugen, logboeken) wordt meegenomen.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Instellingen</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en aangepaste knopafbeeldingen</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Knoppenrijen en sneltoetsen</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>De configuratie-indeling van Hotline is gewijzigd. Instellingen en knoppenrijen uit oudere versies keren terug naar de standaardwaarden. AI-verbindingen en MCP-servers blijven behouden.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Opnieuw ingesteld: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Originele bestanden: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Er kon geen volledige upgrade-back-up worden gemaakt.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Kan niet upgraden: {0}. Hotline probeert deze bestanden bij de volgende start opnieuw.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgraden vanaf 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Bij de eerste start na de upgrade keren oude instellingen en knoppenrijen terug naar de ingebouwde standaardwaarden. Alleen de standaard AI-verbinding en verbindingsvolgorde worden overgenomen. AI-verbindingen en MCP-servers blijven behouden; oude MCP-goedkeuringen worden verwijderd. Originele bestanden worden vóór conversie gekopieerd naar backups/&lt;time&gt;-upgrade. Als die back-up mislukt, wordt de conversie toch uitgevoerd. Bestanden die niet kunnen worden geconverteerd blijven ongemoeid en worden bij de volgende start opnieuw geprobeerd. Referentiestandaarden worden bij het opstarten vernieuwd in .defaults.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Deze back-up bevat omgevingswaarden in platte tekst voor {0}. Gebruik Verplaatsen naar Referentiekluis in Instellingen &gt; Hulpprogramma's voordat je deze back-up deelt.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Deze MCP-servers hebben geheimen uit de Referentiekluis nodig op deze pc: {0}. Voeg hun geheimen toe in Instellingen &gt; Hulpprogramma's.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Een nieuwere versie is ongemoeid gelaten.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI-verbindingen</value></data>
@@ -750,7 +819,7 @@ Een verplaatst paneel opent de volgende keer op zijn standaardpositie, tenzij he
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Omhoog of omlaag</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>De chat groeit vanaf de berichtenbalk: omhoog, tenzij er daarboven geen ruimte is, en dan omlaag. Instellingen › Venster kan dit vastzetten op omhoog of omlaag en stelt de positie, breedte en chathoogte in.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Knoppenrijen</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoprijen toont de balk als zes gebieden: links, midden en rechts van de rij boven het berichtvak, en dezelfde drie eronder. Sleep een knop of kiezer om deze binnen een gebied of naar een ander gebied te verplaatsen, of gebruik de pijltoetsen (Alt+pijl wijzigt het gebied, Ctrl+pijl wijzigt de volgorde). Wat u verbergt, wacht in “Niet weergegeven”. Elke knop kan een eigen breedte, omlijning of opvulling hebben (de vervolgkeuzelijsten nemen de omlijning en opvulling ook over), en u kunt eigen knoppen toevoegen die een snelle actie uitvoeren of tekst invoegen. Knoppen die niet passen, worden verplaatst naar een ⋯-menu, en “Het vak van de …-knop” (de menu-sleutel in toolbar.json) bevat de knoppen die u daar wilt bewaren. Breedtes worden geteld in cellen: een knop is 0.5, 1, 2, 3 of 4 cellen breed (de width-sleutel, waarbij compact, normal en wide staan voor 0.5, 1 en 2), en elke kiezer heeft zijn eigen breedte. Instellingen › Back-up slaat ook toolbar.json en uw knopafbeeldingen op.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Instellingen › Venster › Knoppenrijen toont de balk als zes gebieden: links, midden en rechts van de rij boven het berichtvak, en dezelfde drie eronder. Sleep een knop of kiezer om deze binnen een gebied of naar een ander te verplaatsen, of gebruik de pijlknoppen (Alt+pijl wijzigt gebied, Ctrl+pijl wijzigt de volgorde). Wat u verbergt wacht in “Niet getoond”. Elke knop kan een eigen breedte, een omtrek of een vulling hebben (de keuzelijsten nemen de omtrek en vulling ook over), en u kunt eigen knoppen toevoegen die een snelle actie uitvoeren of tekst invoegen. Knoppen die niet passen gaan naar een ⋯-menu, en “Het vak van de knop …” (de sleutel menu in toolbar.json) bevat de knoppen die u daar wilt houden. Knopbreedtes zijn de getallen 0.5, 1, 2, 3 of 4 (de sleutel width), elke kiezer heeft zijn eigen bereik, en style.fill (standaard aan) verdeelt de vrije ruimte van een rij. Instellingen › Back-up slaat ook toolbar.json en uw knopafbeeldingen op.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Geluiden</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Instellingen › Weergave › Geluiden speelt een geluid af wanneer het paneel opent of sluit: een Windows-geluid of een .wav in je geluidenmap. Standaard uitgeschakeld.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Instellingen zijn bestanden</value></data>

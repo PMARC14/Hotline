@@ -21,7 +21,7 @@ public class ModelCatalogTests
     public async Task OpenAi_compatible_sends_bearer_key_to_endpoint_models()
     {
         var (catalog, http, secrets, _) = New(_ => Json("""{"data":[{"id":"gpt-x"}]}"""));
-        var p = new BackendProfile { Id = "oa", Type = BackendType.OpenAiCompatible, Endpoint = "https://api.example.com/v1/" };
+        var p = new ConnectionProfile { Id = "oa", Type = BackendType.OpenAiCompatible, Endpoint = "https://api.example.com/v1/" };
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
         var models = await catalog.GetAsync(p, refresh: false, default);
         Assert.Equal("gpt-x", Assert.Single(models).Id);
@@ -34,7 +34,7 @@ public class ModelCatalogTests
     {
         var (catalog, http, secrets, _) = New(_ => Json("""{"models":[]}"""));
         secrets.Set(SecretKeys.ApiKey("g"), "AIza");
-        await catalog.GetAsync(new BackendProfile { Id = "g", Type = BackendType.Gemini }, false, default);
+        await catalog.GetAsync(new ConnectionProfile { Id = "g", Type = BackendType.Gemini }, false, default);
         Assert.StartsWith("https://generativelanguage.googleapis.com/v1beta/models", http.Requests[0].RequestUri!.ToString());
         Assert.Equal("AIza", http.Requests[0].Headers.GetValues("x-goog-api-key").Single());
     }
@@ -44,7 +44,7 @@ public class ModelCatalogTests
     {
         var (catalog, http, secrets, _) = New(_ => Json("""{"data":[]}"""));
         secrets.Set(SecretKeys.ApiKey("a"), "sk-ant");
-        await catalog.GetAsync(new BackendProfile { Id = "a", Type = BackendType.Anthropic }, false, default);
+        await catalog.GetAsync(new ConnectionProfile { Id = "a", Type = BackendType.Anthropic }, false, default);
         Assert.Equal("sk-ant", http.Requests[0].Headers.GetValues("x-api-key").Single());
         Assert.Equal("2023-06-01", http.Requests[0].Headers.GetValues("anthropic-version").Single());
     }
@@ -53,7 +53,7 @@ public class ModelCatalogTests
     public async Task Missing_required_key_is_reported_without_calling()
     {
         var (catalog, http, _, _) = New(_ => Json("{}"));
-        var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(new BackendProfile { Id = "g", Type = BackendType.Gemini }, false, default));
+        var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(new ConnectionProfile { Id = "g", Type = BackendType.Gemini }, false, default));
         Assert.Contains("API key", ex.Message);
         Assert.Empty(http.Requests);
     }
@@ -62,7 +62,7 @@ public class ModelCatalogTests
     public async Task Local_endpoint_works_without_key()
     {
         var (catalog, http, _, _) = New(_ => Json("""{"data":[{"id":"qwen"}]}"""));
-        var models = await catalog.GetAsync(new BackendProfile { Id = "l", Type = BackendType.Local }, false, default);
+        var models = await catalog.GetAsync(new ConnectionProfile { Id = "l", Type = BackendType.Local }, false, default);
         Assert.Equal("qwen", Assert.Single(models).Id);
         Assert.Null(http.Requests[0].Headers.Authorization);
     }
@@ -75,15 +75,30 @@ public class ModelCatalogTests
         var (catalog, _, secrets, _) = New(_ => status is { } code ? Json("""{"error":"bad key"}""", code) : throw new HttpRequestException("connection refused"));
         secrets.Set(SecretKeys.ApiKey("oa"), "bad");
         var ex = await Assert.ThrowsAsync<ModelListException>(() =>
-            catalog.GetAsync(new BackendProfile { Id = "oa", Type = status is null ? BackendType.Local : BackendType.OpenAiCompatible }, false, default));
+            catalog.GetAsync(new ConnectionProfile { Id = "oa", Type = status is null ? BackendType.Local : BackendType.OpenAiCompatible }, false, default));
         Assert.Contains(expected, ex.Message);
+    }
+
+    [Fact]
+    public async Task Cache_ignores_connection_id_case_but_preserves_endpoint_path_case()
+    {
+        var ct = TestContext.Current.CancellationToken;
+        var (catalog, http, _, _) = New(_ => Json("""{"data":[{"id":"x"}]}"""));
+        var p = new ConnectionProfile { Id = "Claude", Type = BackendType.Local, Endpoint = "http://localhost/v1" };
+        var first = await catalog.GetAsync(p, false, ct);
+        p.Id = "CLAUDE";
+        Assert.Same(first, await catalog.GetAsync(p, false, ct));
+        Assert.Single(http.Requests);
+        p.Endpoint = "http://localhost/V1";
+        await catalog.GetAsync(p, false, ct);
+        Assert.Equal(2, http.Requests.Count);
     }
 
     [Fact]
     public async Task Results_are_cached_until_refresh_or_ttl()
     {
         var (catalog, http, _, clock) = New(_ => Json("""{"data":[{"id":"x"}]}"""));
-        var p = new BackendProfile { Id = "l", Type = BackendType.Local };
+        var p = new ConnectionProfile { Id = "l", Type = BackendType.Local };
         await catalog.GetAsync(p, false, default);
         await catalog.GetAsync(p, false, default);
         Assert.Single(http.Requests);
@@ -98,8 +113,8 @@ public class ModelCatalogTests
     public async Task Agy_uses_cli_runner_and_claude_code_uses_aliases()
     {
         var (catalog, _, _, _) = New(_ => Json("{}"));
-        Assert.Equal("m1", Assert.Single(await catalog.GetAsync(new BackendProfile { Id = "agy", Type = BackendType.Antigravity }, false, default)).Id);
-        Assert.Contains(await catalog.GetAsync(new BackendProfile { Id = "cc", Type = BackendType.ClaudeCode }, false, default), m => m.Id == "sonnet");
+        Assert.Equal("m1", Assert.Single(await catalog.GetAsync(new ConnectionProfile { Id = "agy", Type = BackendType.Antigravity }, false, default)).Id);
+        Assert.Contains(await catalog.GetAsync(new ConnectionProfile { Id = "cc", Type = BackendType.ClaudeCode }, false, default), m => m.Id == "sonnet");
     }
 
     [Fact]
@@ -108,11 +123,11 @@ public class ModelCatalogTests
         var (catalog, http, secrets, _) = New(_ => Json("""{"data":[]}"""));
         secrets.Set(SecretKeys.ApiKey("oa"), "sk");
         var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(
-            new BackendProfile { Id = "oa", Name = "X", Type = BackendType.OpenAiCompatible, Endpoint = "http://example.com/v1" }, false, default));
+            new ConnectionProfile { Id = "oa", Name = "X", Type = BackendType.OpenAiCompatible, Endpoint = "http://example.com/v1" }, false, default));
         Assert.Contains("https", ex.Message);
         Assert.Empty(http.Requests);
         secrets.Set(SecretKeys.ApiKey("l"), "sk");
-        await catalog.GetAsync(new BackendProfile { Id = "l", Type = BackendType.Local, Endpoint = "http://127.0.0.1:8080/v1" }, false, default); // loopback ok
+        await catalog.GetAsync(new ConnectionProfile { Id = "l", Type = BackendType.Local, Endpoint = "http://127.0.0.1:8080/v1" }, false, default); // loopback ok
     }
 
     // ---- Test connection (Settings › AI connections) ------------------------------------------
@@ -122,7 +137,7 @@ public class ModelCatalogTests
     {
         var (catalog, _, secrets, _) = New(_ => Json("""{"data":[{"id":"gpt-x"},{"id":"gpt-y"}]}"""));
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
-        BackendProfile P(string? model) => new() { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = model };
+        ConnectionProfile P(string? model) => new() { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = model };
         Assert.Equal("Connected: 2 models, including gpt-y.", await catalog.TestAsync(P("gpt-y"), default));
         Assert.Equal("Connected: 2 models, but gpt-z isn't one of them.", await catalog.TestAsync(P("gpt-z"), default));
         Assert.Equal("Connected: 2 models.", await catalog.TestAsync(P(null), default));
@@ -134,7 +149,7 @@ public class ModelCatalogTests
         var calls = 0;
         var (catalog, _, secrets, _) = New(_ => { calls++; return Json("""{"data":[]}"""); });
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible };
         await catalog.GetAsync(p, refresh: false, default);
         await catalog.TestAsync(p, default);
         Assert.Equal(2, calls);
@@ -145,7 +160,7 @@ public class ModelCatalogTests
     {
         var (catalog, _, secrets, _) = New(_ => Json("""{"error":{"code":400,"message":"API key not valid. Please pass a valid API key."}}""", HttpStatusCode.BadRequest));
         secrets.Set(SecretKeys.ApiKey("g"), "AIza-secret");
-        var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.TestAsync(new BackendProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini }, default));
+        var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.TestAsync(new ConnectionProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini }, default));
         Assert.Contains("API key not valid", ex.Message);
         Assert.DoesNotContain("AIza-secret", ex.Message);
     }

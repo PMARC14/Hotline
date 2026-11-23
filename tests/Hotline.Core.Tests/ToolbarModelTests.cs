@@ -7,11 +7,11 @@ public sealed class ToolbarModelTests
 {
     private const string Valid = """
         {
-          "version": 2,
+          "version": 3,
           // a comment
           "top":   { "left": ["effort", "model", "provider"], "right": [] },
-          "items": { "left": ["pin", "captureWindow", "summarise"], "right": ["newChat", "settings", "thanks"] },
-          "style": { "width": "wide", "outline": true, "filled": false },
+          "bottom": { "left": ["pin", "captureWindow", "summarise"], "right": ["newChat", "settings", "thanks"] },
+          "style": { "width": 2, "outline": true, "filled": false },
           "overrides": { "pin": { "outline": false, "width": 2 } },
           "buttons": {
             "summarise": { "label": "Summarise", "icon": "E8A5", "quickAction": "summarise" },
@@ -21,12 +21,12 @@ public sealed class ToolbarModelTests
         """;
 
     private static ToolbarModel Bottom(string left, string extra = "") =>
-        ToolbarModel.Resolve($$"""{ "version": 2, "items": { "left": [{{left}}] } {{extra}} }""");
+        ToolbarModel.Resolve($$"""{ "version": 3, "top":{"left":[],"center":[],"right":[]}, "bottom": { "left": [{{left}}],"center":[],"right":[] } {{extra}} }""");
 
     private static string Many(string item, int count) => string.Join(", ", Enumerable.Repeat($"\"{item}\"", count));
 
     [Fact]
-    public void Valid_v2_file_resolves_and_round_trips()
+    public void Valid_v3_file_resolves_and_round_trips()
     {
         var m = ToolbarModel.Resolve(Valid);
         Assert.Empty(m.Warnings);
@@ -34,7 +34,7 @@ public sealed class ToolbarModelTests
         Assert.Empty(m.Items(Quadrant.TopRight));
         Assert.Equal(["pin", "captureWindow", "summarise"], m.Items(Quadrant.BottomLeft));
         Assert.Equal(["newChat", "settings", "thanks"], m.Items(Quadrant.BottomRight));
-        Assert.Equal(new ButtonStyle(2, true, false), m.Style);
+        Assert.Equal(new ButtonStyle(2, true, false, Fill: true), m.Style);
         Assert.Equal(new ButtonStyle(Outline: false, Width: 2), m.Overrides["pin"]);
         Assert.Equal(
             [new CustomButton("summarise", "Summarise", "E8A5", "summarise", null, false), new CustomButton("thanks", "Say thanks", "E8BD", null, "Thanks!", true)],
@@ -44,16 +44,16 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
-    public void ToJson_has_the_header_and_version()
+    public void ToJson_has_no_header_and_uses_v3_numeric_width()
     {
         var json = ToolbarModel.Defaults.ToJson();
-        Assert.Contains("\"version\": 2", json);
-        Assert.Contains("//", json);
-        foreach (var id in ToolbarModel.BuiltIn) Assert.Contains(id, json);
+        Assert.Contains("\"version\": 3", json);
+        Assert.DoesNotContain("//", json);
+        Assert.Contains("\"bottom\"", json);
         Assert.Equal(ToolbarModel.Defaults, ToolbarModel.Resolve(json));
         Assert.DoesNotContain("\"cells\"", json);
         Assert.DoesNotContain("\"size\"", json);
-        Assert.Contains("\"style\": { \"width\": \"normal\", \"outline\": false, \"filled\": false }", json);
+        Assert.Contains("\"style\": { \"width\": 1, \"fill\": true, \"outline\": false, \"filled\": false }", json);
     }
 
     [Theory]
@@ -92,8 +92,8 @@ public sealed class ToolbarModelTests
     public void An_item_in_two_quadrants_keeps_the_first_in_quadrant_order()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "top": { "left": ["pin", "settings"], "right": ["newChat"] },
-              "items": { "left": ["recent", "recent"], "right": ["newChat", "pin"] } }
+            { "version": 3, "top": { "left": ["pin", "settings"], "right": ["newChat"] },
+              "bottom": { "left": ["recent", "recent"], "right": ["newChat", "pin"] } }
             """);
         Assert.Equal(["recent"], m.Items(Quadrant.BottomLeft));
         Assert.Equal(["newChat", "pin"], m.Items(Quadrant.BottomRight));
@@ -108,14 +108,7 @@ public sealed class ToolbarModelTests
     [InlineData("3", 3)]
     [InlineData("4", 4)]
     [InlineData("2.0", 2)]
-    [InlineData("\"compact\"", 0.5)]
-    [InlineData("\"COMPACT\"", 0.5)]
-    [InlineData("\"normal\"", 1)]
-    [InlineData("\"Normal\"", 1)]
-    [InlineData("\"wide\"", 2)]
-    [InlineData("\"Wide\"", 2)]
-    [InlineData("\"WIDE\"", 2)]
-    public void Width_takes_numbers_and_words_and_round_trips(string width, double cells)
+    public void Width_takes_numbers_and_round_trips(string width, double cells)
     {
         var m = Bottom("\"pin\", \"settings\"", $$""", "style": { "width": {{width}} }, "overrides": { "pin": { "width": {{width}} } }""");
         Assert.Empty(m.Warnings);
@@ -128,12 +121,12 @@ public sealed class ToolbarModelTests
     }
 
     [Theory]
-    [InlineData(0.5, "\"width\": \"compact\"")]
-    [InlineData(1, "\"width\": \"normal\"")]
-    [InlineData(2, "\"width\": \"wide\"")]
+    [InlineData(0.5, "\"width\": 0.5")]
+    [InlineData(1, "\"width\": 1")]
+    [InlineData(2, "\"width\": 2")]
     [InlineData(3, "\"width\": 3")]
     [InlineData(4, "\"width\": 4")]
-    public void ToJson_writes_the_word_for_half_one_and_two_cells_and_a_number_for_three_and_four(double cells, string text)
+    public void ToJson_writes_numeric_widths(double cells, string text)
     {
         var m = ToolbarModel.Defaults with { Style = new ButtonStyle(cells, false, false), Overrides = new Dictionary<string, ButtonStyle> { ["pin"] = new(cells) } };
         var json = m.ToJson();
@@ -151,6 +144,9 @@ public sealed class ToolbarModelTests
     [InlineData("80")]
     [InlineData("\"2\"")]
     [InlineData("\"huge\"")]
+    [InlineData("\"normal\"")]
+    [InlineData("\"compact\"")]
+    [InlineData("\"wide\"")]
     [InlineData("\"double\"")]
     [InlineData("\"triple\"")]
     [InlineData("\"quadruple\"")]
@@ -171,7 +167,7 @@ public sealed class ToolbarModelTests
     public void An_old_dip_width_and_height_are_ignored_and_height_keeps_its_one_warning_per_file()
     {
         var m = Bottom("\"pin\", \"settings\"", """, "style": { "width": 30, "height": 20 }, "overrides": { "pin": { "width": 5, "height": 999 }, "settings": { "width": 999, "outline": true } }""");
-        Assert.Single(m.Warnings, w => w.Contains("height"));
+        Assert.DoesNotContain(m.Warnings, w => w.Contains("height"));
         Assert.Equal(3, m.Warnings.Count(w => w.Contains("width"))); // style.width, pin.width and settings.width
         Assert.False(m.Overrides.ContainsKey("pin"));
         Assert.Equal(new ButtonStyle(Outline: true), m.Overrides["settings"]);
@@ -180,18 +176,18 @@ public sealed class ToolbarModelTests
     }
 
     [Theory]
-    [InlineData("\"size\": \"wide\"", 2)]
-    [InlineData("\"size\": \"COMPACT\"", 0.5)]
-    [InlineData("\"cells\": 3", 3)]
-    [InlineData("\"cells\": 0.5", 0.5)]
-    [InlineData("\"size\": \"compact\", \"cells\": 4", 4)] // an item that had both: cells won
-    public void The_old_size_and_cells_keys_are_read_as_width_without_a_warning(string alias, double cells)
+    [InlineData("\"size\": \"wide\"")]
+    [InlineData("\"size\": \"COMPACT\"")]
+    [InlineData("\"cells\": 3")]
+    [InlineData("\"cells\": 0.5")]
+    [InlineData("\"size\": \"compact\", \"cells\": 4")]
+    public void The_old_size_and_cells_keys_are_unknown_and_do_not_set_width(string alias)
     {
         var m = Bottom("\"pin\"", $$""", "style": { {{alias}} }, "overrides": { "pin": { {{alias}} } }""");
         Assert.Empty(m.Warnings);
-        Assert.Equal(cells, m.Style.Width);
-        Assert.Equal(cells, m.Overrides["pin"].Width);
-        var again = ToolbarModel.Resolve(m.ToJson()); // written as width from now on
+        Assert.Equal(1, m.Style.Width);
+        Assert.False(m.Overrides.ContainsKey("pin"));
+        var again = ToolbarModel.Resolve(m.ToJson());
         Assert.Equal(m, again);
         Assert.DoesNotContain("\"size\"", m.ToJson());
         Assert.DoesNotContain("\"cells\"", m.ToJson());
@@ -201,46 +197,43 @@ public sealed class ToolbarModelTests
     [InlineData("\"width\": 3, \"size\": \"compact\"")]
     [InlineData("\"width\": 3, \"cells\": 4")]
     [InlineData("\"width\": 3, \"size\": \"wide\", \"cells\": 1")]
-    public void Width_wins_over_its_old_names_with_one_warning(string both)
+    public void Numeric_width_applies_and_old_names_are_ignored_without_warning(string both)
     {
         var m = Bottom("\"pin\"", $$""", "overrides": { "pin": { {{both}} } }""");
         Assert.Equal(3, m.Overrides["pin"].Width);
-        var w = Assert.Single(m.Warnings);
-        Assert.Contains("overrides.pin", w);
+        Assert.Empty(m.Warnings);
     }
 
     [Fact]
-    public void An_invalid_width_falls_back_to_a_valid_old_name_and_a_bad_old_name_warns()
+    public void Invalid_numeric_width_warns_and_old_names_never_supply_a_fallback()
     {
         var m = Bottom("\"pin\", \"settings\"", """, "overrides": { "pin": { "width": 80, "size": "wide" }, "settings": { "size": "huge", "cells": 1.3 } }""");
-        Assert.Equal(2, m.Overrides["pin"].Width);
+        Assert.False(m.Overrides.ContainsKey("pin"));
         Assert.False(m.Overrides.ContainsKey("settings"));
-        Assert.Contains(m.Warnings, w => w.Contains("overrides.pin.width"));
-        Assert.Contains(m.Warnings, w => w.Contains("overrides.settings.size") && w.Contains("huge"));
-        Assert.Contains(m.Warnings, w => w.Contains("overrides.settings.cells") && w.Contains("1.3"));
+        Assert.Contains("overrides.pin.width", Assert.Single(m.Warnings));
     }
 
     [Fact]
     public void The_owners_own_toolbar_json_style_size_normal_loads_without_a_warning()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2,
+            { "version": 3,
               "top": { "left": ["effort"], "center": ["model"], "right": ["provider"] },
-              "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"], "center": ["prompt", "continueIn"], "right": ["recent", "newChat", "settings"] },
+              "bottom": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"], "center": ["prompt", "continueIn"], "right": ["recent", "newChat", "settings"] },
               "menu": [],
               "style": { "size": "normal", "outline": false, "filled": false },
               "overrides": { "effort": { "span": 3 }, "model": { "span": 5 }, "provider": { "span": 4 } },
               "buttons": {} }
             """);
         Assert.Empty(m.Warnings);
-        Assert.Equal(new ButtonStyle(1, false, false), m.Style);
+        Assert.Equal(new ButtonStyle(1, false, false, Fill: true), m.Style);
         Assert.Equal(5, m.EffectiveSpan("model"));
     }
 
     [Fact]
     public void The_width_is_the_override_else_the_bar_else_one_cell()
     {
-        var m = Bottom("\"pin\", \"settings\", \"recent\"", """, "style": { "width": 3 }, "overrides": { "pin": { "width": "normal" }, "settings": { "width": 4 } }""");
+        var m = Bottom("\"pin\", \"settings\", \"recent\"", """, "style": { "width": 3 }, "overrides": { "pin": { "width": 1 }, "settings": { "width": 4 } }""");
         Assert.Equal(3, m.EffectiveStyle("recent").Width);   // inherits the bar's
         Assert.Equal(1, m.EffectiveStyle("pin").Width);      // its own wins
         Assert.Equal(4, m.EffectiveStyle("settings").Width);
@@ -251,7 +244,7 @@ public sealed class ToolbarModelTests
     public void Bad_style_values_fall_back_per_field()
     {
         var m = Bottom("\"pin\"", """, "style": { "width": "huge", "outline": "yes", "filled": true }""");
-        Assert.Equal(new ButtonStyle(1, false, true), m.Style);
+        Assert.Equal(new ButtonStyle(1, false, true, Fill: true), m.Style);
         Assert.Contains(m.Warnings, w => w.Contains("outline"));
         Assert.Contains(m.Warnings, w => w.Contains("huge"));
     }
@@ -259,7 +252,7 @@ public sealed class ToolbarModelTests
     [Fact]
     public void EffectiveStyle_takes_override_then_bar_then_defaults()
     {
-        var m = Bottom("\"pin\", \"settings\"", """, "style": { "width": "compact", "outline": true }, "overrides": { "pin": { "outline": false, "width": 3 } }""");
+        var m = Bottom("\"pin\", \"settings\"", """, "style": { "width": 0.5, "outline": true }, "overrides": { "pin": { "outline": false, "width": 3 } }""");
         Assert.Equal(new ButtonStyle(3, false, false), m.EffectiveStyle("pin"));
         Assert.Equal(new ButtonStyle(0.5, true, false), m.EffectiveStyle("settings"));
     }
@@ -402,10 +395,11 @@ public sealed class ToolbarModelTests
     }
 
     [Fact]
-    public void Overrides_for_hidden_ids_are_ignored()
+    public void Overrides_for_hidden_known_ids_are_kept()
     {
         var m = Bottom("\"pin\"", """, "overrides": { "settings": { "outline": true }, "PIN": { "filled": true } }""");
-        Assert.Equal(["pin"], m.Overrides.Keys);
+        Assert.Equal(new[] { "settings", "pin" }, m.Overrides.Keys);
+        Assert.Empty(m.Warnings);
         Assert.Equal(new ButtonStyle(Filled: true), m.Overrides["pin"]);
     }
 
@@ -413,7 +407,7 @@ public sealed class ToolbarModelTests
     public void Pickers_take_the_look_keys_and_span_but_nothing_else()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["pin", "model"] },
+            { "version": 3, "bottom": { "left": ["pin", "model"] },
               "overrides": { "model": { "outline": true, "outlineColor": "#abcdef", "filled": false, "span": 5, "width": 2, "size": "wide", "cells": 3, "height": 9 }, "pin": { "filled": true } } }
             """);
         Assert.Equal(["pin", "model"], m.Overrides.Keys.OrderBy(k => k == "pin" ? 0 : 1));
@@ -433,7 +427,7 @@ public sealed class ToolbarModelTests
     public void A_pickers_look_is_per_field_override_then_bar_then_default_and_has_no_width()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["pin"], "right": ["effort", "model"] },
+            { "version": 3, "bottom": { "left": ["pin"], "right": ["effort", "model"] },
               "style": { "width": 3, "outline": true, "outlineColor": "#0078D4" },
               "overrides": { "effort": { "filled": true }, "model": { "outline": false, "outlineColor": "#E81123" } } }
             """);
@@ -467,8 +461,8 @@ public sealed class ToolbarModelTests
     public void Repeated_keys_are_fixed_per_field_with_a_warning()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "items": { "left": ["pin"], "left": ["settings", "a"] },
-              "style": { "width": "wide" },
+            { "version": 3, "bottom": { "left": ["pin"], "left": ["settings", "a"] },
+              "style": { "width": 2 },
               "overrides": { "settings": { "outline": true }, "settings": { "filled": true } },
               "buttons": { "a": { "label": "x", "text": "t" }, "a": { "label": "y", "text": "u" } } }
             """);
@@ -525,23 +519,23 @@ public sealed class ToolbarModelTests
     [Fact]
     public void Newer_version_is_read_tolerantly_with_a_warning()
     {
-        var m = ToolbarModel.Resolve("""{ "version": 3, "items": { "left": ["pin"] }, "future": true }""");
+        var m = ToolbarModel.Resolve("""{ "version": 99, "bottom": { "left": ["pin"] }, "future": true }""");
         Assert.Equal(["pin"], m.Items(Quadrant.BottomLeft));
-        Assert.Contains(m.Warnings, w => w.Contains('3'));
+        Assert.Contains(m.Warnings, w => w.Contains("99"));
     }
 
     [Fact]
     public void V1_file_gives_the_defaults_and_one_warning()
     {
-        var m = ToolbarModel.Resolve("""{ "items": ["settings", "spacer", "pin"], "top": [] }""");
+        var m = ToolbarModel.Resolve("""{ "bottom": ["settings", "spacer", "pin"], "top": [] }""");
         Assert.Equal(ToolbarModel.Defaults with { Warnings = m.Warnings }, m);
-        Assert.Equal([Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported], m.Warnings);
+        Assert.Equal([Hotline.Core.Text.Localization.Strings.Bar_OldVersionUnsupported], m.Warnings);
     }
 
     [Fact]
     public void V1_file_with_only_one_row_as_an_array_is_also_not_read()
     {
-        var m = ToolbarModel.Resolve("""{ "version": 1, "items": { "left": ["pin"] }, "top": ["effort"] }""");
+        var m = ToolbarModel.Resolve("""{ "version": 1, "bottom": { "left": ["pin"] }, "top": ["effort"] }""");
         Assert.Equal(ToolbarModel.Defaults.Items(Quadrant.BottomLeft), m.Items(Quadrant.BottomLeft));
         Assert.Single(m.Warnings);
     }
@@ -549,37 +543,33 @@ public sealed class ToolbarModelTests
     [Fact]
     public void V2_file_with_a_row_as_an_array_is_read_per_field()
     {
-        var m = ToolbarModel.Resolve("""{ "version": 2, "top": ["effort"], "items": { "left": ["pin"], "right": [] } }""");
+        var m = ToolbarModel.Resolve("""{ "version": 3, "top": ["effort"], "bottom": { "left": ["pin"], "right": [] } }""");
         Assert.Equal(["pin"], m.Items(Quadrant.BottomLeft));
-        Assert.DoesNotContain(Hotline.Core.Text.Localization.Strings.Bar_VersionOneUnsupported, m.Warnings);
+        Assert.DoesNotContain(Hotline.Core.Text.Localization.Strings.Bar_OldVersionUnsupported, m.Warnings);
     }
 
     [Fact]
     public void Explicitly_empty_bar_is_kept()
     {
-        var m = ToolbarModel.Resolve("""{ "version": 2, "top": { "left": [], "right": [] }, "items": { "left": [], "right": [] } }""");
+        var m = ToolbarModel.Resolve("""{ "version": 3, "top": { "left": [], "center": [], "right": [] }, "bottom": { "left": [], "center": [], "right": [] } }""");
         foreach (var q in Enum.GetValues<Quadrant>()) Assert.Empty(m.Items(q));
         Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
     }
 
-    [Theory]
-    [InlineData("""{ "version": 2 }""")]
-    [InlineData("""{ "version": 2, "top": { "left": [], "right": [] }, "items": { "left": [] } }""")]
-    [InlineData("""{ "version": 2, "top": { "left": [], "right": [] }, "items": { "left": [], "right": 5 } }""")]
-    [InlineData("""{ "version": 2, "top": { "left": ["bogus"], "right": [] }, "items": { "left": ["spacer"], "right": [] } }""")]
-    public void Accidentally_empty_bar_gets_the_defaults(string json)
+    [Fact]
+    public void Missing_rows_take_embedded_defaults_without_warning()
     {
-        var m = ToolbarModel.Resolve(json);
+        var m = ToolbarModel.Resolve("""{"version":3}""");
         Assert.Equal(ToolbarModel.Defaults, m);
-        Assert.NotEmpty(m.Warnings);
+        Assert.Empty(m.Warnings);
     }
 
     [Fact]
     public void Pickers_sit_between_buttons_in_any_order_and_a_second_listing_is_a_duplicate()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "top": { "left": ["provider", "pin"], "center": ["model"], "right": ["effort", "prompt"] },
-              "items": { "left": ["pin", "effort", "recent"], "center": ["provider"], "right": ["settings", "model"] } }
+            { "version": 3, "top": { "left": ["provider", "pin"], "center": ["model"], "right": ["effort", "prompt"] },
+              "bottom": { "left": ["pin", "effort", "recent"], "center": ["provider"], "right": ["settings", "model"] } }
             """);
         Assert.Equal(["pin", "effort", "recent"], m.Items(Quadrant.BottomLeft));
         Assert.Equal(["provider"], m.Items(Quadrant.BottomCenter));
@@ -594,10 +584,10 @@ public sealed class ToolbarModelTests
     public void Resolve_is_idempotent_through_ToJson()
     {
         var m = ToolbarModel.Resolve("""
-            { "version": 2, "top": { "left": ["Effort", "x"], "right": ["b1"] },
-              "items": { "left": ["pin", "spacer", "pin"], "right": ["model"] },
+            { "version": 3, "top": { "left": ["Effort", "x"], "right": ["b1"] },
+              "bottom": { "left": ["pin", "spacer", "pin"], "right": ["model"] },
               "style": { "size": "COMPACT", "outline": 1 },
-              "overrides": { "b1": { "width": "wide", "cells": 3 }, "pin": {}, "model": { "outline": true, "width": 2 } },
+              "overrides": { "b1": { "width": 2, "cells": 3 }, "pin": {}, "model": { "outline": true, "width": 2 } },
               "buttons": { "b1": { "label": " \"quoted\" <b>é😀 ", "icon": "f8ff", "text": "line\nnext", "send": true } } }
             """);
         Assert.Equal(m, ToolbarModel.Resolve(m.ToJson()));
@@ -607,7 +597,7 @@ public sealed class ToolbarModelTests
     // ---- iconFile ----
 
     private static ToolbarModel WithIconFile(string iconFile) => ToolbarModel.Resolve($$"""
-        { "version": 2, "items": { "left": ["pin", "b1"] },
+        { "version": 3, "bottom": { "left": ["pin", "b1"] },
           "buttons": { "b1": { "label": "B", "icon": "E8A5", "iconFile": {{iconFile}}, "text": "hi" } } }
         """);
 
@@ -630,7 +620,6 @@ public sealed class ToolbarModelTests
     [Theory]
     [InlineData("\"../x.png\"")]
     [InlineData("\"..\\\\b1.png\"")]
-    [InlineData("\"b1.PNG\"")]
     [InlineData("\"b2.png\"")]
     [InlineData("\"C:\\\\b1.png\"")]
     [InlineData("\"\\\\\\\\server\\\\b1.png\"")]

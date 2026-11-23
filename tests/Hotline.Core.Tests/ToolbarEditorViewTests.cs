@@ -10,7 +10,7 @@ public sealed class ToolbarEditorViewTests
 
     private static ToolbarModel Model(string bottomLeft, string topLeft, string topRight = "", string bottomRight = "", string buttons = "") =>
         ToolbarModel.Resolve($$"""
-            { "version": 2, "items": { "left": [{{bottomLeft}}], "right": [{{bottomRight}}] }, "top": { "left": [{{topLeft}}], "right": [{{topRight}}] },
+            { "version": 3, "bottom": { "left": [{{bottomLeft}}], "center": [], "right": [{{bottomRight}}] }, "top": { "left": [{{topLeft}}], "center": [], "right": [{{topRight}}] },
               "buttons": { {{buttons}} } }
             """);
 
@@ -230,18 +230,17 @@ public sealed class ToolbarEditorViewTests
 
     [Theory]
     [InlineData("", "", BarSizeChoice.Normal, 1)] // no width anywhere: normal
-    [InlineData("\"width\": \"wide\"", "", BarSizeChoice.Wide, 2)]
-    [InlineData("\"width\": \"compact\"", "\"pin\": { \"outline\": true }", BarSizeChoice.Compact, 0.5)] // other keys don't matter
-    [InlineData("\"width\": \"wide\"", "\"pin\": { \"width\": 2 }", BarSizeChoice.Wide, 2)] // the same width again
-    [InlineData("\"width\": \"wide\"", "\"pin\": { \"width\": \"compact\" }", BarSizeChoice.Custom, 0)]
+    [InlineData("\"width\": 2", "", BarSizeChoice.Wide, 2)]
+    [InlineData("\"width\": 0.5", "\"pin\": { \"outline\": true }", BarSizeChoice.Compact, 0.5)] // other keys don't matter
+    [InlineData("\"width\": 2", "\"pin\": { \"width\": 2 }", BarSizeChoice.Wide, 2)] // the same width again
+    [InlineData("\"width\": 2", "\"pin\": { \"width\": 0.5 }", BarSizeChoice.Custom, 0)]
     [InlineData("", "\"settings\": { \"width\": 3, \"filled\": true }", BarSizeChoice.Custom, 0)]
     [InlineData("\"width\": 3", "", BarSizeChoice.Custom, 3)] // uniform, but not one of the three names
-    [InlineData("\"size\": \"wide\"", "\"pin\": { \"cells\": 2 }", BarSizeChoice.Wide, 2)] // the old names read the same
     [InlineData("", "\"model\": { \"outline\": true }", BarSizeChoice.Normal, 1)] // a picker has no width
     public void The_bar_width_shows_custom_only_while_an_item_has_another_width(string style, string overrides, BarSizeChoice expected, double uniform) // uniform: 0 = the widths differ
     {
         var m = ToolbarModel.Resolve($$"""
-            { "version": 2, "items": { "left": ["pin", "settings", "model"], "right": [] }, "style": { {{style}} }, "overrides": { {{overrides}} } }
+            { "version": 3, "bottom": { "left": ["pin", "settings", "model"], "right": [] }, "style": { {{style}} }, "overrides": { {{overrides}} } }
             """);
         Assert.Empty(m.Warnings);
         Assert.Equal(expected, ToolbarEditorView.BarSize(m));

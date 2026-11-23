@@ -1,4 +1,6 @@
 using Hotline.Core.Activation;
+using Hotline.Core.Windowing;
+using System.Text.Json.Serialization;
 
 namespace Hotline.Core.Settings;
 
@@ -15,119 +17,101 @@ public static class SettingsRanges
     public static readonly IReadOnlyDictionary<string, SettingRange> All =
         new System.Collections.ObjectModel.ReadOnlyDictionary<string, SettingRange>(new Dictionary<string, SettingRange>
         {
-            ["ChatSettings.MaxImagePixels"] = new(256, 8192, 2048),
-            ["ChatSettings.HistoryRetentionDays"] = new(1, 3650, 30),
-            ["ChatSettings.HistoryListSize"] = new(10, 5000, 300),
-            ["ChatSettings.ThinkingDelayMs"] = new(0, 10_000, 700),
-            ["WindowSettings.FontSize"] = new(10, 32, null),
-            ["WindowSettings.Width"] = new(200, 16000, null),
-            ["WindowSettings.ChatHeight"] = new(60, 8000, null),
-            ["WindowSettings.ChatWidth"] = new(200, 16000, null),
-            ["WindowSettings.ChatWidthPercent"] = new(20, 90, 0, ZeroToo: true),
-            ["WindowSettings.TintOpacity"] = new(0, 1, 0.15),
-            ["WindowSettings.LuminosityOpacity"] = new(0, 1, 0.35),
-            ["WindowSettings.WidthPercent"] = new(20, 90, 40),
-            ["WindowSettings.MinWidth"] = new(200, 8000, 400),
-            ["WindowSettings.MaxWidth"] = new(200, 16000, 1200),
-            ["WindowSettings.Height"] = new(0, 4000, 0),
-            ["WindowSettings.MaxHeightPercent"] = new(30, 95, 60),
-            ["PanelAnchor.X"] = new(0, 1, 0.5),
-            ["PanelAnchor.Y"] = new(0, 1, 0.8),
+            ["ChatSettings.MaxImagePixels"] = new(256, 8192, SettingsDefaults.Number("chat", "maxImagePixels")),
+            ["ChatSettings.HistoryRetentionDays"] = new(1, 3650, SettingsDefaults.Number("chat", "historyRetentionDays")),
+            ["ChatSettings.HistoryListSize"] = new(10, 5000, SettingsDefaults.Number("chat", "historyListSize")),
+            ["ChatSettings.ThinkingDelayMs"] = new(0, 10000, SettingsDefaults.Number("chat", "thinkingDelayMs")),
+            ["WindowSettings.FontSize"] = new(10, 32, SettingsDefaults.Number("window", "fontSize")),
+            ["WindowSettings.ChatHeight"] = new(60, 8000, SettingsDefaults.Number("window", "chatHeight")),
+            ["WindowSettings.TintOpacity"] = new(0, 1, SettingsDefaults.Number("window", "tintOpacity")),
+            ["WindowSettings.LuminosityOpacity"] = new(0, 1, SettingsDefaults.Number("window", "luminosityOpacity")),
+            ["WindowSettings.MinWidth"] = new(200, 4000, SettingsDefaults.Number("window", "minWidth")),
+            ["WindowSettings.MaxWidth"] = new(200, 4000, SettingsDefaults.Number("window", "maxWidth")),
+            ["WindowSettings.MinHeight"] = new(0, 4000, SettingsDefaults.Number("window", "minHeight")),
+            ["WindowSettings.MaxHeightPercent"] = new(30, 95, SettingsDefaults.Number("window", "maxHeightPercent")),
+            ["PanelAnchor.X"] = new(0, 1, SettingsDefaults.Anchor<double>("x")),
+            ["PanelAnchor.Y"] = new(0, 1, SettingsDefaults.Anchor<double>("y")),
         });
 }
 
 public sealed class HotlineSettings
 {
-    public const int CurrentSchemaVersion = 15;
+    public const int CurrentSchemaVersion = SettingsMigrations.CurrentVersion;
+    [JsonPropertyName("version")]
     public int SchemaVersion { get; set; } = CurrentSchemaVersion;
     public GeneralSettings General { get; set; } = new();
     public ActivationSettings Activation { get; set; } = new();
     public WindowSettings Window { get; set; } = new();
     public DiagnosticsSettings Diagnostics { get; set; } = new();
     public ChatSettings Chat { get; set; } = new();
+    public ToolsSettings Tools { get; set; } = new();
 }
 
 public sealed class GeneralSettings
 {
     /// <summary>Interface language: "system" follows Windows, or a tag from Languages.Supported (e.g. "de"). Applies on restart.</summary>
-    public string Language { get; set; } = Text.Localization.Languages.System;
+    public string Language { get; set; } = SettingsDefaults.Get<string>("general", "language");
 
-    /// <summary>Show the "Enjoying Hotline?" donation note once, the next time the panel opens after an answer (then it turns itself off).</summary>
-    public bool SupportReminder { get; set; } = true;
+    /// <summary>User preference for showing the support reminder.</summary>
+    public bool SupportReminder { get; set; } = SettingsDefaults.Get<bool>("general", "supportReminder");
 }
 
 public sealed class DiagnosticsSettings
 {
     /// <summary>Write DEBUG lines to the log and show the key-status line in the popup. Debug builds force this on.</summary>
-    public bool VerboseLogging { get; set; }
+    public bool VerboseLogging { get; set; } = SettingsDefaults.Get<bool>("diagnostics", "verboseLogging");
     /// <summary>Allow diagnostic links (hotline://demo, hotline://selftest, hotline://grips). File-only; off by default.</summary>
-    public bool TestLinks { get; set; }
+    public bool TestLinks { get; set; } = SettingsDefaults.Get<bool>("diagnostics", "testLinks");
 }
 
 public sealed class ActivationSettings
 {
-    public KeyAction Tap { get; set; } = KeyAction.TogglePopup;
+    public KeyAction Tap { get; set; } = SettingsDefaults.Get<KeyAction>("activation", "tap");
     /// <summary>Long press: start a new chat (and open the popup).</summary>
-    public KeyAction Hold { get; set; } = KeyAction.NewChat;
+    public KeyAction Hold { get; set; } = SettingsDefaults.Get<KeyAction>("activation", "hold");
     /// <summary>Optional extra hotkey, e.g. "Ctrl+Alt+H". Null or empty = off.</summary>
-    public string? FallbackHotkey { get; set; }
+    public string? FallbackHotkey { get; set; } = SettingsDefaults.Get<string?>("activation", "fallbackHotkey");
 }
 
 /// <summary>HighContrast: Hotline's own white-on-black theme (a Windows contrast theme is followed automatically either way).</summary>
 public enum ThemeChoice { System, Light, Dark, HighContrast }
 
-/// <summary>Window backdrop material. Acrylic (translucent) is the default look.</summary>
+/// <summary>Window backdrop material.</summary>
 public enum BackdropKind { Acrylic, AcrylicThin, Mica, Solid }
 
 public sealed class WindowSettings
 {
-    /// <summary>Panel width as a percentage of the monitor's work area in real pixels (20–90; Windows' scaling is ignored), clamped to [MinWidth, MaxWidth].</summary>
-    public double WidthPercent { get; set; } = 40;
-    /// <summary>Narrowest panel, in real pixels: 384 = 20% of a 1920 × 1080 screen.</summary>
-    public int MinWidth { get; set; } = 400;
-    /// <summary>Widest panel, in real pixels: 2304 = 60% of a 4K (3840) screen.</summary>
-    public int MaxWidth { get; set; } = 1200;
-    /// <summary>Minimum panel height in DIPs. 0 = fit the message bar exactly; the panel grows upward with text and replies.</summary>
-    public int Height { get; set; }
-    /// <summary>The panel grows upward with the conversation to at most this share of the screen height (30–95).</summary>
-    public double MaxHeightPercent { get; set; } = 60;
-    /// <summary>Where the panel opens (its saved default spot): monitor and fractions of the free work area.</summary>
+    public PanelWidth Width { get; set; } = SettingsDefaults.Get<PanelWidth>("window", "width");
+    public PanelWidth? ChatWidth { get; set; } = SettingsDefaults.Get<PanelWidth?>("window", "chatWidth");
+    public int MinWidth { get; set; } = SettingsDefaults.Get<int>("window", "minWidth");
+    public int MaxWidth { get; set; } = SettingsDefaults.Get<int>("window", "maxWidth");
+    public int MinHeight { get; set; } = SettingsDefaults.Get<int>("window", "minHeight");
+    public double MaxHeightPercent { get; set; } = SettingsDefaults.Get<double>("window", "maxHeightPercent");
     public PanelAnchor Anchor { get; set; } = new();
-    /// <summary>Panel width in real pixels (a manual resize saves one); null = WidthPercent clamped to [MinWidth, MaxWidth].</summary>
-    public int? Width { get; set; }
-    /// <summary>
-    /// When a chat starts the panel grows to this share of the work area's width (0 = it doesn't; otherwise 20-90), clamped to
-    /// [MinWidth, MaxWidth]; no wider than it opened means no growth. A fixed <see cref="Width"/> (a manual resize saves one) never grows.
-    /// </summary>
-    public double ChatWidthPercent { get; set; }
-    /// <summary>The width the panel grows to when a chat starts, in real pixels (kept within MinWidth..MaxWidth); null = <see cref="ChatWidthPercent"/>.</summary>
-    public int? ChatWidth { get; set; }
+    public GrowMode GrowMode { get; set; } = SettingsDefaults.Get<GrowMode>("window", "growMode");
     /// <summary>Most the chat grows to, in DIPs; null = MaxHeightPercent of the screen.</summary>
-    public int? ChatHeight { get; set; }
+    public int? ChatHeight { get; set; } = SettingsDefaults.Get<int?>("window", "chatHeight");
     /// <summary>Which way the chat grows from the bar: Auto (up unless there's no room above), or locked Up/Down.</summary>
-    public GrowDirection GrowDirection { get; set; } = GrowDirection.Auto;
+    public GrowDirection GrowDirection { get; set; } = SettingsDefaults.Get<GrowDirection>("window", "growDirection");
     /// <summary>Sound when the panel opens: "off", "windows:&lt;event&gt;" (the Windows sound scheme) or a .wav in ~/.hotline/sounds.</summary>
-    public string OpenSound { get; set; } = "off";
+    public string OpenSound { get; set; } = SettingsDefaults.Get<string>("window", "openSound");
     /// <summary>Sound when the panel closes (same values as OpenSound).</summary>
-    public string CloseSound { get; set; } = "off";
-    /// <summary>Before v13: the vertical position, now Anchor.Y (read once, then dropped from the file).</summary>
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public double? VerticalPosition { get; set; }
-    public bool HideOnBlur { get; set; } = true;
-    public bool AlwaysOnTop { get; set; } = true;
-    public ThemeChoice Theme { get; set; } = ThemeChoice.System;
+    public string CloseSound { get; set; } = SettingsDefaults.Get<string>("window", "closeSound");
+    public bool HideOnBlur { get; set; } = SettingsDefaults.Get<bool>("window", "hideOnBlur");
+    public bool AlwaysOnTop { get; set; } = SettingsDefaults.Get<bool>("window", "alwaysOnTop");
+    public ThemeChoice Theme { get; set; } = SettingsDefaults.Get<ThemeChoice>("window", "theme");
     /// <summary>"hotline" (the built-in purple), "windows" (follows the Windows accent) or a "#RRGGBB" colour.</summary>
-    public string Accent { get; set; } = Theming.AccentChoice.Hotline;
+    public string Accent { get; set; } = SettingsDefaults.Get<string>("window", "accent");
     /// <summary>Chat text size in px (10–32); null = the Windows default (scaled by Settings › Accessibility › Text size).</summary>
-    public int? FontSize { get; set; }
+    public int? FontSize { get; set; } = SettingsDefaults.Get<int?>("window", "fontSize");
     /// <summary>Chat font family, e.g. "Cascadia Code"; null = Segoe UI Variable.</summary>
-    public string? FontFamily { get; set; }
-    public ScrollbarStyle Scrollbar { get; set; } = ScrollbarStyle.Auto;
-    public BackdropKind Backdrop { get; set; } = BackdropKind.AcrylicThin;
+    public string? FontFamily { get; set; } = SettingsDefaults.Get<string?>("window", "fontFamily");
+    public ScrollbarStyle Scrollbar { get; set; } = SettingsDefaults.Get<ScrollbarStyle>("window", "scrollbar");
+    public BackdropKind Backdrop { get; set; } = SettingsDefaults.Get<BackdropKind>("window", "backdrop");
     /// <summary>Acrylic tint strength, 0 (clear) to 1 (opaque tint).</summary>
-    public double TintOpacity { get; set; } = 0.15;
+    public double TintOpacity { get; set; } = SettingsDefaults.Get<double>("window", "tintOpacity");
     /// <summary>Acrylic luminosity layer, 0 (most see-through) to 1.</summary>
-    public double LuminosityOpacity { get; set; } = 0.35;
+    public double LuminosityOpacity { get; set; } = SettingsDefaults.Get<double>("window", "luminosityOpacity");
 }
 
 public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Anthropic, Local, Codex }
@@ -135,9 +119,11 @@ public enum BackendType { Antigravity, Gemini, OpenAiCompatible, ClaudeCode, Ant
 /// <summary>ChatOnly: answers only (attachments readable). Inherit: the CLI's own tools and permission rules.</summary>
 public enum ToolMode { ChatOnly, Inherit }
 
-public sealed class BackendProfile
+public sealed class ConnectionProfile
 {
+    [JsonIgnore]
     public string Id { get; set; } = "";
+    public int Version { get; set; } = 1;
     public BackendType Type { get; set; }
     public string Name { get; set; } = "";
     /// <summary>Model override (agy: e.g. "gemini-3.8-flash-low"; null = backend default).</summary>
@@ -151,8 +137,8 @@ public sealed class BackendProfile
     public string? Agent { get; set; }
     /// <summary>This connection's own "Continue this chat in" targets: null = the shared list (chat.continueIn), [] = none.</summary>
     public List<Backends.ContinueTarget>? ContinueIn { get; set; }
-    /// <summary>Extra CLI arguments, space separated.</summary>
-    public string? ExtraArgs { get; set; }
+    /// <summary>Extra CLI arguments, passed as individual arguments.</summary>
+    public List<string>? ExtraArgs { get; set; }
     /// <summary>
     /// Replaces Hotline's usual extra launch flags for this mode (null = defaults). Required and chat-only isolation flags are
     /// always added; flags that approve tools or skip permission checks are dropped: only ApproveAllTools turns them on.
@@ -192,60 +178,52 @@ public sealed class BackendProfile
 public sealed class ChatSettings
 {
     /// <summary>The connection the panel uses. Empty = not chosen yet: a new install asks on first open (and runs no CLI before).</summary>
-    public string DefaultBackend { get; set; } = "";
+    [JsonPropertyName("defaultConnection")]
+    public string DefaultBackend { get; set; } = SettingsDefaults.Get<string>("chat", "defaultConnection");
     /// <summary>System prompt used by connections that don't pick their own.</summary>
-    public string DefaultPrompt { get; set; } = "default";
+    public string DefaultPrompt { get; set; } = SettingsDefaults.Get<string>("chat", "defaultPrompt");
     /// <summary>The shared "Continue this chat in" targets; null = the default (the llama.cpp web UI of a Local connection).</summary>
-    public List<Backends.ContinueTarget>? ContinueIn { get; set; }
+    public List<Backends.ContinueTarget>? ContinueIn { get; set; } = SettingsDefaults.Get<List<Backends.ContinueTarget>?>("chat", "continueIn");
     /// <summary>
-    /// The connections, in dropdown order. Stored one file each in ~/.hotline/connections/&lt;id&gt;.json (not in
-    /// settings.json; an old settings.json "backends" list is moved there once).
+    /// The connections in dropdown order, stored one file each in connections/&lt;id&gt;.json.
     /// </summary>
-    [System.Text.Json.Serialization.JsonIgnore(Condition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingNull)]
-    public List<BackendProfile> Backends { get; set; } = [];
+    [JsonIgnore]
+    public List<ConnectionProfile> Connections { get; set; } = [];
     /// <summary>Dropdown order: connection ids. Connections not listed follow, by name.</summary>
-    public List<string> Order { get; set; } = [];
-    /// <summary>Grow = fit the conversation (up to the maximum height); Full = jump to the maximum height once there are messages.</summary>
-    public GrowMode GrowMode { get; set; } = GrowMode.Grow;
-    public bool SaveHistory { get; set; } = true;
+    public List<string> Order { get; set; } = SettingsDefaults.Get<List<string>>("chat", "order");
+    public bool SaveHistory { get; set; } = SettingsDefaults.Get<bool>("chat", "saveHistory");
     /// <summary>A Windows notification when an answer finishes while the panel is hidden or another app is in front.</summary>
-    public bool NotifyWhenDone { get; set; } = true;
+    public bool NotifyWhenDone { get; set; } = SettingsDefaults.Get<bool>("chat", "notifyWhenDone");
+    /// <summary>Include answer text in completion notifications.</summary>
+    public bool NotifyShowsText { get; set; } = SettingsDefaults.Get<bool>("chat", "notifyShowsText");
     /// <summary>How many saved chats the history list reads (each is opened for its title). settings.json only.</summary>
-    public int HistoryListSize { get; set; } = 300;
+    public int HistoryListSize { get; set; } = SettingsDefaults.Get<int>("chat", "historyListSize");
     /// <summary>While an answer streams and no text has come for <see cref="ThinkingDelayMs"/>, the cursor spins.</summary>
-    public bool ThinkingIndicator { get; set; } = true;
+    public bool ThinkingIndicator { get; set; } = SettingsDefaults.Get<bool>("chat", "thinkingIndicator");
     /// <summary>How long without new text before the thinking indicator shows (ms, 0–10000). settings.json only.</summary>
-    public int ThinkingDelayMs { get; set; } = 700;
+    public int ThinkingDelayMs { get; set; } = SettingsDefaults.Get<int>("chat", "thinkingDelayMs");
     /// <summary>"/resume" and a space opens the history list right away, searching as you type. settings.json only.</summary>
-    public bool ResumeWhileTyping { get; set; } = true;
+    public bool ResumeWhileTyping { get; set; } = SettingsDefaults.Get<bool>("chat", "resumeWhileTyping");
     /// <summary>
     /// A reopened CLI chat whose messages Hotline didn't keep shows them from the CLI's own history (agy, Claude Code,
     /// Codex). settings.json only.
     /// </summary>
-    public bool CliTranscripts { get; set; } = true;
-    public int HistoryRetentionDays { get; set; } = 30;
+    public bool CliTranscripts { get; set; } = SettingsDefaults.Get<bool>("chat", "cliTranscripts");
+    public int HistoryRetentionDays { get; set; } = SettingsDefaults.Get<int>("chat", "historyRetentionDays");
     /// <summary>Longest edge for attached/captured images (pixels).</summary>
-    public int MaxImagePixels { get; set; } = 2048;
+    public int MaxImagePixels { get; set; } = SettingsDefaults.Get<int>("chat", "maxImagePixels");
     /// <summary>Selected text in the app you came from becomes an attachment when the key opens the panel.</summary>
-    public AttachSelectionMode AttachSelection { get; set; } = AttachSelectionMode.Auto;
+    public AttachSelectionMode AttachSelection { get; set; } = SettingsDefaults.Get<AttachSelectionMode>("chat", "attachSelection");
     /// <summary>Screenshot text for models that can't read images (Windows' built-in OCR, offline).</summary>
-    public OcrMode Ocr { get; set; } = OcrMode.Auto;
+    public OcrMode Ocr { get; set; } = SettingsDefaults.Get<OcrMode>("chat", "ocr");
     /// <summary>Voice key action: send the message when the key is released (off = review it first).</summary>
-    public bool VoiceAutoSend { get; set; }
-    /// <summary>Stops a streaming answer: a key alone ("Esc") or a combo ("Ctrl+."). Enter never stops an answer.</summary>
-    public string StopShortcut { get; set; } = "Esc";
-
-    /// <summary>In-panel toolbar shortcuts (button id to combo); empty text disables an entry.</summary>
-    public Dictionary<string, string> Shortcuts { get; set; } = ChatShortcuts.CreateDefaults();
-    /// <summary>Legacy explicit map, captured before normalization. Other settings saves retain its original JSON.</summary>
-    [System.Text.Json.Serialization.JsonIgnore]
-    public System.Text.Json.JsonElement? LegacyShortcutValues { get; set; }
+    public bool VoiceAutoSend { get; set; } = SettingsDefaults.Get<bool>("chat", "voiceAutoSend");
     [System.Text.Json.Serialization.JsonIgnore]
     public Windowing.ToolbarModel Toolbar { get; set; } = Windowing.ToolbarModel.Defaults;
     /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
-    public bool Memory { get; set; } = true;
+    public bool Memory { get; set; } = SettingsDefaults.Get<bool>("chat", "memory");
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>
-    public MemoryToolMode MemoryTool { get; set; } = MemoryToolMode.Ask;
+    public MemoryToolMode MemoryTool { get; set; } = SettingsDefaults.Get<MemoryToolMode>("chat", "memoryTool");
 }
 
 /// <summary>Auto = thin and transparent until hovered; Visible = always shown; Hidden = never shown (still scrolls).</summary>
@@ -263,9 +241,9 @@ public enum GrowDirection { Auto, Up, Down }
 public sealed class PanelAnchor
 {
     public const string Active = "active", Primary = "primary";
-    public string Monitor { get; set; } = Active;
-    public double X { get; set; } = 0.5;
-    public double Y { get; set; } = 0.8;
+    public string Monitor { get; set; } = SettingsDefaults.Anchor<string>("monitor");
+    public double X { get; set; } = SettingsDefaults.Anchor<double>("x");
+    public double Y { get; set; } = SettingsDefaults.Anchor<double>("y");
 }
 
 /// <summary>
@@ -278,3 +256,8 @@ public enum AttachSelectionMode { Auto, Off, Clipboard }
 public enum OcrMode { Auto, Always, Off }
 
 public enum MemoryToolMode { Ask, Allow, Off }
+
+public sealed class ToolsSettings
+{
+    public Dictionary<string, string> Approvals { get; set; } = SettingsDefaults.Get<Dictionary<string, string>>("tools", "approvals");
+}

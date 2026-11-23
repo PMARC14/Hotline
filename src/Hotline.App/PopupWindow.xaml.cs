@@ -24,6 +24,8 @@ public sealed partial class PopupWindow : Window
     private readonly PopupToggleGuard _guard;
     private readonly FileLog _log;
     private readonly ForegroundWindowTracker _foreground;
+    private readonly Hotline.Core.State.StateStore? _state;
+    private EffectivePanelSpot _resolvedSpot;
     private PanelLayoutSettings? _lastLayout;
     private readonly PanelDisplayObserver _displayObserver;
     private bool _displayRecoveryHeld;
@@ -45,13 +47,16 @@ public sealed partial class PopupWindow : Window
     public event Action? NewChatRequested;
     public event Action<bool>? CaptureRequested;
 
-    public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus, ForegroundWindowTracker? foreground = null)
+    public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus,
+        ForegroundWindowTracker? foreground = null, Hotline.Core.State.StateStore? state = null)
     {
         _settings = settings;
         GrowMode = growMode;
         _guard = guard;
         _log = log;
         _foreground = foreground ?? new ForegroundWindowTracker(log);
+        _state = state;
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         InitializeComponent();
         Input.TextCompositionStarted += (_, _) => IsComposing = true;
         Input.TextCompositionEnded += (_, _) => IsComposing = false;
@@ -115,6 +120,7 @@ public sealed partial class PopupWindow : Window
         var next = PanelLayoutSettings.From(_settings);
         var changed = next != _lastLayout;
         _lastLayout = next;
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         if (!AppWindow.IsVisible) return;
         if (changed) RequestPlacement(); // deferred while HoldResize is held
         else ApplyHeight();
@@ -634,11 +640,9 @@ public sealed partial class PopupWindow : Window
     /// <summary>The panel is wider than the bar it opened at (the chat width): a move then keeps the start width as the bar's.</summary>
     private bool _widthGrown;
 
-    /// <summary>The width the panel grows to when a chat starts (physical pixels), or null: no growth is set, a width was fixed in the
-    /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
-    private int? ChatWidthPx => _fixedPx is not null ? null
-        : PopupGeometry.ChatWidthPx(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width,
-            _settings.MinWidth, _settings.MaxWidth, _bar.Width, _fixedWidth);
+    /// <summary>The chat width in real pixels, or null when disabled, the width was resized by hand, or no wider than the opening width.</summary>
+    private int? ChatWidthPx => _fixedWidth || _settings.ChatWidth is null ? null
+        : Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, _work.Width, _scale, chat: true) is var width && width > _bar.Width ? width : null;
 
     private bool _animating;
     private double _animatedHeight;
@@ -704,8 +708,8 @@ public sealed partial class PopupWindow : Window
     /// <summary>Growing down: the bar's top edge, fixed when the direction is chosen (so typing more lines grows it downward).</summary>
     private int? _downTop;
 
-    /// <summary>The tallest the panel may be: the bar plus window.chatHeight, else maxHeightPercent of the work area.</summary>
-    private int MaxPx => Math.Min(_work.Height, _settings.ChatHeight is { } chat
+    /// <summary>The tallest the panel may be: the bar plus effective chatHeight, else maxHeightPercent of the work area.</summary>
+    private int MaxPx => Math.Min(_work.Height, _resolvedSpot.ChatHeight is { } chat
         ? BarPx + (int)Math.Round(chat * _scale)
         : (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0));
 
@@ -723,8 +727,8 @@ public sealed partial class PopupWindow : Window
     public RectI WindowRect => new(AppWindow.Position.X, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
     public RectI WorkArea => _work;
     public bool IsResizeHeld => _resizeHolds > 0;
-    /// <summary>Real pixels, the same floor Normalize gives window.minWidth (the width setting is not in scaled units).</summary>
-    public int MinDragWidthPx => Math.Max(200, _settings.MinWidth);
+    /// <summary>The scaled window.minWidth converted to real pixels on this monitor.</summary>
+    public int MinDragWidthPx => Hotline.Core.Windowing.PanelWidth.MinimumPixels(_settings, _scale);
     /// <summary>A resize may go down to the bar alone (the panel as it first opens).</summary>
     public int MinDragHeightPx => Hotline.Core.Windowing.PanelPlacement.MinResizeHeight(BarPx);
     private bool _dragging;
@@ -761,9 +765,9 @@ public sealed partial class PopupWindow : Window
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
         if (widthChanged) _fixedWidth = true;
-        var h = (int)Math.Round(_settings.Height * _scale);
-        // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
-        var (barX, barW) = !resized && !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
+        var h = (int)Math.Round(_settings.MinHeight * _scale);
+        // A move or height drag of a panel widened for a chat keeps the bar's own width (centred), so it shrinks back to it later.
+        var (barX, barW) = !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
         _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
         // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
         void BarAt(bool up)
@@ -804,18 +808,17 @@ public sealed partial class PopupWindow : Window
         RequestPlacement();
     }
 
-    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width in real pixels (what window.width holds), chat height in DIPs.</summary>
-    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthPx, int? ChatHeightDip) CurrentSpot()
+    /// <summary>What "Save as default" writes to state.json: anchor, width and chat height in scaled pixels, each over its settings.json value.</summary>
+    public Hotline.Core.State.PanelSpot CurrentSpot()
     {
-        var anchor = Hotline.Core.Windowing.PanelPlacement.AnchorFor(_bar, _work);
         var native = new Native.RECT { Left = _work.X, Top = _work.Y, Right = _work.X + _work.Width, Bottom = _work.Y + _work.Height };
-        anchor.Monitor = DisplayArea.FindAll().Count > 1
-            ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST)) ?? _settings.Anchor.Monitor
-            : _settings.Anchor.Monitor;
-        // Sized down to the bar alone: no chat height to save (60 would cap every future chat); keep the setting.
-        int? chat = _fixedPx is { } f && (f - BarPx) / _scale >= 60 ? (int)Math.Round((f - BarPx) / _scale) : _settings.ChatHeight;
-        return (anchor, _bar.Width, chat);
+        var monitorDevice = DisplayArea.FindAll().Count > 1
+            ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST))
+            : null;
+        return PanelSpotPolicy.BuildSaveSpot(_bar, _work, _scale, _fixedPx, BarPx, monitorDevice, _settings, _state);
     }
+
+    internal void RefreshSavedSpot() => _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
 
     /// <summary>The panel goes back to its saved default on the next open (unpinned, clicked into another app).</summary>
     public void ForgetSessionSpot()
@@ -864,41 +867,35 @@ public sealed partial class PopupWindow : Window
         }
         _fixedPx = null;
         _fixedWidth = false;
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         var (area, monitor, how) = HomeMonitor();
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
-        var widthPx = _settings.Width ?? PopupGeometry.RelativeWidthPx(wa.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.Height, scale, _settings.Anchor);
+        var widthPx = _resolvedSpot.OpeningWidthPixels(_settings, wa.Width, scale);
+        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.MinHeight, scale, _resolvedSpot.Anchor);
         (_bar, _work, _scale) = (r, work, scale);
         _displayMonitor = monitor;
         ChooseDirection();
-        _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
+        _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_resolvedSpot.Anchor.X:0.###},{_resolvedSpot.Anchor.Y:0.###} -> {r} up={_growUp}");
         ApplyHeight(force: true);
     }
 
-    /// <summary>The width (scaled units; the setting is in real pixels) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
-    /// monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
+    /// <summary>The width (scaled pixels) the panel opens with on the monitor it would open on now (the resolved width setting or saved spot,
+    /// or its percentage of that monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
     public double OpeningWidthDip()
     {
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         var (area, monitor, _) = HomeMonitor();
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        var px = Math.Min(area.WorkArea.Width, _settings.Width ?? PopupGeometry.RelativeWidthPx(area.WorkArea.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth));
-        return px / scale; // the width is in real pixels; the button cells are in scaled units
-    }
-
-    /// <summary>Settings' line above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>
-    public string ScreenLine()
-    {
-        var (area, monitor, _) = HomeMonitor();
-        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        return Hotline.Core.Windowing.ScreenScale.Line(area.OuterBounds.Width, area.OuterBounds.Height, scale);
+        var px = _resolvedSpot.OpeningWidthPixels(_settings, area.WorkArea.Width, scale);
+        return px / scale;
     }
 
     /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>
     private (DisplayArea Area, nint Monitor, string How) HomeMonitor()
     {
-        var wanted = _settings.Anchor.Monitor;
+        var wanted = _resolvedSpot.Anchor.Monitor;
         if (string.Equals(wanted, Hotline.Core.Settings.PanelAnchor.Primary, StringComparison.OrdinalIgnoreCase))
         {
             var primary = DisplayArea.Primary;

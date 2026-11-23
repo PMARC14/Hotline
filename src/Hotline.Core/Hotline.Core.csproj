@@ -6,6 +6,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <EmbeddedResource Include="Defaults\*.json" />
     <!-- Interface text: English in Strings.resx, one Strings.<language>.resx per translation (satellite assemblies).
          The generated Hotline.Core.Text.Localization.Strings class gives each text a property, so a missing key fails the build. -->
     <EmbeddedResource Update="Text\Localization\Strings.resx" StronglyTypedLanguage="CSharp" StronglyTypedClassName="Strings"

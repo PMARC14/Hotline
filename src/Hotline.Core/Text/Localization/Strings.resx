@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Text only, in your .hotline folder.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Notify when an answer finishes in the background</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>A Windows notification when an answer finishes while the panel is hidden or another app is in front. Click it to open the answer.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Scaled pixels (200–4000) or a share of the work area (20%–90%); blank keeps the opening width.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Scaled pixels (DIPs).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Enter 200–4000 scaled pixels or 20%–90%.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Show answer text in notifications</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Include answer text in the completion notification; off shows the chat title only.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>This file uses the pre-freeze format. Defaults apply until the upgrade runs; the file is unchanged.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>Connection id {0} is invalid. Use 1–64 letters, digits, dots, underscores or hyphens; Windows device names and trailing dots are refused.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} answered</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Answer ready</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} couldn't finish the answer</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Keep history for</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>days</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Start with Windows</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>API connections with Tool use set to "Use Hotline's tools" can call the tools of these MCP servers. Read-only tools run; anything else asks you in the panel (Allow once / Always / Deny).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP servers</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — same "mcpServers" format as other MCP apps; approvals live in the same file</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — same "mcpServers" format as other MCP apps; approval rules are tools.approvals in settings.json</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>Edit mcp.json</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>Open folder</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows agent registry</value></data>
@@ -431,6 +440,34 @@ Deny:
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" isn't installed or isn't on PATH, so the {1} server can't start. Check "command" in mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json couldn't be read: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>Approval "{0}" has an unknown value, so it's treated as "deny".</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>The "approvals" section in mcp.json is ignored; move rules to settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" has a non-string env value for "{1}", so it was skipped.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" has an invalid secret reference in env "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" references secret "{1}" in env "{2}", which is not in the Credential Locker.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Allow rule "{0}" differs only in case from "{1}", so it was ignored.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json uses a newer version ({0}) and cannot be updated safely.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Could not back up mcp.json before updating it.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Could not save the updated mcp.json file.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Could not find env entry "{1}" on server "{0}" in mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>That env entry changed or was already moved; nothing was changed.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>The value is now saved in Windows Credential Locker as "{0}" ({1}), but mcp.json was not changed because saving and rollback failed.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Always-allow grants</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>No saved tool grants.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · launch {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Revoke</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Could not revoke tool grant.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Environment secrets</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>No plaintext env entries found in mcp.json.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (plaintext in mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Move to Credential Locker</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Move env value to Credential Locker?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stores {0} › {1} in Windows Credential Locker and replaces it in mcp.json. The previous mcp.json (including the plaintext value) stays in backups\&lt;time&gt;-save, and comments in mcp.json are not kept.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Secret name</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Use letters, numbers, dots, underscores, or hyphens.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>A secret with this name already exists in the Credential Locker and will be overwritten.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Move</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Moved {0} › {1} to Credential Locker. The previous mcp.json (including the plaintext value) was saved to backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Could not move env value to Credential Locker.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>A server name can't contain '/' or '*'.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>didn't start within {0:0} s</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} No tools run until it's fixed.</value></data>
@@ -480,6 +517,30 @@ Deny:
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} isn't 0.5, 1, 2, 3 or 4 (cells is the old name of width); the default width is used</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>a copy of the current file couldn't be made first, so nothing was changed ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json changed while this page was open. It was reloaded, and your last change was not applied: make it again.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Duplicate custom button id "{0}" (case-insensitive); the first definition is used.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Still answering. The Stop button stops it; your message waits in the box.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} is not a numeric width of 0.5, 1, 2, 3 or 4; the default width is used.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: combo already in use; this shortcut is disabled.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>This toolbar file uses an older format. The default button rows and shortcuts are active; the file has not been changed.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Fill available row space</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Could not back up the button rows and shortcuts.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Could not save the button rows and shortcuts.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>The picture was not changed: toolbar.json couldn't be saved.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>More</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nothing here</value></data>
@@ -596,8 +657,6 @@ Deny:
   <data name="Bar_continueIn" xml:space="preserve"><value>Continue in</value></data>
   <data name="Recent_ContinueNothing" xml:space="preserve"><value>Nothing to continue this chat in yet: no AI command-line tool is installed, or the chat has no messages.</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Screen {0} × {1} px at {2}% scaling: Windows draws the interface at {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Screen {0} × {1} px at 100% scaling</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Real pixels of the screen, Windows scaling ignored</value></data>
   <data name="Bar_TopRow" xml:space="preserve"><value>Above the message box</value></data>
@@ -670,7 +729,17 @@ Deny:
   <data name="Nav_Backup" xml:space="preserve"><value>Backup</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Move your Hotline setup to another PC, or keep a copy. A backup is one .zip file holding the parts you tick; nothing else (chat history, memory, logs) is included.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Settings</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and custom button pictures</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Button rows and shortcuts</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline's configuration format has changed. Settings and button rows from older versions return to the defaults. AI connections and MCP servers are kept.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Reset: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Original files: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>No complete upgrade backup could be made.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Could not upgrade: {0}. Hotline will retry these files at the next start.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Upgrading from 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>On the first start after upgrading, old settings and button rows return to the embedded defaults. Only the default AI connection and connection order carry over. AI connections and MCP servers are kept; old MCP approvals are removed. Original files are copied to backups/&lt;time>-upgrade before conversion. If that backup fails, conversion still runs. Files that cannot be converted stay untouched and are retried at the next start. Reference defaults are refreshed in .defaults at startup.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>This backup includes plaintext environment values for {0}. Use Move to Credential Locker in Settings > Tools before sharing this backup.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>These MCP servers need Credential Locker secrets on this PC: {0}. Add their secrets in Settings > Tools.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>A newer version was left untouched.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Tools (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sounds</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI connections</value></data>
@@ -751,7 +820,7 @@ A moved panel opens at its default the next time, unless it's pinned (the pin bu
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Up or down</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>The chat grows from the message bar: up, unless there's no room above, then down. Settings › Window can keep it up or down and sets the position, width and chat height.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Button rows</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert a text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Widths are counted in cells: a button is 0.5, 1, 2, 3 or 4 cells wide (the width key, where compact, normal and wide stand for 0.5, 1 and 2), and each picker has its own width. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Settings › Window › Button rows shows the bar as six areas: left, center and right of the row above the message box, and the same three below it. Drag a button or a picker to move it inside an area or to another one, or use its arrow buttons (Alt+arrow changes area, Ctrl+arrow changes the order). What you hide waits in “Not shown”. Every button can have its own width, an outline or a fill (the dropdowns take the outline and fill too), and you can add buttons of your own that run a quick action or insert text. Buttons that don't fit move into a ⋯ menu, and “The … button's box” (the menu key in toolbar.json) holds the ones you choose to keep there. Button widths are numbers 0.5, 1, 2, 3 or 4 (the width key), each picker has its own span, and style.fill (default on) shares a row's spare room. Settings › Backup also saves toolbar.json and your button pictures.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sounds</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Settings › Appearance › Sounds plays a sound when the panel opens or closes: a Windows sound or a .wav in your sounds folder. Off by default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Settings are files</value></data>

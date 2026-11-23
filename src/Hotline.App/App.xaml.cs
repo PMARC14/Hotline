@@ -9,6 +9,9 @@ using Hotline.Core.Processes;
 using Hotline.Core.Activation;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Files;
+using Hotline.Core.State;
+using Hotline.Core.Upgrade;
 using Microsoft.UI.Xaml;
 using Microsoft.Windows.AppLifecycle;
 
@@ -30,7 +33,7 @@ public partial class App : Application
     private PromptLibrary? _prompts;
     private ModelCatalog? _models;
     private ISecretStore? _secrets;
-    private readonly HashSet<string> _pendingInvalidations = [];
+    private readonly HashSet<string> _pendingInvalidations = new(StringComparer.OrdinalIgnoreCase);
     private SettingsHost? _settingsHost;
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private IReadOnlyList<Hotline.Core.Tools.McpServerConfig> _odrServers = [];
@@ -105,10 +108,14 @@ public partial class App : Application
         // If the move failed, keep using the old settings this session (never write defaults over the user data).
         if (migrationFailed) dataDir = privateDir;
         _log = new FileLog(Path.Combine(dataDir, "logs", "hotline.log"));
-        var store = new SettingsStore(dataDir);
+        _secrets = new PasswordVaultSecretStore(_log);
+        var state = new StateStore(Path.Combine(dataDir, StateStore.FileName));
+        var files = new RealFileSystem();
+        var upgrade = PreFreezeUpgrade.Run(dataDir, files, state, _secrets);
+        var starterFailures = StarterFiles.Ensure(dataDir, files, state, _secrets);
+        foreach (var name in starterFailures) _log.Error($"starter file could not be written: {name}");
+        var store = new SettingsStore(dataDir, state: state);
         var settings = store.Load();
-        try { SettingsReset.WriteDefaults(dataDir); } // the hidden copy of the defaults (Settings › Advanced › Reset)
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Debug.WriteLine(ex); }
         ApplyLanguage(settings.General.Language); // before any window or text is created
         _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
         _log.Info($"starting {(IsDebugBuild ? "DEBUG" : "release")} build {typeof(App).Assembly.GetName().Version}; verbose={_log.Verbose}; settings at {store.FilePath}");
@@ -119,13 +126,12 @@ public partial class App : Application
         _settingsService = new SettingsService(store, settings, _log);
         _prompts = new PromptLibrary(Path.Combine(dataDir, "prompts"));
         try { _prompts.EnsureDefault(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("prompt folder setup failed", ex); }
-        _secrets = new PasswordVaultSecretStore(_log);
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var prompts = _prompts;
 
         var job = new ChildProcessJob(_log);
         _foreground = new ForegroundWindowTracker(_log, job.Owns);
-        _popup = new PopupWindow(settings.Window, settings.Chat.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground);
+        _popup = new PopupWindow(settings.Window, settings.Window.GrowMode, new PopupToggleGuard(TimeProvider.System, TimeSpan.FromMilliseconds(300)), _log, showDebugStatus: _log.Verbose, _foreground, state);
         _router = new ActivationRouter(_popup, settings.Activation,
             new KeyEventDeduper(TimeProvider.System, TimeSpan.FromMilliseconds(1000)), _log,
             testLinksEnabled: () => _settingsService.Current.Diagnostics.TestLinks);
@@ -144,7 +150,7 @@ public partial class App : Application
         var memory = new MemoryStore(Path.Combine(dataDir, "memory.md"));
         try { memory.EnsureFile(); } catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("memory.md setup failed", ex); }
         // Hotline's own tools (remember) + the MCP tools; saving a memory asks in the panel unless chat.memoryTool says otherwise.
-        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job), memory,
+        var tools = new Hotline.Core.Tools.HotlineToolHost(ToolHost(dataDir, job, state), memory,
             () => settings.Chat.Memory ? settings.Chat.MemoryTool : MemoryToolMode.Off, // memory off: nothing to save into
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
             () => _popup.DispatcherQueue.TryEnqueue(() => _settingsService!.Update(s => s.Chat.MemoryTool = MemoryToolMode.Allow, UpdateSource.Automatic)), // Update may Reload: UI thread
@@ -156,7 +162,7 @@ public partial class App : Application
             home, _secrets, BackendFactory.CreateApiHttpClient(), tools,
             new Hotline.Core.Backends.Agy.AgyProjects(Hotline.Core.Backends.Agy.AgyProjects.DirectoryFor(home), Path.Combine(privateDir, "agy", "Hotline")),
             Path.Combine(scratchDir, "codex", "Hotline"));
-        _backends = new BackendCache(() => settings.Chat.Backends, p => BackendFactory.Create(p, deps));
+        _backends = new BackendCache(() => settings.Chat.Connections, p => BackendFactory.Create(p, deps));
         HistoryStore? history = null;
         if (settings.Chat.SaveHistory)
         {
@@ -165,15 +171,15 @@ public partial class App : Application
         }
         // CLI chats live in the CLI's own history; Hotline keeps the messages too only for API/local connections or when asked.
         var chat = new ChatController(_backends.Get, history, TimeProvider.System, _log,
-            id => settings.Chat.Backends.FirstOrDefault(b => b.Id == id) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
+            id => settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } profile || ConnectionTypes.HotlineKeepsTranscript(profile))
         {
             BackendId = settings.Chat.DefaultBackend,
             // A chat Hotline kept only a record of shows its messages from the CLI's own history (chat.cliTranscripts).
             CliTranscript = (backendId, sessionId) => settings.Chat.CliTranscripts
-                && settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } owner
+                && settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } owner
                 ? CliTranscripts.Read(owner.Type, sessionId, home, backendId) : null,
         };
-        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir)
+        _presenter = new ChatPresenter(_popup, chat, new AttachmentTray(new AttachmentLimits()), settings, store, _log, dataDir, state)
         {
             UpdateSettings = change => _settingsService!.Update(change, UpdateSource.Automatic),
         };
@@ -213,7 +219,7 @@ public partial class App : Application
         chat.Event += e => { if (e is ConversationReset) _ = InvalidateBackend(chat.BackendId).AsTask(); };
         _settingsService.Changed += () =>
         {
-            if (chat.BackendId == lastBackend) return;
+            if (string.Equals(chat.BackendId, lastBackend, StringComparison.OrdinalIgnoreCase)) return;
             _ = InvalidateBackend(lastBackend).AsTask();
             lastBackend = chat.BackendId;
         };
@@ -230,8 +236,23 @@ public partial class App : Application
         _router.AppActionRequested += action => _presenter.RunAppAction(action);
         _settingsHost = new SettingsHost(() => new SettingsWindow(_settingsService, _secrets, _models, InvalidateBackend,
             _prompts, store.FilePath, Path.Combine(dataDir, "logs"), _log, _toolHost, Path.Combine(dataDir, "mcp.json"), _odrPath,
-            () => BarRoom(settings.Window), () => _popup?.ScreenLine() ?? ""), _log);
+            () => BarRoom(settings.Window), state), _log);
         _presenter.SettingsRequested += () => { _popup.HidePopup(); _settingsHost.Show(); };
+        void ShowUpgradeOnce()
+        {
+            _popup.Shown -= ShowUpgradeOnce;
+            if (state.IsShown(ShownFlag.UpgradeNotice)) return;
+            if (!upgrade.Changed && upgrade.Failed.Count == 0 && state.GetUpgrade() is null) return;
+            var lines = new List<string> { Strings.Upgrade_Notice };
+            if (upgrade.Reset.Count > 0) lines.Add(L.F(Strings.Upgrade_Reset, string.Join(", ", upgrade.Reset)));
+            var backup = upgrade.Changed ? upgrade.Backup : state.GetUpgrade()?.Backup;
+            lines.Add(backup is null ? Strings.Upgrade_NoBackup : L.F(Strings.Upgrade_Backup, backup));
+            if (upgrade.Failed.Count > 0) lines.Add(L.F(Strings.Upgrade_Retry, string.Join(", ", upgrade.Failed)));
+            _presenter.Notices.ShowTagged("upgrade", Strings.Guide_Upgrade_Title, string.Join("\n", lines),
+                Microsoft.UI.Xaml.Controls.InfoBarSeverity.Informational, closable: true);
+            state.MarkShown(ShownFlag.UpgradeNotice);
+        }
+        _popup.Shown += ShowUpgradeOnce;
         _router.OpenSettingsRequested += page => _settingsHost.Show(page);
         ApplyToolbarFile(dataDir);
         ReportSettingsProblems(store);
@@ -239,7 +260,7 @@ public partial class App : Application
         _settingsService.ConnectionsChanged += ids =>
         {
             foreach (var id in ids) _ = InvalidateBackend(id).AsTask();
-            if (settings.Chat.Backends.All(b => b.Id != chat.BackendId)) chat.BackendId = settings.Chat.DefaultBackend;
+            if (settings.Chat.Connections.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase))) chat.BackendId = settings.Chat.DefaultBackend;
         };
         SystemTheme.Changed += () => _popup.DispatcherQueue.TryEnqueue(() =>
         {
@@ -252,11 +273,11 @@ public partial class App : Application
             {
                 // First run: a default chosen in Settings › Connections or settings.json connects the panel too. The
                 // panel's connection removed (Settings or its file): move to the default, not a blank picker.
-                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Backends.All(b => b.Id != chat.BackendId))
-                    && settings.Chat.Backends.Any(b => b.Id == settings.Chat.DefaultBackend))
-                    chat.BackendId = settings.Chat.DefaultBackend;
+                if ((string.IsNullOrEmpty(chat.BackendId) || settings.Chat.Connections.All(b => !string.Equals(b.Id, chat.BackendId, StringComparison.OrdinalIgnoreCase)))
+                    && settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, settings.Chat.DefaultBackend, StringComparison.OrdinalIgnoreCase)) is { } def)
+                    chat.BackendId = def.Id;
                 _log.Verbose = IsDebugBuild || settings.Diagnostics.VerboseLogging;
-                _popup.GrowMode = settings.Chat.GrowMode;
+                _popup.GrowMode = settings.Window.GrowMode;
                 _popup.ApplyAppearance();
                 _presenter.ApplyAppearance();
                 _providerBar.Refresh();

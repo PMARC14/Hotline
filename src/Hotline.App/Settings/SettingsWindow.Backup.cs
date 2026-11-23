@@ -59,11 +59,12 @@ public sealed partial class SettingsWindow
                 var result = await Task.Run(() =>
                 {
                     // Written beside the target and moved over it when complete: a failure half way never destroys an earlier backup.
-                    var temp = file.Path + ".tmp";
+                    // A name of its own (CreateNew): an unrelated "<name>.tmp" beside it is never truncated or deleted.
+                    var temp = $"{file.Path}.{Guid.NewGuid():N}.tmp";
                     try
                     {
                         ExportResult written;
-                        using (var stream = new FileStream(temp, FileMode.Create, FileAccess.Write, FileShare.None))
+                        using (var stream = new FileStream(temp, FileMode.CreateNew, FileAccess.Write, FileShare.None))
                             written = SettingsPackage.Export(data, chosen, stream);
                         File.Move(temp, file.Path, overwrite: true);
                         return written;
@@ -81,7 +82,9 @@ public sealed partial class SettingsWindow
                     : L.F(Strings.Backup_ExportedSkipped, file.Path, result.FileCount, result.Skipped.Count);
                 if (result.Skipped.Count > 0)
                     exported += "\n" + string.Join("\n", result.Skipped.Take(5).Select(s => L.F(Strings.Backup_ImportSkipped, SettingsPackage.LogName(s.Path) + " - " + s.Text)));
-                ShowStatus(status, result.Skipped.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning, exported);
+                if (result.PlaintextEnv.Count > 0)
+                    exported += "\n" + L.F(Strings.Backup_PlaintextEnv, string.Join(", ", result.PlaintextEnv.Select(e => $"{e.Server}/{e.EnvKey}")));
+                ShowStatus(status, result.Skipped.Count == 0 && result.PlaintextEnv.Count == 0 ? InfoBarSeverity.Success : InfoBarSeverity.Warning, exported);
             }
             catch (Exception ex)
             {
@@ -183,11 +186,12 @@ public sealed partial class SettingsWindow
                     return SettingsPackage.PrepareImport(data, stream, chosen);
                 });
                 if (plan.RequiresExecutionConfirmation && !await ConfirmExecutionImportAsync(plan.ExecutionReview)) return;
-                var (result, needKeys) = await Task.Run(() =>
+                var (result, needKeys, needSecrets) = await Task.Run(() =>
                 {
                     var r = SettingsPackage.Import(plan, Path.Combine(data, SettingsReset.BackupsFolder),
                         executionConfirmed: plan.RequiresExecutionConfirmation);
-                    return (r, r.Error is null ? SettingsPackage.ConnectionsNeedingKey(data, r, _secrets) : []);
+                    return (r, r.Error is null ? SettingsPackage.ConnectionsNeedingKey(data, r, _secrets) : [],
+                        r.Written.Contains("mcp.json") ? SettingsPackage.ServersNeedingSecrets(plan, _secrets) : []);
                 });
                 _log.Info($"settings imported: {result.Written.Count} files, {result.Skipped.Count} skipped" + (result.Error is null ? "" : ", refused"));
                 foreach (var s in result.Skipped.Take(20)) _log.Info($"import skipped {SettingsPackage.LogName(s.Path)}: {s.Reason}");
@@ -200,8 +204,9 @@ public sealed partial class SettingsWindow
                 lines.AddRange(result.Skipped.Take(5).Select(s => L.F(Strings.Backup_ImportSkipped, SettingsPackage.LogName(s.Path) + " - " + s.Text)));
                 if (result.BackupFolder is { } backup) lines.Add(L.F(Strings.Backup_ImportBackupAt, backup));
                 if (needKeys.Count > 0) lines.Add(L.F(Strings.Backup_NeedKeys, string.Join(", ", needKeys)));
+                if (needSecrets.Count > 0) lines.Add(L.F(Strings.Backup_MissingSecrets, string.Join(", ", needSecrets)));
                 lines.Add(Strings.Backup_LiveNote);
-                var bar = ShowStatus(status, needKeys.Count > 0 || result.Skipped.Count > 0 ? InfoBarSeverity.Warning : InfoBarSeverity.Success, string.Join("\n", lines));
+                var bar = ShowStatus(status, needKeys.Count > 0 || needSecrets.Count > 0 || result.Skipped.Count > 0 ? InfoBarSeverity.Warning : InfoBarSeverity.Success, string.Join("\n", lines));
                 if (result.BackupFolder is { } folder)
                 {
                     var open = new Button { Content = Strings.Backup_OpenBackup };

@@ -1,5 +1,8 @@
 using System.Text.Json;
 using Hotline.Core.Backends;
+using Hotline.Core.Files;
+using Hotline.Core.State;
+using Hotline.Core.Tools;
 using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Settings;
@@ -37,7 +40,7 @@ public static partial class SettingsPackage
             plan.Add((path, full, data.ToArray()));
         }
 
-        return new(plan, skipped, BuildExecutionReview(root, plan));
+        return new(plan, skipped, BuildExecutionReview(root, plan), rootDirectory: root);
     }
 
     /// <summary>
@@ -45,7 +48,7 @@ public static partial class SettingsPackage
     /// <see cref="PreparedImport.RequiresExecutionConfirmation"/> is true and <paramref name="executionConfirmed"/> is false.
     /// </summary>
     public static ImportResult Import(PreparedImport plan, string backupDirectory,
-        bool executionConfirmed = false, DateTimeOffset? now = null)
+        bool executionConfirmed = false, DateTimeOffset? now = null, IFileSystem? fileSystem = null, StateStore? state = null)
     {
         ArgumentNullException.ThrowIfNull(plan);
         if (plan.Error is { } error) return Failed(error);
@@ -53,51 +56,32 @@ public static partial class SettingsPackage
             return Failed(Strings.Backup_ExecutionConfirmationRequired);
 
         var skipped = plan.Skipped.ToList();
-        string? backup = null;
-        var existing = plan.Files.Where(p => File.Exists(p.Full)).ToList();
-        if (existing.Count > 0)
+        var files = fileSystem ?? new RealFileSystem();
+        var root = plan.RootDirectory;
+        state ??= new StateStore(Path.Combine(root, StateStore.FileName));
+        var backup = new BackupSet(root, BackupReason.Import, files, () => (now ?? DateTimeOffset.Now).LocalDateTime);
+        var writer = new SafeFile(files);
+        // Complete the backup phase before publishing any of the reviewed bytes.
+        try
         {
-            try
-            {
-                var stamp = $"import-{(now ?? DateTimeOffset.Now).ToLocalTime():yyyyMMdd-HHmmss}";
-                backup = Path.Combine(backupDirectory, stamp);
-                for (var n = 2; Directory.Exists(backup); n++) backup = Path.Combine(backupDirectory, $"{stamp}-{n}"); // never over a backup
-                Directory.CreateDirectory(backup);
-                foreach (var (path, full, _) in existing)
-                {
-                    var copy = Path.Combine(backup, path.Replace('/', Path.DirectorySeparatorChar));
-                    Directory.CreateDirectory(Path.GetDirectoryName(copy)!);
-                    File.Copy(full, copy, overwrite: false);
-                }
-            }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-            {
-                return Failed(Strings.Backup_Err_BackupFailed);
-            }
+            foreach (var (_, full, _) in plan.Files)
+                if (files.FileExists(full) && !backup.TryBackup(full)) return Failed(Strings.Backup_Err_BackupFailed);
         }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return Failed(Strings.Backup_Err_BackupFailed); }
 
         var written = new List<string>();
         foreach (var (path, full, data) in plan.Files)
         {
-            var temp = Path.Combine(Path.GetDirectoryName(full)!, $".{Guid.NewGuid():N}.tmp");
-            try
+            var version = path == "toolbar.json" ? 3 : 1;
+            var result = writer.Replace(full, data, backup, version);
+            if (result is SafeFileResult.Written or SafeFileResult.Unchanged)
             {
-                Directory.CreateDirectory(Path.GetDirectoryName(full)!);
-                File.WriteAllBytes(temp, data);
-                File.Move(temp, full, overwrite: true);
                 written.Add(path);
+                if (result == SafeFileResult.Written) state.SetLastWritten(path, SafeFile.Hash(data));
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            {
-                skipped.Add(new(path, "couldn't be written (in use or read-only)"));
-            }
-            finally
-            {
-                try { if (File.Exists(temp)) File.Delete(temp); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { }
-            }
+            else skipped.Add(new(path, result == SafeFileResult.NewerVersion ? "newer version left untouched" : "couldn't be written (in use or read-only)"));
         }
-        return new ImportResult(written, skipped, backup, null);
+        return new ImportResult(written, skipped, backup.DirectoryPath, null);
 
         static ImportResult Failed(string error) => new([], [], null, error);
     }
@@ -131,5 +115,23 @@ public static partial class SettingsPackage
             catch (Exception ex) when (ex is JsonException or IOException or UnauthorizedAccessException) { }
         }
         return [.. ids.Order(StringComparer.OrdinalIgnoreCase)];
+    }
+
+    /// <summary>Checks only the selected package's secret references. Never resolves them into the review or files.</summary>
+    public static IReadOnlyList<string> ServersNeedingSecrets(PreparedImport plan, ISecretStore secrets)
+    {
+        var missing = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        foreach (var (path, _, data) in plan.Files.Where(f => f.Path == "mcp.json"))
+        {
+            var config = McpConfig.Parse(DecodeUtf8(data));
+            foreach (var server in config.Servers)
+                foreach (var value in server.Env.Values)
+                    if (McpSecrets.TryParseToken(value, out var name, out _))
+                    {
+                        try { if (string.IsNullOrEmpty(secrets.Get(McpSecrets.LockerKey(name)))) missing.Add(server.Name); }
+                        catch (Exception) { missing.Add(server.Name); }
+                    }
+        }
+        return missing.Order(StringComparer.OrdinalIgnoreCase).ToList();
     }
 }

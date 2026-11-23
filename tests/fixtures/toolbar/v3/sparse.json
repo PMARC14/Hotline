@@ -1,0 +1,7 @@
+{
+  "version": 3,
+  "bottom": {
+    "left": ["pin"],
+    "right": ["newChat", "settings"]
+  }
+}

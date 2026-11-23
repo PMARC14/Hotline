@@ -54,8 +54,8 @@ public static class ConnectionTypes
     /// Whether Hotline keeps a chat's messages in its own history: always for API and local connections; for a CLI only
     /// when the CLI doesn't keep it (keepCliSessions off) or the user also wants it in Hotline (keepInHotline).
     /// </summary>
-    public static bool HotlineKeepsTranscript(BackendProfile p) => !IsCli(p.Type) || !p.KeepCliSessions || p.KeepInHotline;
+    public static bool HotlineKeepsTranscript(ConnectionProfile p) => !IsCli(p.Type) || !p.KeepCliSessions || p.KeepInHotline;
 
     /// <summary>Whether this connection's model reads images: its "images" setting, else the type's default.</summary>
-    public static bool TakesImages(BackendProfile p) => p.Images ?? Of(p.Type).ImagesByDefault;
+    public static bool TakesImages(ConnectionProfile p) => p.Images ?? Of(p.Type).ImagesByDefault;
 }

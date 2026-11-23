@@ -25,27 +25,28 @@ public sealed class StdioMcpSession : IMcpSession
 
     private static async Task<IMcpSession> ConnectAsync(McpServerConfig server, Action<Process>? onStarted, Action<string> log, TimeProvider clock, Func<bool>? verbose, CancellationToken ct)
     {
-        var stderr = new StderrThrottle(server.Name, log, clock, verbose: verbose);
+        var scrubValues = McpSecrets.GetScrubValues(server);
+        string Scrub(string s) => McpSecrets.Scrub(s, scrubValues);
+        var stderr = new StderrThrottle(server.Name, log, clock, verbose: verbose, scrub: Scrub);
         var startInfo = McpProcess.CreateStartInfo(server, OperatingSystem.IsWindows());
         // Not on this PC (no Node.js for npx, …): say what to install, rather than start cmd for "is not recognized".
         if (OperatingSystem.IsWindows() && !string.Equals(Path.GetFileName(server.Command), "cmd.exe", StringComparison.OrdinalIgnoreCase)
             && Platform.CommandResolver.Find(server.Command, server.WorkingDirectory, startInfo.Environment.TryGetValue("PATH", out var path) ? path : null,
                 startInfo.Environment.TryGetValue("PATHEXT", out var ext) ? ext : null, File.Exists) is null)
-            throw new IOException(Platform.CommandResolver.MissingMessage(server.Name, server.Command));
+            throw new IOException(Scrub(Platform.CommandResolver.MissingMessage(server.Name, server.Command)));
         var process = new Process { StartInfo = startInfo, EnableRaisingEvents = true };
-        process.ErrorDataReceived += (_, e) => { if (e.Data is not null) stderr.Line(e.Data); };
         bool started;
         Processes.ProcessLaunches.Noted();
         try { started = process.Start(); }
         catch (Exception ex)
         {
             process.Dispose();
-            throw new IOException(L.F(Strings.Mcp_StartFailed, server.Command) + ": " + ex.Message, ex);
+            throw new IOException(Scrub(L.F(Strings.Mcp_StartFailed, server.Command) + ": " + ex.Message), ex);
         }
         if (!started)
         {
             process.Dispose();
-            throw new IOException(L.F(Strings.Mcp_StartFailed, server.Command));
+            throw new IOException(Scrub(L.F(Strings.Mcp_StartFailed, server.Command)));
         }
         McpClient? client = null;
         using var exitedOrCancelled = CancellationTokenSource.CreateLinkedTokenSource(ct);
@@ -53,7 +54,7 @@ public sealed class StdioMcpSession : IMcpSession
         try
         {
             onStarted?.Invoke(process);
-            process.BeginErrorReadLine();
+            PumpStderr(process.StandardError, stderr.Line);
             process.Exited += onExited;
             if (process.HasExited) exitedOrCancelled.Cancel();
             client = await McpClient.CreateAsync(new StreamClientTransport(process.StandardInput.BaseStream, process.StandardOutput.BaseStream),
@@ -61,7 +62,7 @@ public sealed class StdioMcpSession : IMcpSession
             process.Exited -= onExited;
             return new StdioMcpSession(client, process);
         }
-        catch (Exception ex)
+        catch (Exception)
         {
             process.Exited -= onExited;
             if (!ct.IsCancellationRequested)
@@ -71,9 +72,9 @@ public sealed class StdioMcpSession : IMcpSession
                 try { await process.WaitForExitAsync(flush.Token); } catch (OperationCanceledException) { }
             }
             var exited = HasExited(process);
-            var message = exited ? ExitMessage(process, stderr) : null;
+            var message = exited ? Scrub(ExitMessage(process, stderr)) : null;
             await ShutdownAsync(process, client, TimeSpan.Zero);
-            if (message is not null && !ct.IsCancellationRequested) throw new IOException(message, ex);
+            if (message is not null && !ct.IsCancellationRequested) throw new IOException(message);
             throw;
         }
     }
@@ -139,4 +140,25 @@ public sealed class StdioMcpSession : IMcpSession
         if (Interlocked.Exchange(ref _disposed, 1) != 0) return;
         await ShutdownAsync(_process, _client, ShutdownGrace);
     }
+
+    /// <summary>Reads stderr in chunks and hands on lines of at most 4000 chars: a server that never writes a newline can't grow memory.</summary>
+    internal static void PumpStderr(TextReader reader, Action<string> line) => _ = Task.Run(async () =>
+    {
+        const int MaxLine = 4000;
+        var buffer = new char[4096];
+        var current = new System.Text.StringBuilder();
+        try
+        {
+            int n;
+            while ((n = await reader.ReadAsync(buffer)) > 0)
+                for (var i = 0; i < n; i++)
+                {
+                    var c = buffer[i];
+                    if (c == '\n') { line(current.ToString().TrimEnd('\r')); current.Clear(); }
+                    else if (current.Length < MaxLine) current.Append(c);
+                }
+            if (current.Length > 0) line(current.ToString().TrimEnd('\r'));
+        }
+        catch (Exception ex) when (ex is IOException or ObjectDisposedException or InvalidOperationException) { }
+    });
 }

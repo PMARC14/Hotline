@@ -13,7 +13,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "schemaVersion": 99,
+              "version": 99,
               "unrecognizedFutureKey": "preserve-this-payload",
               "window": {
                 "fontSize": 16
@@ -47,7 +47,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "schemaVersion": 99,
+              "version": 99,
               "newField": 42
             }
             """;
@@ -58,7 +58,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         var settings = store.Load();
 
         // Add a connection
-        settings.Chat.Backends.Add(new BackendProfile { Id = "test-backend", Name = "Test Connection", Type = BackendType.OpenAiCompatible });
+        settings.Chat.Connections.Add(new ConnectionProfile { Id = "test-backend", Name = "Test Connection", Type = BackendType.OpenAiCompatible });
         store.Save(settings);
 
         // settings.json is still protected
@@ -78,7 +78,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = $$"""
             {
-              "schemaVersion": {{HotlineSettings.CurrentSchemaVersion}},
+              "version": {{HotlineSettings.CurrentSchemaVersion}},
               "window": {
                 "fontSize": 14
               }
@@ -107,9 +107,9 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "version": 3,
+              "version": 99,
               "futureToolbarOption": { "enabled": true },
-              "items": { "left": ["pin"], "center": [], "right": [] }
+              "bottom": { "left": ["pin"], "center": [], "right": [] }
             }
             """;
         File.WriteAllText(path, json);
@@ -121,7 +121,7 @@ public sealed class NewerVersionGuardTests : TempDirTest
         var problem = ToolbarFile.Save(path, ToolbarModel.Defaults);
 
         Assert.NotNull(problem);
-        var expectedProblem = L.F(Strings.Toolbar_NewerVersion, 3);
+        var expectedProblem = L.F(Strings.Toolbar_NewerVersion, 99);
         Assert.Equal(expectedProblem, problem);
 
         var afterBytes = File.ReadAllBytes(path);
@@ -135,8 +135,8 @@ public sealed class NewerVersionGuardTests : TempDirTest
         Directory.CreateDirectory(_dir);
         var json = """
             {
-              "version": 2,
-              "items": { "left": ["pin"], "center": [], "right": [] }
+              "version": 3,
+              "bottom": { "left": ["pin"], "center": [], "right": [] }
             }
             """;
         File.WriteAllText(path, json);
@@ -145,6 +145,6 @@ public sealed class NewerVersionGuardTests : TempDirTest
 
         Assert.Null(problem);
         var textAfter = File.ReadAllText(path);
-        Assert.Contains("\"version\": 2", textAfter);
+        Assert.Contains("\"version\": 3", textAfter);
     }
 }

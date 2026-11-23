@@ -25,7 +25,7 @@ public sealed class GeminiBackendTests : TempDirTest
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
 
-    private (GeminiBackend, RecordingHandler) New(BackendProfile p, Func<HttpRequestMessage, HttpResponseMessage> respond, string? key = "AIza-test")
+    private (GeminiBackend, RecordingHandler) New(ConnectionProfile p, Func<HttpRequestMessage, HttpResponseMessage> respond, string? key = "AIza-test")
     {
         var handler = new RecordingHandler(respond);
         var secrets = new InMemorySecretStore();
@@ -33,7 +33,7 @@ public sealed class GeminiBackendTests : TempDirTest
         return (new GeminiBackend(p, new HttpClient(handler), secrets, _ => "Be brief.", new FileLog(Path.Combine(_dir, "h.log"))), handler);
     }
 
-    private static BackendProfile Gemini(string? model = "gemini-3.8-flash") => new() { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model };
+    private static ConnectionProfile Gemini(string? model = "gemini-3.8-flash") => new() { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model };
 
     [Fact]
     public async Task MAX_TOKENS_keeps_plain_answer_and_yields_a_localized_status_note()

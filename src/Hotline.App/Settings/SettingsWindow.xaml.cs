@@ -29,16 +29,16 @@ public sealed partial class SettingsWindow : Window
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private string _mcpPath = "";
     private string? _odrPath;
+    private readonly Hotline.Core.State.StateStore? _state;
     /// <summary>The width (DIP) the panel's button rows have, or would have when it opens (the button rows editor's "Move what doesn't fit"); null in tests.</summary>
     private readonly Func<double>? _barRoom;
-    /// <summary>The short screen/scaling line shown above the button rows (see <see cref="Hotline.Core.Windowing.ScreenScale"/>); null in tests.</summary>
-    private readonly Func<string>? _screenLine;
 
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
         PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
-        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null, Func<string>? screenLine = null)
+        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null,
+        Hotline.Core.State.StateStore? state = null)
     {
-        (_toolHost, _mcpPath, _odrPath, _barRoom, _screenLine) = (toolHost, mcpPath ?? "", odrPath, barRoom, screenLine);
+        (_toolHost, _mcpPath, _odrPath, _barRoom, _state) = (toolHost, mcpPath ?? "", odrPath, barRoom, state);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
@@ -382,41 +382,44 @@ public sealed partial class SettingsWindow : Window
         PageHost.Children.Add(Card(Strings.Tools_Odr,
             _odrPath is null ? Strings.Tools_Odr_Missing : L.F(Strings.Tools_Odr_Available, _odrPath),
             null));
-        if (_toolHost is null) return;
-        var list = new StackPanel { Spacing = 6 };
-        void Fill()
+        if (_toolHost is not null)
         {
-            list.Children.Clear();
-            if (_toolHost.ConfigError is { } error)
-                list.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = error });
-            var status = _toolHost.Status;
-            if (status.Count == 0)
-                list.Children.Add(new TextBlock { Text = Strings.Tools_NoneChecked, Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
-            foreach (var s in status.OrderBy(s => s.Name))
-                list.Children.Add(Card(s.DisplayName, s.State switch
-                {
-                    Hotline.Core.Tools.McpServerState.Ready => L.F(Strings.Tools_Ready, s.ToolCount),
-                    Hotline.Core.Tools.McpServerState.Failed => L.F(Strings.Tools_Failed, s.Error),
-                    Hotline.Core.Tools.McpServerState.Disabled => Strings.Tools_Disabled,
-                    _ => s.State.ToString(),
-                }, null));
-        }
-        var check = new Button { Content = Strings.Tools_Check, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
-        check.Click += async (_, _) =>
-        {
-            check.IsEnabled = false;
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60)); // a server stuck starting can't hold the button forever
-            try
+            var list = new StackPanel { Spacing = 6 };
+            void Fill()
             {
-                _toolHost.RetryFailedServers();
-                await _toolHost.GetToolsAsync(timeout.Token);
+                list.Children.Clear();
+                if (_toolHost.ConfigError is { } error)
+                    list.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = error });
+                var status = _toolHost.Status;
+                if (status.Count == 0)
+                    list.Children.Add(new TextBlock { Text = Strings.Tools_NoneChecked, Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
+                foreach (var s in status.OrderBy(s => s.Name))
+                    list.Children.Add(Card(s.DisplayName, s.State switch
+                    {
+                        Hotline.Core.Tools.McpServerState.Ready => L.F(Strings.Tools_Ready, s.ToolCount),
+                        Hotline.Core.Tools.McpServerState.Failed => L.F(Strings.Tools_Failed, s.Error),
+                        Hotline.Core.Tools.McpServerState.Disabled => Strings.Tools_Disabled,
+                        _ => s.State.ToString(),
+                    }, null));
             }
-            catch (Exception ex) { _log.Error("checking MCP servers failed", ex); }
-            finally { check.IsEnabled = true; Fill(); }
-        };
-        PageHost.Children.Add(check);
-        PageHost.Children.Add(list);
-        Fill();
+            var check = new Button { Content = Strings.Tools_Check, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+            check.Click += async (_, _) =>
+            {
+                check.IsEnabled = false;
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60)); // a server stuck starting can't hold the button forever
+                try
+                {
+                    _toolHost.RetryFailedServers();
+                    await _toolHost.GetToolsAsync(timeout.Token);
+                }
+                catch (Exception ex) { _log.Error("checking MCP servers failed", ex); }
+                finally { check.IsEnabled = true; Fill(); }
+            };
+            PageHost.Children.Add(check);
+            PageHost.Children.Add(list);
+            Fill();
+        }
+        BuildToolsGrantsAndSecrets();
     }
 
     private void BuildAdvancedExtras()

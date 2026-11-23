@@ -16,7 +16,7 @@ namespace Hotline.Core.Backends.Api;
 /// Stateless: the whole conversation (with images as data URLs) is sent each turn; the reply streams as SSE. With
 /// Tool use on, Hotline's MCP tools are offered as functions; tool calls run through the tool host and loop.
 /// </summary>
-public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
+public sealed class OpenAiBackend(ConnectionProfile profile, HttpClient http, ISecretStore secrets, Func<ConnectionProfile, string> systemPrompt,
     FileLog log, IToolHost? tools = null) : IChatBackend
 {
     public string Id => profile.Id;
@@ -95,6 +95,9 @@ public sealed class OpenAiBackend(BackendProfile profile, HttpClient http, ISecr
 
             if ((calls.Count == 0 || offered.Count == 0) && !done && finish is null)
                 yield return ChatDelta.StatusNote(Strings.Api_AnswerCutOff);
+            // A text answer that hit the token limit is kept, and says so (Gemini's MAX_TOKENS does the same).
+            if ((calls.Count == 0 || offered.Count == 0) && finish is "length")
+                yield return ChatDelta.StatusNote(L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish));
             if (calls.Count == 0 || offered.Count == 0) yield break;
             // Never run tool calls from a cut-off stream: their arguments may be incomplete.
             if (finish is "length" or "content_filter")

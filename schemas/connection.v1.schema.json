@@ -1,0 +1,165 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "connection.v1.schema.json",
+  "title": "Hotline connection profile (v1)",
+  "description": "Per-connection configuration stored in connections/<id>.json; the file stem is the id (unit: JSON object).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "default": 1,
+      "description": "Connection schema version (unit: integer)."
+    },
+    "type": {
+      "type": "string",
+      "enum": ["antigravity", "gemini", "openAiCompatible", "claudeCode", "anthropic", "local", "codex"],
+      "default": "antigravity",
+      "description": "Backend provider kind (unit: enum)."
+    },
+    "name": {
+      "type": ["string", "null"],
+      "default": "",
+      "description": "Display name shown in the Provider dropdown (unit: string)."
+    },
+    "model": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Model id override; null uses connection default (unit: model id)."
+    },
+    "effort": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Reasoning or thinking effort level (trimmed, lower-cased; low, medium, high, plus xhigh and max for Claude Code and Anthropic, and ultra for Codex); null uses model default (unit: string)."
+    },
+    "endpoint": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "API base URL; null uses the type's default endpoint (unit: URL)."
+    },
+    "cliPath": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "CLI executable path; null auto-detects from PATH (unit: file path)."
+    },
+    "agent": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Antigravity custom agent name in chatOnly mode; null uses 'hotline' (unit: agent name)."
+    },
+    "continueIn": {
+      "type": ["array", "null"],
+      "items": { "$ref": "#/$defs/continueTarget" },
+      "default": null,
+      "description": "Connection-specific 'Continue this chat in' targets; null uses chat.continueIn (unit: target array)."
+    },
+    "extraArgs": {
+      "type": ["array", "null"],
+      "items": { "type": "string" },
+      "default": null,
+      "description": "Extra CLI arguments appended on launch (unit: argument array)."
+    },
+    "args": {
+      "type": ["array", "null"],
+      "items": { "type": "string" },
+      "default": null,
+      "description": "Replacement CLI launch flags for inherit mode (unit: argument array)."
+    },
+    "keepCliSessions": {
+      "type": ["boolean", "null"],
+      "default": true,
+      "description": "Keep CLI conversation in the CLI's own session store (unit: boolean)."
+    },
+    "keepInHotline": {
+      "type": ["boolean", "null"],
+      "default": false,
+      "description": "Also save CLI conversation messages in Hotline's history\\ (unit: boolean)."
+    },
+    "refusalFallback": {
+      "type": ["boolean", "null"],
+      "default": true,
+      "description": "Allow Anthropic API safety refusal fallback routing (unit: boolean)."
+    },
+    "tools": {
+      "type": ["string", "null"],
+      "enum": ["chatOnly", "inherit", null],
+      "default": "chatOnly",
+      "description": "Tool mode: chatOnly or inherit CLI/MCP tools (unit: enum)."
+    },
+    "approveAllTools": {
+      "type": ["boolean", "null"],
+      "default": false,
+      "description": "Auto-approve all CLI tool requests in inherit mode (unit: boolean)."
+    },
+    "workingDirectory": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "Working folder for CLI inherit mode; null uses user profile (unit: directory path)."
+    },
+    "prompt": {
+      "type": ["string", "null"],
+      "default": null,
+      "description": "System prompt name in prompts\\; null uses chat.defaultPrompt (unit: prompt name)."
+    },
+    "maxTokens": {
+      "type": ["integer", "null"],
+      "minimum": 1,
+      "maximum": 1000000,
+      "default": null,
+      "description": "Maximum tokens per answer for API connections (unit: tokens)."
+    },
+    "temperature": {
+      "type": ["number", "null"],
+      "minimum": 0,
+      "maximum": 2,
+      "default": null,
+      "description": "Sampling temperature for Gemini, OpenAI-compatible and local APIs (unit: scalar 0-2)."
+    },
+    "images": {
+      "type": ["boolean", "null"],
+      "default": null,
+      "description": "Whether model accepts images; null uses type default (unit: boolean)."
+    }
+  },
+  "$defs": {
+    "continueTarget": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["web", "openWebUi", "app"],
+          "description": "Target launch mechanism (unit: enum)."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Display label in Continue this chat in menu (unit: string)."
+        },
+        "url": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "URL template for web or base URL for openWebUi (unit: URL)."
+        },
+        "command": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Executable and arguments for app target (unit: command string)."
+        },
+        "model": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Optional model override for openWebUi (unit: model id)."
+        },
+        "copyChat": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Copy chat Markdown to clipboard before launching (unit: boolean)."
+        }
+      }
+    }
+  }
+}

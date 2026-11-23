@@ -1,138 +1,71 @@
-using Hotline.Core.Windowing;
+using System.Text;
+using System.Text.Json;
+using System.Text.Json.Nodes;
+using Hotline.Core.Files;
+using Hotline.Core.State;
+using Hotline.Core.Upgrade;
 
 namespace Hotline.Core.Settings;
 
-/// <summary>
-/// Settings › Advanced › Reset. Everything is copied to backups\reset-&lt;time&gt;\ first. "Settings" puts settings.json and
-/// toolbar.json back to the defaults but keeps the connections (and which one is used); "everything" also removes the
-/// connections, toolbar.json (recreated on the next load) and mcp.json. Prompts, quick actions, memory and history are
-/// never touched. Copies of the default settings.json and toolbar.json are kept in the hidden .defaults folder (rewritten
-/// at startup, so they always match this version).
-/// </summary>
+/// <summary>Explicit Reset uses one backup set and clears state. Retained connections are never rewritten.</summary>
 public static class SettingsReset
 {
-    public const string DefaultsFolder = ".defaults";
-    public const string BackupsFolder = "backups";
-    private const string ToolbarFileName = "toolbar.json";
-    private static readonly string[] EverythingFiles = [ToolbarFileName, "mcp.json"];
+    public const string DefaultsFolder = ".defaults", BackupsFolder = "backups";
+    public static string DefaultsPath(string directory) => Path.Combine(directory, DefaultsFolder, "settings.json");
+    public static string DefaultsToolbarPath(string directory) => Path.Combine(directory, DefaultsFolder, "toolbar.json");
 
-    public static string DefaultsPath(string directory) => Path.Combine(directory, DefaultsFolder, SettingsStore.FileName);
-
-    public static string DefaultsToolbarPath(string directory) => Path.Combine(directory, DefaultsFolder, ToolbarFileName);
-
-    /// <summary>Writes the hidden copies of the default settings.json and toolbar.json when missing or out of date.</summary>
-    public static void WriteDefaults(string directory)
-    {
-        var folder = Directory.CreateDirectory(Path.Combine(directory, DefaultsFolder));
-        folder.Attributes |= FileAttributes.Hidden;
-        var json = SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings()));
-        var path = DefaultsPath(directory);
-        if (!File.Exists(path) || File.ReadAllText(path) != json) File.WriteAllText(path, json);
-        var bar = ToolbarModel.Defaults.ToJson();
-        var barPath = DefaultsToolbarPath(directory);
-        if (!File.Exists(barPath) || File.ReadAllText(barPath) != bar) File.WriteAllText(barPath, bar);
-    }
-
-    /// <summary>
-    /// Backs up, then resets, file by file: a file that can't be copied is not deleted, one that can't be deleted is listed, and
-    /// the rest goes on. Returns the backup folder, the ids of the connections removed (their API keys are the caller's to
-    /// delete; always complete, whatever failed) and what failed. The caller reloads the settings afterwards.
-    /// </summary>
     public static ResetResult Reset(SettingsStore store, string directory, HotlineSettings current,
-        bool everything, DateTimeOffset now, Action<string, string>? copyFile = null)
+        bool everything, DateTimeOffset now, IFileSystem? fileSystem = null, StateStore? state = null)
     {
-        var stamp = $"reset-{now.ToLocalTime():yyyyMMdd-HHmmss}";
-        var backup = Path.Combine(directory, BackupsFolder, stamp);
-        for (var n = 2; Directory.Exists(backup); n++) backup = Path.Combine(directory, BackupsFolder, $"{stamp}-{n}"); // never over a backup
-        Directory.CreateDirectory(backup);
+        var files = fileSystem ?? new RealFileSystem();
+        state ??= new StateStore(Path.Combine(directory, StateStore.FileName));
+        var backup = new BackupSet(directory, BackupReason.Reset, files, () => now.LocalDateTime);
+        var writer = new SafeFile(files);
         var failed = new List<string>();
-        var backedUp = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // full paths with a copy in the backup folder
-
-        bool Copy(string file, string to)
+        var removed = new List<string>();
+        var fresh = JsonNode.Parse(StarterFiles.DefaultBytes("settings"))!.AsObject();
+        if (!everything)
         {
-            try
-            {
-                Directory.CreateDirectory(Path.GetDirectoryName(to)!);
-                if (copyFile is not null) copyFile(file, to);
-                else File.Copy(file, to, overwrite: true);
-                using (var destination = new FileStream(to, FileMode.Open, FileAccess.Write, FileShare.Read))
-                    destination.Flush(flushToDisk: true);
-                backedUp.Add(Path.GetFullPath(file));
-                return true;
-            }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-            {
-                failed.Add(Path.GetFileName(file));
-                return false;
-            }
+            fresh["chat"]!["defaultConnection"] = current.Chat.DefaultBackend;
+            fresh["chat"]!["order"] = new JsonArray(current.Chat.Order.Select(id => (JsonNode?)JsonValue.Create(id)).ToArray());
         }
 
-        if (File.Exists(store.FilePath)) Copy(store.FilePath, Path.Combine(backup, SettingsStore.FileName));
-        var connectionFiles = Directory.Exists(store.ConnectionsDirectory)
-            ? Directory.EnumerateFiles(store.ConnectionsDirectory, "*.json").ToList() : [];
-        foreach (var file in connectionFiles)
-            Copy(file, Path.Combine(backup, SettingsStore.ConnectionsFolder, Path.GetFileName(file)));
-        foreach (var name in EverythingFiles)
-            if (File.Exists(Path.Combine(directory, name))) Copy(Path.Combine(directory, name), Path.Combine(backup, name));
+        void Replace(string name, byte[] bytes, int version)
+        {
+            var result = writer.Replace(Path.Combine(directory, name), bytes, backup, version);
+            if (result is not (SafeFileResult.Written or SafeFileResult.Unchanged)) failed.Add(name);
+        }
 
-        var fresh = new HotlineSettings();
-        IReadOnlyList<string> removed = [];
+        Replace("settings.json", Encoding.UTF8.GetBytes(fresh.ToJsonString(new JsonSerializerOptions { WriteIndented = true })), 1);
+        Replace("toolbar.json", StarterFiles.DefaultBytes("toolbar"), 3);
         if (everything)
         {
-            var ids = current.Chat.Backends.Select(b => b.Id).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            fresh.Chat.Backends = [];
-            var kept = new HashSet<string>(StringComparer.OrdinalIgnoreCase); // files still there: their connections (and keys) stay
-            foreach (var file in connectionFiles)
-            {
-                var full = Path.GetFullPath(file);
-                if (!backedUp.Contains(full) || !TryDelete(file, failed)) { kept.Add(full); continue; }
-                ids.Add(Path.GetFileNameWithoutExtension(file)); // files that didn't load too: their keys go as well
-            }
-            ids.RemoveWhere(id => store.SourcePath(id) is { } source && kept.Contains(source)
-                                  || kept.Contains(Path.GetFullPath(Path.Combine(store.ConnectionsDirectory, id + ".json"))));
-            removed = ids.ToList();
-            foreach (var name in EverythingFiles)
-            {
-                var path = Path.Combine(directory, name);
-                if (File.Exists(path) && backedUp.Contains(Path.GetFullPath(path))) TryDelete(path, failed); // recreated with defaults on use
-            }
-        }
-        else
-        {
-            fresh.Chat.Backends = current.Chat.Backends;
-            fresh.Chat.DefaultBackend = current.Chat.DefaultBackend;
-            var toolbar = Path.Combine(directory, ToolbarFileName);
-            if (!File.Exists(toolbar) || backedUp.Contains(Path.GetFullPath(toolbar)))
-            {
-                // The backup copy above has the old one; a refusal (a newer file's version) is a failure, not a reset.
-                try { if (ToolbarFile.Save(toolbar, ToolbarModel.Defaults) is not null) failed.Add(ToolbarFileName); }
-                catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(ToolbarFileName); }
-            }
-        }
-        // Connection files have already been handled individually above. Save only settings.json: Save would also
-        // rewrite retained connections, including ones whose reset backup failed, and may skip backing up its own last write.
-        if (!File.Exists(store.FilePath) || backedUp.Contains(Path.GetFullPath(store.FilePath)))
-        {
+            Replace("mcp.json", StarterFiles.DefaultBytes("mcp"), 1);
             try
             {
-                fresh.Chat.Order = fresh.Chat.Backends.Select(b => b.Id).ToList();
-                DurableFile.WriteText(store.FilePath, SettingsStore.Serialize(SettingsStore.Normalize(fresh)));
+                if (files.DirectoryExists(store.ConnectionsDirectory))
+                    foreach (var path in files.EnumerateFiles(store.ConnectionsDirectory, "*.json").ToArray())
+                    {
+                        try
+                        {
+                            if (SafeFile.IsNewer(files.ReadAllBytes(path), 1)) { failed.Add(Path.GetFileName(path)); continue; }
+                            if (!backup.TryBackup(path)) { failed.Add(Path.GetFileName(path)); continue; }
+                            files.DeleteFile(path);
+                            removed.Add(Path.GetFileNameWithoutExtension(path));
+                        }
+                        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(Path.GetFileName(path)); }
+                    }
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(SettingsStore.FileName); }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add("connections"); }
         }
-        return new ResetResult(backup, removed, failed.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
-    }
-
-    private static bool TryDelete(string file, List<string> failed)
-    {
-        try { File.Delete(file); return true; }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { failed.Add(Path.GetFileName(file)); return false; }
+        if (!state.Clear()) failed.Add(StateStore.FileName);
+        return new(backup.DirectoryPath ?? "", removed, failed.Distinct(StringComparer.OrdinalIgnoreCase).ToList());
     }
 }
 
-/// <param name="Backup">The folder the old files were copied to ("" when it couldn't even be made).</param>
-/// <param name="Removed">Ids of the connections removed: their API keys can go.</param>
-/// <param name="Failed">Names of files that couldn't be copied, deleted or written (left as they were); empty when all went well.</param>
+/// <param name="Backup">Backup folder, or empty when nothing needed backing up.</param>
+/// <param name="Removed">Removed connection ids whose API keys the caller may delete.</param>
+/// <param name="Failed">Files left untouched after a backup, version or write failure.</param>
 public sealed record ResetResult(string Backup, IReadOnlyList<string> Removed, IReadOnlyList<string> Failed)
 {
     public void Deconstruct(out string backup, out IReadOnlyList<string> removed) { backup = Backup; removed = Removed; }

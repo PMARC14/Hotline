@@ -10,17 +10,15 @@ and trailer, captured from the installed app); output in `artifacts/store/`. Per
 (the demo conversation is interface text). The logos have no text and are shared. For the English panel alone,
 `scripts/make-store-media.sh --no-video` is enough.
 
-The English **Short description** and **Description** are the owner's own text (the Partner Center version of 2026-11-08), with
-the real 0.6 features from the earlier longer description added in the same plain voice (Codex, Continue in, shortcuts,
-bar layout, Backup). `store/listings/<language>.md` carry translations of both.
+The English **Short description** and **Description** match Partner Center, with translations in `store/listings/<language>.md`.
 
 ---
 
-## Submission guide: what to paste and change in Partner Center (Store version 0.6.N.0)
+## Submission guide: what to paste and change in Partner Center (Store version 0.7.N.0)
 
 Do these in order. "Paste" means copy the text from the section of this file with the same name. Nothing here is submitted until
-you press **Submit to the Store** at the end. The Store version is the Hotline version with `.0` added (0.6.3 becomes 0.6.3.0);
-below, 0.6.N.0 stands for the bundle you built, and it must be higher than the last version uploaded.
+you press **Submit to the Store** at the end. The Store version is the Hotline version with `.0` added (0.7.1 becomes 0.7.1.0);
+below, 0.7.N.0 stands for the bundle you built, and it must be higher than the last version uploaded.
 
 ### 1. Start the update
 
@@ -32,11 +30,11 @@ below, 0.6.N.0 stands for the bundle you built, and it must be higher than the l
 
 ### 2. Packages
 
-1. Get the bundle: GitHub › Actions › **Store** › **Run workflow** with the version in three parts (for example `0.6.3`, no `.0`)
-   and *Submit* off, then download the artifact `hotline-store-0.6.3.0` (it holds `HotlineAI_0.6.3.0_Store.msixbundle`, one file for
+1. Get the bundle: GitHub › Actions › **Store** › **Run workflow** with the version in three parts (for example `0.7.1`, no `.0`)
+   and *Submit* off, then download the artifact `hotline-store-0.7.1.0` (it holds `HotlineAI_0.7.1.0_Store.msixbundle`, one file for
    x64 and ARM64). See [RELEASING.md](../docs/RELEASING.md).
 2. **Packages** page: remove the old package, drag in the new `.msixbundle`, wait for validation (a few minutes). The version must
-   read 0.6.N.0 (Store versions end in `.0`).
+   read 0.7.N.0 (Store versions end in `.0`).
 3. **Notes for certification** (the free-text box under **Submission options**, near the end): paste the Generative AI text from
    *Properties* below, plus: "Needs the user's own Claude/Codex/Gemini sign-in or API key to chat. To test without an account, add a connection of
    type 'Local endpoint' or use any OpenAI-compatible API key."
@@ -64,7 +62,7 @@ below, 0.6.N.0 stands for the bundle you built, and it must be higher than the l
 ### 4. The other languages (one listing per package language)
 
 The Store listing languages are the ones the package declares: English (United States) plus the 16 below, which come from the
-`src/Hotline.App/Strings/<tag>/` folders ([TRANSLATING.md](../docs/TRANSLATING.md)). There is no separate "additional languages"
+`src/Hotline.App/Strings/<tag>/` folders ([Translations](../README.md#translations)). There is no separate "additional languages"
 section any more (that was for region-specific listings, and it was removed): every language in the package list gets its own
 listing, and Partner Center asks for all of them before you can submit. Open each language from the **Store listings** page and
 paste, from `store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**,
@@ -103,7 +101,7 @@ panel, poster and box art): `scripts/make-store-panels.sh` then `scripts/make-st
 
 1. Re-read the English page once (Description, What's new, 20 features, short description).
 2. **Submit to the Store**. Certification usually takes a few days. The update goes live when it passes.
-3. After it is live: open the Store page on this PC, install it, check that Settings > About shows the version (0.6.N), and check the Spanish
+3. After it is live: open the Store page on this PC, install it, check that Settings > About shows the version (0.7.N), and check the Spanish
    page from another region.
 
 ---
@@ -166,7 +164,6 @@ NATIVE, LIGHT AND YOURS
   up first.
 • Tools, carefully: API connections can use tools from your MCP servers; anything that changes something asks you
   first.
-• The Copilot key can also act as a Right Ctrl key, if you'd rather have that.
 
 PRIVATE BY DESIGN
 Hotline AI has no server and collects nothing: no account, no analytics, no ads. Your messages go only to the AI
@@ -180,7 +177,7 @@ Claude Code, Codex, the Antigravity CLI or an AI API requires your own account w
 
 ## What's new in this version
 
-Arrange button rows in Settings, add buttons with your own pictures, and use a More menu. Set button widths in cells and size each picker separately. The bar's buttons, including your own, can have keyboard shortcuts while the panel has focus. Settings > Backup moves your setup without API keys; bad settings values warn, and your edits get backed up before replacement. Continue in opens the chat in Open WebUI, llama.cpp, LM Studio or your own targets, sometimes with a paste needed. Window widths use real pixels, and the chat can grow wider. I also fixed Copilot key focus handling on Windows 11 26H2, MCP tool checks, API response limits and backup failures.
+Move and resize the panel: hold Alt for grips, pin it, and save its position and size. The chat grows up or down and can open wider. Arrange the button rows in Settings: drag buttons between left, centre and right, add your own with pictures, and use a More menu. Buttons now spread evenly across the bar. Every bar command has a keyboard shortcut you can change, Stop included. Continue a chat in a terminal, Open WebUI, llama.cpp, LM Studio or your own targets. Settings > Backup exports and imports your setup, never API keys. Width is a size in pixels or a percent of the screen, and looks the same at any Windows scaling. MCP tools: "Always allow" is remembered on this PC and can be revoked in Settings > Tools, and server secrets can move to Windows Credential Locker. Also new: a thinking indicator, open and close sounds, /resume as you type, and reopened CLI chats show their messages. Safer files: a newer file is never overwritten, unknown keys are kept, and replaced files are backed up in one folder. I fixed Copilot key focus on Windows 11 26H2, Capture window from the key, monitor and scaling changes, and many accessibility and safety issues. This update resets settings and button rows once to the new file format; your connections are kept and your old files are saved in the backups folder.
 
 ## Product features (up to 20; 200 characters each)
 
@@ -203,7 +200,7 @@ Arrange button rows in Settings, add buttons with your own pictures, and use a M
 17. No Hotline account, analytics or ads; API keys stay in Windows Credential Locker; free and open source
 18. Editable settings, connections, prompts and toolbar.json; bad values warn and fall back, backups protect your edits
 19. Settings > Backup exports and imports settings, bar, MCP, sounds, connections, quick actions and prompts; never API keys
-20. In-panel shortcuts for the bar's buttons, your own included; move, pin and resize the panel, with pixel widths and a wider chat option
+20. In-panel shortcuts for the bar's buttons, your own included; move, pin and resize the panel, with pixel or percent widths and a wider chat option
 
 ## Screenshot captions (200 characters each; same text as on the images)
 

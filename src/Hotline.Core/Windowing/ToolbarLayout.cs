@@ -16,6 +16,42 @@ public sealed record FitResult(int LeftShown, bool Overflow, int RightDropped = 
 /// </summary>
 public static class ToolbarLayout
 {
+    /// <summary>Shares whole DIPs by item weight, holding each minimum and redistributing the remaining room.
+    /// Rounding remainders go to the flexible items from left to right. If the minima do not fit, they overshoot.</summary>
+    public static IReadOnlyList<double> Fill(double room, IReadOnlyList<(double Shares, double Min)> items)
+    {
+        var widths = items.Select(p => Math.Ceiling(p.Min)).ToArray();
+        room = double.IsFinite(room) ? Math.Floor(room) : 0;
+        if (room <= widths.Sum() || items.Count == 0) return widths;
+
+        var flexible = Enumerable.Range(0, items.Count).ToList();
+        var remaining = room;
+        while (flexible.Count > 0)
+        {
+            var shares = flexible.Sum(i => items[i].Shares);
+            if (!(shares > 0)) return widths; // nothing can grow: the minima stand
+            var unit = remaining / shares;
+            var clamped = flexible.Where(i => items[i].Shares * unit < widths[i]).ToList();
+            if (clamped.Count == 0)
+            {
+                foreach (var i in flexible) widths[i] = Math.Floor(items[i].Shares * unit);
+                break;
+            }
+            foreach (var i in clamped)
+            {
+                remaining -= widths[i];
+                flexible.Remove(i);
+            }
+        }
+        var remainder = room - widths.Sum();
+        foreach (var i in flexible)
+        {
+            if (remainder-- <= 0) break;
+            widths[i]++;
+        }
+        return widths;
+    }
+
     /// <returns>Width per picker name; 0 = hidden.</returns>
     public static IReadOnlyDictionary<string, double> Compute(
         double barWidth, double fixedWidth, double spacing, IReadOnlyList<PickerSpec> pickers, IReadOnlyList<string> hideOrder)
@@ -68,10 +104,11 @@ public static class ToolbarLayout
         FitChecked(room, spacing, leftWidths, rightWidths, reservedWidth, overflowWidth, alwaysOverflow).Result;
 
     /// <summary><see cref="Fit"/>, and whether the result is within the room (false = the documented overshoot).
-    /// <paramref name="alwaysOverflow"/>: the menu button is a placed "more" button, drawn (and counted) whether or not anything is dropped.</summary>
+    /// <paramref name="alwaysOverflow"/>: the menu button is a placed "more" button, drawn (and counted) whether or not anything is dropped.
+    /// <paramref name="shrinkLastRight"/> is false when the supplied widths are already button minima.</summary>
     public static (FitResult Result, bool Fits) FitChecked(
         double room, double spacing, IReadOnlyList<double> leftWidths, IReadOnlyList<double> rightWidths,
-        double reservedWidth, double overflowWidth = 32, bool alwaysOverflow = false)
+        double reservedWidth, double overflowWidth = 32, bool alwaysOverflow = false, bool shrinkLastRight = true)
     {
         static double Clean(double v) => double.IsNaN(v) || v < 0 ? 0 : v;
         room = Clean(room); spacing = double.IsFinite(spacing) ? Clean(spacing) : 0; reservedWidth = Clean(reservedWidth); overflowWidth = Clean(overflowWidth);
@@ -94,7 +131,7 @@ public static class ToolbarLayout
         var lastRight = Math.Max(0, right.Length - 1);
         for (var dropped = 0; dropped <= lastRight; dropped++)
             if (Needed(0, dropped) <= room) return (new FitResult(0, alwaysOverflow || left.Length > 0 || dropped > 0, dropped), true);
-        if (right.Length > 0 && right[lastRight] > overflowWidth * 1.5)
+        if (shrinkLastRight && right.Length > 0 && right[lastRight] > overflowWidth * 1.5)
         {
             right[lastRight] = overflowWidth;
             if (Needed(0, lastRight) <= room) return (new FitResult(0, alwaysOverflow || left.Length > 0 || lastRight > 0, lastRight, ShrunkLastRight: true), true);

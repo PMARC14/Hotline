@@ -65,7 +65,7 @@ public class SettingsSchemaTests
             // A value the item accepts: its placeholder when it checks the format (e.g. a colour).
             var sample = t.Validate is { } valid && !valid("Ctrl+Alt+H") ? t.Placeholder! : "Ctrl+Alt+H";
             t.Set(s, sample);
-            Assert.Equal(sample, t.Get(s));
+            Assert.Equal(string.IsNullOrEmpty(sample) ? null : sample, t.Get(s));
             t.Set(s, "  ");
             if (t.ToolbarShortcutId is not null)
             {

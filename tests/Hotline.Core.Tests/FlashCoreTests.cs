@@ -14,7 +14,7 @@ public sealed class FlashCoreTests : TempDirTest
         var path = store.ConnectionPath("missing");
         const string text = """{ "name": "Remote Server" }""";
         File.WriteAllText(path, text);
-        Assert.Empty(store.Load().Chat.Backends);
+        Assert.Empty(store.Load().Chat.Connections);
         Assert.Contains(path, store.BrokenConnectionFiles);
         Assert.Single(store.SettingsProblems);
         Assert.Equal(text, File.ReadAllText(path));
@@ -38,7 +38,6 @@ public sealed class FlashCoreTests : TempDirTest
     [InlineData("LPT9")]
     public void Connection_paths_do_not_address_DOS_devices(string id)
     {
-        var stem = Path.GetFileName(new SettingsStore(_dir).ConnectionPath(id)).Split('.')[0];
-        Assert.Equal("_" + id.Split('.')[0], stem);
+        Assert.Throws<ArgumentException>(() => new SettingsStore(_dir).ConnectionPath(id));
     }
 }

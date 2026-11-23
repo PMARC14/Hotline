@@ -10,10 +10,9 @@ public partial class App
     /// MCP tools for API connections: servers from ~/.hotline/mcp.json plus the Windows on-device agent registry's
     /// connectors when odr.exe exists (discovered once in the background). Approvals go to the panel.
     /// </summary>
-    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job)
+    private Hotline.Core.Tools.McpToolHost ToolHost(string dataDir, ChildProcessJob job, Hotline.Core.State.StateStore state)
     {
         var mcpPath = Path.Combine(dataDir, "mcp.json");
-        _ = Hotline.Core.Tools.McpConfig.Load(mcpPath); // creates mcp.json with a commented example on first run
         _odrPath = Hotline.Core.Tools.OdrDiscovery.FindOdr(File.Exists, Environment.GetEnvironmentVariable("WINDIR"), Environment.GetEnvironmentVariable("LOCALAPPDATA"));
         _log?.Info(_odrPath is null ? "Windows agent registry: not available on this Windows" : $"Windows agent registry: {_odrPath}");
         if (_odrPath is { } odr)
@@ -35,9 +34,11 @@ public partial class App
             });
         _toolHost = new Hotline.Core.Tools.McpToolHost(
             () => Hotline.Core.Tools.McpConfig.Load(mcpPath), () => _odrServers,
+            ToolRules, // settings.json tools.approvals, read anew for every check
+            state, _secrets!,
             Hotline.Core.Tools.StdioMcpSession.Connector(job.Add, line => _log?.Info($"mcp {line}"), verbose: () => _log?.Verbose == true),
             (request, ct) => _presenter?.AskToolApprovalAsync(request, ct) ?? Task.FromResult(Hotline.Core.Tools.ToolDecision.Deny),
-            _log!, mcpPath);
+            _log!);
         return _toolHost;
     }
 
@@ -46,5 +47,21 @@ public partial class App
     {
         try { if (_toolHost is { } host) Task.Run(async () => await host.DisposeAsync()).Wait(TimeSpan.FromSeconds(3)); }
         catch (Exception ex) { _log?.Error("stopping MCP servers failed", ex); }
+    }
+
+    private string? _toolRuleWarnings;
+
+    /// <summary>The hand-written rules of settings.json (tools.approvals). An unknown word counts as deny; each new set of
+    /// warnings is logged once.</summary>
+    private IReadOnlyDictionary<string, Hotline.Core.Tools.ToolApproval> ToolRules()
+    {
+        var rules = Hotline.Core.Tools.ToolRules.Parse(_settingsService?.Current.Tools.Approvals, out var warnings);
+        var text = string.Join("; ", warnings);
+        if (text != _toolRuleWarnings)
+        {
+            _toolRuleWarnings = text;
+            if (text.Length > 0) _log?.Error($"tools.approvals: {text}");
+        }
+        return rules;
     }
 }

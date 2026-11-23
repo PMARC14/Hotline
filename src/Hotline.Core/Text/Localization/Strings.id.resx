@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Hanya teks, di folder .hotline Anda.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Beri tahu saat jawaban selesai di latar belakang</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Notifikasi Windows saat jawaban selesai ketika panel tersembunyi atau aplikasi lain berada di depan. Klik untuk membuka jawabannya.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Piksel berskala (200–4000) atau bagian dari area kerja (20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Piksel berskala (200–4000) atau bagian dari area kerja (20%–90%); kosongkan untuk mempertahankan lebar awal.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Piksel berskala (DIP).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Masukkan 200–4000 piksel berskala atau 20%–90%.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Tampilkan teks jawaban di notifikasi</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Sertakan teks jawaban di notifikasi selesai; jika mati, hanya judul obrolan yang ditampilkan.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>File ini menggunakan format pra-beku (pre-freeze). Pengaturan default berlaku hingga peningkatan dijalankan; file tidak diubah.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>ID koneksi {0} tidak valid. Gunakan 1–64 huruf, angka, titik, garis bawah, atau tanda hubung; nama perangkat Windows dan titik di akhir ditolak.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} sudah menjawab</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Jawaban siap</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} tidak dapat menyelesaikan jawaban</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Simpan riwayat selama</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>hari</value></data>
@@ -120,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Mulai bersama Windows</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>Koneksi API dengan Penggunaan alat diatur ke "Gunakan alat Hotline" dapat memanggil alat dari server MCP ini. Alat hanya-baca langsung berjalan; selain itu Anda akan ditanya di panel (Izinkan sekali / Selalu / Tolak).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>Server MCP</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — format "mcpServers" yang sama dengan aplikasi MCP lain; persetujuan disimpan di file yang sama</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — format "mcpServers" yang sama seperti aplikasi MCP lainnya; aturan persetujuan adalah tools.approvals di settings.json</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>Edit mcp.json</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>Buka folder</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Registri agen Windows</value></data>
@@ -431,6 +440,34 @@ Tolak:
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}" tidak terpasang atau tidak ada di PATH, jadi server {1} tidak dapat dimulai. Periksa "command" di mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json tidak dapat dibaca: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>Persetujuan "{0}" memiliki nilai yang tidak dikenal, jadi diperlakukan sebagai "deny".</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>Bagian "approvals" di mcp.json diabaikan; pindahkan aturan ke settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Server "{0}" memiliki nilai env non-string untuk "{1}", sehingga dilewati.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Server "{0}" memiliki referensi rahasia yang tidak valid di env "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Server "{0}" merujuk rahasia "{1}" di env "{2}", yang tidak ada di Loker Kredensial.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>Aturan izin "{0}" hanya berbeda huruf besar/kecil dari "{1}", sehingga diabaikan.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json menggunakan versi yang lebih baru ({0}) dan tidak dapat diperbarui dengan aman.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Tidak dapat mencadangkan mcp.json sebelum memperbaruinya.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Tidak dapat menyimpan file mcp.json yang diperbarui.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Tidak dapat menemukan entri env "{1}" pada server "{0}" di mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Entri env tersebut berubah atau sudah dipindahkan; tidak ada yang diubah.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>Nilai kini disimpan di Loker Kredensial Windows sebagai "{0}" ({1}), tetapi mcp.json tidak diubah karena penyimpanan dan pemulihan gagal.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Izin selalu izinkan</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Tidak ada izin alat yang disimpan.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · luncurkan {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Cabut</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Tidak dapat mencabut izin alat.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Rahasia lingkungan</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>Tidak ada entri env teks biasa yang ditemukan di mcp.json.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (teks biasa di mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Pindahkan ke Loker Kredensial</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Pindahkan nilai env ke Loker Kredensial?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Menyimpan {0} › {1} di Loker Kredensial Windows dan menggantinya di mcp.json. File mcp.json sebelumnya (termasuk nilai teks biasa) tetap berada di backups\&lt;time&gt;-save, dan komentar di mcp.json tidak dipertahankan.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Nama rahasia</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Gunakan huruf, angka, titik, garis bawah, atau tanda hubung.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Rahasia dengan nama ini sudah ada di Loker Kredensial dan akan ditimpa.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Pindahkan</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>Memindahkan {0} › {1} ke Loker Kredensial. File mcp.json sebelumnya (termasuk nilai teks biasa) disimpan ke backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Tidak dapat memindahkan nilai env ke Loker Kredensial.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Nama server tidak boleh berisi '/' atau '*'.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>tidak dimulai dalam {0:0} dtk</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Tidak ada alat yang berjalan sampai ini diperbaiki.</value></data>
@@ -480,6 +517,30 @@ Tolak:
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} bukan 0.5, 1, 2, 3 atau 4 (cells adalah nama lama dari width); lebar default digunakan</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>salinan file saat ini tidak dapat dibuat terlebih dahulu, jadi tidak ada yang diubah ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json berubah saat halaman ini terbuka. File dimuat ulang, dan perubahan terakhir Anda tidak diterapkan: buat perubahan lagi.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>ID tombol kustom duplikat "{0}" (tidak peka huruf besar/kecil); definisi pertama yang digunakan.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Masih menjawab. Tombol Hentikan akan menghentikannya; pesan Anda menunggu di kotak.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} bukan lebar numerik 0.5, 1, 2, 3, atau 4; lebar default digunakan.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: kombinasi sudah digunakan; pintasan ini dinonaktifkan.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>File bilah alat ini menggunakan format lama. Baris tombol dan pintasan default aktif; file tidak diubah.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Isi ruang baris yang tersedia</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Tidak dapat mencadangkan baris tombol dan pintasan.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Tidak dapat menyimpan baris tombol dan pintasan.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Gambar tidak diubah: toolbar.json tidak dapat disimpan.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Lainnya</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Tidak ada apa-apa di sini</value></data>
@@ -598,8 +659,6 @@ Tolak:
   <data name="Bar_BottomRow" xml:space="preserve"><value>Di bawah kotak pesan</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Kosong</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Layar {0} × {1} px pada skala {2}%: Windows merender antarmuka pada {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Layar {0} × {1} px pada skala 100%</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Piksel nyata layar, penskalaan Windows diabaikan</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Piksel layar sebenarnya, penskalaan Windows diabaikan</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Pindahkan ke bawah kotak pesan</value></data>
@@ -664,7 +723,17 @@ Tolak:
   <data name="Nav_Backup" xml:space="preserve"><value>Cadangan</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Pindahkan konfigurasi Hotline Anda ke PC lain, atau simpan salinannya. Cadangan adalah satu file .zip yang berisi bagian-bagian yang Anda centang; tidak ada hal lain (riwayat obrolan, memori, log) yang disertakan.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Pengaturan</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Baris tombol dan gambar tombol kustom</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Baris tombol dan pintasan</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Format konfigurasi Hotline telah berubah. Pengaturan dan baris tombol dari versi lama kembali ke default. Koneksi AI dan server MCP tetap dipertahankan.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Direset: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>File asli: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Cadangan peningkatan lengkap tidak dapat dibuat.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Tidak dapat meningkatkan: {0}. Hotline akan mencoba ulang file ini saat mulai berikutnya.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Meningkatkan dari 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Pada saat pertama kali dijalankan setelah peningkatan, pengaturan lama dan baris tombol kembali ke default bawaan. Hanya koneksi AI default dan urutan koneksi yang dibawa. Koneksi AI dan server MCP dipertahankan; izin MCP lama dihapus. File asli disalin ke backups/&lt;time&gt;-upgrade sebelum konversi. Jika pencadangan gagal, konversi tetap berjalan. File yang tidak dapat dikonversi tetap tidak tersentuh dan dicoba ulang saat mulai berikutnya. Default referensi diperbarui di .defaults saat memulai.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Cadangan ini menyertakan nilai lingkungan teks biasa untuk {0}. Gunakan Pindahkan ke Loker Kredensial di Pengaturan &gt; Alat sebelum membagikan cadangan ini.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Server MCP ini memerlukan rahasia Loker Kredensial di PC ini: {0}. Tambahkan rahasianya di Pengaturan &gt; Alat.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Versi yang lebih baru dibiarkan tidak tersentuh.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Alat (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Suara</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>Koneksi AI</value></data>
@@ -750,7 +819,7 @@ Panel yang dipindahkan akan terbuka di posisi default berikutnya, kecuali jika d
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Ke atas atau ke bawah</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>Obrolan memanjang dari bilah pesan: ke atas, kecuali tidak ada ruang di atas, lalu ke bawah. Pengaturan › Jendela dapat menguncinya ke atas atau ke bawah serta mengatur posisi, lebar, dan tinggi obrolan.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Baris tombol</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan bilah sebagai enam area: kiri, tengah, dan kanan dari baris di atas kotak pesan, dan tiga area yang sama di bawahnya. Seret tombol atau pemilih untuk memindahkannya di dalam suatu area atau ke area lain, atau gunakan tombol panahnya (Alt+panah mengubah area, Ctrl+panah mengubah urutan). Yang Anda sembunyikan menunggu di “Tidak ditampilkan”. Setiap tombol dapat memiliki lebar sendiri, garis luar, atau isian (menu dropdown juga mengambil garis luar dan isian), dan Anda dapat menambahkan tombol kustom yang menjalankan tindakan cepat atau menyisipkan teks. Tombol yang tidak muat akan pindah ke menu ⋯, dan “Kotak tombol …” (kunci menu di toolbar.json) menampung tombol yang Anda pilih untuk tetap ada di sana. Lebar dihitung dalam sel: sebuah tombol memiliki lebar 0.5, 1, 2, 3, atau 4 sel (kunci width, dengan compact, normal, dan wide mewakili 0.5, 1, dan 2), dan setiap pemilih memiliki lebarnya sendiri. Pengaturan › Cadangan juga menyimpan toolbar.json dan gambar tombol Anda.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Pengaturan › Jendela › Baris tombol menampilkan bilah sebagai enam area: kiri, tengah, dan kanan pada baris di atas kotak pesan, serta tiga area yang sama di bawahnya. Seret tombol atau pemilih untuk memindahkannya di dalam satu area atau ke area lain, atau gunakan tombol panahnya (Alt+panah mengubah area, Ctrl+panah mengubah urutan). Yang Anda sembunyikan menunggu di “Tidak ditampilkan”. Setiap tombol dapat memiliki lebarnya sendiri, garis tepi atau isian (menu tarik-turun juga mengikuti garis tepi dan isian), dan Anda dapat menambahkan tombol sendiri yang menjalankan tindakan cepat atau menyisipkan teks. Tombol yang tidak muat berpindah ke menu ⋯, dan “Kotak tombol …” (kunci menu di toolbar.json) menyimpan tombol yang Anda pilih untuk tetap di sana. Lebar tombol berupa angka 0.5, 1, 2, 3, atau 4 (kunci width), setiap pemilih memiliki rentangnya sendiri, dan style.fill (aktif secara default) membagi ruang sisa baris. Pengaturan › Pencadangan juga menyimpan toolbar.json dan gambar tombol Anda.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Suara</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Pengaturan › Tampilan › Suara memutar suara saat panel terbuka atau tertutup: suara Windows atau file .wav di folder suara Anda. Dinonaktifkan secara default.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Pengaturan berupa file</value></data>

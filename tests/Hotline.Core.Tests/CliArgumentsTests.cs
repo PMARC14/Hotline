@@ -8,6 +8,25 @@ namespace Hotline.Core.Tests;
 
 public class CliArgumentsTests
 {
+    [Theory]
+    [InlineData(1)]
+    [InlineData(17)]
+    [InlineData(941)]
+    public void Join_split_round_trips_generated_string_lists(int seed)
+    {
+        string[] edgeCases = ["--foo=bar\"baz", "--verbose", "", "\"", "\\", "x\\\\", "a\\\"b", "x y\\", "a\"b\"\\", "\t\r\n", "雪"];
+        Assert.Equal(edgeCases, CliArguments.Split(CliArguments.Join(edgeCases)));
+        var random = new Random(seed);
+        const string alphabet = "ab= -\"\\\t\r\n雪\0";
+        for (var sample = 0; sample < 1000; sample++)
+        {
+            var args = Enumerable.Range(0, random.Next(9)).Select(_ =>
+                new string(Enumerable.Range(0, random.Next(64)).Select(_ => random.Next(4) == 0
+                    ? (char)random.Next(char.MaxValue + 1) : alphabet[random.Next(alphabet.Length)]).ToArray())).ToArray();
+            Assert.Equal(args, CliArguments.Split(CliArguments.Join(args)));
+        }
+    }
+
     [Fact]
     public void Quoted_paths_round_trip_and_permission_filters_still_apply()
     {
@@ -23,10 +42,10 @@ public class CliArgumentsTests
 
         // 2. Dangerous-flag cases across the three protocols
         // ClaudeCodeProtocol: dangerous skip permissions and blocked flags
-        var claudeSafe = ClaudeCodeProtocol.BuildArgs(new BackendProfile
+        var claudeSafe = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile
         {
             Tools = ToolMode.ChatOnly,
-            ExtraArgs = "--allowedTools Bash Edit --dangerously-skip-permissions --mcp-config \"C:\\My Files\\m.json\" --verbose"
+            ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--allowedTools Bash Edit --dangerously-skip-permissions --mcp-config \"C:\\My Files\\m.json\" --verbose").ToList()
         }, "prompt");
         Assert.DoesNotContain(claudeSafe, a => a.Contains("dangerous", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain("Bash", claudeSafe);
@@ -35,10 +54,10 @@ public class CliArgumentsTests
         Assert.Contains("--verbose", claudeSafe);
 
         // CodexProtocol: dangerous bypass and custom settings
-        var codexSafe = CodexProtocol.BuildArgs(new BackendProfile
+        var codexSafe = CodexProtocol.BuildArgs(new ConnectionProfile
         {
             Tools = ToolMode.ChatOnly,
-            ExtraArgs = "--dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access -c model_verbosity=\"low\""
+            ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access -c model_verbosity=\"low\"").ToList()
         }, "prompt", null, []);
         Assert.DoesNotContain(codexSafe, a => a.Contains("dangerous", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain("danger-full-access", codexSafe);
@@ -46,10 +65,10 @@ public class CliArgumentsTests
         Assert.Contains("model_verbosity=\"low\"", codexSafe);
 
         // AgyProtocol: dangerous skip permissions and agent override
-        var agySafe = AgyProtocol.BuildArgs(new BackendProfile
+        var agySafe = AgyProtocol.BuildArgs(new ConnectionProfile
         {
             Tools = ToolMode.ChatOnly,
-            ExtraArgs = "--dangerously-skip-permissions --agent malicious --model gemini-3.8-flash"
+            ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--dangerously-skip-permissions --agent malicious --model gemini-3.8-flash").ToList()
         });
         Assert.DoesNotContain(agySafe, a => a.Contains("dangerous", StringComparison.OrdinalIgnoreCase));
         Assert.DoesNotContain("malicious", agySafe);
@@ -63,7 +82,7 @@ public class CliArgumentsTests
         Assert.Equal(["-c", "model_verbosity=\"low\""], tokens);
 
         var joined = CliArguments.Join(tokens);
-        Assert.Equal("-c model_verbosity=\"low\"", joined);
+        Assert.Equal("-c \"model_verbosity=\\\"low\\\"\"", joined);
         Assert.Equal(tokens, CliArguments.Split(joined));
     }
 
