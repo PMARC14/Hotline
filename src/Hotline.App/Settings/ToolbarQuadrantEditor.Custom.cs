@@ -85,7 +85,7 @@ internal sealed partial class ToolbarQuadrantEditor
                 var room = ToolbarEditorView.Check(_model, new CustomButton("x", "x", ToolbarModel.DefaultIcon, null, "x", false), adding: true);
                 if (room != CustomProblem.None) { Notice(ToolbarCustomButtonDialog.Message(room), InfoBarSeverity.Warning); return; }
             }
-            var (next, pictureReplaced) = await ToolbarCustomButtonDialog.ShowAsync(_model, existing, _quickActions(), _showDialog, XamlRoot, _log.Info);
+            var (next, pictureReplaced) = await ToolbarCustomButtonDialog.ShowAsync(_model, existing, _quickActions(), _showDialog, XamlRoot, _log.Info, _chat());
             var focus = existing is null ? "bar-custom-add" : "bar-custom-edit-" + existing.Id;
             // The new picture is already in icons\ (the dialog stored it): kept only once toolbar.json is saved with it.
             var pictureId = existing?.Id ?? next?.Buttons.LastOrDefault()?.Id;
@@ -110,7 +110,7 @@ internal sealed partial class ToolbarQuadrantEditor
                 {
                     if (existing is not null) CustomIcons.Rollback(CustomButtonPicture.Folder, existing.Id);
                     _log.Info("button rows: toolbar.json changed on disk; picture rolled back");
-                    if (_reload() is { } fresh) { _model = fresh; _stash.Clear(); }
+                    if (_reload() is { } fresh) _model = fresh;
                     Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
                 }
                 else if (existing is not null)
@@ -138,7 +138,6 @@ internal sealed partial class ToolbarQuadrantEditor
             if (await _showDialog(confirm) != ContentDialogResult.Primary) return;
             if (Edit(m => ToolbarEditor.RemoveCustom(m, b.Id), null, ("bar-custom-add", "bar-custom-add")))
             {
-                _stash.Remove(b.Id);
                 if (!_model.Buttons.Any(x => x.Id == b.Id)) ForgetPicture(b.Id);
             }
         }

@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Reflection;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Text.Localization;
 
@@ -30,13 +31,9 @@ internal static class LenientReader
     /// <summary>The file's limits that Normalize would otherwise clamp silently: a value outside them is reported.</summary>
     private static readonly Dictionary<string, SettingRange> Ranges = new(SettingsRanges.All)
     {
-        ["BackendProfile.MaxTokens"] = new(1, 1_000_000, null),
-        ["BackendProfile.Temperature"] = new(0, 2, null),
+        ["ConnectionProfile.MaxTokens"] = new(1, 1_000_000, null),
+        ["ConnectionProfile.Temperature"] = new(0, 2, null),
     };
-
-    private static readonly HashSet<string> Skipped = ["ChatSettings.Backends"]; // the connections have their own files
-
-    private static readonly NullabilityInfoContext Nullability = new();
 
     private static readonly Dictionary<Type, PropertyInfo[]> PropertyCache = [];
 
@@ -74,12 +71,24 @@ internal static class LenientReader
 
         foreach (var prop in Properties(type))
         {
-            var name = JsonNamingPolicy.CamelCase.ConvertName(prop.Name);
-            if (Skipped.Contains($"{type.Name}.{prop.Name}") || !keys.TryGetValue(name, out var found)) continue;
+            var name = prop.GetCustomAttribute<JsonPropertyNameAttribute>()?.Name ?? JsonNamingPolicy.CamelCase.ConvertName(prop.Name);
+            if (!keys.TryGetValue(name, out var found)) continue;
             var where = $"{label} › {(path.Length == 0 ? name : $"{path}.{name}")}";
             var childPath = path.Length == 0 ? name : $"{path}.{name}";
             if (found.Count > 1) problems.Add(L.F(Strings.Settings_ProblemDuplicate, where));
             var value = found.Value;
+            if (value.ValueKind == JsonValueKind.Null) continue; // null and absent both mean the embedded default
+
+            if (target is ToolsSettings && prop.Name == nameof(ToolsSettings.Approvals))
+            {
+                if (value.ValueKind != JsonValueKind.Object) { problems.Add(WrongType(where, value)); continue; }
+                var rules = new Dictionary<string, string>(StringComparer.Ordinal);
+                foreach (var entry in value.EnumerateObject())
+                    if (entry.Value.ValueKind == JsonValueKind.String) rules[entry.Name] = entry.Value.GetString()!;
+                    else problems.Add(WrongType($"{where}.{entry.Name}", entry.Value));
+                prop.SetValue(target, rules);
+                continue;
+            }
 
             if (IsSection(prop.PropertyType))
             {
@@ -100,10 +109,8 @@ internal static class LenientReader
 
             try
             {
-                if (value.ValueKind == JsonValueKind.Null && !AllowsNull(prop)) throw new JsonException("null");
                 var read = value.Deserialize(prop.PropertyType, SettingsStore.Options);
                 if (read is List<string> list) list.RemoveAll(x => x is null);
-                if (read is not null && !Valid(type, prop, read)) { problems.Add(WrongType(where, value)); continue; }
                 if (read is not null && Ranges.TryGetValue($"{type.Name}.{prop.Name}", out var range) && Number(read) is { } number
                     && !(number >= range.Min && number <= range.Max || range.ZeroToo && number == 0))
                     problems.Add(L.F(Strings.Settings_ProblemRange, where, Describe(value), range.Min, range.Max)); // kept; Normalize pulls it in
@@ -120,8 +127,13 @@ internal static class LenientReader
     /// One connection file (or old inline entry). Null when it can't be used: an unknown or non-text "type" would otherwise
     /// fall back to the first type, which starts a CLI.
     /// </summary>
-    public static BackendProfile? ReadProfile(JsonElement obj, string label, ReadProblems problems)
+    public static ConnectionProfile? ReadProfile(JsonElement obj, string label, ReadProblems problems)
     {
+        if (!obj.EnumerateObject().Any(m => m.Name.Equals("type", StringComparison.OrdinalIgnoreCase)))
+        {
+            problems.Add(L.F(Strings.Settings_ProblemConnectionType, label, "type"));
+            return null;
+        }
         foreach (var member in obj.EnumerateObject().Where(m => m.Name.Equals("type", StringComparison.OrdinalIgnoreCase)))
         {
             var known = member.Value.ValueKind == JsonValueKind.String
@@ -130,7 +142,7 @@ internal static class LenientReader
             problems.Add(L.F(Strings.Settings_ProblemConnectionType, label, Describe(member.Value)));
             return null;
         }
-        var profile = new BackendProfile();
+        var profile = new ConnectionProfile();
         Populate(obj, profile, label, "", problems);
         return profile;
     }
@@ -166,23 +178,13 @@ internal static class LenientReader
         {
             if (!PropertyCache.TryGetValue(type, out var props))
                 PropertyCache[type] = props = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-                    .Where(p => p.CanRead && p.CanWrite && p.GetIndexParameters().Length == 0).ToArray();
+                    .Where(p => p.CanRead && p.CanWrite && p.GetIndexParameters().Length == 0
+                        && p.GetCustomAttribute<JsonIgnoreAttribute>()?.Condition != JsonIgnoreCondition.Always).ToArray();
             return props;
         }
     }
 
     private static bool IsSection(Type t) => t.IsClass && t != typeof(string) && !typeof(IEnumerable).IsAssignableFrom(t);
-
-    private static bool AllowsNull(PropertyInfo prop)
-    {
-        if (Nullable.GetUnderlyingType(prop.PropertyType) is not null) return true;
-        if (prop.PropertyType.IsValueType) return false;
-        lock (Nullability) return Nullability.Create(prop).WriteState != NullabilityState.NotNull;
-    }
-
-    // Values the type accepts but the program can't use (an unparsable stop shortcut would silently become Esc).
-    private static bool Valid(Type owner, PropertyInfo prop, object value) =>
-        !(owner == typeof(ChatSettings) && prop.Name == nameof(ChatSettings.StopShortcut) && value is string s && !Activation.Hotkey.TryParseShortcut(s, out _));
 
     private static double? Number(object value) => value switch
     {

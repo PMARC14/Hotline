@@ -12,7 +12,8 @@ internal static class Native
     public const uint MONITOR_DEFAULTTONEAREST = 2;
     public const int MDT_EFFECTIVE_DPI = 0;
     public const int NIM_ADD = 0, NIM_DELETE = 2, NIM_SETVERSION = 4;
-    public const int NIF_MESSAGE = 0x1, NIF_ICON = 0x2, NIF_TIP = 0x4;
+    public const int NIF_MESSAGE = 0x1, NIF_ICON = 0x2, NIF_TIP = 0x4, NIF_SHOWTIP = 0x80;
+    public const uint NIN_SELECT = 0x0400, NIN_KEYSELECT = 0x0401;
     public const int NOTIFYICON_VERSION_4 = 4;
     public const uint MF_STRING = 0x0, MF_SEPARATOR = 0x800;
     public const uint TPM_RIGHTBUTTON = 0x2, TPM_BOTTOMALIGN = 0x20;
@@ -60,6 +61,7 @@ internal static class Native
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern bool AppendMenu(nint hMenu, uint flags, nuint id, string? text);
     [DllImport("user32.dll")] public static extern bool TrackPopupMenuEx(nint hMenu, uint flags, int x, int y, nint hWnd, nint tpm);
     [DllImport("user32.dll")] public static extern bool DestroyMenu(nint hMenu);
+    [DllImport("user32.dll")] public static extern bool DestroyIcon(nint hIcon);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern nint LoadImage(nint hInst, string name, uint type, int cx, int cy, uint flags);
     [DllImport("shell32.dll", CharSet = CharSet.Unicode)] public static extern bool Shell_NotifyIcon(int message, ref NOTIFYICONDATA data);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetClassName(nint hWnd, System.Text.StringBuilder name, int max);

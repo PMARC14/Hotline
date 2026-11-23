@@ -2,10 +2,8 @@ using Hotline.Core.Settings;
 
 namespace Hotline.Core.Tests;
 
-public sealed class HotlinePathsTests : IDisposable
+public sealed class HotlinePathsTests : TempDirTest
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_root)) Directory.Delete(_root, recursive: true); }
 
     [Fact]
     public void Data_directory_is_dot_hotline_in_profile()
@@ -14,8 +12,8 @@ public sealed class HotlinePathsTests : IDisposable
     [Fact]
     public void Migrates_settings_and_history_once()
     {
-        var legacy = Path.Combine(_root, "legacy");
-        var data = Path.Combine(_root, ".hotline");
+        var legacy = Path.Combine(_dir, "legacy");
+        var data = Path.Combine(_dir, ".hotline");
         Directory.CreateDirectory(Path.Combine(legacy, "history"));
         File.WriteAllText(Path.Combine(legacy, "settings.json"), "{\"x\":1}");
         File.WriteAllText(Path.Combine(legacy, "history", "c1.jsonl"), "line");
@@ -31,13 +29,13 @@ public sealed class HotlinePathsTests : IDisposable
 
     [Fact]
     public void Nothing_to_migrate_is_fine()
-        => Assert.False(HotlinePaths.MigrateFromLegacy(Path.Combine(_root, "none"), Path.Combine(_root, ".hotline")));
+        => Assert.False(HotlinePaths.MigrateFromLegacy(Path.Combine(_dir, "none"), Path.Combine(_dir, ".hotline")));
 
     [Fact]
     public void Existing_history_file_does_not_abort_migration()
     {
-        var legacy = Path.Combine(_root, "legacy");
-        var data = Path.Combine(_root, ".hotline");
+        var legacy = Path.Combine(_dir, "legacy");
+        var data = Path.Combine(_dir, ".hotline");
         Directory.CreateDirectory(Path.Combine(legacy, "history"));
         Directory.CreateDirectory(Path.Combine(data, "history"));
         File.WriteAllText(Path.Combine(legacy, "settings.json"), "{}");

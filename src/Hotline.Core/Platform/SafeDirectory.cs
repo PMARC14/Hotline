@@ -14,4 +14,11 @@ public static class SafeDirectory
         if (path.Length < 3 || !char.IsAsciiLetter(path[0]) || path[1] != ':' || path[2] is not ('\\' or '/')) return false;
         return Path.IsPathFullyQualified(path);
     }
+
+    /// <summary>A share or device path (\\server\…, //server/…, \\?\…): probing one makes Windows connect to it.</summary>
+    public static bool IsShareOrDevice(string? path)
+    {
+        var t = path?.TrimStart();
+        return t is { Length: >= 2 } && t[0] is '\\' or '/' && t[1] is '\\' or '/';
+    }
 }

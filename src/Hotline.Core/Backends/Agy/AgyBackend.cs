@@ -14,11 +14,12 @@ namespace Hotline.Core.Backends.Agy;
 /// can't be resumed (cancel, crash, new chat, unknown ID) the next turn starts a new conversation and replays the
 /// transcript Hotline has.
 /// </summary>
-public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, AgyWorkspace workspace, ILineProcessFactory processes, FileLog log,
-    Func<BackendProfile, string> systemPrompt, string homeDirectory, AgyProjects? projects = null)
+public sealed class AgyBackend(ConnectionProfile profile, Func<string?> locateExe, AgyWorkspace workspace, ILineProcessFactory processes, FileLog log,
+    Func<ConnectionProfile, string> systemPrompt, string homeDirectory, AgyProjects? projects = null)
     : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
+    private readonly SemaphoreSlim _turnGate = new(1, 1);
     private int _knownCount;
     private string? _knownFirstId;
     private string? _startedPrompt;
@@ -31,6 +32,18 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
     public CliSession? Resume { get; set; }
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
+    {
+        // New chat may send again while the cancelled turn is still unwinding.
+        // Keep its process cleanup and session bookkeeping ahead of the next turn.
+        await _turnGate.WaitAsync(ct);
+        try
+        {
+            await foreach (var delta in StreamTurnAsync(conversation, ct)) yield return delta;
+        }
+        finally { _turnGate.Release(); }
+    }
+
+    private async IAsyncEnumerable<ChatDelta> StreamTurnAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
     {
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));
@@ -167,7 +180,7 @@ public sealed class AgyBackend(BackendProfile profile, Func<string?> locateExe, 
     {
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
-        return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
+        return Platform.SafeDirectory.IsLocal(dir) && Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
             L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

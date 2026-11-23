@@ -1,0 +1,226 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "state.v1.schema.json",
+  "title": "Hotline app state (v1)",
+  "description": "Internal app state in state.json; never exported or backed up (unit: JSON object).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "default": 1,
+      "description": "State schema version (unit: integer)."
+    },
+    "shown": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Timestamps when one-time notices were shown (unit: object).",
+      "properties": {
+        "firstRun": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "default": null,
+          "description": "When the first-run notice was shown (unit: ISO-8601 UTC timestamp)."
+        },
+        "supportNote": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "default": null,
+          "description": "When the support note was shown (unit: ISO-8601 UTC timestamp)."
+        },
+        "upgradeNotice": {
+          "type": ["string", "null"],
+          "format": "date-time",
+          "default": null,
+          "description": "When the pre-freeze upgrade notice was shown (unit: ISO-8601 UTC timestamp)."
+        }
+      }
+    },
+    "panel": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "default": {},
+      "description": "Saved panel position and size from 'Save position and size as default' (unit: object).",
+      "properties": {
+        "width": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": true,
+              "required": ["value"],
+              "properties": {
+                "value": {
+                  "$ref": "#/$defs/panelWidth",
+                  "description": "Saved opening width (unit: scaled px or percent)."
+                },
+                "over": {
+                  "$ref": "#/$defs/panelWidthOrNull",
+                  "description": "settings.json window.width value this saved spot overrides (unit: scaled px or percent)."
+                }
+              }
+            },
+            { "type": "null" }
+          ],
+          "description": "Saved panel width override entry (unit: override object)."
+        },
+        "chatHeight": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": true,
+              "required": ["value"],
+              "properties": {
+                "value": {
+                  "type": "integer",
+                  "minimum": 60,
+                  "maximum": 8000,
+                  "description": "Saved chat height (unit: scaled px)."
+                },
+                "over": {
+                  "type": ["integer", "null"],
+                  "minimum": 60,
+                  "maximum": 8000,
+                  "description": "settings.json window.chatHeight value this saved spot overrides (unit: scaled px)."
+                }
+              }
+            },
+            { "type": "null" }
+          ],
+          "description": "Saved chat height override entry (unit: override object)."
+        },
+        "anchor": {
+          "oneOf": [
+            {
+              "type": "object",
+              "additionalProperties": true,
+              "required": ["value"],
+              "properties": {
+                "value": {
+                  "$ref": "#/$defs/anchor",
+                  "description": "Saved panel anchor (unit: anchor object)."
+                },
+                "over": {
+                  "oneOf": [
+                    { "$ref": "#/$defs/anchor" },
+                    { "type": "null" }
+                  ],
+                  "description": "settings.json window.anchor value this saved spot overrides (unit: anchor object)."
+                }
+              }
+            },
+            { "type": "null" }
+          ],
+          "description": "Saved panel anchor override entry (unit: override object)."
+        }
+      }
+    },
+    "grants": {
+      "type": ["array", "null"],
+      "items": { "$ref": "#/$defs/grant" },
+      "default": [],
+      "description": "Runtime 'Always allow' MCP tool grants bound to server launch identity (unit: grant array)."
+    },
+    "lastWritten": {
+      "type": ["object", "null"],
+      "additionalProperties": {
+        "type": "string",
+        "pattern": "^[0-9a-fA-F]{64}$"
+      },
+      "default": {},
+      "description": "SHA-256 hex digests of config files last written by Hotline, keyed by relative path (unit: hash map)."
+    },
+    "upgrade": {
+      "oneOf": [
+        {
+          "type": "object",
+          "additionalProperties": true,
+          "required": ["at"],
+          "properties": {
+            "at": {
+              "type": "string",
+              "format": "date-time",
+              "description": "When the pre-freeze upgrade ran (unit: ISO-8601 UTC timestamp)."
+            },
+            "backup": {
+              "type": ["string", "null"],
+              "default": null,
+              "description": "Relative path of the upgrade backup folder, or null if backup failed (unit: relative path)."
+            }
+          }
+        },
+        { "type": "null" }
+      ],
+      "default": null,
+      "description": "Record of the one-time pre-freeze upgrade (unit: upgrade object)."
+    }
+  },
+  "$defs": {
+    "panelWidth": {
+      "oneOf": [
+        { "type": "number", "minimum": 200, "maximum": 4000 },
+        { "type": "string", "pattern": "^((2[0-9]|[3-8][0-9])(\\.[0-9]+)?|90(\\.0+)?)%$" }
+      ]
+    },
+    "panelWidthOrNull": {
+      "oneOf": [
+        { "type": "number", "minimum": 200, "maximum": 4000 },
+        { "type": "string", "pattern": "^((2[0-9]|[3-8][0-9])(\\.[0-9]+)?|90(\\.0+)?)%$" },
+        { "type": "null" }
+      ]
+    },
+    "anchor": {
+      "type": "object",
+      "additionalProperties": true,
+      "properties": {
+        "monitor": {
+          "type": ["string", "null"],
+          "default": "active",
+          "description": "Target monitor: 'active', 'primary', or device name (unit: monitor identifier)."
+        },
+        "x": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.5,
+          "description": "Horizontal fraction of free work area (unit: fraction 0-1)."
+        },
+        "y": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.8,
+          "description": "Vertical fraction of free work area (unit: fraction 0-1)."
+        }
+      }
+    },
+    "grant": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["server", "tool", "launch", "at"],
+      "properties": {
+        "server": {
+          "type": "string",
+          "minLength": 1,
+          "description": "MCP server name (unit: server name)."
+        },
+        "tool": {
+          "type": "string",
+          "minLength": 1,
+          "description": "MCP tool name (unit: tool name)."
+        },
+        "launch": {
+          "type": "string",
+          "pattern": "^[0-9a-fA-F]{64}$",
+          "description": "SHA-256 hex digest of server command, args and cwd (unit: SHA-256 hex)."
+        },
+        "at": {
+          "type": "string",
+          "format": "date-time",
+          "description": "When the grant was recorded (unit: ISO-8601 UTC timestamp)."
+        }
+      }
+    }
+  }
+}

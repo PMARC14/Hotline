@@ -10,6 +10,7 @@ public class ActivationParserTests
     [InlineData("hotline://key?state=Up", KeyEvent.HoldStop)]
     [InlineData("HOTLINE://key?STATE=tap", KeyEvent.Tap)]
     [InlineData("hotline://key?foo=1&state=Up", KeyEvent.HoldStop)]
+    [InlineData("hotline://key?x=1&state=ta%70", KeyEvent.Tap)] // percent escapes are read
     [InlineData("hotline://key", null)]
     [InlineData("hotline://key?state=Wiggle", null)]
     [InlineData("hotline://key?state=", null)]

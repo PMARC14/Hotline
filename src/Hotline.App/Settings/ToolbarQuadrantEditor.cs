@@ -28,7 +28,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private static readonly Dictionary<string, string> BuiltInGlyphs = new()
     {
         ["pin"] = "\uE718", ["captureWindow"] = "\uE7C4", ["captureScreen"] = "\uE7F4", ["captureRegion"] = "\uF407", ["prompt"] = "\uE8A5",
-        ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713", ["more"] = "\uE712",
+        ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713", ["more"] = "\uE712", ["copyLastAnswer"] = "\uE8C8",
     };
 
     private readonly Action<ToolbarModel> _save;
@@ -38,8 +38,6 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private readonly FileLog _log;
     /// <summary>The width (DIP) of the panel's button rows, for "Move what doesn't fit into the menu"; null = the default room of 11 buttons.</summary>
     private readonly Func<double>? _barRoom;
-    /// <summary>Style overrides of items hidden in this session (Hide drops them), put back when the item is shown again.</summary>
-    private readonly Dictionary<string, ButtonStyle> _stash = new(StringComparer.OrdinalIgnoreCase);
     private readonly InfoBar _notice = new() { IsOpen = false, IsClosable = true };
     private readonly StackPanel _layout = new() { Spacing = 8 };
     private readonly Dictionary<ListViewItem, (Rectangle Before, Rectangle After)> _markers = [];
@@ -57,13 +55,15 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
 
     /// <summary>Reads toolbar.json anew (and notes its fingerprint) after <see cref="ChangedOnDiskException"/>; null when it can't be used.</summary>
     private readonly Func<ToolbarModel?> _reload;
+    private readonly Func<Hotline.Core.Settings.ChatSettings> _chat;
 
     public ToolbarQuadrantEditor(ToolbarModel model, Action<ToolbarModel> save, Func<IReadOnlyList<string>> quickActions,
         Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Func<double>? barRoom = null,
-        Func<ToolbarModel?>? reload = null)
+        Func<ToolbarModel?>? reload = null, Func<Hotline.Core.Settings.ChatSettings>? chat = null)
     {
         (_model, _save, _quickActions, _showDialog, _cardStyle, _log, _barRoom) = (model, save, quickActions, showDialog, cardStyle, log, barRoom);
         _reload = reload ?? (() => null);
+        _chat = chat ?? (() => new());
         Spacing = 8;
         Children.Add(_notice);
         Children.Add(new TextBlock { Text = Strings.Bar_EditorIntro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8 });
@@ -86,13 +86,6 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         try { next = edit(before); }
         catch (Exception ex) { _log.Error("button rows: edit failed", ex); return false; } // ToolbarEditor never throws; a drop must never fail anyway
         if (ReferenceEquals(next, before)) return false;
-        var (wasHidden, isHidden) = id is null ? (false, false) : (IsHidden(before, id), IsHidden(next, id));
-        ButtonStyle? restored = null;
-        if (wasHidden && !isHidden && _stash.TryGetValue(id!, out var stashed))
-        {
-            next = ToolbarEditor.SetStyle(next, id, stashed);
-            restored = stashed;
-        }
         try { _save(next); }
         catch (ChangedOnDiskException)
         {
@@ -101,7 +94,6 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
             if (_reload() is { } fresh)
             {
                 _model = fresh;
-                _stash.Clear();
                 Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
                 _focus = focus ?? _focus;
                 QueueRebuild();
@@ -118,16 +110,10 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         }
         _model = next;
         if (_notice.Severity == InfoBarSeverity.Error) _notice.IsOpen = false;
-        if (restored is not null) _stash.Remove(id!);
-        if (!wasHidden && isHidden && before.Overrides.TryGetValue(id!, out var dropped)) _stash[id!] = dropped;
         _focus = focus ?? _focus;
         QueueRebuild();
         return true;
     }
-
-    /// <summary>Not on the bar itself: in "Not shown" or in the box of the more button (its style override is kept aside either way).</summary>
-    private static bool IsHidden(ToolbarModel m, string id) =>
-        ToolbarEditor.Hidden(m).Contains(id, StringComparer.OrdinalIgnoreCase) || ToolbarEditor.InMenu(m, id) is not null;
 
     private void Notice(string message, InfoBarSeverity severity) =>
         (_notice.Message, _notice.Severity, _notice.IsOpen) = (message, severity, true);

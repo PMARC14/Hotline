@@ -1,0 +1,9 @@
+{
+  "version": 99,
+  "mcpServers": {
+    "files": {
+      "command": "npx"
+    }
+  },
+  "futureMcpField": 123
+}

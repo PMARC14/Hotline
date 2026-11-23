@@ -17,7 +17,11 @@ public sealed record ContinueTarget(ContinueKind Kind, string Name,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Url = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Command = null,
     [property: JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)] string? Model = null,
-    bool CopyChat = false);
+    bool CopyChat = false)
+{
+    [JsonExtensionData]
+    public Dictionary<string, System.Text.Json.JsonElement>? ExtensionData { get; init; }
+}
 
 /// <summary>The values a target's placeholders take: {chat}, {last}, {file}, {model}.</summary>
 public sealed record ContinueValues(string Chat, string Last, string? File, string Model);
@@ -29,7 +33,7 @@ public sealed record FilledUrl(Uri Uri, bool Shortened);
 public static partial class ContinueTargets
 {
     /// <summary>The targets for a chat on <paramref name="profile"/> (null profile = the shared list).</summary>
-    public static IReadOnlyList<ContinueTarget> For(BackendProfile? profile, HotlineSettings settings) =>
+    public static IReadOnlyList<ContinueTarget> For(ConnectionProfile? profile, HotlineSettings settings) =>
         profile?.ContinueIn ?? Shared(settings);
 
     /// <summary>
@@ -39,7 +43,7 @@ public static partial class ContinueTargets
     public static IReadOnlyList<ContinueTarget> Shared(HotlineSettings settings)
     {
         if (settings.Chat.ContinueIn is { } list) return list;
-        var local = settings.Chat.Backends.FirstOrDefault(b => b.Type == BackendType.Local && Uri.TryCreate(b.Endpoint, UriKind.Absolute, out _));
+        var local = settings.Chat.Connections.FirstOrDefault(b => b.Type == BackendType.Local && Uri.TryCreate(b.Endpoint, UriKind.Absolute, out _));
         return local is null ? [] : [LlamaCpp(new Uri(local.Endpoint!).GetLeftPart(UriPartial.Authority))];
     }
 

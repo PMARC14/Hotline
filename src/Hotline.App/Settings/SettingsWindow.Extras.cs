@@ -14,6 +14,59 @@ public sealed partial class SettingsWindow
     private const int MaxToolbarProblemLines = 10;
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
+    /// <summary>toolbar.json as this page build read it: once per page, not once per shortcut row (cleared by ShowPage).</summary>
+    private ToolbarShortcutSession? _pageToolbar;
+
+    private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
+    {
+        var page = _pageToolbar ??= new ToolbarShortcutSession(ToolbarPath, state: _state);
+        if (page.Load.Error is { } problem) return Card(header, problem, null);
+        var id = row.ToolbarShortcutId!;
+        var box = new TextBox { Text = page.Load.Model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
+        bool Accept(string value)
+        {
+            _settings.Current.Chat.Toolbar = page.Load.Model;
+            var valid = row.Validate!(value) && row.ValidateFor!(_settings.Current, value);
+            box.Header = valid ? null : L.Get(row.Invalid!);
+            return valid;
+        }
+        void Save(string? value)
+        {
+            // Reset (null) is checked too: the default may be taken by another command meanwhile.
+            if (!Accept(value ?? Hotline.Core.Settings.ChatShortcuts.Defaults.GetValueOrDefault(id, ""))) return;
+            try
+            {
+                var result = page.SetShortcut(id, value);
+                if (result.ChangedOnDisk) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
+                if (result.Error is { } problem)
+                {
+                    Fail("saving toolbar shortcut failed", new IOException(problem));
+                    return;
+                }
+                var next = page.Load.Model;
+                _settings.Current.Chat.Toolbar = next;
+                box.Text = next.ShortcutText(id);
+                DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
+            }
+            catch (ToolbarQuadrantEditor.ChangedOnDiskException)
+            {
+                // Not saved: the file changed since the page read it. Show it as it is now and say why.
+                ShowPage(_currentPage);
+                PageHost.Children.Insert(1, new InfoBar
+                {
+                    IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
+                    Message = Strings.Bar_ChangedOnDisk,
+                });
+            }
+            catch (Exception ex) { Fail("saving toolbar shortcut failed", ex); }
+        }
+        box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != page.Load.Model.ShortcutText(id)) Save(value); };
+        var capture = ShortcutBinder.Create(() => page.Load.Model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true, stop: id == "stop");
+        var reset = new Button { Content = Strings.Bar_Reset };
+        reset.Click += (_, _) => Save(null);
+        return Card(header, description, new StackPanel { Spacing = 6, Children = { box, capture, reset } });
+    }
+
     /// <summary>
     /// Window › Button rows: the quadrant editor (<see cref="ToolbarQuadrantEditor"/>) on toolbar.json, read anew each time
     /// the page is shown (an edit made in the file while the page is open shows on the next visit; the bar itself follows
@@ -26,25 +79,20 @@ public sealed partial class SettingsWindow
         {
             Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        try
-        {
-            if (_screenLine?.Invoke() is { Length: > 0 } screen)
-                PageHost.Children.Add(new TextBlock { Text = screen, TextWrapping = TextWrapping.Wrap, Opacity = 0.7, Margin = new Thickness(0, 0, 0, 8) });
-        }
-        catch (Exception ex) { _log.Error("working out the screen line failed", ex); }
         var load = ToolbarFile.Load(ToolbarPath);
         if (load.Error is { } error)
         {
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        if (load.Model.Warnings.Count > 0)
+        var warnings = load.Model.ResolveShortcuts().Warnings;
+        if (warnings.Count > 0)
             PageHost.Children.Add(new InfoBar
             {
                 IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Warning,
-                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", load.Model.Warnings.Take(MaxToolbarProblemLines))
-                    + (load.Model.Warnings.Count > MaxToolbarProblemLines
-                        ? "\n" + L.F(Strings.Settings_AndMore, load.Model.Warnings.Count - MaxToolbarProblemLines) : ""),
+                Message = Strings.Bar_Warnings + "\n" + string.Join("\n", warnings.Take(MaxToolbarProblemLines))
+                    + (warnings.Count > MaxToolbarProblemLines
+                        ? "\n" + L.F(Strings.Settings_AndMore, warnings.Count - MaxToolbarProblemLines) : ""),
             });
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
         // The file as this page read or last saved it: an edit made while the page is open is never overwritten.
@@ -52,7 +100,8 @@ public sealed partial class SettingsWindow
         void Save(ToolbarModel model)
         {
             if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-            ToolbarFile.Save(ToolbarPath, model);
+            var problem = ToolbarFile.Save(ToolbarPath, model, state: _state);
+            if (problem is not null) throw new IOException(problem);
             stamp = ToolbarFile.Fingerprint(ToolbarPath);
         }
         ToolbarModel? Reload()
@@ -64,7 +113,7 @@ public sealed partial class SettingsWindow
             return null;
         }
         PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, Save,
-            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload));
+            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload, () => _settings.Current.Chat));
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 
@@ -133,11 +182,12 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                Hotline.Core.Settings.FileArchive.KeepOld(ToolbarPath); // the user's file stays as toolbar.json.old (or .old2…)
-                ToolbarFile.Save(ToolbarPath, ToolbarModel.Defaults);
+                var current = ToolbarFile.Load(ToolbarPath);
+                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.ResetLayout(current.Error is null ? current.Model : null), state: _state);
+                if (problem is not null) throw new IOException(problem);
+                ShowPage(_currentPage); // only on success: a rebuilt page would hide the error
             }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { _log.Error("saving toolbar.json failed", ex); }
-            ShowPage(_currentPage);
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("saving toolbar.json failed", ex); }
         };
         return reset;
     }
@@ -168,7 +218,11 @@ public sealed partial class SettingsWindow
                 return button;
             }
             var reminder = new ToggleSwitch { IsOn = _settings.Current.General.SupportReminder, OnContent = "", OffContent = "", MinWidth = 0 };
-            reminder.Toggled += (_, _) => _settings.Update(s => s.General.SupportReminder = reminder.IsOn);
+            reminder.Toggled += (_, _) =>
+            {
+                _settings.Update(s => s.General.SupportReminder = reminder.IsOn);
+                if (reminder.IsOn) _state?.SetShown(Hotline.Core.State.ShownFlag.SupportNote, null); // asked for again: show it once more
+            };
             PageHost.Children.Add(Card(Strings.About_Support, Strings.About_Support_Desc,
                 new StackPanel
                 {

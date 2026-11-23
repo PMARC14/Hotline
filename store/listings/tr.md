@@ -5,79 +5,80 @@ Center › the submission › Store listings › Türkçe. Product name stays "H
 
 ## Kısa açıklama
 
-Copilot tuşunu seçtiğiniz yapay zekâyla hızlı bir sohbete dönüştürün: Claude veya Gemini oturumunuz, kendi API
-anahtarınız ya da kendi bilgisayarınızdaki bir model. Tuşa basın, sorun ve yanıtın akışını izleyin.
+Copilot tuşuna mecbursanız bari kullanın: Zaten sahip olduğunuz yapay zekâ (Claude, Codex, Gemini), kendi API anahtarınız ya da yerel bir model için hızlı, yerel bir sohbet paneli. Bizde hesap yok. Çubuğu düzenleyin ve sohbeti başka bir uygulamaya taşıyın.
 
 ## Açıklama
 
-Copilot tuşu madem orada, kullanın. Hotline AI onu, seçtiğiniz yapay zekâyla konuşan hızlı ve yerel bir sohbet
-paneline dönüştürür.
+Copilot tuşuna mecbursunuz, bari bir işe yarasın. Hotline AI, bu tuşu seçtiğiniz yapay zekâyla konuşan hızlı ve yerel bir yapay zekâ sohbet paneline dönüştürür.
 
-Tuşa basın; çalıştığınız monitörde yazmaya hazır bir panel açılır. Bir soru sorun, yanıt anında akmaya başlar; tuşa
-yeniden basın, panel kaybolur. Tarayıcı sekmesi yok, bizde hesap yok.
+Tuşa bastığınızda, çalıştığınız ekranda yazmaya hazır bir panel açılır. Sorunuzu sorun, akıcı yanıtınızı alın, tuşa tekrar bastığınızda kapansın. Tarayıcı sekmesi yok, bizde hesap açmak yok.
 
 ZATEN SAHİP OLDUĞUNUZ YAPAY ZEKÂYI KULLANIN
-• Claude Code: yüklü Claude Code'unuzu ve oturumunu kullanır; Claude planınız API anahtarı olmadan çalışır.
-• OpenAI Codex CLI: yüklü Codex'inizi ve oturumunu kullanır; ChatGPT planınız API anahtarı olmadan çalışır.
+• Claude Code: Yüklü Claude Code uygulamanızı ve oturumunuzu kullanır; böylece Claude planınız API anahtarı olmadan çalışır.
+• OpenAI Codex CLI: Yüklü Codex uygulamanızı ve oturumunuzu kullanır; böylece ChatGPT planınız API anahtarı olmadan çalışır.
 • Antigravity CLI (agy): Google oturumunuzla Gemini.
-• Kendi API anahtarınız: Anthropic, Google Gemini, OpenAI ve OpenRouter gibi OpenAI uyumlu diğer hizmetler.
-• Yerel modeller: bilgisayarınızdaki OpenAI tarzı herhangi bir sunucu (ör. llama.cpp veya LM Studio); böylece hiçbir şey bilgisayarınızdan çıkmaz.
-Modeli, sağlayıcıyı ve ne kadar düşüneceğini doğrudan panelin çubuğundan seçin.
+• Kendi API anahtarınız: Anthropic, Google Gemini, OpenAI ve OpenRouter gibi diğer OpenAI uyumlu servisler.
+• Yerel modeller: Bilgisayarınızdaki herhangi bir OpenAI tarzı sunucu (örneğin llama.cpp veya LM Studio); böylece hiçbir şey bilgisayarınızdan dışarı çıkmaz.
+Modeli, sağlayıcıyı ve ne kadar derin düşüneceğini doğrudan panelin çubuğundan seçin.
 
 BAĞLAMI YANINIZDA GETİRİN
 • Başka bir uygulamada seçtiğiniz metin, tuşa bastığınızda otomatik olarak eklenir; göndermeden önce kaldırabilirsiniz.
-• Bulunduğunuz pencereyi, tüm ekranı ya da sürükleyerek seçtiğiniz bir bölgeyi yakalayın; görüntü ve dosyaları yapıştırın veya bırakın.
-• Görüntüleri göremeyen modeller, bunun yerine ekran görüntünüzdeki metni alır; metin bilgisayarınızda Windows'un kendi OCR'ı ile okunur.
+• Bulunduğunuz pencereyi, tüm ekranı veya sürükleyerek seçtiğiniz bir alanı yakalayın; resimleri ve dosyaları yapıştırın ya da sürükleyip bırakın.
+• Görselleri göremeyen modellere ekran görüntünüz yerine, Windows'un kendi OCR özelliğiyle bilgisayarınızda okunan metin iletilir.
 
-HIZLI İŞLER İÇİN TASARLANDI
-• Hızlı eylemler: çevirmek, özetlemek, düzeltmek veya açıklamak için / yazın ya da kendinizinkileri basit metin dosyaları olarak yazın.
-• Bellek: "/remember metrik birimleri tercih ederim" deyin, hangi yapay zekâyı kullanırsanız kullanın her sohbet bunu bilir.
-• Ses: tuşu basılı tutup konuşun; durdurmak için bırakın.
-• Son sohbetler bir tık uzağınızda.
-• Click to Do ve Windows eylemleri: diğer uygulamalardan Hotline AI'ya metin veya görüntü gönderin.
+HIZLI İŞLER İÇİN YAPILDI
+• Hızlı eylemler: Çevir, özetle, düzelt veya açıkla için / yazın ya da basit metin dosyaları olarak kendi eylemlerinizi yazın.
+• Bellek: "/remember Metrik birimleri tercih ederim" deyin; hangi yapay zekâyı kullanırsanız kullanın her sohbet bunu bilsin.
+• Ses: Tuşa basılı tutup konuşun; durdurmak için bırakın.
+• Son sohbetler aranabilir bir listede bir tık uzağınızda (Ctrl+H).
+• Click to Do ve Windows eylemleri: Diğer uygulamalardan Hotline AI'a metin veya resim gönderin.
+• Şurada devam et: Daha fazla alana ihtiyaç duyduğunuzda sohbeti bir terminale, Open WebUI'a, llama.cpp web arayüzüne, LM Studio'ya veya kendi hedefinize taşıyın.
+• Panel odaktayken çubuktaki düğmeler için kısayollar: Yeni sohbet, son sohbetler, Ayarlar, sabitleme, yakalamalar ve seçiciler. Kendi düğmeleriniz de kısayola sahip olabilir. Ctrl, Alt veya Win gerektirir; bu sayede yazı yazmanıza asla engel olmaz.
+• Siz başka bir yerdeyken yanıt tamamlandığında bir Windows bildirimi haber verir.
 
 YEREL, HAFİF VE SİZİN
-• WinUI 3 ile geliştirildi: hızlı açılır, açık veya koyu temanızı izler, gömülü tarayıcı içermez.
-• Zengin yanıtlar: başlıklar, listeler, tablolar, Kopyala düğmeli kod, formüller ve basit çizimler.
-• Her şey düzenleyebileceğiniz bir dosyadır: ayarlar, bağlantılar, istemler, çubuktaki düğmeler.
-• Araçlar, özenle: API bağlantıları MCP sunucularınızın araçlarını kullanabilir; bir şeyi değiştiren her işlem önce size sorar.
+• WinUI 3 ile geliştirildi: Hızlı açılır, açık veya koyu temanıza uyum sağlar, gömülü tarayıcı içermez. x64 ve ARM64 üzerinde yereldir.
+• Zengin yanıtlar: Başlıklar, listeler, tablolar, Kopyala düğmeli kodlar, matematik ve basit çizimler.
+• Paneli taşımak veya yeniden boyutlandırmak için Alt tuşunu basılı tutun; paneli sabitleyin ve sohbetin yukarı mı yoksa aşağı mı büyüyeceğini seçin.
+• Her şey düzenleyebileceğiniz düz bir dosyadır: Ayarlar, bağlantılar, istemler, çubuktaki düğmeler.
+• Çubuğu dilediğiniz gibi düzenleyin: Ayarlar'da düğmeleri satırlar arasında sürükleyin, kendi resimlerinizle düğmeler ekleyin ve daha az kullanılanları Daha Fazla menüsünde tutun.
+• Ayarlar > Yedekleme kurulumunuzu başka bir bilgisayara taşır. API anahtarları asla dışa aktarılmaz ve Hotline'ın değiştirdiği bir dosya önce yedeklenir.
+• Araçlar, dikkatle: API bağlantıları MCP sunucularınızdaki araçları kullanabilir; bir şeyi değiştiren her işlem önce size sorar.
+• İsterseniz Copilot tuşu Sağ Ctrl tuşu olarak da işlev görebilir.
 
-TASARIMDAN GELEN GİZLİLİK
-Hotline AI'nın sunucusu yoktur ve hiçbir şey toplamaz: hesap yok, analiz yok, reklam yok. İletileriniz yalnızca
-seçtiğiniz yapay zekâ hizmetine, o hizmetin koşullarıyla gider. API anahtarları Windows Kimlik Bilgisi Yöneticisi'nde
-kalır; geçmiş, ayarlar ve bellek bilgisayarınızda kalır. Ücretsiz ve açık kaynak.
+TASARIMI GEREĞİ GİZLİ
+Hotline AI'ın sunucusu yoktur ve hiçbir şey toplamaz: Hesap yok, analiz yok, reklam yok. Mesajlarınız yalnızca seçtiğiniz yapay zekâ servisine, o servisin koşulları altında iletilir. API anahtarları Windows Credential Locker'da kalır; geçmiş, ayarlar ve bellek bilgisayarınızda tutulur. Ücretsiz ve açık kaynaklıdır.
 
-Copilot tuşunuz yok mu? İstediğiniz bir kısayolu ayarlayın, ör. Ctrl+Alt+H.
+Copilot tuşunuz yok mu? İstediğiniz kısayolu belirleyin, örneğin Ctrl+Alt+H.
 
-Hotline AI bağımsız bir uygulamadır; Microsoft, Anthropic, Google veya OpenAI ile bağlantılı değildir ve onlar
-tarafından onaylanmamıştır. Claude Code, Codex, Antigravity CLI veya bir yapay zekâ API'sini kullanmak için o hizmette kendi
-hesabınız gerekir.
+Hotline AI bağımsız bir uygulamadır; Microsoft, Anthropic, Google veya OpenAI ile bir bağlantısı ya da bu şirketlerin onayı yoktur. Claude Code, Codex, Antigravity CLI veya bir yapay zekâ API'si kullanmak, ilgili serviste kendi hesabınızın olmasını gerektirir.
 
 ## Bu sürümdeki yenilikler
 
-Vurgu renginizi seçin (Hotline moru, Windows vurgu rengi veya herhangi bir renk) ve yeni Yüksek karşıtlık teması; Hotline, Windows karşıtlık temalarını ve saydamlık ayarını da izler. Sohbet geçmişiniz aranabilir bir liste olarak açılır (geçmiş düğmesi, Ctrl+↑ veya /resume). Ek kısayolu tuşlara basarak ayarlayın. Yeni hızlı eylemler: /reply, /shorter, /formal ve /bullets. Kod blokları yana kayar ve panel yanıtları gelirken izler.
+Paneli taşıyıp yeniden boyutlandırın: tutamaçlar için Alt'ı basılı tutun, sabitleyin, konum ve boyutunu kaydedin. Sohbet yukarı veya aşağı büyür ve daha geniş açılabilir. Ayarlar'da düğme satırlarını düzenleyin: düğmeleri sol, orta ve sağa sürükleyin, resimli kendi düğmelerinizi ekleyin ve Daha Fazla menüsünü kullanın. Düğmeler artık çubuğa eşit dağılır. Durdur dahil her çubuk komutunun değiştirilebilir kısayolu vardır. Sohbeti terminal, Open WebUI, llama.cpp, LM Studio veya kendi hedeflerinizde sürdürün. Ayarlar > Yedekleme, API anahtarları hariç kurulumunuzu dışa ve içe aktarır. Genişlik piksel veya ekran yüzdesidir ve her Windows ölçeğinde aynı görünür. MCP araçları: "Her zaman izin ver" bu bilgisayarda hatırlanır ve Ayarlar > Araçlar'dan iptal edilebilir; sunucu gizli verileri Windows Credential Locker'a taşınabilir. Diğer yenilikler: düşünme göstergesi, açma/kapama sesleri, yazarken /resume ve yeniden açılan CLI sohbetlerinde mesajların görünmesi. Daha güvenli dosyalar: yeni dosya üzerine yazılmaz, bilinmeyen anahtarlar korunur, değişen dosyalar tek klasöre yedeklenir. Windows 11 26H2'de Copilot tuşu odağını, tuşla pencere yakalamayı, monitör ve ölçek değişikliklerini, ayrıca birçok erişilebilirlik ve güvenlik sorununu düzelttim. Bu güncelleme ayarları ve düğme satırlarını bir kez yeni dosya biçimine sıfırlar; bağlantılarınız korunur ve eski dosyalarınız yedekler klasörüne kaydedilir.
 
 ## Ürün özellikleri
 
 1. Copilot tuşuyla (veya herhangi bir kısayolla) çalıştığınız monitörde, yazmaya hazır açılır
 2. Claude Code, ChatGPT (Codex CLI) veya Gemini (Antigravity CLI) oturumunuzla çalışır: API anahtarı gerekmez
-3. Kendi anahtarınız: Anthropic, Google Gemini, OpenAI ve OpenAI uyumlu API'ler
-4. Yerel modeller: bilgisayarınızdaki OpenAI tarzı herhangi bir sunucu, hiçbir şey bilgisayarınızdan çıkmaz
+3. Kendi anahtarınızı getirin: Anthropic, Google Gemini, OpenAI ve OpenAI uyumlu API'ler
+4. Yerel modeller: bilgisayarınızdaki OpenAI tarzı herhangi bir sunucu; sohbet bilgisayarınızda kalır
 5. Modeli, sağlayıcıyı ve düşünme eforunu panelden seçin
 6. Geldiğiniz uygulamadaki seçili metin otomatik olarak eklenir
 7. Bir pencereyi, ekranı veya bölgeyi yakalayın; görüntü ve dosyaları yapıştırın veya bırakın
 8. Görüntü göremeyen modeller için ekran görüntülerindeki metin bilgisayarınızda okunur (OCR)
-9. Hızlı eylemler: /translate, /summarize, /fix, /explain veya kendinizinkiler
-10. Hangi yapay zekâ olursa olsun her sohbetin gördüğü bir bellek
-11. Tuşa basılı tutarak sesle giriş
-12. Click to Do ve diğer uygulamalardan metin veya görüntü gönderin
-13. Zengin yanıtlar: tablolar, kopyalanabilir kod, formüller ve çizimler
-14. Yerel WinUI 3, açık veya koyu temanızı izler
-15. Her şey düzenlenebilir bir dosyadır: ayarlar, bağlantılar, istemler, çubuk
-16. MCP sunucularınızdan isteğe bağlı araçlar, her değişiklikten önce onayla
-17. Hesap, analiz ve reklam yok; anahtarlar Windows Kimlik Bilgisi Yöneticisi'nde kalır
-18. Ücretsiz ve açık kaynak
-19. x64 ve ARM64 bilgisayarlarda yerel
+9. Hızlı eylemler: /translate, /summarize, /fix, /explain ve fazlası ya da kendi metin dosyalarınız
+10. Hangi yapay zekâyı kullanırsanız kullanın her sohbetin gördüğü bir bellek
+11. Windows'un çevrimiçi konuşma tanımasını kullanan bas-konuş sesli giriş
+12. Click to Do ve diğer uygulamalardan metin veya görüntü gönderin; sohbetleri terminal, Open WebUI, llama.cpp veya LM Studio'da sürdürün
+13. Zengin yanıtlar: tablolar, Kopyala düğmeli kod, formüller ve çizimler
+14. x64 ve ARM64'te yerel WinUI 3; açık, koyu ve karşıtlık temaları, kendi vurgu renginiz, gömülü tarayıcı yok
+15. Ayarlar'da düğme satırlarını sürükleyip bırakın; özel resimli düğmeler, Daha Fazla menüsü ve ayrı seçici boyutları
+16. API bağlantıları için isteğe bağlı MCP araçları; izin vermediğiniz sürece değişiklikler önce onay ister
+17. Hotline hesabı, analiz veya reklam yok; API anahtarları Windows Kimlik Bilgisi Yöneticisi'nde kalır; ücretsiz ve açık kaynak
+18. Düzenlenebilir ayarlar, bağlantılar, istemler ve toolbar.json; hatalı değerler uyarır, yedekler düzenlemelerinizi korur
+19. Ayarlar > Yedekleme; ayarları, çubuğu, MCP'yi, sesleri, bağlantıları, eylemleri ve istemleri taşır; API anahtarlarını asla almaz
+20. Çubuk düğmeleri için panel içi kısayollar; piksel genişlikleri ve genişleyen sohbet seçeneğiyle paneli taşıyın, sabitleyin ve boyutlandırın
 
 ## Ekran görüntüsü açıklamaları
 
@@ -88,4 +89,4 @@ Vurgu renginizi seçin (Hotline moru, Windows vurgu rengi veya herhangi bir renk
 
 ## Arama terimleri
 
-yapay zekâ sohbeti, Copilot tuşu, Claude, Gemini, yapay zekâ asistanı, LLM, yerel yapay zekâ
+Yapay zekâ asistanı, Copilot tuşu kısayolu, Claude Code entegrasyonu, Codex Gemini CLI, Anthropic OpenAI API, OpenRouter uyumlu, Yerel LLM llama.cpp

@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Text.Json;
 using Hotline.Core.Backends;
 using Hotline.Core.Backends.Codex;
@@ -15,10 +17,6 @@ public sealed class CodexTests : TempDirTest
 {
     private readonly FakeLineProcessFactory _factory = new();
 
-    private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
-
     private const string ThreadStarted = """{"type":"thread.started","thread_id":"0199a213-81c0-7800-8aa1-bbab2a035a53"}""";
     private const string TurnStarted = """{"type":"turn.started"}""";
     private const string TurnCompleted = """{"type":"turn.completed","usage":{"input_tokens":10,"cached_input_tokens":0,"output_tokens":5,"reasoning_output_tokens":0}}""";
@@ -31,19 +29,12 @@ public sealed class CodexTests : TempDirTest
             .Concat(messages.Select((m, i) => Message("item_" + i, m)))
             .Append(TurnCompleted);
 
-    private CodexBackend New(string? exe = @"C:\codex.exe", BackendProfile? profile = null, Func<BackendProfile, string>? prompt = null) =>
-        new(profile ?? new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex }, () => exe, Path.Combine(_dir, "ws"),
+    private CodexBackend New(string? exe = @"C:\codex.exe", ConnectionProfile? profile = null, Func<ConnectionProfile, string>? prompt = null) =>
+        new(profile ?? new ConnectionProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex }, () => exe, Path.Combine(_dir, "ws"),
             _factory, new FileLog(Path.Combine(_dir, "h.log")), prompt ?? (_ => "SYSTEM"), Path.Combine(_dir, "home"));
 
     private void Script(Func<string, IEnumerable<string>> respond) =>
         _factory.Create = () => new FakeLineProcess { Respond = respond, ExitWhenInputCompletes = true };
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
 
     private static string After(IReadOnlyList<string> args, string flag) => args[args.ToList().IndexOf(flag) + 1];
 
@@ -59,12 +50,12 @@ public sealed class CodexTests : TempDirTest
     [Fact]
     public void Chat_only_is_read_only_ephemeral_and_ignores_the_users_config()
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { Type = BackendType.Codex, KeepCliSessions = false }, "Be brief.", null, []);
+        var args = CodexProtocol.BuildArgs(new ConnectionProfile { Type = BackendType.Codex, KeepCliSessions = false }, "Be brief.", null, []);
         Assert.Equal("exec", args[0]);
         Assert.Contains("--json", args);
         Assert.Contains("--skip-git-repo-check", args);
         Assert.Contains("--ephemeral", args); // only when Codex isn't keeping the chats (default: it is)
-        Assert.DoesNotContain("--ephemeral", CodexProtocol.BuildArgs(new BackendProfile { Type = BackendType.Codex }, "x", null, []));
+        Assert.DoesNotContain("--ephemeral", CodexProtocol.BuildArgs(new ConnectionProfile { Type = BackendType.Codex }, "x", null, []));
         Assert.Contains("--ignore-user-config", args);
         Assert.Contains("--ignore-rules", args);
         Assert.Equal("read-only", After(args, "--sandbox"));
@@ -77,22 +68,22 @@ public sealed class CodexTests : TempDirTest
     [Fact]
     public void Inherit_mode_writes_in_the_workspace_and_bypasses_only_with_approve_all()
     {
-        var inherit = CodexProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit }, "x", null, []);
+        var inherit = CodexProtocol.BuildArgs(new ConnectionProfile { Tools = ToolMode.Inherit }, "x", null, []);
         Assert.Equal("workspace-write", After(inherit, "--sandbox"));
         Assert.DoesNotContain("--ignore-user-config", inherit);
 
-        var all = CodexProtocol.BuildArgs(new BackendProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }, "x", null, []);
+        var all = CodexProtocol.BuildArgs(new ConnectionProfile { Tools = ToolMode.Inherit, ApproveAllTools = true }, "x", null, []);
         Assert.Contains("--dangerously-bypass-approvals-and-sandbox", all);
         Assert.DoesNotContain("--sandbox", all);
 
-        var chatOnly = CodexProtocol.BuildArgs(new BackendProfile { ApproveAllTools = true }, "x", null, []);
+        var chatOnly = CodexProtocol.BuildArgs(new ConnectionProfile { ApproveAllTools = true }, "x", null, []);
         Assert.DoesNotContain("--dangerously-bypass-approvals-and-sandbox", chatOnly);
     }
 
     [Fact]
     public void Extra_args_cannot_bypass_the_sandbox()
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = "--search --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --yolo -s danger-full-access -c \"approval_policy\"=\"on-request\" --config=sandbox_mode=workspace-write -c model=\"o3\"" }, "x", null, []);
+        var args = CodexProtocol.BuildArgs(new ConnectionProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("--search --dangerously-bypass-approvals-and-sandbox --sandbox danger-full-access --yolo -s danger-full-access -c \"approval_policy\"=\"on-request\" --config=sandbox_mode=workspace-write -c model=\"o3\"").ToList() }, "x", null, []);
         Assert.Contains("model=\"o3\"", args); // other config overrides pass
         Assert.DoesNotContain(args, a => a.Contains("on-request", StringComparison.Ordinal) || a.Contains("sandbox_mode", StringComparison.Ordinal));
         Assert.Contains("--search", args);
@@ -108,7 +99,7 @@ public sealed class CodexTests : TempDirTest
     [InlineData(null, "bogus", null, null)]
     public void Model_and_effort(string? model, string? effort, string? expectedModel, string? expectedEffort)
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { Model = model, Effort = effort }, "", null, []);
+        var args = CodexProtocol.BuildArgs(new ConnectionProfile { Model = model, Effort = effort }, "", null, []);
         if (expectedModel is null) Assert.DoesNotContain("--model", args); else Assert.Equal(expectedModel, After(args, "--model"));
         var effortArg = args.FirstOrDefault(a => a.StartsWith("model_reasoning_effort=", StringComparison.Ordinal));
         Assert.Equal(expectedEffort is null ? null : $"model_reasoning_effort=\"{expectedEffort}\"", effortArg);
@@ -118,7 +109,7 @@ public sealed class CodexTests : TempDirTest
     [Fact]
     public void Attached_short_flags_and_folder_flags_are_dropped_too()
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { ExtraArgs = "-sworkspace-write -csandbox_mode=\"workspace-write\" -C C:\\ --cd=D:\\ --add-dir C:\\Windows -cmodel=\"o3\"" }, "x", null, []);
+        var args = CodexProtocol.BuildArgs(new ConnectionProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra("-sworkspace-write -csandbox_mode=\"workspace-write\" -C C:\\ --cd=D:\\ --add-dir C:\\Windows -cmodel=\"o3\"").ToList() }, "x", null, []);
         Assert.DoesNotContain(args, a => a.Contains("workspace-write", StringComparison.Ordinal) || a.Contains(":\\", StringComparison.Ordinal));
         Assert.DoesNotContain("-C", args);
         Assert.Contains("-cmodel=\"o3\"", args);
@@ -144,7 +135,7 @@ public sealed class CodexTests : TempDirTest
     [Fact]
     public void Resume_and_images()
     {
-        var args = CodexProtocol.BuildArgs(new BackendProfile { KeepCliSessions = true }, "x", "thread-1", [@"C:\a.png", @"C:\b.jpg"]);
+        var args = CodexProtocol.BuildArgs(new ConnectionProfile { KeepCliSessions = true }, "x", "thread-1", [@"C:\a.png", @"C:\b.jpg"]);
         Assert.DoesNotContain("--ephemeral", args); // a resumable session has to be saved
         var resume = args.ToList().IndexOf("resume");
         Assert.True(resume > 0);
@@ -252,7 +243,7 @@ public sealed class CodexTests : TempDirTest
     public async Task Keep_sessions_resumes_the_thread_and_sends_only_the_new_message()
     {
         Script(_ => Answer("ok"));
-        var b = New(profile: new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
+        var b = New(profile: new ConnectionProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
         var session = await SessionOf(b.StreamAsync([U("u1", "first")], default));
         Assert.Equal("0199a213-81c0-7800-8aa1-bbab2a035a53", session?.Id); // reported for the chat to record
         b.Resume = session; // what the chat controller hands back on the next turn
@@ -273,18 +264,10 @@ public sealed class CodexTests : TempDirTest
         _factory.Create = () => _factory.Started.Count == 1
             ? new FakeLineProcess { ExitWhenInputCompletes = true, Respond = _ => [TurnStarted, Message("m", "half an ans")] } // then dies
             : new FakeLineProcess { ExitWhenInputCompletes = true, Respond = _ => Answer("ok") };
-        var b = New(profile: new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
+        var b = New(profile: new ConnectionProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
         b.Resume = await SessionOf(b.StreamAsync([U("u1", "first")], default));
         await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("u1", "first"), A("a1", "ok"), U("u2", "second")], default)));
         Assert.Equal(2, _factory.Started.Count); // no silent replay that would repeat the half answer
-    }
-
-    [Fact]
-    public void Model_check_message_for_a_connection_without_a_model_list()
-    {
-        Assert.Equal("Connected: 0 models.", ModelCatalog.Describe([], null));
-        Assert.StartsWith("This connection doesn't list models", ModelCatalog.Describe([], null, listsModels: false));
-        Assert.StartsWith("Using gpt-5.5", ModelCatalog.Describe([], "gpt-5.5", listsModels: false));
     }
 
     [Fact]
@@ -301,7 +284,7 @@ public sealed class CodexTests : TempDirTest
         _factory.Create = () => _factory.Started.Count == 1 // the 2nd process (the resume) dies at once, like codex with no rollout
             ? new FakeLineProcess { ExitWhenInputCompletes = true, StandardErrorTail = "Error: thread/resume failed: no rollout found" }
             : new FakeLineProcess { ExitWhenInputCompletes = true, Respond = _ => Answer("ok") };
-        var b = New(profile: new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
+        var b = New(profile: new ConnectionProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
         b.Resume = await SessionOf(b.StreamAsync([U("u1", "first")], default));
         Assert.Equal("ok", await Collect(b.StreamAsync([U("u1", "first"), A("a1", "ok"), U("u2", "second")], default)));
         Assert.Equal(3, _factory.Started.Count);
@@ -316,7 +299,7 @@ public sealed class CodexTests : TempDirTest
         _factory.Create = () => _factory.Started.Count == 1 // the resume dies at once: signed out
             ? new FakeLineProcess { ExitWhenInputCompletes = true, StandardErrorTail = "Error: Not logged in. Run codex login." }
             : new FakeLineProcess { ExitWhenInputCompletes = true, Respond = _ => Answer("ok") };
-        var b = New(profile: new BackendProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
+        var b = New(profile: new ConnectionProfile { Id = "cx", Name = "Codex", Type = BackendType.Codex, KeepCliSessions = true });
         b.Resume = await SessionOf(b.StreamAsync([U("u1", "first")], default));
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("u1", "first"), A("a1", "ok"), U("u2", "second")], default)));
         Assert.Equal(BackendErrorKind.NotLoggedIn, ex.Kind);
@@ -365,7 +348,7 @@ public sealed class CodexTests : TempDirTest
     {
         var work = Directory.CreateDirectory(Path.Combine(_dir, "proj")).FullName;
         Script(_ => Answer("done"));
-        await Collect(New(profile: new BackendProfile { Id = "cx", Type = BackendType.Codex, Tools = ToolMode.Inherit, WorkingDirectory = work }).StreamAsync([U("u1", "go")], default));
+        await Collect(New(profile: new ConnectionProfile { Id = "cx", Type = BackendType.Codex, Tools = ToolMode.Inherit, WorkingDirectory = work }).StreamAsync([U("u1", "go")], default));
         Assert.Equal(work, _factory.Started[0].Cwd);
     }
 
@@ -394,14 +377,24 @@ public sealed class CodexTests : TempDirTest
         Assert.Null(CodexLocator.Find(@"D:\missing.exe", Exists, @"C:\bin", "x64"));
     }
 
-    // ---- wiring --------------------------------------------------------------------------------
+    [Fact]
+    public async Task Oversized_command_is_rejected_before_start()
+    {
+        var b = New(prompt: _ => new string('x', 33_000));
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.NotConfigured, ex.Kind);
+        Assert.Contains("Codex", ex.Message);
+        Assert.Empty(_factory.Started);
+    }
 
     [Fact]
-    public void Codex_is_a_cli_connection_type()
+    public async Task Win32_error_206_maps_to_failed_never_not_installed()
     {
-        var info = ConnectionTypes.Of(BackendType.Codex);
-        Assert.True(info.Has(ConnectionField.CliPath) && info.Has(ConnectionField.Tools));
-        Assert.False(info.Has(ConnectionField.ApiKey));
-        Assert.Equal(["low", "medium", "high", "xhigh", "max", "ultra"], info.EffortLevels);
+        _factory.Create = () => throw new System.ComponentModel.Win32Exception(206);
+        var b = New();
+        var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
+        Assert.Equal(BackendErrorKind.Failed, ex.Kind);
+        Assert.NotEqual(BackendErrorKind.NotInstalled, ex.Kind);
+        Assert.Contains("Codex", ex.Message);
     }
 }

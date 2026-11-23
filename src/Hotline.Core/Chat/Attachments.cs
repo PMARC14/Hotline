@@ -23,6 +23,25 @@ public static class AttachmentFactory
         ".php", ".swift", ".lua", ".r", ".tex",
     };
 
+    public const ulong MaxBitmapInputBytes = 256UL * 1024 * 1024;
+
+    public static void RequireBitmapSize(ulong size)
+    {
+        if (size > MaxBitmapInputBytes)
+            throw new AttachmentRejectedException(L.F(Strings.Attach_LargerMb, "Bitmap", MaxBitmapInputBytes / (1024 * 1024)));
+    }
+
+    public static bool IsImage(string name, string? mimeType) => ImageTypes.ContainsKey(Path.GetExtension(name))
+        || (mimeType?.StartsWith("image/", StringComparison.OrdinalIgnoreCase) ?? false);
+
+    public static async Task<Attachment> FromImageAsync(string name, byte[] data, AttachmentLimits limits,
+        Func<byte[], Task<byte[]>> normalize)
+    {
+        RequireBitmapSize((ulong)data.LongLength);
+        var png = await normalize(data);
+        return FromBytes(Path.ChangeExtension(name, ".png"), "image/png", png, limits);
+    }
+
     public static Attachment FromBytes(string name, string? mimeType, byte[] data, AttachmentLimits limits)
     {
         var ext = Path.GetExtension(name);
@@ -89,6 +108,13 @@ public sealed class AttachmentTray(AttachmentLimits limits)
     }
 
     public bool Remove(string id) => _items.RemoveAll(a => a.Id == id) > 0;
+
+    /// <summary>Commit only the original snapshot; attachments added while preparing remain in the tray.</summary>
+    public void Consume(IReadOnlyList<Attachment> snapshot)
+    {
+        var ids = snapshot.Select(a => a.Id).ToHashSet(StringComparer.Ordinal);
+        _items.RemoveAll(a => ids.Contains(a.Id));
+    }
 
     public IReadOnlyList<Attachment> TakeAll()
     {

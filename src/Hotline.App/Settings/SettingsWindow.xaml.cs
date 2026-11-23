@@ -6,6 +6,7 @@ using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Media;
 using Windows.Graphics;
@@ -23,20 +24,21 @@ public sealed partial class SettingsWindow : Window
     private readonly string _settingsFile;
     private readonly string _logsDir;
     private readonly FileLog _log;
+    private bool _closed;
 
     private Hotline.Core.Tools.McpToolHost? _toolHost;
     private string _mcpPath = "";
     private string? _odrPath;
+    private readonly Hotline.Core.State.StateStore? _state;
     /// <summary>The width (DIP) the panel's button rows have, or would have when it opens (the button rows editor's "Move what doesn't fit"); null in tests.</summary>
     private readonly Func<double>? _barRoom;
-    /// <summary>The short screen/scaling line shown above the button rows (see <see cref="Hotline.Core.Windowing.ScreenScale"/>); null in tests.</summary>
-    private readonly Func<string>? _screenLine;
 
     internal SettingsWindow(SettingsService settings, ISecretStore secrets, ModelCatalog models, Func<string, ValueTask> invalidate,
         PromptLibrary prompts, string settingsFile, string logsDir, FileLog log, Hotline.Core.Tools.McpToolHost? toolHost = null,
-        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null, Func<string>? screenLine = null)
+        string? mcpPath = null, string? odrPath = null, Func<double>? barRoom = null,
+        Hotline.Core.State.StateStore? state = null)
     {
-        (_toolHost, _mcpPath, _odrPath, _barRoom, _screenLine) = (toolHost, mcpPath ?? "", odrPath, barRoom, screenLine);
+        (_toolHost, _mcpPath, _odrPath, _barRoom, _state) = (toolHost, mcpPath ?? "", odrPath, barRoom, state);
         (_settings, _secrets, _models, _invalidate, _prompts, _settingsFile, _logsDir, _log) =
             (settings, secrets, models, invalidate, prompts, settingsFile, logsDir, log);
         InitializeComponent();
@@ -45,15 +47,16 @@ public sealed partial class SettingsWindow : Window
         ExtendsContentIntoTitleBar = true;
         SetTitleBar(AppTitleBar);
         AppWindow.SetIcon("Assets\\Hotline.ico");
-        var dpi = Native.GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(this));
-        var scale = dpi == 0 ? 1.0 : dpi / 96.0;
-        AppWindow.Resize(new SizeInt32((int)(1000 * scale), (int)(740 * scale)));
+        FitInitialWindow();
+        Activated += FitOnceAfterFirstActivation;
         ApplyTheme();
         _settings.Changed += OnSettingsChanged;
         _settings.SaveFailed += OnSaveFailed;
         SystemTheme.Changed += OnSettingsChanged;
-        Closed += (_, _) => { _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
+        Closed += (_, _) => { _closed = true; Activated -= FitOnceAfterFirstActivation; _settings.Changed -= OnSettingsChanged; _settings.SaveFailed -= OnSaveFailed; SystemTheme.Changed -= OnSettingsChanged; };
         Nav.SelectedItem = Nav.MenuItems[0];
+        // After the first layout (queued: not inside it): the pane widens when a label is trimmed (SettingsWindow.NavPane.cs).
+        Nav.Loaded += (_, _) => DispatcherQueue.TryEnqueue(() => { if (!_closed) FitNavPane(); });
     }
 
     /// <summary>Self-test: builds every page once (hidden window) so a broken page fails the smoke test.</summary>
@@ -68,20 +71,49 @@ public sealed partial class SettingsWindow : Window
         return failures;
     }
 
-    private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(ApplyTheme);
+    private void OnSettingsChanged() => DispatcherQueue.TryEnqueue(() => { if (!_closed) ApplyTheme(); });
 
     /// <summary>A save left something undone (a file couldn't be backed up or written): said at the top of the page, not only in the log.</summary>
     private void OnSaveFailed(IReadOnlyList<string> problems) => DispatcherQueue.TryEnqueue(() =>
+    {
+        if (_closed) return;
         PageHost.Children.Insert(0, new InfoBar
         {
             IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
             Message = string.Join(" ", problems.Take(3)),
-        }));
+        });
+    });
 
     private void ApplyTheme()
     {
         Root.RequestedTheme = SystemTheme.Resolve(_settings.Current.Window.Theme);
         SystemTheme.ApplyTitleBar(AppWindow, _settings.Current.Window.Theme);
+    }
+
+    private void FitInitialWindow()
+    {
+        if (_closed) return;
+        var area = Microsoft.UI.Windowing.DisplayArea.GetFromWindowId(AppWindow.Id, Microsoft.UI.Windowing.DisplayAreaFallback.Nearest);
+        var wa = area?.WorkArea ?? Microsoft.UI.Windowing.DisplayArea.Primary?.WorkArea ?? new RectInt32(0, 0, 1920, 1080);
+        var work = new Hotline.Core.Windowing.RectI(wa.X, wa.Y, wa.Width, wa.Height);
+        var dpi = Native.GetDpiForWindow(WinRT.Interop.WindowNative.GetWindowHandle(this));
+        var scale = dpi == 0 ? 1.0 : dpi / 96.0;
+        var target = Hotline.Core.Windowing.WindowSizing.Centered(work, 1000, 740, scale);
+        var pos = AppWindow.Position;
+        var size = AppWindow.Size;
+        if (pos.X != target.X || pos.Y != target.Y || size.Width != target.Width || size.Height != target.Height)
+        {
+            AppWindow.MoveAndResize(new RectInt32(target.X, target.Y, target.Width, target.Height));
+        }
+    }
+
+    private void FitOnceAfterFirstActivation(object sender, WindowActivatedEventArgs args)
+    {
+        Activated -= FitOnceAfterFirstActivation;
+        if (DispatcherQueue is null || !DispatcherQueue.TryEnqueue(FitInitialWindow))
+        {
+            FitInitialWindow();
+        }
     }
 
     private void Nav_SelectionChanged(NavigationView sender, NavigationViewSelectionChangedEventArgs args)
@@ -99,7 +131,9 @@ public sealed partial class SettingsWindow : Window
 
     private void ShowPage(string tag)
     {
+        if (_closed) return;
         _currentPage = tag;
+        _pageToolbar = null;
         PageHost.Children.Clear();
         PageHost.Children.Add(new TextBlock
         {
@@ -149,6 +183,7 @@ public sealed partial class SettingsWindow : Window
         grid.Children.Add(text);
         if (control is FrameworkElement fe)
         {
+            if (string.IsNullOrEmpty(AutomationProperties.GetName(fe))) AutomationProperties.SetName(fe, header);
             Grid.SetColumn(fe, 1);
             fe.VerticalAlignment = VerticalAlignment.Center;
             grid.Children.Add(fe);
@@ -218,6 +253,7 @@ public sealed partial class SettingsWindow : Window
                 return Card(header, description, HotkeyBinder(hk));
             case TextItem tx:
             {
+                if (tx.ToolbarShortcutId is not null) return ToolbarShortcutCard(tx, header, description);
                 var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder is null ? "" : L.Get(tx.Placeholder), Width = 240 };
                 box.LostFocus += (_, _) =>
                 {
@@ -225,6 +261,17 @@ public sealed partial class SettingsWindow : Window
                     {
                         box.Header = tx.Invalid is null ? Strings.Settings_InvalidValue : L.Get(tx.Invalid);
                         return;
+                    }
+                    if (tx.ValidateFor is { } validFor && !string.IsNullOrWhiteSpace(box.Text))
+                    {
+                        // Checked against toolbar.json as it is now (the Stop row: a panel command's binding).
+                        var toolbar = Hotline.Core.Windowing.ToolbarFile.Load(ToolbarPath);
+                        if (toolbar.Error is null) _settings.Current.Chat.Toolbar = toolbar.Model;
+                        if (!validFor(_settings.Current, box.Text.Trim()))
+                        {
+                            box.Header = L.Get(tx.InvalidFor ?? tx.Invalid ?? nameof(Strings.Settings_InvalidValue));
+                            return;
+                        }
                     }
                     box.Header = null;
                     if ((tx.Get(_settings.Current) ?? "") != box.Text.Trim()) _settings.Update(x => tx.Set(x, box.Text));
@@ -240,49 +287,11 @@ public sealed partial class SettingsWindow : Window
     /// A key binder: click, then press the shortcut (Esc cancels, Backspace clears). It saves the same text settings.json
     /// holds, and refuses a combination another app already holds.
     /// </summary>
-    private Button HotkeyBinder(HotkeyItem item)
-    {
-        var button = new Button { MinWidth = 200, HorizontalContentAlignment = HorizontalAlignment.Center };
-        var capturing = false;
-        void ShowValue() { capturing = false; button.Content = item.Get(_settings.Current) is { Length: > 0 } v ? v : Strings.Hotkey_NotSet; }
-        void Save(string? value) { _settings.Update(x => item.Set(x, value)); ShowValue(); }
-        ShowValue();
-        button.Click += (_, _) => { capturing = true; button.Content = Strings.Hotkey_Press; };
-        button.LostFocus += (_, _) => { if (capturing) ShowValue(); };
-        button.PreviewKeyDown += (_, e) =>
-        {
-            if (!capturing) return;
-            e.Handled = true; // while binding, every key belongs to the binder (Space/Enter don't click it again)
-            var held = HotkeyModifiers.None;
-            if (Down(Windows.System.VirtualKey.Control)) held |= HotkeyModifiers.Control;
-            if (Down(Windows.System.VirtualKey.Menu)) held |= HotkeyModifiers.Alt;
-            if (Down(Windows.System.VirtualKey.Shift)) held |= HotkeyModifiers.Shift;
-            if (Down(Windows.System.VirtualKey.LeftWindows) || Down(Windows.System.VirtualKey.RightWindows)) held |= HotkeyModifiers.Win;
-            var key = e.Key != Windows.System.VirtualKey.None ? e.Key : e.OriginalKey; // some Alt combinations report Key as None
-            var result = HotkeyCapture.Press(held, (uint)key);
-            switch (result.Outcome)
-            {
-                case HotkeyCapture.Outcome.Waiting: return;
-                case HotkeyCapture.Outcome.Cancel: ShowValue(); return;
-                case HotkeyCapture.Outcome.Clear: Save(null); return;
-                case HotkeyCapture.Outcome.NeedsModifier: button.Content = Strings.Hotkey_NeedsModifier; return;
-                case HotkeyCapture.Outcome.Unsupported: button.Content = Strings.Hotkey_Unsupported; return;
-            }
-            // Hotline's own current hotkey is "taken" by Hotline itself; anything else must be free.
-            var isCurrent = string.Equals(result.Text, item.Get(_settings.Current), StringComparison.OrdinalIgnoreCase);
-            if (!isCurrent && Hotkey.TryParse(result.Text, out var hotkey)
-                && !HotkeyRegistration.IsFree(WinRT.Interop.WindowNative.GetWindowHandle(this), hotkey))
-            {
-                button.Content = Strings.Hotkey_InUse;
-                return;
-            }
-            Save(result.Text);
-        };
-        return button;
-
-        static bool Down(Windows.System.VirtualKey key) =>
-            Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(key).HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down);
-    }
+    private Button HotkeyBinder(HotkeyItem item) => ShortcutBinder.Create(() => item.Get(_settings.Current),
+        value => _settings.Update(x => item.Set(x, value)), value =>
+            string.Equals(value, item.Get(_settings.Current), StringComparison.OrdinalIgnoreCase)
+            || !Hotkey.TryParse(value, out var hotkey)
+            || HotkeyRegistration.IsFree(WinRT.Interop.WindowNative.GetWindowHandle(this), hotkey));
 
     /// <summary>
     /// A failure inside a click or value handler (they run as async void, where an exception would take the app down): logged, and
@@ -291,6 +300,7 @@ public sealed partial class SettingsWindow : Window
     private void Fail(string what, Exception ex)
     {
         _log.Error(what, ex);
+        if (_closed) return;
         PageHost.Children.Insert(0, new InfoBar
         {
             IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Error, Margin = new Thickness(0, 0, 0, 8),
@@ -372,41 +382,44 @@ public sealed partial class SettingsWindow : Window
         PageHost.Children.Add(Card(Strings.Tools_Odr,
             _odrPath is null ? Strings.Tools_Odr_Missing : L.F(Strings.Tools_Odr_Available, _odrPath),
             null));
-        if (_toolHost is null) return;
-        var list = new StackPanel { Spacing = 6 };
-        void Fill()
+        if (_toolHost is not null)
         {
-            list.Children.Clear();
-            if (_toolHost.ConfigError is { } error)
-                list.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = error });
-            var status = _toolHost.Status;
-            if (status.Count == 0)
-                list.Children.Add(new TextBlock { Text = Strings.Tools_NoneChecked, Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
-            foreach (var s in status.OrderBy(s => s.Name))
-                list.Children.Add(Card(s.DisplayName, s.State switch
-                {
-                    Hotline.Core.Tools.McpServerState.Ready => L.F(Strings.Tools_Ready, s.ToolCount),
-                    Hotline.Core.Tools.McpServerState.Failed => L.F(Strings.Tools_Failed, s.Error),
-                    Hotline.Core.Tools.McpServerState.Disabled => Strings.Tools_Disabled,
-                    _ => s.State.ToString(),
-                }, null));
-        }
-        var check = new Button { Content = Strings.Tools_Check, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
-        check.Click += async (_, _) =>
-        {
-            check.IsEnabled = false;
-            using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60)); // a server stuck starting can't hold the button forever
-            try
+            var list = new StackPanel { Spacing = 6 };
+            void Fill()
             {
-                _toolHost.RetryFailedServers();
-                await _toolHost.GetToolsAsync(timeout.Token);
+                list.Children.Clear();
+                if (_toolHost.ConfigError is { } error)
+                    list.Children.Add(new InfoBar { IsOpen = true, IsClosable = false, Severity = InfoBarSeverity.Error, Message = error });
+                var status = _toolHost.Status;
+                if (status.Count == 0)
+                    list.Children.Add(new TextBlock { Text = Strings.Tools_NoneChecked, Opacity = 0.75, TextWrapping = TextWrapping.Wrap });
+                foreach (var s in status.OrderBy(s => s.Name))
+                    list.Children.Add(Card(s.DisplayName, s.State switch
+                    {
+                        Hotline.Core.Tools.McpServerState.Ready => L.F(Strings.Tools_Ready, s.ToolCount),
+                        Hotline.Core.Tools.McpServerState.Failed => L.F(Strings.Tools_Failed, s.Error),
+                        Hotline.Core.Tools.McpServerState.Disabled => Strings.Tools_Disabled,
+                        _ => s.State.ToString(),
+                    }, null));
             }
-            catch (Exception ex) { _log.Error("checking MCP servers failed", ex); }
-            finally { check.IsEnabled = true; Fill(); }
-        };
-        PageHost.Children.Add(check);
-        PageHost.Children.Add(list);
-        Fill();
+            var check = new Button { Content = Strings.Tools_Check, Style = (Style)Application.Current.Resources["AccentButtonStyle"] };
+            check.Click += async (_, _) =>
+            {
+                check.IsEnabled = false;
+                using var timeout = new CancellationTokenSource(TimeSpan.FromSeconds(60)); // a server stuck starting can't hold the button forever
+                try
+                {
+                    _toolHost.RetryFailedServers();
+                    await _toolHost.GetToolsAsync(timeout.Token);
+                }
+                catch (Exception ex) { _log.Error("checking MCP servers failed", ex); }
+                finally { check.IsEnabled = true; Fill(); }
+            };
+            PageHost.Children.Add(check);
+            PageHost.Children.Add(list);
+            Fill();
+        }
+        BuildToolsGrantsAndSecrets();
     }
 
     private void BuildAdvancedExtras()

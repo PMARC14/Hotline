@@ -12,7 +12,7 @@ namespace Hotline.Core.Tests;
 public class CliLaunchFlagTests
 {
     private static List<string> Claude(ToolMode mode, IReadOnlyList<string>? args = null, string? extra = null) =>
-        ClaudeCodeProtocol.BuildArgs(new BackendProfile { Tools = mode, Args = args?.ToList(), ExtraArgs = extra }, "x").ToList();
+        ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { Tools = mode, Args = args?.ToList(), ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra(extra).ToList() }, "x").ToList();
 
     private static readonly string[] ClaudeLockdown = ["--tools", "", "--setting-sources", "", "--strict-mcp-config"];
 
@@ -83,7 +83,7 @@ public class CliLaunchFlagTests
     }
 
     private static List<string> Agy(ToolMode mode, IReadOnlyList<string>? args = null, string? extra = null) =>
-        AgyProtocol.BuildArgs(new BackendProfile { Tools = mode, Agent = "hotline", Args = args?.ToList(), ExtraArgs = extra }).ToList();
+        AgyProtocol.BuildArgs(new ConnectionProfile { Tools = mode, Agent = "hotline", Args = args?.ToList(), ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra(extra).ToList() }).ToList();
 
     [Theory]
     [InlineData("--agent other")]
@@ -129,7 +129,7 @@ public class CliLaunchFlagTests
     }
 
     private static List<string> Codex(ToolMode mode, IReadOnlyList<string>? args = null, string? extra = null, string? resume = null) =>
-        CodexProtocol.BuildArgs(new BackendProfile { Tools = mode, Args = args?.ToList(), ExtraArgs = extra }, "x", resume, []).ToList();
+        CodexProtocol.BuildArgs(new ConnectionProfile { Tools = mode, Args = args?.ToList(), ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra(extra).ToList() }, "x", resume, []).ToList();
 
     [Fact]
     public void Codex_chat_only_ignores_the_users_config_even_with_custom_args_and_before_resume()

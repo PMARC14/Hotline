@@ -3,11 +3,9 @@ using Hotline.Core.Chat;
 namespace Hotline.Core.Tests;
 
 /// <summary>Fixes from the full-codebase review: chat file edge cases.</summary>
-public sealed class ReviewX2ChatToolsTests : IDisposable
+public sealed class ReviewX2ChatToolsTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     private readonly ManualTimeProvider _clock = new();
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void Prompt_library_treats_the_default_name_case_insensitively()

@@ -4,6 +4,7 @@ using System.Text;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 using Interop.UIAutomationClient;
 
 namespace Hotline.App.Interop;
@@ -12,6 +13,7 @@ internal static class ClipboardCopy
 {
     private const long MaxSnapshotBytes = 64L * 1024 * 1024;
     private static readonly SemaphoreSlim OneAtATime = new(1, 1);
+    private sealed record ClipboardSnapshot(List<(uint Format, byte[] Data)> Formats, uint Sequence);
 
     /// <summary>
     /// Sends Ctrl+C to <paramref name="target"/> (only while it's still the foreground window, before
@@ -31,21 +33,36 @@ internal static class ClipboardCopy
             if (ModifiersDown()) { log.Info("selection: modifiers held; skipped Ctrl+C"); return; }
             var saved = Snapshot(log);
             if (saved is null) return;
-            if (stop.IsCancellationRequested || Environment.TickCount64 > deadline || Native.GetForegroundWindow() != target)
+            Native.GetWindowThreadProcessId(target, out var targetProcess);
+            if (targetProcess == 0 || !ClipboardCopyPolicy.MaySend(Environment.TickCount64, deadline,
+                stop.IsCancellationRequested, Native.GetForegroundWindow() == target,
+                saved.Sequence, ClipboardNative.GetClipboardSequenceNumber()))
             {
                 log.Info("selection: too late or focus moved; skipped Ctrl+C");
                 return;
             }
-            var before = ClipboardNative.GetClipboardSequenceNumber();
+            var before = saved.Sequence;
             SendCtrlC();
-            // Wait for the copy only until the deadline: after that the panel is open, and a clipboard change is more
-            // likely the user's own copy, which must not be "restored" away.
-            while (ClipboardNative.GetClipboardSequenceNumber() == before && Environment.TickCount64 < deadline && !stop.IsCancellationRequested) Thread.Sleep(10);
-            if (ClipboardNative.GetClipboardSequenceNumber() == before) return; // nothing was copied: clipboard untouched
-            Thread.Sleep(20); // let the app finish writing all of its formats
-            var ours = ClipboardNative.GetClipboardSequenceNumber();
-            try { copied.TrySetResult(IsWholeLineCopy() ? null : ReadText()); }
-            finally { Restore(saved, ours, log); }
+            // Cancellation prevents sending keys, but must not cancel cleanup of a copy already sent.
+            while (true)
+            {
+                var now = Environment.TickCount64;
+                if (now >= deadline) copied.TrySetResult(null); // panel opens while cleanup continues
+                var action = ClipboardCopyPolicy.Observe(now, deadline, before,
+                    ClipboardNative.GetClipboardSequenceNumber(), targetProcess, OwnerProcess());
+                if (action == ClipboardCopyAction.Stop) return;
+                if (action == ClipboardCopyAction.Wait) { Thread.Sleep(10); continue; }
+
+                Thread.Sleep(20); // let the app finish writing all of its formats
+                var ours = ClipboardNative.GetClipboardSequenceNumber();
+                try
+                {
+                    if (action == ClipboardCopyAction.ReadAndRestore)
+                        copied.TrySetResult(ReadCopiedText(ours, targetProcess, deadline, out ours));
+                }
+                finally { Restore(saved.Formats, ours, targetProcess, log); }
+                return;
+            }
         }
         finally { OneAtATime.Release(); }
     }
@@ -53,25 +70,36 @@ internal static class ClipboardCopy
     private static bool ModifiersDown() =>
         new[] { 0x10, 0x11, 0x12, 0x5B, 0x5C }.Any(vk => (ClipboardNative.GetAsyncKeyState(vk) & 0x8000) != 0); // Shift, Ctrl, Alt, LWin, RWin
 
-    private static bool IsHandleFormat(uint f) =>
-        f is 2 or 3 or 9 or 14 or 0x80 or 0x82 or 0x83 or 0x8E || f is >= 0x200 and <= 0x3FF; // bitmap, metafile, palette, owner/private/GDI
-
-    private static List<(uint Format, byte[] Data)>? Snapshot(FileLog log)
+    private static ClipboardSnapshot? Snapshot(FileLog log)
     {
         if (!OpenWithRetry(TimeSpan.FromMilliseconds(100))) { log.Info("selection: clipboard busy; skipped Ctrl+C"); return null; }
         try
         {
             var formats = new List<(uint, byte[])>();
             long total = 0;
-            for (uint f = ClipboardNative.EnumClipboardFormats(0); f != 0; f = ClipboardNative.EnumClipboardFormats(f))
+            uint f = 0;
+            while (true)
             {
-                if (IsHandleFormat(f)) continue;
+                f = ClipboardNative.EnumClipboardFormats(f);
+                if (f == 0)
+                {
+                    if (Marshal.GetLastWin32Error() != 0) return null;
+                    break;
+                }
+                var name = new StringBuilder(256);
+                if (f >= 0xC000) ClipboardNative.GetClipboardFormatName(f, name, name.Capacity);
+                if (!ClipboardCopyPolicy.CanSnapshotFormat(f, name.ToString()))
+                {
+                    log.Info("selection: clipboard has formats that cannot be safely restored; skipped Ctrl+C");
+                    return null;
+                }
                 var h = ClipboardNative.GetClipboardData(f);
-                if (h == 0) continue;
+                if (h == 0) return null;
                 var size = (long)ClipboardNative.GlobalSize(h);
+                if (size <= 0) return null;
                 if ((total += size) > MaxSnapshotBytes) { log.Info("selection: clipboard too large to restore; skipped Ctrl+C"); return null; }
                 var p = ClipboardNative.GlobalLock(h);
-                if (p == 0) continue;
+                if (p == 0) return null;
                 try
                 {
                     var bytes = new byte[size];
@@ -80,7 +108,7 @@ internal static class ClipboardCopy
                 }
                 finally { ClipboardNative.GlobalUnlock(h); }
             }
-            return formats;
+            return new ClipboardSnapshot(formats, ClipboardNative.GetClipboardSequenceNumber());
         }
         finally { ClipboardNative.CloseClipboard(); }
     }
@@ -99,39 +127,60 @@ internal static class ClipboardCopy
 
     private static string? ReadText() => ReadString(13, unicode: true); // CF_UNICODETEXT
 
-    /// <summary>Reads a text format, bounded by the memory block's size (some apps omit the terminating null).</summary>
-    private static string? ReadString(uint format, bool unicode)
+    private static uint OwnerProcess()
     {
+        Native.GetWindowThreadProcessId(ClipboardNative.GetClipboardOwner(), out var process);
+        return process;
+    }
+
+    private static string? ReadCopiedText(uint sequence, uint targetProcess, long deadline, out uint restoreSequence)
+    {
+        restoreSequence = sequence;
         if (!OpenWithRetry(TimeSpan.FromMilliseconds(200))) return null;
         try
         {
-            var h = ClipboardNative.GetClipboardData(format);
-            if (h == 0) return null;
-            var size = (long)ClipboardNative.GlobalSize(h);
-            var p = ClipboardNative.GlobalLock(h);
-            if (p == 0) return null;
-            try
+            if (!ClipboardCopyPolicy.MayRead(Environment.TickCount64, deadline, sequence,
+                ClipboardNative.GetClipboardSequenceNumber(), targetProcess, OwnerProcess())) return null;
+            try { return IsWholeLineCopy() ? null : ReadText(); }
+            finally
             {
-                var s = unicode ? Marshal.PtrToStringUni(p, (int)Math.Min(size / 2, int.MaxValue)) : Marshal.PtrToStringUTF8(p, (int)Math.Min(size, int.MaxValue));
-                var end = s.IndexOf('\0');
-                return end >= 0 ? s[..end] : s;
+                // GetClipboardData can cause delayed rendering and advance the sequence while we hold the lock.
+                restoreSequence = ClipboardNative.GetClipboardSequenceNumber();
             }
-            finally { ClipboardNative.GlobalUnlock(h); }
         }
         finally { ClipboardNative.CloseClipboard(); }
+    }
+
+    /// <summary>Reads a text format, bounded by the memory block's size (some apps omit the terminating null).</summary>
+    private static string? ReadString(uint format, bool unicode)
+    {
+        // Caller holds the clipboard open and has checked its owner and sequence.
+        var h = ClipboardNative.GetClipboardData(format);
+        if (h == 0) return null;
+        var size = (long)ClipboardNative.GlobalSize(h);
+        var p = ClipboardNative.GlobalLock(h);
+        if (p == 0) return null;
+        try
+        {
+            var s = unicode ? Marshal.PtrToStringUni(p, (int)Math.Min(size / 2, int.MaxValue)) : Marshal.PtrToStringUTF8(p, (int)Math.Min(size, int.MaxValue));
+            var end = s.IndexOf('\0');
+            return end >= 0 ? s[..end] : s;
+        }
+        finally { ClipboardNative.GlobalUnlock(h); }
     }
 
     /// <summary>
     /// Puts the saved formats back (retrying while clipboard managers hold it open), marked so clipboard history and
     /// cloud clipboard don't record the restore. Skipped when someone else wrote to the clipboard after our copy.
     /// </summary>
-    private static void Restore(List<(uint Format, byte[] Data)> saved, uint ours, FileLog log)
+    private static void Restore(List<(uint Format, byte[] Data)> saved, uint ours, uint targetProcess, FileLog log)
     {
         if (!OpenWithRetry(TimeSpan.FromSeconds(2))) { log.Error("selection: couldn't reopen the clipboard to restore it"); return; }
         try
         {
-            if (ClipboardNative.GetClipboardSequenceNumber() != ours) { log.Info("selection: clipboard changed again; not restored"); return; }
-            ClipboardNative.EmptyClipboard();
+            if (!ClipboardCopyPolicy.MayRestore(ours, ClipboardNative.GetClipboardSequenceNumber(), targetProcess, OwnerProcess()))
+            { log.Info("selection: clipboard changed again or has another owner; not restored"); return; }
+            if (!ClipboardNative.EmptyClipboard()) { log.Error("selection: couldn't empty the clipboard to restore it"); return; }
             foreach (var (format, data) in saved) Put(format, data);
             Put(ClipboardNative.RegisterClipboardFormat("ExcludeClipboardContentFromMonitorProcessing"), [0]);
             Put(ClipboardNative.RegisterClipboardFormat("CanIncludeInClipboardHistory"), [0, 0, 0, 0]);

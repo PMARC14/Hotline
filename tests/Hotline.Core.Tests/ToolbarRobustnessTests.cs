@@ -31,11 +31,12 @@ public sealed class ToolbarRobustnessTests
 
         /// <summary>The width of the row (pickers excluded) with <paramref name="leftShown"/> left buttons and the right group's
         /// first <paramref name="rightDropped"/> in the menu: every shown button, "⋯", and the gaps between all columns.</summary>
-        public double Width(int leftShown, int rightDropped)
+        public double Width(int leftShown, int rightDropped, bool shrunk = false)
         {
             var overflow = leftShown < Left.Length || rightDropped > 0;
             var columns = leftShown + Right.Length - rightDropped + (overflow ? 1 : 0) + (HasPickers ? 1 : 0) + (Plan.Center.Count > 0 ? 2 : 1);
-            return Left.Take(leftShown).Sum() + Right.Skip(rightDropped).Sum() + (overflow ? Overflow : 0) + Spacing * (columns - 1);
+            var rightSum = Right.Skip(rightDropped).Sum() - (shrunk && Right.Length > 0 ? Right[^1] - Overflow : 0);
+            return Left.Take(leftShown).Sum() + rightSum + (overflow ? Overflow : 0) + Spacing * (columns - 1);
         }
 
         /// <summary>Buttons on the bar (not in the menu): never fewer with more room while the pickers keep the same state.</summary>
@@ -114,10 +115,12 @@ public sealed class ToolbarRobustnessTests
         Assert.Equal(fit.LeftShown < f.Left.Length || fit.RightDropped > 0, fit.Overflow);
         Assert.True(fit.RightDropped == 0 || fit.LeftShown == 0, $"{where}: the right group gave up buttons before the left was gone ({fit})");
         Assert.True(double.IsFinite(fit.FixedWidth) && fit.FixedWidth >= 0, $"{where}: {fit}");
-        Assert.Equal(f.Width(fit.LeftShown, fit.RightDropped), fit.FixedWidth, 6);
+        Assert.Equal(f.Width(fit.LeftShown, fit.RightDropped, fit.ShrunkLastRight), fit.FixedWidth, 6);
         // The narrowest the row can be: no left button, all but the last right button in the menu (the "⋯" button if anything is).
-        var smallest = f.Width(0, Math.Max(0, f.Right.Length - 1));
-        if (smallest <= room)
+        var canShrink = f.Right.Length > 0 && f.Right[^1] > f.Overflow * 1.5;
+        var smallest = f.Width(0, Math.Max(0, f.Right.Length - 1), shrunk: canShrink);
+        // Two compact right buttons can fit where replacing one with the wider menu button would not.
+        if (Math.Min(f.Width(0, 0), smallest) <= room)
         {
             Assert.True(f.Used <= room + 1e-9, $"{where}: uses {f.Used} of {room} ({fit})");
             // The right group gave up no more than it had to: one more button back would not fit (with the pickers' room if kept).
@@ -127,7 +130,7 @@ public sealed class ToolbarRobustnessTests
         else
         {
             // Fit's documented overshoot, and the only one: not even one right button and the "⋯" button fit, with the pickers given up.
-            Assert.Equal(new RowFit(0, f.Left.Length > 0 || f.Right.Length > 1, false, smallest, Math.Max(0, f.Right.Length - 1)), fit);
+            Assert.Equal(new RowFit(0, f.Left.Length > 0 || f.Right.Length > 1, false, smallest, Math.Max(0, f.Right.Length - 1), ShrunkLastRight: canShrink), fit);
         }
 
         // What the renderer puts into the "⋯" menu: the end of left-then-centre, in order, the centre before any left button;
@@ -224,8 +227,8 @@ public sealed class ToolbarRobustnessTests
         var overrides = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 4, "height": 80 } """));
         var ids = string.Join(", ", Enumerable.Range(1, 24).Select(i => $"\"c{i}\""));
         var m = ToolbarModel.Resolve($$"""
-            { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] }, "items": { "left": [{{ids}}], "right": ["settings"] },
-              "style": { "width": "wide", "cells": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
+            { "version": 3, "top": { "left": ["effort", "model", "provider"], "right": [] }, "bottom": { "left": [{{ids}}], "right": ["settings"] },
+              "style": { "width": 2, "cells": 999 }, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
             """);
         Assert.Equal(24, m.Buttons.Count);
         AssertMetricsInRange(m);

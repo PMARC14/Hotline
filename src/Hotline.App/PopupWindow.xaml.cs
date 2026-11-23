@@ -23,6 +23,13 @@ public sealed partial class PopupWindow : Window
     public GrowMode GrowMode { get; set; }
     private readonly PopupToggleGuard _guard;
     private readonly FileLog _log;
+    private readonly ForegroundWindowTracker _foreground;
+    private readonly Hotline.Core.State.StateStore? _state;
+    private EffectivePanelSpot _resolvedSpot;
+    private PanelLayoutSettings? _lastLayout;
+    private readonly PanelDisplayObserver _displayObserver;
+    private bool _displayRecoveryHeld;
+    private nint _displayMonitor;
     private int _modal;
     private RectI _bar;
     private RectI _work;
@@ -40,13 +47,19 @@ public sealed partial class PopupWindow : Window
     public event Action? NewChatRequested;
     public event Action<bool>? CaptureRequested;
 
-    public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus)
+    public PopupWindow(WindowSettings settings, GrowMode growMode, PopupToggleGuard guard, FileLog log, bool showDebugStatus,
+        ForegroundWindowTracker? foreground = null, Hotline.Core.State.StateStore? state = null)
     {
         _settings = settings;
         GrowMode = growMode;
         _guard = guard;
         _log = log;
+        _foreground = foreground ?? new ForegroundWindowTracker(log);
+        _state = state;
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         InitializeComponent();
+        Input.TextCompositionStarted += (_, _) => IsComposing = true;
+        Input.TextCompositionEnded += (_, _) => IsComposing = false;
         // The grips reach the window's edge: the negated padding of Root (one source of truth, XAML has no way to bind it).
         var pad = Root.Padding;
         GripLayer.Margin = new Thickness(-pad.Left, -pad.Top, -pad.Right, -pad.Bottom);
@@ -68,6 +81,8 @@ public sealed partial class PopupWindow : Window
         if (showDebugStatus)
             StatusText.Visibility = Visibility.Visible;
         ApplyAppearance();
+        _displayObserver = new PanelDisplayObserver(Root, DispatcherQueue, RecoverDisplay);
+        Closed += (_, _) => _displayObserver.Dispose();
 
         Activated += OnActivated;
         _scrollbarHide = DispatcherQueue.CreateTimer();
@@ -102,7 +117,19 @@ public sealed partial class PopupWindow : Window
             ScrollbarStyle.Hidden => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden,
             _ => Microsoft.UI.Xaml.Controls.ScrollBarVisibility.Hidden, // Auto: shown on wheel/hover (ShowScrollbarBriefly)
         };
-        if (AppWindow.IsVisible) PlaceOnActiveMonitor();
+        var next = PanelLayoutSettings.From(_settings);
+        var changed = next != _lastLayout;
+        _lastLayout = next;
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
+        if (!AppWindow.IsVisible) return;
+        if (changed) RequestPlacement(); // deferred while HoldResize is held
+        else ApplyHeight();
+    }
+
+    private void RequestPlacement()
+    {
+        if (_resizeHolds > 0) { _placementHeld = true; return; }
+        PlaceOnActiveMonitor();
     }
 
     private readonly Microsoft.UI.Dispatching.DispatcherQueueTimer _scrollbarHide;
@@ -142,8 +169,16 @@ public sealed partial class PopupWindow : Window
     public IReadOnlyDictionary<string, double> FitToolbar(double room, IReadOnlyCollection<string> availablePickers) =>
         _rows.Fit(room, availablePickers);
 
+    /// <summary>Self-test: shown buttons drawn at another width than fitted, and whether a row shrank its last right button.</summary>
+    public (IReadOnlyList<string> Problems, bool AnyShrunk) ToolbarDrawnWidths() => _rows.DrawnWidths();
+
     /// <summary>Where a bar button's menu opens: the button, or "⋯" while the button is in that menu.</summary>
     public FrameworkElement ToolbarAnchor(FrameworkElement button) => _rows.Anchor(button);
+
+    public void SetToolbarShortcuts(ChatSettings settings) => _rows.SetShortcuts(settings);
+    public IReadOnlyDictionary<string, string> ToolbarShortcuts => _rows.Shortcuts;
+    public string ShortcutTip(string id, string text) => _rows.ShortcutTip(id, text);
+    public void InvokeToolbarShortcut(string id) => _rows.InvokeShortcut(id);
 
     /// <summary>A custom button (toolbar.json "buttons") or its "⋯" entry was clicked.</summary>
     public event Action<CustomButton>? CustomButtonClicked;
@@ -155,21 +190,27 @@ public sealed partial class PopupWindow : Window
     /// <summary>Runs synchronously when the panel is about to open over a real app window (its handle), before focus moves.</summary>
     public Action<nint>? BeforeShow { get; set; }
 
+    /// <summary>Revalidates the show-time target window right before a capture uses it.</summary>
+    public nint RevalidateCaptureTarget(nint? candidate = null)
+    {
+        var fg = _foreground.RevalidateShowTarget(candidate ?? PreviousForeground);
+        PreviousForeground = fg;
+        return fg;
+    }
+
     /// <param name="readSelection">False when the caller brings the content itself (an App Action).</param>
     public void ShowPopup(bool readSelection = true)
     {
         // The open sound plays only when it really opens (not back from the file picker).
-        var wasShown = AppWindow.IsVisible && !_offscreen || _hiddenForDialog;
+        var hiddenForDialog = _hiddenForDialog;
+        var wasShown = AppWindow.IsVisible && !_offscreen || hiddenForDialog;
         _hiddenForDialog = false;
-        var fg = Native.GetForegroundWindow();
-        if (fg != Hwnd && fg != 0 && !ShellSurfaces.IsShell(Native.ClassNameOf(fg)))
+        var fg = hiddenForDialog ? _foreground.RevalidateShowTarget(PreviousForeground) : _foreground.ResolveForShow();
+        PreviousForeground = fg;
+        if (fg != 0 && !hiddenForDialog && readSelection)
         {
-            PreviousForeground = fg; // keep the last real app window; taskbar/desktop/flyouts don't count
-            if (readSelection)
-            {
-                try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
-                catch (Exception ex) { _log.Error("before-show step failed", ex); }
-            }
+            try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
+            catch (Exception ex) { _log.Error("before-show step failed", ex); }
         }
 
         if (_offscreen)
@@ -275,6 +316,9 @@ public sealed partial class PopupWindow : Window
         PlayOpenClose?.Invoke(false);
         if (!Pinned || _forgetOnHide) _session = null; // moved but not pinned (or forgotten): the next open uses the default
         _forgetOnHide = false;
+        _displayRecoveryHeld = false;
+        _placementHeld = false;
+        _resizeHeld = false;
         AppWindow.Hide();
         _guard.NoteHidden();
         Hidden?.Invoke();
@@ -300,9 +344,11 @@ public sealed partial class PopupWindow : Window
             // Closed by the key while it had focus (a pinned panel keeps it; unpinned, the shell usually took it first):
             // no window had focus afterwards, the rest of the key press went nowhere and Windows played its warning
             // sound. Give focus back to the app the panel opened over.
-            if (fg == Hwnd && PreviousForeground != 0 && Native.IsWindow(PreviousForeground))
+            var prev = _foreground.RevalidateShowTarget(PreviousForeground);
+            PreviousForeground = prev;
+            if (fg == Hwnd && prev != 0)
             {
-                if (Native.ForceForeground(PreviousForeground)) _log.Info($"focus back to {Native.ClassNameOf(PreviousForeground)}");
+                if (Native.ForceForeground(prev)) _log.Info($"focus back to {Native.ClassNameOf(prev)}");
                 else _log.Info("could not give focus back to the previous window");
             }
         }
@@ -330,12 +376,13 @@ public sealed partial class PopupWindow : Window
     public IDisposable Modal()
     {
         _modal++;
-        return new Releaser(() => _modal--);
+        var suppress = _foreground.Suppress();
+        return new Releaser(() => { suppress.Dispose(); _modal--; });
     }
 
     /// <summary>
     /// While held, the window keeps its size: resizing a window closes its open flyouts at once (the history list
-    /// opened from the keyboard did exactly that). A resize asked for meanwhile is applied when the last hold ends.
+    /// opened from the keyboard did exactly that). A resize or placement asked for meanwhile is applied when the last hold ends.
     /// Only flyouts take it; dialogs and captures still resize as usual.
     /// </summary>
     public IDisposable HoldResize()
@@ -346,7 +393,11 @@ public sealed partial class PopupWindow : Window
             void Release()
             {
                 _resizeHolds--;
-                if (_resizeHolds == 0 && _resizeHeld && AppWindow.IsVisible) ApplyHeight();
+                if (_resizeHolds != 0) return;
+                if (!AppWindow.IsVisible) { _placementHeld = false; _resizeHeld = false; return; }
+                if (_displayRecoveryHeld) RecoverDisplay();
+                if (_placementHeld) PlaceOnActiveMonitor();
+                else if (_resizeHeld) ApplyHeight();
             }
             if (DispatcherQueue.HasThreadAccess) Release(); else DispatcherQueue.TryEnqueue(Release);
         });
@@ -355,6 +406,8 @@ public sealed partial class PopupWindow : Window
     private int _resizeHolds;
     /// <summary>A resize was asked for during a HoldResize; any real resize settles it.</summary>
     private bool _resizeHeld;
+    /// <summary>A placement was asked for during a HoldResize; consumed before height when the last hold ends.</summary>
+    private bool _placementHeld;
 
     /// <summary>Hides the popup briefly (e.g. to capture what is underneath), then brings it back.</summary>
     public async Task<T> WithHiddenAsync<T>(Func<Task<T>> work)
@@ -431,11 +484,7 @@ public sealed partial class PopupWindow : Window
     public Func<bool>? KeepOnKeyPress { get; set; }
 
     /// <summary>Another Hotline process (the key's launcher instance) never counts as another app.</summary>
-    private static bool IsHotline(uint pid)
-    {
-        try { using var p = System.Diagnostics.Process.GetProcessById((int)pid); return string.Equals(p.ProcessName, "Hotline", StringComparison.OrdinalIgnoreCase); }
-        catch (Exception ex) when (ex is ArgumentException or InvalidOperationException) { return false; }
-    }
+    private static bool IsHotline(uint pid) => ForegroundWindowTracker.IsHotlineExecutable(pid);
 
     /// <summary>A window for the log: class and process name.</summary>
     private static string Describe(nint hwnd)
@@ -448,8 +497,13 @@ public sealed partial class PopupWindow : Window
         return $"{Native.ClassNameOf(hwnd)} ({name})";
     }
 
+    private Func<uint, bool>? _isOurProcess;
     /// <summary>Whether a process is one Hotline started (a CLI, or something it started); set by App.</summary>
-    public Func<uint, bool>? IsOurProcess { get; set; }
+    public Func<uint, bool>? IsOurProcess
+    {
+        get => _isOurProcess;
+        set { _isOurProcess = value; _foreground.IsOurProcess = value; }
+    }
 
     /// <summary>
     /// Focus went elsewhere: hide, unless the window that took it belongs to a program Hotline started (a CLI opening a
@@ -497,19 +551,39 @@ public sealed partial class PopupWindow : Window
         return cls == "CASCADIA_HOSTING_WINDOW_CLASS" && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
     }
 
+    internal bool IsComposing { get; private set; }
+
     private void Root_KeyDown(object sender, KeyRoutedEventArgs e)
     {
-        if (e.Key == VirtualKey.Escape)
+        if (IsComposing || (uint)e.Key == 0xE5 || (uint)e.OriginalKey == 0xE5) return;
+        if (e.Key == VirtualKey.Escape && !e.KeyStatus.WasKeyDown)
         {
             HidePopup();
             e.Handled = true;
         }
-        else if (e.Key == VirtualKey.N && InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Control).HasFlag(CoreVirtualKeyStates.Down)
-                 && !InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.Shift).HasFlag(CoreVirtualKeyStates.Down))
-        {
-            RequestNewChat();
-            e.Handled = true;
-        }
+    }
+
+    private void RecoverDisplay()
+    {
+        if (!AppWindow.IsVisible || _offscreen || _bar.Width == 0) { _displayRecoveryHeld = false; return; }
+        if (_resizeHolds > 0 || _dragging) { _displayRecoveryHeld = true; return; }
+        _displayRecoveryHeld = false;
+        var monitor = Native.MonitorFromWindow(Hwnd, Native.MONITOR_DEFAULTTONEAREST);
+        var area = DisplayArea.GetFromWindowId(AppWindow.Id, DisplayAreaFallback.Nearest);
+        if (area is null) return;
+        var wa = area.WorkArea;
+        var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
+        var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
+        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001) return;
+        _displayMonitor = monitor;
+        StopAnimation();
+        var result = PanelDisplayRecovery.Calculate(_work, work, _scale, scale, WindowRect, _bar, _fixedPx, _growUp);
+        (_work, _scale, _bar, _fixedPx) = (work, scale, result.Bar, result.FixedHeight);
+        _downTop = _growUp ? null : result.Rect.Y;
+        _currentRect = _targetRect = result.Rect;
+        MoveTo(result.Rect);
+        if (_session is not null) _session = new SessionSpot(_bar, _work, _scale, _fixedPx, _fixedWidth);
+        ApplyHeight();
     }
 
     private RectI _targetRect;
@@ -566,11 +640,9 @@ public sealed partial class PopupWindow : Window
     /// <summary>The panel is wider than the bar it opened at (the chat width): a move then keeps the start width as the bar's.</summary>
     private bool _widthGrown;
 
-    /// <summary>The width the panel grows to when a chat starts (physical pixels), or null: no growth is set, a width was fixed in the
-    /// settings or by a resize by hand (that, like a manual height, always wins), or the target is no wider than the start width.</summary>
-    private int? ChatWidthPx => _fixedPx is not null ? null
-        : PopupGeometry.ChatWidthPx(_settings.Width, _settings.ChatWidth, _settings.ChatWidthPercent, _work.Width,
-            _settings.MinWidth, _settings.MaxWidth, _bar.Width, _fixedWidth);
+    /// <summary>The chat width in real pixels, or null when disabled, the width was resized by hand, or no wider than the opening width.</summary>
+    private int? ChatWidthPx => _fixedWidth || _settings.ChatWidth is null ? null
+        : Hotline.Core.Windowing.PanelWidth.ResolvePixels(_settings, _work.Width, _scale, chat: true) is var width && width > _bar.Width ? width : null;
 
     private bool _animating;
     private double _animatedHeight;
@@ -636,8 +708,8 @@ public sealed partial class PopupWindow : Window
     /// <summary>Growing down: the bar's top edge, fixed when the direction is chosen (so typing more lines grows it downward).</summary>
     private int? _downTop;
 
-    /// <summary>The tallest the panel may be: the bar plus window.chatHeight, else maxHeightPercent of the work area.</summary>
-    private int MaxPx => Math.Min(_work.Height, _settings.ChatHeight is { } chat
+    /// <summary>The tallest the panel may be: the bar plus effective chatHeight, else maxHeightPercent of the work area.</summary>
+    private int MaxPx => Math.Min(_work.Height, _resolvedSpot.ChatHeight is { } chat
         ? BarPx + (int)Math.Round(chat * _scale)
         : (int)Math.Round(_work.Height * _settings.MaxHeightPercent / 100.0));
 
@@ -655,8 +727,8 @@ public sealed partial class PopupWindow : Window
     public RectI WindowRect => new(AppWindow.Position.X, AppWindow.Position.Y, AppWindow.Size.Width, AppWindow.Size.Height);
     public RectI WorkArea => _work;
     public bool IsResizeHeld => _resizeHolds > 0;
-    /// <summary>Real pixels, the same floor Normalize gives window.minWidth (the width setting is not in scaled units).</summary>
-    public int MinDragWidthPx => Math.Max(200, _settings.MinWidth);
+    /// <summary>The scaled window.minWidth converted to real pixels on this monitor.</summary>
+    public int MinDragWidthPx => Hotline.Core.Windowing.PanelWidth.MinimumPixels(_settings, _scale);
     /// <summary>A resize may go down to the bar alone (the panel as it first opens).</summary>
     public int MinDragHeightPx => Hotline.Core.Windowing.PanelPlacement.MinResizeHeight(BarPx);
     private bool _dragging;
@@ -693,9 +765,9 @@ public sealed partial class PopupWindow : Window
         rect = Hotline.Core.Windowing.PanelPlacement.Clamp(rect, _work);
         if (resized) _fixedPx = rect.Height;
         if (widthChanged) _fixedWidth = true;
-        var h = (int)Math.Round(_settings.Height * _scale);
-        // A move of a panel widened for a chat keeps the bar's own width (centred in the window), so it shrinks back to it later.
-        var (barX, barW) = !resized && !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
+        var h = (int)Math.Round(_settings.MinHeight * _scale);
+        // A move or height drag of a panel widened for a chat keeps the bar's own width (centred), so it shrinks back to it later.
+        var (barX, barW) = !widthChanged && _widthGrown && _bar.Width < rect.Width ? (rect.X + (rect.Width - _bar.Width) / 2, _bar.Width) : (rect.X, rect.Width);
         _bar = new RectI(barX, rect.Y, barW, h); // BarPx below reads this monitor's bar height
         // The bar line where the window now shows its bar: at the bottom when growing up, at the top when growing down.
         void BarAt(bool up)
@@ -714,6 +786,8 @@ public sealed partial class PopupWindow : Window
         }
         _session = new SessionSpot(_bar, _work, _scale, _fixedPx, _fixedWidth);
         _forgetOnHide = false; // moved again: this is the spot now
+        _displayMonitor = monitor;
+        _displayRecoveryHeld = false; // drag completion rebuilt geometry using the surviving display
         ApplyHeight(force: true);
     }
 
@@ -731,21 +805,20 @@ public sealed partial class PopupWindow : Window
         _session = null;
         _fixedPx = null;
         _fixedWidth = false;
-        PlaceOnActiveMonitor();
+        RequestPlacement();
     }
 
-    /// <summary>What "Save as default" writes: the anchor for this spot (monitor named when there are several), width in real pixels (what window.width holds), chat height in DIPs.</summary>
-    public (Hotline.Core.Settings.PanelAnchor Anchor, int WidthPx, int? ChatHeightDip) CurrentSpot()
+    /// <summary>What "Save as default" writes to state.json: anchor, width and chat height in scaled pixels, each over its settings.json value.</summary>
+    public Hotline.Core.State.PanelSpot CurrentSpot()
     {
-        var anchor = Hotline.Core.Windowing.PanelPlacement.AnchorFor(_bar, _work);
         var native = new Native.RECT { Left = _work.X, Top = _work.Y, Right = _work.X + _work.Width, Bottom = _work.Y + _work.Height };
-        anchor.Monitor = DisplayArea.FindAll().Count > 1
-            ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST)) ?? _settings.Anchor.Monitor
-            : _settings.Anchor.Monitor;
-        // Sized down to the bar alone: no chat height to save (60 would cap every future chat); keep the setting.
-        int? chat = _fixedPx is { } f && (f - BarPx) / _scale >= 60 ? (int)Math.Round((f - BarPx) / _scale) : _settings.ChatHeight;
-        return (anchor, _bar.Width, chat);
+        var monitorDevice = DisplayArea.FindAll().Count > 1
+            ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST))
+            : null;
+        return PanelSpotPolicy.BuildSaveSpot(_bar, _work, _scale, _fixedPx, BarPx, monitorDevice, _settings, _state);
     }
+
+    internal void RefreshSavedSpot() => _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
 
     /// <summary>The panel goes back to its saved default on the next open (unpinned, clicked into another app).</summary>
     public void ForgetSessionSpot()
@@ -776,6 +849,7 @@ public sealed partial class PopupWindow : Window
 
     private void PlaceOnActiveMonitor()
     {
+        _placementHeld = false;
         // A moved spot: kept across closes only while pinned (HidePopup drops it otherwise), and kept while open, so a
         // settings change (a model picked in the bar) doesn't snap a moved panel back to its default spot.
         if (_session is { } spot && MonitorAt(spot.Work) is { } still)
@@ -788,44 +862,40 @@ public sealed partial class PopupWindow : Window
             ChooseDirection();
             _log.Info($"place: pinned spot {_bar} on {still.Device} scale={still.Scale} up={_growUp}");
             ApplyHeight(force: true);
+            _displayMonitor = Native.MonitorFromWindow(Hwnd, Native.MONITOR_DEFAULTTONEAREST);
             return;
         }
         _fixedPx = null;
         _fixedWidth = false;
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         var (area, monitor, how) = HomeMonitor();
         var wa = area.WorkArea;
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
-        var widthPx = _settings.Width ?? PopupGeometry.RelativeWidthPx(wa.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth);
-        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.Height, scale, _settings.Anchor);
+        var widthPx = _resolvedSpot.OpeningWidthPixels(_settings, wa.Width, scale);
+        var r = Hotline.Core.Windowing.PanelPlacement.Home(work, widthPx, _settings.MinHeight, scale, _resolvedSpot.Anchor);
         (_bar, _work, _scale) = (r, work, scale);
+        _displayMonitor = monitor;
         ChooseDirection();
-        _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_settings.Anchor.X:0.###},{_settings.Anchor.Y:0.###} -> {r} up={_growUp}");
+        _log.Info($"place: {how} {Native.MonitorDevice(monitor)} work={wa.X},{wa.Y} {wa.Width}x{wa.Height} scale={scale} anchor={_resolvedSpot.Anchor.X:0.###},{_resolvedSpot.Anchor.Y:0.###} -> {r} up={_growUp}");
         ApplyHeight(force: true);
     }
 
-    /// <summary>The width (scaled units; the setting is in real pixels) the panel opens with on the monitor it would open on now (the width setting, or its percentage of that
-    /// monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
+    /// <summary>The width (scaled pixels) the panel opens with on the monitor it would open on now (the resolved width setting or saved spot,
+    /// or its percentage of that monitor's work area): what Settings' "Move what doesn't fit into the menu" plans against, with the live width as the other bound.</summary>
     public double OpeningWidthDip()
     {
+        _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);
         var (area, monitor, _) = HomeMonitor();
         var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        var px = Math.Min(area.WorkArea.Width, _settings.Width ?? PopupGeometry.RelativeWidthPx(area.WorkArea.Width, _settings.WidthPercent, _settings.MinWidth, _settings.MaxWidth));
-        return px / scale; // the width is in real pixels; the button cells are in scaled units
-    }
-
-    /// <summary>Settings' line above the button rows: this monitor's real pixels, Windows' scaling and the scaled interface size.</summary>
-    public string ScreenLine()
-    {
-        var (area, monitor, _) = HomeMonitor();
-        var scale = Native.GetDpiForMonitor(monitor, Native.MDT_EFFECTIVE_DPI, out var dpi, out _) == 0 ? dpi / 96.0 : 1.0;
-        return Hotline.Core.Windowing.ScreenScale.Line(area.OuterBounds.Width, area.OuterBounds.Height, scale);
+        var px = _resolvedSpot.OpeningWidthPixels(_settings, area.WorkArea.Width, scale);
+        return px / scale;
     }
 
     /// <summary>The monitor for the saved default: the one you're working on, the primary one, or a named one.</summary>
     private (DisplayArea Area, nint Monitor, string How) HomeMonitor()
     {
-        var wanted = _settings.Anchor.Monitor;
+        var wanted = _resolvedSpot.Anchor.Monitor;
         if (string.Equals(wanted, Hotline.Core.Settings.PanelAnchor.Primary, StringComparison.OrdinalIgnoreCase))
         {
             var primary = DisplayArea.Primary;
@@ -842,8 +912,8 @@ public sealed partial class PopupWindow : Window
         }
         // A remembered window may have closed since (stale handle): its monitor/DPI lookups then fail and the
         // popup came out at 100% scale ("occasionally small"). Only trust live windows; otherwise use the cursor.
-        if (PreviousForeground != 0 && !Native.IsWindow(PreviousForeground))
-            PreviousForeground = 0;
+        if (PreviousForeground != 0)
+            PreviousForeground = _foreground.RevalidateShowTarget(PreviousForeground);
         var anchor = PreviousForeground;
         DisplayArea? area = null;
         nint monitor = 0;

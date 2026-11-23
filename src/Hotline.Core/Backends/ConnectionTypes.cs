@@ -11,8 +11,7 @@ public enum ConnectionField { None = 0, Endpoint = 1, ApiKey = 2, CliPath = 4, A
 /// <param name="DescriptionKey">Resource key of the one-line description (shown as <see cref="Description"/>).</param>
 public sealed record ConnectionTypeInfo(
     BackendType Type, string DisplayNameKey, string DefaultName, ConnectionField Fields, string? DefaultEndpoint,
-    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true,
-    bool ListsModels = true)
+    IReadOnlyList<string> EffortLevels, bool ApiKeyOptional, string DescriptionKey, bool EffortInModelId = false, bool ImagesByDefault = true)
 {
     public string DisplayName => L.Get(DisplayNameKey);
     public string Description => L.Get(DescriptionKey);
@@ -55,8 +54,8 @@ public static class ConnectionTypes
     /// Whether Hotline keeps a chat's messages in its own history: always for API and local connections; for a CLI only
     /// when the CLI doesn't keep it (keepCliSessions off) or the user also wants it in Hotline (keepInHotline).
     /// </summary>
-    public static bool HotlineKeepsTranscript(BackendProfile p) => !IsCli(p.Type) || !p.KeepCliSessions || p.KeepInHotline;
+    public static bool HotlineKeepsTranscript(ConnectionProfile p) => !IsCli(p.Type) || !p.KeepCliSessions || p.KeepInHotline;
 
     /// <summary>Whether this connection's model reads images: its "images" setting, else the type's default.</summary>
-    public static bool TakesImages(BackendProfile p) => p.Images ?? Of(p.Type).ImagesByDefault;
+    public static bool TakesImages(ConnectionProfile p) => p.Images ?? Of(p.Type).ImagesByDefault;
 }

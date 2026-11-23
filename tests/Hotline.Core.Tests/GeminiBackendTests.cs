@@ -1,3 +1,4 @@
+using static Hotline.Core.Tests.TestStreams;
 using System.Net;
 using System.Text;
 using System.Text.Json;
@@ -12,16 +13,6 @@ namespace Hotline.Core.Tests;
 public sealed class GeminiBackendTests : TempDirTest
 {
 
-    private sealed class Handler(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
-    {
-        public List<(HttpRequestMessage Request, string Body)> Seen { get; } = [];
-        protected override async Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken ct)
-        {
-            Seen.Add((request, request.Content is null ? "" : await request.Content.ReadAsStringAsync(ct)));
-            return respond(request);
-        }
-    }
-
     private static string Part(string text, bool thought = false) => JsonSerializer.Serialize(new
     {
         candidates = new[] { new { content = new { role = "model", parts = new[] { thought ? (object)new { text, thought = true } : new { text } } } } },
@@ -34,22 +25,26 @@ public sealed class GeminiBackendTests : TempDirTest
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
 
-    private (GeminiBackend, Handler) New(BackendProfile p, Func<HttpRequestMessage, HttpResponseMessage> respond, string? key = "AIza-test")
+    private (GeminiBackend, RecordingHandler) New(ConnectionProfile p, Func<HttpRequestMessage, HttpResponseMessage> respond, string? key = "AIza-test")
     {
-        var handler = new Handler(respond);
+        var handler = new RecordingHandler(respond);
         var secrets = new InMemorySecretStore();
         if (key is not null) secrets.Set(SecretKeys.ApiKey(p.Id), key);
         return (new GeminiBackend(p, new HttpClient(handler), secrets, _ => "Be brief.", new FileLog(Path.Combine(_dir, "h.log"))), handler);
     }
 
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
+    private static ConnectionProfile Gemini(string? model = "gemini-3.8-flash") => new() { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model };
 
-    private static BackendProfile Gemini(string? model = "gemini-3.8-flash") => new() { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model };
+    [Fact]
+    public async Task MAX_TOKENS_keeps_plain_answer_and_yields_a_localized_status_note()
+    {
+        var (backend, _) = New(Gemini(), _ => Sse(Part("Partial answer."), """{"candidates":[{"finishReason":"MAX_TOKENS"}]}"""));
+        var deltas = new List<ChatDelta>();
+        await foreach (var delta in backend.StreamAsync([new("1", ChatRole.User, "hi", [], Now)], default)) deltas.Add(delta);
+        Assert.Equal("Partial answer.", string.Concat(deltas.Select(d => d.Text)));
+        var status = Assert.Single(deltas, d => d.Status is not null);
+        Assert.Equal(Hotline.Core.Text.Localization.L.F(Hotline.Core.Text.Localization.Strings.Api_StoppedAnswer, "Gemini API", "MAX_TOKENS"), status.Status);
+    }
 
     [Fact]
     public async Task Streams_generate_content_with_roles_system_and_images_and_skips_thoughts()

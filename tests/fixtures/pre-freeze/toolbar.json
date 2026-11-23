@@ -1,0 +1,38 @@
+{
+  // The button rows around the message box: "top" above it, "items" below it. Each row has a "left", a "center"
+  // and a "right" group, listed left to right (the centre sits in the free space between the other two).
+  // Leave an item out to hide it; an item sits in one place only.
+  // Built-in items: pin, captureWindow, captureScreen, captureRegion, effort, model, provider, prompt, recent, continueIn, newChat, settings, more, copyLastAnswer, plus the ids under "buttons".
+  // The effort, model and provider pickers are items like any other (each can sit in any area, between any buttons).
+  // They take the bar's look (outline, outlineColor, filled) but not its width: their width is the "span" override, in button
+  // widths (1-8; effort 3, model 4, provider 4; a span equal to that is not written).
+  // "style": the whole bar. "width" is the width of a button in cells (0.5, 1, 2, 3 or 4; every button is one cell high);
+  // the words compact, normal and wide are shortcuts for 0.5, 1 and 2. outline and filled are true | false,
+  // outlineColor is "#RRGGBB" (left out: the accent colour).
+  // "overrides": one item's own "width", "outline", "filled" and "outlineColor" (a picker's: "span", "outline", "filled", "outlineColor").
+  // "buttons": up to 24 custom buttons; id a-z, 0-9 and -, label up to 40 characters, icon a Segoe
+  // Fluent Icons code (E000-F8FF), and exactly one action: "quickAction" (the name of a file in actions\) or
+  // "text" (put in the message box; "send": true also sends it). "iconFile": "<id>.png" shows that picture from
+  // icons\ instead of the icon (PNG, at most 256 KB, 16-256 px a side; Settings copies it there).
+  // Optional buttons.<id>."shortcut": "Ctrl+Shift+1" runs the button while the panel has focus (Enter is reserved).
+  // "shortcuts": built-in/picker overrides; omitted ids use defaults, "" disables. Ctrl, Alt or Win required, except F1-F24.
+  // Stop wins, then built-ins, then custom buttons in file order; conflicts affect runtime only, preserving requested values.
+  // "menu": ids of buttons (built-in or custom, no pickers) listed in the "more" item's menu instead of on the bar. A row with a
+  // "more" item sends the buttons that don't fit into that menu too (after these), and then has no separate "…" button.
+  // Needs "more" placed in one of the groups; it is ignored otherwise.
+  "version": 2,
+  "shortcuts": {"pin":"Ctrl+K","captureScreen":""},
+  "top": { "left": ["effort"], "center": ["model"], "right": ["provider"] },
+  "items": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "summarize"], "center": ["prompt", "continueIn"], "right": ["recent", "newChat", "settings"] },
+  "menu": [],
+  "style": { "width": "normal", "outline": false, "filled": false },
+  "overrides": {
+    "recent": { "width": "wide" },
+    "newChat": { "width": "wide" },
+    "settings": { "width": "wide" },
+    "provider": { "span": 5 }
+  },
+  "buttons": {
+    "summarize": { "label": "Summarize", "icon": "E8A5", "shortcut": "Ctrl+Shift+1", "quickAction": "summarize" }
+  }
+}

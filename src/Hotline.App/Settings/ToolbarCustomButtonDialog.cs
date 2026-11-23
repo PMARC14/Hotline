@@ -1,4 +1,6 @@
 using Hotline.Core.Windowing;
+using Hotline.Core.Activation;
+using Hotline.Core.Settings;
 using Microsoft.UI;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Automation;
@@ -37,10 +39,22 @@ internal static class ToolbarCustomButtonDialog
     /// <summary>The model with the button added or changed (null when cancelled or nothing in it changed), and whether the
     /// button's picture file was replaced (its name stays the same, so the model alone doesn't show that).</summary>
     public static async Task<(ToolbarModel? Model, bool PictureReplaced)> ShowAsync(ToolbarModel model, CustomButton? existing,
-        IReadOnlyList<string> actionFiles, Func<ContentDialog, Task<ContentDialogResult>> show, XamlRoot root, Action<string> log)
+        IReadOnlyList<string> actionFiles, Func<ContentDialog, Task<ContentDialogResult>> show, XamlRoot root, Action<string> log,
+        ChatSettings chat)
     {
         var adding = existing is null;
         var label = new TextBox { Header = Strings.Bar_CustomLabel, Text = existing?.Label ?? "", MaxLength = 40 };
+        var shortcut = new TextBox { Header = Strings.Bar_CustomShortcut, Text = existing?.RequestedShortcut ?? existing?.Shortcut ?? "", PlaceholderText = "Ctrl+Shift+1" };
+        var shortcutError = new TextBlock { Text = Strings.Shortcuts_InvalidOrConflict, TextWrapping = TextWrapping.Wrap, Visibility = Visibility.Collapsed };
+        bool ValidShortcut() => string.IsNullOrWhiteSpace(shortcut.Text) || Hotkey.TryParseToolbarShortcut(shortcut.Text.Trim(), out _);
+        shortcut.LostFocus += (_, _) => shortcutError.Visibility = ValidShortcut() ? Visibility.Collapsed : Visibility.Visible;
+        var capture = ShortcutBinder.Create(() => shortcut.Text, value =>
+        {
+            shortcut.Text = value ?? "";
+            shortcutError.Visibility = Visibility.Collapsed;
+        }, panel: true);
+        shortcut.TextChanged += (_, _) => capture.Content = shortcut.Text.Length > 0 ? shortcut.Text : Strings.Hotkey_NotSet;
+        ToolTipService.SetToolTip(capture, Strings.Hotkey_Press);
         var id = new TextBlock { FontSize = 12, Opacity = 0.7, TextWrapping = TextWrapping.Wrap };
         string Id() => existing?.Id ?? ToolbarEditorView.NewCustomId(model, label.Text);
         label.TextChanged += (_, _) => id.Text = L.F(Strings.Bar_CustomId, Id());
@@ -118,6 +132,7 @@ internal static class ToolbarCustomButtonDialog
         foreach (var (element, automationId, name) in new (UIElement, string, string)[]
         {
             (label, "bar-custom-label", Strings.Bar_CustomLabel), (iconGrid, "bar-custom-icon", Strings.Bar_CustomIcon),
+            (shortcut, "bar-custom-shortcut", Strings.Bar_CustomShortcut),
             (runAction, "bar-custom-quickaction", Strings.Bar_CustomQuickAction), (actions, "bar-custom-actions", Strings.Bar_CustomQuickAction),
             (insertText, "bar-custom-text", Strings.Bar_CustomText), (text, "bar-custom-textbox", Strings.Bar_CustomText),
             (send, "bar-custom-send", Strings.Bar_CustomSend), (choosePicture, "bar-custom-picture", Strings.Bar_CustomPicture),
@@ -127,6 +142,7 @@ internal static class ToolbarCustomButtonDialog
             AutomationProperties.SetAutomationId(element, automationId);
             AutomationProperties.SetName(element, name);
         }
+        AutomationProperties.SetAutomationId(capture, "bar-custom-shortcut-capture"); // Name follows its content: combo or capture state.
         void Sync()
         {
             actions.IsEnabled = runAction.IsChecked == true;
@@ -150,13 +166,20 @@ internal static class ToolbarCustomButtonDialog
                 Content = new StackPanel
                 {
                     Spacing = 8, MinWidth = 380,
-                    Children = { label, id, iconGrid, pictureHint, pictureRow, pictureError, runAction, actions, insertText, text, send, error },
+                    Children = { label, id, shortcut, capture, shortcutError, iconGrid, pictureHint, pictureRow, pictureError, runAction, actions, insertText, text, send, error },
                 },
             },
             PrimaryButtonText = Strings.Bar_CustomSave, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Primary,
         };
         dialog.PrimaryButtonClick += (_, e) =>
         {
+            if (!ValidShortcut())
+            {
+                shortcutError.Visibility = Visibility.Visible;
+                e.Cancel = true;
+                return;
+            }
+            var combo = Hotkey.TryParseToolbarShortcut(shortcut.Text.Trim(), out var parsed) ? parsed.ToString() : null;
             var quick = runAction.IsChecked == true;
             var button = new CustomButton(
                 Id(), label.Text.Trim(),
@@ -164,11 +187,20 @@ internal static class ToolbarCustomButtonDialog
                 quick ? actions.SelectedItem as string ?? "" : null,
                 quick ? null : text.Text.Replace("\r\n", "\n").Replace('\r', '\n'), // a WinUI TextBox ends lines with \r
                 !quick && send.IsChecked == true,
-                picked is not null ? Id() + ".png" : cleared ? null : existing?.IconFile);
+                picked is not null ? Id() + ".png" : cleared ? null : existing?.IconFile, combo);
             // A new picture for a button that already had one keeps the same name: only the file changes.
             var unchanged = button == existing;
             if (unchanged && picked is null) return; // nothing changed
+            // Report a collision before the editor's lenient round-trip could silently remove a shortcut on save.
+            if (!ChatShortcuts.CanBind(model, button.Id, combo))
+            {
+                error.Message = Strings.Shortcuts_InvalidOrConflict;
+                error.Severity = InfoBarSeverity.Warning;
+                error.IsOpen = e.Cancel = true;
+                return;
+            }
             var problem = ToolbarEditorView.Check(model, button, adding);
+            error.Severity = InfoBarSeverity.Error;
             var next = problem != CustomProblem.None || unchanged ? model
                 : adding ? ToolbarEditor.AddCustom(model, button) : ToolbarEditor.UpdateCustom(model, button);
             if (problem == CustomProblem.None && (unchanged || !ReferenceEquals(next, model)))

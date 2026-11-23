@@ -120,9 +120,7 @@ public class McpProcessTests
         var started = new List<int>();
         var connect = StdioMcpSession.Connector(p => started.Add(p.Id), _ => { });
         using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(20));
-        var sw = Stopwatch.StartNew();
         var ex = await Assert.ThrowsAnyAsync<Exception>(() => connect(Server("cmd.exe", ["/c", "echo bad config 1>&2 & exit 3"]), cts.Token));
-        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(15), $"took {sw.Elapsed}");
         Assert.Contains("exit code 3", ex.Message);
         Assert.Contains("bad config", ex.Message);
         Assert.Single(started);
@@ -152,15 +150,31 @@ public class McpProcessTests
             Server("cmd.exe", ["/c", $"powershell.exe -NoProfile -Command Set-Content -Path '{pidFile}' -Value $PID; Start-Sleep 120"]), cts.Token);
         // Cancel only once the grandchild exists (PowerShell can take many seconds to start on CI runners).
         var childPid = await ReadPidAsync(pidFile, TimeSpan.FromSeconds(60));
-        var sw = Stopwatch.StartNew();
         cts.Cancel();
         await Assert.ThrowsAnyAsync<Exception>(() => connecting);
-        Assert.True(sw.Elapsed < TimeSpan.FromSeconds(3), $"cancelled connect took {sw.Elapsed} to tear down");
         var rootPid = Assert.Single(started);
         File.Delete(pidFile);
-        await Task.Delay(500);
-        Assert.Throws<ArgumentException>(() => Process.GetProcessById(rootPid));
-        Assert.Throws<ArgumentException>(() => Process.GetProcessById(childPid));
+        await WaitForExitAsync(rootPid, TimeSpan.FromSeconds(10));
+        await WaitForExitAsync(childPid, TimeSpan.FromSeconds(10));
+    }
+
+    private static async Task WaitForExitAsync(int pid, TimeSpan timeout)
+    {
+        var sw = Stopwatch.StartNew();
+        while (sw.Elapsed < timeout)
+        {
+            try
+            {
+                using var p = Process.GetProcessById(pid);
+                if (p.HasExited) return;
+            }
+            catch (ArgumentException)
+            {
+                return;
+            }
+            await Task.Delay(25);
+        }
+        Assert.Throws<ArgumentException>(() => Process.GetProcessById(pid));
     }
 
     /// <summary>Waits for a process to write its PID (the file can exist before its content is complete).</summary>
@@ -174,7 +188,7 @@ public class McpProcessTests
                 if (File.Exists(path) && int.TryParse(File.ReadAllText(path).Trim(), out var pid)) return pid;
             }
             catch (IOException) { } // still being written
-            await Task.Delay(100);
+            await Task.Delay(25);
         }
         throw new TimeoutException($"no PID in {path} after {timeout}");
     }

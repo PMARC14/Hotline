@@ -14,10 +14,11 @@ namespace Hotline.Core.Backends.ClaudeCode;
 /// unknown ID, prompt change without kept sessions) the next turn starts a fresh process and replays the
 /// conversation as text. Images go inline as base64 content blocks.
 /// </summary>
-public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> locateExe, ILineProcessFactory processes,
-    FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
+public sealed class ClaudeCodeBackend(ConnectionProfile profile, Func<string?> locateExe, ILineProcessFactory processes,
+    FileLog log, Func<ConnectionProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
+    private readonly SemaphoreSlim _turnGate = new(1, 1);
     private int _knownCount;
     private string? _knownFirstId;
     private string? _startedPrompt;
@@ -30,6 +31,18 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     public CliSession? Resume { get; set; }
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
+    {
+        // New chat may send again while the cancelled turn is still unwinding.
+        // Keep its process cleanup and session bookkeeping ahead of the next turn.
+        await _turnGate.WaitAsync(ct);
+        try
+        {
+            await foreach (var delta in StreamTurnAsync(conversation, ct)) yield return delta;
+        }
+        finally { _turnGate.Release(); }
+    }
+
+    private async IAsyncEnumerable<ChatDelta> StreamTurnAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
     {
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));
@@ -128,7 +141,12 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
         Directory.CreateDirectory(cwd);
         var args = ClaudeCodeProtocol.BuildArgs(profile, prompt).ToList();
         if (resume is not null) args.AddRange(["--resume", resume.Id]);
-        _process = processes.Start(exe, args, cwd);
+        CliCommandLine.RequireFits(exe, args, profile.Name);
+        try { _process = processes.Start(exe, args, cwd); }
+        catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 206)
+        {
+            throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_CommandTooLong, profile.Name), ex);
+        }
         _startedPrompt = prompt;
         _cwd = cwd;
         _sessionId = null;
@@ -147,7 +165,7 @@ public sealed class ClaudeCodeBackend(BackendProfile profile, Func<string?> loca
     {
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
-        return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
+        return Platform.SafeDirectory.IsLocal(dir) && Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
             L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

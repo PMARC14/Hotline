@@ -22,8 +22,9 @@ public static class PopupGeometry
 
     public static RectI GrowUp(RectI bar, int contentPx, int maxPx, RectI workArea)
     {
-        var h = Math.Clamp(contentPx, bar.Height, Math.Max(bar.Height, Math.Min(maxPx, workArea.Height)));
         var bottom = bar.Y + bar.Height;
+        var room = Math.Min(workArea.Height, bottom - workArea.Y);
+        var h = Math.Clamp(contentPx, bar.Height, Math.Max(bar.Height, Math.Min(maxPx, room)));
         var y = Math.Max(workArea.Y, bottom - h);
         return bar with { Y = y, Height = h };
     }

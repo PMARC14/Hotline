@@ -5,78 +5,80 @@ Center › the submission › Store listings › Italiano. Product name stays "H
 
 ## Descrizione breve
 
-Trasforma il tasto Copilot in una chat IA veloce con l'IA che scegli tu: il tuo accesso a Claude o Gemini, la tua chiave
-API o un modello sul tuo PC. Premi il tasto, chiedi e ricevi la risposta in tempo reale.
+Ti ritrovi il tasto Copilot, tanto vale usarlo: un rapido pannello di chat IA nativo per l'IA che hai già (Claude, Codex, Gemini), la tua chiave API o un modello locale. Nessun account con noi. Disponi la barra e sposta la chat in un'altra app.
 
 ## Descrizione
 
-Il tasto Copilot c'è comunque, tanto vale usarlo. Hotline AI lo trasforma in un pannello di chat IA veloce e nativo che
-parla con l'IA che scegli tu.
+Ti ritrovi il tasto Copilot, tanto vale usarlo. Hotline AI lo trasforma in un rapido pannello di chat IA nativo che parla con l'IA che scegli.
 
-Premi il tasto e si apre un pannello sul monitor su cui stai lavorando, pronto per scrivere. Fai una domanda, ricevi la
-risposta in tempo reale, premi di nuovo il tasto e sparisce. Nessuna scheda del browser, nessun account presso di noi.
+Premi il tasto e si apre un pannello sul monitor su cui stai lavorando, pronto per scrivere. Fai una domanda, ricevi una risposta in streaming, premi di nuovo il tasto ed è sparito. Nessuna scheda del browser, nessun account con noi.
 
 USA L'IA CHE HAI GIÀ
-• Claude Code: usa il tuo Claude Code installato e il suo accesso, quindi il tuo piano Claude funziona senza chiave API.
-• CLI OpenAI Codex: usa il tuo Codex installato e il suo accesso, quindi il tuo piano ChatGPT funziona senza chiave API.
-• CLI di Antigravity (agy): Gemini con il tuo account Google.
+• Claude Code: usa la tua installazione di Claude Code e il suo accesso, così il tuo piano Claude funziona senza alcuna chiave API.
+• OpenAI Codex CLI: usa la tua installazione di Codex e il suo accesso, così il tuo piano ChatGPT funziona senza alcuna chiave API.
+• Antigravity CLI (agy): Gemini con il tuo accesso Google.
 • La tua chiave API: Anthropic, Google Gemini, OpenAI e altri servizi compatibili con OpenAI come OpenRouter.
 • Modelli locali: qualsiasi server in stile OpenAI sul tuo PC (ad esempio llama.cpp o LM Studio), così nulla lascia il tuo computer.
-Scegli modello, provider e quanto deve ragionare direttamente dalla barra del pannello.
+Scegli il modello, il provider e quanto a fondo deve pensare direttamente dalla barra del pannello.
 
-PORTA CON TE IL CONTESTO
-• Il testo selezionato in un'altra app viene allegato automaticamente quando premi il tasto, e puoi rimuoverlo prima dell'invio.
-• Cattura la finestra in cui eri, l'intero schermo o un'area che trascini; incolla o trascina immagini e file.
-• I modelli che non vedono le immagini ricevono invece il testo dello screenshot, letto sul tuo PC con l'OCR di Windows.
+PORTA IL CONTESTO CON TE
+• Il testo che avevi selezionato in un'altra app viene allegato automaticamente quando premi il tasto, e puoi rimuoverlo prima di inviare.
+• Cattura la finestra in cui ti trovavi, l'intero schermo o un'area delimitata trascinando il mouse; incolla o trascina immagini e file.
+• I modelli che non leggono le immagini ricevono invece il testo del tuo screenshot, letto direttamente sul tuo PC con l'OCR di Windows.
 
-FATTO PER I LAVORI VELOCI
+FATTO PER I LAVORI RAPIDI
 • Azioni rapide: digita / per tradurre, riassumere, correggere o spiegare, oppure crea le tue come semplici file di testo.
-• Memoria: «/remember preferisco le unità metriche» e ogni chat lo sa, qualunque IA tu usi.
+• Memoria: "/remember preferisco le unità metriche" e ogni chat lo sa, qualunque IA tu usi.
 • Voce: tieni premuto il tasto e parla; rilascialo per fermarti.
-• Le chat recenti sono a un clic.
-• Click to Do e azioni di Windows: invia testo o un'immagine a Hotline AI da altre app.
+• Le chat recenti sono a portata di clic, in un elenco ricercabile (Ctrl+H).
+• Click to Do e azioni di Windows: invia testo o immagini a Hotline AI da altre app.
+• Continua in: sposta la chat in un terminale, Open WebUI, nell'interfaccia web di llama.cpp, in LM Studio o nella tua destinazione personalizzata quando ti serve più spazio.
+• Scorciatoie per i pulsanti della barra mentre il pannello ha lo stato attivo: nuova chat, chat recenti, Impostazioni, blocca, catture e selettori. Anche i tuoi pulsanti possono averne una. Richiedono Ctrl, Alt o Win, così digitare non viene mai intaccato.
+• Una notifica di Windows ti avvisa quando una risposta è completata mentre sei altrove.
 
 NATIVO, LEGGERO E TUO
-• Realizzato con WinUI 3: si apre in fretta, segue il tema chiaro o scuro, senza browser integrato.
-• Risposte complete: titoli, elenchi, tabelle, codice con pulsante Copia, formule e disegni semplici.
-• Tutto è un file modificabile: impostazioni, connessioni, prompt, i pulsanti della barra.
-• Strumenti, con attenzione: le connessioni API possono usare gli strumenti dei tuoi server MCP; tutto ciò che modifica qualcosa ti chiede prima conferma.
+• Creato con WinUI 3: veloce ad aprirsi, rispetta il tuo tema chiaro o scuro, nessun browser integrato. Nativo per x64 e ARM64.
+• Risposte ricche: titoli, elenchi, tabelle, codice con pulsante Copia, formule matematiche e semplici disegni.
+• Tieni premuto Alt per spostare o ridimensionare il pannello; bloccalo in primo piano e scegli se la chat cresce verso l'alto o verso il basso.
+• Tutto è un semplice file modificabile: impostazioni, connessioni, prompt, i pulsanti nella barra.
+• Disponi la barra a modo tuo: trascina i pulsanti tra le righe in Impostazioni, aggiungi i tuoi pulsanti con le tue immagini e tieni quelli meno usati in un menu Altro.
+• Impostazioni > Backup sposta la tua configurazione su un altro PC. Le chiavi API non vengono mai esportate e i file che Hotline sostituisce vengono prima salvati in un backup.
+• Strumenti, con cautela: le connessioni API possono usare strumenti dai tuoi server MCP; qualsiasi operazione che modifichi qualcosa ti chiede prima conferma.
+• Il tasto Copilot può anche fungere da tasto Ctrl destro, se preferisci.
 
-PRIVATO PER SCELTA
-Hotline AI non ha server e non raccoglie nulla: nessun account, nessuna analisi, nessuna pubblicità. I tuoi messaggi
-vanno solo al servizio di IA che scegli, secondo le sue condizioni. Le chiavi API restano in Gestione credenziali di
-Windows; cronologia, impostazioni e memoria restano sul tuo PC. Gratuito e open source.
+PROGETTATO PER LA PRIVACY
+Hotline AI non ha server e non raccoglie nulla: nessun account, nessuna metrica, nessuna pubblicità. I tuoi messaggi vanno solo al servizio di IA che scegli, secondo le condizioni di quel servizio. Le chiavi API rimangono in Windows Credential Locker; cronologia, impostazioni e memoria restano sul tuo PC. Gratuito e open source.
 
-Niente tasto Copilot? Imposta la scorciatoia che preferisci, ad esempio Ctrl+Alt+H.
+Non hai il tasto Copilot? Imposta la scorciatoia che preferisci, ad esempio Ctrl+Alt+H.
 
-Hotline AI è un'app indipendente e non è affiliata né approvata da Microsoft, Anthropic, Google o OpenAI. Per usare
-Claude Code, Codex, la CLI di Antigravity o un'API di IA serve un tuo account presso quel servizio.
+Hotline AI è un'app indipendente e non è affiliata né approvata da Microsoft, Anthropic, Google o OpenAI. L'uso di Claude Code, Codex, Antigravity CLI o di un'API di IA richiede un proprio account con il rispettivo servizio.
 
 ## Novità di questa versione
 
-Scegli il colore principale (viola Hotline, quello di Windows o qualsiasi colore) e il nuovo tema Contrasto elevato; Hotline segue anche i temi a contrasto e la trasparenza di Windows. La cronologia delle chat si apre come elenco con ricerca (pulsante Cronologia, Ctrl+↑ o /resume). Imposta la scorciatoia aggiuntiva semplicemente premendola. Nuove azioni rapide: /reply, /shorter, /formal e /bullets. I blocchi di codice scorrono in orizzontale e il pannello segue le risposte mentre arrivano.
+Sposta e ridimensiona il pannello: tieni Alt per le maniglie, bloccalo e salva posizione e dimensioni. La chat cresce verso l'alto o il basso e si apre più larga. Disponi le righe di pulsanti in Impostazioni: trascina tra sinistra, centro e destra, aggiungi i tuoi con immagini e usa il menu Altro. I pulsanti ora si distribuiscono uniformemente. Ogni comando della barra ha una scorciatoia modificabile, incluso Interrompi. Continua una chat in un terminale, Open WebUI, llama.cpp, LM Studio o tue destinazioni. Impostazioni > Backup esporta e importa tutto, mai le chiavi API. La larghezza è in pixel o % dello schermo e resta uguale a ogni scala di Windows. Strumenti MCP: «Consenti sempre» è ricordato su questo PC e revocabile in Impostazioni > Strumenti; i segreti possono passare in Windows Credential Locker. Novità: indicatore di ragionamento, suoni di apertura e chiusura, /resume mentre digiti e messaggi visibili nelle chat CLI riaperte. File più sicuri: i file recenti non vengono mai sovrascritti, le chiavi ignote restano e i file sostituiti vanno in una cartella di backup. Ho corretto il focus del tasto Copilot su Windows 11 26H2, cattura finestra dal tasto, cambi di monitor e scala, e vari bug di accessibilità e sicurezza. Questo aggiornamento reimposta una volta impostazioni e righe di pulsanti al nuovo formato; le connessioni restano e i vecchi file sono nella cartella dei backup.
 
 ## Caratteristiche del prodotto
 
 1. Si apre con il tasto Copilot (o qualsiasi scorciatoia) sul monitor su cui lavori, pronto per scrivere
 2. Funziona con il tuo accesso a Claude Code, ChatGPT (CLI di Codex) o Gemini (CLI di Antigravity): nessuna chiave API
 3. La tua chiave: Anthropic, Google Gemini, OpenAI e API compatibili con OpenAI
-4. Modelli locali: qualsiasi server in stile OpenAI sul tuo PC, nulla lascia il computer
+4. Modelli locali: qualsiasi server in stile OpenAI sul tuo PC, così la chat resta sul tuo computer
 5. Scegli modello, provider e impegno di ragionamento dal pannello
 6. Il testo selezionato nell'app di provenienza viene allegato automaticamente
 7. Cattura una finestra, lo schermo o un'area; incolla o trascina immagini e file
 8. Il testo degli screenshot viene letto sul tuo PC (OCR) per i modelli che non vedono le immagini
-9. Azioni rapide: /translate, /summarize, /fix, /explain o le tue
+9. Azioni rapide: /translate, /summarize, /fix, /explain e altre, o file di testo personalizzati
 10. Una memoria che ogni chat vede, qualunque IA tu usi
-11. Input vocale tenendo premuto il tasto
-12. Invia testo o immagini da Click to Do e da altre app
-13. Risposte complete: tabelle, codice con Copia, formule e disegni
-14. WinUI 3 nativo, segue il tema chiaro o scuro
-15. Tutto è un file modificabile: impostazioni, connessioni, prompt, la barra
-16. Strumenti opzionali dai tuoi server MCP, con approvazione prima di ogni modifica
-17. Nessun account, nessuna analisi, nessuna pubblicità; le chiavi restano in Gestione credenziali di Windows
-18. Gratuito e open source
-19. Nativo su PC x64 e ARM64
+11. Input vocale push-to-talk con il riconoscimento vocale online di Windows
+12. Invia testo o immagini da Click to Do e altre app; continua le chat in un terminale, Open WebUI, llama.cpp o LM Studio
+13. Risposte complete: tabelle, codice con pulsante Copia, formule e disegni
+14. WinUI 3 nativo su x64 e ARM64; temi chiaro, scuro e a contrasto, colore personalizzato, nessun browser integrato
+15. Trascina le righe di pulsanti in Impostazioni; pulsanti personalizzati con immagini proprie, menu Altro e larghezze separate
+16. Strumenti MCP opzionali per connessioni API; le modifiche chiedono prima conferma se non autorizzate
+17. Nessun account Hotline, analisi o pubblicità; le chiavi restano in Gestione credenziali di Windows; gratuito e open source
+18. Impostazioni, connessioni, prompt e toolbar.json modificabili; valori non validi segnalati, i backup proteggono le modifiche
+19. Impostazioni > Backup esporta e importa impostazioni, barra, MCP, suoni, connessioni, azioni rapide e prompt; mai chiavi API
+20. Scorciatoie nel pannello per i pulsanti della barra, inclusi i tuoi; sposta, blocca e ridimensiona in pixel, con chat allargabile
 
 ## Didascalie degli screenshot
 
@@ -87,4 +89,4 @@ Scegli il colore principale (viola Hotline, quello di Windows o qualsiasi colore
 
 ## Termini di ricerca
 
-chat IA, tasto Copilot, Claude, Gemini, assistente IA, LLM, IA locale
+Assistente chat IA, Scorciatoia tasto Copilot, Integrazione Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Compatibile OpenRouter, LLM locale llama.cpp

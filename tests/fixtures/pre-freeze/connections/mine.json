@@ -1,0 +1,11 @@
+{
+  "id": "claude-work",
+  "type": "claudeCode",
+  "name": "Claude Work",
+  "extraArgs": "--verbose --model \"claude-opus-4\"",
+  "keepCliSessions": true,
+  "keepInHotline": false,
+  "refusalFallback": true,
+  "tools": "inherit",
+  "approveAllTools": false
+}

@@ -8,17 +8,27 @@ namespace Hotline.App.Chat;
 internal sealed class PasswordVaultSecretStore(FileLog log) : ISecretStore
 {
     private const string Resource = "Hotline";
+    private const int ElementNotFound = unchecked((int)0x80070490);
     private readonly PasswordVault _vault = new();
 
-    public string? Get(string key)
+    public string? Get(string key) => TryGet(key, out var value) ? value : null;
+
+    public bool TryGet(string key, out string? value)
     {
+        value = null;
         try
         {
             var credential = _vault.Retrieve(Resource, key);
             credential.RetrievePassword();
-            return credential.Password;
+            value = credential.Password;
+            return true;
         }
-        catch (Exception) { return null; } // not found
+        catch (Exception ex) when (ex.HResult == ElementNotFound) { return true; } // not found
+        catch (Exception ex)
+        {
+            log.Error("reading API key failed", ex);
+            return false;
+        }
     }
 
     public void Set(string key, string? value)

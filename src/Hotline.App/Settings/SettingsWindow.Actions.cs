@@ -22,7 +22,11 @@ public sealed partial class SettingsWindow
             var edit = new Button { Content = Strings.Common_Edit };
             edit.Click += (_, _) => CliRunner.OpenInEditor(actions.PathFor(action.Name));
             var rename = new Button { Content = Strings.Actions_Rename };
-            rename.Click += async (_, _) => await RenameActionAsync(actions, action.Name);
+            rename.Click += async (_, _) =>
+            {
+                try { await RenameActionAsync(actions, action.Name); }
+                catch (Exception ex) { Fail("renaming a quick action failed", ex); }
+            };
             var delete = new Button { Content = Strings.Common_Delete };
             delete.Click += async (_, _) =>
             {
@@ -83,11 +87,15 @@ public sealed partial class SettingsWindow
         };
         dialog.PrimaryButtonClick += (_, e) =>
         {
-            var to = box.Text.Trim();
-            if (to == name) return;
-            if (actions.Rename(name, to)) return;
-            box.Header = Strings.Actions_RenameInvalid; // keep the dialog open
-            e.Cancel = true;
+            try
+            {
+                var to = box.Text.Trim();
+                if (to == name) return;
+                if (actions.Rename(name, to)) return;
+                box.Header = Strings.Actions_RenameInvalid; // keep the dialog open
+                e.Cancel = true;
+            }
+            catch (Exception ex) { e.Cancel = true; Fail("renaming a quick action failed", ex); }
         };
         if (await ShowDialogAsync(dialog) == ContentDialogResult.Primary) ShowPage("Actions");
     }

@@ -1,0 +1,11 @@
+{
+  "version": 3,
+  "top": { "left": [], "center": [], "right": [] },
+  "bottom": { "left": ["mINE", "more"], "center": [], "right": [] },
+  "menu": ["OtHeR"],
+  "overrides": { "MINE": { "width": 2, "future": true } },
+  "buttons": {
+    "MiNe": { "label": "Mixed case", "text": "Hello", "iconFile": "mine.PNG", "shortcut": "Ctrl+Alt+1", "future": 7 },
+    "oThEr": { "text": "Other", "iconFile": "OTHER.pNg" }
+  }
+}

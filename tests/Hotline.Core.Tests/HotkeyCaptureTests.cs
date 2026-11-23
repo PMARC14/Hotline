@@ -5,6 +5,58 @@ namespace Hotline.Core.Tests;
 /// <summary>Setting the fallback hotkey by pressing it (Settings › General).</summary>
 public class HotkeyCaptureTests
 {
+    [Theory]
+    [InlineData("Esc")]
+    [InlineData("Backspace")]
+    [InlineData("F1")]
+    [InlineData("F12")]
+    [InlineData("F24")]
+    [InlineData("A")]
+    [InlineData("1")]
+    [InlineData("Tab")]
+    [InlineData("Shift+A")]
+    [InlineData("Ctrl+.")]
+    [InlineData("Enter")]
+    [InlineData("Ctrl+Enter")]
+    [InlineData("Ctrl+A")]
+    [InlineData("Ctrl+C")]
+    [InlineData("Ctrl+V")]
+    [InlineData("Ctrl+X")]
+    [InlineData("Ctrl+Y")]
+    [InlineData("Ctrl+Z")]
+    [InlineData("Ctrl+Tab")]
+    [InlineData("Ctrl+Backspace")]
+    [InlineData("Ctrl+Shift+Z")]
+    [InlineData("Ctrl+Shift+Tab")]
+    public void Stop_capture_accepts_exactly_the_file_parser_keys(string text)
+    {
+        Hotkey key;
+        if (text.EndsWith("Enter")) key = new(text.StartsWith("Ctrl") ? HotkeyModifiers.Control : HotkeyModifiers.None, 0x0D);
+        else Assert.True(Hotkey.TryParseShortcut(text, out key));
+        var capture = HotkeyCapture.Press(key.Modifiers, key.VirtualKey, panel: true, stop: true);
+        var accepted = Settings.ChatShortcuts.TryParse("stop", text, out var expected);
+        Assert.Equal(accepted ? HotkeyCapture.Outcome.Bound : HotkeyCapture.Outcome.Unsupported, capture.Outcome);
+        if (accepted) Assert.Equal(expected.ToString(), capture.Text);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Right_alt_refuses_capture_for_global_and_panel_shortcuts(bool panel)
+    {
+        var result = HotkeyCapture.Press(HotkeyModifiers.Control | HotkeyModifiers.Alt, 'Q', panel, rightAltDown: true);
+        Assert.Equal(HotkeyCapture.Outcome.Waiting, result.Outcome);
+        Assert.Null(result.Text);
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Left_ctrl_alt_still_binds_after_right_alt_is_released(bool panel)
+    {
+        Assert.Equal("Ctrl+Alt+Q", HotkeyCapture.Press(HotkeyModifiers.Control | HotkeyModifiers.Alt, 'Q', panel, rightAltDown: false).Text);
+    }
+
     private const uint Esc = 0x1B, Backspace = 0x08, Delete = 0x2E, Ctrl = 0x11, Shift = 0x10, LWin = 0x5B, H = 'H', F13 = 0x7C, F5 = 0x74;
 
     [Fact]

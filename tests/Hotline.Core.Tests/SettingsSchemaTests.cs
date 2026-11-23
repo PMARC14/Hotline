@@ -65,8 +65,15 @@ public class SettingsSchemaTests
             // A value the item accepts: its placeholder when it checks the format (e.g. a colour).
             var sample = t.Validate is { } valid && !valid("Ctrl+Alt+H") ? t.Placeholder! : "Ctrl+Alt+H";
             t.Set(s, sample);
-            Assert.Equal(sample, t.Get(s));
+            Assert.Equal(string.IsNullOrEmpty(sample) ? null : sample, t.Get(s));
             t.Set(s, "  ");
+            if (t.ToolbarShortcutId is not null)
+            {
+                Assert.Equal("", t.Get(s));
+                t.Reset!(s);
+                Assert.Equal(t.Placeholder, t.Get(s));
+                continue;
+            }
             // Unset, or (for settings that always need a value) the default shown as the placeholder.
             Assert.True(t.Get(s) is null || t.Get(s) == t.Placeholder, $"{t.Header}: {t.Get(s)}");
         }

@@ -16,7 +16,7 @@ namespace Hotline.Core.Backends.Api;
 /// Hotline's MCP tools are offered as function declarations; the model's parts are echoed back unchanged (they may
 /// carry thought signatures) followed by the function responses.
 /// </summary>
-public sealed partial class GeminiBackend(BackendProfile profile, HttpClient http, ISecretStore secrets, Func<BackendProfile, string> systemPrompt,
+public sealed partial class GeminiBackend(ConnectionProfile profile, HttpClient http, ISecretStore secrets, Func<ConnectionProfile, string> systemPrompt,
     FileLog log, IToolHost? tools = null) : IChatBackend
 {
     public string Id => profile.Id;
@@ -39,6 +39,7 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
         {
             var modelParts = new JsonArray();
             var calls = new List<(string Name, string? Id, JsonElement Args)>();
+            string? finishReason = null;
             HttpResponseMessage? sent = null;
             await foreach (var step in ApiCommon.SendWithRetriesAsync(http, () => Request(endpoint, model, key, contents, offered), profile, ct))
                 if (step.Status is { } note) yield return ChatDelta.StatusNote(note);
@@ -78,12 +79,26 @@ public sealed partial class GeminiBackend(BackendProfile profile, HttpClient htt
                             if (part.TryGetProperty("thought", out var thought) && thought.ValueKind == JsonValueKind.True) continue;
                             if (Str(part, "text") is { Length: > 0 } piece) yield return new ChatDelta(piece);
                         }
-                    if (Str(candidate, "finishReason") is ("SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST") and var finish)
-                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finish));
+                    var stopReason = Str(candidate, "finishReason");
+                    if (stopReason is not null) finishReason = stopReason;
+                    // A cut-off answer is shown as far as it got, but a function call from one must not run (its arguments may be partial).
+                    if (stopReason is "SAFETY" or "RECITATION" or "PROHIBITED_CONTENT" or "BLOCKLIST" or "MALFORMED_FUNCTION_CALL"
+                        || stopReason is "MAX_TOKENS" && calls.Count > 0)
+                        throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), stopReason));
                 }
             }
 
-            if (calls.Count == 0 || offered.Count == 0) yield break;
+            if (calls.Count == 0)
+            {
+                if (finishReason is null)
+                    yield return ChatDelta.StatusNote(Strings.Api_AnswerCutOff);
+                if (finishReason == "MAX_TOKENS")
+                    yield return ChatDelta.StatusNote(L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finishReason));
+                yield break;
+            }
+            if (finishReason != "STOP")
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Api_StoppedAnswer, ApiCommon.Name(profile), finishReason ?? "EOF"));
+            if (offered.Count == 0) yield break;
             contents.Add(new JsonObject { ["role"] = "model", ["parts"] = modelParts });
             var responses = new JsonArray();
             foreach (var (name, id, args) in calls)

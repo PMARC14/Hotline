@@ -5,79 +5,80 @@ Center › the submission › Store listings › Deutsch. Product name stays "Ho
 
 ## Kurzbeschreibung
 
-Mach die Copilot-Taste zu einem schnellen KI-Chat mit der KI deiner Wahl: deine Claude- oder Gemini-Anmeldung, dein
-eigener API-Schlüssel oder ein Modell auf deinem PC. Taste drücken, fragen, Antwort erscheint live.
+Du hast die Copilot-Taste nun mal, also nutze sie: ein schnelles, natives KI-Chatpanel für die KI, die du schon hast (Claude, Codex, Gemini), deinen API-Schlüssel oder ein lokales Modell. Kein Konto bei uns. Ordne die Leiste und nimm den Chat in andere Apps mit.
 
 ## Beschreibung
 
-Die Copilot-Taste ist nun mal da, also kannst du sie auch nutzen. Hotline AI macht daraus ein schnelles, natives
-KI-Chatfenster, das mit der KI deiner Wahl spricht.
+Du hast die Copilot-Taste nun mal, also kannst du sie genauso gut nutzen. Hotline AI macht daraus ein schnelles, natives KI-Chatpanel, das mit der KI deiner Wahl spricht.
 
-Drück die Taste, und auf dem Monitor, an dem du arbeitest, öffnet sich ein Panel, bereit zum Tippen. Stell eine Frage,
-die Antwort erscheint live; drück die Taste erneut, und es ist weg. Kein Browser-Tab, kein Konto bei uns.
+Drück die Taste und auf dem Monitor, auf dem du arbeitest, öffnet sich ein Panel – tippbereit. Frag etwas, erhalte eine gestreamte Antwort, drück die Taste noch mal und es ist weg. Kein Browser-Tab, kein Konto bei uns.
 
 NUTZE DIE KI, DIE DU SCHON HAST
-• Claude Code: nutzt dein installiertes Claude Code und dessen Anmeldung, dein Claude-Abo funktioniert also ohne API-Schlüssel.
-• OpenAI Codex CLI: nutzt dein installiertes Codex und dessen Anmeldung, dein ChatGPT-Abo funktioniert also ohne API-Schlüssel.
+• Claude Code: nutzt dein installiertes Claude Code samt Anmeldung, sodass dein Claude-Abo ohne API-Schlüssel funktioniert.
+• OpenAI Codex CLI: nutzt dein installiertes Codex samt Anmeldung, sodass dein ChatGPT-Abo ohne API-Schlüssel funktioniert.
 • Antigravity CLI (agy): Gemini mit deiner Google-Anmeldung.
-• Dein eigener API-Schlüssel: Anthropic, Google Gemini, OpenAI und andere OpenAI-kompatible Dienste wie OpenRouter.
-• Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC (z. B. llama.cpp oder LM Studio), sodass nichts deinen Computer verlässt.
-Modell, Anbieter und Denkaufwand wählst du direkt in der Leiste des Panels.
+• Eigener API-Schlüssel: Anthropic, Google Gemini, OpenAI und andere OpenAI-kompatible Dienste wie OpenRouter.
+• Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC (zum Beispiel llama.cpp oder LM Studio), sodass nichts deinen Computer verlässt.
+Wähle Modell, Anbieter und wie gründlich gedacht werden soll direkt über die Leiste des Panels.
 
-KONTEXT KOMMT MIT
-• In einer anderen App markierter Text wird beim Drücken der Taste automatisch angehängt; du kannst ihn vor dem Senden entfernen.
-• Nimm das Fenster auf, in dem du warst, den ganzen Bildschirm oder einen gezogenen Bereich; füge Bilder und Dateien ein oder zieh sie hinein.
-• Modelle, die keine Bilder sehen, bekommen stattdessen den Text deines Screenshots, gelesen auf deinem PC mit der OCR von Windows.
+BRING KONTEXT MIT
+• Text, den du in einer anderen App markiert hattest, wird beim Tastendruck automatisch angehängt und lässt sich vor dem Senden entfernen.
+• Erfasse das Fenster, in dem du warst, den gesamten Bildschirm oder ziehe einen Bereich auf; füge Bilder und Dateien per Einfügen oder Drag-and-drop ein.
+• Modelle, die keine Bilder verarbeiten können, erhalten stattdessen den Text aus deinem Screenshot – direkt auf deinem PC ausgelesen mit Windows-eigenem OCR.
 
-FÜR SCHNELLE AUFGABEN GEMACHT
-• Schnellaktionen: Tippe / für Übersetzen, Zusammenfassen, Korrigieren oder Erklären, oder schreib eigene als einfache Textdateien.
-• Gedächtnis: „/remember Ich bevorzuge metrische Einheiten“, und jeder Chat weiß es, egal welche KI du nutzt.
-• Sprache: Taste gedrückt halten und sprechen; loslassen beendet.
-• Letzte Chats sind einen Klick entfernt.
-• Click to Do und Windows-Aktionen: Text oder ein Bild aus anderen Apps an Hotline AI senden.
+GEMACHT FÜR SCHNELLE AUFGABEN
+• Schnellaktionen: Tippe / für übersetzen, zusammenfassen, korrigieren oder erklären, oder erstelle eigene als einfache Textdateien.
+• Gedächtnis: "/remember Ich bevorzuge metrische Einheiten" und jeder Chat weiß Bescheid, ganz gleich, welche KI du nutzt.
+• Sprache: Halte die Taste gedrückt und sprich; lass los, um zu stoppen.
+• Letzte Chats sind nur einen Klick entfernt, in einer durchsuchbaren Liste (Ctrl+H).
+• Click to Do und Windows-Aktionen: Sende Text oder Bilder aus anderen Apps an Hotline AI.
+• Weiterführen in: Nimm den Chat mit in ein Terminal, Open WebUI, die Web-UI von llama.cpp, LM Studio oder eigene Ziele, wenn du mehr Platz brauchst.
+• Tastenkombinationen für die Schaltflächen der Leiste, solange das Panel den Fokus hat: neuer Chat, letzte Chats, Einstellungen, Anheften, Bildschirmaufnahmen und die Auswahlfelder. Auch deine eigenen Schaltflächen können eine haben. Sie erfordern Ctrl, Alt oder Win, damit normales Tippen unberührt bleibt.
+• Eine Windows-Benachrichtigung sagt dir Bescheid, wenn eine Antwort fertig ist, während du woanders bist.
 
-NATIV, LEICHT UND DEINS
-• Mit WinUI 3 gebaut: öffnet schnell, folgt deinem hellen oder dunklen Design, kein eingebetteter Browser.
-• Reichhaltige Antworten: Überschriften, Listen, Tabellen, Code mit Kopieren-Schaltfläche, Formeln und einfache Zeichnungen.
-• Alles ist eine bearbeitbare Datei: Einstellungen, Verbindungen, Prompts, die Schaltflächen in der Leiste.
-• Tools, mit Bedacht: API-Verbindungen können Tools deiner MCP-Server nutzen; alles, was etwas ändert, fragt dich zuerst.
+NATIV, SCHLANK UND DEINS
+• Entwickelt mit WinUI 3: öffnet schnell, folgt deinem hellen oder dunklen Design, kein eingebetteter Browser. Nativ auf x64 und ARM64.
+• Formatierte Antworten: Überschriften, Listen, Tabellen, Code mit Kopieren-Schaltfläche, Mathe und einfache Zeichnungen.
+• Halte Alt gedrückt, um das Panel zu verschieben oder in der Größe anzupassen; hefte es an und wähle, ob der Chat nach oben oder unten wächst.
+• Alles ist eine einfache Datei, die du bearbeiten kannst: Einstellungen, Verbindungen, Prompts, die Schaltflächen in der Leiste.
+• Richte die Leiste nach deinen Wünschen ein: Ziehe Schaltflächen in den Einstellungen zwischen Zeilen, füge eigene Schaltflächen mit eigenen Bildern hinzu und behalte seltener genutzte in einem Mehr-Menü.
+• Einstellungen > Backup überträgt deine Konfiguration auf einen anderen PC. API-Schlüssel werden niemals exportiert, und Dateien, die Hotline ersetzt, werden vorher gesichert.
+• Tools, aber mit Bedacht: API-Verbindungen können Tools von deinen MCP-Servern nutzen; alles, was Änderungen vornimmt, fragt dich zuerst.
+• Die Copilot-Taste kann auch als rechte Ctrl-Taste fungieren, falls dir das lieber ist.
 
-PRIVAT VON GRUND AUF
-Hotline AI hat keinen Server und sammelt nichts: kein Konto, keine Analysen, keine Werbung. Deine Nachrichten gehen nur
-an den KI-Dienst, den du wählst, zu dessen Bedingungen. API-Schlüssel bleiben in der Windows-Anmeldeinformationsverwaltung;
-Verlauf, Einstellungen und Gedächtnis bleiben auf deinem PC. Kostenlos und Open Source.
+VON GRUND AUF PRIVAT
+Hotline AI hat keine Server und sammelt nichts: kein Konto, keine Analysen, keine Werbung. Deine Nachrichten gehen ausschließlich an den von dir gewählten KI-Dienst – zu dessen Bedingungen. API-Schlüssel bleiben im Windows Credential Locker; Verlauf, Einstellungen und Gedächtnis bleiben auf deinem PC. Kostenlos und quelloffen.
 
-Keine Copilot-Taste? Leg eine beliebige Tastenkombination fest, z. B. Strg+Alt+H.
+Keine Copilot-Taste? Lege eine beliebige Tastenkombination fest, zum Beispiel Ctrl+Alt+H.
 
-Hotline AI ist eine unabhängige App und steht in keiner Verbindung zu Microsoft, Anthropic, Google oder OpenAI und wird
-von diesen nicht unterstützt. Für Claude Code, Codex, die Antigravity CLI oder eine KI-API brauchst du ein eigenes Konto bei
-dem jeweiligen Dienst.
+Hotline AI ist eine unabhängige App und steht in keiner Verbindung zu Microsoft, Anthropic, Google oder OpenAI und wird von diesen weder unterstützt noch empfohlen. Die Nutzung von Claude Code, Codex, der Antigravity CLI oder einer KI-API setzt ein eigenes Konto beim jeweiligen Dienst voraus.
 
 ## Neuigkeiten in dieser Version
 
-Wähle deine Akzentfarbe (Hotline-Lila, deine Windows-Akzentfarbe oder eine beliebige Farbe) und das neue Design „Hoher Kontrast“; Hotline folgt außerdem den Kontrastdesigns und der Transparenzeinstellung von Windows. Dein Chatverlauf öffnet sich als durchsuchbare Liste (Verlauf-Schaltfläche, Strg+↑ oder /resume). Die zusätzliche Tastenkombination legst du einfach per Tastendruck fest. Neue Schnellaktionen: /reply, /shorter, /formal und /bullets. Codeblöcke lassen sich seitlich scrollen, und das Panel folgt Antworten, während sie entstehen.
+Panel verschieben und skalieren: Alt für Anfasser halten, anheften sowie Position und Größe speichern. Der Chat wächst nach oben oder unten und öffnet auf Wunsch breiter. Schaltflächenzeilen in den Einstellungen anordnen: Schaltflächen zwischen links, Mitte und rechts ziehen, eigene mit Bildern ergänzen und ein Mehr-Menü nutzen. Schaltflächen verteilen sich nun gleichmäßig über die Leiste. Jeder Leistenbefehl hat ein änderbares Tastenkürzel, Stopp inklusive. Chats in Terminal, Open WebUI, llama.cpp, LM Studio oder eigenen Zielen fortsetzen. Einstellungen > Backup exportiert und importiert dein Setup ohne API-Schlüssel. Die Breite nutzt Pixel oder Bildschirmprozent und bleibt bei jeder Windows-Skalierung gleich. MCP-Tools: „Immer erlauben“ wird lokal gemerkt und unter Einstellungen > Tools widerrufen; Server-Geheimnisse können in den Windows Credential Locker umziehen. Neu sind auch Denkanzeige, Öffnungs-/Schließtöne, /resume beim Tippen sowie Nachrichten in wiedergeöffneten CLI-Chats. Sicherere Dateien: Neuere Dateien bleiben unberührt, unbekannte Schlüssel erhalten, ersetzte Dateien in einem Ordner gesichert. Ich habe den Copilot-Tastenfokus unter Windows 11 26H2, Fenstererfassung per Taste, Monitor-/Skalierungswechsel sowie viele Barrierefreiheits- und Sicherheitsprobleme behoben. Dieses Update setzt Einstellungen und Schaltflächenzeilen einmalig auf das neue Format zurück; Verbindungen bleiben erhalten, alte Dateien liegen im Backups-Ordner.
 
 ## Produktmerkmale
 
 1. Öffnet sich per Copilot-Taste (oder beliebiger Tastenkombination) auf dem Monitor, an dem du arbeitest, bereit zum Tippen
 2. Funktioniert mit deiner Claude Code-, ChatGPT- (Codex CLI) oder Gemini-Anmeldung (Antigravity CLI): kein API-Schlüssel nötig
 3. Eigener Schlüssel: Anthropic, Google Gemini, OpenAI und OpenAI-kompatible APIs
-4. Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC, nichts verlässt deinen Computer
+4. Lokale Modelle: jeder Server im OpenAI-Stil auf deinem PC, sodass der Chat auf deinem Computer bleibt
 5. Modell, Anbieter und Denkaufwand direkt im Panel wählen
 6. Markierter Text aus der vorherigen App wird automatisch angehängt
 7. Fenster, Bildschirm oder Bereich aufnehmen; Bilder und Dateien einfügen oder hineinziehen
 8. Text in Screenshots wird auf deinem PC gelesen (OCR) – für Modelle ohne Bildverständnis
-9. Schnellaktionen: /translate, /summarize, /fix, /explain oder eigene
-10. Ein Gedächtnis, das jeder Chat sieht, egal welche KI
-11. Spracheingabe per Tastendruck
-12. Text oder Bilder aus Click to Do und anderen Apps senden
+9. Schnellaktionen: /translate, /summarize, /fix, /explain und mehr, oder eigene Textdateien
+10. Ein Gedächtnis, das jeder Chat sieht, egal welche KI du nutzt
+11. Push-to-Talk-Spracheingabe über die Online-Spracherkennung von Windows
+12. Text oder Bilder aus Click to Do und anderen Apps senden; Chats im Terminal, Open WebUI, llama.cpp oder LM Studio fortsetzen
 13. Reichhaltige Antworten: Tabellen, Code mit Kopieren, Formeln und Zeichnungen
-14. Natives WinUI 3, folgt deinem hellen oder dunklen Design
-15. Alles ist eine bearbeitbare Datei: Einstellungen, Verbindungen, Prompts, die Leiste
-16. Optionale Tools deiner MCP-Server, mit Bestätigung vor jeder Änderung
-17. Kein Konto, keine Analysen, keine Werbung; Schlüssel bleiben in der Windows-Anmeldeinformationsverwaltung
-18. Kostenlos und Open Source
-19. Nativ auf x64- und ARM64-PCs
+14. Natives WinUI 3 auf x64 und ARM64; helles, dunkles und Kontrast-Design, deine Akzentfarbe, kein eingebetteter Browser
+15. Schaltflächenzeilen per Drag-and-Drop in den Einstellungen anordnen; eigene Buttons mit Bildern, Mehr-Menü und Breitenanpassung
+16. Optionale MCP-Tools für API-Verbindungen; Änderungen fragen zuerst nach, sofern nicht vorab erlaubt
+17. Kein Hotline-Konto, keine Analysen, keine Werbung; Schlüssel bleiben in der Windows-Anmeldeinformationsverwaltung; kostenlos und Open Source
+18. Bearbeitbare Einstellungen, Verbindungen, Prompts und toolbar.json; Warnung bei Fehlwerten, Backups schützen deine Anpassungen
+19. Einstellungen > Backup exportiert und importiert Einstellungen, Leiste, MCP, Töne, Verbindungen, Schnellaktionen und Prompts; nie API-Schlüssel
+20. Tastenkombinationen im Panel für Leisten-Buttons und eigene Aktionen; Panel verschieben, anheften, skalieren, mit Pixelbreiten und breiterem Chat
 
 ## Screenshot-Beschriftungen
 
@@ -88,4 +89,4 @@ Wähle deine Akzentfarbe (Hotline-Lila, deine Windows-Akzentfarbe oder eine beli
 
 ## Suchbegriffe
 
-KI-Chat, Copilot-Taste, Claude, Gemini, KI-Assistent, LLM, lokale KI
+KI-Chat-Assistent, Copilot-Taste Tastenkürzel, Claude Code Integration, Codex Gemini CLI, Anthropic OpenAI API-Schlüssel, OpenRouter-kompatibel, Lokales LLM llama.cpp

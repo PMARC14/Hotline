@@ -2,17 +2,19 @@ using System.IO.Compression;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using Hotline.Core.Backends;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class SettingsPackageTests : IDisposable
+public sealed class SettingsPackageTests : TempDirTest
 {
     private static readonly byte[] Png16 = Convert.FromBase64String(
         "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAVSURBVDhPY2AYXuA/GI2CUTAKyAEAeu0B/zEZFcQAAAAASUVORK5CYII=");
 
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "hotline-pkg-" + Guid.NewGuid().ToString("N"));
+    private string _root => _dir;
     private string Data => Path.Combine(_root, "data");
     private string Target => Path.Combine(_root, "target");
     private string Backups => Path.Combine(Target, "backups");
@@ -20,22 +22,12 @@ public sealed class SettingsPackageTests : IDisposable
 
     public SettingsPackageTests() => Directory.CreateDirectory(_root);
 
-    public void Dispose()
-    {
-        try
-        {
-            foreach (var f in Directory.EnumerateFiles(_root, "*", SearchOption.AllDirectories)) File.SetAttributes(f, FileAttributes.Normal);
-            Directory.Delete(_root, recursive: true);
-        }
-        catch (IOException) { }
-    }
-
     // ---- fixtures ----------------------------------------------------------------------------
 
     private static string Wav(string marker = "") => "RIFF\0\0\0\0WAVEfmt " + marker;
     private static byte[] WavBytes(string marker = "") => Encoding.Latin1.GetBytes(Wav(marker));
 
-    private static string Conn(string id, string type = "openAiCompatible") => $"{{\"id\":\"{id}\",\"type\":\"{type}\",\"name\":\"{id}\"}}";
+    private static string Conn(string id, string type = "openAiCompatible") => $"{{\"version\":1,\"id\":\"{id}\",\"type\":\"{type}\",\"name\":\"{id}\"}}";
 
     private static void Put(string dir, string rel, string text) => PutBytes(dir, rel, Encoding.UTF8.GetBytes(text));
 
@@ -51,9 +43,9 @@ public sealed class SettingsPackageTests : IDisposable
     {
         Directory.CreateDirectory(dir);
         Put(dir, "settings.json", SettingsStore.Serialize(SettingsStore.Normalize(new HotlineSettings())));
-        Put(dir, "toolbar.json", """{ "version": 2 }""");
+        Put(dir, "toolbar.json", """{ "version": 3 }""");
         PutBytes(dir, "icons/my-btn.png", Png16);
-        Put(dir, "mcp.json", """{ "mcpServers": {}, "approvals": {} }""");
+        Put(dir, "mcp.json", """{ "version": 1, "mcpServers": {}, "approvals": {} }""");
         PutBytes(dir, "sounds/ding.wav", WavBytes());
         PutBytes(dir, "sounds/hotline.wav", WavBytes("b"));
         Put(dir, "connections/work.json", Conn("work"));
@@ -120,7 +112,8 @@ public sealed class SettingsPackageTests : IDisposable
 
     private static IEnumerable<string> Relative(string dir) =>
         Directory.Exists(dir)
-            ? Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Select(f => Path.GetRelativePath(dir, f).Replace('\\', '/')).Order(StringComparer.Ordinal)
+            ? Directory.EnumerateFiles(dir, "*", SearchOption.AllDirectories).Select(f => Path.GetRelativePath(dir, f).Replace('\\', '/'))
+                .Where(f => f != "state.json").Order(StringComparer.Ordinal)
             : [];
 
     // ---- export ------------------------------------------------------------------------------
@@ -250,6 +243,41 @@ public sealed class SettingsPackageTests : IDisposable
 
     // ---- inspect -----------------------------------------------------------------------------
 
+    [Theory]
+    [InlineData(1024)]
+    [InlineData(1024 * 1024 + 1)]
+    public void A_stored_manifest_with_a_small_declared_size_and_large_actual_content_is_refused(int actualSize)
+    {
+        using var buffer = new MemoryStream();
+        using (var zip = new ZipArchive(buffer, ZipArchiveMode.Create, leaveOpen: true))
+        {
+            var entry = zip.CreateEntry(SettingsPackage.ManifestName, CompressionLevel.NoCompression);
+            using var content = entry.Open();
+            var json = Encoding.UTF8.GetBytes("""{"format":1,"files":[]}""".PadRight(actualSize));
+            content.Write(json);
+        }
+        var bytes = buffer.ToArray();
+        // Stored data is read using the compressed length. Forge both uncompressed sizes while
+        // retaining the actual compressed length and CRC, as an attacker-controlled ZIP can do.
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(22), 32);
+        var central = bytes.AsSpan().IndexOf(new byte[] { 0x50, 0x4b, 0x01, 0x02 });
+        Assert.True(central > 0);
+        System.Buffers.Binary.BinaryPrimitives.WriteUInt32LittleEndian(bytes.AsSpan(central + 24), 32);
+        using var forged = new MemoryStream(bytes);
+        using (var zip = new ZipArchive(forged, ZipArchiveMode.Read, leaveOpen: true))
+        {
+            var entry = Assert.Single(zip.Entries);
+            Assert.Equal(32, entry.Length);
+            using var actual = entry.Open();
+            using var read = new MemoryStream();
+            actual.CopyTo(read);
+            Assert.Equal(actualSize, read.Length); // prove the real stream exceeds the declaration
+        }
+        forged.Position = 0;
+
+        Assert.False(SettingsPackage.Inspect(forged).IsValid);
+    }
+
     [Fact]
     public void Inspect_reports_version_date_and_counts()
     {
@@ -352,7 +380,7 @@ public sealed class SettingsPackageTests : IDisposable
     [InlineData("actions/fix.md.")]
     [InlineData("sounds/a..wav")]
     [InlineData("sounds/.wav")]
-    [InlineData("icons/Upper.png")]
+    [InlineData("icons/Not Valid.png")]
     [InlineData("icons/spacer.png")]
     [InlineData("icons/a_b.png")]
     [InlineData("icons/sub/a.png")]
@@ -496,7 +524,7 @@ public sealed class SettingsPackageTests : IDisposable
     [Fact]
     public void A_toolbar_that_resolves_with_warnings_is_written_as_is()
     {
-        const string odd = "{ \"version\": 2, \"buttons\": { \"x\": 7 }, \"mystery\": true, // comment\n}";
+        const string odd = "{ \"version\": 3, \"buttons\": { \"x\": 7 }, \"mystery\": true, // comment\n}";
         using var zip = Zip([E("toolbar.json", odd)]);
         var result = Import(zip);
         Assert.Equal(["toolbar.json"], result.Written);
@@ -507,7 +535,7 @@ public sealed class SettingsPackageTests : IDisposable
     public void A_connection_file_with_no_id_takes_its_file_name_and_one_with_a_safe_form_of_its_id_is_kept()
     {
         using var zip = Zip([
-            E("connections/noid.json", """{ "type": "local", "name": "n" }"""),
+            E("connections/noid.json", """{ "version": 1, "type": "local", "name": "n" }"""),
             E("connections/My-Conn.json", Conn("My Conn")), // the store names this file My-Conn.json
         ]);
         var result = Import(zip);
@@ -522,7 +550,7 @@ public sealed class SettingsPackageTests : IDisposable
         FillData(Data);
         using var zip = Export(Data, [SettingsCategory.Actions, SettingsCategory.Mcp, SettingsCategory.Sounds], out _);
         Put(Target, "actions/fix.md", "MY OWN FIX");
-        Put(Target, "mcp.json", """{"mcpServers":{"mine":{"command":"x"}}}""");
+        Put(Target, "mcp.json", """{ "version": 1,"mcpServers":{"mine":{"command":"x"}}}""");
         Put(Target, "settings.json", "untouched");        // category not in the package
         Put(Target, "actions/unrelated.md", "keep me");   // not in the package
         Put(Target, "memory.md", "notes");
@@ -531,7 +559,7 @@ public sealed class SettingsPackageTests : IDisposable
 
         var backup = result.BackupFolder;
         Assert.NotNull(backup);
-        Assert.Equal(Path.Combine(Backups, $"import-{Now.ToLocalTime():yyyyMMdd-HHmmss}"), backup);
+        Assert.Equal(Path.Combine(Backups, $"{Now.ToLocalTime():yyyyMMdd-HHmmss}-import"), backup);
         Assert.Equal(["actions/fix.md", "mcp.json"], Relative(backup!));
         Assert.Equal("MY OWN FIX", File.ReadAllText(Path.Combine(backup!, "actions", "fix.md")));
         Assert.Contains("mine", File.ReadAllText(Path.Combine(backup!, "mcp.json")));
@@ -613,7 +641,10 @@ public sealed class SettingsPackageTests : IDisposable
         Import(zip, SettingsCategory.Actions);
         Assert.Contains("local", File.ReadAllText(Path.Combine(Target, "connections", "work.json")));
         zip.Position = 0;
-        Import(zip, SettingsCategory.Connections);
+        // The connection changes type (and so where its saved key goes): the review asks, and confirming replaces it.
+        var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Connections]);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        SettingsPackage.Import(plan, Backups, executionConfirmed: true, Now);
         Assert.Contains("openAiCompatible", File.ReadAllText(Path.Combine(Target, "connections", "work.json")));
     }
 
@@ -639,10 +670,161 @@ public sealed class SettingsPackageTests : IDisposable
             E("connections/local.json", Conn("local", "local")),           // key optional
             E("connections/claude.json", Conn("claude", "claudeCode")),    // CLI
         ]);
-        var result = Import(zip);
+        var plan = SettingsPackage.PrepareImport(Target, zip, SettingsPackage.All);
+        var result = SettingsPackage.Import(plan, Backups, executionConfirmed: true, Now);
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("haskey"), "k");
         Assert.Equal(["gpt"], SettingsPackage.ConnectionsNeedingKey(Target, result, secrets));
+    }
+
+    // ---- compatibility: import, load, unrelated edit, export ----------------------------------
+
+    private static JsonNode ExportedJson(ZipArchive zip, string path)
+    {
+        using var stream = zip.GetEntry(path)!.Open();
+        return JsonNode.Parse(stream, documentOptions: new() { CommentHandling = JsonCommentHandling.Skip })!;
+    }
+
+    [Fact]
+    public void V1_scaled_widths_survive_a_diagnostics_edit()
+    {
+        const string original = """{"version": 1,"window":{"minWidth":600,"maxWidth":1000},"chat":{"memory":false}}""";
+        using var incoming = Zip([E("settings.json", original)]);
+        Assert.Equal(["settings.json"], Import(incoming).Written);
+        var store = new SettingsStore(Target);
+        var settings = store.Load();
+        settings.Diagnostics.VerboseLogging = true; // unrelated to the old width units
+        store.Save(settings);
+        using var outgoing = Export(Target, [SettingsCategory.Settings], out _);
+        using var archive = new ZipArchive(outgoing);
+        var saved = ExportedJson(archive, "settings.json");
+        Assert.Equal(600, (int)saved["window"]!["minWidth"]!);
+        Assert.Equal(1000, (int)saved["window"]!["maxWidth"]!);
+        Assert.Equal(1, (int)saved["version"]!);
+        Assert.False((bool)saved["chat"]!["memory"]!);
+        Assert.True((bool)saved["diagnostics"]!["verboseLogging"]!);
+        Assert.Empty(SettingsTestFiles.Backups(Target, "settings.json")); // the imported bytes match lastWritten
+    }
+
+    private const string CompatToolbar = """
+        {"version":3,"bottom":{"left":["quick","hello"],"right":[]},
+         "buttons":{
+           "quick":{"label":"Summarize","quickAction":"summarize","iconFile":"quick.png","shortcut":"Ctrl+Alt+1"},
+           "hello":{"label":"Hello","text":"Hello!","send":true,"shortcut":"Ctrl+Alt+2"}}}
+        """;
+
+    [Fact]
+    public void Mixed_case_toolbar_icons_import_export_and_load()
+    {
+        const string json = """{"version":3,"buttons":{"MiNe":{"text":"hi","iconFile":"mine.pNg"}}}""";
+        using var incoming = Zip([E("toolbar.json", json), ("icons/MINE.PNG", Png16)]);
+        var imported = Import(incoming);
+        Assert.Equal(new[] { "icons/MINE.PNG", "toolbar.json" }, imported.Written.Order(StringComparer.Ordinal));
+        var model = ToolbarFile.Load(Path.Combine(Target, "toolbar.json")).Model;
+        Assert.Empty(model.Warnings);
+        var button = Assert.Single(model.Buttons);
+        Assert.Equal("MiNe", button.Id);
+        Assert.Equal(Png16, CustomIcons.Read(CustomIcons.IconPath(CustomIcons.Folder(Target), button.IconFile)!).Bytes);
+        using var outgoing = Export(Target, [SettingsCategory.Toolbar], out _);
+        using var archive = new ZipArchive(outgoing);
+        Assert.NotNull(archive.GetEntry("icons/MINE.PNG"));
+        Assert.Equal(json, ReadEntry(archive, "toolbar.json"));
+    }
+
+    [Fact]
+    public void Compat_custom_buttons_icons_and_button_shortcuts_survive_a_style_edit()
+    {
+        using var incoming = Zip([E("toolbar.json", CompatToolbar), ("icons/quick.png", Png16), E("actions/summarize.md", "Summarize this.")]);
+        Assert.Equal(3, Import(incoming).Written.Count);
+        new SettingsStore(Target).Load();
+        var path = Path.Combine(Target, "toolbar.json");
+        var loaded = ToolbarFile.Load(path);
+        Assert.Null(loaded.Error);
+        Assert.Empty(loaded.Model.Warnings);
+        ToolbarFile.Save(path, loaded.Model with { Style = new ButtonStyle(2, true) });
+        using var outgoing = Export(Target, [.. SettingsPackage.All], out _);
+        using var archive = new ZipArchive(outgoing);
+        var saved = ExportedJson(archive, "toolbar.json");
+        Assert.Equal("Ctrl+Alt+1", (string)saved["buttons"]!["quick"]!["shortcut"]!);
+        Assert.Equal("quick.png", (string)saved["buttons"]!["quick"]!["iconFile"]!);
+        Assert.Equal("summarize", (string)saved["buttons"]!["quick"]!["quickAction"]!);
+        Assert.Equal("Ctrl+Alt+2", (string)saved["buttons"]!["hello"]!["shortcut"]!);
+        Assert.Equal("Hello!", (string)saved["buttons"]!["hello"]!["text"]!);
+        Assert.True((bool)saved["buttons"]!["hello"]!["send"]!);
+        Assert.Equal(["quick", "hello"], saved["bottom"]!["left"]!.AsArray().Select(n => (string)n!));
+        using var icon = archive.GetEntry("icons/quick.png")!.Open();
+        using var bytes = new MemoryStream();
+        icon.CopyTo(bytes);
+        Assert.Equal(Png16, bytes.ToArray());
+        Assert.Equal("Summarize this.", ReadEntry(archive, "actions/summarize.md"));
+    }
+
+    private static string ReadEntry(ZipArchive zip, string path)
+    {
+        using var stream = zip.GetEntry(path)!.Open();
+        using var reader = new StreamReader(stream);
+        return reader.ReadToEnd();
+    }
+
+    [Theory]
+    [InlineData(false)]
+    [InlineData(true)]
+    public void Compat_unknown_top_level_key_after_an_unrelated_edit(bool editToolbar)
+    {
+        const string original = """{"version":3,"futureKey":{"x":1}}""";
+        using var incoming = Zip([E("toolbar.json", original)]);
+        Assert.Equal(["toolbar.json"], Import(incoming).Written);
+        var store = new SettingsStore(Target);
+        var settings = store.Load();
+        var toolbarPath = Path.Combine(Target, "toolbar.json");
+        var loaded = ToolbarFile.Load(toolbarPath);
+        Assert.Null(loaded.Error);
+        if (editToolbar) ToolbarFile.Save(toolbarPath, loaded.Model with { Style = new ButtonStyle(2) });
+        else
+        {
+            settings.Chat.Memory = false;
+            store.Save(settings);
+        }
+        using var outgoing = Export(Target, [SettingsCategory.Toolbar], out _);
+        using var archive = new ZipArchive(outgoing);
+        var saved = ExportedJson(archive, "toolbar.json");
+        Assert.True(saved.AsObject().ContainsKey("futureKey"));
+        if (!editToolbar) Assert.Equal(original, ReadEntry(archive, "toolbar.json"));
+        else Assert.False(Directory.Exists(Path.Combine(Target, "backups"))); // own imported bytes need no save backup
+    }
+
+    [Theory]
+    [InlineData(SettingsCategory.Settings)]
+    [InlineData(SettingsCategory.Toolbar)]
+    public void Compat_partial_categories_keep_unselected_files_through_load_edit_export(SettingsCategory selected)
+    {
+        var source = SettingsStore.Normalize(new HotlineSettings());
+        source.Window.Width = new Hotline.Core.Windowing.PanelWidth(55, true);
+        using var incoming = Zip([E("settings.json", SettingsStore.Serialize(source)), E("toolbar.json", CompatToolbar), ("icons/quick.png", Png16), E("actions/summarize.md", "incoming action")]);
+        var existing = SettingsStore.Normalize(new HotlineSettings());
+        existing.Window.Width = new Hotline.Core.Windowing.PanelWidth(35, true);
+        Put(Target, "settings.json", SettingsStore.Serialize(existing));
+        const string originalToolbar = """{"version":3,"shortcuts":{"pin":"Ctrl+Alt+9"}}""";
+        Put(Target, "toolbar.json", originalToolbar);
+        Put(Target, "actions/summarize.md", "existing action");
+        var imported = Import(incoming, selected);
+        Assert.Equal(selected == SettingsCategory.Settings ? new[] { "settings.json" } : ["icons/quick.png", "toolbar.json"], imported.Written.Order(StringComparer.Ordinal));
+        var store = new SettingsStore(Target);
+        var settings = store.Load();
+        Assert.Equal(selected == SettingsCategory.Settings ? 55 : 35, settings.Window.Width.Value);
+        settings.Diagnostics.VerboseLogging = true;
+        store.Save(settings);
+        var loaded = ToolbarFile.Load(Path.Combine(Target, "toolbar.json"));
+        Assert.Null(loaded.Error);
+        if (selected == SettingsCategory.Toolbar) Assert.Equal(2, loaded.Model.Buttons.Count);
+        else Assert.Equal(originalToolbar, File.ReadAllText(Path.Combine(Target, "toolbar.json")));
+        Assert.Equal("existing action", File.ReadAllText(Path.Combine(Target, "actions/summarize.md")));
+        using var outgoing = Export(Target, [selected], out _);
+        using var archive = new ZipArchive(outgoing);
+        var names = archive.Entries.Where(e => e.FullName != SettingsPackage.ManifestName).Select(e => e.FullName).Order(StringComparer.Ordinal);
+        Assert.Equal(imported.Written.Order(StringComparer.Ordinal), names);
+        if (selected == SettingsCategory.Settings) Assert.True((bool)ExportedJson(archive, "settings.json")["diagnostics"]!["verboseLogging"]!);
+        else Assert.Equal("Ctrl+Alt+1", (string)ExportedJson(archive, "toolbar.json")["buttons"]!["quick"]!["shortcut"]!);
     }
 
     // ---- logging helper ----------------------------------------------------------------------
@@ -652,5 +834,171 @@ public sealed class SettingsPackageTests : IDisposable
     {
         var text = SettingsPackage.LogName("actions/a\nb.md");
         Assert.DoesNotContain('\n', text);
+    }
+
+    // ---- execution review and confirmation (F1) ----------------------------------------------
+
+    [Fact]
+    public void Import_ExecutableConfigurationWithoutConfirmation_WritesNothing()
+    {
+        const string existingSettings = """{ "version": 1,"window":{"widthPercent":45}}""";
+        const string existingMcp = """{ "version": 1,"mcpServers":{},"approvals":{}}""";
+        Put(Target, "settings.json", existingSettings);
+        Put(Target, "mcp.json", existingMcp);
+
+        const string incomingSettings = """
+            // custom comment
+            {
+              "version": 1,
+              "unknownTop": 42,
+              "chat": {
+                "continueIn": [
+                  { "kind": "app", "name": "Run Tool", "command": "C:\\Tools\\runner.exe --chat {file}" }
+                ],
+                "defaultConnection": "claude-dev"
+              }
+            }
+            """;
+        const string incomingMcp = """
+            { "version": 1,
+              "mcpServers": {
+                "fs": {
+                  "command": "npx",
+                  "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Work"],
+                  "cwd": "C:\\Work",
+                  "env": { "NODE_ENV": "production" },
+                  "disabled": false
+                }
+              },
+              "approvals": {
+                "fs/*": "allow"
+              }
+            }
+            """;
+        const string incomingConn = """
+            { "version": 1,
+              "id": "claude-dev",
+              "type": "claudeCode",
+              "name": "Claude Dev",
+              "tools": "inherit",
+              "approveAllTools": true,
+              "cliPath": "C:\\Tools\\claude.exe",
+              "extraArgs": ["--mcp-config", "C:\\mcp.json"],
+              "args": ["--verbose"],
+              "continueIn": [
+                { "kind": "app", "name": "Local Editor", "command": "C:\\Tools\\edit.exe {file}" }
+              ]
+            }
+            """;
+
+        using var zip = Zip([
+            E("settings.json", incomingSettings),
+            E("mcp.json", incomingMcp),
+            E("connections/claude-dev.json", incomingConn),
+        ]);
+
+        var plan = SettingsPackage.PrepareImport(Target, zip, SettingsPackage.All);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("mcp.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("npx", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("@modelcontextprotocol/server-filesystem", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\Work", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("NODE_ENV=***", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.DoesNotContain("production", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("enabled: true", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("connections/claude-dev.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("claudeCode", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("inherit", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("approveAllTools: true", plan.ExecutionReview, StringComparison.OrdinalIgnoreCase);
+        Assert.Contains("C:\\Tools\\claude.exe", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("--mcp-config C:\\mcp.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("--verbose", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\Tools\\edit.exe {file}", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("settings.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("C:\\Tools\\runner.exe --chat {file}", plan.ExecutionReview, StringComparison.Ordinal);
+
+        Assert.False(Directory.Exists(Backups));
+        Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
+        Assert.Equal(existingMcp, File.ReadAllText(Path.Combine(Target, "mcp.json")));
+        Assert.False(File.Exists(Path.Combine(Target, "connections", "claude-dev.json")));
+
+        var unconfirmed = SettingsPackage.Import(plan, Backups, executionConfirmed: false, Now);
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Backup_ExecutionConfirmationRequired, unconfirmed.Error);
+        Assert.Empty(unconfirmed.Written);
+        Assert.Null(unconfirmed.BackupFolder);
+        Assert.False(Directory.Exists(Backups));
+        Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
+        Assert.Equal(existingMcp, File.ReadAllText(Path.Combine(Target, "mcp.json")));
+        Assert.False(File.Exists(Path.Combine(Target, "connections", "claude-dev.json")));
+
+        zip.Position = 0;
+        var wrapperResult = Import(zip);
+        Assert.Equal(Hotline.Core.Text.Localization.Strings.Backup_ExecutionConfirmationRequired, wrapperResult.Error);
+        Assert.Empty(wrapperResult.Written);
+        Assert.False(Directory.Exists(Backups));
+        Assert.Equal(existingSettings, File.ReadAllText(Path.Combine(Target, "settings.json")));
+    }
+
+    [Fact]
+    public void Import_ConfirmedExecutableConfiguration_PreservesReviewedBytesEvenIfSourceChanges()
+    {
+        Put(Target, "mcp.json", """{ "version": 1,"mcpServers":{},"approvals":{}}""");
+        const string reviewedMcp = "// reviewed comment\n{\"mcpServers\":{\"s\":{\"command\":\"npx\",\"args\":[\"a\"]}},\"approvals\":{\"s/*\":\"allow\"},\"extraField\":123}";
+        const string tamperedMcp = "{\"mcpServers\":{\"s\":{\"command\":\"evil.exe\"}},\"approvals\":{}}";
+
+        var zipPath = Path.Combine(_root, "pkg.zip");
+        using (var first = Zip([E("mcp.json", reviewedMcp)]))
+            File.WriteAllBytes(zipPath, first.ToArray());
+
+        PreparedImport plan;
+        using (var stream = new FileStream(zipPath, FileMode.Open, FileAccess.Read, FileShare.Read))
+            plan = SettingsPackage.PrepareImport(Target, stream, [SettingsCategory.Mcp]);
+
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("npx", plan.ExecutionReview, StringComparison.Ordinal);
+
+        // Replace the ZIP on disk before committing the prepared plan.
+        using (var second = Zip([E("mcp.json", tamperedMcp)]))
+            File.WriteAllBytes(zipPath, second.ToArray());
+
+        var result = SettingsPackage.Import(plan, Backups, executionConfirmed: true, Now);
+        Assert.Null(result.Error);
+        Assert.Equal(["mcp.json"], result.Written);
+        Assert.NotNull(result.BackupFolder);
+        Assert.Equal(reviewedMcp, File.ReadAllText(Path.Combine(Target, "mcp.json")));
+    }
+
+    [Fact]
+    public void PrepareImport_UnselectedExecutableCategories_DoNotEnterPlanOrRequireConfirmation()
+    {
+        using var zip = Zip([
+            E("mcp.json", """{ "version": 1,"mcpServers":{"s":{"command":"npx"}},"approvals":{"s/*":"allow"}}"""),
+            E("connections/cli.json", """{ "version": 1,"id":"cli","type":"claudeCode","name":"CLI","tools":"inherit","approveAllTools":true,"cliPath":"claude.exe"}"""),
+            E("settings.json", """{ "version": 1,"chat":{"continueIn":[{"kind":"app","name":"App","command":"app.exe"}]}}"""),
+            E("prompts/default.md", "Safe prompt."),
+        ]);
+
+        var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Prompts]);
+        Assert.False(plan.RequiresExecutionConfirmation);
+        Assert.Equal("", plan.ExecutionReview);
+
+        var result = SettingsPackage.Import(plan, Backups, executionConfirmed: false, Now);
+        Assert.Null(result.Error);
+        Assert.Equal(["prompts/default.md"], result.Written);
+        Assert.Equal(["prompts/default.md"], Relative(Target));
+    }
+
+    [Fact]
+    public void PrepareImport_ExistingMcpInteractingWithImportedInheritConnection_RequiresConfirmation()
+    {
+        Put(Target, "mcp.json", """{ "version": 1,"mcpServers":{"existing":{"command":"existing-server.exe"}},"approvals":{}}""");
+        using var zip = Zip([
+            E("connections/api.json", """{ "version": 1,"id":"api","type":"openAiCompatible","name":"API","tools":"inherit"}"""),
+        ]);
+
+        var plan = SettingsPackage.PrepareImport(Target, zip, [SettingsCategory.Connections]);
+        Assert.True(plan.RequiresExecutionConfirmation);
+        Assert.Contains("connections/api.json", plan.ExecutionReview, StringComparison.Ordinal);
+        Assert.Contains("existing-server.exe", plan.ExecutionReview, StringComparison.Ordinal);
     }
 }

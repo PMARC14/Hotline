@@ -5,78 +5,80 @@ Center › the submission › Store listings › Bahasa Indonesia. Product name 
 
 ## Deskripsi singkat
 
-Ubah tombol Copilot menjadi obrolan AI yang cepat dengan AI pilihan Anda: akun Claude atau Gemini Anda, kunci API Anda
-sendiri, atau model di PC Anda sendiri. Tekan tombol, bertanya, dan jawaban langsung mengalir.
+Terlanjur punya tombol Copilot, manfaatkan saja: panel obrolan AI native yang cepat untuk AI yang sudah Anda punya (Claude, Codex, Gemini), kunci API sendiri, atau model lokal. Tanpa akun di kami. Atur bilahnya dan bawa obrolan ke aplikasi lain.
 
 ## Deskripsi
 
-Tombol Copilot sudah ada di keyboard Anda, jadi manfaatkan saja. Hotline AI mengubahnya menjadi panel obrolan AI native
-yang cepat dan berbicara dengan AI pilihan Anda.
+Terlanjur punya tombol Copilot, manfaatkan saja sekalian. Hotline AI mengubahnya menjadi panel obrolan AI native yang cepat dan terhubung ke AI pilihan Anda.
 
-Tekan tombol dan panel terbuka di monitor tempat Anda bekerja, siap untuk mengetik. Ajukan pertanyaan, jawaban mengalir
-seketika, tekan tombol lagi dan panel menghilang. Tanpa tab browser, tanpa akun di kami.
+Tekan tombolnya dan panel terbuka di monitor yang sedang Anda gunakan, siap untuk mengetik. Tanyakan sesuatu, dapatkan jawaban yang mengalir, tekan lagi tombolnya dan panel pun hilang. Tanpa tab browser, tanpa perlu akun di kami.
 
-GUNAKAN AI YANG SUDAH ANDA MILIKI
-• Claude Code: memakai Claude Code yang terpasang beserta akunnya, jadi paket Claude Anda bekerja tanpa kunci API.
-• OpenAI Codex CLI: memakai Codex yang terpasang beserta akunnya, jadi paket ChatGPT Anda bekerja tanpa kunci API.
-• Antigravity CLI (agy): Gemini dengan akun Google Anda.
-• Kunci API Anda sendiri: Anthropic, Google Gemini, OpenAI, dan layanan kompatibel OpenAI lainnya seperti OpenRouter.
-• Model lokal: server bergaya OpenAI apa pun di PC Anda (misalnya llama.cpp atau LM Studio), sehingga tidak ada yang keluar dari komputer Anda.
-Pilih model, penyedia, dan seberapa keras ia berpikir langsung dari bilah panel.
+GUNAKAN AI YANG SUDAH ANDA PUNYA
+• Claude Code: menggunakan Claude Code yang terpasang dan sesi masuknya, jadi paket Claude Anda berfungsi tanpa kunci API.
+• OpenAI Codex CLI: menggunakan Codex yang terpasang dan sesi masuknya, jadi paket ChatGPT Anda berfungsi tanpa kunci API.
+• Antigravity CLI (agy): Gemini dengan sesi masuk Google Anda.
+• Kunci API Anda sendiri: Anthropic, Google Gemini, OpenAI, dan layanan lain yang kompatibel dengan OpenAI seperti OpenRouter.
+• Model lokal: server bergaya OpenAI apa pun di PC Anda (misalnya llama.cpp atau LM Studio), jadi tidak ada yang meninggalkan komputer Anda.
+Pilih model, penyedia, dan seberapa keras ia harus berpikir langsung dari bilah panel.
 
-BAWA KONTEKS ANDA
-• Teks yang Anda pilih di aplikasi lain otomatis dilampirkan saat Anda menekan tombol, dan bisa Anda hapus sebelum mengirim.
-• Tangkap jendela tempat Anda tadi, seluruh layar, atau area yang Anda seret; tempel atau letakkan gambar dan file.
-• Model yang tidak bisa melihat gambar akan menerima teks dari tangkapan layar Anda, dibaca di PC Anda dengan OCR bawaan Windows.
+BAWA KONTEKS BERSAMA ANDA
+• Teks yang Anda pilih di aplikasi lain otomatis dilampirkan saat Anda menekan tombolnya, dan Anda bisa menghapusnya sebelum mengirim.
+• Tangkap jendela yang sedang dibuka, seluruh layar, atau area yang Anda pilih; tempel atau seret gambar dan file.
+• Model yang tidak bisa melihat gambar akan menerima teks dari tangkapan layar Anda, yang dibaca di PC dengan OCR bawaan Windows.
 
-DIBUAT UNTUK PEKERJAAN CEPAT
-• Aksi cepat: ketik / untuk menerjemahkan, meringkas, memperbaiki, atau menjelaskan, atau tulis aksi Anda sendiri sebagai file teks sederhana.
-• Memori: "/remember saya lebih suka satuan metrik" dan setiap obrolan mengetahuinya, AI apa pun yang Anda pakai.
-• Suara: tahan tombol dan berbicara; lepaskan untuk berhenti.
-• Obrolan terbaru hanya sejauh satu klik.
-• Click to Do dan aksi Windows: kirim teks atau gambar ke Hotline AI dari aplikasi lain.
+DIBUAT UNTUK TUGAS CEPAT
+• Aksi cepat: ketik / untuk terjemahkan, ringkas, perbaiki, atau jelaskan, atau tulis aksi Anda sendiri sebagai file teks sederhana.
+• Memori: "/remember saya lebih suka satuan metrik" dan setiap obrolan mengetahuinya, AI mana pun yang Anda gunakan.
+• Suara: tahan tombol dan bicara; lepas untuk berhenti.
+• Obrolan terkini hanya berjarak satu klik, dalam daftar yang dapat dicari (Ctrl+H).
+• Click to Do dan tindakan Windows: kirim teks atau gambar ke Hotline AI dari aplikasi lain.
+• Continue in: bawa obrolan ke terminal, Open WebUI, UI web llama.cpp, LM Studio, atau target Anda sendiri saat Anda butuh ruang lebih.
+• Pintasan untuk tombol di bilah saat panel memiliki fokus: obrolan baru, obrolan terkini, Pengaturan, sematkan, tangkapan layar, dan pemilih. Tombol Anda sendiri juga bisa memilikinya. Pintasan butuh Ctrl, Alt, atau Win, jadi tidak akan mengganggu saat mengetik.
+• Notifikasi Windows memberi tahu Anda saat jawaban selesai ketika Anda sedang membuka aplikasi lain.
 
 NATIVE, RINGAN, DAN MILIK ANDA
-• Dibuat dengan WinUI 3: cepat dibuka, mengikuti tema terang atau gelap Anda, tanpa browser tertanam.
-• Jawaban yang kaya: judul, daftar, tabel, kode dengan tombol Salin, rumus matematika, dan gambar sederhana.
-• Semuanya berupa file yang bisa Anda edit: pengaturan, koneksi, prompt, dan tombol di bilah.
-• Alat, dengan hati-hati: koneksi API dapat memakai alat dari server MCP Anda; apa pun yang mengubah sesuatu akan bertanya dulu.
+• Dibangun dengan WinUI 3: cepat terbuka, mengikuti tema terang atau gelap Anda, tanpa browser tersemat. Native di x64 dan ARM64.
+• Jawaban kaya format: judul, daftar, tabel, kode dengan tombol Salin, rumus matematika, dan gambar sederhana.
+• Tahan Alt untuk memindahkan atau mengubah ukuran panel; sematkan, dan pilih apakah obrolan memanjang ke atas atau ke bawah.
+• Semuanya berupa file biasa yang bisa Anda edit: pengaturan, koneksi, prompt, tombol di bilah.
+• Atur bilah sesuai keinginan Anda: seret tombol antar-baris di Pengaturan, tambahkan tombol dengan gambar Anda sendiri, dan simpan yang jarang dipakai di menu Lainnya.
+• Pengaturan > Cadangan memindahkan konfigurasi Anda ke PC lain. Kunci API tidak pernah diekspor, dan file yang diganti Hotline dicadangkan terlebih dahulu.
+• Alat, dengan cermat: koneksi API dapat menggunakan alat dari server MCP Anda; apa pun yang mengubah sesuatu akan meminta persetujuan Anda terlebih dahulu.
+• Tombol Copilot juga bisa berfungsi sebagai tombol Ctrl Kanan, jika Anda lebih suka itu.
 
-PRIVASI SEJAK AWAL
-Hotline AI tidak punya server dan tidak mengumpulkan apa pun: tanpa akun, tanpa analitik, tanpa iklan. Pesan Anda hanya
-dikirim ke layanan AI pilihan Anda, sesuai ketentuan layanan itu. Kunci API tetap di Manajer Kredensial Windows;
-riwayat, pengaturan, dan memori tetap di PC Anda. Gratis dan sumber terbuka.
+DIRANCANG PRIVAT
+Hotline AI tidak memiliki server dan tidak mengumpulkan apa pun: tanpa akun, tanpa analitik, tanpa iklan. Pesan Anda hanya dikirim ke layanan AI yang Anda pilih, di bawah ketentuan layanan tersebut. Kunci API tetap berada di Windows Credential Locker; riwayat, pengaturan, dan memori tetap berada di PC Anda. Gratis dan sumber terbuka.
 
-Tidak punya tombol Copilot? Atur pintasan apa pun yang Anda suka, misalnya Ctrl+Alt+H.
+Tidak ada tombol Copilot? Atur pintasan apa pun yang Anda suka, misalnya Ctrl+Alt+H.
 
-Hotline AI adalah aplikasi independen dan tidak berafiliasi dengan atau didukung oleh Microsoft, Anthropic, Google,
-atau OpenAI. Menggunakan Claude Code, Codex, Antigravity CLI, atau API AI memerlukan akun Anda sendiri di layanan tersebut.
+Hotline AI adalah aplikasi independen dan tidak berafiliasi dengan atau didukung oleh Microsoft, Anthropic, Google, atau OpenAI. Menggunakan Claude Code, Codex, Antigravity CLI, atau API AI memerlukan akun Anda sendiri di layanan tersebut.
 
 ## Yang baru di versi ini
 
-Pilih warna aksen Anda (ungu Hotline, aksen Windows, atau warna apa pun) dan tema Kontras tinggi yang baru; Hotline juga mengikuti tema kontras dan pengaturan transparansi Windows. Riwayat obrolan terbuka sebagai daftar yang bisa dicari (tombol riwayat, Ctrl+↑, atau /resume). Atur pintasan tambahan cukup dengan menekannya. Tindakan cepat baru: /reply, /shorter, /formal, dan /bullets. Blok kode bisa digulir ke samping, dan panel mengikuti jawaban saat muncul.
+Pindahkan dan ubah ukuran panel: tahan Alt untuk pegangan, sematkan, dan simpan posisi serta ukurannya. Obrolan memanjang ke atas atau bawah dan bisa terbuka lebih lebar. Atur baris tombol di Pengaturan: seret tombol antara kiri, tengah, dan kanan, tambahkan tombol sendiri dengan gambar, lalu gunakan menu Lainnya. Tombol kini tersebar merata di bilah. Setiap perintah bilah punya pintasan keyboard yang dapat diubah, termasuk Hentikan. Lanjutkan obrolan di terminal, Open WebUI, llama.cpp, LM Studio, atau target Anda sendiri. Pengaturan > Cadangan mengekspor dan mengimpor setelan Anda, tanpa kunci API. Lebar memakai piksel atau persen layar, dan tampil sama di skala Windows mana pun. Alat MCP: "Selalu izinkan" diingat di PC ini dan dapat dicabut di Pengaturan > Alat, dan rahasia server bisa dipindah ke Windows Credential Locker. Baru juga: indikator berpikir, suara buka dan tutup, /resume saat mengetik, dan obrolan CLI yang dibuka kembali menampilkan pesannya. File lebih aman: file lebih baru tak pernah ditimpa, kunci tak dikenal dipertahankan, dan file terganti dicadangkan dalam satu folder. Saya memperbaiki fokus tombol Copilot di Windows 11 26H2, tangkap jendela dari tombol, perubahan monitor dan skala, serta banyak masalah aksesibilitas dan keamanan. Pembaruan ini mereset pengaturan dan baris tombol sekali ke format file baru; koneksi Anda tetap ada dan file lama disimpan di folder cadangan.
 
 ## Fitur produk
 
 1. Terbuka dengan tombol Copilot (atau pintasan apa pun) di monitor tempat Anda bekerja, siap mengetik
 2. Bekerja dengan akun Claude Code, ChatGPT (Codex CLI), atau Gemini (Antigravity CLI) Anda: tanpa kunci API
-3. Kunci Anda sendiri: Anthropic, Google Gemini, OpenAI, dan API kompatibel OpenAI
-4. Model lokal: server bergaya OpenAI apa pun di PC Anda, tidak ada yang keluar dari komputer
-5. Pilih model, penyedia, dan upaya penalaran dari panel
-6. Teks yang dipilih di aplikasi asal otomatis dilampirkan
+3. Kunci Anda sendiri: Anthropic, Google Gemini, OpenAI, dan API yang kompatibel dengan OpenAI
+4. Model lokal: server bergaya OpenAI apa pun di PC Anda, sehingga obrolan tetap di komputer Anda
+5. Pilih model, penyedia, dan upaya penalaran langsung dari panel
+6. Teks yang dipilih dari aplikasi asal dilampirkan secara otomatis
 7. Tangkap jendela, layar, atau area; tempel atau letakkan gambar dan file
 8. Teks di tangkapan layar dibaca di PC Anda (OCR) untuk model yang tidak bisa melihat gambar
-9. Aksi cepat: /translate, /summarize, /fix, /explain, atau milik Anda sendiri
-10. Memori yang dilihat setiap obrolan, AI apa pun yang dipakai
-11. Input suara dengan menahan tombol
-12. Kirim teks atau gambar dari Click to Do dan aplikasi lain
-13. Jawaban yang kaya: tabel, kode yang bisa disalin, rumus, dan gambar
-14. WinUI 3 native, mengikuti tema terang atau gelap Anda
-15. Semuanya file yang bisa diedit: pengaturan, koneksi, prompt, bilah
-16. Alat opsional dari server MCP Anda, dengan persetujuan sebelum setiap perubahan
-17. Tanpa akun, analitik, atau iklan; kunci tetap di Manajer Kredensial Windows
-18. Gratis dan sumber terbuka
-19. Native di PC x64 dan ARM64
+9. Aksi cepat: /translate, /summarize, /fix, /explain, dan lainnya, atau file teks Anda sendiri
+10. Memori yang dilihat setiap obrolan, AI apa pun yang Anda pakai
+11. Input suara tekan-bicara menggunakan pengenalan suara daring Windows
+12. Kirim teks atau gambar dari Click to Do dan aplikasi lain; lanjutkan obrolan di terminal, Open WebUI, llama.cpp, atau LM Studio
+13. Jawaban yang kaya: tabel, kode dengan tombol Salin, rumus matematika, dan gambar
+14. WinUI 3 native di x64 dan ARM64; tema terang, gelap, dan kontras, warna aksen Anda, tanpa browser tertanam
+15. Tarik dan lepas baris tombol di Pengaturan; tombol kustom dengan gambar Anda sendiri, menu Lainnya, dan lebar pemilih terpisah
+16. Alat MCP opsional untuk koneksi API; perubahan meminta izin dulu kecuali jika Anda telah mengizinkannya
+17. Tanpa akun Hotline, analitik, atau iklan; kunci API tetap di Manajer Kredensial Windows; gratis dan sumber terbuka
+18. Pengaturan, koneksi, prompt, dan toolbar.json yang dapat diedit; nilai salah memunculkan peringatan, cadangan melindungi editan Anda
+19. Pengaturan > Cadangan mengekspor dan mengimpor pengaturan, bilah, MCP, suara, koneksi, aksi cepat, dan prompt; tanpa kunci API
+20. Pintasan dalam panel untuk tombol bilah, termasuk tombol Anda; pindahkan, sematkan, dan ubah ukuran panel, dengan lebar piksel dan opsi obrolan lebih lebar
 
 ## Keterangan tangkapan layar
 
@@ -87,4 +89,4 @@ Pilih warna aksen Anda (ungu Hotline, aksen Windows, atau warna apa pun) dan tem
 
 ## Istilah pencarian
 
-obrolan AI, tombol Copilot, Claude, Gemini, asisten AI, LLM, AI lokal
+Asisten obrolan AI, Pintasan tombol Copilot, Integrasi Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Kompatibel OpenRouter, LLM lokal llama.cpp

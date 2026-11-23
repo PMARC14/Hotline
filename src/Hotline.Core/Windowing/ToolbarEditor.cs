@@ -10,6 +10,16 @@ public enum Shift { Left, Right, Up, Down }
 /// </summary>
 public static class ToolbarEditor
 {
+    /// <summary>Changes an explicit override. Empty disables; null resets to the shipped default.</summary>
+    public static ToolbarModel SetShortcut(ToolbarModel model, string id, string? text)
+    {
+        var command = Settings.ChatShortcuts.Defaults.Keys.FirstOrDefault(k => k.Equals(id, StringComparison.OrdinalIgnoreCase));
+        if (command is null) return model;
+        var map = model.Shortcuts is null ? new System.Text.Json.Nodes.JsonObject() : (System.Text.Json.Nodes.JsonObject)model.Shortcuts.DeepClone();
+        foreach (var key in map.Select(p => p.Key).Where(k => k.Equals(id, StringComparison.OrdinalIgnoreCase)).ToList()) map.Remove(key);
+        if (text is not null) map[command] = text;
+        return model with { Shortcuts = map };
+    }
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
     /// <summary>Moves an item <paramref name="delta"/> places within its quadrant, stopping at the ends.</summary>
@@ -58,7 +68,7 @@ public static class ToolbarEditor
     /// <summary>Puts a button (on the bar, in "Not shown" or already in the menu) at gap <paramref name="index"/> of the "more" button's
     /// menu (0 = first, Count = last; clamped). With no more button on the bar one is added at the end of the bottom-right group, as the
     /// menu is ignored without it. Pickers and the more button itself can't go in; the input comes back for those, for an unknown id and
-    /// when nothing changes. Its style override goes, as in <see cref="Hide"/>.</summary>
+    /// when nothing changes. Its style override is kept.</summary>
     public static ToolbarModel MoveToMenu(ToolbarModel m, string id, int index)
     {
         if (m is null || Known(m, id) is not { } c || ToolbarPlan.Stays(c)) return m!;
@@ -73,9 +83,7 @@ public static class ToolbarEditor
             menu.RemoveAt(own);
         }
         menu.Insert(at, c);
-        var overrides = Overrides(m);
-        overrides.Remove(c);
-        return Strict(m, With(m, lists) with { Menu = menu, Overrides = overrides });
+        return Strict(m, With(m, lists) with { Menu = menu });
     }
 
     /// <summary>A drag-and-drop onto the "more" menu card: <see cref="MoveToMenu"/>.</summary>
@@ -106,7 +114,7 @@ public static class ToolbarEditor
     {
         if (m is null) return m!;
         List<string> Overflow(ToolbarModel planned) => new[] { (Top: false, Room: bottomRoom), (Top: true, Room: topRoom) }
-            .SelectMany(r => { var f = ToolbarPlan.PlanRow(planned, r.Top, r.Room, RowSpacing); return f.Dropped.Concat(f.RightDropped); })
+            .SelectMany(r => { var f = ToolbarPlan.PlanRow(planned, r.Top, r.Room, RowSpacing, fill: planned.Style.Fill == true); return f.Dropped.Concat(f.RightDropped); })
             .Distinct().ToList();
         if (Overflow(m).Count == 0) return m;
         var lists = Lists(m);
@@ -114,10 +122,8 @@ public static class ToolbarEditor
         var overflow = Overflow(With(m, lists));
         if (overflow.Count == 0) return m;
         foreach (var list in lists.Values) list.RemoveAll(x => overflow.Contains(x));
-        var overrides = Overrides(m);
-        foreach (var id in overflow) overrides.Remove(id);
         var menu = m.Menu.Concat(overflow.Where(id => !m.Menu.Contains(id))).ToList();
-        return Strict(m, With(m, lists) with { Menu = menu, Overrides = overrides });
+        return Strict(m, With(m, lists) with { Menu = menu });
     }
 
     /// <summary>A drag-and-drop in Settings: the item (shown or not) goes to gap <paramref name="index"/> of
@@ -150,8 +156,7 @@ public static class ToolbarEditor
         (true, 0) => Quadrant.TopLeft, (true, 1) => Quadrant.TopCenter, _ => Quadrant.TopRight,
     };
 
-    /// <summary>Takes an item off the bar (to "Not shown"); its style override goes with it, as <see cref="ToolbarModel.Resolve"/>
-    /// keeps overrides only for shown items (a picker's span and look stay: see <see cref="SetPickerSpan"/>).</summary>
+    /// <summary>Takes an item off the bar (to "Not shown"), keeping its style override and picker span.</summary>
     public static ToolbarModel Hide(ToolbarModel m, string id)
     {
         if (m is null) return m!;
@@ -159,11 +164,9 @@ public static class ToolbarEditor
             return InMenu(m, id) is { } entry ? Strict(m, m with { Menu = [.. m.Menu.Where(x => x != entry)] }) : m;
         var lists = Lists(m);
         lists[at.Quadrant].Remove(at.Id);
-        var overrides = Overrides(m);
-        if (!ToolbarPlan.IsPicker(at.Id)) overrides.Remove(at.Id); // a picker keeps its span and look, shown or not
         // The menu is ignored without a more button, so its entries go back to "Not shown" with it.
         var menu = at.Id == ToolbarModel.MoreId ? [] : m.Menu;
-        return Strict(m, With(m, lists) with { Overrides = overrides, Menu = menu });
+        return Strict(m, With(m, lists) with { Menu = menu });
     }
 
     /// <summary>Puts a hidden item at the end of <paramref name="q"/>. An item already shown stays where it is (moving is
@@ -180,7 +183,7 @@ public static class ToolbarEditor
     }
 
     /// <summary>Adds a custom button, shown at the end of the bottom-left group. Rejected (input returned) for an id that
-    /// isn't 1-32 characters a-z, 0-9 or -, is a built-in or already used, past 24 buttons, or for a button
+    /// isn't 1-32 ASCII letters, digits or -, is a built-in or already used, past 24 buttons, or for a button
     /// <see cref="ToolbarModel.Resolve"/> would drop; label, text and icon are clamped like Resolve does.</summary>
     public static ToolbarModel AddCustom(ToolbarModel m, CustomButton b)
     {
@@ -194,11 +197,11 @@ public static class ToolbarEditor
     public static ToolbarModel UpdateCustom(ToolbarModel m, CustomButton b)
     {
         if (m is null || !OneAction(b) || b.Id is null) return m!;
-        var i = m.Buttons.ToList().FindIndex(x => x.Id == b.Id);
+        var i = m.Buttons.ToList().FindIndex(x => x.Id.Equals(b.Id, StringComparison.OrdinalIgnoreCase));
         if (i < 0) return m;
         var buttons = m.Buttons.ToList();
-        buttons[i] = b;
-        return Lenient(m, m with { Buttons = buttons }, b.Id);
+        buttons[i] = b with { Id = buttons[i].Id };
+        return Lenient(m, m with { Buttons = buttons }, buttons[i].Id);
     }
 
     /// <summary>Deletes a custom button, its place on the bar and its style override.</summary>
@@ -217,7 +220,7 @@ public static class ToolbarEditor
 
     /// <summary>Sets the whole bar's style (<paramref name="id"/> null; unset fields get the defaults) or one item's override (unset
     /// fields inherit; an empty style removes it). The width is <c>Width</c> in cells (0.5, 1, 2, 3 or 4; anything else is read back
-    /// as unset); every button stays one cell high. A shown button takes any field; a picker (shown or not) takes the look only (outline,
+    /// as unset); every button stays one cell high. Any known button takes the fields; a picker takes the look only (outline,
     /// outline colour, filled): its width is its span, so a width given for it is dropped.</summary>
     public static ToolbarModel SetStyle(ToolbarModel m, string? id, ButtonStyle s)
     {
@@ -226,7 +229,7 @@ public static class ToolbarEditor
         var overrides = Overrides(m);
         string key;
         if (ToolbarModel.Pickers.FirstOrDefault(p => p.Equals(id, StringComparison.OrdinalIgnoreCase)) is { } picker) { key = picker; s = s with { Width = null }; }
-        else if (Placed(m, id) is { } at) key = at.Id;
+        else if (Known(m, id) is { } known) key = known;
         else return m;
         if (s == new ButtonStyle()) overrides.Remove(key);
         else overrides[key] = s;

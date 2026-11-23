@@ -1,5 +1,7 @@
 using System.Text.RegularExpressions;
 using Hotline.Core.Platform;
+using Hotline.Core.Chat;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Activation;
 
@@ -16,9 +18,17 @@ public sealed partial record AppActionRequest(string? QuickAction, string? Text,
     /// <summary>Packages that are part of Windows end with this publisher id.</summary>
     private const string WindowsPublisherId = "_cw5n1h2txyewy";
 
-    public bool AutoSend => QuickAction is not null && FromWindows && (Text is not null || ImagePath is not null);
+    public bool ProtocolForResults { get; init; }
+    public bool HasInputText { get; init; }
+    public bool AutoSend => QuickAction is not null && FromWindows && ProtocolForResults && HasInputText;
 
-    public static AppActionRequest? Parse(Uri? uri, IReadOnlyDictionary<string, string>? inputs, string? callerPackageFamily)
+    public string DraftAfter(string draft) => QuickAction is { } name && (FromWindows || draft.Length == 0) ? $"/{name}" : draft;
+
+    public Attachment? TextAttachment() => SelectionAttachment.Create(Text, null) is { } attachment
+        ? FromWindows ? attachment : attachment with { Name = Strings.Attach_FromLink }
+        : null;
+
+    public static AppActionRequest? Parse(Uri? uri, IReadOnlyDictionary<string, string>? inputs, string? callerPackageFamily, bool protocolForResults = false)
     {
         if (uri is null || !string.Equals(uri.Scheme, Scheme, StringComparison.OrdinalIgnoreCase)) return null;
         string? quickAction = null;
@@ -33,6 +43,7 @@ public sealed partial record AppActionRequest(string? QuickAction, string? Text,
         // Added one by one: "text" and "Text" among the inputs must not throw (a case-insensitive copy would).
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
         foreach (var (key, value) in inputs ?? new Dictionary<string, string>()) values.TryAdd(key, value);
+        var hasInputText = values.TryGetValue("text", out var inputText) && !string.IsNullOrWhiteSpace(inputText);
         foreach (var (key, value) in UriQuery.Pairs(uri.Query)) values.TryAdd(key, value);
         var text = values.TryGetValue("text", out var t) && !string.IsNullOrWhiteSpace(t) ? (t.Length > MaxTextChars ? t[..MaxTextChars] : t) : null;
         var fromWindows = IsWindowsCaller(callerPackageFamily);
@@ -43,7 +54,8 @@ public sealed partial record AppActionRequest(string? QuickAction, string? Text,
         if (!fromWindows || image is null || !IsSafeLocalImagePath(image)) image = null;
         if (wantedImage && image is null) return null; // an image we won't open: ignore the launch
         if (text is null && image is null) return null;
-        return new AppActionRequest(quickAction, text, image, fromWindows);
+        return new AppActionRequest(quickAction, text, image, fromWindows)
+        { ProtocolForResults = protocolForResults, HasInputText = hasInputText };
     }
 
     public static bool IsWindowsCaller(string? callerPackageFamily) =>

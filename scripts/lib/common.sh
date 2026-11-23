@@ -13,7 +13,7 @@ winpath() { if command -v cygpath >/dev/null 2>&1; then cygpath -w "$1"; else pr
 xml_escape() { local s=$1; s=${s//&/&amp;}; s=${s//</&lt;}; s=${s//>/&gt;}; s=${s//\"/&quot;}; printf '%s' "$s"; }
 
 # Escapes a replacement string for sed (& \ and the | delimiter).
-sed_escape() { printf '%s' "$1" | sed -e 's/[&\|]/\&/g'; }
+sed_escape() { printf '%s' "$1" | sed -e 's/[&\\|]/\\&/g'; }
 
 # Reads an <Identity> attribute (Name, Publisher, Version) from the manifest.
 identity_attr() { grep -o "<Identity [^>]*" "$MANIFEST" | grep -o " $1=\"[^\"]*\"" | head -1 | sed -E 's/^ [A-Za-z]+="(.*)"$/\1/'; }

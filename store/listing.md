@@ -1,11 +1,114 @@
-# Microsoft Store listing — Hotline AI
+# Microsoft Store listing: Hotline AI
 
 Copy each field into Partner Center › your app › the submission › **Store listings** › English. The other languages'
-text is in `store/listings/<language>.md` (model-drafted; add those listings in Partner Center with *Add languages*). Limits are Partner
+text is in `store/listings/<language>.md` (model-drafted; paste each into that language's listing, see step 4 below). Limits are Partner
 Center's. Images: `scripts/make-store-art.sh` (poster, box art, logos) and `scripts/make-store-media.sh` (screenshots
-and trailer, captured from the installed app); output in `artifacts/store/`.
+and trailer, captured from the installed app); output in `artifacts/store/`. Per-language images:
+`scripts/make-store-panels.sh` (captures each language's panels; turns on diagnostics.testLinks temporarily) and then
+`scripts/make-store-localized.sh` (headless, no screen): `artifacts/store/<lang>/screenshot-1..4.png`, `poster-1440x2160.png` and
+`boxart-2160x2160.png` for English and the 16 languages, with each language's captions, tagline and a panel in that language
+(the demo conversation is interface text). The logos have no text and are shared. For the English panel alone,
+`scripts/make-store-media.sh --no-video` is enough.
+
+The English **Short description** and **Description** match Partner Center, with translations in `store/listings/<language>.md`.
 
 ---
+
+## Submission guide: what to paste and change in Partner Center (Store version 0.7.N.0)
+
+Do these in order. "Paste" means copy the text from the section of this file with the same name. Nothing here is submitted until
+you press **Submit to the Store** at the end. The Store version is the Hotline version with `.0` added (0.7.1 becomes 0.7.1.0);
+below, 0.7.N.0 stands for the bundle you built, and it must be higher than the last version uploaded.
+
+### 1. Start the update
+
+1. Partner Center › Apps and games › **Hotline AI** › **Start update**.
+2. **Pricing and availability**: no change (free).
+3. **Properties**: check against *Properties (suggested)* below. Change the category, the system requirements or the Generative AI
+   notes only if they differ.
+4. **Age ratings**: no change unless the questionnaire asks something new.
+
+### 2. Packages
+
+1. Get the bundle: GitHub › Actions › **Store** › **Run workflow** with the version in three parts (for example `0.7.1`, no `.0`)
+   and *Submit* off, then download the artifact `hotline-store-0.7.1.0` (it holds `HotlineAI_0.7.1.0_Store.msixbundle`, one file for
+   x64 and ARM64). See [RELEASING.md](../docs/RELEASING.md).
+2. **Packages** page: remove the old package, drag in the new `.msixbundle`, wait for validation (a few minutes). The version must
+   read 0.7.N.0 (Store versions end in `.0`).
+3. **Notes for certification** (the free-text box under **Submission options**, near the end): paste the Generative AI text from
+   *Properties* below, plus: "Needs the user's own Claude/Codex/Gemini sign-in or API key to chat. To test without an account, add a connection of
+   type 'Local endpoint' or use any OpenAI-compatible API key."
+
+### 3. Store listing: English (United States)
+
+| Field in Partner Center | What to do |
+|---|---|
+| Description | Paste **Description** below. It replaces the old text. |
+| What's new in this version | Paste **What's new in this version** below. |
+| Product features | Replace all 20 with **Product features** below. The old set is shorter: no Codex, Continue in, shortcuts, Backup or button rows. Paste one per box, without the leading "1." to "20." numbers. |
+| Screenshots (Desktop) | Keep the 4 and their captions (they match **Screenshot captions**). Optional: add a 5th of Settings > Window > Button rows, and one of Settings > Backup. |
+| Trailer | No change. |
+| Short description (under *Supplemental fields*) | Empty today. Paste **Short description** below (232 characters; the limit is 270). |
+| Keywords | Replace your seven with the set under **Search terms** below: one comma-separated term per box (7 terms, at most 40 characters each, 21 words in all). |
+| Copyright and trademark info | **Change it.** Paste **Copyright and trademark info** below. It now leads with Apache 2.0 and says the MIT license is only for the Microsoft Fluent Emoji artwork. |
+| **Additional license terms** | **Change it.** It says "MIT License: …". Hotline is Apache 2.0. Paste **Additional license terms** below. The Fluent Emoji line in the copyright box stays (that artwork is MIT). |
+| Developed by | No change (PMARC14). |
+| Product name | Keep **Product name** below (Hotline AI). |
+| Privacy policy, Website, Support | Check the URLs against **Links** below. |
+| Short title | Paste **Short title** below. |
+| Voice title | Leave empty (Xbox only). |
+| Store logos / images | No change. |
+
+### 4. The other languages (one listing per package language)
+
+The Store listing languages are the ones the package declares: English (United States) plus the 16 below, which come from the
+`src/Hotline.App/Strings/<tag>/` folders ([Translations](../README.md#translations)). There is no separate "additional languages"
+section any more (that was for region-specific listings, and it was removed): every language in the package list gets its own
+listing, and Partner Center asks for all of them before you can submit. Open each language from the **Store listings** page and
+paste, from `store/listings/<file>`, the **Short description**, **Description**, **What's new**, **Product features**,
+**Screenshot captions** and **Search terms** (each file has them as sections in the same order; the headings are in that
+language), set the product name to `Hotline AI`, and upload that language's pictures from `artifacts/store/<lang>/`
+(`screenshot-1..4.png`, `poster-1440x2160.png`, `boxart-2160x2160.png`). The shared fields (license, copyright, developer,
+trailer, logos, short title) are entered once, not per language.
+
+| Partner Center language | File |
+|---|---|
+| Chinese (Simplified) | `zh-Hans.md` |
+| Chinese (Traditional) | `zh-Hant.md` |
+| Dutch | `nl.md` |
+| French | `fr.md` |
+| German | `de.md` |
+| Hindi | `hi.md` |
+| Indonesian | `id.md` |
+| Italian | `it.md` |
+| Japanese | `ja.md` |
+| Korean | `ko.md` |
+| Polish | `pl.md` |
+| Portuguese (Brazil) | `pt-BR.md` |
+| Spanish | `es.md` |
+| Turkish | `tr.md` |
+| Ukrainian | `uk.md` |
+| Vietnamese | `vi.md` |
+
+Notes: a language left "Not started" blocks submission. To drop a language, remove it from the package (its `Strings/<tag>` folder and
+`Languages.Supported`), not from the page. No regional variants are needed: the Store shows a user the listing of their language
+whatever their region (after it is live, check the Spanish page from a Latin American setting). The translations are
+model-drafted; a native speaker should skim them. Pictures per language (screenshots with translated captions and a translated
+panel, poster and box art): `scripts/make-store-panels.sh` then `scripts/make-store-localized.sh`, output in
+`artifacts/store/<lang>/`; upload them on that language's listing (the logos are shared).
+
+### 5. Submit
+
+1. Re-read the English page once (Description, What's new, 20 features, short description).
+2. **Submit to the Store**. Certification usually takes a few days. The update goes live when it passes.
+3. After it is live: open the Store page on this PC, install it, check that Settings > About shows the version (0.7.N), and check the Spanish
+   page from another region.
+
+---
+
+## Short title
+
+Hotline
 
 ## Product name
 
@@ -13,8 +116,7 @@ Hotline AI
 
 ## Short description (shown near the top; keep it under ~270 characters)
 
-Turn the Copilot key into a fast AI chat that uses the AI you choose: your Claude or Gemini sign-in, your own API key,
-or a model on your own PC. Press the key, ask, and get a streamed answer.
+You're stuck with the Copilot key, so use it: a fast, native AI chat panel for the AI you already have (Claude, Codex, Gemini), your own API key or a local model. No account with us. Arrange the bar and take the chat to another app.
 
 ## Description (up to 10,000 characters)
 
@@ -43,13 +145,23 @@ MADE FOR QUICK JOBS
 • Quick actions: type / for translate, summarize, fix or explain, or write your own as simple text files.
 • Memory: "/remember I prefer metric units" and every chat knows it, whichever AI you use.
 • Voice: hold the key and talk; let go to stop.
-• Recent chats are one click away.
+• Recent chats are one click away, in a searchable list (Ctrl+H).
 • Click to Do and Windows actions: send text or an image to Hotline AI from other apps.
+• Continue in: take the chat to a terminal, Open WebUI, the llama.cpp web UI, LM Studio or your own target when you
+  need more room.
+• Shortcuts for the bar's buttons while the panel has focus: new chat, recent chats, Settings, pin, captures and the
+  pickers. Your own buttons can have one too. They need Ctrl, Alt or Win, so typing is never touched.
+• A Windows notification tells you when an answer finishes while you're elsewhere.
 
 NATIVE, LIGHT AND YOURS
-• Built with WinUI 3: fast to open, follows your light or dark theme, no embedded browser.
+• Built with WinUI 3: fast to open, follows your light or dark theme, no embedded browser. Native on x64 and ARM64.
 • Rich answers: headings, lists, tables, code with a Copy button, math and simple drawings.
+• Hold Alt to move or resize the panel; pin it, and choose whether the chat grows up or down.
 • Everything is a plain file you can edit: settings, connections, prompts, the buttons in the bar.
+• Arrange the bar your way: drag buttons between rows in Settings, add your own buttons with your own pictures, and
+  keep less-used ones in a More menu.
+• Settings > Backup moves your setup to another PC. API keys are never exported, and a file Hotline replaces is backed
+  up first.
 • Tools, carefully: API connections can use tools from your MCP servers; anything that changes something asks you
   first.
 
@@ -65,29 +177,30 @@ Claude Code, Codex, the Antigravity CLI or an AI API requires your own account w
 
 ## What's new in this version
 
-Pick your accent colour (Hotline purple, your Windows accent or any colour) and a new High contrast theme; Hotline also follows Windows' contrast themes and transparency setting. Your chat history opens as a searchable list (history button, Ctrl+↑ or /resume). Set the extra shortcut by simply pressing it. New quick actions: /reply, /shorter, /formal and /bullets. Code blocks scroll sideways, and the panel follows answers as they stream in.
+Move and resize the panel: hold Alt for grips, pin it, and save its position and size. The chat grows up or down and can open wider. Arrange the button rows in Settings: drag buttons between left, centre and right, add your own with pictures, and use a More menu. Buttons now spread evenly across the bar. Every bar command has a keyboard shortcut you can change, Stop included. Continue a chat in a terminal, Open WebUI, llama.cpp, LM Studio or your own targets. Settings > Backup exports and imports your setup, never API keys. Width is a size in pixels or a percent of the screen, and looks the same at any Windows scaling. MCP tools: "Always allow" is remembered on this PC and can be revoked in Settings > Tools, and server secrets can move to Windows Credential Locker. Also new: a thinking indicator, open and close sounds, /resume as you type, and reopened CLI chats show their messages. Safer files: a newer file is never overwritten, unknown keys are kept, and replaced files are backed up in one folder. I fixed Copilot key focus on Windows 11 26H2, Capture window from the key, monitor and scaling changes, and many accessibility and safety issues. This update resets settings and button rows once to the new file format; your connections are kept and your old files are saved in the backups folder.
 
 ## Product features (up to 20; 200 characters each)
 
 1. Opens from the Copilot key (or any shortcut) on the monitor you're working on, ready to type
 2. Works with your Claude Code, ChatGPT (Codex CLI) or Gemini (Antigravity CLI) sign-in: no API key needed
 3. Bring your own key: Anthropic, Google Gemini, OpenAI and OpenAI-compatible APIs
-4. Local models: any OpenAI-style server on your PC, so nothing leaves your computer
+4. Local models: any OpenAI-style server on your PC, so the chat stays on your computer
 5. Pick the model, provider and thinking effort from the panel
 6. Selected text from the app you came from is attached automatically
 7. Capture a window, the screen or a region; paste or drop images and files
 8. Text in screenshots is read on your PC (OCR) for models that can't see images
-9. Quick actions: /translate, /summarize, /fix, /explain, or your own
+9. Quick actions: /translate, /summarize, /fix, /explain and more, or your own text files
 10. Memory that every chat sees, whichever AI you use
-11. Push-to-talk voice input
-12. Send text or images from Click to Do and other apps
+11. Push-to-talk voice input using Windows' online speech recognition
+12. Send text or images from Click to Do and other apps; continue chats in a terminal, Open WebUI, llama.cpp or LM Studio
 13. Rich answers: tables, code with Copy, math and drawings
-14. Native WinUI 3, follows your light or dark theme
-15. Everything is an editable file: settings, connections, prompts, the bar
-16. Optional tools from your MCP servers, with approval before any change
-17. No account, no analytics, no ads; keys stay in Windows Credential Locker
-18. Free and open source
-19. Native on x64 and ARM64 PCs
+14. Native WinUI 3 on x64 and ARM64; light, dark and contrast themes, your accent colour, no embedded browser
+15. Drag and drop button rows in Settings; custom buttons with your own pictures, a More menu and separate picker widths
+16. Optional MCP tools for API connections; changes ask first unless you've allowed them
+17. No Hotline account, analytics or ads; API keys stay in Windows Credential Locker; free and open source
+18. Editable settings, connections, prompts and toolbar.json; bad values warn and fall back, backups protect your edits
+19. Settings > Backup exports and imports settings, bar, MCP, sounds, connections, quick actions and prompts; never API keys
+20. In-panel shortcuts for the bar's buttons, your own included; move, pin and resize the panel, with pixel or percent widths and a wider chat option
 
 ## Screenshot captions (200 characters each; same text as on the images)
 
@@ -100,13 +213,13 @@ Pick your accent colour (Hotline purple, your Windows accent or any colour) and 
 
 `trailer.mp4` (1920x1080, 38 s, no audio) with `trailer-thumbnail.png`. Title: "Hotline AI in 30 seconds".
 
-## Search terms (up to 7)
+## Search terms (up to 7; 40 characters each, at most 21 words in all; 7 keywords of up to 3 words = 21 words. Adds Codex, assistant, LLM and shortcut to the earlier seven)
 
-AI chat, Copilot key, Claude, Gemini, AI assistant, LLM, local AI
+AI chat assistant, Copilot key shortcut, Claude Code integration, Codex Gemini CLI, Anthropic OpenAI API key, OpenRouter compatible, Local LLM llama.cpp
 
 ## Copyright and trademark info
 
-© 2026 PMARC14. Microsoft Fluent Emoji artwork © Microsoft Corporation (MIT License).
+© 2026 PMARC14. Hotline AI is licensed under the Apache License 2.0. Includes Microsoft Fluent Emoji artwork © Microsoft Corporation, used under the MIT License.
 
 ## Additional license terms
 
@@ -126,7 +239,7 @@ PMARC14
 
 - Category: Productivity (subcategory: none, or "Personal assistant" if offered)
 - Personal information: Yes (sends what you type, attach or say to the AI service you choose; see the privacy
-  policy). Payments/purchases: No, until donations are switched on.
+  policy). Payments/purchases: No in-app purchases; optional donation links in Settings > About.
 - Generative AI: Yes. Notes for certification: "Hotline AI is a client for AI services the user configures with their
   own account or key; it hosts no model. Each answer has a ⋯ menu with 'Report this answer', which opens the
   provider's report page (Anthropic or Google). Content filtering is done by the chosen provider; local models run on

@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "mcp.v1.schema.json",
+  "title": "Hotline MCP servers configuration (v1)",
+  "description": "Stdio MCP server definitions in mcp.json (unit: JSON object).",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "version": {
+      "type": ["integer", "null"],
+      "enum": [1, null],
+      "default": 1,
+      "description": "Optional MCP config schema version; absent means 1 (unit: integer)."
+    },
+    "mcpServers": {
+      "type": ["object", "null"],
+      "additionalProperties": { "$ref": "#/$defs/mcpServer" },
+      "default": {},
+      "description": "Stdio MCP servers keyed by server name (unit: server map)."
+    }
+  },
+  "$defs": {
+    "mcpServer": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["command"],
+      "properties": {
+        "command": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Executable name or path to launch the MCP server (unit: command string)."
+        },
+        "args": {
+          "type": ["array", "null"],
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Command-line arguments passed to the server (unit: argument array)."
+        },
+        "env": {
+          "type": ["object", "null"],
+          "additionalProperties": { "type": "string" },
+          "default": {},
+          "description": "Environment variables; '${hotline:secret:<name>}' resolves from Credential Locker (unit: env var map)."
+        },
+        "disabled": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Disable launching this server (unit: boolean)."
+        },
+        "cwd": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Working directory for the server process (unit: directory path)."
+        },
+        "displayName": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Optional friendly display name (unit: string)."
+        }
+      }
+    }
+  }
+}

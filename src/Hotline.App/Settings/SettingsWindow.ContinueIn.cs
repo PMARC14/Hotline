@@ -29,7 +29,7 @@ public sealed partial class SettingsWindow
     }
 
     /// <summary>A connection's "Continue in" choice: the shared list (null), its own list, or none ([]).</summary>
-    private UIElement ConnectionContinueIn(BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    private UIElement ConnectionContinueIn(ConnectionProfile p, Func<Action<ConnectionProfile>, Task> save)
     {
         var panel = new StackPanel { Spacing = 4 };
         var choice = new ComboBox { MinWidth = 220 };

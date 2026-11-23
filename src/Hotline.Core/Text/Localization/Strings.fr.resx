@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>Texte uniquement, dans votre dossier .hotline.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>Avertir quand une réponse se termine en arrière-plan</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>Une notification Windows quand une réponse se termine alors que le panneau est masqué ou qu'une autre application est au premier plan. Cliquez dessus pour ouvrir la réponse.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>Pixels mis à l'échelle (200–4000) ou part de la zone de travail (20 %–90 %).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>Pixels mis à l'échelle (200–4000) ou part de la zone de travail (20 %–90 %) ; vide conserve la largeur d'ouverture.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>Pixels mis à l'échelle (DIP).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>Saisissez 200–4000 pixels mis à l'échelle ou 20 %–90 %.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>Afficher le texte de la réponse dans les notifications</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>Inclure le texte de la réponse dans la notification de fin ; désactivé affiche uniquement le titre de la discussion.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>Ce fichier utilise l'ancien format préliminaire. Les valeurs par défaut s'appliquent jusqu'à la mise à niveau ; le fichier est inchangé.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>L'identifiant de connexion {0} n'est pas valide. Utilisez 1 à 64 lettres, chiffres, points, traits de soulignement ou traits d'union ; les noms de périphériques Windows et les points finaux sont refusés.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} a répondu</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>Réponse prête</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} n'a pas pu terminer la réponse</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>Conserver l'historique pendant</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>jours</value></data>
@@ -84,6 +93,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>Non</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>Arrêter une réponse</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>La touche qui arrête une réponse en cours d'écriture (Entrée ne le fait jamais ; le bouton Envoyer l'arrête aussi). Une touche seule (Échap) ou une combinaison comme Ctrl+. — quand rien n'est en cours, Échap masque le panneau.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>Une commande du panneau utilise déjà ce raccourci. Modifiez ou effacez d'abord le raccourci de cette commande, ou choisissez-en un autre.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>Raccourci non valide (exemples : Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>Mémoire</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>Chaque conversation voit memory.md dans votre dossier .hotline (« /remember quelque chose » ajoute une ligne).</value></data>
@@ -119,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Démarrer avec Windows</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>Les connexions API dont l'utilisation des outils est réglée sur « Utiliser les outils de Hotline » peuvent appeler les outils de ces serveurs MCP. Les outils en lecture seule s'exécutent ; pour tout le reste, le panneau vous demande confirmation (Autoriser une fois / Toujours / Refuser).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>Serveurs MCP</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — même format « mcpServers » que les autres applications MCP ; les autorisations sont dans le même fichier</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — même format "mcpServers" que les autres applications MCP ; les règles d’approbation sont dans tools.approvals de settings.json</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>Modifier mcp.json</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>Ouvrir le dossier</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Registre d'agents de Windows</value></data>
@@ -430,6 +440,34 @@ Refuser :
   <data name="Mcp_Missing" xml:space="preserve"><value>« {0} » n'est pas installé ou n'est pas dans le PATH ; le serveur {1} ne peut donc pas démarrer. Vérifiez « command » dans mcp.json.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>Impossible de lire mcp.json : {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>L'autorisation « {0} » a une valeur inconnue ; elle est donc traitée comme « deny ».</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>La section "approvals" dans mcp.json est ignorée ; déplacez les règles vers settings.json (tools.approvals).</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>Le serveur "{0}" a une valeur env non textuelle pour "{1}", elle a donc été ignorée.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>Le serveur "{0}" contient une référence de secret non valide dans env "{1}".</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>Le serveur "{0}" référence le secret "{1}" dans env "{2}", qui est absent du Gestionnaire d'identification.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>La règle d'autorisation "{0}" ne diffère que par la casse de "{1}", elle a donc été ignorée.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json utilise une version plus récente ({0}) et ne peut pas être mis à jour en toute sécurité.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>Impossible de sauvegarder mcp.json avant de le mettre à jour.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>Impossible d'enregistrer le fichier mcp.json mis à jour.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>Entrée env "{1}" introuvable sur le serveur "{0}" dans mcp.json.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>Cette entrée env a changé ou a déjà été déplacée ; rien n'a été modifié.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>La valeur est désormais enregistrée dans le Gestionnaire d'identification Windows sous "{0}" ({1}), mais mcp.json n'a pas été modifié car l'enregistrement et l'annulation ont échoué.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>Autorisations permanentes</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>Aucune autorisation d'outil enregistrée.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · lancement {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>Révoquer</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>Impossible de révoquer l'autorisation de l'outil.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>Secrets d'environnement</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>Aucune entrée env en texte brut trouvée dans mcp.json.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (texte brut dans mcp.json)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>Déplacer vers le Gestionnaire d'identification</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>Déplacer la valeur env vers le Gestionnaire d'identification ?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>Stocke {0} › {1} dans le Gestionnaire d'identification Windows et la remplace dans mcp.json. L'ancien mcp.json (y compris la valeur en texte brut) reste dans backups\&lt;time&gt;-save, et les commentaires dans mcp.json ne sont pas conservés.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>Nom du secret</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>Utilisez des lettres, chiffres, points, traits de soulignement ou traits d'union.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>Un secret portant ce nom existe déjà dans le Gestionnaire d'identification et sera remplacé.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>Déplacer</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1} déplacé vers le Gestionnaire d'identification. L'ancien mcp.json (y compris la valeur en texte brut) a été enregistré dans backups\&lt;time&gt;-save.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>Impossible de déplacer la valeur env vers le Gestionnaire d'identification.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>Un nom de serveur ne peut pas contenir « / » ni « * ».</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>n'a pas démarré en {0:0} s</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} Aucun outil ne s'exécute tant que ce n'est pas corrigé.</value></data>
@@ -479,6 +517,30 @@ Refuser :
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} n'est pas 0.5, 1, 2, 3 ou 4 (cells est l'ancien nom de width) ; la largeur par défaut est utilisée</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>impossible de créer d'abord une copie du fichier actuel, rien n'a donc été modifié ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>toolbar.json a été modifié pendant que cette page était ouverte. Il a été rechargé et votre dernière modification n'a pas été appliquée : veuillez la refaire.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>Identifiant de bouton personnalisé en double "{0}" (insensible à la casse) ; la première définition est utilisée.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>Réponse en cours. Le bouton Arrêter l'interrompt ; votre message attend dans la zone de saisie.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} n'est pas une largeur numérique de 0.5, 1, 2, 3 ou 4 ; la largeur par défaut est utilisée.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0} : combinaison déjà utilisée ; ce raccourci est désactivé.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>Ce fichier de barre d'outils utilise un ancien format. Les rangées de boutons et raccourcis par défaut sont actifs ; le fichier n'a pas été modifié.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>Remplir l'espace disponible sur la ligne</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>Impossible de sauvegarder les rangées de boutons et raccourcis.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>Impossible d'enregistrer les rangées de boutons et raccourcis.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>L'image n'a pas été modifiée : impossible d'enregistrer toolbar.json.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Plus</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Rien ici</value></data>
@@ -499,7 +561,7 @@ Refuser :
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} Le reste est appliqué. Paramètres › Avancé répertorie tout.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>Impossible de lire un fichier de paramètres</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline conserve ses paramètres actuels jusqu'à ce que le problème soit résolu.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width sont désormais des pixels réels (auparavant : unités mises à l'échelle) : vos valeurs {0} ont été conservées telles quelles ; vérifiez Paramètres &amp;gt; Fenêtre</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width sont désormais des pixels réels (auparavant : unités mises à l'échelle) : vos valeurs {0} ont été conservées telles quelles ; vérifiez Paramètres &gt; Fenêtre</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>Problèmes dans vos fichiers de paramètres</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>Les valeurs ignorées utilisent leurs valeurs par défaut. Corrigez le fichier et Hotline l'appliquera immédiatement.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>Une partie de toolbar.json a été ignorée</value></data>
@@ -597,8 +659,6 @@ Refuser :
   <data name="Bar_BottomRow" xml:space="preserve"><value>Sous la zone de message</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>Vide</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>Lignes de boutons</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>Écran {0} × {1} px avec mise à l'échelle à {2}% : Windows affiche l'interface en {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>Écran {0} × {1} px à une échelle de 100 %</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>Pixels réels de l'écran, mise à l'échelle Windows ignorée</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>Pixels réels de l'écran, mise à l'échelle Windows ignorée</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>Déplacer sous la zone de message</value></data>
@@ -663,7 +723,17 @@ Refuser :
   <data name="Nav_Backup" xml:space="preserve"><value>Sauvegarde</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Transférez votre configuration Hotline vers un autre PC ou conservez-en une copie. Une sauvegarde est un fichier .zip unique contenant les éléments cochés ; rien d'autre (historique des discussions, mémoire, journaux) n'est inclus.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>Paramètres</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Lignes de boutons et images de boutons personnalisées</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>Rangées de boutons et raccourcis</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Le format de configuration de Hotline a changé. Les paramètres et rangées de boutons des versions précédentes reviennent aux valeurs par défaut. Les connexions IA et les serveurs MCP sont conservés.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>Réinitialisé : {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>Fichiers d'origine : {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>Aucune sauvegarde complète de mise à niveau n'a pu être effectuée.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>Mise à niveau impossible : {0}. Hotline réessaiera ces fichiers au prochain démarrage.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>Mise à niveau depuis 0.6</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>Au premier démarrage après la mise à niveau, les anciens paramètres et rangées de boutons reviennent aux valeurs par défaut intégrées. Seuls la connexion IA par défaut et l'ordre des connexions sont conservés. Les connexions IA et les serveurs MCP restent en place ; les anciennes approbations MCP sont supprimées. Les fichiers d'origine sont copiés dans backups/&lt;time&gt;-upgrade avant la conversion. Si cette sauvegarde échoue, la conversion a tout de même lieu. Les fichiers impossibles à convertir restent intacts et sont réessayés au prochain démarrage. Les valeurs par défaut de référence sont actualisées dans .defaults au démarrage.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>Cette sauvegarde contient des valeurs d'environnement en texte brut pour {0}. Utilisez Déplacer vers le Gestionnaire d'identification dans Paramètres &gt; Outils avant de la partager.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>Ces serveurs MCP nécessitent des secrets du Gestionnaire d'identification sur ce PC : {0}. Ajoutez leurs secrets dans Paramètres &gt; Outils.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>Une version plus récente n'a pas été modifiée.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>Outils (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>Sons</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>Connexions IA</value></data>
@@ -749,7 +819,7 @@ Un panneau déplacé s'ouvrira à sa position par défaut la prochaine fois, sau
   <data name="Guide_Direction_Title" xml:space="preserve"><value>Vers le haut ou vers le bas</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>La discussion se développe à partir de la barre de message : vers le haut, sauf s'il n'y a pas assez de place, puis vers le bas. Paramètres › Fenêtre permet de la maintenir vers le haut ou vers le bas et définit la position, la largeur et la hauteur de la discussion.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>Rangées de boutons</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Rangées de boutons affiche la barre sous la forme de six zones : gauche, centre et droite de la rangée au-dessus de la zone de message, et les trois mêmes en dessous. Faites glisser un bouton ou un sélecteur pour le déplacer dans une zone ou vers une autre, ou utilisez ses boutons fléchés (Alt+flèche change de zone, Ctrl+flèche modifie l'ordre). Les éléments masqués restent dans « Non affiché ». Chaque bouton peut avoir sa propre largeur, un contour ou un remplissage (les menus déroulants adoptent également le contour et le remplissage), et vous pouvez ajouter vos propres boutons pour exécuter une action rapide ou insérer du texte. Les boutons qui ne rentrent pas sont déplacés dans un menu ⋯, et « La boîte du bouton … » (la clé menu dans toolbar.json) contient ceux que vous choisissez d'y conserver. Les largeurs sont comptées en cellules : un bouton fait 0.5, 1, 2, 3 ou 4 cellules de large (la clé width, où compact, normal et wide correspondent à 0.5, 1 et 2), et chaque sélecteur a sa propre largeur. Paramètres › Sauvegarde enregistre également toolbar.json et les images de vos boutons.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>Paramètres › Fenêtre › Lignes de boutons affiche la barre en six zones : gauche, centre et droite de la ligne au-dessus de la zone de message, et les trois mêmes en dessous. Faites glisser un bouton ou un sélecteur pour le déplacer dans une zone ou vers une autre, ou utilisez ses boutons fléchés (Alt+flèche change de zone, Ctrl+flèche modifie l’ordre). Ce que vous masquez attend dans « Non affiché ». Chaque bouton peut avoir sa propre largeur, un contour ou un remplissage (les listes déroulantes prennent aussi le contour et le remplissage), et vous pouvez ajouter vos propres boutons pour exécuter une action rapide ou insérer du texte. Les boutons qui ne tiennent pas passent dans un menu ⋯, et « La zone du bouton … » (la clé menu dans toolbar.json) contient ceux que vous choisissez d’y garder. Les largeurs de bouton sont les nombres 0.5, 1, 2, 3 ou 4 (la clé width), chaque sélecteur a sa propre étendue, et style.fill (activé par défaut) répartit l’espace libre d’une ligne. Paramètres › Sauvegarde enregistre aussi toolbar.json et les images de vos boutons.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>Sons</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>Paramètres › Apparence › Sons émet un son à l'ouverture ou à la fermeture du panneau : un son Windows ou un .wav dans votre dossier de sons. Désactivé par défaut.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>Les paramètres sont des fichiers</value></data>
@@ -775,7 +845,7 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Bar_ColorPink" xml:space="preserve"><value>Rose</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>Largeur en boutons</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>Non affiché</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>Glissez les éléments entre les quatre groupes ou utilisez les boutons sous chaque élément. Avec un élément sélectionné, Alt+touches de direction le déplace vers un autre groupe et Ctrl+Gauche ou Ctrl+Droite le déplace au sein de son groupe. Les modifications sont enregistrées dans toolbar.json et appliquées immédiatement.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>Glissez les éléments entre les six groupes ou utilisez les boutons sous chaque élément. Avec un élément sélectionné, Alt+touches de direction le déplace vers un autre groupe et Ctrl+Gauche ou Ctrl+Droite le déplace au sein de son groupe. Les modifications sont enregistrées dans toolbar.json et appliquées immédiatement.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>Déplacer vers le groupe de gauche</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>Déplacer vers le groupe de droite</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>Sélecteurs</value></data>
@@ -862,4 +932,69 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>Connexion impossible : {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>Enregistrer</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>Indiquez le nom et l'adresse ou la commande.</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>Copier la dernière réponse</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>Raccourci : {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>Les noms des touches restent en anglais. Ctrl, Alt ou Win est requis, sauf pour F1-F24. Vide désactive ; Réinitialiser rétablit la valeur par défaut. Enregistré dans toolbar.json. Arrêter et tous les boutons doivent utiliser des combinaisons distinctes.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0} : raccourci invalide ; valeur par défaut utilisée si disponible.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0} : combinaison déjà utilisée ; valeur par défaut utilisée si libre, sinon désactivation.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts : bouton inconnu {0} ; ignoré.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0} : entrée répétée ; la dernière est utilisée.</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Raccourcis du panneau</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Dans le panneau, Ctrl+N démarre un chat, Ctrl+H ouvre l’historique et Ctrl+Shift+C copie la dernière réponse terminée. Survolez les boutons pour voir leurs touches ; celles des sélecteurs parcourent leurs listes. Modifiez-les dans Paramètres &gt; Chat et historique ou shortcuts dans toolbar.json. Vide désactive ; Réinitialiser rétablit la valeur par défaut. Arrêter est prioritaire. La répétition, AltGr et la composition IME ne lancent aucun bouton.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>Raccourci</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut : raccourci non valide ; désactivé.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut : combinaison déjà utilisée ; désactivée.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Utilisez Ctrl, Alt ou Win, ou F1-F24. La combinaison doit être libre (Arrêter, boutons intégrés et personnalisés compris).</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ajoutez Ctrl, Alt ou Win (F1-F24 fonctionnent seules)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>Aucune réponse terminée à copier.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>Supprimer la pièce jointe {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>Déplacer la connexion {0} vers le haut</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>Déplacer la connexion {0} vers le bas</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>Comment calculer l'aire d'un cercle ? Montre-le en Python.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### Aire d'un cercle
+
+L'aire est
+
+$$A = \pi r^2$$
+
+- **r** est le rayon (la moitié du diamètre)
+- **π** ≈ 3.14159
+
+Pour un rayon de 2 : $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| Rayon | Aire |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>Le télétravail a transformé la communication au sein des équipes. Les points asynchrones remplacent désormais de nombreuses réunions, les décisions écrites circulent mieux que les échanges oraux, et les équipes qui documentent bien accueillent de nouveaux membres en quelques jours plutôt qu'en plusieurs semaines. En contrepartie, les conversations informelles se font plus rares : beaucoup d'entreprises prévoient donc délibérément des moments en présentiel, quelques jours par trimestre pour planifier, guider et apprendre à se connaître.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>Résume cela en trois points.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **Priorité à l'asynchrone :** les points écrits remplacent de nombreuses réunions et les décisions écrites touchent davantage de personnes.
+- **La documentation paie :** les équipes bien organisées intègrent les nouveaux membres en quelques jours, pas en plusieurs semaines.
+- **Des moments d'équipe planifiés :** les échanges informels étant plus rares, les entreprises organisent des journées en présentiel chaque trimestre.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>Vérifier les programmes et les autorisations</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>Cette sauvegarde contient des paramètres pouvant exécuter des programmes ou autoriser des outils sans demander. Vérifiez les détails ci-dessous. N'importez que si vous faites confiance à ces paramètres.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>Importation annulée : les programmes et autorisations nécessitent une confirmation.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>La section approvals doit être un objet JSON.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>Les modifications des paramètres attendent que settings.json devienne lisible.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>Impossible de démarrer {0}, car sa commande de lancement est trop longue. Raccourcissez l'invite système, la mémoire enregistrée ou les arguments de lancement supplémentaires.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>La réponse a été coupée avant que le serveur ne confirme qu'elle était terminée.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>Le chat ou la connexion a changé pendant la préparation des pièces jointes. Votre message n'a pas été envoyé.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>À partir d'un lien</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>Déplacer le panneau</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>Redimensionner le panneau</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 ouvre le menu du panneau. Choisissez Déplacer ou Redimensionner, utilisez les touches de direction, puis Enter pour terminer ou Esc pour annuler.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json a été écrit par une version plus récente de Hotline (version {0} ; celle-ci écrit {1}), Hotline ne l'écrasera donc pas. Mettez Hotline à jour ou modifiez le fichier manuellement.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json a été écrit par une version plus récente de Hotline (version {0}), Hotline ne l'écrasera donc pas. Mettez Hotline à jour ou modifiez le fichier manuellement.</value></data>
 </root>

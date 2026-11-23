@@ -80,9 +80,9 @@ public static class CodexModels
 
 /// <summary>Lists Codex models: `codex app-server` first, then the cache file, then <see cref="CodexModels.Curated"/>.</summary>
 public sealed class CodexModelLister(
-    ILineProcessFactory processes, Func<BackendProfile, string?> locate, Func<string?> readCache, string appVersion, TimeSpan? timeout = null)
+    ILineProcessFactory processes, Func<ConnectionProfile, string?> locate, Func<string?> readCache, string appVersion, TimeSpan? timeout = null)
 {
-    public async Task<IReadOnlyList<ModelInfo>> ListAsync(BackendProfile p, CancellationToken ct)
+    public async Task<IReadOnlyList<ModelInfo>> ListAsync(ConnectionProfile p, CancellationToken ct)
     {
         if (locate(p) is { } exe)
         {

@@ -31,12 +31,14 @@ internal static class ClipboardNative
     [DllImport("user32.dll", SetLastError = true)] public static extern bool OpenClipboard(nint owner);
     [DllImport("user32.dll")] public static extern bool CloseClipboard();
     [DllImport("user32.dll")] public static extern bool EmptyClipboard();
-    [DllImport("user32.dll")] public static extern uint EnumClipboardFormats(uint format);
+    [DllImport("user32.dll", SetLastError = true)] public static extern uint EnumClipboardFormats(uint format);
     [DllImport("user32.dll")] public static extern nint GetClipboardData(uint format);
     [DllImport("user32.dll")] public static extern nint SetClipboardData(uint format, nint mem);
     [DllImport("user32.dll")] public static extern bool IsClipboardFormatAvailable(uint format);
     [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern uint RegisterClipboardFormat(string name);
     [DllImport("user32.dll")] public static extern uint GetClipboardSequenceNumber();
+    [DllImport("user32.dll")] public static extern nint GetClipboardOwner();
+    [DllImport("user32.dll", CharSet = CharSet.Unicode)] public static extern int GetClipboardFormatName(uint format, StringBuilder name, int maxCount);
     [DllImport("user32.dll")] public static extern short GetAsyncKeyState(int vKey);
     [DllImport("kernel32.dll")] public static extern nint GlobalAlloc(uint flags, nuint bytes);
     [DllImport("kernel32.dll")] public static extern nint GlobalFree(nint mem);

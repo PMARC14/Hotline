@@ -14,6 +14,31 @@ public class ToolbarLayoutTests
 
     private static double Used(IReadOnlyDictionary<string, double> w) => w.Values.Sum() + Gap * w.Values.Count(v => v > 0);
 
+    [Theory]
+    [InlineData(350, 100, 200, 50)]
+    [InlineData(353, 101, 202, 50)]
+    [InlineData(353.9, 101, 202, 50)]
+    [InlineData(200, 58, 114, 28)]
+    [InlineData(120, 40, 60, 20)]
+    [InlineData(100, 40, 40, 20)]
+    [InlineData(99, 40, 40, 20)] // the documented overshoot: minima still hold
+    public void Fill_shares_room_with_floors_and_whole_DIP_remainders_from_the_left(double room, double first, double second, double third)
+    {
+        var widths = ToolbarLayout.Fill(room, [(1, 40), (2, 40), (0.5, 20)]);
+        Assert.Equal([first, second, third], widths);
+        Assert.Equal(Math.Max(100, Math.Floor(room)), widths.Sum());
+    }
+
+    [Theory]
+    [InlineData(double.NaN, 1)]
+    [InlineData(double.PositiveInfinity, 1)]
+    [InlineData(100, 0)] // no shares: nothing can grow
+    public void Fill_keeps_finite_minima_for_bad_room_or_no_shares(double room, double shares) =>
+        Assert.Equal([40.0], ToolbarLayout.Fill(room, [(shares, 40)]));
+
+    [Fact]
+    public void Fill_of_no_items_is_empty() => Assert.Empty(ToolbarLayout.Fill(500, []));
+
     [Fact]
     public void Wide_bar_gets_preferred_widths()
     {

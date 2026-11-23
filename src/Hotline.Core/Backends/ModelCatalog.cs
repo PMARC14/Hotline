@@ -10,8 +10,8 @@ public sealed record ModelInfo(string Id, string Label, IReadOnlyList<string>? E
 public sealed class ModelListException(string message) : Exception(message);
 
 /// <summary>Lists the models a connection offers, cached for 10 minutes per connection.</summary>
-public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<BackendProfile, CancellationToken, Task<string>> runAgyModels, TimeProvider clock,
-    Func<BackendProfile, CancellationToken, Task<IReadOnlyList<ModelInfo>>>? listCodexModels = null)
+public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<ConnectionProfile, CancellationToken, Task<string>> runAgyModels, TimeProvider clock,
+    Func<ConnectionProfile, CancellationToken, Task<IReadOnlyList<ModelInfo>>>? listCodexModels = null)
 {
     private static readonly TimeSpan Ttl = TimeSpan.FromMinutes(10);
     // Concurrent callers (the picker and the Test button) share it across awaits.
@@ -20,9 +20,9 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
     /// <summary>Most bytes read from a model-list answer (injectable for tests).</summary>
     public int MaxBodyBytes { get; init; } = Api.ApiCommon.MaxModelListBytes;
 
-    public async Task<IReadOnlyList<ModelInfo>> GetAsync(BackendProfile p, bool refresh, CancellationToken ct)
+    public async Task<IReadOnlyList<ModelInfo>> GetAsync(ConnectionProfile p, bool refresh, CancellationToken ct)
     {
-        var key = $"{p.Type}|{p.Id}|{p.Endpoint}|{p.CliPath}";
+        var key = $"{p.Type}|{p.Id.ToLowerInvariant()}|{p.Endpoint}|{p.CliPath}";
         if (!refresh && _cache.TryGetValue(key, out var hit) && clock.GetUtcNow() - hit.At < Ttl) return hit.Models;
         var models = await FetchAsync(p, ct);
         _cache[key] = (clock.GetUtcNow(), models);
@@ -33,8 +33,8 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
     /// Settings › AI connections › Test: lists the models afresh (proves the endpoint and key) and checks the chosen
     /// model is among them. Throws <see cref="ModelListException"/> with the server's message on failure.
     /// </summary>
-    public async Task<string> TestAsync(BackendProfile p, CancellationToken ct) =>
-        Describe(await GetAsync(p, refresh: true, ct), p.Model, ConnectionTypes.Of(p.Type).ListsModels);
+    public async Task<string> TestAsync(ConnectionProfile p, CancellationToken ct) =>
+        Describe(await GetAsync(p, refresh: true, ct), p.Model);
 
     /// <summary>"Connected: N models[, including X | , but X isn't one of them]."</summary>
     public static string Describe(IReadOnlyList<ModelInfo> models, string? chosen, bool listsModels = true)
@@ -50,7 +50,7 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
             : L.F(Strings.Models_NotIncluded, count, model);
     }
 
-    private async Task<IReadOnlyList<ModelInfo>> FetchAsync(BackendProfile p, CancellationToken ct)
+    private async Task<IReadOnlyList<ModelInfo>> FetchAsync(ConnectionProfile p, CancellationToken ct)
     {
         switch (p.Type)
         {
@@ -74,7 +74,7 @@ public sealed class ModelCatalog(HttpClient http, ISecretStore secrets, Func<Bac
         }
     }
 
-    private async Task<string> GetAsync(BackendProfile p, string path, Action<HttpRequestMessage, string> addKey, CancellationToken ct)
+    private async Task<string> GetAsync(ConnectionProfile p, string path, Action<HttpRequestMessage, string> addKey, CancellationToken ct)
     {
         var info = ConnectionTypes.Of(p.Type);
         var key = secrets.Get(SecretKeys.ApiKey(p.Id));

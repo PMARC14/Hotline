@@ -61,10 +61,10 @@ public sealed class SelectionTests : TempDirTest
     }
 
     [Fact]
-    public void Schema_7_files_migrate_with_the_new_chat_defaults()
+    public void V1_sparse_files_use_the_chat_defaults()
     {
         Directory.CreateDirectory(_dir);
-        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "schemaVersion": 7, "chat": { "saveHistory": false } }""");
+        File.WriteAllText(Path.Combine(_dir, SettingsStore.FileName), """{ "version": 1, "chat": { "saveHistory": false } }""");
         var s = new SettingsStore(_dir).Load();
         Assert.Equal(HotlineSettings.CurrentSchemaVersion, s.SchemaVersion);
         Assert.Equal(AttachSelectionMode.Auto, s.Chat.AttachSelection);

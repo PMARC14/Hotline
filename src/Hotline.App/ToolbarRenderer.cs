@@ -32,14 +32,18 @@ internal sealed class ToolbarRenderer
         public IReadOnlyList<string> Dropped { get; set; } = [];
         /// <summary>The buttons the user put in the more button's menu, when this row holds that button (they come first in its menu).</summary>
         public IReadOnlyList<string> UserMenu { get; set; } = [];
-        public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers)? Arranged { get; set; }
+        public (int LeftShown, int RightDropped, bool Overflow, string HiddenPickers, bool Fill)? Arranged { get; set; }
+        /// <summary>The last fit's cell width of each shown button (<see cref="ToolbarPlan.RowLayout.ButtonWidths"/>): what is drawn,
+        /// including the last right button shrunk to one cell when the row is very narrow.</summary>
+        public IReadOnlyDictionary<string, double> Widths { get; set; } = new Dictionary<string, double>();
+        public bool ShrunkLastRight { get; set; }
     }
 
     private readonly PopupWindow _popup;
     private readonly Action<CustomButton> _custom;
     private readonly FileLog _log;
     private readonly Dictionary<string, ButtonBase> _builtIn;
-    private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = [];
+    private readonly Dictionary<string, (Button Button, CustomButton Definition)> _customButtons = new(StringComparer.OrdinalIgnoreCase);
     private readonly Row _top, _bottom;
     /// <summary>The placed "more" item (toolbar.json): the menu button of the row that holds it, in place of that row's automatic "⋯".</summary>
     private readonly Button _moreItem = MoreButton();
@@ -52,6 +56,8 @@ internal sealed class ToolbarRenderer
     private (double Room, IReadOnlyCollection<string> Available)? _lastFit;
 
     private readonly Dictionary<string, ComboBox> _pickers;
+    /// <summary>The last fit's picker widths (0 or missing = hidden or not on the bar).</summary>
+    private IReadOnlyDictionary<string, double> _pickerWidths = new Dictionary<string, double>();
 
     public ToolbarRenderer(PopupWindow popup, Action<CustomButton> custom, FileLog log)
     {
@@ -62,6 +68,7 @@ internal sealed class ToolbarRenderer
             ["captureRegion"] = popup.CaptureRegionButton, ["prompt"] = popup.PromptButton, ["recent"] = popup.RecentButton,
             ["continueIn"] = popup.ContinueInButton, ["newChat"] = popup.NewChatButton, ["settings"] = popup.SettingsButton,
             [ToolbarModel.MoreId] = _moreItem,
+            ["copyLastAnswer"] = popup.CopyLastAnswerButton,
         };
         // Clicking a bar button leaves keyboard focus in the message box: with 26H2 the Copilot key's keystrokes reached a
         // focused pin button and turned pinning off.
@@ -90,6 +97,77 @@ internal sealed class ToolbarRenderer
         ToolTipService.SetToolTip(more, Strings.Transcript_More);
         AutomationProperties.SetName(more, Strings.Transcript_More);
         return more;
+    }
+
+    private Hotline.Core.Settings.ChatSettings _chatSettings = new();
+    private IReadOnlyList<string> _shortcutWarnings = [];
+    private IReadOnlyDictionary<string, string> _shortcuts = Hotline.Core.Settings.ChatShortcuts.Defaults;
+    public IReadOnlyDictionary<string, string> Shortcuts => _shortcuts;
+
+    public string ShortcutTip(string id, string text) => _shortcuts.TryGetValue(id, out var combo) && combo.Length > 0
+        ? text + "\n" + L.F(Strings.Shortcuts_Tooltip, combo) : text;
+
+    public void SetShortcuts(Hotline.Core.Settings.ChatSettings settings)
+    {
+        _chatSettings = settings;
+        var resolved = Model.ResolveShortcuts();
+        var warnings = resolved.Warnings.Except(Model.Warnings).ToList();
+        if (!warnings.SequenceEqual(_shortcutWarnings))
+        {
+            _shortcutWarnings = warnings;
+            foreach (var warning in warnings) _log.Info("toolbar.json: " + warning);
+        }
+        var shortcuts = Model.EffectiveShortcuts();
+        foreach (var b in resolved.Buttons)
+            if (b.Shortcut is { } combo) shortcuts[b.Id] = combo;
+        _shortcuts = shortcuts;
+        foreach (var (id, button) in _builtIn)
+            ShortcutHelp(button, id, AutomationProperties.GetName(button));
+        foreach (var (id, picker) in _pickers)
+        {
+            var text = AutomationProperties.GetName(picker);
+            if (id != "effort" && picker.SelectedItem is string name && name.Trim().Length > 0) text += ": " + name.Trim();
+            ShortcutHelp(picker, id, text);
+        }
+        foreach (var row in new[] { _top, _bottom })
+            ShortcutHelp(row.More, "more", Strings.Transcript_More);
+        foreach (var (id, custom) in _customButtons)
+            ShortcutHelp(custom.Button, id, custom.Definition.Label);
+    }
+
+    private void ShortcutHelp(DependencyObject element, string id, string text)
+    {
+        ToolTipService.SetToolTip(element, ShortcutTip(id, text));
+        AutomationProperties.SetAcceleratorKey(element, _shortcuts.GetValueOrDefault(id, ""));
+    }
+
+    /// <summary>Uses the same Click/toggle/flyout path as the bar and overflow. Pickers cycle through their items.</summary>
+    public void InvokeShortcut(string id)
+    {
+        if (_customButtons.TryGetValue(id, out var custom))
+        {
+            if (custom.Button.IsEnabled) Invoke(custom.Button, Anchor(custom.Button));
+            return;
+        }
+        if (_pickers.TryGetValue(id, out var picker))
+        {
+            // Only a picker on the bar with room to show (the last fit gave it a width): cycling a hidden one would change and save
+            // the model or default connection without the user seeing it.
+            if (_pickerWidths.GetValueOrDefault(id) <= 0) return;
+            if (picker.IsEnabled && picker.Items.Count > 0)
+                picker.SelectedIndex = (picker.SelectedIndex + 1) % picker.Items.Count;
+            return;
+        }
+        if (id == "more")
+        {
+            var rows = new[] { _top, _bottom };
+            var row = rows.FirstOrDefault(r => r.Plan.HasMore) ?? rows.FirstOrDefault(r => r.Dropped.Count > 0);
+            if (row is not null) Invoke(MenuButton(row), MenuButton(row));
+            return;
+        }
+        if (!_builtIn.TryGetValue(id, out var button) || !button.IsEnabled) return;
+        if (button is ToggleButton toggle) toggle.IsChecked = toggle.IsChecked != true;
+        else Invoke((Button)button, Anchor(button));
     }
 
     /// <summary>Rebuilds both rows from the model and fits them to the last known width (the queued layout follows).</summary>
@@ -123,6 +201,7 @@ internal sealed class ToolbarRenderer
             row.Plan = ToolbarPlan.Row(model, top);
             row.UserMenu = row.Plan.HasMore ? ToolbarPlan.MenuItems(model) : [];
             row.Arranged = null;
+            (row.Widths, row.ShrunkLastRight) = (new Dictionary<string, double>(), false);
             Arrange(row, row.Plan.Droppable.Count(id => !ToolbarPlan.Stays(id)), rightDropped: 0, overflow: false, hiddenPickers: []); // as Fit counts them
             var visibility = row.Plan.Left.Count + row.Plan.Center.Count + row.Plan.Right.Count > 0 ? Visibility.Visible : Visibility.Collapsed;
             if (row.Grid.Visibility != visibility) row.Grid.Visibility = visibility;
@@ -131,6 +210,7 @@ internal sealed class ToolbarRenderer
         // Sizes come from the same Metrics as Fit's widths (every button one cell high), so what is drawn is what was fitted.
         Restyle(model);
         Model = model;
+        SetShortcuts(_chatSettings);
         // Not inside a layout pass (App's file timer, the self-test): only moves buttons between a row and its menu.
         if (_lastFit is { } last) Fit(last.Room, last.Available);
     }
@@ -152,12 +232,12 @@ internal sealed class ToolbarRenderer
     /// <summary>Lays a row out: the left items kept (every picker stays in its group), "⋯" when some buttons moved into it, a flexible
     /// gap, the centre group (between two flexible gaps, so it sits in the free space), the right group (without the buttons it
     /// gave up). A picker in <paramref name="hiddenPickers"/> (no room, or nothing to show) is left out of the grid, so it costs
-    /// no column gap.</summary>
-    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow, IReadOnlyCollection<string> hiddenPickers)
+    /// no column gap. A filled row uses the planned item widths without flexible group gaps.</summary>
+    private void Arrange(Row row, int leftShown, int rightDropped, bool overflow, IReadOnlyCollection<string> hiddenPickers, bool fill = false)
     {
         var hiddenKey = string.Join(",", hiddenPickers.Order());
-        if (row.Arranged == (leftShown, rightDropped, overflow, hiddenKey)) return;
-        row.Arranged = (leftShown, rightDropped, overflow, hiddenKey);
+        if (row.Arranged == (leftShown, rightDropped, overflow, hiddenKey, fill)) return;
+        row.Arranged = (leftShown, rightDropped, overflow, hiddenKey, fill);
         var (shown, dropped) = ToolbarPlan.Split(row.Plan.Droppable, leftShown); // the left group, then the centre: the centre goes first
         var (rightShown, rightGone) = ToolbarPlan.SplitRight(row.Plan.Right, rightDropped);
         row.Dropped = [.. dropped, .. rightGone];
@@ -170,7 +250,10 @@ internal sealed class ToolbarRenderer
             Grid.SetColumn(element, grid.ColumnDefinitions.Count - 1);
             grid.Children.Add(element);
         }
-        void Gap() => grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        void Gap()
+        {
+            if (!fill) grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(1, GridUnitType.Star) });
+        }
         foreach (var id in shown.Where(row.Plan.Left.Contains).Where(Visible)) Add(Element(id));
         if (overflow && !row.Plan.HasMore) Add(row.More); // a row with the more item has that as its menu button
         Gap();
@@ -198,17 +281,44 @@ internal sealed class ToolbarRenderer
     {
         _lastFit = (room, availablePickers);
         var widths = new Dictionary<string, double>();
+        _pickerWidths = widths;
         foreach (var (row, top) in new[] { (_top, true), (_bottom, false) })
         {
             if (row.Plan.Droppable.Count + row.Plan.Right.Count == 0) continue;
             // The same call the tests make: which buttons stay, and the widths of the row's pickers from what they leave. The
             // row's column gap lies between any two items, pickers too.
-            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers);
+            var layout = ToolbarPlan.PlanRow(Model, top, room, row.Grid.ColumnSpacing, availablePickers, fill: Model.Style.Fill == true);
             var hidden = layout.PickerWidths.Where(p => p.Value <= 0).Select(p => p.Key).ToList();
-            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden);
+            Arrange(row, layout.Fit.LeftShown, layout.Fit.RightDropped, layout.Fit.Overflow, hidden, fill: Model.Style.Fill == true);
+            (row.Widths, row.ShrunkLastRight) = (layout.ButtonWidths, layout.Fit.ShrunkLastRight);
+            ApplyWidths(row);
             foreach (var (id, width) in layout.PickerWidths) widths[id] = width;
         }
         return widths;
+    }
+
+    /// <summary>Sizes each shown button, including automatic more, to its planned cell (<see cref="Row.Widths"/>).
+    /// Only values that differ are set.</summary>
+    private void ApplyWidths(Row row)
+    {
+        foreach (var (id, cell) in row.Widths)
+        {
+            var element = id == ToolbarModel.MoreId ? MenuButton(row) : Element(id);
+            var width = ToolbarPlan.Inner(cell);
+            if (element.Width != width) element.Width = width;
+        }
+    }
+
+    /// <summary>For the self-test: each shown button whose drawn width differs from its fitted cell (less the inset), and whether a
+    /// row shrank its last right button.</summary>
+    public (IReadOnlyList<string> Problems, bool AnyShrunk) DrawnWidths()
+    {
+        var problems = new List<string>();
+        foreach (var (row, label) in new[] { (_top, "top"), (_bottom, "bottom") })
+        foreach (var (id, cell) in row.Widths)
+                if ((id == ToolbarModel.MoreId ? MenuButton(row) : Element(id)) is { ActualWidth: > 0 } e && Math.Abs(e.ActualWidth - ToolbarPlan.Inner(cell)) > 0.5)
+                    problems.Add($"{label} {id} is {e.ActualWidth} wide, fitted {ToolbarPlan.Inner(cell)}");
+        return (problems, _top.ShrunkLastRight || _bottom.ShrunkLastRight);
     }
 
     /// <summary>The row's menu button: its placed more item, else its automatic "⋯".</summary>
@@ -220,7 +330,7 @@ internal sealed class ToolbarRenderer
     {
         foreach (var row in new[] { _top, _bottom })
             if (row.Dropped.Concat(row.UserMenu).Any(id => ReferenceEquals(_builtIn.GetValueOrDefault(id), button))) return MenuButton(row);
-        return button;
+        return button.Parent is not null && button.ActualWidth > 0 ? button : _popup.Input;
     }
 
     // ---- style ----
@@ -243,10 +353,13 @@ internal sealed class ToolbarRenderer
         foreach (var (id, button) in _builtIn) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
         foreach (var (id, (button, _)) in _customButtons) ApplyStyle(button, model.EffectiveStyle(id), ToolbarPlan.Metrics(model, id), accent);
         foreach (var (id, box) in _pickers) ApplyPickerStyle(id, box, model.EffectiveStyle(id), accent);
-        // The automatic "⋯" button is always one cell (BaseWidth x one cell high), whatever the bar's width.
+        // The automatic "⋯" starts at one cell, whatever the bar's width; the fitted width below shares the row's room.
         var overflowStyle = model.Style with { Width = 1 };
         ApplyStyle(_top.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
         ApplyStyle(_bottom.More, overflowStyle, ToolbarPlan.Metrics(overflowStyle), accent);
+        // ApplyStyle set each style's own width: the fitted widths win until the next fit.
+        ApplyWidths(_top);
+        ApplyWidths(_bottom);
     }
 
     /// <summary>The outline's thickness: drawn inside the button's fixed width and height, so it never changes the layout.</summary>
@@ -339,9 +452,7 @@ internal sealed class ToolbarRenderer
             foreach (var id in row.Dropped) menu.Items.Add(Item(id, row));
             if (menu.Items.Count == 0) menu.Items.Add(new MenuFlyoutItem { Text = Strings.Bar_NothingHere, IsEnabled = false });
         };
-        IDisposable? hold = null;
-        menu.Opened += (_, _) => hold = _popup.HoldResize(); // a resize would close the menu
-        menu.Closed += (_, _) => { hold?.Dispose(); hold = null; };
+        _ = HoldFor(menu);
         return menu;
     }
 
@@ -351,6 +462,7 @@ internal sealed class ToolbarRenderer
         if (_customButtons.TryGetValue(id, out var custom))
         {
             var item = new MenuFlyoutItem { Text = custom.Definition.Label, Icon = new FontIcon { Glyph = Glyph(custom.Definition.Icon) } };
+            ShortcutHelp(item, id, custom.Definition.Label);
             if (CustomButtonPicture.Read(custom.Definition, _log.Info) is { } picture)
             {
                 var image = new ImageIcon();
@@ -367,37 +479,38 @@ internal sealed class ToolbarRenderer
         if (button is ToggleButton toggle)
         {
             var item = new ToggleMenuFlyoutItem { Text = text, Icon = icon, IsChecked = toggle.IsChecked == true };
+            ShortcutHelp(item, id, text);
             item.Click += (_, _) => toggle.IsChecked = toggle.IsChecked != true; // its Checked/Unchecked handlers do the rest
             return item;
         }
         var entry = new MenuFlyoutItem { Text = text, Icon = icon };
+        ShortcutHelp(entry, id, text);
         // After this menu has closed, so a menu the button opens isn't closed with it.
         entry.Click += (_, _) => _popup.DispatcherQueue.TryEnqueue(() =>
         {
             // An exception escaping a DispatcherQueue callback ends the process.
-            try { Invoke((Button)button, row); }
+            try { Invoke((Button)button, MenuButton(row)); }
             catch (Exception ex) { _log.Error($"bar item {id} from the overflow menu failed", ex); }
         });
         return entry;
     }
 
-    private void Invoke(Button button, Row row)
+    private void Invoke(Button button, FrameworkElement anchor)
     {
         if (button.Flyout is { } flyout)
         {
             // Its own menu (the prompt list), opened at the row's menu button: the button itself isn't on screen.
-            var hold = _popup.HoldResize();
-            void Closed(object? s, object e) { flyout.Closed -= Closed; hold.Dispose(); }
-            flyout.Closed += Closed;
-            try { flyout.ShowAt(MenuButton(row)); }
-            catch
-            {
-                Closed(null, EventArgs.Empty); // it never opened: release the hold now
-                throw;
-            }
+            HoldFor(flyout).ShowAt(anchor);
             return;
         }
         new ButtonAutomationPeer(button).Invoke(); // raises its Click: the same handlers as the button
+    }
+
+    private readonly Dictionary<Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase, FlyoutHold> _flyoutHolds = [];
+    private FlyoutHold HoldFor(Microsoft.UI.Xaml.Controls.Primitives.FlyoutBase flyout)
+    {
+        if (!_flyoutHolds.TryGetValue(flyout, out var hold)) _flyoutHolds[flyout] = hold = new FlyoutHold(_popup, flyout);
+        return hold;
     }
 }
 

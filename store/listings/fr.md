@@ -5,81 +5,80 @@ Center › the submission › Store listings › Français. Product name stays "
 
 ## Description courte
 
-Transformez la touche Copilot en une discussion IA rapide avec l'IA de votre choix : votre compte Claude ou Gemini,
-votre propre clé API ou un modèle sur votre PC. Appuyez sur la touche, posez votre question, la réponse s'affiche.
+Coincé avec la touche Copilot ? Utilisez-la : un panneau de discussion IA rapide et natif pour l'IA que vous avez déjà (Claude, Codex, Gemini), votre propre clé API ou un modèle local. Sans compte chez nous. Organisez la barre et continuez dans une autre appli.
 
 ## Description
 
-Vous avez une touche Copilot ? Autant vous en servir. Hotline AI en fait un panneau de discussion IA rapide et natif
-qui parle à l'IA de votre choix.
+Quitte à être coincé avec la touche Copilot, autant vous en servir. Hotline AI la transforme en un panneau de discussion IA rapide et natif qui échange avec l'IA de votre choix.
 
-Appuyez sur la touche et un panneau s'ouvre sur l'écran où vous travaillez, prêt à écrire. Posez une question, la
-réponse s'affiche au fil de l'eau ; appuyez de nouveau sur la touche et il disparaît. Pas d'onglet de navigateur, pas
-de compte chez nous.
+Appuyez sur la touche : un panneau s'ouvre sur l'écran où vous travaillez, prêt pour la saisie. Posez une question, recevez une réponse au fil de l'eau, réappuyez sur la touche et il disparaît. Aucun onglet de navigateur, aucun compte chez nous.
 
 UTILISEZ L'IA QUE VOUS AVEZ DÉJÀ
-• Claude Code : utilise votre Claude Code installé et sa connexion ; votre forfait Claude fonctionne sans clé API.
-• CLI OpenAI Codex : utilise votre Codex installé et sa connexion ; votre forfait ChatGPT fonctionne sans clé API.
-• CLI Antigravity (agy) : Gemini avec votre compte Google.
+• Claude Code : utilise votre installation de Claude Code et sa connexion ; votre forfait Claude fonctionne donc sans clé API.
+• OpenAI Codex CLI : utilise votre installation de Codex et sa connexion ; votre forfait ChatGPT fonctionne donc sans clé API.
+• Antigravity CLI (agy) : Gemini avec votre connexion Google.
 • Votre propre clé API : Anthropic, Google Gemini, OpenAI et d'autres services compatibles OpenAI comme OpenRouter.
-• Modèles locaux : n'importe quel serveur de type OpenAI sur votre PC (par exemple llama.cpp ou LM Studio), pour que rien ne quitte votre ordinateur.
-Choisissez le modèle, le fournisseur et l'effort de réflexion directement depuis la barre du panneau.
+• Modèles locaux : n'importe quel serveur au format OpenAI sur votre PC (par exemple llama.cpp ou LM Studio), pour que rien ne quitte votre ordinateur.
+Choisissez le modèle, le fournisseur et son niveau de réflexion directement depuis la barre du panneau.
 
-EMPORTEZ LE CONTEXTE
-• Le texte sélectionné dans une autre application est joint automatiquement quand vous appuyez sur la touche, et vous pouvez le retirer avant l'envoi.
-• Capturez la fenêtre où vous étiez, tout l'écran ou une zone que vous tracez ; collez ou déposez images et fichiers.
-• Les modèles qui ne voient pas les images reçoivent à la place le texte de votre capture, lu sur votre PC avec l'OCR de Windows.
+EMPORTEZ DU CONTEXTE AVEC VOUS
+• Le texte que vous aviez sélectionné dans une autre application est joint automatiquement lorsque vous appuyez sur la touche, et vous pouvez le retirer avant l'envoi.
+• Capturez la fenêtre où vous étiez, l'écran entier ou une zone délimitée à la souris ; collez ou glissez-déposez des images et des fichiers.
+• Les modèles qui ne gèrent pas les images reçoivent à la place le texte de votre capture d'écran, lu sur votre PC avec l'OCR intégré de Windows.
 
 FAIT POUR LES TÂCHES RAPIDES
 • Actions rapides : tapez / pour traduire, résumer, corriger ou expliquer, ou écrivez les vôtres dans de simples fichiers texte.
-• Mémoire : « /remember je préfère les unités métriques » et chaque conversation le sait, quelle que soit l'IA utilisée.
-• Voix : maintenez la touche et parlez ; relâchez pour arrêter.
-• Les conversations récentes sont à un clic.
-• Click to Do et actions Windows : envoyez du texte ou une image à Hotline AI depuis d'autres applications.
+• Mémoire : "/remember je préfère les unités métriques" et chaque discussion le sait, quelle que soit l'IA utilisée.
+• Voix : maintenez la touche enfoncée et parlez ; relâchez pour arrêter.
+• Les discussions récentes sont accessibles en un clic, dans une liste avec recherche (Ctrl+H).
+• Click to Do et actions Windows : envoyez du texte ou une image vers Hotline AI depuis d'autres applications.
+• Continuer dans : passez la discussion dans un terminal, Open WebUI, l'interface web de llama.cpp, LM Studio ou votre propre cible quand vous avez besoin de plus d'espace.
+• Raccourcis pour les boutons de la barre quand le panneau a le focus : nouvelle discussion, discussions récentes, Paramètres, épinglage, captures et sélecteurs. Vos propres boutons peuvent aussi en avoir un. Ils nécessitent Ctrl, Alt ou Win, sans jamais gêner la frappe.
+• Une notification Windows vous prévient lorsqu'une réponse se termine pendant que vous êtes ailleurs.
 
 NATIF, LÉGER ET À VOUS
-• Conçu avec WinUI 3 : s'ouvre vite, suit votre thème clair ou sombre, sans navigateur intégré.
-• Réponses riches : titres, listes, tableaux, code avec bouton Copier, formules et dessins simples.
-• Tout est un fichier modifiable : paramètres, connexions, prompts, boutons de la barre.
-• Des outils, avec prudence : les connexions API peuvent utiliser les outils de vos serveurs MCP ; tout ce qui modifie quelque chose vous est d'abord demandé.
+• Développé avec WinUI 3 : rapide à ouvrir, s'adapte à votre thème clair ou sombre, aucun navigateur embarqué. Natif sur x64 et ARM64.
+• Réponses enrichies : titres, listes, tableaux, code avec un bouton Copier, maths et dessins simples.
+• Maintenez Alt pour déplacer ou redimensionner le panneau ; épinglez-le et choisissez si la discussion s'agrandit vers le haut ou vers le bas.
+• Tout est un simple fichier modifiable : paramètres, connexions, prompts, boutons de la barre.
+• Organisez la barre à votre façon : faites glisser les boutons entre les rangées dans Paramètres, ajoutez vos propres boutons avec vos propres images et gardez les moins utilisés dans un menu Plus.
+• Paramètres > Sauvegarde transfère votre configuration sur un autre PC. Les clés API ne sont jamais exportées, et tout fichier remplacé par Hotline est d'abord sauvegardé.
+• Des outils, avec prudence : les connexions API peuvent utiliser les outils de vos serveurs MCP ; tout ce qui modifie quelque chose vous demande d'abord confirmation.
+• La touche Copilot peut aussi faire office de touche Ctrl droite, si vous préférez.
 
-PRIVÉ PAR CONCEPTION
-Hotline AI n'a pas de serveur et ne collecte rien : pas de compte, pas de statistiques, pas de publicité. Vos messages
-vont uniquement au service d'IA que vous choisissez, selon ses conditions. Les clés API restent dans le Gestionnaire
-d'informations d'identification de Windows ; l'historique, les paramètres et la mémoire restent sur votre PC. Gratuit
-et open source.
+CONÇU POUR LA VIE PRIVÉE
+Hotline AI ne possède aucun serveur et ne collecte rien : aucun compte, aucune mesure d'audience, aucune publicité. Vos messages vont uniquement au service d'IA que vous choisissez, selon les conditions de ce service. Les clés API restent dans le Credential Locker de Windows ; l'historique, les paramètres et la mémoire restent sur votre PC. Gratuit et open source.
 
 Pas de touche Copilot ? Définissez le raccourci de votre choix, par exemple Ctrl+Alt+H.
 
-Hotline AI est une application indépendante, non affiliée à Microsoft, Anthropic, Google ou OpenAI, ni approuvée par
-eux. L'utilisation de Claude Code, de Codex, de la CLI Antigravity ou d'une API d'IA nécessite votre propre compte auprès de ce
-service.
+Hotline AI est une application indépendante et n'est ni affiliée à Microsoft, Anthropic, Google ou OpenAI, ni approuvée par ces entreprises. L'utilisation de Claude Code, Codex, de l'Antigravity CLI ou d'une API d'IA nécessite votre propre compte auprès de ce service.
 
 ## Nouveautés de cette version
 
-Choisissez votre couleur d'accentuation (violet Hotline, celle de Windows ou n'importe quelle couleur) et un nouveau thème Contraste élevé ; Hotline suit aussi les thèmes de contraste et la transparence de Windows. Votre historique s'ouvre en liste avec recherche (bouton Historique, Ctrl+↑ ou /resume). Définissez le raccourci supplémentaire en appuyant simplement dessus. Nouvelles actions rapides : /reply, /shorter, /formal et /bullets. Les blocs de code défilent horizontalement et le panneau suit les réponses à mesure qu'elles arrivent.
+Déplacez et redimensionnez le panneau : maintenez Alt pour les poignées, épinglez-le et sauvez position et taille. La discussion s'étend vers le haut ou le bas et s'ouvre plus large. Organisez les rangées de boutons dans Paramètres : glissez-les entre gauche, centre et droite, ajoutez les vôtres avec images et utilisez un menu Plus. Les boutons s'espacent uniformément. Chaque commande a un raccourci modifiable, Arrêter inclus. Poursuivez une discussion dans un terminal, Open WebUI, llama.cpp, LM Studio ou vos cibles. Paramètres > Sauvegarde exporte et importe tout, sauf les clés API. La largeur en pixels ou % d'écran reste fixe à toute échelle Windows. Outils MCP : « Toujours autoriser » est mémorisé sur ce PC et révocable dans Paramètres > Outils ; les secrets peuvent aller dans le Credential Locker de Windows. Nouveautés : indicateur de réflexion, sons d'ouverture/fermeture, /resume à la frappe et messages affichés dans les discussions CLI rouvertes. Fichiers sûrs : aucun fichier récent écrasé, clés inconnues gardées, fichiers remplacés sauvegardés dans un dossier. J'ai corrigé le focus de la touche Copilot sous Windows 11 26H2, la capture de fenêtre au clavier, les changements d'écran/échelle et des bugs d'accessibilité et de sécurité. Cette mise à jour réinitialise une fois paramètres et rangées au nouveau format ; vos connexions restent et vos anciens fichiers sont dans le dossier des sauvegardes.
 
 ## Fonctionnalités du produit
 
 1. S'ouvre avec la touche Copilot (ou n'importe quel raccourci) sur l'écran où vous travaillez, prêt à écrire
 2. Fonctionne avec votre connexion Claude Code, ChatGPT (CLI Codex) ou Gemini (CLI Antigravity) : aucune clé API nécessaire
 3. Votre propre clé : Anthropic, Google Gemini, OpenAI et API compatibles OpenAI
-4. Modèles locaux : n'importe quel serveur de type OpenAI sur votre PC, rien ne quitte votre ordinateur
+4. Modèles locaux : n'importe quel serveur de type OpenAI sur votre PC, pour que la discussion reste sur votre ordinateur
 5. Choisissez le modèle, le fournisseur et l'effort de réflexion depuis le panneau
 6. Le texte sélectionné dans l'application d'origine est joint automatiquement
 7. Capturez une fenêtre, l'écran ou une zone ; collez ou déposez images et fichiers
 8. Le texte des captures est lu sur votre PC (OCR) pour les modèles qui ne voient pas les images
-9. Actions rapides : /translate, /summarize, /fix, /explain ou les vôtres
-10. Une mémoire visible par chaque conversation, quelle que soit l'IA
-11. Saisie vocale en maintenant la touche
-12. Envoyez du texte ou des images depuis Click to Do et d'autres applications
-13. Réponses riches : tableaux, code avec Copier, formules et dessins
-14. WinUI 3 natif, suit votre thème clair ou sombre
-15. Tout est un fichier modifiable : paramètres, connexions, prompts, la barre
-16. Outils optionnels de vos serveurs MCP, avec approbation avant toute modification
-17. Pas de compte, pas de statistiques, pas de publicité ; les clés restent dans le Gestionnaire d'informations d'identification de Windows
-18. Gratuit et open source
-19. Natif sur les PC x64 et ARM64
+9. Actions rapides : /translate, /summarize, /fix, /explain et d'autres, ou vos propres fichiers texte
+10. Une mémoire visible par chaque discussion, quelle que soit l'IA utilisée
+11. Saisie vocale en maintenant la touche grâce à la reconnaissance vocale en ligne de Windows
+12. Envoyez du texte ou des images depuis Click to Do ; continuez dans un terminal, Open WebUI, llama.cpp ou LM Studio
+13. Réponses riches : tableaux, code avec bouton Copier, formules et dessins
+14. WinUI 3 natif sur x64 et ARM64 ; thèmes clair, sombre et contraste, votre couleur d'accentuation, sans navigateur
+15. Réorganisez les rangées dans Paramètres ; boutons personnalisés avec vos images, menu Plus et sélecteurs ajustables
+16. Outils MCP optionnels pour l'API ; les modifications requièrent votre accord sauf autorisation préalable
+17. Ni compte, ni statistiques, ni pub ; clés dans le Gestionnaire d'identifiants Windows ; gratuit et open source
+18. Paramètres, connexions, prompts et toolbar.json modifiables ; avertissement en cas d'erreur et sauvegardes automatiques
+19. Paramètres > Sauvegarde exporte et importe réglages, barre, MCP, sons, connexions et prompts ; jamais les clés API
+20. Raccourcis pour les boutons de la barre ; déplacez, épinglez et redimensionnez en pixels avec discussion élargie
 
 ## Légendes des captures d'écran
 
@@ -90,4 +89,4 @@ Choisissez votre couleur d'accentuation (violet Hotline, celle de Windows ou n'i
 
 ## Termes de recherche
 
-chat IA, touche Copilot, Claude, Gemini, assistant IA, LLM, IA locale
+Assistant chat IA, Raccourci touche Copilot, Intégration Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Compatible OpenRouter, LLM local llama.cpp

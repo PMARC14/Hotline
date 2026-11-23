@@ -58,7 +58,7 @@ public static partial class ApiCommon
     /// server's suggested wait or 2 s, 4 s backoff, at most <see cref="MaxTries"/> tries. Yields a status note before
     /// each wait, then the successful response. Retries happen only before a response streams, so nothing repeats.
     /// </summary>
-    public static async IAsyncEnumerable<SendStep> SendWithRetriesAsync(HttpClient http, Func<HttpRequestMessage> request, BackendProfile p,
+    public static async IAsyncEnumerable<SendStep> SendWithRetriesAsync(HttpClient http, Func<HttpRequestMessage> request, ConnectionProfile p,
         [EnumeratorCancellation] CancellationToken ct)
     {
         for (var attempt = 1; ; attempt++)
@@ -76,7 +76,7 @@ public static partial class ApiCommon
     }
 
     /// <summary>One try: the response, a wait before retrying, or a BackendException with the server's message.</summary>
-    private static async Task<(HttpResponseMessage? Response, TimeSpan Wait, string Reason)> TrySendAsync(HttpClient http, HttpRequestMessage request, BackendProfile p, int attempt, CancellationToken ct)
+    private static async Task<(HttpResponseMessage? Response, TimeSpan Wait, string Reason)> TrySendAsync(HttpClient http, HttpRequestMessage request, ConnectionProfile p, int attempt, CancellationToken ct)
     {
         using var _ = request; // the response doesn't need it once the headers are in
         HttpResponseMessage response;

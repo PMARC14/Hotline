@@ -8,18 +8,18 @@ namespace Hotline.Core.Tests;
 public sealed class ContinueTargetsTests : TempDirTest
 {
 
-    private static HotlineSettings With(params BackendProfile[] profiles)
+    private static HotlineSettings With(params ConnectionProfile[] profiles)
     {
         var s = new HotlineSettings();
-        s.Chat.Backends.Clear();
-        s.Chat.Backends.AddRange(profiles);
+        s.Chat.Connections.Clear();
+        s.Chat.Connections.AddRange(profiles);
         return s;
     }
 
-    private static BackendProfile Local(string endpoint = "http://127.0.0.1:8080/v1") =>
+    private static ConnectionProfile Local(string endpoint = "http://127.0.0.1:8080/v1") =>
         new() { Id = "local", Type = BackendType.Local, Name = "Local", Endpoint = endpoint };
 
-    private static BackendProfile Api() => new() { Id = "claude", Type = BackendType.Anthropic, Name = "Claude" };
+    private static ConnectionProfile Api() => new() { Id = "claude", Type = BackendType.Anthropic, Name = "Claude" };
 
     [Fact]
     public void Shared_defaults_to_the_llama_cpp_web_ui_at_the_local_connection()
@@ -31,6 +31,17 @@ public sealed class ContinueTargetsTests : TempDirTest
 
     [Fact]
     public void No_local_connection_means_an_empty_default() => Assert.Empty(ContinueTargets.Shared(With(Api())));
+
+    [Theory]
+    [InlineData(null)]
+    [InlineData("")]
+    [InlineData(" ")]
+    public void A_local_connection_without_an_endpoint_has_no_default_target(string? endpoint)
+    {
+        var local = Local();
+        local.Endpoint = endpoint;
+        Assert.Empty(ContinueTargets.Shared(With(Api(), local)));
+    }
 
     [Fact]
     public void A_set_shared_list_is_used_as_is()
@@ -63,7 +74,7 @@ public sealed class ContinueTargetsTests : TempDirTest
         var s = store.Load();
         var api = Api();
         api.ContinueIn = [new ContinueTarget(ContinueKind.OpenWebUi, "Open WebUI", Url: "http://localhost:3000")];
-        s.Chat.Backends.Add(api);
+        s.Chat.Connections.Add(api);
         s.Chat.ContinueIn = [new ContinueTarget(ContinueKind.App, "LM Studio", Command: "x.exe", CopyChat: true)];
         store.Save(s);
 
@@ -71,7 +82,7 @@ public sealed class ContinueTargetsTests : TempDirTest
         Assert.Contains("\"app\"", File.ReadAllText(Path.Combine(_dir, SettingsStore.FileName)));
         var back = new SettingsStore(_dir).Load();
         Assert.True(Assert.Single(back.Chat.ContinueIn!).CopyChat);
-        Assert.Equal(ContinueKind.OpenWebUi, Assert.Single(back.Chat.Backends.Single(b => b.Id == "claude").ContinueIn!).Kind);
+        Assert.Equal(ContinueKind.OpenWebUi, Assert.Single(back.Chat.Connections.Single(b => b.Id == "claude").ContinueIn!).Kind);
     }
 
     // ---- filling (Task 2) ----------------------------------------------------------------------
@@ -106,9 +117,6 @@ public sealed class ContinueTargetsTests : TempDirTest
     [InlineData("ftp://x.test/{last}", "a")]
     public void Only_http_and_https_are_opened(string template, string last)
         => Assert.Null(ContinueTargets.FillUrl(template, Values(Msg(ChatRole.User, last))));
-
-    [Fact]
-    public void An_https_template_is_opened() => Assert.NotNull(ContinueTargets.FillUrl("https://x.test/?q={chat}", Values(Msg(ChatRole.User, "hi"))));
 
     [Fact]
     public void A_long_chat_falls_back_to_the_last_message()
@@ -168,8 +176,10 @@ public sealed class ContinueTargetsTests : TempDirTest
     public void Targets_are_written_without_empty_fields()
     {
         var json = SettingsStore.Serialize(new HotlineSettings { Chat = { ContinueIn = [new ContinueTarget(ContinueKind.OpenWebUi, "W", Url: "http://x")] } });
-        Assert.DoesNotContain("command", json);
-        Assert.DoesNotContain("model", json);
+        using var document = System.Text.Json.JsonDocument.Parse(json);
+        var target = document.RootElement.GetProperty("chat").GetProperty("continueIn")[0];
+        Assert.False(target.TryGetProperty("command", out _));
+        Assert.False(target.TryGetProperty("model", out _));
         Assert.Contains("\"kind\": \"openWebUi\"", json);
     }
 }

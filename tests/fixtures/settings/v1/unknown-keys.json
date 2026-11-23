@@ -1,0 +1,87 @@
+{
+  "$schema": "../../../../schemas/settings.v1.schema.json",
+  "version": 1,
+  "futureTopLevel": { "nested": [1, 2, 3] },
+  "general": {
+    "language": "en-US",
+    "supportReminder": true,
+    "futureGeneralFlag": "kept"
+  },
+  "activation": {
+    "tap": "togglePopup",
+    "hold": "newChat",
+    "fallbackHotkey": "Ctrl+Alt+H",
+    "futureGesture": true
+  },
+  "window": {
+    "width": "45%",
+    "chatWidth": 680,
+    "minWidth": 320,
+    "maxWidth": 800,
+    "minHeight": 0,
+    "maxHeightPercent": 60,
+    "chatHeight": 420,
+    "growMode": "grow",
+    "growDirection": "auto",
+    "anchor": {
+      "monitor": "active",
+      "x": 0.5,
+      "y": 0.8,
+      "futureAnchorProp": 42
+    },
+    "openSound": "off",
+    "closeSound": "off",
+    "hideOnBlur": true,
+    "alwaysOnTop": true,
+    "theme": "dark",
+    "accent": "#6E56CF",
+    "fontSize": 14,
+    "fontFamily": "Cascadia Code",
+    "scrollbar": "auto",
+    "backdrop": "acrylicThin",
+    "tintOpacity": 0.15,
+    "luminosityOpacity": 0.35,
+    "futureWindowProp": "preserved"
+  },
+  "diagnostics": {
+    "verboseLogging": false,
+    "testLinks": false,
+    "futureDiag": 99
+  },
+  "chat": {
+    "defaultConnection": "claude",
+    "defaultPrompt": "default",
+    "continueIn": [
+      {
+        "kind": "web",
+        "name": "llama.cpp",
+        "url": "http://127.0.0.1:8080/?q={chat}&model={model}",
+        "futureTargetProp": true
+      }
+    ],
+    "order": ["claude"],
+    "saveHistory": true,
+    "notifyWhenDone": true,
+    "notifyShowsText": true,
+    "historyListSize": 300,
+    "thinkingIndicator": true,
+    "thinkingDelayMs": 700,
+    "resumeWhileTyping": true,
+    "cliTranscripts": true,
+    "historyRetentionDays": 30,
+    "maxImagePixels": 2048,
+    "attachSelection": "auto",
+    "ocr": "auto",
+    "voiceAutoSend": false,
+    "memory": true,
+    "memoryTool": "ask",
+    "futureChatProp": "kept"
+  },
+  "tools": {
+    "approvals": {
+      "files/read_file": "allow",
+      "files/*": "ask"
+    },
+    "futureToolsProp": [true, false]
+  }
+}

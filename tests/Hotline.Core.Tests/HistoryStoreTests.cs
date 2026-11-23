@@ -6,6 +6,22 @@ public sealed class HistoryStoreTests : TempDirTest
 {
     private readonly ManualTimeProvider _clock = new();
 
+    [Theory]
+    [InlineData("{\"id\":\"broken é")]
+    [InlineData("")]
+    [InlineData("\r\n")]
+    public void Append_after_unterminated_tail_preserves_new_message(string tail)
+    {
+        var store = new HistoryStore(_dir, _clock);
+        store.Append("c1", new ChatMessage("m1", ChatRole.User, "first", [], _clock.GetUtcNow()));
+        var original = File.ReadAllText(store.PathFor("c1")).TrimEnd('\n') + (tail.StartsWith('{') ? "\n" : "") + tail;
+        File.WriteAllText(store.PathFor("c1"), original);
+        store.Append("c1", new ChatMessage("m2", ChatRole.User, "new", [], _clock.GetUtcNow()));
+        Assert.StartsWith(original, File.ReadAllText(store.PathFor("c1")));
+        Assert.Equal("new", store.Load("c1")[^1].Text);
+        Assert.Equal(2, store.Load("c1").Count);
+    }
+
     [Fact]
     public void Round_trips_messages_with_attachment_metadata_but_no_bytes()
     {

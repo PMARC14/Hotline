@@ -14,25 +14,15 @@ namespace Hotline.App.Chat;
 internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript, Composer composer, HotlineSettings settings, FileLog log,
     Action<ChatEvent> apply, Action rebuild, Action newChat, Action<string, string?> attachSelection, Func<IReadOnlyList<Attachment>> takeAttachments)
 {
-    private const string DemoAnswer = "### Area of a circle\n\nThe area is\n\n$$A = \\pi r^2$$\n\n" +
-            "- **r** is the radius (half the diameter)\n- **π** ≈ 3.14159\n\n" +
-            "For a radius of 2: $A = \\pi \\times 2^2 \\approx 12.57$.\n\n" +
-            "```python\nimport math\n\ndef circle_area(r: float) -> float:\n    return math.pi * r ** 2\n\nprint(round(circle_area(2), 2))  # 12.57\n```\n\n" +
-            "| Radius | Area |\n|---|---|\n| 1 | 3.14 |\n| 2 | 12.57 |\n| 3 | 28.27 |";
+    // The demo conversations are interface text (Strings.Demo_*), so the Store screenshots can be taken in every language.
+    private static string DemoAnswer => Strings.Demo_MathAnswer;
 
     private const string TestAnswer = "# Heading\n\nSome **bold** text with `code` and <kbd>Ctrl</kbd>.\n\n- one\n- two\n  1. nested\n\n" +
             "```csharp\nvar x = 1;\nConsole.WriteLine(x);\n```\n\n| a | b |\n|---|---|\n| 1 | 22 |\n\n> quoted\n\n$$\\pi r^2$$\n\n<div align=\"center\">\n\n<svg viewBox=\"0 0 10 10\" width=\"40\" height=\"40\">\n\n<circle cx=\"5\" cy=\"5\" r=\"4\" fill=\"#0284c7\"/>\n</svg>\n\n</div>\n\n- [x] done ==marked== x^2^\n\n---\n\nEnd.";
 
-    private const string SummaryText = "Remote work has reshaped how teams communicate. Asynchronous updates now replace many " +
-            "meetings, written decisions travel further than spoken ones, and teams that document well onboard new people in " +
-            "days instead of weeks. The trade-off is fewer chance conversations, so many companies now plan in-person time on " +
-            "purpose: a few days each quarter for planning, mentoring and getting to know each other.";
+    private static string SummaryText => Strings.Demo_SummaryText;
 
-    private const string SummaryAnswer = """
-        - **Async first:** written updates replace many meetings, and written decisions reach more people.
-        - **Documentation pays off:** well-documented teams onboard new people in days, not weeks.
-        - **Planned together-time:** chance conversations are rarer, so companies schedule in-person days each quarter.
-        """;
+    private static string SummaryAnswer => Strings.Demo_SummaryAnswer;
 
     /// <summary>
     /// hotline://demo[?scene=math|summary|slash]: a scripted conversation shown in the real panel and streamed like a
@@ -44,25 +34,29 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
         {
             newChat(); // a real reset (stops any answer, clears the controller), not just the view
             popup.ShowPopup();
-            var backend = settings.Chat.Backends.FirstOrDefault()?.Name ?? "Gemini (Antigravity)";
+            var backend = settings.Chat.Connections.FirstOrDefault()?.Name ?? "Gemini (Antigravity)";
             switch (scene?.ToLowerInvariant())
             {
                 case "summary":
                     attachSelection(SummaryText, "Microsoft Edge"); // the chip, as when the key opens over a selection
-                    await TypeAsync("Summarize this in three bullet points.");
-                    await Task.Delay(2500); // the Store screenshot is taken here: chip + question
+                    await TypeAsync(Strings.Demo_SummaryQuestion);
+                    await Task.Delay(8000); // the Store screenshot is taken here: chip + question (long enough for every language: a short question is typed in half a second)
                     composer.Text = "";
-                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, "Summarize this in three bullet points.", takeAttachments(), DateTimeOffset.Now)));
+                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, Strings.Demo_SummaryQuestion, takeAttachments(), DateTimeOffset.Now)));
                     await StreamAsync(backend, SummaryAnswer);
                     break;
                 case "slash":
                     await TypeAsync("/"); // opens the quick-action list
                     break;
                 default:
-                    await TypeAsync("How do I find the area of a circle? Show it in Python.");
+                    await TypeAsync(Strings.Demo_MathQuestion);
                     composer.Text = "";
-                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, "How do I find the area of a circle? Show it in Python.", [], DateTimeOffset.Now)));
+                    apply(new UserMessageAdded(new ChatMessage("demo-u", ChatRole.User, Strings.Demo_MathQuestion, [], DateTimeOffset.Now)));
                     await StreamAsync(backend, DemoAnswer);
+                    // The answer is taller than the panel and the view follows the stream to the bottom; the screenshot reads
+                    // better from the top (the question, the heading and the equation).
+                    await Task.Delay(400);
+                    popup.MessagesScroll.ChangeView(null, 0, null, disableAnimation: true);
                     break;
             }
             log.Info($"demo conversation shown ({scene ?? "math"})");
@@ -104,6 +98,13 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
     };
 
     public async Task RunAsync()
+    {
+        // The URI handler is async void; setup and restoration can fail too.
+        try { await RunCoreAsync(); }
+        catch (Exception ex) { log.Error("selftest FAILED during setup or restoration", ex); }
+    }
+
+    private async Task RunCoreAsync()
     {
         if (popup.IsShown) popup.HidePopup(); // test-only link: render off-screen, never in front of the user
         // What the test changes, restored in finally whatever happens: the user's draft, button rows and direction.
@@ -220,8 +221,8 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
             // Bar looks, the ⋯ menu and a damaged file, from models resolved in memory (the user's toolbar.json is never touched).
             const string builtIn = "\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\", \"prompt\", \"recent\", \"continueIn\"";
             static string Bar(string style, string moreLeft = "", string buttons = "", string overrides = "") => $$"""
-                { "version": 2, "top": { "left": ["effort", "model", "provider"], "right": [] },
-                  "items": { "left": [{{builtIn}}{{moreLeft}}], "right": ["newChat", "settings"] },
+                { "version": 3, "top": { "left": ["effort", "model", "provider"], "right": [] },
+                  "bottom": { "left": [{{builtIn}}{{moreLeft}}], "right": ["newChat", "settings"] },
                   "style": {{style}}, "overrides": { {{overrides}} }, "buttons": { {{buttons}} } }
                 """;
             async Task Look(string name, string json, int width)
@@ -250,32 +251,37 @@ internal sealed class PanelSelfTest(PopupWindow popup, TranscriptView transcript
                     if (Math.Abs(box.BorderThickness.Left - wanted) > 0.01)
                         log.Error($"selftest FAILED: {name}: the {id} picker's border is {box.BorderThickness.Left}, not {wanted}");
                 }
+                // Every shown button is drawn at the width the fit gave it (ToolbarPlan.PlanRow's ButtonWidths).
+                foreach (var problem in popup.ToolbarDrawnWidths().Problems) log.Error($"selftest FAILED: {name}: {problem}");
             }
             var customButtons = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$"""
                 "c{{i}}": { "label": "Custom {{i}}", "icon": "E734", "text": "t{{i}}" }
                 """));
             var customIds = string.Concat(Enumerable.Range(1, 24).Select(i => $", \"c{i}\""));
-            await Look("9-wide-outline", Bar("""{ "width": "wide", "outline": true }"""), 720);
-            await Look("10-compact-filled", Bar("""{ "width": "compact", "filled": true }"""), 720);
+            await Look("9-wide-outline", Bar("""{ "width": 2, "outline": true }"""), 720);
+            await Look("10-compact-filled", Bar("""{ "width": 0.5, "filled": true }"""), 720);
             // 24 custom buttons: at the narrowest width the left ones go into the ⋯ menu; wider they come back (no layout cycle either way).
             await Look("11-custom-720", Bar("{}", customIds, customButtons), 720);
             await Look("12-custom-320", Bar("{}", customIds, customButtons), 320);
             await Look("13-custom-1000", Bar("{}", customIds, customButtons), 1000);
             await Look("14-custom-320-again", Bar("{}", customIds, customButtons), 320);
             // A hand-damaged file: a repeated key and wrong values still give a drawn bar.
-            await Look("15-damaged-file", Bar("""{ "width": "huge", "outline": "yes" }""").Replace("\"version\": 2", "\"version\": 2, \"version\": 2"), 720);
+            await Look("15-damaged-file", Bar("""{ "width": "huge", "outline": "yes" }""").Replace("\"version\": 3", "\"version\": 3, \"version\": 3"), 720);
             // Wide (two cells across, one cell high) at the narrowest width: the left buttons go into the ⋯ menu (one cell); then mixed widths.
-            await Look("16-wide-320", Bar("""{ "width": "wide", "outline": true }"""), 320);
-            await Look("17-mixed-widths-720", Bar("""{ "width": "normal" }""", overrides: """ "pin": { "width": "compact" }, "prompt": { "width": "wide" } """), 720);
+            await Look("16-wide-320", Bar("""{ "width": 2, "outline": true }"""), 320);
+            await Look("17-mixed-widths-720", Bar("""{ "width": 1 }""", overrides: """ "pin": { "width": 0.5 }, "prompt": { "width": 2 } """), 720);
             // Custom buttons at their widest (4 cells) on a wide bar: still one cell high (ToolbarPlan.Metrics).
             var biggest = string.Join(", ", Enumerable.Range(1, 24).Select(i => $$""" "c{{i}}": { "width": 4 } """));
-            await Look("18-custom-4-cells-320", Bar("""{ "width": "wide" }""", customIds, customButtons, biggest), 320);
+            await Look("18-custom-4-cells-320", Bar("""{ "width": 2 }""", customIds, customButtons, biggest), 320);
             // A coloured outline bar-wide, and one item in another colour.
-            await Look("19-outline-colour", Bar("""{ "width": "wide", "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            await Look("19-outline-colour", Bar("""{ "width": 2, "outline": true, "outlineColor": "#E81123" }""", overrides: """ "pin": { "outlineColor": "#0078D4" } """), 720);
+            // Very narrow with a four-cell last right button: the fit shrinks it to one cell, and it must be drawn that way (CheckGrid).
+            await Look("21-shrunk-last-right-200", Bar("""{ "fill": false }""", overrides: """ "settings": { "width": 4 } """), 200);
+            if (!popup.ToolbarDrawnWidths().AnyShrunk) log.Error("selftest FAILED: 21-shrunk-last-right-200: the fit did not shrink the last right button");
             // Items in the left, centre and right groups of both rows.
             await Look("20-centre-group", """
-                { "version": 2, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
-                  "items": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
+                { "version": 3, "top": { "left": ["effort", "model", "provider"], "center": ["recent"], "right": ["continueIn"] },
+                  "bottom": { "left": ["pin", "captureWindow", "captureScreen"], "center": ["captureRegion", "prompt"], "right": ["newChat", "settings"] },
                   "style": { "outline": true } }
                 """, 720);
             // The reference layouts (ToolbarProfiles; the unit tests run all of them at many widths): the ones that mix the pickers

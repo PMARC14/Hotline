@@ -4,21 +4,15 @@ using Hotline.Core.Windowing;
 
 namespace Hotline.Core.Tests;
 
-public sealed class CustomIconsTests : IDisposable
+public sealed class CustomIconsTests : TempDirTest
 {
     /// <summary>A 16×16 PNG saved by System.Drawing (a real encoder, so the checker isn't only tested against our own writer).</summary>
     private static readonly byte[] Real16 = Convert.FromBase64String(
         "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAAXNSR0IArs4c6QAAAARnQU1BAACxjwv8YQUAAAAJcEhZcwAADsMAAA7DAcdvqGQAAAAVSURBVDhPY2AYXuA/GI2CUTAKyAEAeu0B/zEZFcQAAAAASUVORK5CYII=");
 
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-icons-" + Guid.NewGuid().ToString("N"));
     private string Icons => Path.Combine(_dir, "icons");
 
     public CustomIconsTests() => Directory.CreateDirectory(_dir);
-
-    public void Dispose()
-    {
-        try { Directory.Delete(_dir, recursive: true); } catch (IOException) { }
-    }
 
     // ---- a minimal PNG writer (bitwise CRC, independent of the checker's table) ----
 
@@ -146,8 +140,8 @@ public sealed class CustomIconsTests : IDisposable
     [Theory]
     [InlineData("b1.png", "b1", true)]
     [InlineData("my-button.png", "my-button", true)]
-    [InlineData("b1.PNG", "b1", false)]
-    [InlineData("B1.png", "b1", false)]
+    [InlineData("b1.PNG", "b1", true)]
+    [InlineData("B1.png", "b1", true)]
     [InlineData("b2.png", "b1", false)]
     [InlineData("../b1.png", "b1", false)]
     [InlineData("..\\b1.png", "b1", false)]
@@ -155,7 +149,7 @@ public sealed class CustomIconsTests : IDisposable
     [InlineData("b1", "b1", false)]
     [InlineData("", "", false)]
     [InlineData(null, "b1", false)]
-    [InlineData("pin.png", "Pin", false)]
+    [InlineData("pin.png", "Pin", true)]
     public void IsFileName_is_the_button_id_dot_png_only(string? name, string id, bool expected) =>
         Assert.Equal(expected, CustomIcons.IsFileName(name, id));
 
@@ -165,7 +159,7 @@ public sealed class CustomIconsTests : IDisposable
         Assert.Equal(Path.Combine(Icons, "b1.png"), CustomIcons.IconPath(Icons, "b1.png"));
         Assert.Null(CustomIcons.IconPath(Icons, "../b1.png"));
         Assert.Null(CustomIcons.IconPath(Icons, "C:\\x.png"));
-        Assert.Null(CustomIcons.IconPath(Icons, "b1.PNG"));
+        Assert.Equal(Path.Combine(Icons, "b1.PNG"), CustomIcons.IconPath(Icons, "b1.PNG"));
         Assert.Null(CustomIcons.IconPath(Icons, null));
         Assert.Equal(Path.Combine("data", "icons"), CustomIcons.Folder("data"));
     }
@@ -214,22 +208,22 @@ public sealed class CustomIconsTests : IDisposable
     }
 
     [Fact]
-    public void Replacing_a_picture_keeps_the_newest_ten_backups_after_commit()
+    public void Replacing_a_picture_keeps_save_sets_after_commit()
     {
         var source = Write("source.png", Png(16, 16));
         CustomIcons.Import(source, Icons, "b1");
         CustomIcons.Commit(Icons, "b1");
-        for (uint side = 17; side <= 28; side++)
+        for (uint side = 17; side <= 38; side++)
         {
             var previous = File.ReadAllBytes(Path.Combine(Icons, "b1.png"));
             File.WriteAllBytes(source, Png(side, side));
             Assert.Equal("b1.png", CustomIcons.Import(source, Icons, "b1").FileName);
             CustomIcons.Commit(Icons, "b1");
-            var backups = Directory.GetFiles(Icons, "b1.png.*.bak");
-            Assert.Equal(Math.Min((int)side - 16, 10), backups.Length);
+            var backups = Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories);
+            Assert.Equal(Math.Min((int)side - 16, 20), backups.Length);
             Assert.Contains(backups, file => File.ReadAllBytes(file).SequenceEqual(previous));
         }
-        Assert.DoesNotContain(Directory.GetFiles(Icons, "b1.png.*.bak"), file => File.ReadAllBytes(file).SequenceEqual(Png(16, 16)));
+        Assert.DoesNotContain(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories), file => File.ReadAllBytes(file).SequenceEqual(Png(16, 16)));
     }
 
     [Fact]
@@ -310,7 +304,7 @@ public sealed class CustomIconsTests : IDisposable
         Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(Path.Combine(_dir, "missing.png"), Icons, "b1"));
         var source = Write("a.png", Real16);
         Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "../evil"));
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "B1"));
+        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "B 1"));
         Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, null!));
         Assert.False(Directory.Exists(Icons));
     }
@@ -337,5 +331,21 @@ public sealed class CustomIconsTests : IDisposable
         Assert.False(CustomIcons.Delete(Path.Combine(_dir, "nowhere"), "b2"));
         Assert.Equal(["b2.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
         Assert.True(File.Exists(Path.Combine(_dir, "outside.png")));
+    }
+
+    [Fact]
+    public void Delete_keeps_old_backups_and_rollback_copies()
+    {
+        CustomIcons.Import(Write("a.png", Real16), Icons, "b1");
+        CustomIcons.Import(Write("b.png", Real16), Icons, "b1");
+        File.WriteAllText(Path.Combine(Icons, "b1.png.old.bak"), "old backup");
+        Assert.Contains(Directory.GetFiles(Icons, "*", SearchOption.AllDirectories), f => f.EndsWith(".b1.prev"));
+        Assert.True(CustomIcons.Delete(Icons, "b1"));
+        var left = Directory.GetFiles(Icons).Select(Path.GetFileName).ToList();
+        Assert.DoesNotContain("b1.png", left);
+        Assert.Contains(".b1.prev", left);
+        Assert.Contains("b1.png.old.bak", left);
+        Assert.False(CustomIcons.Rollback(Icons, "b1")); // the retained .prev is no longer a pending operation
+        Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories));
     }
 }

@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>텍스트만, .hotline 폴더에 저장합니다.</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>백그라운드에서 답변이 끝나면 알림</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>패널이 숨겨져 있거나 다른 앱이 앞에 있을 때 답변이 끝나면 Windows 알림을 표시합니다. 클릭하면 답변이 열립니다.</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>배율 적용 픽셀(200–4000) 또는 작업 영역 비율(20%–90%).</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>배율 적용 픽셀(200–4000) 또는 작업 영역 비율(20%–90%). 비워 두면 열 때의 너비가 유지됩니다.</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>배율 적용 픽셀(DIP).</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>200–4000 사이의 배율 적용 픽셀 또는 20%–90%를 입력하세요.</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>알림에 답변 텍스트 표시</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>완료 알림에 답변 텍스트를 포함합니다. 끄면 채팅 제목만 표시됩니다.</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>이 파일은 동결 이전 형식을 사용합니다. 업그레이드가 실행될 때까지 기본값이 적용되며 파일은 변경되지 않습니다.</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>연결 ID {0}이(가) 잘못되었습니다. 1–64자의 영문자, 숫자, 마침표, 밑줄 또는 하이픈을 사용하세요. Windows 장치 이름과 끝의 마침표는 사용할 수 없습니다.</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0}이(가) 답변했습니다</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>답변 준비됨</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0}이(가) 답변을 완료하지 못했습니다</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>기록 보관 기간</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>일</value></data>
@@ -84,6 +93,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>아니요</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>답변 중지</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>답변이 작성되는 동안 이를 멈추는 키입니다(Enter로는 멈추지 않으며, 보내기 단추로도 멈출 수 있습니다). 단일 키(Esc) 또는 Ctrl+. 같은 조합 — 답변 중이 아닐 때 Esc는 패널을 숨깁니다.</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>패널 명령에서 이미 이 바로 가기를 사용하고 있습니다. 먼저 해당 명령의 바로 가기를 변경하거나 지우거나, 다른 바로 가기를 선택하세요.</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>올바른 바로 가기 키가 아닙니다(예: Esc, Ctrl+., Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>메모리</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>모든 대화에서 .hotline 폴더의 memory.md를 참조합니다("/remember 내용"으로 한 줄 추가).</value></data>
@@ -119,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>Windows 시작 시 실행</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>도구 사용을 "Hotline 도구 사용"으로 설정한 API 연결은 이 MCP 서버의 도구를 호출할 수 있습니다. 읽기 전용 도구는 바로 실행되고, 그 밖의 도구는 패널에서 묻습니다(한 번 허용 / 항상 / 거부).</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP 서버</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 다른 MCP 앱과 같은 "mcpServers" 형식이며 승인도 같은 파일에 저장됩니다</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 다른 MCP 앱과 동일한 "mcpServers" 형식이며, 승인 규칙은 settings.json의 tools.approvals입니다</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>mcp.json 편집</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>폴더 열기</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows 에이전트 레지스트리</value></data>
@@ -430,6 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>"{0}"이(가) 설치되어 있지 않거나 PATH에 없어 {1} 서버를 시작할 수 없습니다. mcp.json의 "command"를 확인하세요.</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>mcp.json을 읽을 수 없습니다: {0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>승인 "{0}"의 값을 알 수 없으므로 "deny"로 처리합니다.</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>mcp.json의 "approvals" 섹션은 무시됩니다. 규칙을 settings.json(tools.approvals)으로 이동하세요.</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>서버 "{0}"의 "{1}"에 문자열이 아닌 env 값이 있어 건너뛰었습니다.</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>서버 "{0}"의 env "{1}"에 잘못된 비밀 참조가 있습니다.</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>서버 "{0}"이(가) env "{2}"에서 비밀 "{1}"을(를) 참조하지만 자격 증명 보관함에 없습니다.</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>허용 규칙 "{0}"이(가) "{1}"과(와) 대소문자만 달라 무시되었습니다.</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json이 최신 버전({0})을 사용하므로 안전하게 업데이트할 수 없습니다.</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>업데이트하기 전에 mcp.json을 백업할 수 없습니다.</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>업데이트된 mcp.json 파일을 저장할 수 없습니다.</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>mcp.json의 서버 "{0}"에서 env 항목 "{1}"을(를) 찾을 수 없습니다.</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>해당 env 항목이 변경되었거나 이미 이동되었습니다. 아무것도 변경되지 않았습니다.</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>값이 Windows 자격 증명 보관함에 "{0}"({1})으로 저장되었지만, 저장 및 롤백에 실패하여 mcp.json은 변경되지 않았습니다.</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>항상 허용 권한</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>저장된 도구 권한이 없습니다.</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · 실행 {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>취소</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>도구 권한을 취소할 수 없습니다.</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>환경 비밀</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>mcp.json에서 일반 텍스트 env 항목을 찾을 수 없습니다.</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1}(mcp.json의 일반 텍스트)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>자격 증명 보관함으로 이동</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>env 값을 자격 증명 보관함으로 이동할까요?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>{0} › {1}을(를) Windows 자격 증명 보관함에 저장하고 mcp.json에서 바꿉니다. 이전 mcp.json(일반 텍스트 값 포함)은 backups\&lt;time&gt;-save에 유지되며, mcp.json의 주석은 유지되지 않습니다.</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>비밀 이름</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>영문자, 숫자, 마침표, 밑줄 또는 하이픈을 사용하세요.</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>이 이름의 비밀이 자격 증명 보관함에 이미 있으며 덮어쓰여집니다.</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>이동</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>{0} › {1}을(를) 자격 증명 보관함으로 이동했습니다. 이전 mcp.json(일반 텍스트 값 포함)은 backups\&lt;time&gt;-save에 저장되었습니다.</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>env 값을 자격 증명 보관함으로 이동할 수 없습니다.</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>서버 이름에는 '/'나 '*'를 쓸 수 없습니다.</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>{0:0}초 안에 시작되지 않았습니다</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 수정될 때까지 도구가 실행되지 않습니다.</value></data>
@@ -479,6 +517,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1}이(가) 0.5, 1, 2, 3, 4가 아닙니다(cells는 width의 이전 이름입니다). 기본 너비가 사용됩니다</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>현재 파일의 복사본을 먼저 만들 수 없어 아무것도 변경되지 않았습니다({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>이 페이지가 열려 있는 동안 toolbar.json이 변경되었습니다. 다시 로드되어 마지막 변경 사항이 적용되지 않았습니다. 다시 변경해 주세요.</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>중복된 사용자 지정 단추 ID "{0}"(대소문자 구분 안 함)입니다. 첫 번째 정의가 사용됩니다.</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>아직 답변 중입니다. 중지 단추로 중지할 수 있으며 메시지는 입력 상자에서 대기합니다.</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1}은(는) 0.5, 1, 2, 3 또는 4의 숫자 너비가 아닙니다. 기본 너비가 사용됩니다.</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: 이미 사용 중인 조합입니다. 이 바로 가기는 비활성화됩니다.</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>이 도구 모음 파일은 이전 형식을 사용합니다. 기본 단추 행과 바로 가기가 활성화되었으며 파일은 변경되지 않았습니다.</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>사용 가능한 행 공간 채우기</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>단추 행과 바로 가기를 백업할 수 없습니다.</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>단추 행과 바로 가기를 저장할 수 없습니다.</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>이미지가 변경되지 않았습니다: toolbar.json을 저장할 수 없습니다.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>자세히</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>표시할 항목 없음</value></data>
@@ -499,7 +561,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 나머지는 적용됩니다. 설정 › 고급에서 전체 목록을 확인할 수 있습니다.</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>설정 파일을 읽을 수 없습니다</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>문제가 해결될 때까지 Hotline은 현재 설정을 유지합니다.</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width가 이제 실제 픽셀 단위입니다(이전: 배율 단위): {0} 값은 그대로 유지되었습니다. 설정 &amp;gt; 창에서 확인하세요</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width가 이제 실제 픽셀 단위입니다(이전: 배율 단위): {0} 값은 그대로 유지되었습니다. 설정 &gt; 창에서 확인하세요</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>설정 파일 문제</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>무시된 값에는 기본값이 사용됩니다. 파일을 수정하면 Hotline에 즉시 반영됩니다.</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json의 일부가 무시되었습니다</value></data>
@@ -597,8 +659,6 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>메시지 상자 아래</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>비어 있음</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>화면 {0} × {1} px ({2}% 배율): Windows에서 인터페이스를 {3} × {4} 크기로 렌더링합니다</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>화면 {0} × {1} px (100% 배율)</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀, Windows 배율 무시</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>화면의 실제 픽셀, Windows 배율 무시</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>메시지 상자 아래로 이동</value></data>
@@ -663,7 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>백업</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>Hotline 설정을 다른 PC로 이동하거나 복사본을 보관하세요. 백업은 선택한 항목만 포함하는 단일 .zip 파일입니다. 그 외의 항목(채팅 기록, 메모리, 로그)은 포함되지 않습니다.</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>설정</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>단추 행 및 사용자 지정 단추 사진</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>단추 행 및 바로 가기</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline의 구성 형식이 변경되었습니다. 이전 버전의 설정과 단추 행은 기본값으로 돌아갑니다. AI 연결과 MCP 서버는 유지됩니다.</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>초기화됨: {0}.</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>원본 파일: {0}.</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>전체 업그레이드 백업을 만들 수 없습니다.</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>업그레이드할 수 없음: {0}. Hotline이 다음 시작 시 이 파일들을 다시 시도합니다.</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>0.6에서 업그레이드</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>업그레이드 후 처음 시작할 때 이전 설정과 단추 행은 기본 내장 값으로 돌아갑니다. 기본 AI 연결과 연결 순서만 유지됩니다. AI 연결과 MCP 서버는 유지되며, 이전 MCP 승인은 제거됩니다. 원본 파일은 변환 전에 backups/&lt;time&gt;-upgrade로 복사됩니다. 백업에 실패하더라도 변환은 실행됩니다. 변환할 수 없는 파일은 그대로 유지되며 다음 시작 시 다시 시도됩니다. 참조 기본값은 시작 시 .defaults에서 새로 고쳐집니다.</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>이 백업에는 {0}의 일반 텍스트 환경 값이 포함되어 있습니다. 이 백업을 공유하기 전에 설정 &gt; 도구에서 자격 증명 보관함으로 이동을 사용하세요.</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>이 MCP 서버에는 이 PC의 자격 증명 보관함 비밀이 필요합니다: {0}. 설정 &gt; 도구에서 비밀을 추가하세요.</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>최신 버전은 그대로 유지되었습니다.</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>도구 (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>소리</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 연결</value></data>
@@ -749,7 +819,7 @@ Claude Code, Codex 또는 Antigravity와의 채팅은 해당 도구 자체 기�
   <data name="Guide_Direction_Title" xml:space="preserve"><value>위 또는 아래</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>채팅은 메시지 표시줄을 기준으로 확장됩니다. 위쪽에 공간이 없는 경우가 아니면 위로, 공간이 없으면 아래로 확장됩니다. 설정 › 창에서 위 또는 아래로 고정할 수 있으며 위치, 너비 및 채팅 높이도 설정할 수 있습니다.</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>단추 행</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 버튼 행은 표시줄을 6개 영역(메시지 상자 위 행의 왼쪽, 가운데, 오른쪽 및 아래의 동일한 3개)으로 표시합니다. 버튼이나 선택기를 드래그하여 영역 내 또는 다른 영역으로 이동하거나 화살표 버튼을 사용하세요(Alt+화살표는 영역 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “표시 안 됨”에서 대기합니다. 각 버튼은 고유한 너비, 윤곽선 또는 채우기를 가질 수 있으며(드롭다운에도 윤곽선과 채우기가 적용됨), 빠른 작업을 실행하거나 텍스트를 삽입하는 사용자 정의 버튼을 추가할 수 있습니다. 맞지 않는 버튼은 ⋯ 메뉴로 이동하고 “… 버튼 상자”(toolbar.json의 menu 키)에는 그곳에 유지하도록 선택한 버튼이 들어갑니다. 너비는 셀 단위로 계산됩니다. 버튼은 0.5, 1, 2, 3 또는 4셀 너비이며(width 키, compact, normal, wide는 각각 0.5, 1, 2를 의미), 각 선택기는 고유한 너비를 가집니다. 설정 › 백업은 toolbar.json과 버튼 그림도 함께 저장합니다.</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>설정 › 창 › 단추 행에서는 표시줄을 메시지 상자 위 행의 왼쪽, 가운데, 오른쪽과 아래 행의 동일한 세 영역 등 여섯 개 영역으로 보여 줍니다. 단추나 선택기를 끌어 같은 영역 내 또는 다른 영역으로 이동하거나 화살표 단추를 사용하세요(Alt+화살표는 영역 변경, Ctrl+화살표는 순서 변경). 숨긴 항목은 “표시 안 함”에 보관됩니다. 모든 단추는 고유한 너비, 윤곽선 또는 채우기를 가질 수 있으며(드롭다운에도 윤곽선과 채우기가 적용됨), 빠른 작업을 실행하거나 텍스트를 삽입하는 사용자 지정 단추를 추가할 수 있습니다. 공간에 맞지 않는 단추는 ⋯ 메뉴로 이동하며, “… 단추 상자”(toolbar.json의 menu 키)에는 그곳에 두기로 선택한 단추가 보관됩니다. 단추 너비는 0.5, 1, 2, 3 또는 4의 숫자(width 키)이고, 각 선택기는 고유한 범위를 가지며, style.fill(기본값 켜짐)은 행의 여유 공간을 나눕니다. 설정 › 백업은 toolbar.json과 단추 이미지도 함께 저장합니다.</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>소리</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>설정 › 모양 › 사운드에서 패널이 열리거나 닫힐 때 소리를 재생합니다: Windows 소리 또는 소리 폴더의 .wav 파일. 기본적으로 꺼져 있습니다.</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>설정 파일</value></data>
@@ -775,7 +845,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Bar_ColorPink" xml:space="preserve"><value>분홍색</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>단추 단위 너비</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>표시 안 함</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>네 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>여섯 그룹 간에 항목을 끌어다 놓거나 각 항목 아래의 단추를 사용하세요. 항목에 포커스가 있을 때 Alt+화살표 키로 다른 그룹으로 이동하고 Ctrl+Left 또는 Ctrl+Right로 해당 그룹 내에서 이동합니다. 변경 내용은 toolbar.json에 저장되며 즉시 적용됩니다.</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>왼쪽 그룹으로 이동</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>오른쪽 그룹으로 이동</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>선택기</value></data>
@@ -862,4 +932,69 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>연결할 수 없음: {0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>저장</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>이름과 주소 또는 명령을 입력하세요.</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>마지막 답변 복사</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>바로 가기: {0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>키 이름은 영어로 씁니다. F1-F24 외에는 Ctrl, Alt 또는 Win이 필요합니다. 빈칸은 비활성화, 초기화는 기본값 복원입니다. toolbar.json에 저장됩니다. 중지와 모든 버튼은 서로 다른 조합을 써야 합니다.</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}: 잘못된 바로 가기입니다. 사용 가능하면 기본값을 사용합니다.</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}: 이미 사용 중입니다. 기본값이 사용 가능하면 사용하고, 아니면 비활성화합니다.</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: 알 수 없는 버튼 {0}을 무시했습니다.</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: 중복되었습니다. 마지막 항목을 사용합니다.</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>패널 바로 가기</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>패널에서 Ctrl+N은 새 채팅, Ctrl+H는 기록, Ctrl+Shift+C는 마지막 완료된 답변 복사입니다. 버튼 위에 마우스를 올리면 키가 표시되고 선택기 키는 목록을 순환합니다. 설정 &gt; 채팅 및 기록 또는 toolbar.json의 shortcuts에서 바꿉니다. 빈칸은 비활성화, 초기화는 기본값 복원입니다. 중지가 우선합니다. 키 반복, AltGr, IME 조합 중에는 도구 모음 명령을 실행하지 않습니다.</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>바로 가기</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: 잘못된 바로 가기이므로 비활성화했습니다.</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: 이미 사용 중인 조합이므로 비활성화했습니다.</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>Ctrl, Alt, Win 또는 F1-F24를 사용하세요. 중지, 기본 버튼, 사용자 지정 버튼이 쓰지 않는 조합이어야 합니다.</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>Ctrl, Alt 또는 Win 추가 (F1-F24는 단독 사용 가능)</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>복사할 완료된 답변이 없습니다.</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>첨부 파일 {0} 제거</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>연결 {0} 위로 이동</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>연결 {0} 아래로 이동</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>원의 넓이는 어떻게 구하나요? Python 코드로 보여주세요.</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### 원의 넓이
+
+넓이는 다음과 같습니다.
+
+$$A = \pi r^2$$
+
+- **r**은 반지름(지름의 절반)입니다
+- **π** ≈ 3.14159
+
+반지름이 2인 경우: $A = \pi \times 2^2 \approx 12.57$.
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| 반지름 | 넓이 |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>원격 근무는 팀의 소통 방식을 크게 변화시켰습니다. 이제 비동기 업데이트가 많은 회의를 대체하고, 기록된 결정은 말로 나눈 대화보다 더 멀리 전해지며, 문서화가 잘된 팀은 신규 입사자를 몇 주가 아닌 며칠 만에 온보딩합니다. 반면 우연히 나누는 대화가 줄어든다는 단점이 있어, 많은 기업이 분기마다 며칠씩 계획 수립, 멘토링, 상호 교류를 위한 대면 모임 시간을 의도적으로 마련하고 있습니다.</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>이 내용을 세 가지 항목으로 요약해 주세요.</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **비동기 우선:** 서면 업데이트가 많은 회의를 대체하고, 기록된 결정이 더 많은 사람에게 전달됩니다.
+- **문서화의 힘:** 문서화가 잘된 팀은 신규 입사자를 몇 주가 아닌 며칠 만에 온보딩합니다.
+- **계획된 대면 시간:** 우연한 대화가 줄어든 만큼, 기업들은 매 분기 대면 모임 일정을 의도적으로 계획합니다.</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>프로그램 및 권한 검토</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>이 백업에는 확인 없이 프로그램을 실행하거나 도구를 허용할 수 있는 설정이 포함되어 있습니다. 아래 세부 정보를 검토하세요. 이러한 설정을 신뢰하는 경우에만 가져오세요.</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>가져오기 취소됨: 프로그램 및 권한에 대한 확인이 필요합니다.</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals 섹션은 JSON 개체여야 합니다.</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>설정 변경 사항이 settings.json을 읽을 수 있게 될 때까지 대기 중입니다.</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>시작 명령이 너무 길어 {0}을(를) 시작할 수 없습니다. 시스템 프롬프트, 저장된 메모리 또는 추가 시작 인수를 줄이세요.</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>서버가 완료되었음을 확인하기 전에 응답이 중단되었습니다.</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>첨부 파일을 준비하는 동안 채팅 또는 연결이 변경되었습니다. 메시지가 전송되지 않았습니다.</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>링크에서</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>패널 이동</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>패널 크기 조정</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10을 누르면 패널 메뉴가 열립니다. 이동 또는 크기 조정을 선택하고 화살표 키를 사용한 다음 Enter 키를 눌러 완료하거나 Esc 키를 눌러 취소하세요.</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json 파일은 최신 버전의 Hotline(버전 {0}, 이 버전은 {1})에서 작성되었으므로 Hotline에서 덮어쓰지 않습니다. Hotline을 업데이트하거나 파일을 직접 편집하세요.</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json 파일은 최신 버전의 Hotline(버전 {0})에서 작성되었으므로 Hotline에서 덮어쓰지 않습니다. Hotline을 업데이트하거나 파일을 직접 편집하세요.</value></data>
 </root>

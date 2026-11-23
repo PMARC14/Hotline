@@ -1,15 +1,18 @@
 using System.Text.Json;
+using Hotline.Core.Backends;
 using Hotline.Core.Diagnostics;
+using Hotline.Core.State;
 using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tools;
 
 /// <summary>A tool offered to an API model. ApiName is what the model calls; Server/Tool identify the MCP tool.</summary>
-public sealed record ToolSpec(string ApiName, string Server, string Tool, string Description, JsonElement InputSchema, bool ReadOnly);
+/// <param name="Launch">The launch hash of the server process that offered the tool; a call never goes to a replacement.</param>
+public sealed record ToolSpec(string ApiName, string Server, string Tool, string Description, JsonElement InputSchema, bool ReadOnly, string? Launch = null);
 
 public sealed record ToolResult(string Text, bool IsError);
 
-public sealed record ToolCallRequest(ToolSpec Tool, JsonElement Arguments);
+public sealed record ToolCallRequest(ToolSpec Tool, JsonElement Arguments, bool AllowAlways = true);
 
 public enum ToolDecision { AllowOnce, AllowAlways, Deny }
 
@@ -38,31 +41,33 @@ public sealed record McpServerStatus(string Name, string DisplayName, McpServerS
 
 /// <summary>
 /// Hosts the MCP servers from mcp.json (+ the Windows agent registry): starts them lazily on first use (in parallel),
-/// keeps going if one fails, applies the approval policy before every call ("ask" goes to the panel; "Always" is saved
-/// to mcp.json). Each server's tool list is cached while it runs; a server restarts only when its own entry changes or
-/// it died, and one that failed to start is retried after <see cref="RetryFailedAfter"/> (or on
-/// <see cref="RetryFailedServers"/>). If mcp.json can't be read, the last good config stays in force (deny rules
-/// included); with no good config yet, no tools are offered.
+/// resolves ${hotline:secret:&lt;name&gt;} env tokens at launch, keeps going if one fails, applies the approval policy
+/// before every call (rules > grants > default; "Always allow" stores a launch-hashed grant via IGrantStore).
 /// </summary>
 public sealed class McpToolHost(
     Func<McpConfig> loadConfig,
     Func<IReadOnlyList<McpServerConfig>> extraServers,
+    Func<IReadOnlyDictionary<string, ToolApproval>> getRules,
+    IGrantStore grants,
+    ISecretStore secrets,
     Func<McpServerConfig, CancellationToken, Task<IMcpSession>> connect,
     Func<ToolCallRequest, CancellationToken, Task<ToolDecision>> approve,
     FileLog log,
-    string? configPath = null,
     TimeProvider? time = null) : IToolHost, IAsyncDisposable
 {
-    private const int MaxResultChars = 20_000;
+    private const int MaxResultChars = 32_000;
+    private static readonly IReadOnlyDictionary<string, ToolApproval> EmptyRules =
+        new Dictionary<string, ToolApproval>(StringComparer.Ordinal);
+
     private readonly TimeProvider _time = time ?? TimeProvider.System;
     private readonly SemaphoreSlim _gate = new(1, 1);
-    private readonly Dictionary<string, Running> _running = new(StringComparer.OrdinalIgnoreCase); // under _gate
+    private readonly Dictionary<string, Running> _running = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, (string Fingerprint, DateTimeOffset At)> _failed = new(StringComparer.OrdinalIgnoreCase);
     private readonly Dictionary<string, McpServerStatus> _status = new(StringComparer.OrdinalIgnoreCase);
     private readonly System.Collections.Concurrent.ConcurrentDictionary<IMcpSession, byte> _dead = new();
-    private readonly System.Collections.Concurrent.ConcurrentDictionary<string, byte> _remembered = new(StringComparer.OrdinalIgnoreCase);
+    private readonly HashSet<string> _warnedCaseRules = new(StringComparer.Ordinal);
     private readonly Lock _snapshotLock = new();
-    private Snapshot _snapshot = new([], new Dictionary<string, IMcpSession>());
+    private Snapshot _snapshot = new([], new Dictionary<string, Running>());
     private McpConfig? _lastGood;
     private string? _configError;
     private volatile bool _disposed;
@@ -71,10 +76,10 @@ public sealed class McpToolHost(
     public TimeSpan StartTimeout { get; init; } = TimeSpan.FromSeconds(30);
     public TimeSpan RetryFailedAfter { get; init; } = TimeSpan.FromMinutes(1);
 
-    private sealed record Running(IMcpSession Session, string Fingerprint, IReadOnlyList<McpToolInfo> Tools);
+    private sealed record Running(IMcpSession Session, string Fingerprint, string LaunchHash, IReadOnlyList<string> SensitiveValues, IReadOnlyList<McpToolInfo> Tools);
 
     /// <summary>What calls use: replaced as a whole, so a call never sees half of an update.</summary>
-    private sealed record Snapshot(IReadOnlyList<ToolSpec> Tools, IReadOnlyDictionary<string, IMcpSession> Sessions);
+    private sealed record Snapshot(IReadOnlyList<ToolSpec> Tools, IReadOnlyDictionary<string, Running> Sessions);
 
     public IReadOnlyList<McpServerStatus> Status { get { lock (_status) return _status.Values.ToList(); } }
     public string? ConfigError => Volatile.Read(ref _configError);
@@ -92,7 +97,7 @@ public sealed class McpToolHost(
             var config = EffectiveConfig();
             if (config is null)
             {
-                // Never read successfully: fail closed rather than run tools without the user's rules.
+                // Never read successfully: fail closed rather than run tools without server configuration.
                 await StopAsync(_running.Keys.ToList());
                 Publish([]);
                 return [];
@@ -136,7 +141,7 @@ public sealed class McpToolHost(
             }
             ct.ThrowIfCancellationRequested();
 
-            var approvals = Approvals(config);
+            var rules = getRules() ?? EmptyRules;
             var used = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             var tools = new List<ToolSpec>();
             foreach (var server in servers) // config order, so tool names stay stable between answers
@@ -147,9 +152,11 @@ public sealed class McpToolHost(
                 var offered = 0;
                 foreach (var t in running.Tools)
                 {
-                    if (ToolNames.IsAmbiguous(t.Name)) { log.Error($"MCP server {server.Name}: skipped tool '{t.Name}' ('/' and '*' aren't allowed in names)"); continue; }
-                    if (ToolPolicy.Decide(approvals, server.Name, t.Name, t.ReadOnly) == ToolApproval.Deny) continue; // never offered
-                    tools.Add(new ToolSpec(ToolNames.ForApi(server.Name, t.Name, used), server.Name, t.Name, t.Description, t.InputSchema, t.ReadOnly));
+                    if (ToolNames.IsAmbiguous(t.Name)) { log.Error($"MCP server {server.Name}: skipped tool '{McpSecrets.Scrub(t.Name, running.SensitiveValues)}' ('/' and '*' aren't allowed in names)"); continue; }
+                    var decision = ToolPolicy.Evaluate(rules, grants, server.Name, t.Name, t.ReadOnly, running.LaunchHash);
+                    WarnIfCaseMismatch(server.Name, t.Name, decision.CaseMismatchAllowRule);
+                    if (decision.Approval == ToolApproval.Deny) continue; // never offered
+                    tools.Add(new ToolSpec(ToolNames.ForApi(server.Name, t.Name, used), server.Name, t.Name, McpSecrets.Scrub(t.Description, running.SensitiveValues), t.InputSchema, t.ReadOnly, running.LaunchHash));
                     offered++;
                 }
                 SetStatus(new(server.Name, display, McpServerState.Ready, offered, null));
@@ -162,21 +169,35 @@ public sealed class McpToolHost(
 
     private async Task<(McpServerConfig Server, Running? Running, string? Error)> StartAsync(McpServerConfig server, string fingerprint, CancellationToken ct)
     {
+        if (!McpSecrets.TryResolveEnv(server, secrets, out var resolvedEnv, out var secretError))
+        {
+            log.Error($"MCP server {server.Name}: {secretError}");
+            return (server, null, secretError);
+        }
+
+        var launchHash = StateStore.ComputeLaunchHash(server.Command, server.Args, server.WorkingDirectory);
+        var sensitive = McpSecrets.CollectScrubValues(server, resolvedEnv);
+        McpSecrets.AttachScrubValues(resolvedEnv, sensitive);
         IMcpSession? session = null;
         try
         {
             using var timeout = CancellationTokenSource.CreateLinkedTokenSource(ct);
             timeout.CancelAfter(StartTimeout);
-            session = await connect(server, timeout.Token);
+            var launchServer = ReferenceEquals(resolvedEnv, server.Env) ? server : server with { Env = resolvedEnv };
+            session = await connect(launchServer, timeout.Token);
             var list = await session.ListToolsAsync(timeout.Token);
-            return (server, new Running(session, fingerprint, list), null);
+            return (server, new Running(session, fingerprint, launchHash, sensitive, list), null);
         }
         catch (Exception ex) // never throws: results of servers that did start must not be lost (their processes would leak)
         {
             if (session is not null) await SafeDispose(session);
             if (ct.IsCancellationRequested) return (server, null, "cancelled");
-            log.Error($"MCP server {server.Name} failed", ex);
-            return (server, null, ex is OperationCanceledException ? L.F(Strings.Mcp_StartTimeout, StartTimeout.TotalSeconds) : ex.Message);
+            var safeDetail = McpSecrets.Scrub(ex.ToString(), sensitive);
+            log.Error($"MCP server {server.Name} failed: {safeDetail}");
+            var statusMessage = ex is OperationCanceledException
+                ? L.F(Strings.Mcp_StartTimeout, StartTimeout.TotalSeconds)
+                : McpSecrets.Scrub(ex.Message, sensitive);
+            return (server, null, statusMessage);
         }
     }
 
@@ -186,23 +207,31 @@ public sealed class McpToolHost(
         var snapshot = Volatile.Read(ref _snapshot);
         // The current entry, not the caller's copy: if the server now marks the tool as not read-only, that must ask.
         if (snapshot.Tools.FirstOrDefault(t => Same(t.Server, tool.Server) && t.Tool == tool.Tool) is not { } current
-            || !snapshot.Sessions.TryGetValue(tool.Server, out var session))
+            || !snapshot.Sessions.TryGetValue(tool.Server, out var running)
+            || (tool.Launch is not null && tool.Launch != running.LaunchHash)) // offered by a process that has been replaced
             return new ToolResult($"{tool.Server}/{tool.Tool} is no longer available.", true);
         tool = current;
-        // The policy is checked against the file as it is now (a deny added mid-answer applies to the next call).
-        var config = EffectiveConfig();
-        if (config is null) return new ToolResult("mcp.json can't be read, so no tools run until it's fixed.", true);
-        var decision = ToolPolicy.Decide(Approvals(config), tool.Server, tool.Tool, tool.ReadOnly);
-        if (decision == ToolApproval.Deny) return new ToolResult($"The user doesn't allow {tool.Server}/{tool.Tool}.", true);
-        if (decision == ToolApproval.Ask)
+        // Policy is checked against live rules, grants, and the launch hash of the running process.
+        if (CheckPolicy(tool, running, out var decision) is { } blocked) return blocked;
+        var asked = decision.Approval == ToolApproval.Ask;
+        if (asked)
         {
-            var answer = await approve(new ToolCallRequest(tool, arguments), ct);
+            var answer = await approve(new ToolCallRequest(tool, arguments, decision.CanAlwaysAllow), ct);
             if (answer == ToolDecision.Deny) return new ToolResult($"The user declined running {tool.Server}/{tool.Tool}.", true);
-            if (answer == ToolDecision.AllowAlways) Remember(tool);
+            // Don't persist "Always" or run if the rule or server launch config changed while the dialog was open.
+            if (CheckPolicy(tool, running, out var afterDecision) is { } changed) return changed;
+            if (answer == ToolDecision.AllowAlways && decision.CanAlwaysAllow && afterDecision.CanAlwaysAllow)
+                grants.AddGrant(tool.Server, tool.Tool, running.LaunchHash);
         }
         try
         {
-            var result = await session.CallAsync(tool.Tool, arguments, ct);
+            if (CheckPolicy(tool, running, out var last) is { } changed) return changed;
+            // A grant revoked or an "ask" rule added since the first check: this call was never shown to the user.
+            if (last.Approval == ToolApproval.Ask && !asked)
+                return new ToolResult($"The approval for {tool.Server}/{tool.Tool} changed; try again.", true);
+            var result = await running.Session.CallAsync(tool.Tool, arguments, ct);
+            // What a server returns can echo its own environment (an "invalid token: ..." error); it goes to the model and the chat.
+            result = result with { Text = McpSecrets.Scrub(result.Text, running.SensitiveValues) };
             log.Info($"tool {tool.Server}/{tool.Tool}: {(result.IsError ? "error" : "ok")} ({result.Text.Length} chars)");
             return result.Text.Length <= MaxResultChars ? result
                 : result with { Text = result.Text[..MaxResultChars] + $"\n…(truncated, {result.Text.Length} chars total)" };
@@ -210,10 +239,38 @@ public sealed class McpToolHost(
         catch (Exception ex) when (ex is not OperationCanceledException || !ct.IsCancellationRequested)
         {
             // The server process died or its connection closed: restart it on the next answer.
-            if (ex is IOException or ObjectDisposedException or InvalidOperationException) _dead.TryAdd(session, 0);
-            log.Error($"tool {tool.Server}/{tool.Tool} failed", ex);
-            return new ToolResult($"The tool failed: {ex.Message}", true);
+            if (ex is IOException or ObjectDisposedException or InvalidOperationException) _dead.TryAdd(running.Session, 0);
+            var safeDetail = McpSecrets.Scrub(ex.ToString(), running.SensitiveValues);
+            log.Error($"tool {tool.Server}/{tool.Tool} failed: {safeDetail}");
+            return new ToolResult($"The tool failed: {McpSecrets.Scrub(ex.Message, running.SensitiveValues)}", true);
         }
+    }
+
+    private ToolResult? CheckPolicy(ToolSpec tool, Running running, out ToolPolicyDecision decision)
+    {
+        decision = new ToolPolicyDecision(ToolApproval.Deny, CanAlwaysAllow: false);
+        var config = EffectiveConfig();
+        if (config is null) return new ToolResult("mcp.json can't be read, so no tools run until it's fixed.", true);
+        var server = config.Servers.Concat(extraServers()).FirstOrDefault(s => Same(s.Name, tool.Server));
+        if (server is null) return new ToolResult($"{tool.Server} is no longer configured.", true);
+        if (server.Disabled) return new ToolResult($"{tool.Server} is switched off in mcp.json.", true);
+        var currentHash = StateStore.ComputeLaunchHash(server.Command, server.Args, server.WorkingDirectory);
+        if (!string.Equals(currentHash, running.LaunchHash, StringComparison.OrdinalIgnoreCase))
+            return new ToolResult($"{tool.Server} configuration changed; refresh tools before calling.", true);
+        var rules = getRules() ?? EmptyRules;
+        decision = ToolPolicy.Evaluate(rules, grants, tool.Server, tool.Tool, tool.ReadOnly, running.LaunchHash);
+        WarnIfCaseMismatch(tool.Server, tool.Tool, decision.CaseMismatchAllowRule);
+        return decision.Approval == ToolApproval.Deny ? new ToolResult($"The user doesn't allow {tool.Server}/{tool.Tool}.", true) : null;
+    }
+
+    private void WarnIfCaseMismatch(string server, string tool, string? ruleKey)
+    {
+        if (ruleKey is null) return;
+        lock (_warnedCaseRules)
+        {
+            if (!_warnedCaseRules.Add($"{ruleKey}\0{server}/{tool}")) return;
+        }
+        log.Info(L.F(Strings.Mcp_CaseMismatchAllow, ruleKey, $"{server}/{tool}"));
     }
 
     /// <summary>The config in force: the file if it reads cleanly, else the last good one (null if there never was one).</summary>
@@ -222,14 +279,6 @@ public sealed class McpToolHost(
         var loaded = loadConfig();
         if (loaded.Error is null)
         {
-            var enabled = loaded.Servers.Concat(extraServers()).DistinctBy(s => s.Name, StringComparer.OrdinalIgnoreCase)
-                .Where(s => !s.Disabled).Select(s => s.Name).ToHashSet(StringComparer.OrdinalIgnoreCase);
-            foreach (var key in _remembered.Keys)
-            {
-                var server = key[..key.IndexOf('/')];
-                if (!enabled.Contains(server) || loaded.Approvals.ContainsKey(key) || loaded.Approvals.ContainsKey($"{server}/*"))
-                    _remembered.TryRemove(key, out _);
-            }
             Volatile.Write(ref _lastGood, loaded);
             Volatile.Write(ref _configError, loaded.Warnings.Count > 0 ? string.Join(" ", loaded.Warnings) : null);
             return loaded;
@@ -239,34 +288,9 @@ public sealed class McpToolHost(
         return good;
     }
 
-    /// <summary>The file's rules plus "Always" clicks whose save failed (an explicit rule in the file wins over those).</summary>
-    private IReadOnlyDictionary<string, ToolApproval> Approvals(McpConfig config)
-    {
-        if (_remembered.IsEmpty) return config.Approvals;
-        var merged = new Dictionary<string, ToolApproval>(config.Approvals, StringComparer.OrdinalIgnoreCase);
-        foreach (var key in _remembered.Keys) merged.TryAdd(key, ToolApproval.Allow);
-        return merged;
-    }
-
-    private void Remember(ToolSpec spec)
-    {
-        var key = $"{spec.Server}/{spec.Tool}";
-        if (configPath is not null)
-        {
-            try
-            {
-                McpConfig.SaveApproval(configPath, key, ToolApproval.Allow);
-                _remembered.TryRemove(key, out _);
-                return;
-            }
-            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or JsonException) { log.Error("saving the tool approval failed", ex); }
-        }
-        _remembered[key] = 0;
-    }
-
     private void Publish(IReadOnlyList<ToolSpec> tools)
     {
-        var sessions = _running.ToDictionary(kv => kv.Key, kv => kv.Value.Session, StringComparer.OrdinalIgnoreCase);
+        var sessions = _running.ToDictionary(kv => kv.Key, kv => kv.Value, StringComparer.OrdinalIgnoreCase);
         lock (_snapshotLock) _snapshot = new Snapshot(tools, sessions);
     }
 

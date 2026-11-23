@@ -14,10 +14,11 @@ namespace Hotline.Core.Backends.Codex;
 /// (`exec resume`) in the folder it began in and send only the new message. Otherwise sessions are ephemeral and every
 /// turn replays the conversation as text. Images go as temporary files, deleted after the turn.
 /// </summary>
-public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe, string workspace, ILineProcessFactory processes,
-    FileLog log, Func<BackendProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
+public sealed class CodexBackend(ConnectionProfile profile, Func<string?> locateExe, string workspace, ILineProcessFactory processes,
+    FileLog log, Func<ConnectionProfile, string> systemPrompt, string homeDirectory) : IChatBackend, ICliSessionBackend
 {
     private ILineProcess? _process;
+    private readonly SemaphoreSlim _turnGate = new(1, 1);
 
     public CliSession? Resume { get; set; }
 
@@ -26,6 +27,18 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
     public BackendCapabilities Capabilities { get; } = new(Images: true, TextFiles: true);
 
     public async IAsyncEnumerable<ChatDelta> StreamAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
+    {
+        // New chat may send again while the cancelled turn is still unwinding.
+        // Keep its process cleanup and session bookkeeping ahead of the next turn.
+        await _turnGate.WaitAsync(ct);
+        try
+        {
+            await foreach (var delta in StreamTurnAsync(conversation, ct)) yield return delta;
+        }
+        finally { _turnGate.Release(); }
+    }
+
+    private async IAsyncEnumerable<ChatDelta> StreamTurnAsync(IReadOnlyList<ChatMessage> conversation, [EnumeratorCancellation] CancellationToken ct)
     {
         if (conversation.Count == 0 || conversation[^1].Role != ChatRole.User)
             throw new ArgumentException("The conversation must end with a user message.", nameof(conversation));
@@ -56,11 +69,16 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
         attempt:
             var text = CodexProtocol.ComposeText(user.Text, texts, resume is null ? prior : []);
             var args = CodexProtocol.BuildArgs(profile, prompt, resume, images);
+            CliCommandLine.RequireFits(exe, args, profile.Name);
 
             await StopAsync();
             ILineProcess process;
             try { process = _process = processes.Start(exe, args, cwd); }
-            catch (System.ComponentModel.Win32Exception ex)
+            catch (System.ComponentModel.Win32Exception ex) when (ex.NativeErrorCode == 206)
+            {
+                throw new BackendException(BackendErrorKind.Failed, L.F(Strings.Cli_CommandTooLong, profile.Name), ex);
+            }
+            catch (Exception ex) when (ex is System.ComponentModel.Win32Exception or InvalidOperationException)
             {
                 throw new BackendException(BackendErrorKind.NotInstalled, L.F(Strings.Codex_StartFailed, exe, ex.Message), ex);
             }
@@ -147,7 +165,7 @@ public sealed class CodexBackend(BackendProfile profile, Func<string?> locateExe
     {
         if (string.IsNullOrWhiteSpace(profile.WorkingDirectory)) return homeDirectory;
         var dir = Environment.ExpandEnvironmentVariables(profile.WorkingDirectory.Trim());
-        return Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
+        return Platform.SafeDirectory.IsLocal(dir) && Directory.Exists(dir) ? dir : throw new BackendException(BackendErrorKind.NotConfigured,
             L.F(Strings.Cli_NoFolder, profile.Name, dir));
     }
 }

@@ -1,4 +1,4 @@
-# Builds a signed MSIX and publishes a GitHub Release:
+# Builds a signed MSIX and publishes a GitHub prerelease (stable requires manual promotion):
 #   - every push to main (code changes): version.txt's major.minor plus the next patch in that line, e.g. 0.2.26
 #     (scripts/next-version.sh; bumping version.txt to 0.3 starts at 0.3.0)
 #   - a pushed tag vX.Y.Z, or "Run workflow" with a version: that version
@@ -6,9 +6,9 @@
 #   1. Azure Artifact Signing (formerly Trusted Signing) — repository variables ARTIFACT_SIGNING_ENDPOINT,
 #      ARTIFACT_SIGNING_ACCOUNT, ARTIFACT_SIGNING_PROFILE, HOTLINE_PUBLISHER (the certificate subject, exactly) and
 #      AZURE_CLIENT_ID / AZURE_TENANT_ID / AZURE_SUBSCRIPTION_ID (an Entra app with a GitHub OIDC federated
-#      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored). A normal release.
+#      credential and the "Artifact Signing Certificate Profile Signer" role; no secret stored).
 #   2. A .pfx — secrets HOTLINE_SIGNING_PFX_BASE64 / HOTLINE_SIGNING_PFX_PASSWORD (subject = manifest Publisher).
-#   3. Neither: a throwaway self-signed certificate (users trust Hotline.cer first; the release notes say how).
+#   3. Neither: publishing fails; a throwaway certificate is allowed only for workflow_dispatch with publish off.
 name: Release
 
 on:
@@ -22,13 +22,11 @@ on:
         description: 'Version to release, e.g. 0.2.0 (empty = the next one: scripts/next-version.sh)'
         required: false
       publish:
-        description: 'Publish the GitHub Release (off = build and upload the files only, e.g. to test a branch)'
+        description: 'Publish a GitHub prerelease (off = build and upload the files only, e.g. to test a branch)'
         type: boolean
         default: true
 
-permissions:
-  contents: write
-  id-token: write # OIDC login for Azure Artifact Signing
+permissions: {}
 
 concurrency:
   group: release
@@ -37,13 +35,16 @@ concurrency:
 jobs:
   release:
     runs-on: windows-latest
+    permissions:
+      contents: write # Create the prerelease and its tag; checkout also needs contents access.
+      id-token: write # OIDC login for Azure Artifact Signing
     defaults:
       run:
         shell: bash # Git Bash on the Windows runner; the scripts are bash (scripts/*.sh)
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 
@@ -92,7 +93,7 @@ jobs:
 
       - name: Azure login (OIDC)
         if: steps.mode.outputs.artifact == 'true'
-        uses: azure/login@v2
+        uses: azure/login@a641126d1b8aa4d1fa005f4f92df94a3a4c4c906 # v3.1.0
         with:
           client-id: ${{ vars.AZURE_CLIENT_ID }}
           tenant-id: ${{ vars.AZURE_TENANT_ID }}
@@ -100,7 +101,7 @@ jobs:
 
       - name: Sign with Azure Artifact Signing
         if: steps.mode.outputs.artifact == 'true'
-        uses: azure/artifact-signing-action@v2
+        uses: azure/artifact-signing-action@c7ab2a863ab5f9a846ddb8265964877ef296ee82 # v2.0.0
         with:
           endpoint: ${{ vars.ARTIFACT_SIGNING_ENDPOINT }}
           signing-account-name: ${{ vars.ARTIFACT_SIGNING_ACCOUNT }}
@@ -131,6 +132,8 @@ jobs:
         env:
           PFX_BASE64: ${{ secrets.HOTLINE_SIGNING_PFX_BASE64 }}
           PFX_PASSWORD: ${{ secrets.HOTLINE_SIGNING_PFX_PASSWORD }}
+          EVENT: ${{ github.event_name }}
+          PUBLISH: ${{ inputs.publish }}
         run: |
           mkdir -p certs
           if [ -n "$PFX_BASE64" ]; then
@@ -138,6 +141,9 @@ jobs:
             password=$PFX_PASSWORD
             echo "prerelease=false" >> "$GITHUB_OUTPUT"
           else
+            if [ "$EVENT" != workflow_dispatch ] || [ "$PUBLISH" != false ]; then
+              echo "::error::Publishing requires a configured signing identity."; exit 1
+            fi
             # No signing secrets yet: a throwaway certificate with the manifest's Publisher, for test builds.
             scripts/dev-cert.sh --dir certs --no-trust
             mv certs/hotline-dev.pfx certs/release.pfx
@@ -164,7 +170,7 @@ jobs:
           scripts/make-appinstaller.sh --version "$PACKAGE_VERSION" --tag "$TAG" \
             --msix-name "Hotline_$PACKAGE_VERSION.msixbundle" --out artifacts/Hotline.appinstaller >/dev/null
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: hotline-${{ steps.ver.outputs.tag }}
           path: |
@@ -181,8 +187,8 @@ jobs:
           SHA: ${{ github.sha }}
           PRERELEASE: ${{ steps.cert.outputs.prerelease }}
         run: |
-          # Every release is a normal ("latest") release; a self-signed one says how to trust it.
-          flags=(--target "$SHA" --title "Hotline $TAG" --generate-notes --latest)
+          # Tags also start as prereleases: only the owner's promotion advances the stable update channel.
+          flags=(--target "$SHA" --title "Hotline $TAG" --generate-notes --prerelease --latest=false)
           if [ "$PRERELEASE" = true ]; then
             flags+=(--notes "Signed with a self-signed certificate: install Hotline.cer into Local Machine > Trusted People first (README › Install), then open the .msixbundle (x64 and ARM64). The Microsoft Store version (Hotline AI) needs none of this.")
           else flags+=(--notes ""); fi

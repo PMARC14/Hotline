@@ -11,18 +11,25 @@ concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
 
+permissions:
+  contents: read
+
 jobs:
   build-test:
     runs-on: windows-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 
       - name: Unit tests
         run: dotnet test --project tests/Hotline.Core.Tests/Hotline.Core.Tests.csproj -c Release
+
+      - name: Build unsigned MSIX
+        shell: bash
+        run: bash scripts/build-msix.sh --unsigned
 
       - name: Build app (x64)
         run: dotnet build src/Hotline.App/Hotline.App.csproj -c Release -p:Platform=x64
@@ -31,9 +38,9 @@ jobs:
   build-test-arm64:
     runs-on: windows-11-arm
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - uses: actions/setup-dotnet@v4
+      - uses: actions/setup-dotnet@0f4a354dd5547a28c70b7853dbd95d5b67886e73 # v6.1.0
         with:
           global-json-file: global.json
 

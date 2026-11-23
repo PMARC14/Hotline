@@ -5,78 +5,80 @@ Center › the submission › Store listings › Polski. Product name stays "Hot
 
 ## Krótki opis
 
-Zamień klawisz Copilot w szybki czat z wybraną przez siebie AI: Twoim kontem Claude lub Gemini, własnym kluczem API albo
-modelem na Twoim komputerze. Naciśnij klawisz, zapytaj i patrz, jak pojawia się odpowiedź.
+I tak masz klawisz Copilot, więc zrób z niego użytek: szybki, natywny panel czatu dla AI, którą już masz (Claude, Codex, Gemini), własnego klucza API lub modelu lokalnego. Bez konta u nas. Uporządkuj pasek i przenieś czat do innej aplikacji.
 
 ## Opis
 
-Skoro masz już klawisz Copilot, to z niego korzystaj. Hotline AI zamienia go w szybki, natywny panel czatu AI, który
-rozmawia z wybraną przez Ciebie sztuczną inteligencją.
+I tak masz klawisz Copilot, więc równie dobrze możesz zrobić z niego użytek. Hotline AI zamienia go w szybki, natywny panel czatu AI, który rozmawia z wybraną przez Ciebie AI.
 
-Naciśnij klawisz, a na monitorze, na którym pracujesz, otworzy się panel gotowy do pisania. Zadaj pytanie, odpowiedź
-pojawia się na bieżąco, naciśnij klawisz ponownie i panel znika. Bez karty przeglądarki i bez konta u nas.
+Naciśnij klawisz, a na monitorze, na którym pracujesz, otworzy się panel gotowy do wpisywania tekstu. Zadaj pytanie, odbierz odpowiedź na bieżąco, naciśnij klawisz ponownie i znika. Żadnych kart w przeglądarce, żadnego konta u nas.
 
 UŻYWAJ AI, KTÓRĄ JUŻ MASZ
-• Claude Code: korzysta z zainstalowanego Claude Code i jego logowania, więc Twój plan Claude działa bez klucza API.
-• OpenAI Codex CLI: korzysta z zainstalowanego Codex i jego logowania, więc Twój plan ChatGPT działa bez klucza API.
-• Antigravity CLI (agy): Gemini z Twoim kontem Google.
-• Własny klucz API: Anthropic, Google Gemini, OpenAI i inne usługi zgodne z OpenAI, na przykład OpenRouter.
-• Modele lokalne: dowolny serwer w stylu OpenAI na Twoim komputerze (np. llama.cpp lub LM Studio), więc nic nie opuszcza Twojego komputera.
-Model, dostawcę i to, jak intensywnie ma myśleć, wybierasz prosto z paska panelu.
+• Claude Code: korzysta z zainstalowanego Claude Code i Twojego logowania, więc Twój plan Claude działa bez klucza API.
+• OpenAI Codex CLI: korzysta z zainstalowanego Codex i Twojego logowania, więc Twój plan ChatGPT działa bez klucza API.
+• Antigravity CLI (agy): Gemini z Twoim logowaniem Google.
+• Własny klucz API: Anthropic, Google Gemini, OpenAI oraz inne usługi zgodne z OpenAI, takie jak OpenRouter.
+• Modele lokalne: dowolny serwer w stylu OpenAI na Twoim komputerze (na przykład llama.cpp lub LM Studio), dzięki czemu nic nie opuszcza Twojego komputera.
+Wybieraj model, dostawcę i to, jak intensywnie ma myśleć, prosto z paska panelu.
 
-KONTEKST IDZIE Z TOBĄ
-• Tekst zaznaczony w innej aplikacji jest dołączany automatycznie po naciśnięciu klawisza; przed wysłaniem możesz go usunąć.
-• Przechwyć okno, w którym byłeś, cały ekran lub wybrany obszar; wklejaj lub przeciągaj obrazy i pliki.
-• Modele, które nie widzą obrazów, dostają zamiast nich tekst ze zrzutu ekranu, odczytany na Twoim komputerze przez OCR systemu Windows.
+ZABIERZ KONTEKST ZE SOBĄ
+• Tekst zaznaczony w innej aplikacji dołącza się automatycznie po naciśnięciu klawisza — możesz go usunąć przed wysłaniem.
+• Przechwytuj aktywne okno, cały ekran lub zaznaczony obszar; wklejaj albo upuszczaj obrazy i pliki.
+• Modele, które nie widzą obrazów, dostają zamiast tego tekst ze zrzutu ekranu, odczytany na Twoim komputerze za pomocą wbudowanego w Windows OCR.
 
 STWORZONY DO SZYBKICH ZADAŃ
-• Szybkie akcje: wpisz /, aby tłumaczyć, streszczać, poprawiać lub wyjaśniać, albo napisz własne jako zwykłe pliki tekstowe.
-• Pamięć: „/remember wolę jednostki metryczne” i każdy czat o tym wie, niezależnie od używanej AI.
+• Szybkie akcje: wpisz /, aby przetłumaczyć, streścić, poprawić lub wyjaśnić, albo twórz własne jako zwykłe pliki tekstowe.
+• Pamięć: "/remember wolę jednostki metryczne" i każdy czat już o tym wie, bez względu na to, z jakiej AI korzystasz.
 • Głos: przytrzymaj klawisz i mów; puść, aby zakończyć.
-• Ostatnie czaty są na wyciągnięcie ręki.
+• Ostatnie czaty są pod jednym kliknięciem, na liście z wyszukiwarką (Ctrl+H).
 • Click to Do i akcje systemu Windows: wysyłaj tekst lub obraz do Hotline AI z innych aplikacji.
+• Continue in: przenieś czat do terminala, Open WebUI, interfejsu webowego llama.cpp, LM Studio lub własnego miejsca docelowego, gdy potrzebujesz więcej miejsca.
+• Skróty do przycisków na pasku, gdy panel jest aktywny: nowy czat, ostatnie czaty, Ustawienia, przypięcie, przechwytywanie i selektory. Twoje własne przyciski też mogą je mieć. Wymagają Ctrl, Alt lub Win, więc nigdy nie przeszkadzają w pisaniu.
+• Powiadomienie systemu Windows da Ci znać, gdy odpowiedź będzie gotowa, kiedy zajmujesz się czymś innym.
 
 NATYWNY, LEKKI I TWÓJ
-• Zbudowany w WinUI 3: otwiera się szybko, dopasowuje do jasnego lub ciemnego motywu, bez wbudowanej przeglądarki.
-• Bogate odpowiedzi: nagłówki, listy, tabele, kod z przyciskiem Kopiuj, wzory i proste rysunki.
-• Wszystko jest plikiem do edycji: ustawienia, połączenia, prompty, przyciski na pasku.
-• Narzędzia z rozwagą: połączenia API mogą używać narzędzi Twoich serwerów MCP; wszystko, co coś zmienia, najpierw pyta o zgodę.
+• Zbudowany w WinUI 3: otwiera się szybko, dopasowuje do jasnego lub ciemnego motywu, bez wbudowanej przeglądarki. Natywny dla x64 i ARM64.
+• Rozbudowane odpowiedzi: nagłówki, listy, tabele, kod z przyciskiem Kopiuj, zapis matematyczny i proste rysunki.
+• Przytrzymaj Alt, aby przesunąć panel lub zmienić jego rozmiar; przypnij go i wybierz, czy czat ma rozwijać się w górę, czy w dół.
+• Wszystko jest zwykłym plikiem, który możesz edytować: ustawienia, połączenia, prompty, przyciski na pasku.
+• Uporządkuj pasek po swojemu: przeciągaj przyciski między rzędami w Ustawieniach, dodawaj własne przyciski z własnymi grafikami, a rzadziej używane trzymaj w menu Więcej.
+• Ustawienia > Kopia zapasowa przenosi konfigurację na inny komputer. Klucze API nigdy nie są eksportowane, a każdy plik zastępowany przez Hotline ma najpierw tworzoną kopię zapasową.
+• Narzędzia, z rozwagą: połączenia API mogą korzystać z narzędzi Twoich serwerów MCP; wszystko, co wprowadza zmiany, pyta Cię najpierw o zgodę.
+• Klawisz Copilot może też działać jako prawy Ctrl, jeśli tak wolisz.
 
-PRYWATNOŚĆ OD PODSTAW
-Hotline AI nie ma serwera i niczego nie zbiera: bez konta, bez analityki, bez reklam. Twoje wiadomości trafiają tylko
-do wybranej usługi AI, na jej warunkach. Klucze API zostają w Menedżerze poświadczeń systemu Windows; historia,
-ustawienia i pamięć zostają na Twoim komputerze. Bezpłatny i open source.
+PRYWATNY Z ZAŁOŻENIA
+Hotline AI nie ma serwera i niczego nie zbiera: żadnych kont, żadnej analityki, żadnych reklam. Twoje wiadomości trafiają wyłącznie do wybranej przez Ciebie usługi AI, zgodnie z jej warunkami. Klucze API pozostają w Windows Credential Locker; historia, ustawienia i pamięć zostają na Twoim komputerze. Bezpłatny i open source.
 
 Nie masz klawisza Copilot? Ustaw dowolny skrót, na przykład Ctrl+Alt+H.
 
-Hotline AI to niezależna aplikacja, niepowiązana z firmami Microsoft, Anthropic, Google ani OpenAI i nieautoryzowana
-przez nie. Korzystanie z Claude Code, Codex, Antigravity CLI lub API AI wymaga własnego konta w danej usłudze.
+Hotline AI to niezależna aplikacja i nie jest powiązana z firmami Microsoft, Anthropic, Google ani OpenAI ani przez nie wspierana. Korzystanie z Claude Code, Codex, Antigravity CLI lub API modeli AI wymaga własnego konta w danej usłudze.
 
 ## Nowości w tej wersji
 
-Wybierz kolor akcentu (fiolet Hotline, akcent systemu Windows lub dowolny kolor) i nowy motyw Wysoki kontrast; Hotline stosuje też motywy kontrastowe i ustawienie przezroczystości systemu Windows. Historia czatów otwiera się jako lista z wyszukiwaniem (przycisk historii, Ctrl+↑ lub /resume). Dodatkowy skrót ustawisz, po prostu go naciskając. Nowe szybkie akcje: /reply, /shorter, /formal i /bullets. Bloki kodu przewijają się w poziomie, a panel podąża za odpowiedziami w trakcie ich pisania.
+Przesuwaj i zmieniaj rozmiar panelu: przytrzymaj Alt dla uchwytów, przypnij go i zapisz pozycję oraz rozmiar. Czat rośnie w górę lub w dół i może otwierać się szerzej. Układaj rzędy przycisków w Ustawieniach: przeciągaj między lewą, środkiem i prawą stroną, dodawaj własne z grafikami i używaj menu Więcej. Przyciski rozkładają się teraz równomiernie. Każde polecenie paska ma zmienialny skrót, w tym Zatrzymaj. Kontynuuj czat w terminalu, Open WebUI, llama.cpp, LM Studio lub własnym celu. Ustawienia > Kopia zapasowa eksportują i importują konfigurację bez kluczy API. Szerokość podaje się w pikselach lub % ekranu i wygląda tak samo przy każdym skalowaniu Windows. Narzędzia MCP: „Zawsze zezwalaj” jest pamiętane na tym PC i można je cofnąć w Ustawieniach > Narzędzia, a sekrety serwerów mogą trafić do Windows Credential Locker. Nowości też: wskaźnik myślenia, dźwięki otwarcia i zamknięcia, /resume podczas pisania oraz wiadomości w ponownie otwartych czatach CLI. Bezpieczniejsze pliki: nowszy plik nie jest nadpisywany, nieznane klucze zostają, a zastąpione pliki trafiają do jednego folderu kopii. Naprawiłem fokus klawisza Copilot w Windows 11 26H2, przechwytywanie okna klawiszem, zmiany monitora i skali oraz błędy dostępności i bezpieczeństwa. Ta aktualizacja jednorazowo resetuje ustawienia i rzędy przycisków do nowego formatu; połączenia zostają, a stare pliki są w folderze backups.
 
 ## Funkcje produktu
 
 1. Otwiera się klawiszem Copilot (lub dowolnym skrótem) na monitorze, na którym pracujesz, gotowy do pisania
 2. Działa z logowaniem do Claude Code, ChatGPT (Codex CLI) lub Gemini (Antigravity CLI): bez klucza API
 3. Własny klucz: Anthropic, Google Gemini, OpenAI i API zgodne z OpenAI
-4. Modele lokalne: dowolny serwer w stylu OpenAI na Twoim komputerze, nic go nie opuszcza
-5. Wybór modelu, dostawcy i intensywności rozumowania w panelu
-6. Tekst zaznaczony w poprzedniej aplikacji dołącza się automatycznie
-7. Przechwytywanie okna, ekranu lub obszaru; wklejanie i przeciąganie obrazów i plików
+4. Modele lokalne: dowolny serwer w stylu OpenAI na komputerze, więc czat nie opuszcza Twojego urządzenia
+5. Wybór modelu, dostawcy i intensywności myślenia prosto z panelu
+6. Zaznaczony tekst z poprzedniej aplikacji dołącza się automatycznie
+7. Przechwytywanie okna, ekranu lub obszaru; wklejanie i upuszczanie obrazów oraz plików
 8. Tekst ze zrzutów ekranu jest odczytywany na komputerze (OCR) dla modeli, które nie widzą obrazów
-9. Szybkie akcje: /translate, /summarize, /fix, /explain lub własne
-10. Pamięć widoczna dla każdego czatu, niezależnie od AI
-11. Wprowadzanie głosowe przez przytrzymanie klawisza
-12. Wysyłanie tekstu lub obrazów z Click to Do i innych aplikacji
-13. Bogate odpowiedzi: tabele, kod z kopiowaniem, wzory i rysunki
-14. Natywne WinUI 3, dopasowuje się do jasnego lub ciemnego motywu
-15. Wszystko jest edytowalnym plikiem: ustawienia, połączenia, prompty, pasek
-16. Opcjonalne narzędzia z Twoich serwerów MCP, z zatwierdzeniem przed każdą zmianą
-17. Bez konta, analityki i reklam; klucze zostają w Menedżerze poświadczeń systemu Windows
-18. Bezpłatny i open source
-19. Natywnie na komputerach x64 i ARM64
+9. Szybkie akcje: /translate, /summarize, /fix, /explain i inne, albo własne pliki tekstowe
+10. Pamięć widoczna dla każdego czatu, niezależnie od używanej AI
+11. Wprowadzanie głosowe push-to-talk z użyciem funkcji rozpoznawania mowy online w systemie Windows
+12. Wysyłanie tekstu lub obrazów z Click to Do i innych aplikacji; kontynuacja w terminalu, Open WebUI, llama.cpp lub LM Studio
+13. Bogate odpowiedzi: tabele, kod z przyciskiem Kopiuj, wzory matematyczne i rysunki
+14. Natywne WinUI 3 na x64 i ARM64; motywy jasny, ciemny i kontrastowy, własny kolor akcentu, bez wbudowanej przeglądarki
+15. Przeciąganie rzędów przycisków w Ustawieniach; własne przyciski z grafikami, menu Więcej i osobne szerokości selektorów
+16. Opcjonalne narzędzia MCP dla połączeń API; zmiany wymagają zgody, chyba że wcześniej na nie zezwolono
+17. Bez konta Hotline, analityki i reklam; klucze w Menedżerze poświadczeń systemu Windows; bezpłatny i open source
+18. Edycja settings, connections, prompts i toolbar.json; ostrzeżenia o błędnych wartościach i kopie zapasowe
+19. Ustawienia > Kopia zapasowa: eksport i import ustawień, paska, MCP, dźwięków, połączeń, akcji i promptów; nigdy kluczy
+20. Skróty w panelu dla przycisków paska i własnych; przesuwanie, przypinanie i zmiana rozmiaru w pikselach oraz poszerzanie czatu
 
 ## Podpisy zrzutów ekranu
 
@@ -87,4 +89,4 @@ Wybierz kolor akcentu (fiolet Hotline, akcent systemu Windows lub dowolny kolor)
 
 ## Terminy wyszukiwania
 
-czat AI, klawisz Copilot, Claude, Gemini, asystent AI, LLM, lokalna AI
+Asystent czatu AI, Skrót klawisza Copilot, Integracja Claude Code, Codex Gemini CLI, API Anthropic OpenAI, Zgodność OpenRouter, Lokalny LLM llama.cpp

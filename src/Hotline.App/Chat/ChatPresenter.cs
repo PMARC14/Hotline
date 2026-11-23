@@ -3,6 +3,7 @@ using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.State;
 using Hotline.Core.Tools;
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
@@ -21,6 +22,7 @@ internal sealed class ChatPresenter
     private readonly ChatController _chat;
     private readonly HotlineSettings _settings;
     private readonly SettingsStore _store;
+    private readonly StateStore _state;
     private readonly FileLog _log;
     private readonly string _dataDirectory;
     private readonly PanelTheme _theme;
@@ -39,6 +41,7 @@ internal sealed class ChatPresenter
     private readonly AnswerNotifier _notifier;
     private readonly ToolbarCustomActions _customButtons;
     private readonly Dictionary<string, string> _answerBackends = [];
+    private string? _chatTitle;
     private string? _lastLook;
     private bool _preparingSend;
 
@@ -46,9 +49,8 @@ internal sealed class ChatPresenter
     public event Action<bool>? BusyChanged;
     public event Action? SettingsRequested;
 
-    /// <summary>Saves a settings change (the donation note turns itself off once shown).</summary>
-    public Action<Action<HotlineSettings>>? UpdateSettings { set { _support.UpdateSettings = value; _updateSettings = value; } }
-    private Action<Action<HotlineSettings>>? _updateSettings;
+    /// <summary>Retained for caller wiring; notes and saved panel spots now write state.json directly.</summary>
+    public Action<Action<HotlineSettings>>? UpdateSettings { get; set; }
 
     /// <summary>hotline://grips: shows the Alt grips on the open panel until hidden again (tests, screenshots).</summary>
     internal void ShowGrips(bool show) => _grips.Force(show);
@@ -62,9 +64,9 @@ internal sealed class ChatPresenter
     internal ContinueIn? ContinueIn { get => _recent.ContinueIn; set => _recent.ContinueIn = value; }
 
     public ChatPresenter(PopupWindow popup, ChatController chat, AttachmentTray tray, HotlineSettings settings, SettingsStore store, FileLog log,
-        string dataDirectory)
+        string dataDirectory, StateStore state)
     {
-        (_popup, _chat, _settings, _store, _log, _dataDirectory) = (popup, chat, settings, store, log, dataDirectory);
+        (_popup, _chat, _settings, _store, _log, _dataDirectory, _state) = (popup, chat, settings, store, log, dataDirectory, state);
         _theme = new PanelTheme(settings, OpenLink);
         _notices = new NoticeArea(popup, log);
         _tasks = new UiTasks(log, _notices);
@@ -81,8 +83,8 @@ internal sealed class ChatPresenter
         _voice = new VoiceInput(popup, _composer, _notices, settings, _tasks, log);
         popup.KeepOnKeyPress = () => _voice.Active || settings.Activation.Tap != Hotline.Core.Activation.KeyAction.TogglePopup;
         _recent = new RecentChatsMenu(popup, chat, _notices, dataDirectory, log, () => settings.Chat.HistoryListSize);
-        _firstRun = new FirstRunNote(popup, _notices, dataDirectory);
-        _support = new SupportNote(popup, _notices, settings, dataDirectory);
+        _firstRun = new FirstRunNote(popup, _notices, state);
+        _support = new SupportNote(popup, _notices, settings, state);
         _notifier = new AnswerNotifier(popup, settings, log);
         _customButtons = new ToolbarCustomActions(_composer, actions, () => _attachments.Items.Count > 0, _notices, () => _tasks.Run("send", () => SendAsync(plain: true)), log);
         _selfTest = new PanelSelfTest(popup, _transcript, _composer, settings, log, OnChatEvent, () => { _lastLook = null; ApplyAppearance(); }, NewChat,
@@ -119,15 +121,23 @@ internal sealed class ChatPresenter
         {
             SaveAsDefault = () =>
             {
-                var (anchor, width, chat) = _popup.CurrentSpot();
-                _updateSettings?.Invoke(s => { s.Window.Anchor = anchor; s.Window.Width = width; s.Window.ChatHeight = chat; });
-                _log.Info($"saved as default: {anchor.Monitor} {anchor.X:0.###},{anchor.Y:0.###} width {width} chat {chat?.ToString() ?? "auto"}");
-                Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                var spot = _popup.CurrentSpot();
+                if (_state.SavePanelSpot(spot))
+                {
+                    _popup.RefreshSavedSpot();
+                    _log.Info($"saved as default to state.json: {spot.Anchor?.Value.Monitor} {spot.Anchor?.Value.X:0.###},{spot.Anchor?.Value.Y:0.###} width {spot.Width?.Value} chat {spot.ChatHeight?.Value.ToString() ?? "auto"}");
+                    Notice(Strings.Grip_Saved, InfoBarSeverity.Success);
+                }
+                else
+                {
+                    _log.Error("saving default panel spot to state.json failed");
+                }
             },
         };
         _grips.Initialize();
         _selfTest.ShowGrips = _grips.SetVisible;
         _popup.NewChatButton.Click += (_, _) => NewChat();
+        _popup.CopyLastAnswerButton.Click += (_, _) => _transcript.CopyLastAnswer();
         _popup.CustomButtonClicked += _customButtons.Run;
         _popup.SettingsButton.Click += (_, _) => { if (SettingsRequested is null) OpenSettingsFolder(); else SettingsRequested(); };
         _popup.MessagesPanel.SizeChanged += (_, _) => ReportHeight();
@@ -141,6 +151,7 @@ internal sealed class ChatPresenter
     /// <summary>Recomputes the look from the live settings and re-renders what's shown when it changed.</summary>
     public void ApplyAppearance()
     {
+        _popup.SetToolbarShortcuts(_settings.Chat);
         _theme.Update();
         if (_theme.Backdrop == BackdropKind.Solid)
             _popup.Root.Background = PanelTheme.Brush(_theme.Tokens.SolidBackground); // follows the chosen theme, not the OS theme
@@ -179,16 +190,18 @@ internal sealed class ChatPresenter
     /// </summary>
     public void RunAppAction(Hotline.Core.Activation.AppActionRequest action) => _tasks.Run("run the action", async () =>
     {
-        if (action.Text is { } text) _attachments.AttachSelection(text, null);
-        if (action.ImagePath is { } path)
+        // Something already in the box or the tray: never send it along unasked; the user presses Enter.
+        var draft = _attachments.Items.Count > 0 || !string.IsNullOrWhiteSpace(_composer.Text);
+        _attachments.AttachActionText(action);
+        if (action.ImagePath is { } path && new FileInfo(path).Length <= Hotline.App.ActivationRouter.MaxActionImageBytes)
         {
             var bytes = await File.ReadAllBytesAsync(path);
             await _attachments.AddBytesAsync($"image-{DateTime.Now:HHmmss}{Path.GetExtension(path)}", null, bytes);
-            if (path.StartsWith(Hotline.App.ActivationRouter.ActionImagesFolder, StringComparison.OrdinalIgnoreCase))
+            if (Hotline.App.ActivationRouter.IsOwnActionImage(path))
                 try { File.Delete(path); } catch (IOException) { } // our copy; the original stays where it was
         }
-        if (action.QuickAction is { } name) _composer.Text = $"/{name}";
-        if (action.AutoSend) await SendAsync();
+        _composer.Text = action.DraftAfter(_composer.Text);
+        if (action.AutoSend && !draft) await SendAsync();
     });
 
     public void Demo(string? scene) => _ = _selfTest.DemoAsync(scene);
@@ -202,21 +215,39 @@ internal sealed class ChatPresenter
     {
         if (_chat.IsBusy)
         {
-            _notices.ShowTagged("stop-hint", null, L.F(Strings.Chat_StillAnswering, _settings.Chat.StopShortcut),
+            var shortcut = _popup.ToolbarShortcuts.GetValueOrDefault("stop", "");
+            _notices.ShowTagged("stop-hint", null, shortcut.Length > 0 ? L.F(Strings.Chat_StillAnswering, shortcut) : Strings.Bar_StillAnsweringNoShortcut,
                 InfoBarSeverity.Informational, closable: true);
             return;
         }
         _tasks.Run("send", SendAsync);
     }
 
-    /// <summary>chat.stopShortcut stops the answer being written, wherever the focus is in the panel.</summary>
+    /// <summary>Panel shortcuts run before text editing; Stop has priority while an answer is being written.</summary>
     private void OnPanelKey(object sender, Microsoft.UI.Xaml.Input.KeyRoutedEventArgs e)
     {
-        if (!_chat.IsBusy || !Hotline.Core.Activation.Hotkey.TryParseShortcut(_settings.Chat.StopShortcut, out var stop)) return;
-        if (!stop.Matches((uint)e.Key, HeldModifiers())) return;
-        _chat.Cancel();
-        _notices.Remove("stop-hint");
-        e.Handled = true; // e.g. Esc stops instead of hiding the panel
+        if (_popup.IsComposing || (uint)e.Key == 0xE5 || (uint)e.OriginalKey == 0xE5) return;
+        var held = HeldModifiers();
+        if (_chat.IsBusy && Hotline.Core.Activation.Hotkey.TryParseShortcut(_popup.ToolbarShortcuts.GetValueOrDefault("stop"), out var stop)
+            && stop.Matches((uint)e.Key, held))
+        {
+            _chat.Cancel();
+            _notices.Remove("stop-hint");
+            e.Handled = true; // e.g. Esc stops instead of hiding the panel
+            return;
+        }
+        if (e.KeyStatus.WasKeyDown) return;
+        if (held.HasFlag(Hotline.Core.Activation.HotkeyModifiers.Control)
+            && Microsoft.UI.Input.InputKeyboardSource.GetKeyStateForCurrentThread(VirtualKey.RightMenu)
+                .HasFlag(Windows.UI.Core.CoreVirtualKeyStates.Down)) return;
+        foreach (var (id, text) in _popup.ToolbarShortcuts)
+        {
+            if (id == "stop") continue;
+            if (!Hotline.Core.Activation.Hotkey.TryParseToolbarShortcut(text, out var shortcut) || !shortcut.Matches((uint)e.Key, held)) continue;
+            e.Handled = true;
+            _tasks.Guard("toolbar shortcut " + id, () => _popup.InvokeToolbarShortcut(id));
+            return;
+        }
     }
 
     private static Hotline.Core.Activation.HotkeyModifiers HeldModifiers()
@@ -271,18 +302,28 @@ internal sealed class ChatPresenter
 
     private async Task SendMessageAsync(string typed, SendRoute.Message message)
     {
+        var destination = _chat.DestinationVersion;
+        var snapshot = _attachments.Items.ToArray();
+        IReadOnlyList<Attachment> attachments;
         _preparingSend = true;
         try
         {
-            if (!await _attachments.PrepareForSendAsync(_chat.CurrentCapabilities?.Images ?? true)) return;
-            if (!_chat.CanAccept(_attachments.Items, out var reason))
+            var prepared = await _attachments.PrepareForSendAsync(snapshot, _chat.CurrentCapabilities?.Images ?? true);
+            if (destination != _chat.DestinationVersion)
+            {
+                _notices.Show(Strings.Chat_SendDestinationChanged, InfoBarSeverity.Warning);
+                return;
+            }
+            if (prepared is null) return;
+            if (!_chat.CanAccept(prepared, out var reason))
             {
                 _notices.Show(reason!, InfoBarSeverity.Warning); // draft stays in the box
                 return;
             }
+            attachments = prepared;
+            _attachments.Consume(snapshot);
         }
         finally { _preparingSend = false; }
-        var attachments = _attachments.TakeAll();
         if (_composer.Text == typed) _composer.Text = ""; // keep anything typed while OCR ran
         if (message.Action is { } action) _log.Info($"quick action /{action}");
         _log.Info($"chat send via {_chat.BackendId}: {message.Text.Length} chars, {attachments.Count} attachment(s)");
@@ -292,18 +333,23 @@ internal sealed class ChatPresenter
     // ---- chat events ------------------------------------------------------------------------------
 
     private ReportTarget? ReportFor(string? backendId) =>
-        _settings.Chat.Backends.FirstOrDefault(b => b.Id == backendId) is { } profile ? ReportLinks.For(profile.Type) : null;
+        _settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, backendId, StringComparison.OrdinalIgnoreCase)) is { } profile ? ReportLinks.For(profile.Type) : null;
 
     /// <summary>Not the self-test or demo.</summary>
     private static bool IsRealAnswer(string id) => !id.StartsWith("st-", StringComparison.Ordinal) && !id.StartsWith("demo-", StringComparison.Ordinal);
 
     private string BackendOf(string answerId) => _answerBackends.Remove(answerId, out var name) ? name : "";
 
+    private string CurrentChatTitle() =>
+        _chatTitle ?? HistoryStore.TitleOf(_chat.Messages.FirstOrDefault(m => m.Role == ChatRole.User && !string.IsNullOrWhiteSpace(m.Text))?.Text ?? "");
+
     private void OnChatEvent(ChatEvent e)
     {
         switch (e)
         {
             case UserMessageAdded u:
+                if (_chatTitle is null && !string.IsNullOrWhiteSpace(u.Message.Text))
+                    _chatTitle = HistoryStore.TitleOf(u.Message.Text);
                 _transcript.AddUser(u.Message);
                 break;
             case AssistantStarted s:
@@ -319,14 +365,14 @@ internal sealed class ChatPresenter
                 _notices.Show(s.Message, InfoBarSeverity.Informational);
                 break;
             case AssistantCompleted c:
-                _transcript.FinishAnswer(c.Id);
+                _transcript.FinishAnswer(c.Id, completed: true);
                 SetBusy(false);
                 _log.Info("chat answer completed");
                 var answeredBy = BackendOf(c.Id);
                 if (IsRealAnswer(c.Id))
                 {
                     _support.AnswerCompleted();
-                    _notifier.Finished(answeredBy, _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
+                    _notifier.Finished(answeredBy, CurrentChatTitle(), _chat.Messages.LastOrDefault(m => m.Id == c.Id)?.Text ?? "", failed: false);
                 }
                 break;
             case AssistantCancelled c:
@@ -341,24 +387,29 @@ internal sealed class ChatPresenter
                 _transcript.ShowError(f.Id, f.Message);
                 SetBusy(false);
                 var failedOn = BackendOf(f.Id);
-                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, f.Message, failed: true);
+                if (IsRealAnswer(f.Id)) _notifier.Finished(failedOn, CurrentChatTitle(), f.Message, failed: true);
                 break;
             case MessageRestored r when r.Message.Role == ChatRole.User:
                 _transcript.AddUser(r.Message);
                 break;
             case MessageRestored r:
-                var name = _settings.Chat.Backends.FirstOrDefault(b => b.Id == r.Message.BackendId)?.Name ?? r.Message.BackendId ?? "";
+                var name = _settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, r.Message.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? r.Message.BackendId ?? "";
                 _transcript.RestoreAnswer(r.Message, name, ReportFor(r.Message.BackendId));
                 break;
             case ConversationReset:
+                _chatTitle = null;
                 _transcript.Clear();
                 _notices.Clear();
                 SetBusy(false);
                 break;
-            case ConversationResumed { HasTranscript: false } resumed:
-                // Only the record was kept: the earlier messages are in the CLI's own history.
-                var holder = _settings.Chat.Backends.FirstOrDefault(b => b.Id == resumed.BackendId)?.Name ?? resumed.BackendId ?? "";
-                _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
+            case ConversationResumed resumed:
+                _chatTitle = string.IsNullOrWhiteSpace(resumed.Title) ? null : resumed.Title;
+                if (!resumed.HasTranscript)
+                {
+                    // Only the record was kept: the earlier messages are in the CLI's own history.
+                    var holder = _settings.Chat.Connections.FirstOrDefault(b => string.Equals(b.Id, resumed.BackendId, StringComparison.OrdinalIgnoreCase))?.Name ?? resumed.BackendId ?? "";
+                    _notices.Show(L.F(Strings.Chat_ContinuingCli, resumed.Title, holder), InfoBarSeverity.Informational);
+                }
                 break;
         }
     }

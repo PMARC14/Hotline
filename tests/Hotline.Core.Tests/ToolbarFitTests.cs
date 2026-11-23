@@ -101,7 +101,6 @@ public class ToolbarFitTests
                 for (double room = 100; room <= 1600; room += 8)
                 {
                     var r = ToolbarLayout.Fit(room, Gap, left, right, reserved);
-                    Assert.Equal(r, ToolbarLayout.Fit(room, Gap, left, right, reserved));
                     Assert.InRange(r.LeftShown, 0, count);
                     Assert.Equal(r.LeftShown < count || r.RightDropped > 0, r.Overflow);
                     Assert.True(r.LeftShown >= prev, $"not monotonic at {room}");

@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "type": "claudeCode",
+  "name": "Claude (Claude Code)",
+  "keepCliSessions": true,
+  "keepInHotline": false,
+  "refusalFallback": true,
+  "tools": "chatOnly",
+  "approveAllTools": false
+}

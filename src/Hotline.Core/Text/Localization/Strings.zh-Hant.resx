@@ -73,7 +73,16 @@
   <data name="Set_History_Desc" xml:space="preserve"><value>僅文字,儲存在你的 .hotline 資料夾中。</value></data>
   <data name="Set_NotifyDone" xml:space="preserve"><value>回答在背景完成時通知</value></data>
   <data name="Set_NotifyDone_Desc" xml:space="preserve"><value>面板隱藏或其他應用程式在前景時,回答完成後顯示 Windows 通知。按一下即可開啟回答。</value></data>
+  <data name="Set_WidthV1_Desc" xml:space="preserve"><value>縮放像素 (200–4000) 或工作區比例 (20%–90%)。</value></data>
+  <data name="Set_ChatWidthV1_Desc" xml:space="preserve"><value>縮放像素 (200–4000) 或工作區比例 (20%–90%)；留空則保持開啟時的寬度。</value></data>
+  <data name="Set_ScaledPixels_Desc" xml:space="preserve"><value>縮放像素 (DIP)。</value></data>
+  <data name="Set_PanelWidth_Invalid" xml:space="preserve"><value>請輸入 200–4000 縮放像素或 20%–90%。</value></data>
+  <data name="Set_NotifyShowsText" xml:space="preserve"><value>在通知中顯示回答文字</value></data>
+  <data name="Set_NotifyShowsText_Desc" xml:space="preserve"><value>在完成通知中包含回答文字；關閉則只顯示聊天標題。</value></data>
+  <data name="Settings_PreFreeze" xml:space="preserve"><value>此檔案使用凍結前格式。在執行升級前將套用預設值；檔案維持不變。</value></data>
+  <data name="Settings_InvalidConnectionId" xml:space="preserve"><value>連線 ID {0} 無效。請使用 1–64 個字母、數字、點、底線或連字號；不允許使用 Windows 裝置名稱及結尾的點。</value></data>
   <data name="Notify_Answered" xml:space="preserve"><value>{0} 已回答</value></data>
+  <data name="Notify_AnswerReady" xml:space="preserve"><value>回答已就緒</value></data>
   <data name="Notify_Failed" xml:space="preserve"><value>{0} 無法完成回答</value></data>
   <data name="Set_Retention" xml:space="preserve"><value>聊天記錄保留期間</value></data>
   <data name="Set_Unit_Days" xml:space="preserve"><value>天</value></data>
@@ -84,6 +93,7 @@
   <data name="Set_Selection_Off" xml:space="preserve"><value>否</value></data>
   <data name="Set_Stop" xml:space="preserve"><value>停止回答</value></data>
   <data name="Set_Stop_Desc" xml:space="preserve"><value>在回答產生時用來停止的按鍵 (Enter 永遠不會停止;[傳送] 按鈕也可停止)。單一按鍵 (Esc) 或組合鍵,例如 Ctrl+. —— 未在產生回答時,Esc 會隱藏面板。</value></data>
+  <data name="Set_Stop_Conflict" xml:space="preserve"><value>面板命令已在使用此快速鍵。請先變更或清除該命令的快速鍵，或選擇其他快速鍵。</value></data>
   <data name="Set_Stop_Invalid" xml:space="preserve"><value>快速鍵無效 (範例:Esc、Ctrl+.、Ctrl+Shift+Backspace)</value></data>
   <data name="Set_Memory" xml:space="preserve"><value>記憶</value></data>
   <data name="Set_Memory_Desc" xml:space="preserve"><value>每個聊天都會讀取 .hotline 資料夾中的 memory.md (「/remember 某件事」會新增一行)。</value></data>
@@ -119,7 +129,7 @@
   <data name="Settings_Startup" xml:space="preserve"><value>隨 Windows 啟動</value></data>
   <data name="Tools_Intro" xml:space="preserve"><value>「工具使用」設為「使用 Hotline 的工具」的 API 連線可以呼叫這些 MCP 伺服器的工具。唯讀工具會直接執行;其他動作會在面板中詢問你 (允許一次 / 一律 / 拒絕)。</value></data>
   <data name="Tools_Servers" xml:space="preserve"><value>MCP 伺服器</value></data>
-  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} —— 與其他 MCP 應用程式相同的「mcpServers」格式;核准設定儲存在同一個檔案中</value></data>
+  <data name="Tools_Servers_Desc" xml:space="preserve"><value>{0} — 與其他 MCP 應用程式相同的 "mcpServers" 格式；核准規則為 settings.json 中的 tools.approvals</value></data>
   <data name="Tools_EditMcp" xml:space="preserve"><value>編輯 mcp.json</value></data>
   <data name="Common_OpenFolder" xml:space="preserve"><value>開啟資料夾</value></data>
   <data name="Tools_Odr" xml:space="preserve"><value>Windows 代理程式登錄</value></data>
@@ -430,6 +440,34 @@
   <data name="Mcp_Missing" xml:space="preserve"><value>未安裝「{0}」或其不在 PATH 中,因此 {1} 伺服器無法啟動。請檢查 mcp.json 中的「command」。</value></data>
   <data name="Mcp_Unreadable" xml:space="preserve"><value>無法讀取 mcp.json:{0}</value></data>
   <data name="Mcp_BadApproval" xml:space="preserve"><value>核准「{0}」的值不明,因此視為「deny」。</value></data>
+  <data name="Mcp_ApprovalsIgnored" xml:space="preserve"><value>已忽略 mcp.json 中的 "approvals" 區段；請將規則移至 settings.json (tools.approvals)。</value></data>
+  <data name="Mcp_BadEnvValue" xml:space="preserve"><value>伺服器 "{0}" 的 "{1}" 包含非字串 env 值，因此已略過。</value></data>
+  <data name="Mcp_BadSecretToken" xml:space="preserve"><value>伺服器 "{0}" 在 env "{1}" 中包含無效的祕密參考。</value></data>
+  <data name="Mcp_MissingSecret" xml:space="preserve"><value>伺服器 "{0}" 在 env "{2}" 中參考了祕密 "{1}"，但該祕密不在認證存放區中。</value></data>
+  <data name="Mcp_CaseMismatchAllow" xml:space="preserve"><value>允許規則 "{0}" 與 "{1}" 僅大小寫不同，因此已忽略。</value></data>
+  <data name="Mcp_MoveNewerVersion" xml:space="preserve"><value>mcp.json 使用較新版本 ({0})，無法安全更新。</value></data>
+  <data name="Mcp_MoveBackupFailed" xml:space="preserve"><value>更新前無法備份 mcp.json。</value></data>
+  <data name="Mcp_MoveWriteFailed" xml:space="preserve"><value>無法儲存更新後的 mcp.json 檔案。</value></data>
+  <data name="Mcp_MoveNotFound" xml:space="preserve"><value>在 mcp.json 中的伺服器 "{0}" 上找不到 env 項目 "{1}"。</value></data>
+  <data name="Mcp_MoveChangedNothingMoved" xml:space="preserve"><value>該 env 項目已變更或已移動；未變更任何內容。</value></data>
+  <data name="Mcp_MoveLockerUpdatedFileFailed" xml:space="preserve"><value>該值現已作為 "{0}" ({1}) 儲存在 Windows 認證存放區中，但因儲存和復原失敗，mcp.json 未變更。</value></data>
+  <data name="Tools_GrantsTitle" xml:space="preserve"><value>一律允許授與</value></data>
+  <data name="Tools_GrantsEmpty" xml:space="preserve"><value>沒有已儲存的工具授與。</value></data>
+  <data name="Tools_GrantDesc" xml:space="preserve"><value>{0}/{1} · 啟動 {2}</value></data>
+  <data name="Tools_Revoke" xml:space="preserve"><value>撤銷</value></data>
+  <data name="Tools_RevokeFailed" xml:space="preserve"><value>無法撤銷工具授與。</value></data>
+  <data name="Tools_SecretsTitle" xml:space="preserve"><value>環境祕密</value></data>
+  <data name="Tools_SecretsEmpty" xml:space="preserve"><value>在 mcp.json 中找不到純文字 env 項目。</value></data>
+  <data name="Tools_EnvPlaintextDesc" xml:space="preserve"><value>{0} › {1} (mcp.json 中的純文字)</value></data>
+  <data name="Tools_MoveToLocker" xml:space="preserve"><value>移至認證存放區</value></data>
+  <data name="Tools_MoveToLockerTitle" xml:space="preserve"><value>要將 env 值移至認證存放區嗎?</value></data>
+  <data name="Tools_MoveToLockerBody" xml:space="preserve"><value>將 {0} › {1} 儲存在 Windows 認證存放區中，並在 mcp.json 中取代它。先前的 mcp.json (包含純文字值) 會保留在 backups\&lt;time&gt;-save 中，且不會保留 mcp.json 中的註解。</value></data>
+  <data name="Tools_SecretName" xml:space="preserve"><value>祕密名稱</value></data>
+  <data name="Tools_SecretNameInvalid" xml:space="preserve"><value>請使用字母、數字、點、底線或連字號。</value></data>
+  <data name="Tools_SecretOverwriteWarn" xml:space="preserve"><value>認證存放區中已存在此名稱的祕密，將會覆寫。</value></data>
+  <data name="Tools_MoveToLockerConfirm" xml:space="preserve"><value>移動</value></data>
+  <data name="Tools_MovedToLocker" xml:space="preserve"><value>已將 {0} › {1} 移至認證存放區。先前的 mcp.json (包含純文字值) 已儲存至 backups\&lt;time&gt;-save。</value></data>
+  <data name="Tools_MoveToLockerFailed" xml:space="preserve"><value>無法將 env 值移至認證存放區。</value></data>
   <data name="Mcp_BadName" xml:space="preserve"><value>伺服器名稱不能包含「/」或「*」。</value></data>
   <data name="Mcp_StartTimeout" xml:space="preserve"><value>未在 {0:0} 秒內啟動</value></data>
   <data name="Mcp_ConfigBroken" xml:space="preserve"><value>{0} 修正前不會執行任何工具。</value></data>
@@ -479,6 +517,30 @@
   <data name="BarW_CellsBad" xml:space="preserve"><value>"{0}" {1} 不是 0.5、1、2、3 或 4（cells 是 width 的舊名稱）；將使用預設寬度</value></data>
   <data name="Bar_SaveBackupFailed" xml:space="preserve"><value>無法先建立目前檔案的複本，因此未變更任何內容 ({0})</value></data>
   <data name="Bar_ChangedOnDisk" xml:space="preserve"><value>開啟此頁面時 toolbar.json 已變更。已重新載入，且您上次所做的變更未套用：請重新變更。</value></data>
+  <data name="Bar_DuplicateButton" xml:space="preserve">
+    <value>自訂按鈕 ID "{0}" 重複 (不區分大小寫)；將使用第一個定義。</value>
+  </data>
+  <data name="Bar_StillAnsweringNoShortcut" xml:space="preserve">
+    <value>仍在回答。使用停止按鈕可停止；你的訊息會在方塊中等待。</value>
+  </data>
+  <data name="Bar_WidthInvalid" xml:space="preserve">
+    <value>"{0}" {1} 不是 0.5、1、2、3 或 4 的數值寬度；將使用預設寬度。</value>
+  </data>
+  <data name="Bar_CommandConflict" xml:space="preserve">
+    <value>shortcuts.{0}: 快速鍵組合已被使用；此快速鍵已停用。</value>
+  </data>
+  <data name="Bar_OldVersionUnsupported" xml:space="preserve">
+    <value>此工具列檔案使用較舊格式。預設按鈕列和快速鍵已啟用；檔案未變更。</value>
+  </data>
+  <data name="Bar_Fill" xml:space="preserve">
+    <value>填滿可用列空間</value>
+  </data>
+  <data name="Bar_BackupFailed" xml:space="preserve">
+    <value>無法備份按鈕列和快速鍵。</value>
+  </data>
+  <data name="Bar_WriteFailed" xml:space="preserve">
+    <value>無法儲存按鈕列和快速鍵。</value>
+  </data>
   <data name="Bar_PictureNotSaved" xml:space="preserve"><value>圖片未變更：無法儲存 toolbar.json。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>這裡沒有任何內容</value></data>
@@ -499,7 +561,7 @@
   <data name="Settings_NoticeProblems" xml:space="preserve"><value>{0} 其餘項目仍會套用。「設定 › 進階」中列出了所有項目。</value></data>
   <data name="Settings_NoticeUnreadableTitle" xml:space="preserve"><value>無法讀取設定檔</value></data>
   <data name="Settings_NoticeKept" xml:space="preserve"><value>Hotline 將保留現有設定，直到問題修正。</value></data>
-  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 現為實際像素（先前為縮放單位）：您的數值 {0} 已按原樣保留；請查看 設定 &amp;gt; 視窗</value></data>
+  <data name="Settings_WidthUnitsMigrated" xml:space="preserve"><value>minWidth/maxWidth/width 現為實際像素（先前為縮放單位）：您的數值 {0} 已按原樣保留；請查看 設定 &gt; 視窗</value></data>
   <data name="Advanced_ProblemsTitle" xml:space="preserve"><value>設定檔發生問題</value></data>
   <data name="Advanced_ProblemsBody" xml:space="preserve"><value>忽略的值將使用預設值。修正檔案後，Hotline 會立即載入。</value></data>
   <data name="Bar_NoticeProblemsTitle" xml:space="preserve"><value>toolbar.json 的部分內容已被忽略</value></data>
@@ -597,8 +659,6 @@
   <data name="Bar_BottomRow" xml:space="preserve"><value>訊息方塊下方</value></data>
   <data name="Bar_RowEmpty" xml:space="preserve"><value>空白</value></data>
   <data name="Bar_RowsTitle" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Bar_ScreenLine" xml:space="preserve"><value>螢幕 {0} × {1} px，縮放比例 {2}%：Windows 繪製介面大小為 {3} × {4}</value></data>
-  <data name="Bar_ScreenLine100" xml:space="preserve"><value>螢幕 {0} × {1} px（100% 縮放）</value></data>
   <data name="Set_MinWidth_Desc" xml:space="preserve"><value>螢幕實際像素，忽略 Windows 縮放</value></data>
   <data name="Set_MaxWidth_Desc" xml:space="preserve"><value>螢幕的實際像素，忽略 Windows 縮放</value></data>
   <data name="Bar_ToBottom" xml:space="preserve"><value>移至訊息方塊下方</value></data>
@@ -663,7 +723,17 @@
   <data name="Nav_Backup" xml:space="preserve"><value>備份</value></data>
   <data name="Backup_Intro" xml:space="preserve"><value>將 Hotline 設定轉移至另一部電腦，或保留備份。備份檔是包含所選項目的單一 .zip 檔案；不包含其他內容（對話記錄、記憶、記錄檔）。</value></data>
   <data name="Backup_Cat_Settings" xml:space="preserve"><value>設定</value></data>
-  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與自訂按鈕圖片</value></data>
+  <data name="Backup_Cat_Toolbar" xml:space="preserve"><value>按鈕列與快速鍵</value></data>
+  <data name="Upgrade_Notice" xml:space="preserve"><value>Hotline 的設定格式已變更。舊版本的設定和按鈕列將回復為預設值。AI 連線和 MCP 伺服器會保留。</value></data>
+  <data name="Upgrade_Reset" xml:space="preserve"><value>已重設: {0}。</value></data>
+  <data name="Upgrade_Backup" xml:space="preserve"><value>原始檔案: {0}。</value></data>
+  <data name="Upgrade_NoBackup" xml:space="preserve"><value>無法建立完整的升級備份。</value></data>
+  <data name="Upgrade_Retry" xml:space="preserve"><value>無法升級: {0}。Hotline 將在下次啟動時重試這些檔案。</value></data>
+  <data name="Guide_Upgrade_Title" xml:space="preserve"><value>從 0.6 升級</value></data>
+  <data name="Guide_Upgrade_Body" xml:space="preserve"><value>升級後首次啟動時，舊設定和按鈕列將回復為內建預設值。僅保留預設 AI 連線和連線順序。AI 連線和 MCP 伺服器會保留；舊的 MCP 核准會移除。轉換前，原始檔案會複製到 backups/&lt;time&gt;-upgrade。即使該備份失敗，轉換仍會執行。無法轉換的檔案會維持原狀，並在下次啟動時重試。參考預設值會在啟動時於 .defaults 中重新整理。</value></data>
+  <data name="Backup_PlaintextEnv" xml:space="preserve"><value>此備份包含 {0} 的純文字環境值。分享此備份前，請在 [設定] &gt; [工具] 中使用 [移至認證存放區]。</value></data>
+  <data name="Backup_MissingSecrets" xml:space="preserve"><value>這些 MCP 伺服器需要此電腦上的認證存放區祕密: {0}。請在 [設定] &gt; [工具] 中新增其祕密。</value></data>
+  <data name="Backup_NewerFile" xml:space="preserve"><value>較新版本已維持原狀。</value></data>
   <data name="Backup_Cat_Mcp" xml:space="preserve"><value>工具 (mcp.json)</value></data>
   <data name="Backup_Cat_Sounds" xml:space="preserve"><value>音效</value></data>
   <data name="Backup_Cat_Connections" xml:space="preserve"><value>AI 連線</value></data>
@@ -749,7 +819,7 @@
   <data name="Guide_Direction_Title" xml:space="preserve"><value>向上或向下</value></data>
   <data name="Guide_Direction_Body" xml:space="preserve"><value>聊天畫面會從訊息列延伸展開：優先向上，除非上方沒有空間，則改為向下。設定 › 視窗可將其固定為向上或向下，並設定位置、寬度與聊天高度。</value></data>
   <data name="Guide_Rows_Title" xml:space="preserve"><value>按鈕列</value></data>
-  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列 將工具列顯示為六個區域：訊息方塊上方列的左側、中央與右側，以及下方相同的這三個區域。拖曳按鈕或選擇器可在區域內移動或移至另一個區域，或使用其方向鍵按鈕（Alt+方向鍵切換區域，Ctrl+方向鍵變更順序）。隱藏的項目會保留在「未顯示」中。每個按鈕都可以有自己的寬度、外框或填滿（下拉式選單也支援外框和填滿），您也可以新增執行快速動作或插入文字的自訂按鈕。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 機碼）則存放您選擇保留在該處的按鈕。寬度以儲存格計算：按鈕寬度為 0.5、1、2、3 或 4 個儲存格（width 機碼，其中 compact、normal 和 wide 代表 0.5、1 和 2），且每個選擇器都有自己的寬度。設定 › 備份 也會儲存 toolbar.json 和您的按鈕圖片。</value></data>
+  <data name="Guide_Rows_Body" xml:space="preserve"><value>設定 › 視窗 › 按鈕列會將工具列顯示為六個區域：訊息方塊上方一列的左、中、右，以及下方一列的相同三個區域。拖曳按鈕或選擇器即可在同區域內或跨區域移動，或使用其方向按鈕（Alt+方向鍵變更區域，Ctrl+方向鍵變更順序）。隱藏的項目會留在「未顯示」中。每個按鈕都能有各自的寬度、外框或填滿（下拉式選單也會套用外框與填滿），你也可以新增自己的按鈕來執行快速動作或插入文字。放不下的按鈕會移至 ⋯ 選單，而「… 按鈕的方塊」（toolbar.json 中的 menu 鍵）會保留你選擇放在那裡的按鈕。按鈕寬度為數字 0.5、1、2、3 或 4（width 鍵），每個選擇器都有各自的跨度，而 style.fill（預設開啟）會分配該列的剩餘空間。設定 › 備份也會儲存 toolbar.json 與你的按鈕圖片。</value></data>
   <data name="Guide_Sounds_Title" xml:space="preserve"><value>音效</value></data>
   <data name="Guide_Sounds_Body" xml:space="preserve"><value>設定 › 外觀 › 音效可在面板開啟或關閉時播放音效：Windows 音效或您音效資料夾中的 .wav 檔案。預設為關閉。</value></data>
   <data name="Guide_Files_Title" xml:space="preserve"><value>設定即檔案</value></data>
@@ -775,7 +845,7 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Bar_ColorPink" xml:space="preserve"><value>粉紅色</value></data>
   <data name="Bar_PickerWidth" xml:space="preserve"><value>按按鈕寬度計算的寬度</value></data>
   <data name="Bar_NotShown" xml:space="preserve"><value>未顯示</value></data>
-  <data name="Bar_EditorIntro" xml:space="preserve"><value>在四個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
+  <data name="Bar_EditorIntro" xml:space="preserve"><value>在六個群組之間拖曳項目，或使用各項目下方的按鈕。焦點位於項目上時，Alt+方向鍵可將其移至其他群組，Ctrl+Left 或 Ctrl+Right 則可在群組內移動。變更會儲存至 toolbar.json 並立即套用。</value></data>
   <data name="Bar_ToLeft" xml:space="preserve"><value>移至左側群組</value></data>
   <data name="Bar_ToRight" xml:space="preserve"><value>移至右側群組</value></data>
   <data name="Bar_Pickers" xml:space="preserve"><value>選擇器</value></data>
@@ -862,4 +932,69 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="ContinueSet_TestFailed" xml:space="preserve"><value>無法連線:{0}</value></data>
   <data name="ContinueSet_Save" xml:space="preserve"><value>儲存</value></data>
   <data name="ContinueSet_Invalid" xml:space="preserve"><value>請填寫名稱以及位址或命令。</value></data>
+  <data name="Bar_copyLastAnswer" xml:space="preserve"><value>複製上一則回答</value></data>
+  <data name="Shortcuts_Tooltip" xml:space="preserve"><value>快速鍵：{0}</value></data>
+  <data name="Set_Shortcuts_Desc" xml:space="preserve"><value>按鍵名稱使用英文。除 F1-F24 外，需要 Ctrl、Alt 或 Win。留空停用；重設恢復預設值。儲存在 toolbar.json 中。停止和所有按鈕必須使用不同組合。</value></data>
+  <data name="Shortcuts_Invalid" xml:space="preserve"><value>shortcuts.{0}：無效的快速鍵；將使用可用的預設值。</value></data>
+  <data name="Shortcuts_Conflict" xml:space="preserve"><value>shortcuts.{0}：組合已被占用；將使用可用的預設值，否則停用。</value></data>
+  <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts：未知按鈕 {0}，已忽略。</value></data>
+  <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}：重複列出；使用最後一個項目。</value></data>
+  <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>面板快速鍵</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>在面板內，Ctrl+N 開始聊天，Ctrl+H 開啟歷史，Ctrl+Shift+C 複製最後一個已完成回答。將游標移到按鈕上可查看快捷鍵；選擇器快捷鍵循環切換清單。可在設定 &gt; 聊天與歷史，或 toolbar.json 的 shortcuts 中修改。留空停用；重設恢復預設值。停止優先。按鍵重複、AltGr 和 IME 組合輸入不會執行工具列命令。</value></data>
+  <data name="Bar_CustomShortcut" xml:space="preserve"><value>快速鍵</value></data>
+  <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut：快速鍵無效，已停用。</value></data>
+  <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut：組合鍵已被使用，已停用。</value></data>
+  <data name="Shortcuts_InvalidOrConflict" xml:space="preserve"><value>請使用 Ctrl、Alt、Win 或 F1-F24。組合必須尚未使用（包括停止、內建按鈕和自訂按鈕）。</value></data>
+  <data name="Shortcuts_NeedsModifier" xml:space="preserve"><value>請加入 Ctrl、Alt 或 Win（F1-F24 可單獨使用）</value></data>
+  <data name="Transcript_NothingToCopy" xml:space="preserve"><value>沒有可複製的已完成回答。</value></data>
+  <data name="Attachment_RemoveNamed" xml:space="preserve"><value>移除附件 {0}</value></data>
+  <data name="Conn_MoveNamedUp" xml:space="preserve"><value>上移連線 {0}</value></data>
+  <data name="Conn_MoveNamedDown" xml:space="preserve"><value>下移連線 {0}</value></data>
+  <data name="Demo_MathQuestion" xml:space="preserve"><value>如何計算圓面積？請用 Python 示範。</value></data>
+  <data name="Demo_MathAnswer" xml:space="preserve"><value>### 圓面積
+
+面積為
+
+$$A = \pi r^2$$
+
+- **r** 是半徑（直徑的一半）
+- **π** ≈ 3.14159
+
+當半徑為 2 時：$A = \pi \times 2^2 \approx 12.57$。
+
+```python
+import math
+
+def circle_area(r: float) -&gt; float:
+    return math.pi * r ** 2
+
+print(round(circle_area(2), 2))  # 12.57
+```
+
+| 半徑 | 面積 |
+|---|---|
+| 1 | 3.14 |
+| 2 | 12.57 |
+| 3 | 28.27 |</value></data>
+  <data name="Demo_SummaryText" xml:space="preserve"><value>遠端工作徹底改變了團隊的溝通方式。非同步更新如今取代了許多會議，文字記錄的決策比口頭傳達更能廣泛傳播，而善於整理文件的團隊更能讓新人在幾天內完成到職引導，不再需要耗費數週。相應的代價是隨機交流的機會變少，因此許多公司現在會特意安排實體相聚時間：每季安排幾天用於規劃、交流指導以及增進彼此認識。</value></data>
+  <data name="Demo_SummaryQuestion" xml:space="preserve"><value>請以三個重點摘要這段內容。</value></data>
+  <data name="Demo_SummaryAnswer" xml:space="preserve"><value>- **非同步優先：** 文字更新取代了許多會議，書面決策也能傳達給更多人。
+- **文件發揮效益：** 完善記錄文件的團隊，只需數天即可帶領新人上手，而非數週。
+- **規劃實體相聚：** 偶遇交流的機會減少，因此公司每季都會特別安排實體見面時間。</value></data>
+  <data name="Backup_ExecutionTitle" xml:space="preserve"><value>檢閱程式與權限</value></data>
+  <data name="Backup_ExecutionBody" xml:space="preserve"><value>此備份包含無需詢問即可執行程式或允許工具的設定。請檢閱下方的詳細資料。僅在信任這些設定時才進行匯入。</value></data>
+  <data name="Backup_ExecutionConfirmationRequired" xml:space="preserve"><value>已取消匯入：程式與權限需要確認。</value></data>
+  <data name="Mcp_ApprovalsObjectRequired" xml:space="preserve"><value>approvals 區段必須是 JSON 物件。</value></data>
+  <data name="Settings_SaveDeferred" xml:space="preserve"><value>設定變更正在等待 settings.json 變成可讀取。</value></data>
+  <data name="Cli_CommandTooLong" xml:space="preserve"><value>無法啟動 {0}，因為其啟動命令過長。請縮短系統提示、儲存的記憶或額外的啟動引數。</value></data>
+  <data name="Api_AnswerCutOff" xml:space="preserve"><value>在伺服器確認完成之前，回答已被截斷。</value></data>
+  <data name="Chat_SendDestinationChanged" xml:space="preserve"><value>準備附件時聊天或連線發生變更。未傳送您的訊息。</value></data>
+  <data name="Attach_FromLink" xml:space="preserve">
+    <value>從連結</value>
+  </data>
+  <data name="Grip_Move" xml:space="preserve"><value>移動面板</value></data>
+  <data name="Grip_Resize" xml:space="preserve"><value>調整面板大小</value></data>
+  <data name="Grip_KeyboardHelp" xml:space="preserve"><value>Ctrl+Shift+F10 可開啟面板功能表。選擇「移動」或「調整大小」，使用方向鍵，然後按 Enter 完成或按 Esc 取消。</value></data>
+  <data name="Settings_NewerVersion" xml:space="preserve"><value>settings.json 是由較新版本的 Hotline (版本 {0}；此版本寫入 {1}) 所撰寫，因此 Hotline 不會覆寫它。請更新 Hotline，或手動編輯此檔案。</value></data>
+  <data name="Toolbar_NewerVersion" xml:space="preserve"><value>toolbar.json 是由較新版本的 Hotline (版本 {0}) 所撰寫，因此 Hotline 不會覆寫它。請更新 Hotline，或手動編輯此檔案。</value></data>
 </root>

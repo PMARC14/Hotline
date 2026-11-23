@@ -10,7 +10,7 @@ public class GrowAndFitTests
     [InlineData(736, 400, 560, 456, 400)]  // grows upward, keeping the bottom edge
     [InlineData(736, 50, 560, 736, 120)]   // never shrinks below the bar
     [InlineData(736, 2000, 560, 296, 560)] // capped at the maximum height
-    [InlineData(100, 600, 600, 0, 600)]    // stays inside the work area's top
+    [InlineData(100, 600, 600, 0, 220)]    // caps at the top without moving the bottom edge
     public void Grows_upward_keeping_the_bottom_edge_within_the_work_area(int barY, int wanted, int max, int expectedY, int expectedHeight)
         => Assert.Equal(new RectI(680, expectedY, 560, expectedHeight), PopupGeometry.GrowUp(new RectI(680, barY, 560, 120), wanted, max, Work));
 

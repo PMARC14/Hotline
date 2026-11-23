@@ -11,10 +11,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Fixes from the full-codebase review: SSE tail, odd JSON from proxies, Claude Code start-up failures.</summary>
-public sealed class ReviewX2BackendTests : IDisposable
+public sealed class ReviewX2BackendTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
 
     private static async Task<List<string>> Events(string sse)
@@ -34,7 +32,7 @@ public sealed class ReviewX2BackendTests : IDisposable
 
     // ---- odd JSON shapes from proxies end up as skipped chunks, not InvalidOperationException ----
 
-    private static async Task<string> Run(BackendProfile p, params string[] data)
+    private static async Task<string> Run(ConnectionProfile p, params string[] data)
     {
         var handler = new FixedHandler(() => new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -52,10 +50,10 @@ public sealed class ReviewX2BackendTests : IDisposable
     }
 
     private static Task<string> RunGemini(params string[] data)
-        => Run(new BackendProfile { Id = "g", Name = "G", Type = BackendType.Gemini, Model = "gemini-3.8-flash" }, data);
+        => Run(new ConnectionProfile { Id = "g", Name = "G", Type = BackendType.Gemini, Model = "gemini-3.8-flash" }, data);
 
     private static Task<string> RunOpenAi(params string[] data)
-        => Run(new BackendProfile { Id = "o", Name = "O", Type = BackendType.OpenAiCompatible, Model = "m", Endpoint = "https://api.example.com/v1" }, data);
+        => Run(new ConnectionProfile { Id = "o", Name = "O", Type = BackendType.OpenAiCompatible, Model = "m", Endpoint = "https://api.example.com/v1" }, data);
 
     private sealed class FixedHandler(Func<HttpResponseMessage> respond) : HttpMessageHandler
     {
@@ -80,7 +78,7 @@ public sealed class ReviewX2BackendTests : IDisposable
     // ---- Claude Code ----
 
     private ClaudeCodeBackend Claude(ILineProcessFactory factory, bool keep = true) =>
-        new(new BackendProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode, KeepCliSessions = keep }, () => @"C:\claude.exe",
+        new(new ConnectionProfile { Id = "cc", Name = "Claude", Type = BackendType.ClaudeCode, KeepCliSessions = keep }, () => @"C:\claude.exe",
             factory, new FileLog(Path.Combine(_dir, "h.log")), _ => "SYSTEM", Path.Combine(_dir, "home"));
 
     [Fact]

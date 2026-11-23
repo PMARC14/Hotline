@@ -34,6 +34,25 @@ public sealed class CliSessionTests : TempDirTest
 
     private HistoryStore History() => new(Path.Combine(_dir, "history"), new ManualTimeProvider());
 
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public async Task Connection_id_case_changes_keep_the_cli_session(bool keepTranscript)
+    {
+        var history = History();
+        var original = New(new FakeCli("Claude"), history, keepTranscript);
+        await original.SendAsync("remember this", []);
+        var cli = new FakeCli("claude");
+        var reopened = new ChatController(_ => cli, history, new ManualTimeProvider(), new FileLog(Path.Combine(_dir, "h.log")), _ => keepTranscript);
+        Assert.True(reopened.Resume(original.ConversationId));
+        var destination = reopened.DestinationVersion;
+        reopened.BackendId = "CLAUDE";
+        Assert.Equal(destination, reopened.DestinationVersion);
+        await reopened.SendAsync("continue", []);
+        Assert.Equal("session-0001", Assert.Single(cli.ResumeSeen)?.Id);
+        Assert.Equal(4, history.LoadMeta(original.ConversationId)!.MessageCount);
+    }
+
     private ChatController New(IChatBackend backend, HistoryStore? history, bool keepTranscript = true)
     {
         var c = new ChatController(id => id == backend.Id ? backend : null, history, new ManualTimeProvider(), new FileLog(Path.Combine(_dir, "h.log")),
@@ -46,6 +65,29 @@ public sealed class CliSessionTests : TempDirTest
     private ChatController Two(IChatBackend first, string firstId, IChatBackend second, string secondId, HistoryStore history, Func<string, bool>? keepTranscript = null)
         => new(id => id == firstId ? first : id == secondId ? second : null, history, new ManualTimeProvider(), new FileLog(Path.Combine(_dir, "h.log")),
             keepTranscript) { BackendId = firstId };
+
+    [Fact]
+    public async Task Api_detour_then_reopen_does_not_restore_old_cli_session()
+    {
+        var history = History();
+        var cli = new FakeCli();
+        var api = new FakeBackend(new ChatDelta("api answer"));
+        var c = Two(cli, "cli", api, "fake", history);
+        await c.SendAsync("first", []);
+        c.BackendId = "fake";
+        await c.SendAsync("second", []);
+        var meta = history.LoadMeta(c.ConversationId)!;
+        Assert.Null(meta.SessionId);
+        Assert.Null(meta.WorkingDirectory);
+        Assert.Equal("first", meta.Title);
+        Assert.Equal(4, meta.MessageCount);
+        var reopened = Two(cli, "cli", api, "fake", history);
+        Assert.True(reopened.Resume(c.ConversationId));
+        reopened.BackendId = "cli";
+        await reopened.SendAsync("third", []);
+        Assert.Null(cli.ResumeSeen.Last());
+        Assert.Equal(["first", "ok", "second", "api answer", "third"], cli.Calls.Last().Select(m => m.Text));
+    }
 
     [Fact]
     public async Task The_reported_session_is_resumed_on_the_next_turn_and_recorded()
@@ -144,6 +186,32 @@ public sealed class CliSessionTests : TempDirTest
         c.BackendId = "agy";
         await c.SendAsync("and you?", []);
         Assert.Null(other.ResumeSeen.Single());
+    }
+
+    [Fact]
+    public async Task Reopening_an_api_chat_in_a_cli_replays_once_without_the_previous_session()
+    {
+        var history = History();
+        var api = new FakeBackend(new ChatDelta("api answer"));
+        var saved = New(api, history);
+        await saved.SendAsync("api question", []);
+        var cli = new FakeCli();
+        var chat = Two(cli, "cli", api, "fake", history);
+        await chat.SendAsync("unrelated CLI question", []);
+        var oldSession = chat.CurrentSession;
+
+        Assert.True(chat.Resume(saved.ConversationId));
+        Assert.Null(chat.CurrentSession);
+        Assert.Equal("cli", chat.BackendId);
+        await chat.SendAsync("continue", []);
+        await chat.SendAsync("again", []);
+
+        Assert.Null(cli.ResumeSeen[1]);
+        Assert.NotEqual(oldSession, chat.CurrentSession);
+        Assert.Equal(chat.CurrentSession!.Value.Session, cli.ResumeSeen[2]);
+        Assert.Equal(["api question", "api answer", "continue"], cli.Calls[1].Select(m => m.Text));
+        Assert.Equal(["api question", "api answer", "continue", "ok", "again"], cli.Calls[2].Select(m => m.Text));
+        Assert.Equal(["api question", "api answer", "continue", "ok", "again", "ok"], history.Load(saved.ConversationId).Select(m => m.Text));
     }
 
     [Theory]

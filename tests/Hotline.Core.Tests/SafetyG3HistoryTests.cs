@@ -4,10 +4,8 @@ using Hotline.Core.Diagnostics;
 namespace Hotline.Core.Tests;
 
 /// <summary>History records that are valid JSON but damaged must not break listing or Resume: they are normalised or skipped one by one.</summary>
-public sealed class SafetyG3HistoryTests : IDisposable
+public sealed class SafetyG3HistoryTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private HistoryStore Store() => new(_dir, new ManualTimeProvider());
 

@@ -67,6 +67,19 @@ function Send-Fast([int]$w) { [SmokeWin]::PostMessage([SmokeWin]::Popup([uint32]
 
 $originalSettings = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { $null }
 try {
+    # Enable diagnostics.testLinks (gates hotline://selftest)
+    $json = if (Test-Path $settingsFile) { [IO.File]::ReadAllText($settingsFile) } else { '' }
+    if ($json -match '(?s)"diagnostics"\s*:\s*\{[^}]*?"testLinks"\s*:\s*(true|false)') {
+        $json = [regex]::Replace($json, '(?s)("diagnostics"\s*:\s*\{[^}]*?"testLinks"\s*:\s*)(?:true|false)', '${1}true')
+    } elseif ($json -match '"diagnostics"\s*:\s*\{') {
+        $json = [regex]::Replace($json, '("diagnostics"\s*:\s*\{)', "`$1`r`n    `"testLinks`": true,")
+    } elseif ($json -match '^\s*\{') {
+        $json = [regex]::Replace($json.TrimEnd(), '(?s)\}\s*$', ",`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}")
+    } else {
+        $json = "{`r`n  `"version`": 1,`r`n  `"diagnostics`": {`r`n    `"testLinks`": true`r`n  }`r`n}"
+    }
+    [IO.File]::WriteAllText($settingsFile, $json)
+
     # 1. Launch
     Restart-Hotline
     Check 'launches' ([bool](Get-Process Hotline -ErrorAction SilentlyContinue))
@@ -124,7 +137,12 @@ try {
 
     # 4c. Hand edits to settings.json apply live (no restart)
     $n = Get-LogCount
-    $json = [IO.File]::ReadAllText($settingsFile) -replace '"verticalPosition":\s*[0-9.]+', '"verticalPosition": 0.75'
+    $json = [IO.File]::ReadAllText($settingsFile)
+    $anchorY = [regex]'(?s)("anchor"\s*:\s*\{[^{}]*"y"\s*:\s*)([0-9.]+)'
+    $match = $anchorY.Match($json)
+    if (-not $match.Success) { throw 'settings.json is missing window.anchor.y' }
+    $newY = if ([double]::Parse($match.Groups[2].Value, [Globalization.CultureInfo]::InvariantCulture) -eq 0.75) { '0.25' } else { '0.75' }
+    $json = $anchorY.Replace($json, '${1}' + $newY, 1)
     [IO.File]::WriteAllText($settingsFile, $json)
     for ($i = 0; $i -lt 10 -and -not (Get-NewLog $n | Select-String -Pattern 'settings.json changed on disk'); $i++) { Start-Sleep -Milliseconds 500 }
     Expect-Log 'settings.json edits apply live' $n 'settings.json changed on disk; applied'
@@ -145,11 +163,11 @@ try {
     Expect-Log 'invalid hotkey is reported' $n "fallback hotkey 'Banana' is not valid"
     Check 'runs with invalid hotkey' ([bool](Get-Process Hotline -ErrorAction SilentlyContinue))
 
-    # 7. Corrupt settings: app starts on defaults and keeps the bad file
+    # 7. Corrupt settings: app starts on defaults in memory and never touches the file (loading never writes)
     [IO.File]::WriteAllText($settingsFile, '{ not json')
     Restart-Hotline
     Check 'starts with corrupt settings' ([bool](Get-Process Hotline -ErrorAction SilentlyContinue))
-    Check 'corrupt settings backed up' (Test-Path "$settingsFile.bad")
+    Check 'corrupt settings left as they are' ([IO.File]::ReadAllText($settingsFile) -eq '{ not json')
 
     # 8. Tray quit command exits cleanly
     [SmokeWin]::PostMessage([SmokeWin]::Popup([uint32](Get-Process Hotline).Id), 0x0111, [IntPtr]4, [IntPtr]0) | Out-Null
@@ -161,6 +179,7 @@ try {
 finally {
     Get-Process Hotline -ErrorAction SilentlyContinue | Stop-Process -Force
     if ($null -ne $originalSettings) { [IO.File]::WriteAllText($settingsFile, $originalSettings) }
+    else { Remove-Item $settingsFile -ErrorAction SilentlyContinue }
     Remove-Item "$settingsFile.bad" -ErrorAction SilentlyContinue
     Start-Process 'hotline://tray'   # leave Hotline running in the tray, panel closed
 }

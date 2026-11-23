@@ -1,0 +1,417 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "settings.v1.schema.json",
+  "title": "Hotline settings (v1)",
+  "description": "User configuration in settings.json (unit: JSON object).",
+  "type": "object",
+  "additionalProperties": true,
+  "required": ["version"],
+  "properties": {
+    "version": {
+      "type": "integer",
+      "const": 1,
+      "default": 1,
+      "description": "Settings schema version (unit: integer)."
+    },
+    "general": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "General application preferences (unit: object).",
+      "properties": {
+        "language": {
+          "type": ["string", "null"],
+          "enum": [
+            "system", "en-US", "es", "fr", "de", "it", "pt-BR", "nl", "pl",
+            "uk", "tr", "ja", "ko", "zh-Hans", "zh-Hant", "hi", "id", "vi", null
+          ],
+          "default": "system",
+          "description": "Interface language tag or 'system' to follow Windows (unit: BCP 47 tag)."
+        },
+        "supportReminder": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "User preference for showing the support reminder (unit: boolean)."
+        }
+      }
+    },
+    "activation": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Copilot key and fallback hotkey actions (unit: object).",
+      "properties": {
+        "tap": {
+          "type": ["string", "null"],
+          "enum": ["none", "togglePopup", "showPopup", "newChat", "captureWindow", "regionSelect", "voice", null],
+          "default": "togglePopup",
+          "description": "Action for Copilot key short press (unit: action enum)."
+        },
+        "hold": {
+          "type": ["string", "null"],
+          "enum": ["none", "togglePopup", "showPopup", "newChat", "captureWindow", "regionSelect", "voice", null],
+          "default": "newChat",
+          "description": "Action for Copilot key long press (unit: action enum)."
+        },
+        "fallbackHotkey": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Optional global fallback hotkey combo, e.g. 'Ctrl+Alt+H' (unit: hotkey string)."
+        }
+      }
+    },
+    "window": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Panel size, placement, sound and appearance (unit: object).",
+      "properties": {
+        "width": {
+          "$ref": "#/$defs/panelWidthOrNull",
+          "default": "40%",
+          "description": "Opening panel width in scaled pixels (200-4000) or share of screen work area ('20%'-'90%') (unit: scaled px or percent)."
+        },
+        "chatWidth": {
+          "$ref": "#/$defs/panelWidthOrNull",
+          "default": null,
+          "description": "Panel width when a chat starts, in scaled pixels (200-4000) or percent ('20%'-'90%'); null keeps opening width (unit: scaled px or percent)."
+        },
+        "minWidth": {
+          "type": ["integer", "null"],
+          "minimum": 200,
+          "maximum": 4000,
+          "default": 320,
+          "description": "Minimum clamp for width and chatWidth (unit: scaled px)."
+        },
+        "maxWidth": {
+          "type": ["integer", "null"],
+          "minimum": 200,
+          "maximum": 4000,
+          "default": 800,
+          "description": "Maximum clamp for width and chatWidth (unit: scaled px)."
+        },
+        "minHeight": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 4000,
+          "default": 0,
+          "description": "Minimum panel height; 0 fits the message bar (unit: scaled px)."
+        },
+        "maxHeightPercent": {
+          "type": ["number", "null"],
+          "minimum": 30,
+          "maximum": 95,
+          "default": 60,
+          "description": "Maximum panel height as a share of screen work area (unit: percent)."
+        },
+        "chatHeight": {
+          "type": ["integer", "null"],
+          "minimum": 60,
+          "maximum": 8000,
+          "default": null,
+          "description": "Maximum chat height; null uses maxHeightPercent (unit: scaled px)."
+        },
+        "growMode": {
+          "type": ["string", "null"],
+          "enum": ["grow", "full", null],
+          "default": "grow",
+          "description": "Whether panel fits conversation or jumps to full height when chatting (unit: enum)."
+        },
+        "growDirection": {
+          "type": ["string", "null"],
+          "enum": ["auto", "up", "down", null],
+          "default": "auto",
+          "description": "Direction chat expands from the message bar (unit: enum)."
+        },
+        "anchor": {
+          "type": ["object", "null"],
+          "additionalProperties": true,
+          "default": { "monitor": "active", "x": 0.5, "y": 0.8 },
+          "description": "Default panel placement anchor on screen (unit: anchor object).",
+          "properties": {
+            "monitor": {
+              "type": ["string", "null"],
+              "default": "active",
+              "description": "Monitor target: 'active', 'primary', or device name (unit: monitor identifier)."
+            },
+            "x": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.5,
+              "description": "Horizontal fraction of free work area (unit: fraction 0-1)."
+            },
+            "y": {
+              "type": ["number", "null"],
+              "minimum": 0,
+              "maximum": 1,
+              "default": 0.8,
+              "description": "Vertical fraction of free work area (unit: fraction 0-1)."
+            }
+          }
+        },
+        "openSound": {
+          "type": ["string", "null"],
+          "default": "off",
+          "description": "Sound played on open: 'off', 'windows:<event>', or '.wav' file in sounds\\ (unit: sound identifier)."
+        },
+        "closeSound": {
+          "type": ["string", "null"],
+          "default": "off",
+          "description": "Sound played on close: 'off', 'windows:<event>', or '.wav' file in sounds\\ (unit: sound identifier)."
+        },
+        "hideOnBlur": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Hide panel when another window receives focus (unit: boolean)."
+        },
+        "alwaysOnTop": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Keep panel above other windows (unit: boolean)."
+        },
+        "theme": {
+          "type": ["string", "null"],
+          "enum": ["system", "light", "dark", "highContrast", null],
+          "default": "system",
+          "description": "Panel colour theme (unit: enum)."
+        },
+        "accent": {
+          "type": ["string", "null"],
+          "pattern": "^\\s*([Hh][Oo][Tt][Ll][Ii][Nn][Ee]|[Ww][Ii][Nn][Dd][Oo][Ww][Ss]|#[0-9A-Fa-f]{6})\\s*$",
+          "default": "hotline",
+          "description": "Accent colour: 'hotline', 'windows', or '#RRGGBB' (unit: colour token or hex)."
+        },
+        "fontSize": {
+          "type": ["integer", "null"],
+          "minimum": 10,
+          "maximum": 32,
+          "default": null,
+          "description": "Chat text size; null follows Windows text size (unit: scaled px)."
+        },
+        "fontFamily": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Chat font family; null uses Segoe UI Variable (unit: font family name)."
+        },
+        "scrollbar": {
+          "type": ["string", "null"],
+          "enum": ["auto", "visible", "hidden", null],
+          "default": "auto",
+          "description": "Chat transcript scrollbar visibility (unit: enum)."
+        },
+        "backdrop": {
+          "type": ["string", "null"],
+          "enum": ["acrylic", "acrylicThin", "mica", "solid", null],
+          "default": "acrylicThin",
+          "description": "Window backdrop material (unit: enum)."
+        },
+        "tintOpacity": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.15,
+          "description": "Acrylic tint opacity (unit: fraction 0-1)."
+        },
+        "luminosityOpacity": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.35,
+          "description": "Acrylic luminosity opacity (unit: fraction 0-1)."
+        }
+      }
+    },
+    "diagnostics": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Logging and diagnostic options (unit: object).",
+      "properties": {
+        "verboseLogging": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Write DEBUG lines to hotline.log and show key-status line (unit: boolean)."
+        },
+        "testLinks": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Enable diagnostic protocol links such as hotline://selftest (unit: boolean)."
+        }
+      }
+    },
+    "chat": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "Conversation, history, selection, OCR and memory options (unit: object).",
+      "properties": {
+        "defaultConnection": {
+          "type": ["string", "null"],
+          "default": "",
+          "description": "Default connection id; empty asks on first open (unit: connection id)."
+        },
+        "defaultPrompt": {
+          "type": ["string", "null"],
+          "default": "default",
+          "description": "System prompt name in prompts\\ for connections without one (unit: prompt name)."
+        },
+        "continueIn": {
+          "type": ["array", "null"],
+          "items": { "$ref": "#/$defs/continueTarget" },
+          "default": null,
+          "description": "Shared 'Continue this chat in' targets; null uses Local connection default (unit: target array)."
+        },
+        "order": {
+          "type": ["array", "null"],
+          "items": { "type": "string" },
+          "default": [],
+          "description": "Connection ids in Provider dropdown order (unit: id array)."
+        },
+        "saveHistory": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Save conversations in history\\ (unit: boolean)."
+        },
+        "notifyWhenDone": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Show Windows toast when answer finishes while panel is hidden or unfocused (unit: boolean)."
+        },
+        "notifyShowsText": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Include answer text in completion toast; false shows title only (unit: boolean)."
+        },
+        "historyListSize": {
+          "type": ["integer", "null"],
+          "minimum": 10,
+          "maximum": 5000,
+          "default": 300,
+          "description": "Maximum saved chats read for the history list (unit: count)."
+        },
+        "thinkingIndicator": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Show spinning cursor while streaming has no new text (unit: boolean)."
+        },
+        "thinkingDelayMs": {
+          "type": ["integer", "null"],
+          "minimum": 0,
+          "maximum": 10000,
+          "default": 700,
+          "description": "Delay without streaming text before thinking indicator appears (unit: ms)."
+        },
+        "resumeWhileTyping": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Open history search immediately when typing '/resume ' (unit: boolean)."
+        },
+        "cliTranscripts": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Read earlier messages from CLI history for record-only chats (unit: boolean)."
+        },
+        "historyRetentionDays": {
+          "type": ["integer", "null"],
+          "minimum": 1,
+          "maximum": 3650,
+          "default": 30,
+          "description": "Age after which saved history files are deleted (unit: days)."
+        },
+        "maxImagePixels": {
+          "type": ["integer", "null"],
+          "minimum": 256,
+          "maximum": 8192,
+          "default": 2048,
+          "description": "Maximum longest edge for attached and captured images (unit: px)."
+        },
+        "attachSelection": {
+          "type": ["string", "null"],
+          "enum": ["auto", "off", "clipboard", null],
+          "default": "auto",
+          "description": "Selected text capture mode on panel open (unit: enum)."
+        },
+        "ocr": {
+          "type": ["string", "null"],
+          "enum": ["auto", "always", "off", null],
+          "default": "auto",
+          "description": "Offline Windows OCR mode for screenshots (unit: enum)."
+        },
+        "voiceAutoSend": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Send dictated message automatically on key release (unit: boolean)."
+        },
+        "memory": {
+          "type": ["boolean", "null"],
+          "default": true,
+          "description": "Include memory.md in every chat's system prompt (unit: boolean)."
+        },
+        "memoryTool": {
+          "type": ["string", "null"],
+          "enum": ["ask", "allow", "off", null],
+          "default": "ask",
+          "description": "Whether API models may write to memory.md via remember tool (unit: enum)."
+        }
+      }
+    },
+    "tools": {
+      "type": ["object", "null"],
+      "additionalProperties": true,
+      "description": "MCP tool approval settings (unit: object).",
+      "properties": {
+        "approvals": {
+          "type": ["object", "null"],
+          "additionalProperties": {
+            "type": "string",
+            "enum": ["allow", "ask", "deny"]
+          },
+          "default": {},
+          "description": "Tool approval rules keyed by 'server/tool' or 'server/*' (unit: approval map)."
+        }
+      }
+    }
+  },
+  "$defs": {
+    "panelWidthOrNull": {
+      "oneOf": [
+        { "type": "number", "minimum": 200, "maximum": 4000 },
+        { "type": "string", "pattern": "^((2[0-9]|[3-8][0-9])(\\.[0-9]+)?|90(\\.0+)?)%$" },
+        { "type": "null" }
+      ]
+    },
+    "continueTarget": {
+      "type": "object",
+      "additionalProperties": true,
+      "required": ["kind", "name"],
+      "properties": {
+        "kind": {
+          "type": "string",
+          "enum": ["web", "openWebUi", "app"],
+          "description": "Target launch mechanism (unit: enum)."
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "description": "Display label in Continue this chat in menu (unit: string)."
+        },
+        "url": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "URL template for web or base URL for openWebUi (unit: URL)."
+        },
+        "command": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Executable and arguments for app target (unit: command string)."
+        },
+        "model": {
+          "type": ["string", "null"],
+          "default": null,
+          "description": "Optional model override for openWebUi (unit: model id)."
+        },
+        "copyChat": {
+          "type": ["boolean", "null"],
+          "default": false,
+          "description": "Copy chat Markdown to clipboard before launching (unit: boolean)."
+        }
+      }
+    }
+  }
+}

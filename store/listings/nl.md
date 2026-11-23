@@ -5,86 +5,88 @@ Center › the submission › Store listings › Nederlands. Product name stays 
 
 ## Korte beschrijving
 
-Maak van de Copilot-toets een snelle AI-chat met de AI die jij kiest: je Claude- of Gemini-aanmelding, je eigen
-API-sleutel of een model op je eigen pc. Druk op de toets, stel je vraag en zie het antwoord verschijnen.
+Je zit opgescheept met de Copilot-toets, dus gebruik hem: een snel, native AI-chatpaneel voor de AI die je al hebt (Claude, Codex, Gemini), je eigen API-sleutel of een lokaal model. Geen account bij ons. Deel de balk in en zet de chat voort in een andere app.
 
 ## Beschrijving
 
-Die Copilot-toets zit er nu eenmaal, dus gebruik hem ook. Hotline AI maakt er een snel, native AI-chatpaneel van dat
-praat met de AI die jij kiest.
+Je zit opgescheept met de Copilot-toets, dus je kunt hem maar beter gebruiken. Hotline AI verandert hem in een snel, native AI-chatpaneel dat praat met de AI die jij kiest.
 
-Druk op de toets en er opent een paneel op het scherm waarop je werkt, klaar om te typen. Stel een vraag, zie het
-antwoord live verschijnen, druk nogmaals op de toets en het is weg. Geen browsertabblad, geen account bij ons.
+Druk op de toets en er opent een paneel op het scherm waarop je werkt, klaar om te typen. Stel een vraag, krijg een live gestreamd antwoord, druk nog eens op de toets en het is weer weg. Geen browsertabblad, geen account bij ons.
 
 GEBRUIK DE AI DIE JE AL HEBT
-• Claude Code: gebruikt je geïnstalleerde Claude Code en de aanmelding daarvan, dus je Claude-abonnement werkt zonder API-sleutel.
-• OpenAI Codex CLI: gebruikt je geïnstalleerde Codex en de aanmelding daarvan, dus je ChatGPT-abonnement werkt zonder API-sleutel.
+• Claude Code: gebruikt je geïnstalleerde Claude Code en je aanmelding, zodat je Claude-abonnement werkt zonder API-sleutel.
+• OpenAI Codex CLI: gebruikt je geïnstalleerde Codex en je aanmelding, zodat je ChatGPT-abonnement werkt zonder API-sleutel.
 • Antigravity CLI (agy): Gemini met je Google-aanmelding.
 • Je eigen API-sleutel: Anthropic, Google Gemini, OpenAI en andere OpenAI-compatibele diensten zoals OpenRouter.
-• Lokale modellen: elke server in OpenAI-stijl op je pc (bijvoorbeeld llama.cpp of LM Studio), zodat niets je computer verlaat.
-Kies het model, de provider en hoeveel er nagedacht moet worden, direct vanuit de balk van het paneel.
+• Lokale modellen: elke server in OpenAI-stijl op je pc (zoals llama.cpp of LM Studio), zodat er niets van je computer weggaat.
+Kies het model, de provider en hoe hard er moet worden nagedacht rechtstreeks vanaf de balk van het paneel.
 
-NEEM JE CONTEXT MEE
-• Tekst die je in een andere app had geselecteerd, wordt automatisch bijgevoegd als je op de toets drukt; je kunt hem vóór het verzenden weghalen.
-• Leg het venster vast waarin je zat, het hele scherm of een gebied dat je uitsleept; plak of sleep afbeeldingen en bestanden.
-• Modellen die geen afbeeldingen kunnen zien, krijgen in plaats daarvan de tekst uit je schermafbeelding, op je pc gelezen met de OCR van Windows.
+NEEM CONTEXT MET JE MEE
+• Tekst die je in een andere app had geselecteerd, wordt automatisch toegevoegd zodra je op de toets drukt, en je kunt het vóór verzending weer verwijderen.
+• Leg het venster vast waarin je zat, het hele scherm of een getrokken selectie; plak of versleep afbeeldingen en bestanden.
+• Modellen die geen afbeeldingen kunnen zien, krijgen in plaats daarvan de tekst in je schermafbeelding, op je pc gelezen met de ingebouwde OCR van Windows.
 
 GEMAAKT VOOR SNELLE KLUSSEN
-• Snelle acties: typ / om te vertalen, samen te vatten, te verbeteren of uit te leggen, of maak je eigen acties als gewone tekstbestanden.
-• Geheugen: "/remember ik gebruik liever metrische eenheden" en elke chat weet het, welke AI je ook gebruikt.
+• Snelle acties: typ / voor vertalen, samenvatten, verbeteren of uitleggen, of schrijf je eigen acties als eenvoudige tekstbestanden.
+• Geheugen: "/remember ik gebruik liever het metriek stelsel" en elke chat weet het, welke AI je ook gebruikt.
 • Spraak: houd de toets ingedrukt en praat; laat los om te stoppen.
-• Recente chats zijn één klik verwijderd.
+• Recente chats zijn één klik verwijderd, in een doorzoekbare lijst (Ctrl+H).
 • Click to Do en Windows-acties: stuur tekst of een afbeelding vanuit andere apps naar Hotline AI.
+• Doorgaan in: zet de chat voort in een terminal, Open WebUI, de llama.cpp-web-UI, LM Studio of je eigen doel als je meer ruimte nodig hebt.
+• Sneltoetsen voor de knoppen in de balk terwijl het paneel de focus heeft: nieuwe chat, recente chats, Instellingen, vastzetten, opnames en de kiezers. Je eigen knoppen kunnen er ook een hebben. Ze vereisen Ctrl, Alt of Win, zodat typen nooit wordt verstoord.
+• Een Windows-melding laat je weten wanneer een antwoord klaar is terwijl je ergens anders bezig bent.
 
 NATIVE, LICHT EN VAN JOU
-• Gebouwd met WinUI 3: opent snel, volgt je lichte of donkere thema, zonder ingebouwde browser.
-• Rijke antwoorden: koppen, lijsten, tabellen, code met een knop Kopiëren, formules en eenvoudige tekeningen.
-• Alles is een bestand dat je kunt bewerken: instellingen, verbindingen, prompts en de knoppen in de balk.
-• Hulpmiddelen, met beleid: API-verbindingen kunnen hulpmiddelen van je MCP-servers gebruiken; alles wat iets wijzigt, vraagt het je eerst.
+• Gebouwd met WinUI 3: opent snel, volgt je lichte of donkere thema, geen ingebouwde browser. Native op x64 en ARM64.
+• Rijke antwoorden: koppen, lijsten, tabellen, code met een Kopieer-knop, wiskunde en eenvoudige tekeningen.
+• Houd Alt ingedrukt om het paneel te verplaatsen of van formaat te veranderen; zet het vast en kies of de chat naar boven of beneden groeit.
+• Alles is een eenvoudig bestand dat je kunt bewerken: instellingen, verbindingen, prompts, de knoppen in de balk.
+• Deel de balk naar eigen wens in: sleep knoppen tussen rijen in Instellingen, voeg je eigen knoppen toe met je eigen afbeeldingen en bewaar minder gebruikte knoppen in een menu Meer.
+• Instellingen > Back-up verplaatst je configuratie naar een andere pc. API-sleutels worden nooit geëxporteerd en van een bestand dat Hotline vervangt, wordt eerst een back-up gemaakt.
+• Hulpmiddelen, zorgvuldig: API-verbindingen kunnen hulpmiddelen van je MCP-servers gebruiken; alles wat iets wijzigt, vraagt je eerst om toestemming.
+• De Copilot-toets kan ook werken als een rechter Ctrl-toets, als je dat liever hebt.
 
-PRIVACY VOOROP
-Hotline AI heeft geen server en verzamelt niets: geen account, geen analyses, geen advertenties. Je berichten gaan
-alleen naar de AI-dienst die jij kiest, onder de voorwaarden van die dienst. API-sleutels blijven in Windows
-Referentiebeheer; geschiedenis, instellingen en geheugen blijven op je pc. Gratis en open source.
+PRIVÉ VAN OPZET
+Hotline AI heeft geen server en verzamelt niets: geen account, geen analyses, geen advertenties. Je berichten gaan alleen naar de AI-dienst die jij kiest, onder de voorwaarden van die dienst. API-sleutels blijven in Windows Credential Locker; geschiedenis, instellingen en geheugen blijven op je pc. Gratis en open source.
 
-Geen Copilot-toets? Stel een sneltoets naar keuze in, bijvoorbeeld Ctrl+Alt+H.
+Geen Copilot-toets? Stel elke gewenste sneltoets in, bijvoorbeeld Ctrl+Alt+H.
 
-Hotline AI is een onafhankelijke app en is niet verbonden aan of goedgekeurd door Microsoft, Anthropic, Google of
-OpenAI. Voor Claude Code, Codex, de Antigravity CLI of een AI-API heb je een eigen account bij die dienst nodig.
+Hotline AI is een onafhankelijke app en is niet gelieerd aan of goedgekeurd door Microsoft, Anthropic, Google of OpenAI. Voor het gebruik van Claude Code, Codex, de Antigravity CLI of een AI-API is een eigen account bij die dienst vereist.
 
 ## Nieuw in deze versie
 
-Kies je accentkleur (Hotline-paars, je Windows-accentkleur of elke kleur) en het nieuwe thema Hoog contrast; Hotline volgt ook de contrastthema's en transparantie-instelling van Windows. Je chatgeschiedenis opent als doorzoekbare lijst (geschiedenisknop, Ctrl+↑ of /resume). Stel de extra sneltoets in door hem gewoon in te drukken. Nieuwe snelle acties: /reply, /shorter, /formal en /bullets. Codeblokken scrollen zijwaarts en het paneel volgt antwoorden terwijl ze binnenkomen.
+Verplaats het paneel en pas het formaat aan: houd Alt ingedrukt voor grepen, zet het vast en sla positie en formaat op. De chat groeit omhoog of omlaag en kan breder openen. Deel knoppenrijen in via Instellingen: sleep knoppen tussen links, midden en rechts, voeg eigen knoppen met afbeeldingen toe en gebruik het menu Meer. Knoppen verdelen zich nu gelijkmatig over de balk. Elke balkopdracht heeft een aanpasbare sneltoets, Stoppen inbegrepen. Zet een chat voort in een terminal, Open WebUI, llama.cpp, LM Studio of eigen doelen. Instellingen > Back-up exporteert en importeert je setup zonder API-sleutels. Breedte is in pixels of schermpercentage en oogt gelijk bij elke Windows-schaling. MCP-hulpmiddelen: 'Altijd toestaan' wordt op deze pc onthouden en is in te trekken via Instellingen > Hulpmiddelen; servergeheimen kunnen naar Windows Credential Locker. Ook nieuw: denkindicator, open- en sluitgeluiden, /resume tijdens het typen en heropende CLI-chats tonen hun berichten. Veiligere bestanden: nieuwere bestanden worden nooit overschreven, onbekende sleutels blijven behouden en vervangen bestanden komen in één back-upmap. Ik heb Copilot-toetsfocus op Windows 11 26H2, vensteropname via de toets, monitor- en schalingswijzigingen en veel toegankelijkheids- en veiligheidsproblemen opgelost. Deze update reset instellingen en knoppenrijen eenmalig naar het nieuwe bestandsformaat; je verbindingen blijven behouden en oude bestanden staan in de map backups.
 
 ## Productkenmerken
 
 1. Opent met de Copilot-toets (of een eigen sneltoets) op het scherm waarop je werkt, klaar om te typen
 2. Werkt met je aanmelding voor Claude Code, ChatGPT (Codex CLI) of Gemini (Antigravity CLI): geen API-sleutel nodig
 3. Eigen sleutel: Anthropic, Google Gemini, OpenAI en OpenAI-compatibele API's
-4. Lokale modellen: elke server in OpenAI-stijl op je pc, niets verlaat je computer
-5. Kies model, provider en denkinspanning in het paneel
-6. Geselecteerde tekst uit de vorige app wordt automatisch bijgevoegd
+4. Lokale modellen: elke server in OpenAI-stijl op je pc, zodat de chat op je computer blijft
+5. Kies het model, de provider en de denkinspanning direct in het paneel
+6. Geselecteerde tekst uit de app waar je vandaan kwam, wordt automatisch bijgevoegd
 7. Leg een venster, het scherm of een gebied vast; plak of sleep afbeeldingen en bestanden
 8. Tekst in schermafbeeldingen wordt op je pc gelezen (OCR) voor modellen die geen afbeeldingen zien
-9. Snelle acties: /translate, /summarize, /fix, /explain of je eigen
+9. Snelle acties: /translate, /summarize, /fix, /explain en meer, of je eigen tekstbestanden
 10. Een geheugen dat elke chat ziet, welke AI je ook gebruikt
-11. Spraakinvoer door de toets ingedrukt te houden
-12. Stuur tekst of afbeeldingen vanuit Click to Do en andere apps
-13. Rijke antwoorden: tabellen, code met Kopiëren, formules en tekeningen
-14. Native WinUI 3, volgt je lichte of donkere thema
-15. Alles is een bewerkbaar bestand: instellingen, verbindingen, prompts, de balk
-16. Optionele hulpmiddelen van je MCP-servers, met goedkeuring vóór elke wijziging
-17. Geen account, geen analyses, geen advertenties; sleutels blijven in Windows Referentiebeheer
-18. Gratis en open source
-19. Native op x64- en ARM64-pc's
+11. Spraakinvoer via push-to-talk met behulp van de online spraakherkenning van Windows
+12. Stuur tekst of afbeeldingen vanuit Click to Do en andere apps; zet chats voort in een terminal, Open WebUI, llama.cpp of LM Studio
+13. Rijke antwoorden: tabellen, code met knop Kopiëren, formules en tekeningen
+14. Native WinUI 3 op x64 en ARM64; lichte, donkere en contrastthema's, je eigen accentkleur, geen ingebouwde browser
+15. Sleep knoppenrijen in Instellingen; eigen knoppen met eigen afbeeldingen, een menu Meer en aparte breedtes voor kiezers
+16. Optionele MCP-hulpmiddelen voor API-verbindingen; wijzigingen vragen eerst bevestiging tenzij vooraf toegestaan
+17. Geen Hotline-account, analyses of advertenties; sleutels blijven in Windows Referentiebeheer; gratis en open source
+18. Bewerkbare instellingen, verbindingen, prompts en toolbar.json; ongeldige waarden waarschuwen en vallen terug, back-ups beschermen bewerkingen
+19. Instellingen > Back-up exporteert en importeert instellingen, balk, MCP, geluiden, verbindingen, acties en prompts; nooit API-sleutels
+20. Sneltoetsen in het paneel voor balkknoppen en eigen knoppen; verplaats, pin en schaal het paneel met pixelbreedtes en een bredere chatoptie
 
 ## Bijschriften bij schermafbeeldingen
 
-1. Druk op de Copilot-toets: vraag wat je wilt, het antwoord verschijnt live.
+1. Druk op de Copilot-toets: vraag wat je wilt, antwoorden verschijnen live.
 2. Geselecteerde tekst gaat mee met je vraag.
 3. Snelle acties met /: vertalen, samenvatten, verbeteren, uitleggen.
 4. Gebruik de AI die je al hebt en stel alles in zoals jij wilt.
 
 ## Zoektermen
 
-AI-chat, Copilot-toets, Claude, Gemini, AI-assistent, LLM, lokale AI
+AI-chatassistent, Copilot-toets sneltoets, Claude Code integratie, Codex Gemini CLI, Anthropic OpenAI API-sleutel, OpenRouter compatibel, Lokaal LLM llama.cpp

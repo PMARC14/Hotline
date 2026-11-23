@@ -1,0 +1,8 @@
+{
+  // MCP servers Hotline can give to API connections (Tool use: "Use Hotline's tools").
+  // Same format as other MCP apps, e.g.:
+  //   "files": { "command": "npx", "args": ["-y", "@modelcontextprotocol/server-filesystem", "C:\\Users\\you\\Documents"] }
+  // Store secrets in Windows Credential Locker and reference them as "${hotline:secret:<name>}" in "env".
+  "version": 1,
+  "mcpServers": {}
+}

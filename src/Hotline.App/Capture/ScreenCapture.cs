@@ -15,7 +15,8 @@ internal static class ScreenCapture
     public static bool TryGetWindowRect(nint hwnd, out RectI rect)
     {
         rect = default;
-        if (hwnd == 0 || !Native.IsWindow(hwnd) || Native.IsIconic(hwnd)) return false;
+        if (hwnd == 0 || !Native.IsWindow(hwnd) || !Native.IsWindowVisible(hwnd) || Native.IsIconic(hwnd)) return false;
+        if (Native.DwmGetWindowAttributeInt(hwnd, Native.DWMWA_CLOAKED, out var cloaked, sizeof(int)) == 0 && cloaked != 0) return false;
         if (Native.DwmGetWindowAttribute(hwnd, Native.DWMWA_EXTENDED_FRAME_BOUNDS, out var r, Marshal.SizeOf<Native.RECT>()) != 0) return false;
         rect = new RectI(r.Left, r.Top, r.Right - r.Left, r.Bottom - r.Top);
         return rect.Width > 0 && rect.Height > 0;
@@ -23,7 +24,7 @@ internal static class ScreenCapture
 
     public static RectI MonitorRect(nint hwnd)
     {
-        var area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(hwnd), DisplayAreaFallback.Nearest) ?? DisplayArea.Primary;
+        var area = (hwnd != 0 ? DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(hwnd), DisplayAreaFallback.Nearest) : null) ?? DisplayArea.Primary;
         var b = area.OuterBounds;
         return new RectI(b.X, b.Y, b.Width, b.Height);
     }

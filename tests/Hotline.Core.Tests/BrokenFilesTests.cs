@@ -4,11 +4,9 @@ using Hotline.Core.Tools;
 namespace Hotline.Core.Tests;
 
 /// <summary>mcp.json, prompts/ and actions/: one bad value or file skips only that item, never the whole list.</summary>
-public sealed class BrokenFilesTests : IDisposable
+public sealed class BrokenFilesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
     public BrokenFilesTests() => Directory.CreateDirectory(_dir);
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public void An_mcp_server_with_odd_value_kinds_still_loads_and_the_others_are_untouched()
@@ -16,7 +14,7 @@ public sealed class BrokenFilesTests : IDisposable
         var config = McpConfig.Parse("""
             {
               "mcpServers": {
-                "good": { "command": "npx", "args": ["-y", 5, null, { "a": 1 }], "env": { "N": 5, "T": true, "Z": null }, "disabled": "true", "cwd": 7, "displayName": ["x"] },
+                "good": { "command": "npx", "args": ["-y", 5, null, { "a": 1 }], "env": { "OK": "yes", "N": 5, "T": true, "Z": null }, "disabled": "true", "cwd": 7, "displayName": ["x"] },
                 "noCommand": { "args": [] },
                 "numberCommand": { "command": 5 },
                 "notAnObject": 5,
@@ -32,22 +30,21 @@ public sealed class BrokenFilesTests : IDisposable
         Assert.Null(good.WorkingDirectory);
         Assert.Null(good.DisplayName);
         Assert.Equal(4, good.Args.Count);
-        Assert.Equal("5", good.Env["N"]);
-        Assert.Equal(ToolApproval.Allow, config.Approvals["a/b"]);
-        Assert.Equal(ToolApproval.Deny, config.Approvals["c/d"]); // unknown words deny
-        Assert.Equal(3, config.Warnings.Count);
+        Assert.Equal(["OK"], good.Env.Keys);
+        Assert.Equal("yes", good.Env["OK"]);
+        Assert.Equal(4, config.Warnings.Count); // 3 non-string env entries + 1 ignored approvals key
     }
 
     [Theory]
-    [InlineData("""{ "mcpServers": [], "approvals": [] }""")]
-    [InlineData("""{ "mcpServers": "x", "approvals": 5 }""")]
-    [InlineData("""{ "mcpServers": null, "approvals": null }""")]
-    [InlineData("{}")]
-    public void Wrong_kinds_for_the_two_sections_give_an_empty_but_valid_config(string json)
+    [InlineData("""{ "mcpServers": [] }""", 0)]
+    [InlineData("""{ "mcpServers": "x", "approvals": {} }""", 1)]
+    [InlineData("""{ "mcpServers": null }""", 0)]
+    [InlineData("{}", 0)]
+    public void Wrong_server_kinds_give_an_empty_valid_config_and_warn_on_approvals(string json, int expectedWarnings)
     {
         var config = McpConfig.Parse(json);
         Assert.Empty(config.Servers);
-        Assert.Empty(config.Approvals);
+        Assert.Equal(expectedWarnings, config.Warnings.Count);
         Assert.Null(config.Error);
     }
 

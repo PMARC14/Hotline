@@ -22,9 +22,9 @@ public static class ToolbarProfiles
     private static string Group(string left = "", string center = "", string right = "") =>
         $"{{ \"left\": [{left}], \"center\": [{center}], \"right\": [{right}] }}";
 
-    private static string Doc(string description, string bottom, string top = "", string style = "{}", string overrides = "{}", string buttons = "{}", string menu = "") =>
-        $"// {description}\n{{ \"version\": 2,\n  \"top\": {(top.Length > 0 ? top : Group())},\n  \"items\": {bottom},\n  \"style\": {style},\n"
-        + $"  \"menu\": [{menu}],\n  \"overrides\": {overrides},\n  \"buttons\": {buttons} }}";
+    private static string Doc(string description, string bottom, string top = "", string style = "{}", string overrides = "{}", string buttons = "{}", string menu = "", string shortcuts = "{}") =>
+        $"// {description}\n{{ \"version\": 3,\n  \"top\": {(top.Length > 0 ? top : Group())},\n  \"bottom\": {bottom},\n  \"style\": {style},\n"
+        + $"  \"shortcuts\": {shortcuts},\n  \"menu\": [{menu}],\n  \"overrides\": {overrides},\n  \"buttons\": {buttons} }}";
 
     /// <summary>The ids c1..cN, as list text and as button definitions.</summary>
     private static string CustomIds(int count) => string.Join(", ", Enumerable.Range(1, count).Select(i => $"\"c{i}\""));
@@ -34,10 +34,12 @@ public static class ToolbarProfiles
 
     private static IReadOnlyList<ToolbarProfile> Build() =>
     [
-        new("default", Doc("The shipped layout (the owner's): effort, model and provider across the top row; capture, prompt and chat buttons below.",
-            Group("\"pin\", \"captureWindow\", \"captureScreen\", \"captureRegion\"", "\"prompt\", \"continueIn\"", "\"recent\", \"newChat\", \"settings\""),
-            top: Group("\"effort\"", "\"model\"", "\"provider\""),
-            overrides: "{ \"recent\": { \"width\": \"wide\" }, \"newChat\": { \"width\": \"wide\" }, \"settings\": { \"width\": \"wide\" }, \"provider\": { \"span\": 5 } }")),
+        new("shortcuts", Doc("Built-in and picker overrides, a disabled shortcut, and a custom binding; version 3.",
+            Group("\"pin\", \"mine\"", right: "\"recent\", \"newChat\", \"settings\""), top: Group(Pickers),
+            shortcuts: """{"pin":"Ctrl+Q","model":"F6","recent":""}""",
+            buttons: """{"mine":{"label":"Mine","text":"hello","shortcut":"Ctrl+Shift+1"}}""")),
+
+        new("default", ToolbarModel.Defaults.ToJson()),
 
         new("nine-buttons-pickers-top", Doc("The layout up to 0.4: the pickers in the top row, the nine buttons bottom left.",
             Group(Buttons), top: Group(Pickers))),
@@ -95,14 +97,14 @@ public static class ToolbarProfiles
             overrides: "{ \"effort\": { \"span\": 1 }, \"model\": { \"span\": 4 }, \"provider\": { \"span\": 8 } }")),
 
         new("all-compact", Doc("Every button half a cell wide (compact), one cell high; the pickers keep their size, bottom left after the buttons.",
-            Group($"{Buttons}, {Pickers}"), style: "{ \"width\": \"compact\" }")),
+            Group($"{Buttons}, {Pickers}"), style: "{ \"width\": 0.5 }")),
 
         new("all-wide", Doc("Every button two cells wide (wide), one cell high; the pickers keep their size, in the top row.",
-            Group(Buttons), top: Group(Pickers), style: "{ \"width\": \"wide\" }")),
+            Group(Buttons), top: Group(Pickers), style: "{ \"width\": 2 }")),
 
         new("mixed-button-sizes", Doc("A different width on several buttons (all one cell high), pickers bottom left after them.",
             Group($"{Buttons}, {Pickers}"),
-            overrides: "{ \"pin\": { \"width\": \"compact\" }, \"captureWindow\": { \"width\": \"wide\" }, \"captureScreen\": { \"width\": 4 }, "
+            overrides: "{ \"pin\": { \"width\": 0.5 }, \"captureWindow\": { \"width\": 2 }, \"captureScreen\": { \"width\": 4 }, "
                        + "\"prompt\": { \"width\": 2, \"outline\": true }, \"settings\": { \"width\": 0.5 }, \"recent\": { \"width\": 3 } }")),
 
         new("custom-24-pickers-bottom", Doc("Twenty-four custom buttons and the pickers in the bottom row: pickers in the middle of the left group.",
@@ -111,7 +113,7 @@ public static class ToolbarProfiles
 
         new("custom-24-wide-pickers-bottom-centre", Doc("Twenty-four custom buttons, each two cells wide (wide), around the pickers in the bottom-centre group.",
             Group(CustomIds(8), Pickers, string.Join(", ", Enumerable.Range(9, 16).Select(i => $"\"c{i}\"")) + ", \"settings\""),
-            style: "{ \"width\": \"wide\" }", buttons: CustomButtons(24))),
+            style: "{ \"width\": 2 }", buttons: CustomButtons(24))),
 
         new("only-pickers", Doc("Nothing but the three pickers, bottom left.",
             Group(Pickers))),
@@ -149,13 +151,13 @@ public static class ToolbarProfiles
 
         new("filled-outlined-bar", Doc("Every button and picker outlined in blue and filled, mixed widths, the pickers bottom left after the buttons.",
             Group($"{Buttons}, {Pickers}"), style: "{ \"outline\": true, \"filled\": true, \"outlineColor\": \"#0078D4\" }",
-            overrides: "{ \"pin\": { \"width\": \"compact\" }, \"prompt\": { \"width\": 3 }, \"provider\": { \"span\": 2, \"filled\": false } }")),
+            overrides: "{ \"pin\": { \"width\": 0.5 }, \"prompt\": { \"width\": 3 }, \"provider\": { \"span\": 2, \"filled\": false } }")),
 
         new("damaged-file",
             """
             // A damaged file that still renders: wrong types, repeated keys, unknown ids, bad widths and spans.
-            { "version": 2,
-              "items": { "left": ["pin", 5, null, "bogus", "pin", "model", ["x"]], "left": ["settings", "effort", "NEWCHAT", "provider", "ok"], "right": "settings" },
+            { "version": 3,
+              "bottom": { "left": ["pin", 5, null, "bogus", "pin", "model", ["x"]], "left": ["settings", "effort", "NEWCHAT", "provider", "ok"], "right": "settings" },
               "top": [ "pin" ],
               "style": { "width": "huge", "size": "wide", "outline": "yes", "cells": 1.3, "outlineColor": "red" },
               "overrides": { "model": { "span": 99, "outline": true, "width": 2 }, "effort": { "span": "2" }, "nobody": 3, "pin": { "height": 5000, "width": 80, "cells": "wide" }, "provider": { "span": 6 } },

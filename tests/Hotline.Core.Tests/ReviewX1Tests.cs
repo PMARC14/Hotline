@@ -12,10 +12,8 @@ using Hotline.Core.Theming;
 namespace Hotline.Core.Tests;
 
 /// <summary>Fixes from the full-codebase review of the core infrastructure and the CLI backends (Activation, Platform, Diagnostics, Processes, Theming, Backends root, Agy).</summary>
-public sealed class ReviewX1Tests : IDisposable
+public sealed class ReviewX1Tests : TempDirTest
 {
-    private readonly string _dir = System.IO.Path.Combine(System.IO.Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { try { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); } catch (IOException) { } }
 
     // ---- Platform ----
 
@@ -67,6 +65,18 @@ public sealed class ReviewX1Tests : IDisposable
         var plan = ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri("hotline://settings?state=tap"), false));
         Assert.Null(plan.Key);
         Assert.True(plan.OpenSettings);
+    }
+
+    [Theory]
+    [InlineData("hotline://settings?page=Connections", "Connections")]
+    [InlineData("hotline://settings?state=tap&page=Backup", "Backup")]
+    [InlineData("hotline://settings?page=", null)]
+    [InlineData("hotline://settings", null)]
+    public void A_settings_link_can_name_the_page_to_open(string uri, string? page)
+    {
+        var plan = ActivationPlanner.Plan(new ActivationRequest(ActivationKind.Protocol, new Uri(uri), false));
+        Assert.True(plan.OpenSettings);
+        Assert.Equal(page, plan.SettingsPage);
     }
 
     [Fact]
@@ -161,7 +171,7 @@ public sealed class ReviewX1Tests : IDisposable
     [Fact]
     public void A_connection_of_an_undefined_type_has_info_instead_of_throwing()
     {
-        var p = new BackendProfile { Id = "x", Type = (BackendType)99, Name = "x" };
+        var p = new ConnectionProfile { Id = "x", Type = (BackendType)99, Name = "x" };
         Assert.NotNull(ConnectionTypes.Of(p.Type));
         _ = ConnectionTypes.TakesImages(p);
     }

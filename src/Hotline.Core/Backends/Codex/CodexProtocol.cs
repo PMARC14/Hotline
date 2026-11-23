@@ -17,7 +17,7 @@ public static class CodexProtocol
 
     /// <param name="resumeThread">Thread id to continue (only when the user keeps Codex sessions), else a new session.</param>
     /// <param name="imagePaths">Image files to attach (codex takes paths, not data).</param>
-    public static IReadOnlyList<string> BuildArgs(BackendProfile p, string systemPrompt, string? resumeThread, IReadOnlyList<string> imagePaths)
+    public static IReadOnlyList<string> BuildArgs(ConnectionProfile p, string systemPrompt, string? resumeThread, IReadOnlyList<string> imagePaths)
     {
         var args = new List<string> { "exec", "--json", "--skip-git-repo-check", "--color", "never" };
         if (!p.KeepCliSessions) args.Add("--ephemeral"); // Hotline keeps its own history
@@ -30,7 +30,7 @@ public static class CodexProtocol
         if (p.Effort?.Trim().ToLowerInvariant() is { } effort && EffortLevels.Contains(effort))
             args.AddRange(["-c", $"model_reasoning_effort={Toml(effort)}"]);
         if (!string.IsNullOrWhiteSpace(systemPrompt)) args.AddRange(["-c", $"developer_instructions={Toml(systemPrompt.Trim())}"]);
-        if (!string.IsNullOrWhiteSpace(p.ExtraArgs)) AddSafe(args, p.ExtraArgs.Split(' ', StringSplitOptions.RemoveEmptyEntries), chatOnly: !inherit);
+        if (p.ExtraArgs is { Count: > 0 }) AddSafe(args, p.ExtraArgs, chatOnly: !inherit);
         // Chat only: never the user's config.toml (MCP servers, profiles) or rules, whatever "args" say. Before "resume",
         // whose own options these aren't.
         if (!inherit) args.AddRange(["--ignore-user-config", "--ignore-rules"]);
@@ -120,7 +120,8 @@ public static class CodexLocator
         if (!string.IsNullOrWhiteSpace(configuredPath))
         {
             var expanded = Environment.ExpandEnvironmentVariables(configuredPath);
-            return exists(expanded) ? expanded : null;
+            // Checked before any File.Exists: a share path would make Windows connect to it (and send the user's hash).
+            return !Platform.SafeDirectory.IsShareOrDevice(expanded) && exists(expanded) ? expanded : null;
         }
         var dirs = (pathEnv ?? "").Split(';', StringSplitOptions.RemoveEmptyEntries).Select(d => d.Trim()).ToList();
         foreach (var dir in dirs)

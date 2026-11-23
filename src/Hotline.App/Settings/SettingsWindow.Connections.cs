@@ -3,6 +3,7 @@ using Hotline.Core.Backends;
 using Hotline.Core.Chat;
 using Hotline.Core.Settings;
 using Microsoft.UI.Xaml;
+using Microsoft.UI.Xaml.Automation;
 using Microsoft.UI.Xaml.Controls;
 using Windows.Storage.Pickers;
 
@@ -18,6 +19,7 @@ public sealed partial class SettingsWindow
     {
         if (_dialogOpen) return ContentDialogResult.None;
         _dialogOpen = true;
+        dialog.XamlRoot ??= Root.XamlRoot; // WinUI throws on ShowAsync without one
         try { return await dialog.ShowAsync(); }
         finally { _dialogOpen = false; }
     }
@@ -26,8 +28,8 @@ public sealed partial class SettingsWindow
     {
         var chat = _settings.Current.Chat;
         // The default, or the first connection when none is chosen yet (first run): Duplicate/Remove need a real one.
-        if (chat.Backends.All(b => b.Id != _selectedConnection))
-            _selectedConnection = chat.Backends.Any(b => b.Id == chat.DefaultBackend) ? chat.DefaultBackend : chat.Backends.FirstOrDefault()?.Id;
+        if (chat.Connections.All(b => !string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)))
+            _selectedConnection = chat.Connections.FirstOrDefault(b => string.Equals(b.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase))?.Id ?? chat.Connections.FirstOrDefault()?.Id;
         var any = _selectedConnection is not null; // every connection can be removed; then there's nothing to act on
 
         var add = new DropDownButton { Content = Strings.Conn_Add };
@@ -66,11 +68,11 @@ public sealed partial class SettingsWindow
             try
             {
                 // The list can have changed under this page (an external reload): a connection that vanished is simply not removed.
-                if (chat.Backends.FirstOrDefault(b => b.Id == id) is not { } target) return;
+                if (chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is not { } target) return;
                 var dialog = new ContentDialog
                 {
                     XamlRoot = Root.XamlRoot, Title = Strings.Conn_RemoveTitle,
-                    Content = chat.Backends.Count == 1 // the last one: say what that means before it goes
+                    Content = chat.Connections.Count == 1 // the last one: say what that means before it goes
                         ? new TextBlock { Text = L.F(Strings.Conn_RemoveLast, target.Name), TextWrapping = TextWrapping.Wrap }
                         : target.Name,
                     PrimaryButtonText = Strings.Common_Remove, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
@@ -89,16 +91,21 @@ public sealed partial class SettingsWindow
             }
             catch (Exception ex) { Fail("removing a connection failed", ex); }
         };
-        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && _selectedConnection != chat.DefaultBackend };
+        var makeDefault = new Button { Content = Strings.Conn_UseByDefault, IsEnabled = any && !string.Equals(_selectedConnection, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase) };
         makeDefault.Click += (_, _) =>
         {
             try { _settings.Update(s => ConnectionEditor.SetDefault(s.Chat, _selectedConnection!)); ShowPage("Connections"); }
             catch (Exception ex) { Fail("choosing the default connection failed", ex); }
         };
+        Action? updateOrderNames = null;
         Button MoveButton(string glyph, string tip, int delta)
         {
             var b = new Button { Content = new FontIcon { Glyph = glyph, FontSize = 14 }, IsEnabled = any };
             ToolTipService.SetToolTip(b, tip);
+            void UpdateName() => AutomationProperties.SetName(b, L.F(delta < 0 ? Strings.Conn_MoveNamedUp : Strings.Conn_MoveNamedDown,
+                chat.Connections.FirstOrDefault(p => string.Equals(p.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase))?.Name ?? ""));
+            UpdateName();
+            updateOrderNames += UpdateName;
             b.Click += (_, _) =>
             {
                 try { _settings.Update(s => ConnectionEditor.Move(s.Chat, _selectedConnection!, delta)); ShowPage("Connections"); }
@@ -115,37 +122,38 @@ public sealed partial class SettingsWindow
         if (!any)
             PageHost.Children.Add(new TextBlock { Text = Strings.Conn_None, TextWrapping = TextWrapping.Wrap, Opacity = 0.8, Margin = new Thickness(0, 8, 0, 0) });
         var list = new ListView { SelectionMode = ListViewSelectionMode.Single, Margin = new Thickness(0, 8, 0, 8) };
-        foreach (var p in chat.Backends)
+        foreach (var p in chat.Connections)
         {
             var info = ConnectionTypes.Of(p.Type);
-            var subtitle = p.Id == chat.DefaultBackend ? L.F(Strings.Conn_DefaultSuffix, info.DisplayName) : info.DisplayName;
+            var subtitle = string.Equals(p.Id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase) ? L.F(Strings.Conn_DefaultSuffix, info.DisplayName) : info.DisplayName;
             list.Items.Add(new ListViewItem
             {
                 Tag = p.Id,
                 Content = new StackPanel { Spacing = 2, Children = { new TextBlock { Text = p.Name }, new TextBlock { Text = subtitle, FontSize = 12, Opacity = 0.7 } } },
             });
         }
-        list.SelectedItem = list.Items.OfType<ListViewItem>().FirstOrDefault(i => (string)i.Tag == _selectedConnection);
+        list.SelectedItem = list.Items.OfType<ListViewItem>().FirstOrDefault(i => string.Equals((string)i.Tag, _selectedConnection, StringComparison.OrdinalIgnoreCase));
         var editorHost = new StackPanel { Spacing = 8 };
         list.SelectionChanged += (_, _) =>
         {
             if (list.SelectedItem is not ListViewItem { Tag: string id }) return;
             _selectedConnection = id;
-            makeDefault.IsEnabled = id != chat.DefaultBackend;
+            updateOrderNames?.Invoke();
+            makeDefault.IsEnabled = !string.Equals(id, chat.DefaultBackend, StringComparison.OrdinalIgnoreCase);
             // A connection removed by an external reload while this page was open: show no editor (never the previous one).
-            if (chat.Backends.FirstOrDefault(b => b.Id == id) is { } picked) BuildEditor(editorHost, picked);
+            if (chat.Connections.FirstOrDefault(b => string.Equals(b.Id, id, StringComparison.OrdinalIgnoreCase)) is { } picked) BuildEditor(editorHost, picked);
             else { editorHost.Children.Clear(); makeDefault.IsEnabled = false; }
         };
         PageHost.Children.Add(list);
         PageHost.Children.Add(editorHost);
-        if (chat.Backends.FirstOrDefault(b => b.Id == _selectedConnection) is { } selected) BuildEditor(editorHost, selected);
+        if (chat.Connections.FirstOrDefault(b => string.Equals(b.Id, _selectedConnection, StringComparison.OrdinalIgnoreCase)) is { } selected) BuildEditor(editorHost, selected);
     }
 
     /// <summary>
     /// agy runs in the background, where any tool call that would ask for permission is denied. Its allow/deny rules
     /// (in agy's own settings.json) decide what works; "approve everything" skips all checks and is dangerous.
     /// </summary>
-    private void AddAgyPermissions(StackPanel host, BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    private void AddAgyPermissions(StackPanel host, ConnectionProfile p, Func<Action<ConnectionProfile>, Task> save)
     {
         var home = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
         var agySettings = Hotline.Core.Backends.Agy.AgyPermissions.SettingsPath(home);
@@ -185,11 +193,11 @@ public sealed partial class SettingsWindow
                 var json = File.Exists(agySettings) ? File.ReadAllText(agySettings) : null;
                 var updated = Hotline.Core.Backends.Agy.AgyPermissions.AddRules(json,
                     Hotline.Core.Backends.Agy.AgyPermissions.ReadOnlyCommandRules, Hotline.Core.Backends.Agy.AgyPermissions.DenyRules);
-                // Keep the file as it was (.old, .old2, ...: hand edits made since an earlier press are never lost), then replace atomically.
-                if (json is not null && updated != json && FileArchive.KeepOld(agySettings) is null)
-                    throw new IOException(L.F(Strings.Settings_ProblemBackupFailed, Path.GetFileName(agySettings), nameof(IOException)));
-                File.WriteAllText(agySettings + ".tmp", updated);
-                File.Move(agySettings + ".tmp", agySettings, overwrite: true);
+                var root = Path.GetDirectoryName(agySettings)!;
+                var backup = new Hotline.Core.Files.BackupSet(root, Hotline.Core.Files.BackupReason.Save);
+                var written = new Hotline.Core.Files.SafeFile().Replace(agySettings, System.Text.Encoding.UTF8.GetBytes(updated), backup, 1);
+                if (written is not (Hotline.Core.Files.SafeFileResult.Written or Hotline.Core.Files.SafeFileResult.Unchanged))
+                    throw new IOException(L.F(Strings.Settings_ProblemWriteFailed, Path.GetFileName(agySettings), written));
                 summary.Text = Summary();
                 await _invalidate(p.Id);
             }
@@ -206,7 +214,7 @@ public sealed partial class SettingsWindow
     /// ⚠ Approve everything (every CLI, inherit mode only): skips the CLI's permission checks (agy/Claude Code
     /// --dangerously-skip-permissions, Codex --dangerously-bypass-approvals-and-sandbox). Turning it on asks first.
     /// </summary>
-    private void AddApproveAll(StackPanel host, BackendProfile p, Func<Action<BackendProfile>, Task> save)
+    private void AddApproveAll(StackPanel host, ConnectionProfile p, Func<Action<ConnectionProfile>, Task> save)
     {
         var cliName = ConnectionTypes.Of(p.Type).DisplayName;
         var approveAll = new ToggleSwitch { IsOn = p.ApproveAllTools, OnContent = "", OffContent = "", MinWidth = 0, IsEnabled = p.Tools == ToolMode.Inherit };
@@ -256,13 +264,13 @@ public sealed partial class SettingsWindow
         return box;
     }
 
-    private void BuildEditor(StackPanel host, BackendProfile p)
+    private void BuildEditor(StackPanel host, ConnectionProfile p)
     {
         host.Children.Clear();
         var info = ConnectionTypes.Of(p.Type);
         host.Children.Add(new TextBlock { Text = info.Description, Opacity = 0.75, TextWrapping = TextWrapping.Wrap, Margin = new Thickness(0, 4, 0, 4) });
 
-        async Task Save(Action<BackendProfile> change)
+        async Task Save(Action<ConnectionProfile> change)
         {
             try
             {
@@ -331,10 +339,10 @@ public sealed partial class SettingsWindow
         }
         if (info.Has(ConnectionField.ExtraArgs))
         {
-            host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(p.ExtraArgs, "", v => p.ExtraArgs = v)));
+            host.Children.Add(Card(Strings.Conn_ExtraArgs, Strings.Conn_ExtraArgs_Desc, Text(CliArguments.Join(p.ExtraArgs), "", v => p.ExtraArgs = CliArguments.SplitExtra(v).ToList())));
             // Advanced: replaces the mode's flags (the protocol flags are always added; dangerous ones never come from here).
-            host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : string.Join(' ', p.Args), Strings.Conn_LaunchArgs_Default,
-                v => p.Args = string.IsNullOrWhiteSpace(v) ? null : v.Split(' ', StringSplitOptions.RemoveEmptyEntries).ToList())));
+            host.Children.Add(Card(Strings.Conn_LaunchArgs, Strings.Conn_LaunchArgs_Desc, Text(p.Args is null ? null : CliArguments.Join(p.Args), Strings.Conn_LaunchArgs_Default,
+                v => p.Args = string.IsNullOrWhiteSpace(v) ? null : CliArguments.Split(v).ToList())));
         }
 
         if (info.Has(ConnectionField.Tools) && !info.Has(ConnectionField.CliPath))
@@ -440,7 +448,7 @@ public sealed partial class SettingsWindow
                 model.SelectedItem = current;
                 filling = false;
                 status.Severity = InfoBarSeverity.Success;
-                status.Message = ModelCatalog.Describe(list, p.Model, ConnectionTypes.Of(p.Type).ListsModels);
+                status.Message = ModelCatalog.Describe(list, p.Model);
             }
             catch (ModelListException ex) { status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }
             catch (Exception ex) { _log.Error("model list failed", ex); status.Severity = InfoBarSeverity.Error; status.Message = ex.Message; }

@@ -1,3 +1,5 @@
+using static Hotline.Core.Tests.TestStreams;
+using static Hotline.Core.Tests.TestMsg;
 using System.Text.Json;
 using Hotline.Core.Backends.Agy;
 using Hotline.Core.Chat;
@@ -11,8 +13,6 @@ public sealed class AgyBackendTests : TempDirTest
     private readonly FakeLineProcessFactory _factory = new();
 
     private static readonly DateTimeOffset Now = DateTimeOffset.UnixEpoch;
-    private static ChatMessage U(string id, string text, params Attachment[] a) => new(id, ChatRole.User, text, a, Now);
-    private static ChatMessage A(string id, string text) => new(id, ChatRole.Assistant, text, [], Now);
 
     private static IEnumerable<string> Answer(string text) =>
     [
@@ -25,17 +25,10 @@ public sealed class AgyBackendTests : TempDirTest
     private static string PromptOf(string line) =>
         JsonDocument.Parse(line).RootElement.GetProperty("message").GetProperty("content").GetString()!;
 
-    private AgyBackend New(string? exe = @"C:\agy.exe", BackendProfile? profile = null, string? home = null) =>
-        new(profile ?? new BackendProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline" }, () => exe,
+    private AgyBackend New(string? exe = @"C:\agy.exe", ConnectionProfile? profile = null, string? home = null) =>
+        new(profile ?? new ConnectionProfile { Id = "agy", Name = "Gemini (Antigravity)", Agent = "hotline" }, () => exe,
             new AgyWorkspace(Path.Combine(_dir, "ws"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")),
             _ => "SYSTEM PROMPT", home ?? Path.Combine(_dir, "home"));
-
-    private static async Task<string> Collect(IAsyncEnumerable<ChatDelta> s)
-    {
-        var text = "";
-        await foreach (var d in s) text = d.ResetBefore ? d.Text : text + d.Text;
-        return text;
-    }
 
     [Fact]
     public async Task Missing_exe_is_NotInstalled()
@@ -175,7 +168,7 @@ public sealed class AgyBackendTests : TempDirTest
         var work = Directory.CreateDirectory(Path.Combine(_dir, "project")).FullName;
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
         var img = new Attachment("a1", "shot.png", AttachmentKind.Image, "image/png", [1, 2]);
-        var b = New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = work });
+        var b = New(profile: new ConnectionProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = work });
         await Collect(b.StreamAsync([U("m1", "look", img)], default));
 
         var (_, args, cwd, proc) = _factory.Started[0];
@@ -190,7 +183,7 @@ public sealed class AgyBackendTests : TempDirTest
     public async Task Inherit_missing_working_dir_is_an_error_not_the_home_folder()
     {
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
-        var b = New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = @"Z:\does\not\exist" });
+        var b = New(profile: new ConnectionProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit, WorkingDirectory = @"Z:\does\not\exist" });
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(b.StreamAsync([U("1", "hi")], default)));
         Assert.Equal(BackendErrorKind.NotConfigured, ex.Kind);
         Assert.Empty(_factory.Started);
@@ -201,7 +194,7 @@ public sealed class AgyBackendTests : TempDirTest
     {
         var home = Directory.CreateDirectory(Path.Combine(_dir, "home")).FullName;
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
-        await Collect(New(profile: new BackendProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit }, home: home).StreamAsync([U("1", "hi")], default));
+        await Collect(New(profile: new ConnectionProfile { Id = "agy", Name = "G", Tools = ToolMode.Inherit }, home: home).StreamAsync([U("1", "hi")], default));
         Assert.Equal(home, _factory.Started[0].Cwd);
     }
 
@@ -210,7 +203,7 @@ public sealed class AgyBackendTests : TempDirTest
     {
         var prompt = "first";
         _factory.Create = () => new FakeLineProcess { Respond = _ => Answer("ok") };
-        var b = new AgyBackend(new BackendProfile { Id = "agy", Name = "G", Agent = "hotline" }, () => @"C:\agy.exe",
+        var b = new AgyBackend(new ConnectionProfile { Id = "agy", Name = "G", Agent = "hotline" }, () => @"C:\agy.exe",
             new AgyWorkspace(Path.Combine(_dir, "ws"), new ManualTimeProvider()), _factory, new FileLog(Path.Combine(_dir, "h.log")), _ => prompt, _dir);
         await Collect(b.StreamAsync([U("1", "hi")], default));
         prompt = "second";

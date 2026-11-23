@@ -7,7 +7,7 @@ namespace Hotline.Core.Tests;
 
 public class CodexModelsTests
 {
-    private static readonly BackendProfile Profile = new() { Id = "cx", Type = BackendType.Codex };
+    private static readonly ConnectionProfile Profile = new() { Id = "cx", Type = BackendType.Codex };
 
     private static string Model(string id, string name, bool hidden = false, string efforts = "low") =>
         $$"""{"id":"{{id}}","model":"{{id}}","displayName":"{{name}}","hidden":{{(hidden ? "true" : "false")}},"supportedReasoningEfforts":[{{string.Join(",", efforts.Split(',').Select(e => $$"""{"reasoningEffort":"{{e}}","description":"d"}"""))}}],"isDefault":false}""";
@@ -130,7 +130,6 @@ public class CodexModelsTests
     {
         Assert.Equal("gpt-6.1-sol", CodexModels.Curated[0].Id);
         Assert.Equal(8, CodexModels.Curated.Count);
-        Assert.True(ConnectionTypes.Of(BackendType.Codex).ListsModels);
         Assert.Contains("max", CodexProtocol.EffortLevels);
         Assert.Contains("ultra", CodexProtocol.EffortLevels);
     }

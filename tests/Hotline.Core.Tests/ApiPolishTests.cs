@@ -7,6 +7,7 @@ using Hotline.Core.Backends.Api;
 using Hotline.Core.Chat;
 using Hotline.Core.Diagnostics;
 using Hotline.Core.Settings;
+using Hotline.Core.Text.Localization;
 
 namespace Hotline.Core.Tests;
 
@@ -45,11 +46,16 @@ public sealed class ApiPolishTests : TempDirTest
         candidates = new[] { new { content = new { role = "model", parts = new[] { new { text } } } } },
     });
 
+    private static string GeminiFinish(string finishReason = "STOP") => JsonSerializer.Serialize(new
+    {
+        candidates = new[] { new { finishReason } },
+    });
+
     private OpenAiBackend OpenAi(Handler handler, string? effort = null)
     {
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("oa"), "sk-test");
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "gpt-x", Effort = effort };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "gpt-x", Effort = effort };
         return new OpenAiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")));
     }
 
@@ -57,7 +63,7 @@ public sealed class ApiPolishTests : TempDirTest
     {
         var secrets = new InMemorySecretStore();
         secrets.Set(SecretKeys.ApiKey("g"), "AIza-test");
-        var p = new BackendProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model, Effort = effort };
+        var p = new ConnectionProfile { Id = "g", Name = "Gemini API", Type = BackendType.Gemini, Model = model, Effort = effort };
         return new GeminiBackend(p, new HttpClient(handler), secrets, _ => "", new FileLog(Path.Combine(_dir, "h.log")));
     }
 
@@ -158,7 +164,7 @@ public sealed class ApiPolishTests : TempDirTest
     [Fact]
     public async Task Gemini_retries_a_503_as_busy()
     {
-        var handler = new Handler(n => n == 1 ? Status(503, retryAfter: TimeSpan.Zero) : Sse(GeminiPart("ok")));
+        var handler = new Handler(n => n == 1 ? Status(503, retryAfter: TimeSpan.Zero) : Sse(GeminiPart("ok"), GeminiFinish()));
         var (text, status) = await Collect(Gemini(handler, "gemini-3.8-flash", null).StreamAsync([User("hi")], default));
         Assert.Equal("ok", text);
         Assert.Equal(["Gemini API is busy, retrying in 0 s…"], status);
@@ -181,6 +187,52 @@ public sealed class ApiPolishTests : TempDirTest
         var ex = await Assert.ThrowsAsync<BackendException>(() => Collect(Gemini(handler, "gemini-3.8-flash", null).StreamAsync([User("hi")], default)));
         Assert.Equal(BackendErrorKind.Unauthorized, ex.Kind);
         Assert.Single(handler.Bodies);
+    }
+
+    [Theory]
+    [InlineData("openai")]
+    [InlineData("gemini")]
+    public async Task Text_EOF_without_terminal_marker_preserves_text_and_warns(string backend)
+    {
+        var handler = new Handler(_ => backend == "openai"
+            ? Sse(OpenAiChunk("Partial answer."))
+            : Sse(GeminiPart("Partial answer.")));
+        IChatBackend b = backend == "openai"
+            ? OpenAi(handler)
+            : Gemini(handler, "gemini-3.8-flash", null);
+        var (text, status) = await Collect(b.StreamAsync([User("hi")], default));
+        Assert.Equal("Partial answer.", text);
+        Assert.Equal([Strings.Api_AnswerCutOff], status);
+    }
+
+    [Fact]
+    public async Task OpenAi_text_answer_at_the_token_limit_keeps_its_text_and_says_so()
+    {
+        var handler = new Handler(_ => Sse(OpenAiChunk("Partial answer."), """{"choices":[{"delta":{},"finish_reason":"length"}]}""", "[DONE]"));
+        var (text, status) = await Collect(OpenAi(handler).StreamAsync([User("hi")], default));
+        Assert.Equal("Partial answer.", text);
+        Assert.Contains(status, s => s.Contains("length", StringComparison.Ordinal));
+    }
+
+    [Theory]
+    [InlineData("openai_done")]
+    [InlineData("openai_stop")]
+    [InlineData("gemini_stop")]
+    public async Task Terminal_markers_suppress_cutoff_warning(string variant)
+    {
+        var handler = new Handler(_ => variant switch
+        {
+            "openai_done" => Sse(OpenAiChunk("Complete."), "[DONE]"),
+            "openai_stop" => Sse(OpenAiChunk("Complete."), """{"choices":[{"finish_reason":"stop"}]}"""),
+            "gemini_stop" => Sse(GeminiPart("Complete."), """{"candidates":[{"finishReason":"STOP"}]}"""),
+            _ => throw new ArgumentOutOfRangeException(nameof(variant)),
+        });
+        IChatBackend b = variant.StartsWith("openai")
+            ? OpenAi(handler)
+            : Gemini(handler, "gemini-3.8-flash", null);
+        var (text, status) = await Collect(b.StreamAsync([User("hi")], default));
+        Assert.Equal("Complete.", text);
+        Assert.Empty(status);
     }
 
     // ---- status notes reach the panel, not the answer -----------------------------------------

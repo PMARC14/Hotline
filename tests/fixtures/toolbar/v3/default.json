@@ -1,0 +1,43 @@
+{
+  "version": 3,
+  "shortcuts": {
+    "stop": "Esc",
+    "newChat": "Ctrl+N",
+    "recent": "Ctrl+H",
+    "settings": "Ctrl+,",
+    "pin": "Ctrl+P",
+    "copyLastAnswer": "Ctrl+Shift+C",
+    "captureRegion": "Ctrl+Shift+R",
+    "prompt": "Ctrl+Shift+P",
+    "effort": "Ctrl+E",
+    "model": "Ctrl+M",
+    "provider": "Ctrl+Shift+M",
+    "captureWindow": "Ctrl+Shift+W",
+    "captureScreen": "Ctrl+Shift+S",
+    "continueIn": "Ctrl+Shift+I",
+    "more": "Ctrl+Shift+O"
+  },
+  "top": {
+    "left": ["effort"],
+    "center": ["model"],
+    "right": ["provider"]
+  },
+  "bottom": {
+    "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+    "center": ["prompt", "continueIn"],
+    "right": ["recent", "newChat", "settings"]
+  },
+  "menu": [],
+  "style": {
+    "width": 1,
+    "fill": true,
+    "outline": false,
+    "filled": false
+  },
+  "overrides": {
+    "provider": {
+      "span": 5
+    }
+  },
+  "buttons": {}
+}

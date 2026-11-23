@@ -11,7 +11,7 @@ namespace Hotline.App.Settings;
 internal sealed partial class ToolbarQuadrantEditor
 {
     private ComboBox? _barSize, _barColor;
-    private ToggleSwitch? _barOutline, _barFilled;
+    private ToggleSwitch? _barOutline, _barFilled, _barFill;
     /// <summary>Set while controls are filled from the model, so their change events don't edit it.</summary>
     private bool _syncing;
 
@@ -24,10 +24,12 @@ internal sealed partial class ToolbarQuadrantEditor
         foreach (var width in ToolbarEditorView.Widths) _barSize.Items.Add(new ComboBoxItem { Content = ToolbarEditorView.WidthName(width), Tag = width });
         _barOutline = new ToggleSwitch { Header = Strings.Bar_Outline, OnContent = "", OffContent = "", MinWidth = 0 };
         _barFilled = new ToggleSwitch { Header = Strings.Bar_Filled, OnContent = "", OffContent = "", MinWidth = 0 };
+        _barFill = new ToggleSwitch { Header = Strings.Bar_Fill, OnContent = "", OffContent = "", MinWidth = 0 };
         _barColor = ColorBox(Strings.Bar_ColorAccent, null);
         Automation(_barSize, "bar-size", Strings.Bar_Width);
         Automation(_barOutline, "bar-outline", Strings.Bar_Outline);
         Automation(_barFilled, "bar-filled", Strings.Bar_Filled);
+        Automation(_barFill, "bar-fill", Strings.Bar_Fill);
         Automation(_barColor, "bar-outline-color", Strings.Bar_OutlineColor);
         // A width for the whole bar widens every button (the items' own widths go).
         // "Custom" only shows that the widths differ: choosing it changes nothing.
@@ -37,6 +39,7 @@ internal sealed partial class ToolbarQuadrantEditor
         };
         _barOutline.Toggled += (_, _) => { if (!_syncing) Edit(m => ToolbarEditor.SetStyle(m, null, m.Style with { Outline = _barOutline.IsOn }), null); };
         _barFilled.Toggled += (_, _) => { if (!_syncing) Edit(m => ToolbarEditor.SetStyle(m, null, m.Style with { Filled = _barFilled.IsOn }), null); };
+        _barFill.Toggled += (_, _) => { if (!_syncing) Edit(m => ToolbarEditor.SetStyle(m, null, m.Style with { Fill = _barFill.IsOn }), null); };
         _barColor.SelectionChanged += (_, _) =>
         {
             if (!_syncing && _barColor.SelectedItem is ComboBoxItem { Tag: string hex })
@@ -52,6 +55,7 @@ internal sealed partial class ToolbarQuadrantEditor
                 Children =
                 {
                     new TextBlock { Text = Strings.Bar_BarStyle },
+                    _barFill,
                     new StackPanel { Orientation = Orientation.Horizontal, Spacing = 24, Children = { _barSize, _barOutline, _barFilled, _barColor } },
                 },
             },
@@ -60,7 +64,7 @@ internal sealed partial class ToolbarQuadrantEditor
 
     private void SyncBarStyle()
     {
-        if (_barSize is null || _barOutline is null || _barFilled is null || _barColor is null) return;
+        if (_barSize is null || _barOutline is null || _barFilled is null || _barColor is null || _barFill is null) return;
         _syncing = true;
         try
         {
@@ -78,6 +82,7 @@ internal sealed partial class ToolbarQuadrantEditor
             }
             _barOutline.IsOn = style.Outline == true;
             _barFilled.IsOn = style.Filled == true;
+            _barFill.IsOn = style.Fill == true;
             SelectColor(_barColor, style.OutlineColor);
             _barColor.IsEnabled = style.Outline == true;
         }

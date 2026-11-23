@@ -9,10 +9,8 @@ using Hotline.Core.Settings;
 namespace Hotline.Core.Tests;
 
 /// <summary>Security S2a: redirects never carry a key, response sizes are capped, bad endpoints and odd JSON don't throw.</summary>
-public sealed class HttpHardeningTests : IDisposable
+public sealed class HttpHardeningTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     private sealed class Handler(Func<HttpRequestMessage, HttpResponseMessage> respond) : HttpMessageHandler
     {
@@ -40,7 +38,7 @@ public sealed class HttpHardeningTests : IDisposable
 
     private async Task<BackendException> OpenAiFailure(Handler handler)
     {
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "m", Endpoint = "https://api.example.com/v1" };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Model = "m", Endpoint = "https://api.example.com/v1" };
         var backend = new OpenAiBackend(p, new HttpClient(handler), KeyFor("oa"), _ => "", new FileLog(Path.Combine(_dir, "h.log")));
         return await Assert.ThrowsAsync<BackendException>(async () =>
         {
@@ -65,7 +63,7 @@ public sealed class HttpHardeningTests : IDisposable
     {
         var handler = new Handler(_ => Redirect("/elsewhere?k=1", HttpStatusCode.Found));
         var catalog = new ModelCatalog(new HttpClient(handler), KeyFor("oa"), (_, _) => Task.FromResult(""), TimeProvider.System);
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Endpoint = "https://api.example.com/v1" };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Endpoint = "https://api.example.com/v1" };
         var ex = await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(p, false, default));
         Assert.Single(handler.Urls);
         Assert.Contains("api.example.com", ex.Message);
@@ -128,7 +126,7 @@ public sealed class HttpHardeningTests : IDisposable
     {
         var handler = new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent(new string(' ', 500)) });
         var catalog = new ModelCatalog(new HttpClient(handler), KeyFor("oa"), (_, _) => Task.FromResult(""), TimeProvider.System) { MaxBodyBytes = 100 };
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Endpoint = "https://api.example.com/v1" };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.OpenAiCompatible, Endpoint = "https://api.example.com/v1" };
         await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(p, false, default));
     }
 
@@ -141,14 +139,14 @@ public sealed class HttpHardeningTests : IDisposable
     {
         var handler = new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("{}") });
         var catalog = new ModelCatalog(new HttpClient(handler), new InMemorySecretStore(), (_, _) => Task.FromResult(""), TimeProvider.System);
-        var p = new BackendProfile { Id = "oa", Name = "OpenAI", Type = BackendType.Local, Endpoint = endpoint };
+        var p = new ConnectionProfile { Id = "oa", Name = "OpenAI", Type = BackendType.Local, Endpoint = endpoint };
         await Assert.ThrowsAsync<ModelListException>(() => catalog.GetAsync(p, false, default));
         Assert.Empty(handler.Urls);
     }
 
     [Fact]
     public void Safe_transport_checks_the_endpoint_even_without_a_key()
-        => Assert.Throws<BackendException>(() => ApiCommon.RequireSafeTransport(new BackendProfile { Name = "X" }, "not a url", null));
+        => Assert.Throws<BackendException>(() => ApiCommon.RequireSafeTransport(new ConnectionProfile { Name = "X" }, "not a url", null));
 
     [Fact]
     public void Parsers_skip_entries_with_null_or_wrong_typed_fields()
@@ -173,7 +171,7 @@ public sealed class HttpHardeningTests : IDisposable
         var handler = new Handler(_ => new HttpResponseMessage(HttpStatusCode.OK) { Content = new StringContent("""{"data":[{"id":"a"}]}""") });
         var catalog = new ModelCatalog(new HttpClient(handler), new InMemorySecretStore(), (_, _) => Task.FromResult(""), TimeProvider.System);
         var tasks = Enumerable.Range(0, 200).Select(i => Task.Run(() => catalog.GetAsync(
-            new BackendProfile { Id = $"c{i % 20}", Name = "L", Type = BackendType.Local, Endpoint = "http://localhost:1/v1" }, i % 3 == 0, default)));
+            new ConnectionProfile { Id = $"c{i % 20}", Name = "L", Type = BackendType.Local, Endpoint = "http://localhost:1/v1" }, i % 3 == 0, default)));
         foreach (var models in await Task.WhenAll(tasks)) Assert.Equal("a", Assert.Single(models).Id);
     }
 }

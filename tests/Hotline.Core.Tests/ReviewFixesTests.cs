@@ -7,10 +7,8 @@ using Hotline.Core.Text;
 namespace Hotline.Core.Tests;
 
 /// <summary>Findings from the Antigravity review (2026-10-02).</summary>
-public sealed class ReviewFixesTests : IDisposable
+public sealed class ReviewFixesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     // #1 SVG sanitizer (allowlist)
     [Theory]
@@ -52,7 +50,7 @@ public sealed class ReviewFixesTests : IDisposable
     [InlineData("--PERMISSION-MODE=acceptEdits")]
     public void Permission_flags_with_equals_are_dropped(string flag)
     {
-        var args = ClaudeCodeProtocol.BuildArgs(new BackendProfile { ExtraArgs = flag, Args = [flag] }, "x").ToList();
+        var args = ClaudeCodeProtocol.BuildArgs(new ConnectionProfile { ExtraArgs = Hotline.Core.Backends.CliArguments.SplitExtra(flag).ToList(), Args = [flag] }, "x").ToList();
         Assert.DoesNotContain(args, a => a.StartsWith("--permission-mode", StringComparison.OrdinalIgnoreCase));
         Assert.Single(args, a => a.StartsWith("--permission-prompts", StringComparison.OrdinalIgnoreCase));
         Assert.Equal("none", args[args.IndexOf("--permission-prompts") + 1]);
@@ -115,10 +113,8 @@ public sealed class ReviewFixesTests : IDisposable
 }
 
 /// <summary>Antigravity review of the API backends and connection files (2026-10-02).</summary>
-public sealed class ApiReviewFixesTests : IDisposable
+public sealed class ApiReviewFixesTests : TempDirTest
 {
-    private readonly string _dir = Path.Combine(Path.GetTempPath(), "hotline-tests", Guid.NewGuid().ToString("N"));
-    public void Dispose() { if (Directory.Exists(_dir)) Directory.Delete(_dir, recursive: true); }
 
     [Fact]
     public async Task Sse_keeps_indentation_and_strips_only_one_space()
@@ -147,12 +143,12 @@ public sealed class ApiReviewFixesTests : IDisposable
     [InlineData("http://127.0.0.1.evil.com/v1")]   // lookalike loopback hosts
     [InlineData("http://localhost.evil.com/v1")]
     public void Unsafe_endpoints_are_refused_when_a_key_would_be_sent(string endpoint)
-        => Assert.Throws<BackendException>(() => Hotline.Core.Backends.Api.ApiCommon.RequireSafeTransport(new BackendProfile { Name = "X" }, endpoint, "key"));
+        => Assert.Throws<BackendException>(() => Hotline.Core.Backends.Api.ApiCommon.RequireSafeTransport(new ConnectionProfile { Name = "X" }, endpoint, "key"));
 
     [Fact]
     public void Ids_that_differ_only_in_case_are_unique()
     {
-        var chat = new ChatSettings { Backends = [new BackendProfile { Id = "LOCAL-MODEL", Type = BackendType.Local, Name = "L" }] };
+        var chat = new ChatSettings { Connections = [new ConnectionProfile { Id = "LOCAL-MODEL", Type = BackendType.Local, Name = "L" }] };
         var added = Hotline.Core.Backends.ConnectionEditor.Add(chat, BackendType.Local);
         Assert.NotEqual("local-model", added.Id, StringComparer.OrdinalIgnoreCase);
     }
@@ -162,10 +158,10 @@ public sealed class ApiReviewFixesTests : IDisposable
     {
         var store = new SettingsStore(_dir);
         var s = store.Load();
-        s.Chat.Backends.Add(new BackendProfile { Id = "a/b", Type = BackendType.Local, Name = "slash" });
+        s.Chat.Connections.Add(new ConnectionProfile { Id = "a/b", Type = BackendType.Local, Name = "slash" });
         store.Save(s); // file a-b.json
-        s.Chat.Backends.RemoveAll(b => b.Id == "a/b");
-        s.Chat.Backends.Add(new BackendProfile { Id = "a-b", Type = BackendType.Local, Name = "dash" });
+        s.Chat.Connections.RemoveAll(b => b.Id == "a/b");
+        s.Chat.Connections.Add(new ConnectionProfile { Id = "a-b", Type = BackendType.Local, Name = "dash" });
         store.Save(s);
         Assert.True(File.Exists(store.ConnectionPath("a-b")));
         Assert.Contains("dash", File.ReadAllText(store.ConnectionPath("a-b")));
