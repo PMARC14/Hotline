@@ -18,8 +18,8 @@ review outputs live outside the repo in `~/.claude/briefs/hotline/`.
 |---|---|
 | Stable release | v0.6.3 (GitHub). Pushes to `main` publish prereleases; **Actions › Promote** makes one stable |
 | Branch | `s1/schema-freeze`, `version.txt` 0.7, 3,140 Core tests green |
-| Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; next is 0.7.x.0, uploaded by hand |
-| Open PRs | #65 `ci/actions-update` (Node 24 actions; green; merging publishes a prerelease); agents-jobs #10 |
+| Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; bundle 0.7.0.0 built in `Downloads\HotlineAI-Store-0.7.0.0.msixbundle`, uploaded by hand |
+| Open PRs | #66 `s1/schema-freeze` (0.7; awaits the owner's hand tests); #65 `ci/actions-update` (Node 24 actions; green); agents-jobs #10 |
 | Installed here | the 0.7 candidate (dev-signed); the upgrade ran on the owner's files on 2026-11-22 and `hotline://selftest` passed (96 checks) |
 
 S1 replaced every config format with a versioned one, one writer (`SafeFile`), backup sets, `state.json`, toolbar v3 and a
@@ -30,11 +30,11 @@ fixed with a test.
 
 1. **Owner hand tests** in [TESTING.md](TESTING.md) › "Not yet checked by hand" (the install and self-test are done). Ask before
    `smoke.ps1` (keystrokes) or screen captures.
-2. **Store bundle 0.7.x.0:** `scripts/build-msix.sh --store --arch all --version <x>` with the identity values from the repo's
-   Actions variables (`gh variable list`; `store.yml` shows the call). Open for the owner: the bundle folder, `store/listing.md`,
+2. **Store upload** of the built 0.7.0.0 bundle (rebuild if code changes: `scripts/build-msix.sh --store --arch all --version 0.7.0.0` with the identity values in
+   `store.yml`). Open for the owner: the bundle folder, `store/listing.md`,
    `store/listings/`, `artifacts/store/` (0.6.3 images reused; recapture `fr/screenshot-4.png` first: `scripts/make-store-panels.sh fr`,
    then `scripts/make-store-localized.sh fr`).
-3. **PR** `s1/schema-freeze` → `main`. Merging publishes a prerelease; the owner promotes it after the hand tests in
+3. **PR #66** `s1/schema-freeze` → `main` is open. Merging publishes a prerelease; the owner promotes it after the hand tests in
    [TESTING.md](TESTING.md).
 
 ## Road to 1.0
