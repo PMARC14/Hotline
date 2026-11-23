@@ -2,12 +2,12 @@
 
 Start here. Hotline is a Windows 11 app that takes over the Copilot key: a native WinUI 3 popup that chats with Claude Code,
 Codex, agy (Antigravity), Anthropic, Gemini, OpenAI-compatible or local servers, configured by files in `%USERPROFILE%\.hotline`.
-**State:** 0.7 (S1 schema freeze) is built and reviewed on `s1/schema-freeze`; next is the install check, the Store bundle and the PR.
+**State:** 0.7 (S1 schema freeze) is merged to `main` (PR #66); the owner hand-checks it on a new PC, then promotes it and
+uploads the Store bundle. Next work: the refactor plan, then the Road to 1.0.
 
-Then read `CLAUDE.md` (working rules, git-ignored) and, if present, `docs/local/HANDOFF-PRIVATE.md` (this PC). Docs:
+Then read `CLAUDE.md` (working rules, git-ignored) and, if present, `docs/local/HANDOFF-PRIVATE.md` (machine notes). Docs:
 [README](../README.md) (users, Copilot key, translations), [configuration.md](configuration.md) (every file and setting, file
-rules), [TESTING.md](TESTING.md) (tests and hand checks), [RELEASING.md](RELEASING.md) (versions, signing, Store). Job briefs and
-review outputs live outside the repo in `~/.claude/briefs/hotline/`.
+rules), [TESTING.md](TESTING.md) (tests and hand checks), [RELEASING.md](RELEASING.md) (versions, signing, Store).
 
 **Contents:** [State](#state) | [Finish 0.7](#finish-07) | [Road to 1.0](#road-to-10) | [Refactor plan](#refactor-plan) |
 [Architecture](#architecture) | [Rules](#rules) | [Hard-won facts](#hard-won-facts) | [Deferred](#deferred) | [Glossary](#glossary)
@@ -17,10 +17,8 @@ review outputs live outside the repo in `~/.claude/briefs/hotline/`.
 | Item | Value |
 |---|---|
 | Stable release | v0.6.3 (GitHub). Pushes to `main` publish prereleases; **Actions › Promote** makes one stable |
-| Branch | `s1/schema-freeze`, `version.txt` 0.7, 3,140 Core tests green |
-| Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; bundle 0.7.0.0 built in `Downloads\HotlineAI-Store-0.7.0.0.msixbundle`, uploaded by hand |
-| Open PRs | #66 `s1/schema-freeze` (0.7; awaits the owner's hand tests); #65 `ci/actions-update` (Node 24 actions; green); agents-jobs #10 |
-| Installed here | the 0.7 candidate (dev-signed); the upgrade ran on the owner's files on 2026-11-22 and `hotline://selftest` passed (96 checks) |
+| Branch | `main` at 0.7 (`version.txt` 0.7, 3,140 Core tests green); `personal/gemini-web` is the owner's own build, kept merged with `main`, never merged into it |
+| Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; next upload 0.7.0.0 (bundle built locally, carried by hand) |
 
 S1 replaced every config format with a versioned one, one writer (`SafeFile`), backup sets, `state.json`, toolbar v3 and a
 one-time upgrade. Reviews on 2026-11-22: Sol (U1, Core), Argon (App), Astra and Neon (whole codebase); every confirmed finding is
@@ -28,19 +26,17 @@ fixed with a test.
 
 ## Finish 0.7
 
-1. **Owner hand tests** in [TESTING.md](TESTING.md) › "Not yet checked by hand" (the install and self-test are done). Ask before
-   `smoke.ps1` (keystrokes) or screen captures.
-2. **Store upload** of the built 0.7.0.0 bundle (rebuild if code changes: `scripts/build-msix.sh --store --arch all --version 0.7.0.0` with the identity values in
-   `store.yml`). Open for the owner: the bundle folder, `store/listing.md`,
-   `store/listings/`, `artifacts/store/` (0.6.3 images reused; recapture `fr/screenshot-4.png` first: `scripts/make-store-panels.sh fr`,
-   then `scripts/make-store-localized.sh fr`).
-3. **PR #66** `s1/schema-freeze` → `main` is open. Merging publishes a prerelease; the owner promotes it after the hand tests in
-   [TESTING.md](TESTING.md).
+1. **Hand tests on the new PC:** install the newest prerelease from GitHub (or `scripts/install.sh`), then run
+   [TESTING.md](TESTING.md) › "Not yet checked by hand". Ask before `smoke.ps1` (keystrokes) or screen captures.
+2. **Promote** that prerelease (**Actions › Promote** with its tag) once the hand tests pass.
+3. **Store upload** of 0.7.0.0: rebuild if code changed (`scripts/build-msix.sh --store --arch all --version 0.7.0.0` with the
+   identity values in `store.yml`), paste the listings from `store/listing.md` and `store/listings/`, reuse the images in
+   `artifacts/store/<lang>/` (git-ignored; `fr/screenshot-4.png` still shows the old clipped label, kept for now).
 
 ## Road to 1.0
 
 1.0 = the items below done and one certified Store update in all 17 languages. Formats are settled from 1.0: a compatible change
-is free, a breaking one needs a version bump and a conversion. Proposed order (Neon design review; owner to confirm the cuts):
+is free, a breaking one needs a version bump and a conversion. Agreed order (2026-11-22):
 
 1. Refactor plan steps 1–3 below.
 2. **E1** security leftovers (see Deferred), multi-monitor and mixed-DPI capture and bar behaviour, **P1** notices in one style and
@@ -49,13 +45,13 @@ is free, a breaking one needs a version bump and a conversion. Proposed order (N
    flow, accessibility pass, **I** local-model presets.
 4. Release: Store update with all languages, signing fix from E1, then 1.0.
 
-Proposed for 1.1 (additive, free under the format rules): **N** customization (profiles, sync, themes), **K** read-aloud,
+Moved to 1.1 (additive, free under the format rules): **N** customization (profiles, sync, themes), **K** read-aloud,
 **L** `hotline ask` CLI, **J** web search and MCP gallery, **H** PDF and Office text. Windows agent connectors (`odr.exe mcp list`,
 needs build 26220.7262+ with Experimental agentic features on) ship as preview if they can't be tested.
 
 ## Refactor plan
 
-From the Neon design review (full text: `~/.claude/briefs/hotline/design-review-neon*.md`). Each step keeps the build and tests green.
+From the Neon design review, agreed 2026-11-22: do steps 1-3 before new 1.0 features. Each step keeps the build and tests green.
 
 | # | Change | Cost | When |
 |---|---|---|---|
@@ -124,13 +120,6 @@ secret scrubbing, the single-`RichTextBlock` transcript.
 - agy: effort is part of the model id; headless mode denies anything not in `permissions.allow` and aborts silently on a denied
   tool; `--add-dir` folders are searched for custom agents.
 - Claude Code: `--bare` never reads the OAuth login; chat-only isolation is `--tools "" --setting-sources "" --strict-mcp-config`.
-
-**Tools on this machine**
-- Write C#, resx and scripts containing backslashes with the file-edit tools: a shell heredoc collapses `\\` and `\n`.
-- `smoke.ps1`'s "agy exits with Hotline" check fails while any `agy.exe` runs. Signed packages in a worktree need a `certs`
-  junction (remove with `cmd /c rmdir`). Agent worktrees need the cwd spelled `C:\Users\pmadd\Git\...`.
-- agy as a reviewer: say "do not use any tools" for pure text jobs; review code by file path, not pasted (command lines cap near
-  32k; pasted hook code tripped Defender). Translations: Hydrogen medium in batches, validated for placeholders.
 
 ## Deferred
 
