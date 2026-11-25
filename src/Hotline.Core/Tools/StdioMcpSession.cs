@@ -49,12 +49,13 @@ public sealed class StdioMcpSession : IMcpSession
             throw new IOException(Scrub(L.F(Strings.Mcp_StartFailed, server.Command)));
         }
         McpClient? client = null;
+        var stderrDone = Task.CompletedTask;
         using var exitedOrCancelled = CancellationTokenSource.CreateLinkedTokenSource(ct);
         EventHandler onExited = (_, _) => { try { exitedOrCancelled.Cancel(); } catch (ObjectDisposedException) { } };
         try
         {
             onStarted?.Invoke(process);
-            PumpStderr(process.StandardError, stderr.Line);
+            stderrDone = PumpStderr(process.StandardError, stderr.Line);
             process.Exited += onExited;
             if (process.HasExited) exitedOrCancelled.Cancel();
             client = await McpClient.CreateAsync(new StreamClientTransport(process.StandardInput.BaseStream, process.StandardOutput.BaseStream),
@@ -67,9 +68,16 @@ public sealed class StdioMcpSession : IMcpSession
             process.Exited -= onExited;
             if (!ct.IsCancellationRequested)
             {
-                // The SDK can see end-of-stream a moment before the exit; also lets the last stderr lines arrive.
+                // The SDK can see end-of-stream a moment before the exit. The exit can also come before the last stderr lines
+                // were read (our own pump, which WaitForExit doesn't wait for): wait for the end of stderr too, so the
+                // server's error text is in the message. A child still holding stderr open is cut off by the same limit.
                 using var flush = new CancellationTokenSource(TimeSpan.FromSeconds(1));
-                try { await process.WaitForExitAsync(flush.Token); } catch (OperationCanceledException) { }
+                try
+                {
+                    await process.WaitForExitAsync(flush.Token);
+                    await stderrDone.WaitAsync(flush.Token);
+                }
+                catch (OperationCanceledException) { }
             }
             var exited = HasExited(process);
             var message = exited ? Scrub(ExitMessage(process, stderr)) : null;
@@ -141,8 +149,9 @@ public sealed class StdioMcpSession : IMcpSession
         await ShutdownAsync(_process, _client, ShutdownGrace);
     }
 
-    /// <summary>Reads stderr in chunks and hands on lines of at most 4000 chars: a server that never writes a newline can't grow memory.</summary>
-    internal static void PumpStderr(TextReader reader, Action<string> line) => _ = Task.Run(async () =>
+    /// <summary>Reads stderr in chunks and hands on lines of at most 4000 chars: a server that never writes a newline can't grow memory.
+    /// The task ends after the last line was handed on (end of stream or a read error).</summary>
+    internal static Task PumpStderr(TextReader reader, Action<string> line) => Task.Run(async () =>
     {
         const int MaxLine = 4000;
         var buffer = new char[4096];
