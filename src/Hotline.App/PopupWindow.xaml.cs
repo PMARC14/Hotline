@@ -857,11 +857,7 @@ public sealed partial class PopupWindow : Window
     /// <summary>What "Save as default" writes to state.json: anchor, width and chat height in scaled pixels, each over its settings.json value.</summary>
     public Hotline.Core.State.PanelSpot CurrentSpot()
     {
-        var native = new Native.RECT { Left = _work.X, Top = _work.Y, Right = _work.X + _work.Width, Bottom = _work.Y + _work.Height };
-        var monitorDevice = DisplayArea.FindAll().Count > 1
-            ? Native.MonitorDevice(Native.MonitorFromRect(ref native, Native.MONITOR_DEFAULTTONEAREST))
-            : null;
-        return PanelSpotPolicy.BuildSaveSpot(_bar, _work, _scale, _fixedPx, BarPx, monitorDevice, _settings, _state);
+        return PanelSpotPolicy.BuildSaveSpot(_bar, _work, _scale, _fixedPx, BarPx, _settings, _state);
     }
 
     internal void RefreshSavedSpot() => _resolvedSpot = PanelSpotPolicy.Resolve(_state, _settings);

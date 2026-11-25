@@ -23,7 +23,7 @@ public sealed class PanelSpotPolicyTests : TempDirTest
         var settings = new WindowSettings();
         var bar = new RectI(400, 900, barWidthPx, barHeightPx);
 
-        var spot = PanelSpotPolicy.BuildSaveSpot(bar, Work, scale, fixedHeightPx, barHeightPx, monitorDevice: null, settings);
+        var spot = PanelSpotPolicy.BuildSaveSpot(bar, Work, scale, fixedHeightPx, barHeightPx, settings);
 
         Assert.NotNull(spot.Width);
         Assert.Equal(expectedWidthDip, spot.Width.Value);
@@ -48,24 +48,24 @@ public sealed class PanelSpotPolicyTests : TempDirTest
     }
 
     [Fact]
-    public void BuildSaveSpot_uses_named_monitor_when_provided_and_keeps_active_chat_height_until_collapsed()
+    public void BuildSaveSpot_keeps_the_monitor_mode_and_keeps_active_chat_height_until_collapsed()
     {
         var store = new StateStore(StatePath);
         var settings = new WindowSettings();
         var bar = new RectI(300, 800, 1280, 160);
 
-        var initial = PanelSpotPolicy.BuildSaveSpot(bar, Work, 2.0, fixedHeightPx: 1160, barHeightPx: 160, @"\\.\DISPLAY2", settings, store);
+        var initial = PanelSpotPolicy.BuildSaveSpot(bar, Work, 2.0, fixedHeightPx: 1160, barHeightPx: 160, settings, store);
         Assert.True(store.SavePanelSpot(initial));
-        Assert.Equal(@"\\.\DISPLAY2", store.GetPanelSpot().Anchor?.Value.Monitor);
+        Assert.Equal("active", store.GetPanelSpot().Anchor?.Value.Monitor); // follows the monitor you work on, not the one saved on
         Assert.Equal(500, store.GetPanelSpot().ChatHeight?.Value);
 
         // Moving without resizing height preserves the active saved chatHeight.
-        var moved = PanelSpotPolicy.BuildSaveSpot(bar with { X = 500 }, Work, 2.0, fixedHeightPx: null, barHeightPx: 160, null, settings, store);
+        var moved = PanelSpotPolicy.BuildSaveSpot(bar with { X = 500 }, Work, 2.0, fixedHeightPx: null, barHeightPx: 160, settings, store);
         Assert.True(store.SavePanelSpot(moved));
         Assert.Equal(500, store.GetPanelSpot().ChatHeight?.Value);
 
         // Sizing down to the bar alone clears the saved chatHeight override.
-        var collapsed = PanelSpotPolicy.BuildSaveSpot(bar, Work, 2.0, fixedHeightPx: 200, barHeightPx: 160, null, settings, store);
+        var collapsed = PanelSpotPolicy.BuildSaveSpot(bar, Work, 2.0, fixedHeightPx: 200, barHeightPx: 160, settings, store);
         Assert.True(store.SavePanelSpot(collapsed));
         Assert.Null(store.GetPanelSpot().ChatHeight);
     }
@@ -73,10 +73,10 @@ public sealed class PanelSpotPolicyTests : TempDirTest
     public static TheoryData<string, string, int?, string, double, double, int, int?, string, double, bool, bool, bool> ResolveCases() =>
         new()
         {
-            { "all-equal", "40%", null, "active", 0.5, 0.8, 640, 500, @"\\.\DISPLAY2", 0.3, true, true, true },
-            { "width-percent-changed", "50%", null, "active", 0.5, 0.8, 50, 500, @"\\.\DISPLAY2", 0.3, false, true, true },
-            { "width-switched-to-px", "700", null, "active", 0.5, 0.8, 700, 500, @"\\.\DISPLAY2", 0.3, false, true, true },
-            { "chat-height-changed", "40%", 420, "active", 0.5, 0.8, 640, 420, @"\\.\DISPLAY2", 0.3, true, false, true },
+            { "all-equal", "40%", null, "active", 0.5, 0.8, 640, 500, "active", 0.3, true, true, true },
+            { "width-percent-changed", "50%", null, "active", 0.5, 0.8, 50, 500, "active", 0.3, false, true, true },
+            { "width-switched-to-px", "700", null, "active", 0.5, 0.8, 700, 500, "active", 0.3, false, true, true },
+            { "chat-height-changed", "40%", 420, "active", 0.5, 0.8, 640, 420, "active", 0.3, true, false, true },
             { "anchor-monitor-changed", "40%", null, "primary", 0.5, 0.8, 640, 500, "primary", 0.5, true, true, false },
             { "anchor-x-changed", "40%", null, "active", 0.6, 0.8, 640, 500, "active", 0.6, true, true, false },
         };
@@ -101,7 +101,7 @@ public sealed class PanelSpotPolicyTests : TempDirTest
         var store = new StateStore(StatePath);
         var baseline = new WindowSettings();
         var bar = new RectI(480, 800, 1280, 160);
-        var savedSpot = PanelSpotPolicy.BuildSaveSpot(bar, Work, 2.0, fixedHeightPx: 1160, barHeightPx: 160, @"\\.\DISPLAY2", baseline, store);
+        var savedSpot = PanelSpotPolicy.BuildSaveSpot(bar, Work, 2.0, fixedHeightPx: 1160, barHeightPx: 160, baseline, store);
         Assert.True(store.SavePanelSpot(savedSpot));
 
         Assert.True(PanelWidth.TryParse(currentWidthText, out var parsedWidth));
@@ -133,7 +133,7 @@ public sealed class PanelSpotPolicyTests : TempDirTest
     {
         var store = new StateStore(StatePath);
         var baseline = new WindowSettings();
-        var saved = PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 1280, 120), Work, 2.0, null, 120, null, baseline, store);
+        var saved = PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 1280, 120), Work, 2.0, null, 120, baseline, store);
         Assert.True(store.SavePanelSpot(saved));
 
         Assert.True(PanelWidth.TryParse(currentWidthText, out var currentWidth));
@@ -149,7 +149,7 @@ public sealed class PanelSpotPolicyTests : TempDirTest
     {
         var store = new StateStore(StatePath);
         var settings = new WindowSettings(); // maxWidth 800
-        Assert.True(store.SavePanelSpot(PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 1000, 120), Work, 1.0, null, 120, null, settings, store)));
+        Assert.True(store.SavePanelSpot(PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 1000, 120), Work, 1.0, null, 120, settings, store)));
         var effective = PanelSpotPolicy.Resolve(store, settings);
         Assert.True(effective.WidthApplied);
         Assert.Equal(1000, effective.OpeningWidthPixels(settings, 1920, 1.0));
@@ -164,7 +164,7 @@ public sealed class PanelSpotPolicyTests : TempDirTest
         Assert.Equal(640, noState.Width.Value);
 
         var store = new StateStore(StatePath);
-        var spot = PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 720, 120), Work, 1.0, null, 120, null, settings, store);
+        var spot = PanelSpotPolicy.BuildSaveSpot(new RectI(0, 0, 720, 120), Work, 1.0, null, 120, settings, store);
         Assert.True(store.SavePanelSpot(spot));
 
         Assert.Equal(720, PanelSpotPolicy.Resolve(store, new WindowSettings { Width = new PanelWidth(640) }).Width.Value);
@@ -183,5 +183,15 @@ public sealed class PanelSpotPolicyTests : TempDirTest
         Assert.False(changedOnDisk);
         Assert.Null(error);
         Assert.Equal(Hotline.Core.Files.SafeFile.Hash(File.ReadAllBytes(toolbarPath)), state.GetLastWritten("toolbar.json"));
+    }
+
+    [Theory]
+    [InlineData("primary")]
+    [InlineData(@"\\.\DISPLAY1")]
+    public void BuildSaveSpot_keeps_a_primary_or_named_monitor_setting(string monitor)
+    {
+        var settings = new WindowSettings { Anchor = new PanelAnchor { Monitor = monitor } };
+        var spot = PanelSpotPolicy.BuildSaveSpot(new RectI(300, 800, 1280, 160), Work, 2.0, null, 160, settings);
+        Assert.Equal(monitor, spot.Anchor?.Value.Monitor);
     }
 }
