@@ -211,7 +211,7 @@ public sealed partial class PopupWindow : Window
         _hiddenForDialog = false;
         var fg = hiddenForDialog ? _foreground.RevalidateShowTarget(PreviousForeground) : _foreground.ResolveForShow();
         PreviousForeground = fg;
-        if (!hiddenForDialog)
+        if (!wasShown) // a panel already open (or back from the file picker) keeps its context and its place
         {
             Native.GetCursorPos(out var cursor);
             UserMonitor = _foreground.PlaceBy == PlaceBy.Cursor ? Native.MonitorFromPoint(cursor, Native.MONITOR_DEFAULTTONEAREST) : 0;
@@ -229,7 +229,9 @@ public sealed partial class PopupWindow : Window
             _log.Error("opening while the off-screen self-test still held the panel; ending it");
             _offscreen = false;
         }
-        PlaceOnActiveMonitor();
+        // Already open (a tap action other than toggle, the key pressed again) or back from the file picker: it stays where it
+        // is; placing it again could move an open chat to the monitor the mouse is on now.
+        if (!wasShown) PlaceOnActiveMonitor();
         _shownAtMs = Environment.TickCount64;
         _reclaimed = 0;
         _shows++;
@@ -650,8 +652,11 @@ public sealed partial class PopupWindow : Window
         if (_fixedPx is { } fixedPx) contentPx = fixedPx; // resized by hand: that height until the next open
         else if (GrowMode == GrowMode.Grow)
         {
-            var previous = _targetRect.Height > 0 ? _targetRect.Height : bar.Height;
-            contentPx = PopupGeometry.TwoStep(previous, contentPx, bar.Height, Math.Max(bar.Height, maxPx), _conversation);
+            // The floor is the bar's real height in both directions (growing up, _bar.Height is window.minHeight, 0 by
+            // default, which made the first "halfway" step max/2 up but bar + (max - bar)/2 down).
+            var floorPx = BarPx;
+            var previous = _targetRect.Height > 0 ? _targetRect.Height : floorPx;
+            contentPx = PopupGeometry.TwoStep(previous, contentPx, floorPx, Math.Max(floorPx, maxPx), _conversation);
         }
         // Full height only during a conversation and not over a size set by hand (see PopupGeometry.FullHeight).
         var manual = _fixedPx is not null;
