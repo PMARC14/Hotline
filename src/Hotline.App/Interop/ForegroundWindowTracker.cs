@@ -60,6 +60,11 @@ public sealed class ForegroundWindowTracker : IDisposable
     private const long HandOffMs = 1000;
     private long _hiddenAtMs = long.MinValue / 2;
 
+    private nint _location;
+
+    /// <summary>The desktop or taskbar the user moved to (placement follows the cursor), while it still exists; otherwise 0.</summary>
+    public nint UserLocation => PlaceBy == PlaceBy.Cursor && _location != 0 && Native.IsWindow(_location) ? _location : 0;
+
     /// <summary>The panel just closed: the next foreground change is Windows' choice (see <see cref="HandOffMs"/>).</summary>
     public void NotePanelClosed() => _hiddenAtMs = Environment.TickCount64;
 
@@ -148,6 +153,7 @@ public sealed class ForegroundWindowTracker : IDisposable
         var candidate = Snapshot(hwnd);
         _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
         var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, Environment.TickCount64 - _hiddenAtMs < HandOffMs);
+        if (placeBy == PlaceBy.Cursor && ShellSurfaces.IsUserLocation(candidate.ClassName)) _location = hwnd;
         if (placeBy != PlaceBy) _log.Info($"placement follows {(placeBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({candidate.ClassName})");
         PlaceBy = placeBy;
     }

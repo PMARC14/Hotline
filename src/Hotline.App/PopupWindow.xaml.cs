@@ -321,8 +321,9 @@ public sealed partial class PopupWindow : Window
         _displayRecoveryHeld = false;
         _placementHeld = false;
         _resizeHeld = false;
-        AppWindow.Hide();
+        // Before Hide: the foreground change it causes is delivered to the tracker while Hide still runs.
         _foreground.NotePanelClosed();
+        AppWindow.Hide();
         _guard.NoteHidden();
         Hidden?.Invoke();
     }
@@ -349,9 +350,11 @@ public sealed partial class PopupWindow : Window
             // sound. Give focus back to the app the panel opened over.
             var prev = _foreground.RevalidateShowTarget(PreviousForeground);
             PreviousForeground = prev;
-            if (fg == Hwnd && prev != 0)
+            // Opened from the desktop or a taskbar (maybe on another monitor than the last app): focus goes back there.
+            var back = _foreground.UserLocation is var location and not 0 ? location : prev;
+            if (fg == Hwnd && back != 0)
             {
-                if (Native.ForceForeground(prev)) _log.Info($"focus back to {Native.ClassNameOf(prev)}");
+                if (Native.ForceForeground(back)) _log.Info($"focus back to {Native.ClassNameOf(back)}");
                 else _log.Info("could not give focus back to the previous window");
             }
         }
