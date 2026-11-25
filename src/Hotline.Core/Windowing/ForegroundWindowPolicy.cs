@@ -44,10 +44,22 @@ public static class ForegroundWindowPolicy
     {
         if (ShellSurfaces.IsKeyFocusFrame(previousClass)) return current;
         if (IsReal(incoming)) return PlaceBy.RememberedWindow;
-        var userLocation = incoming.Handle != 0 && incoming.Exists && !incoming.IsHotline && !incoming.IsOwnedDialog &&
-            ShellSurfaces.IsUserLocation(incoming.ClassName);
-        return userLocation ? PlaceBy.Cursor : current;
+        return IsUserLocation(incoming, previousClass) ? PlaceBy.Cursor : current;
     }
+
+    /// <summary>The user moved to the desktop or a taskbar: a live shell location that took focus by itself (not handed on by
+    /// the Copilot key's focus frame). Focus goes back there when the panel closes.</summary>
+    public static bool IsUserLocation(WindowCandidate incoming, string previousClass = "") =>
+        !ShellSurfaces.IsKeyFocusFrame(previousClass) && incoming.Handle != 0 && incoming.Exists && !incoming.IsHotline &&
+        !incoming.IsOwnedDialog && ShellSurfaces.IsUserLocation(incoming.ClassName);
+
+    /// <summary>
+    /// Whether closing the panel gives focus back: only when the panel itself or the Copilot key's focus frame has it (no
+    /// window would have focus afterwards). A close because the user went elsewhere (an app, Start, Search, a flyout, the
+    /// taskbar) leaves focus there.
+    /// </summary>
+    public static bool GivesFocusBackOnClose(bool panelHasFocus, string foregroundClass) =>
+        panelHasFocus || ShellSurfaces.IsKeyFocusFrame(foregroundClass);
 }
 
 /// <summary>Where an "active monitor" open goes: the remembered app window's monitor, or the cursor's.</summary>

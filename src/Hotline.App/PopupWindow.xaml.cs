@@ -191,6 +191,11 @@ public sealed partial class PopupWindow : Window
     public Action<nint>? BeforeShow { get; set; }
 
     /// <summary>Revalidates the show-time target window right before a capture uses it.</summary>
+    /// <summary>The display area and handle of a monitor that is still connected, else null (it was unplugged).</summary>
+    public static (DisplayArea Area, nint Monitor)? ValidMonitor(nint monitor) =>
+        monitor != 0 && Native.MonitorDevice(monitor) is not null
+        && DisplayArea.GetFromDisplayId(Win32Interop.GetDisplayIdFromMonitor(monitor)) is { } area ? (area, monitor) : null;
+
     /// <summary>The monitor the user was on when the panel opened, when that was a click on a desktop or taskbar (the
     /// remembered app may be on another monitor); otherwise 0. Capture screen grabs this one.</summary>
     public nint UserMonitor { get; private set; }
@@ -292,6 +297,7 @@ public sealed partial class PopupWindow : Window
     public void ShowOffscreen()
     {
         _offscreen = true;
+        _currentRect = null; // parked off-screen: no on-screen rect is current until the next placement
         // A realistic panel size for the primary monitor's scale (a fixed pixel size can be narrower than the button row).
         // Windows gives a window at (-32000, -32000) the scale of the monitor nearest it (not always the primary one).
         AppWindow.Move(new PointInt32(-32000, -32000));
@@ -341,7 +347,7 @@ public sealed partial class PopupWindow : Window
         // clicked elsewhere leaves focus there.
         var fg = Native.GetForegroundWindow();
         var fgClass = fg == 0 ? "" : Native.ClassNameOf(fg);
-        var giveBack = fg == Hwnd || ShellSurfaces.IsShell(fgClass) && !ShellSurfaces.IsUserLocation(fgClass);
+        var giveBack = ForegroundWindowPolicy.GivesFocusBackOnClose(fg == Hwnd, fgClass);
         using (_foreground.Suppress()) AppWindow.Hide();
         if (giveBack)
         {
@@ -616,6 +622,7 @@ public sealed partial class PopupWindow : Window
     /// </summary>
     public bool OnDpiChanged(nint wParam, nint lParam)
     {
+        if (_offscreen) return false; // the self-test window parked at -32000: Windows' rect stands
         var suggested = System.Runtime.InteropServices.Marshal.PtrToStructure<Native.RECT>(lParam);
         var proposal = new RectI(suggested.Left, suggested.Top, suggested.Right - suggested.Left, suggested.Bottom - suggested.Top);
         var dpi = (uint)((long)wParam & 0xFFFF);
@@ -965,6 +972,10 @@ public sealed partial class PopupWindow : Window
             area = DisplayArea.GetFromWindowId(Win32Interop.GetWindowIdFromWindow(anchor), DisplayAreaFallback.Nearest);
             monitor = Native.MonitorFromWindow(anchor, Native.MONITOR_DEFAULTTONEAREST);
         }
+        // Already open after a desktop/taskbar click: placed again (a settings change, Back to the default spot), it stays on
+        // the monitor it opened on rather than following the mouse.
+        if ((area is null || monitor == 0) && AppWindow.IsVisible && !_offscreen && ValidMonitor(UserMonitor) is { } opened)
+            (area, monitor) = opened;
         if (area is null || monitor == 0)
         {
             if (anchor != 0) _log.Error($"no display area for previous foreground window 0x{anchor:X} ({Native.ClassNameOf(anchor)}); using cursor monitor");

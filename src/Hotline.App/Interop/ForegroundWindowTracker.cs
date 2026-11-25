@@ -151,8 +151,8 @@ public sealed class ForegroundWindowTracker : IDisposable
         var candidate = Snapshot(hwnd);
         _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
         var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, _lastClass);
+        if (ForegroundWindowPolicy.IsUserLocation(candidate, _lastClass)) _location = hwnd;
         _lastClass = candidate.ClassName;
-        if (placeBy == PlaceBy.Cursor && ShellSurfaces.IsUserLocation(candidate.ClassName)) _location = hwnd;
         if (placeBy != PlaceBy) _log.Info($"placement follows {(placeBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({candidate.ClassName})");
         PlaceBy = placeBy;
     }
