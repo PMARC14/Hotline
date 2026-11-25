@@ -56,17 +56,15 @@ public sealed class ForegroundWindowTracker : IDisposable
     /// <summary>What an "active monitor" open follows: the remembered app, or the cursor after a click on the desktop or a taskbar.</summary>
     public PlaceBy PlaceBy { get; private set; }
 
-    /// <summary>How long after the panel closes a foreground change counts as Windows handing focus on, not the user moving.</summary>
-    private const long HandOffMs = 1000;
-    private long _hiddenAtMs = long.MinValue / 2;
-
     private nint _location;
+    private string _lastClass = ""; // the class of the last window that took focus (any kind)
+
+    /// <summary>The panel took focus (its own events aren't hooked): what follows is no longer the key frame's hand-off.</summary>
+    public void NotePanelFocused() => _lastClass = "";
 
     /// <summary>The desktop or taskbar the user moved to (placement follows the cursor), while it still exists; otherwise 0.</summary>
     public nint UserLocation => PlaceBy == PlaceBy.Cursor && _location != 0 && Native.IsWindow(_location) ? _location : 0;
 
-    /// <summary>The panel just closed: the next foreground change is Windows' choice (see <see cref="HandOffMs"/>).</summary>
-    public void NotePanelClosed() => _hiddenAtMs = Environment.TickCount64;
 
     public Func<uint, bool>? IsOurProcess { get; set; }
 
@@ -152,7 +150,8 @@ public sealed class ForegroundWindowTracker : IDisposable
     {
         var candidate = Snapshot(hwnd);
         _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
-        var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, Environment.TickCount64 - _hiddenAtMs < HandOffMs);
+        var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, _lastClass);
+        _lastClass = candidate.ClassName;
         if (placeBy == PlaceBy.Cursor && ShellSurfaces.IsUserLocation(candidate.ClassName)) _location = hwnd;
         if (placeBy != PlaceBy) _log.Info($"placement follows {(placeBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({candidate.ClassName})");
         PlaceBy = placeBy;

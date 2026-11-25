@@ -38,29 +38,37 @@ public class PanelDisplayRecoveryTests
         Assert.Null(r.FixedHeight);
     }
 
-    // Opening on a monitor of another scale: placement already planned 1200 px at 150 %, then Windows' DPI change
-    // scaled the window again (~1800 px). The raster scale changed, the planned scale didn't: put the planned rect back.
+    // WM_DPICHANGED: Windows proposes the window scaled by the DPI ratio. When Hotline placed the panel for that DPI already
+    // (opening on a monitor of another scale), its own rect is the answer; otherwise (a drag across monitors, a scaling change
+    // under a pinned panel) Windows' suggestion stands and RecoverDisplay rebuilds around it.
     [Fact]
-    public void A_dpi_change_after_placement_restores_the_planned_rect()
+    public void A_dpi_change_to_the_planned_scale_keeps_the_planned_rect()
     {
-        var planned = new RectI(1320, 1728, 1200, 200);
-        var scaledByWindows = new RectI(1020, 1628, 1800, 300);
-        Assert.True(PanelDisplayRecovery.NeedsRestore(observedScale: 1.0, scale: 1.5, actual: scaledByWindows, planned: planned));
+        var planned = new RectI(1320, 1529, 1200, 199);
+        var suggested = new RectI(1320, 1529, 1800, 299);
+        Assert.Equal(planned, PanelDisplayRecovery.RectForDpiChange(plannedScale: 1.5, newDpi: 144, planned, suggested, userMoving: false));
     }
 
     [Fact]
-    public void No_restore_without_a_raster_scale_change()
+    public void A_dpi_change_to_another_scale_takes_windows_suggestion()
     {
-        // A resize by hand or a grip drag changes the rect but not the scale: never snap it back.
-        var planned = new RectI(1320, 1728, 1200, 200);
-        Assert.False(PanelDisplayRecovery.NeedsRestore(1.5, 1.5, new RectI(1320, 1628, 1400, 300), planned));
+        var planned = new RectI(1320, 1529, 1200, 199);
+        var suggested = new RectI(4272, 1506, 800, 133);
+        Assert.Equal(suggested, PanelDisplayRecovery.RectForDpiChange(1.5, 96, planned, suggested, false));
     }
 
     [Fact]
-    public void No_restore_when_the_window_already_matches_or_nothing_was_planned()
+    public void A_drag_across_monitors_takes_windows_suggestion()
     {
-        var planned = new RectI(1320, 1728, 1200, 200);
-        Assert.False(PanelDisplayRecovery.NeedsRestore(1.0, 1.5, planned, planned));
-        Assert.False(PanelDisplayRecovery.NeedsRestore(1.0, 1.5, planned, null));
+        var planned = new RectI(1320, 1529, 1200, 199);
+        var suggested = new RectI(1300, 1500, 1800, 299);
+        Assert.Equal(suggested, PanelDisplayRecovery.RectForDpiChange(1.5, 144, planned, suggested, userMoving: true));
+    }
+
+    [Fact]
+    public void Nothing_planned_takes_windows_suggestion()
+    {
+        var suggested = new RectI(0, 0, 900, 300);
+        Assert.Equal(suggested, PanelDisplayRecovery.RectForDpiChange(1.5, 144, null, suggested, false));
     }
 }

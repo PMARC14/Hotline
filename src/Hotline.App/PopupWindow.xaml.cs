@@ -191,6 +191,10 @@ public sealed partial class PopupWindow : Window
     public Action<nint>? BeforeShow { get; set; }
 
     /// <summary>Revalidates the show-time target window right before a capture uses it.</summary>
+    /// <summary>The monitor the user was on when the panel opened, when that was a click on a desktop or taskbar (the
+    /// remembered app may be on another monitor); otherwise 0. Capture screen grabs this one.</summary>
+    public nint UserMonitor { get; private set; }
+
     public nint RevalidateCaptureTarget(nint? candidate = null)
     {
         var fg = _foreground.RevalidateShowTarget(candidate ?? PreviousForeground);
@@ -207,6 +211,11 @@ public sealed partial class PopupWindow : Window
         _hiddenForDialog = false;
         var fg = hiddenForDialog ? _foreground.RevalidateShowTarget(PreviousForeground) : _foreground.ResolveForShow();
         PreviousForeground = fg;
+        if (!hiddenForDialog)
+        {
+            Native.GetCursorPos(out var cursor);
+            UserMonitor = _foreground.PlaceBy == PlaceBy.Cursor ? Native.MonitorFromPoint(cursor, Native.MONITOR_DEFAULTTONEAREST) : 0;
+        }
         if (fg != 0 && !hiddenForDialog && readSelection)
         {
             try { BeforeShow?.Invoke(fg); } // e.g. read the selection there before we take focus (also when pinned open)
@@ -226,8 +235,6 @@ public sealed partial class PopupWindow : Window
         _shows++;
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
-        // A move onto a monitor of another scale may only be rescaled by Windows once shown: check after it settles.
-        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, RestoreIfRescaled);
         Shown?.Invoke();
         if (!wasShown) PlayOpenClose?.Invoke(true);
         CheckShown();
@@ -312,18 +319,39 @@ public sealed partial class PopupWindow : Window
     /// <summary>Plays the open (true) or close (false) sound; only for a real open or close, never a re-show.</summary>
     public Action<bool>? PlayOpenClose { get; set; }
 
+    /// <summary>The panel is about to close: a drag or keyboard move still running ends now, before the spot is decided.</summary>
+    public event Action? Hiding;
+
     public void HidePopup()
     {
         if (!AppWindow.IsVisible) return;
+        Hiding?.Invoke(); // a move ended by the close is part of this open: the pinned/forgotten decision below covers it
         PlayOpenClose?.Invoke(false);
         if (!Pinned || _forgetOnHide) _session = null; // moved but not pinned (or forgotten): the next open uses the default
         _forgetOnHide = false;
         _displayRecoveryHeld = false;
         _placementHeld = false;
         _resizeHeld = false;
-        // Before Hide: the foreground change it causes is delivered to the tracker while Hide still runs.
-        _foreground.NotePanelClosed();
-        AppWindow.Hide();
+        // Closed while the panel (or the Copilot key's focus frame, 26H2) has focus: no window would have focus afterwards,
+        // the rest of the key press would go nowhere (Windows' warning sound), and Windows would pick some window, maybe on
+        // another monitor, which isn't the user moving. Hide without tracking that, then give focus back to where the panel
+        // was opened from: the desktop or taskbar the user clicked, else the app it opened over. A close because the user
+        // clicked elsewhere leaves focus there.
+        var fg = Native.GetForegroundWindow();
+        var fgClass = fg == 0 ? "" : Native.ClassNameOf(fg);
+        var giveBack = fg == Hwnd || ShellSurfaces.IsShell(fgClass) && !ShellSurfaces.IsUserLocation(fgClass);
+        using (_foreground.Suppress()) AppWindow.Hide();
+        if (giveBack)
+        {
+            var prev = _foreground.RevalidateShowTarget(PreviousForeground);
+            PreviousForeground = prev;
+            var back = _foreground.UserLocation is var location and not 0 ? location : prev;
+            if (back != 0)
+            {
+                if (Native.ForceForeground(back)) _log.Info($"focus back to {Native.ClassNameOf(back)}");
+                else _log.Info("could not give focus back to the previous window");
+            }
+        }
         _guard.NoteHidden();
         Hidden?.Invoke();
     }
@@ -342,22 +370,7 @@ public sealed partial class PopupWindow : Window
         var foreground = fg == Hwnd ? "panel" : Native.ClassNameOf(fg);
         _log.Info($"toggle: visible={AppWindow.IsVisible} pinned={Pinned} foreground={foreground} focus={focusName} previous={previous}");
         if (_guard.ShouldShowOnToggle(AppWindow.IsVisible)) ShowPopup();
-        else
-        {
-            HidePopup();
-            // Closed by the key while it had focus (a pinned panel keeps it; unpinned, the shell usually took it first):
-            // no window had focus afterwards, the rest of the key press went nowhere and Windows played its warning
-            // sound. Give focus back to the app the panel opened over.
-            var prev = _foreground.RevalidateShowTarget(PreviousForeground);
-            PreviousForeground = prev;
-            // Opened from the desktop or a taskbar (maybe on another monitor than the last app): focus goes back there.
-            var back = _foreground.UserLocation is var location and not 0 ? location : prev;
-            if (fg == Hwnd && back != 0)
-            {
-                if (Native.ForceForeground(back)) _log.Info($"focus back to {Native.ClassNameOf(back)}");
-                else _log.Info("could not give focus back to the previous window");
-            }
-        }
+        else HidePopup(); // gives focus back (see HidePopup)
     }
 
     public void SetStatus(string text) => StatusText.Text = text;
@@ -434,6 +447,7 @@ public sealed partial class PopupWindow : Window
 
     private void OnActivated(object sender, WindowActivatedEventArgs e)
     {
+        if (e.WindowActivationState != WindowActivationState.Deactivated) _foreground.NotePanelFocused();
         if (e.WindowActivationState == WindowActivationState.Deactivated)
         {
             // Who took focus (the pinned-close sound and the forgotten spot were both about this moment).
@@ -580,9 +594,8 @@ public sealed partial class PopupWindow : Window
         var wa = area.WorkArea;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
         var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
-        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001) { RestoreIfRescaled(); return; }
+        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001) return;
         _log.Info($"display change: {_scale} -> {scale}, window {WindowRect}");
-        _observedScale = scale;
         _displayMonitor = monitor;
         StopAnimation();
         var result = PanelDisplayRecovery.Calculate(_work, work, _scale, scale, WindowRect, _bar, _fixedPx, _growUp);
@@ -595,27 +608,27 @@ public sealed partial class PopupWindow : Window
     }
 
     /// <summary>
-    /// Opened on a monitor of another scale: placement planned for that scale, then Windows' DPI change scaled the window once
-    /// more (~1.5x from 100 % to 150 %). Only ever puts the planned rect back; a stale raster scale (XAML not caught up yet)
-    /// does nothing, and the XamlRoot change that follows runs this again.
+    /// WM_DPICHANGED: Windows proposes the window scaled by the DPI ratio. When the panel was placed for the new DPI already
+    /// (opening on a monitor of another scale), answer with that rect instead: accepting the proposal scaled it twice
+    /// (1.5x too big from 100 % to 150 %). A drag across monitors or a scaling change keeps Windows' proposal.
     /// </summary>
-    private void RestoreIfRescaled()
+    public bool OnDpiChanged(nint wParam, nint lParam)
     {
-        if (!AppWindow.IsVisible || _offscreen || _dragging || _resizeHolds > 0) return;
-        var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
-        var observed = _observedScale;
-        _observedScale = scale;
-        if (Math.Abs(_scale - scale) >= 0.001) return; // XAML hasn't caught up with the planned scale yet
-        if (!PanelDisplayRecovery.NeedsRestore(observed, scale, WindowRect, _currentRect) || _currentRect is not { } planned) return;
-        _log.Info($"place: the scale change ({observed} -> {scale}) resized the panel to {WindowRect}; back to {planned}");
-        StopAnimation();
-        MoveTo(planned);
+        var suggested = System.Runtime.InteropServices.Marshal.PtrToStructure<Native.RECT>(lParam);
+        var proposal = new RectI(suggested.Left, suggested.Top, suggested.Right - suggested.Left, suggested.Bottom - suggested.Top);
+        var dpi = (uint)((long)wParam & 0xFFFF);
+        var answer = PanelDisplayRecovery.RectForDpiChange(_scale, dpi, _currentRect, proposal, _dragging);
+        if (answer != proposal)
+        {
+            _log.Info($"place: DPI change to {dpi}: keeping {answer} (Windows proposed {proposal})");
+            System.Runtime.InteropServices.Marshal.StructureToPtr(
+                new Native.RECT { Left = answer.X, Top = answer.Y, Right = answer.X + answer.Width, Bottom = answer.Y + answer.Height }, lParam, false);
+        }
+        return false; // WinUI applies the rect (and rescales its content)
     }
 
     private RectI _targetRect;
     private RectI? _currentRect;
-    /// <summary>The raster scale RecoverDisplay last saw while the panel was shown (0 before the first).</summary>
-    private double _observedScale;
     private bool _conversation;
 
     /// <summary>

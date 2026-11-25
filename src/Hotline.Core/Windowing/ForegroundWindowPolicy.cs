@@ -38,11 +38,12 @@ public static class ForegroundWindowPolicy
     /// remembered window; the desktop or a taskbar (the user moved to another monitor's empty desktop) switches it to the
     /// cursor, since the desktop window spans every monitor; anything else (the Copilot key's focus frame, Start) keeps it.
     /// </summary>
-    /// <param name="justAfterPanelClosed">The panel closed a moment ago: Windows handed focus to the next window, which says
-    /// nothing about where the user is, so an app doesn't take placement back from the cursor.</param>
-    public static PlaceBy UpdatePlaceBy(WindowCandidate incoming, PlaceBy current, bool justAfterPanelClosed = false)
+    /// <param name="previousClass">The class of the window that had focus before: focus handed on by the Copilot key's
+    /// focus frame (26H2) is Windows' choice once the key is released, not the user moving, so it keeps the source.</param>
+    public static PlaceBy UpdatePlaceBy(WindowCandidate incoming, PlaceBy current, string previousClass = "")
     {
-        if (IsReal(incoming)) return justAfterPanelClosed ? current : PlaceBy.RememberedWindow;
+        if (ShellSurfaces.IsKeyFocusFrame(previousClass)) return current;
+        if (IsReal(incoming)) return PlaceBy.RememberedWindow;
         var userLocation = incoming.Handle != 0 && incoming.Exists && !incoming.IsHotline && !incoming.IsOwnedDialog &&
             ShellSurfaces.IsUserLocation(incoming.ClassName);
         return userLocation ? PlaceBy.Cursor : current;

@@ -125,13 +125,13 @@ public class ForegroundWindowPolicyTests
         Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(c, PlaceBy.RememberedWindow));
     }
 
-    // Closing the panel makes Windows hand focus to the next window (often an app on the other monitor): that is not the
-    // user moving, so it must not undo a click on the desktop.
+    // 26H2: when the Copilot key closes the panel, Explorer's focus frame holds focus and, once the key is released, hands
+    // it to some window (often an app on the other monitor). That is Windows' choice, not the user moving.
     [Fact]
-    public void Focus_handed_out_because_the_panel_closed_keeps_the_cursor_placement()
+    public void Focus_handed_on_by_the_copilot_key_frame_keeps_the_placement_source()
     {
-        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, justAfterPanelClosed: true));
-        Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, justAfterPanelClosed: false));
-        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp with { ClassName = "Progman" }, PlaceBy.RememberedWindow, justAfterPanelClosed: true));
+        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, previousClass: "CopilotKeyPressFocusFrame"));
+        Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, previousClass: "Progman"));
+        Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, previousClass: ""));
     }
 }

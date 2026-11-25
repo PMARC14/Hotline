@@ -22,4 +22,7 @@ public static class ShellSurfaces
     public static bool IsShell(string className) => Classes.Contains(className);
 
     public static bool IsUserLocation(string className) => UserLocations.Contains(className);
+
+    /// <summary>Explorer's window that holds focus for a moment on each Copilot key press (26H2).</summary>
+    public static bool IsKeyFocusFrame(string className) => className == "CopilotKeyPressFocusFrame";
 }

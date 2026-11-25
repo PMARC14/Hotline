@@ -20,10 +20,11 @@ public static class PanelDisplayRecovery
     }
 
     /// <summary>
-    /// The panel opened on a monitor of another scale: placement already planned for the new scale, then Windows' DPI change
-    /// scaled the window rect once more. True when the raster scale just changed (<paramref name="observedScale"/> was the last
-    /// one seen) while the planned scale already matches it, and the window no longer matches the planned rect.
+    /// The rect to answer Windows' WM_DPICHANGED with. Windows suggests the window scaled by the DPI ratio; when the panel
+    /// was already placed for the new DPI (opening on a monitor of another scale), scaling it again would make it 1.5x
+    /// too big or too small, so the planned rect stands. A drag across monitors, or a DPI change the panel wasn't placed
+    /// for (a scaling change under a pinned panel), takes the suggestion; RecoverDisplay then rebuilds around it.
     /// </summary>
-    public static bool NeedsRestore(double observedScale, double scale, RectI actual, RectI? planned) =>
-        Math.Abs(observedScale - scale) > 0.001 && planned is { } p && actual != p;
+    public static RectI RectForDpiChange(double plannedScale, uint newDpi, RectI? planned, RectI suggested, bool userMoving) =>
+        !userMoving && planned is { } p && Math.Abs(newDpi / 96.0 - plannedScale) < 0.001 ? p : suggested;
 }
