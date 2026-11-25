@@ -124,4 +124,14 @@ public class ForegroundWindowPolicyTests
         var c = LiveApp with { ClassName = "Progman", IsHotline = isHotline, IsOwnedDialog = ownedDialog, Exists = !gone };
         Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(c, PlaceBy.RememberedWindow));
     }
+
+    // Closing the panel makes Windows hand focus to the next window (often an app on the other monitor): that is not the
+    // user moving, so it must not undo a click on the desktop.
+    [Fact]
+    public void Focus_handed_out_because_the_panel_closed_keeps_the_cursor_placement()
+    {
+        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, justAfterPanelClosed: true));
+        Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor, justAfterPanelClosed: false));
+        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp with { ClassName = "Progman" }, PlaceBy.RememberedWindow, justAfterPanelClosed: true));
+    }
 }

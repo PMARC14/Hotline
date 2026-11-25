@@ -227,7 +227,7 @@ public sealed partial class PopupWindow : Window
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
         // A move onto a monitor of another scale may only be rescaled by Windows once shown: check after it settles.
-        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, RecoverDisplay);
+        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, RestoreIfRescaled);
         Shown?.Invoke();
         if (!wasShown) PlayOpenClose?.Invoke(true);
         CheckShown();
@@ -322,6 +322,7 @@ public sealed partial class PopupWindow : Window
         _placementHeld = false;
         _resizeHeld = false;
         AppWindow.Hide();
+        _foreground.NotePanelClosed();
         _guard.NoteHidden();
         Hidden?.Invoke();
     }
@@ -576,19 +577,9 @@ public sealed partial class PopupWindow : Window
         var wa = area.WorkArea;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
         var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
-        var observed = _observedScale;
+        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001) { RestoreIfRescaled(); return; }
+        _log.Info($"display change: {_scale} -> {scale}, window {WindowRect}");
         _observedScale = scale;
-        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001)
-        {
-            // Opened on a monitor of another scale: placement planned for it, then Windows' DPI change scaled the window again.
-            if (PanelDisplayRecovery.NeedsRestore(observed, scale, WindowRect, _currentRect) && _currentRect is { } planned)
-            {
-                _log.Info($"place: the scale change resized the panel to {WindowRect}; back to {planned}");
-                StopAnimation();
-                MoveTo(planned);
-            }
-            return;
-        }
         _displayMonitor = monitor;
         StopAnimation();
         var result = PanelDisplayRecovery.Calculate(_work, work, _scale, scale, WindowRect, _bar, _fixedPx, _growUp);
@@ -598,6 +589,24 @@ public sealed partial class PopupWindow : Window
         MoveTo(result.Rect);
         if (_session is not null) _session = new SessionSpot(_bar, _work, _scale, _fixedPx, _fixedWidth);
         ApplyHeight();
+    }
+
+    /// <summary>
+    /// Opened on a monitor of another scale: placement planned for that scale, then Windows' DPI change scaled the window once
+    /// more (~1.5x from 100 % to 150 %). Only ever puts the planned rect back; a stale raster scale (XAML not caught up yet)
+    /// does nothing, and the XamlRoot change that follows runs this again.
+    /// </summary>
+    private void RestoreIfRescaled()
+    {
+        if (!AppWindow.IsVisible || _offscreen || _dragging || _resizeHolds > 0) return;
+        var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
+        var observed = _observedScale;
+        _observedScale = scale;
+        if (Math.Abs(_scale - scale) >= 0.001) return; // XAML hasn't caught up with the planned scale yet
+        if (!PanelDisplayRecovery.NeedsRestore(observed, scale, WindowRect, _currentRect) || _currentRect is not { } planned) return;
+        _log.Info($"place: the scale change ({observed} -> {scale}) resized the panel to {WindowRect}; back to {planned}");
+        StopAnimation();
+        MoveTo(planned);
     }
 
     private RectI _targetRect;

@@ -56,6 +56,13 @@ public sealed class ForegroundWindowTracker : IDisposable
     /// <summary>What an "active monitor" open follows: the remembered app, or the cursor after a click on the desktop or a taskbar.</summary>
     public PlaceBy PlaceBy { get; private set; }
 
+    /// <summary>How long after the panel closes a foreground change counts as Windows handing focus on, not the user moving.</summary>
+    private const long HandOffMs = 1000;
+    private long _hiddenAtMs = long.MinValue / 2;
+
+    /// <summary>The panel just closed: the next foreground change is Windows' choice (see <see cref="HandOffMs"/>).</summary>
+    public void NotePanelClosed() => _hiddenAtMs = Environment.TickCount64;
+
     public Func<uint, bool>? IsOurProcess { get; set; }
 
     public ForegroundWindowTracker(FileLog log, Func<uint, bool>? isOurProcess = null)
@@ -89,7 +96,6 @@ public sealed class ForegroundWindowTracker : IDisposable
     public nint ResolveForShow()
     {
         var live = Snapshot(Native.GetForegroundWindow());
-        PlaceBy = ForegroundWindowPolicy.UpdatePlaceBy(live, PlaceBy);
         var remembered = _remembered.Handle != 0 ? Snapshot(_remembered.Handle, _remembered) : default;
         if (!ForegroundWindowPolicy.IsReal(remembered))
             _remembered = default;
@@ -141,7 +147,9 @@ public sealed class ForegroundWindowTracker : IDisposable
     {
         var candidate = Snapshot(hwnd);
         _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
-        PlaceBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy);
+        var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, Environment.TickCount64 - _hiddenAtMs < HandOffMs);
+        if (placeBy != PlaceBy) _log.Info($"placement follows {(placeBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({candidate.ClassName})");
+        PlaceBy = placeBy;
     }
 
     private WindowCandidate Snapshot(nint hwnd, WindowCandidate? expectedIdentity = null)
