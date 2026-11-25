@@ -37,4 +37,30 @@ public class PanelDisplayRecoveryTests
         Assert.Equal(new RectI(40, 400, 600, 60), r.Bar);
         Assert.Null(r.FixedHeight);
     }
+
+    // Opening on a monitor of another scale: placement already planned 1200 px at 150 %, then Windows' DPI change
+    // scaled the window again (~1800 px). The raster scale changed, the planned scale didn't: put the planned rect back.
+    [Fact]
+    public void A_dpi_change_after_placement_restores_the_planned_rect()
+    {
+        var planned = new RectI(1320, 1728, 1200, 200);
+        var scaledByWindows = new RectI(1020, 1628, 1800, 300);
+        Assert.True(PanelDisplayRecovery.NeedsRestore(observedScale: 1.0, scale: 1.5, actual: scaledByWindows, planned: planned));
+    }
+
+    [Fact]
+    public void No_restore_without_a_raster_scale_change()
+    {
+        // A resize by hand or a grip drag changes the rect but not the scale: never snap it back.
+        var planned = new RectI(1320, 1728, 1200, 200);
+        Assert.False(PanelDisplayRecovery.NeedsRestore(1.5, 1.5, new RectI(1320, 1628, 1400, 300), planned));
+    }
+
+    [Fact]
+    public void No_restore_when_the_window_already_matches_or_nothing_was_planned()
+    {
+        var planned = new RectI(1320, 1728, 1200, 200);
+        Assert.False(PanelDisplayRecovery.NeedsRestore(1.0, 1.5, planned, planned));
+        Assert.False(PanelDisplayRecovery.NeedsRestore(1.0, 1.5, planned, null));
+    }
 }

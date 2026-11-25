@@ -226,6 +226,8 @@ public sealed partial class PopupWindow : Window
         _shows++;
         Activate();
         if (!Native.ForceForeground(Hwnd)) _log.Error("could not take foreground; typing goes elsewhere until the panel is clicked");
+        // A move onto a monitor of another scale may only be rescaled by Windows once shown: check after it settles.
+        DispatcherQueue.TryEnqueue(Microsoft.UI.Dispatching.DispatcherQueuePriority.Low, RecoverDisplay);
         Shown?.Invoke();
         if (!wasShown) PlayOpenClose?.Invoke(true);
         CheckShown();
@@ -574,7 +576,19 @@ public sealed partial class PopupWindow : Window
         var wa = area.WorkArea;
         var work = new RectI(wa.X, wa.Y, wa.Width, wa.Height);
         var scale = Root.XamlRoot?.RasterizationScale ?? _scale;
-        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001) return;
+        var observed = _observedScale;
+        _observedScale = scale;
+        if (_displayMonitor == monitor && _work == work && Math.Abs(_scale - scale) < 0.001)
+        {
+            // Opened on a monitor of another scale: placement planned for it, then Windows' DPI change scaled the window again.
+            if (PanelDisplayRecovery.NeedsRestore(observed, scale, WindowRect, _currentRect) && _currentRect is { } planned)
+            {
+                _log.Info($"place: the scale change resized the panel to {WindowRect}; back to {planned}");
+                StopAnimation();
+                MoveTo(planned);
+            }
+            return;
+        }
         _displayMonitor = monitor;
         StopAnimation();
         var result = PanelDisplayRecovery.Calculate(_work, work, _scale, scale, WindowRect, _bar, _fixedPx, _growUp);
@@ -588,6 +602,8 @@ public sealed partial class PopupWindow : Window
 
     private RectI _targetRect;
     private RectI? _currentRect;
+    /// <summary>The raster scale RecoverDisplay last saw while the panel was shown (0 before the first).</summary>
+    private double _observedScale;
     private bool _conversation;
 
     /// <summary>
@@ -914,7 +930,8 @@ public sealed partial class PopupWindow : Window
         // popup came out at 100% scale ("occasionally small"). Only trust live windows; otherwise use the cursor.
         if (PreviousForeground != 0)
             PreviousForeground = _foreground.RevalidateShowTarget(PreviousForeground);
-        var anchor = PreviousForeground;
+        // After a click on another monitor's empty desktop or taskbar, the remembered app is on the wrong monitor: use the cursor.
+        var anchor = _foreground.PlaceBy == PlaceBy.Cursor ? 0 : PreviousForeground;
         DisplayArea? area = null;
         nint monitor = 0;
         if (anchor != 0)
@@ -929,7 +946,7 @@ public sealed partial class PopupWindow : Window
             area = DisplayArea.GetFromPoint(new PointInt32(pt.X, pt.Y), DisplayAreaFallback.Nearest) ?? DisplayArea.Primary;
             monitor = Native.MonitorFromPoint(pt, Native.MONITOR_DEFAULTTONEAREST);
         }
-        return (area, monitor, "active");
+        return (area, monitor, anchor == 0 && PreviousForeground != 0 ? "active (cursor)" : "active");
     }
 
     /// <summary>The monitor that still holds a work area (null when it was unplugged): its current work area and scale.</summary>

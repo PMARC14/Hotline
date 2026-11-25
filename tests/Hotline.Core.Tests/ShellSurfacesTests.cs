@@ -17,4 +17,16 @@ public class ShellSurfacesTests
     [InlineData("WindowsForms10.Window.8.app.0.1", false)]
     public void Only_shell_surfaces_are_skipped_as_capture_targets(string cls, bool isShell)
         => Assert.Equal(isShell, ShellSurfaces.IsShell(cls));
+
+    [Theory]
+    [InlineData("Shell_TrayWnd", true)]
+    [InlineData("Shell_SecondaryTrayWnd", true)]
+    [InlineData("Progman", true)]
+    [InlineData("WorkerW", true)]
+    [InlineData("Windows.UI.Core.CoreWindow", false)]
+    [InlineData("XamlExplorerHostIslandWindow", false)]
+    [InlineData("CopilotKeyPressFocusFrame", false)]
+    [InlineData("Chrome_WidgetWin_1", false)]
+    public void Desktop_and_taskbars_mark_where_the_user_is(string cls, bool isLocation)
+        => Assert.Equal(isLocation, ShellSurfaces.IsUserLocation(cls));
 }

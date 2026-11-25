@@ -32,4 +32,20 @@ public static class ForegroundWindowPolicy
 
     public static WindowCandidate UpdateRemembered(WindowCandidate incoming, WindowCandidate remembered) =>
         IsReal(incoming) ? incoming : remembered;
+
+    /// <summary>
+    /// What an "active monitor" open follows after <paramref name="incoming"/> took focus: a real app brings it back to the
+    /// remembered window; the desktop or a taskbar (the user moved to another monitor's empty desktop) switches it to the
+    /// cursor, since the desktop window spans every monitor; anything else (the Copilot key's focus frame, Start) keeps it.
+    /// </summary>
+    public static PlaceBy UpdatePlaceBy(WindowCandidate incoming, PlaceBy current)
+    {
+        if (IsReal(incoming)) return PlaceBy.RememberedWindow;
+        var userLocation = incoming.Handle != 0 && incoming.Exists && !incoming.IsHotline && !incoming.IsOwnedDialog &&
+            ShellSurfaces.IsUserLocation(incoming.ClassName);
+        return userLocation ? PlaceBy.Cursor : current;
+    }
 }
+
+/// <summary>Where an "active monitor" open goes: the remembered app window's monitor, or the cursor's.</summary>
+public enum PlaceBy { RememberedWindow, Cursor }

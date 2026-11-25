@@ -13,5 +13,13 @@ public static class ShellSurfaces
         "CopilotKeyPressFocusFrame", // Windows 11 26H2: Explorer takes focus for a moment on each Copilot key press
     };
 
+    /// <summary>The desktop and the taskbars: never capture targets, but a click there says which monitor the user is on.</summary>
+    private static readonly HashSet<string> UserLocations = new(StringComparer.Ordinal)
+    {
+        "Shell_TrayWnd", "Shell_SecondaryTrayWnd", "Progman", "WorkerW",
+    };
+
     public static bool IsShell(string className) => Classes.Contains(className);
+
+    public static bool IsUserLocation(string className) => UserLocations.Contains(className);
 }

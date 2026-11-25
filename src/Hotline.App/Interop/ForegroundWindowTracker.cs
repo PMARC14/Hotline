@@ -53,6 +53,9 @@ public sealed class ForegroundWindowTracker : IDisposable
     private WindowCandidate _remembered;
     private WindowCandidate _showTarget;
 
+    /// <summary>What an "active monitor" open follows: the remembered app, or the cursor after a click on the desktop or a taskbar.</summary>
+    public PlaceBy PlaceBy { get; private set; }
+
     public Func<uint, bool>? IsOurProcess { get; set; }
 
     public ForegroundWindowTracker(FileLog log, Func<uint, bool>? isOurProcess = null)
@@ -86,6 +89,7 @@ public sealed class ForegroundWindowTracker : IDisposable
     public nint ResolveForShow()
     {
         var live = Snapshot(Native.GetForegroundWindow());
+        PlaceBy = ForegroundWindowPolicy.UpdatePlaceBy(live, PlaceBy);
         var remembered = _remembered.Handle != 0 ? Snapshot(_remembered.Handle, _remembered) : default;
         if (!ForegroundWindowPolicy.IsReal(remembered))
             _remembered = default;
@@ -137,6 +141,7 @@ public sealed class ForegroundWindowTracker : IDisposable
     {
         var candidate = Snapshot(hwnd);
         _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
+        PlaceBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy);
     }
 
     private WindowCandidate Snapshot(nint hwnd, WindowCandidate? expectedIdentity = null)

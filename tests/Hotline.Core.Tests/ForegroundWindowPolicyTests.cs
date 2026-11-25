@@ -85,4 +85,43 @@ public class ForegroundWindowPolicyTests
         Assert.Equal((nint)0, ForegroundWindowPolicy.Choose(copilotFrame, reusedRemembered));
         Assert.Equal((nint)0, ForegroundWindowPolicy.Choose(copilotFrame, closedRemembered));
     }
+
+    // The desktop and the taskbars say where the user is (a click on another monitor's empty desktop), even though
+    // they are never capture targets. Transient shell surfaces (the Copilot key's focus frame, Start) say nothing.
+    [Theory]
+    [InlineData("Progman")]
+    [InlineData("WorkerW")]
+    [InlineData("Shell_TrayWnd")]
+    [InlineData("Shell_SecondaryTrayWnd")]
+    public void Placement_follows_the_cursor_after_the_user_moves_to_the_desktop_or_a_taskbar(string cls)
+    {
+        var desktop = LiveApp with { ClassName = cls };
+        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(desktop, PlaceBy.RememberedWindow));
+        Assert.Equal(RememberedApp, ForegroundWindowPolicy.UpdateRemembered(desktop, RememberedApp)); // capture target unchanged
+    }
+
+    [Theory]
+    [InlineData("CopilotKeyPressFocusFrame")]
+    [InlineData("Windows.UI.Core.CoreWindow")]
+    [InlineData("XamlExplorerHostIslandWindow")]
+    public void Transient_shell_surfaces_keep_the_placement_source(string cls)
+    {
+        var transient = LiveApp with { ClassName = cls };
+        Assert.Equal(PlaceBy.Cursor, ForegroundWindowPolicy.UpdatePlaceBy(transient, PlaceBy.Cursor));
+        Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(transient, PlaceBy.RememberedWindow));
+    }
+
+    [Fact]
+    public void A_real_app_window_brings_placement_back_to_the_remembered_window()
+        => Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(LiveApp, PlaceBy.Cursor));
+
+    [Theory]
+    [InlineData(true, false, false)]  // Hotline's own window
+    [InlineData(false, true, false)]  // a dialog Hotline owns
+    [InlineData(false, false, true)]  // gone
+    public void Hotline_windows_and_dead_handles_keep_the_placement_source(bool isHotline, bool ownedDialog, bool gone)
+    {
+        var c = LiveApp with { ClassName = "Progman", IsHotline = isHotline, IsOwnedDialog = ownedDialog, Exists = !gone };
+        Assert.Equal(PlaceBy.RememberedWindow, ForegroundWindowPolicy.UpdatePlaceBy(c, PlaceBy.RememberedWindow));
+    }
 }
