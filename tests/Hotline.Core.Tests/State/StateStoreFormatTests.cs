@@ -140,4 +140,23 @@ public sealed class StateStoreFormatTests : TempDirTest
         Assert.Empty(store.GetGrants());
         Assert.Equal(before, File.ReadAllBytes(StatePath));
     }
+
+    [Fact]
+    public void Hand_cased_keys_are_read_and_keep_their_spelling_on_write()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(StatePath, "{\"Version\":1,\"Shown\":{\"FirstRun\":\"2026-11-14T20:00:00Z\"},\"Grants\":[{\"Server\":\"s\",\"Tool\":\"t\",\"Launch\":\"h\",\"At\":\"2026-11-14T20:00:00Z\",\"Extra\":1}]}");
+        var store = new StateStore(StatePath);
+        Assert.True(store.IsShown(ShownFlag.FirstRun));
+        Assert.True(store.IsGranted("s", "t", "h"));
+
+        Assert.True(store.SetShown(ShownFlag.SupportNote, T));
+        Assert.True(store.AddGrant("s2", "t2", "h2", T));
+
+        var root = JsonNode.Parse(File.ReadAllText(StatePath))!.AsObject();
+        Assert.Equal(["Version", "Shown", "Grants"], root.Select(p => p.Key).ToArray());
+        Assert.Equal(1, root["Grants"]![0]!["Extra"]!.GetValue<int>());
+        Assert.Equal(2, root["Grants"]!.AsArray().Count);
+        Assert.NotNull(root["Shown"]!["supportNote"]);
+    }
 }
