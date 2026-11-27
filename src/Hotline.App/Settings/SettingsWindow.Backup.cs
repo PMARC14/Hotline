@@ -189,7 +189,7 @@ public sealed partial class SettingsWindow
                 var (result, needKeys, needSecrets) = await Task.Run(() =>
                 {
                     var r = SettingsPackage.Import(plan, Path.Combine(data, SettingsReset.BackupsFolder),
-                        executionConfirmed: plan.RequiresExecutionConfirmation);
+                        executionConfirmed: plan.RequiresExecutionConfirmation, state: _state);
                     return (r, r.Error is null ? SettingsPackage.ConnectionsNeedingKey(data, r, _secrets) : [],
                         r.Written.Contains("mcp.json") ? SettingsPackage.ServersNeedingSecrets(plan, _secrets) : []);
                 });

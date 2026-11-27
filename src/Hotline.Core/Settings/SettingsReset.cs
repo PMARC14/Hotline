@@ -18,7 +18,7 @@ public static class SettingsReset
         bool everything, DateTimeOffset now, IFileSystem? fileSystem = null, StateStore? state = null)
     {
         var files = fileSystem ?? new RealFileSystem();
-        state ??= new StateStore(Path.Combine(directory, StateStore.FileName));
+        state ??= store.State;
         var backup = new BackupSet(directory, BackupReason.Reset, files, () => now.LocalDateTime);
         var writer = new SafeFile(files);
         var failed = new List<string>();

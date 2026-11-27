@@ -27,8 +27,11 @@ public sealed class SettingsStore
         _directory = Path.GetFullPath(directory);
         _files = fileSystem ?? new RealFileSystem();
         _writer = new SafeFile(_files);
-        _state = state ?? new StateStore(Path.Combine(_directory, "state.json"));
+        _state = state ?? new StateStore(Path.Combine(_directory, StateStore.FileName)); // tests; the app passes its one instance
     }
+
+    /// <summary>The <c>state.json</c> store this settings store records <c>lastWritten</c> hashes in; reset and import use the same one.</summary>
+    public StateStore State => _state;
 
     public string FilePath => Path.Combine(_directory, FileName);
     public string ConnectionsDirectory => Path.Combine(_directory, ConnectionsFolder);

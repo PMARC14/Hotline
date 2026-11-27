@@ -76,7 +76,6 @@ public static class ToolbarFile
         path = Path.GetFullPath(path);
         var files = fileSystem ?? new RealFileSystem();
         var folder = Path.GetDirectoryName(path)!;
-        state ??= fileSystem is null ? new StateStore(Path.Combine(folder, StateStore.FileName)) : null;
         var bytes = Encoding.UTF8.GetBytes(model.ToJson());
         if (files.FileExists(path))
         {

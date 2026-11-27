@@ -779,7 +779,7 @@ public sealed class SettingsPackageTests : TempDirTest
         var toolbarPath = Path.Combine(Target, "toolbar.json");
         var loaded = ToolbarFile.Load(toolbarPath);
         Assert.Null(loaded.Error);
-        if (editToolbar) ToolbarFile.Save(toolbarPath, loaded.Model with { Style = new ButtonStyle(2) });
+        if (editToolbar) ToolbarFile.Save(toolbarPath, loaded.Model with { Style = new ButtonStyle(2) }, state: store.State);
         else
         {
             settings.Chat.Memory = false;
