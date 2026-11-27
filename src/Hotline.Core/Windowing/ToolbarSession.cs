@@ -21,6 +21,7 @@ public enum ToolbarSaveStatus
 public sealed record ToolbarSaveResult(ToolbarSaveStatus Status, string? Error = null, IReadOnlyList<string>? PicturesFailed = null)
 {
     public bool Saved => Status == ToolbarSaveStatus.Saved;
+    public bool ChangedOnDisk => Status == ToolbarSaveStatus.ChangedOnDisk;
 }
 
 /// <summary>

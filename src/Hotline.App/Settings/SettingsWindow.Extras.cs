@@ -76,13 +76,13 @@ public sealed partial class SettingsWindow
         {
             Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        var load = ToolbarFile.Load(ToolbarPath);
-        if (load.Error is { } error)
+        var session = new ToolbarSession(ToolbarPath, state: _state);
+        if (session.Error is { } error)
         {
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        var warnings = load.Model.ResolveShortcuts().Warnings;
+        var warnings = session.Model.ResolveShortcuts().Warnings;
         if (warnings.Count > 0)
             PageHost.Children.Add(new InfoBar
             {
@@ -92,25 +92,9 @@ public sealed partial class SettingsWindow
                         ? "\n" + L.F(Strings.Settings_AndMore, warnings.Count - MaxToolbarProblemLines) : ""),
             });
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
-        // The file as this page read or last saved it: an edit made while the page is open is never overwritten.
-        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
-        void Save(ToolbarModel model)
-        {
-            if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-            var problem = ToolbarFile.Save(ToolbarPath, model, state: _state);
-            if (problem is not null) throw new IOException(problem);
-            stamp = ToolbarFile.Fingerprint(ToolbarPath);
-        }
-        ToolbarModel? Reload()
-        {
-            stamp = ToolbarFile.Fingerprint(ToolbarPath);
-            var again = ToolbarFile.Load(ToolbarPath);
-            if (again.Error is null) return again.Model;
-            ShowPage(_currentPage); // unreadable now: the page shows the error and Reset
-            return null;
-        }
-        PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, Save,
-            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload, () => _settings.Current.Chat));
+        // The session notes the file as this page read or last saved it: an edit made while the page is open is never overwritten.
+        PageHost.Children.Add(new ToolbarQuadrantEditor(session, () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync,
+            (Style)Root.Resources["CardStyle"], _log, () => ShowPage(_currentPage), _barRoom)); // unreadable now: the page shows the error and Reset
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 
@@ -179,9 +163,8 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                var current = ToolbarFile.Load(ToolbarPath);
-                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.ResetLayout(current.Error is null ? current.Model : null), state: _state);
-                if (problem is not null) throw new IOException(problem);
+                var result = new ToolbarSession(ToolbarPath, state: _state).ResetLayout();
+                if (result.Error is { } problem) throw new IOException(problem);
                 ShowPage(_currentPage); // only on success: a rebuilt page would hide the error
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("saving toolbar.json failed", ex); }

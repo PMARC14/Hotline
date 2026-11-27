@@ -164,151 +164,6 @@ public sealed class CustomIconsTests : TempDirTest
         Assert.Equal(Path.Combine("data", "icons"), CustomIcons.Folder("data"));
     }
 
-    // ---- Import ----
-
-    [Fact]
-    public void Import_copies_a_valid_png_under_the_buttons_id()
-    {
-        var source = Write("My Picture (final).png", Real16);
-        var (name, problem) = CustomIcons.Import(source, Icons, "b1");
-        Assert.Equal(CustomIconProblem.None, problem);
-        Assert.Equal("b1.png", name);
-        Assert.Equal(Real16, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-        Assert.Equal(Real16, File.ReadAllBytes(source)); // the original stays
-        Assert.Equal(["b1.png"], Directory.GetFiles(Icons).Select(Path.GetFileName)); // no temp file left
-    }
-
-    [Fact]
-    public void Import_leaves_the_picture_untouched_when_the_backup_destination_is_unwritable()
-    {
-        if (!OperatingSystem.IsWindows()) return;
-        var source = Write("source.png", Png(16, 16));
-        CustomIcons.Import(source, Icons, "b1");
-        CustomIcons.Commit(Icons, "b1");
-        File.WriteAllBytes(source, Png(32, 32));
-        var folder = new DirectoryInfo(Icons);
-        var permissions = System.IO.FileSystemAclExtensions.GetAccessControl(folder);
-        var deny = new System.Security.AccessControl.FileSystemAccessRule(
-            System.Security.Principal.WindowsIdentity.GetCurrent().User!,
-            System.Security.AccessControl.FileSystemRights.CreateFiles, System.Security.AccessControl.AccessControlType.Deny);
-        permissions.AddAccessRule(deny);
-        System.IO.FileSystemAclExtensions.SetAccessControl(folder, permissions);
-        try
-        {
-            Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "b1"));
-            Assert.Equal(Png(16, 16), File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-            Assert.Equal(["b1.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
-            Assert.False(CustomIcons.Rollback(Icons, "b1")); // a failed import left no pending transaction
-        }
-        finally
-        {
-            permissions.RemoveAccessRule(deny);
-            System.IO.FileSystemAclExtensions.SetAccessControl(folder, permissions);
-        }
-    }
-
-    [Fact]
-    public void Replacing_a_picture_keeps_save_sets_after_commit()
-    {
-        var source = Write("source.png", Png(16, 16));
-        CustomIcons.Import(source, Icons, "b1");
-        CustomIcons.Commit(Icons, "b1");
-        for (uint side = 17; side <= 38; side++)
-        {
-            var previous = File.ReadAllBytes(Path.Combine(Icons, "b1.png"));
-            File.WriteAllBytes(source, Png(side, side));
-            Assert.Equal("b1.png", CustomIcons.Import(source, Icons, "b1").FileName);
-            CustomIcons.Commit(Icons, "b1");
-            var backups = Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories);
-            Assert.Equal(Math.Min((int)side - 16, 20), backups.Length);
-            Assert.Contains(backups, file => File.ReadAllBytes(file).SequenceEqual(previous));
-        }
-        Assert.DoesNotContain(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories), file => File.ReadAllBytes(file).SequenceEqual(Png(16, 16)));
-    }
-
-    [Fact]
-    public void Import_replaces_the_buttons_own_icon_only()
-    {
-        Assert.Equal("b1.png", CustomIcons.Import(Write("a.png", Png(16, 16)), Icons, "b1").FileName);
-        Assert.Equal("b2.png", CustomIcons.Import(Write("b.png", Png(32, 32)), Icons, "b2").FileName);
-        var newer = Png(64, 64);
-        Assert.Equal("b1.png", CustomIcons.Import(Write("c.png", newer), Icons, "b1").FileName);
-        CustomIcons.Commit(Icons, "b1"); // (the replaced picture is kept as .b1.prev until then)
-        CustomIcons.Commit(Icons, "b2");
-        Assert.Equal(newer, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-        Assert.Equal(Png(32, 32), File.ReadAllBytes(Path.Combine(Icons, "b2.png")));
-        Assert.Equal(["b1.png", "b2.png"], Directory.GetFiles(Icons, "*.png").Select(Path.GetFileName).Order());
-    }
-
-    [Fact]
-    public void Rollback_puts_the_previous_picture_back_and_Commit_keeps_the_new_one()
-    {
-        var first = Png(16, 16);
-        CustomIcons.Import(Write("a.png", first), Icons, "b1");
-        CustomIcons.Commit(Icons, "b1");
-
-        CustomIcons.Import(Write("b.png", Png(32, 32)), Icons, "b1");
-        Assert.True(CustomIcons.Rollback(Icons, "b1"));
-        Assert.Equal(first, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-
-        var second = Png(64, 64);
-        CustomIcons.Import(Write("c.png", second), Icons, "b1");
-        CustomIcons.Commit(Icons, "b1");
-        Assert.False(CustomIcons.Rollback(Icons, "b1")); // nothing left to restore
-        Assert.Equal(second, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-        Assert.Equal(["b1.png"], Directory.GetFiles(Icons, "*.png").Select(Path.GetFileName));
-    }
-
-    [Fact]
-    public void Rollback_of_a_first_picture_removes_it()
-    {
-        CustomIcons.Import(Write("a.png", Png(16, 16)), Icons, "b1");
-        Assert.True(CustomIcons.Rollback(Icons, "b1"));
-        Assert.Empty(Directory.GetFiles(Icons));
-    }
-
-    [Fact]
-    public void Import_keeps_the_old_icon_when_the_new_one_is_refused()
-    {
-        var good = Png(16, 16);
-        CustomIcons.Import(Write("a.png", good), Icons, "b1");
-        Assert.Equal((null, CustomIconProblem.TooBig), CustomIcons.Import(Write("big.png", Png(512, 512)), Icons, "b1"));
-        Assert.Equal((null, CustomIconProblem.TooLarge), CustomIcons.Import(Write("huge.png", Png(16, 16, idat: 300 * 1024)), Icons, "b1"));
-        Assert.Equal((null, CustomIconProblem.NotPng), CustomIcons.Import(Write("x.png", Encoding.ASCII.GetBytes("<svg/>")), Icons, "b1"));
-        Assert.Equal(good, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
-        Assert.Single(Directory.GetFiles(Icons));
-    }
-
-    [Theory]
-    [InlineData(@"\\server\share\a.png")]
-    [InlineData("//server/share/a.png")]
-    [InlineData(@"\/server\share\a.png")]
-    [InlineData(@"\\?\C:\a.png")]
-    [InlineData(@"\\.\pipe\x")]
-    [InlineData(@"\??\UNC\server\share\a.png")]
-    [InlineData(@"\??\C:\a.png")]
-    [InlineData("/??/C:/a.png")]
-    [InlineData(@"\a.png")]         // rooted, no drive
-    [InlineData("a.png")]          // relative
-    [InlineData(@"C:a.png")]        // drive-relative
-    [InlineData("")]
-    public void Import_refuses_network_device_and_relative_paths_before_touching_them(string source)
-    {
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "b1"));
-        Assert.False(Directory.Exists(Icons));
-    }
-
-    [Fact]
-    public void Import_of_a_missing_file_or_with_a_bad_id_does_nothing()
-    {
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(Path.Combine(_dir, "missing.png"), Icons, "b1"));
-        var source = Write("a.png", Real16);
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "../evil"));
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, "B 1"));
-        Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Import(source, Icons, null!));
-        Assert.False(Directory.Exists(Icons));
-    }
-
     [Fact]
     public void Read_returns_the_bytes_of_a_valid_icon_only()
     {
@@ -320,10 +175,19 @@ public sealed class CustomIconsTests : TempDirTest
     }
 
     [Fact]
+    public void Read_refuses_network_device_and_relative_paths_before_touching_them()
+    {
+        foreach (var source in new[] { @"\\server\share\a.png", "//server/share/a.png", @"\/server\share\a.png", @"\\?\C:\a.png", @"\\.\pipe\x",
+                     @"\??\UNC\server\share\a.png", @"\??\C:\a.png", "/??/C:/a.png", @"\a.png", "a.png", @"C:a.png", "" })
+            Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Read(source));
+    }
+
+    [Fact]
     public void Delete_removes_only_the_buttons_own_file()
     {
-        CustomIcons.Import(Write("a.png", Real16), Icons, "b1");
-        CustomIcons.Import(Write("b.png", Real16), Icons, "b2");
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "b1.png"), Real16);
+        File.WriteAllBytes(Path.Combine(Icons, "b2.png"), Real16);
         File.WriteAllBytes(Path.Combine(_dir, "outside.png"), Real16);
         Assert.True(CustomIcons.Delete(Icons, "b1"));
         Assert.False(CustomIcons.Delete(Icons, "b1")); // already gone
@@ -334,18 +198,12 @@ public sealed class CustomIconsTests : TempDirTest
     }
 
     [Fact]
-    public void Delete_keeps_old_backups_and_rollback_copies()
+    public void Delete_keeps_old_backups()
     {
-        CustomIcons.Import(Write("a.png", Real16), Icons, "b1");
-        CustomIcons.Import(Write("b.png", Real16), Icons, "b1");
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "b1.png"), Real16);
         File.WriteAllText(Path.Combine(Icons, "b1.png.old.bak"), "old backup");
-        Assert.Contains(Directory.GetFiles(Icons, "*", SearchOption.AllDirectories), f => f.EndsWith(".b1.prev"));
         Assert.True(CustomIcons.Delete(Icons, "b1"));
-        var left = Directory.GetFiles(Icons).Select(Path.GetFileName).ToList();
-        Assert.DoesNotContain("b1.png", left);
-        Assert.Contains(".b1.prev", left);
-        Assert.Contains("b1.png.old.bak", left);
-        Assert.False(CustomIcons.Rollback(Icons, "b1")); // the retained .prev is no longer a pending operation
-        Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories));
+        Assert.Equal(["b1.png.old.bak"], Directory.GetFiles(Icons).Select(Path.GetFileName));
     }
 }

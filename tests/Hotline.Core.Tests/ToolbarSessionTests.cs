@@ -190,4 +190,49 @@ public sealed class ToolbarSessionTests : TempDirTest
         Assert.Equal(["mine"], result.PicturesFailed);
         Assert.Equal("mine", session.Model.Buttons.Single().Id); // toolbar.json itself was saved
     }
+
+    [Fact]
+    public void Replacing_a_picture_keeps_save_sets_and_only_that_buttons_file_changes()
+    {
+        var session = Open("""{"version":3}""");
+        session.StagePicture("b1", Source(Real16));
+        session.StagePicture("b2", Source(Real16));
+        Assert.True(session.Edit(m => AddButton(AddButton(m, "b1"), "b2")).Saved);
+        byte[] second = [.. Real16, 0]; // a valid picture (bytes after IEND are ignored), a different file
+        var previous = File.ReadAllBytes(Path.Combine(Icons, "b1.png"));
+        File.WriteAllBytes(Source(second), second);
+        Assert.Equal(CustomIconProblem.None, session.StagePicture("b1", Source(second)));
+        Assert.True(session.Edit(m => m).Saved);
+        Assert.Equal(second, File.ReadAllBytes(Path.Combine(Icons, "b1.png")));
+        Assert.Equal(Real16, File.ReadAllBytes(Path.Combine(Icons, "b2.png")));
+        var backup = Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "b1.png", SearchOption.AllDirectories));
+        Assert.Equal(previous, File.ReadAllBytes(backup));
+        Assert.Equal(["b1.png", "b2.png"], Directory.GetFiles(Icons).Select(Path.GetFileName).Order()); // no .prev or temp files
+    }
+
+    [Fact]
+    public void A_refused_picture_is_not_staged_so_the_old_one_stays()
+    {
+        var session = Open("""{"version":3,"buttons":{"mine":{"text":"hi","iconFile":"mine.png"}}}""");
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "mine.png"), Real16);
+        Assert.Equal(CustomIconProblem.NotPng, session.StagePicture("mine", Source(Encoding.ASCII.GetBytes("<svg/>"))));
+        Assert.False(session.HasStagedPicture("mine"));
+        Assert.Equal(ToolbarSaveStatus.Unchanged, session.Edit(m => m).Status);
+        Assert.Equal(Real16, File.ReadAllBytes(Path.Combine(Icons, "mine.png")));
+    }
+
+    [Theory]
+    [InlineData(@"\\server\share\a.png")]
+    [InlineData("//server/share/a.png")]
+    [InlineData(@"\\?\C:\a.png")]
+    [InlineData(@"\a.png")]
+    [InlineData("a.png")]
+    [InlineData("")]
+    public void Staging_refuses_network_and_relative_paths(string source)
+    {
+        var session = Open("""{"version":3}""");
+        Assert.Equal(CustomIconProblem.Unreadable, session.StagePicture("mine", source));
+        Assert.False(Directory.Exists(Icons));
+    }
 }

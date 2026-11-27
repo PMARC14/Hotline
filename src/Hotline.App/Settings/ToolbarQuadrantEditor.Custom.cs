@@ -9,17 +9,9 @@ namespace Hotline.App.Settings;
 internal sealed partial class ToolbarQuadrantEditor
 {
     private readonly StackPanel _custom = new() { Spacing = 6 };
-    private ToolbarModel? _pictureModel;
-    private string? _pictureToolbarStamp;
-    private static string PictureToolbarPath => Path.Combine(Path.GetDirectoryName(CustomButtonPicture.Folder)!, "toolbar.json");
 
     private void BuildCustomList()
     {
-        if (!ReferenceEquals(_pictureModel, _model))
-        {
-            _pictureModel = _model;
-            _pictureToolbarStamp = ToolbarFile.Fingerprint(PictureToolbarPath);
-        }
         _custom.Children.Clear();
         if (_model.Buttons.Count == 0) _custom.Children.Add(new TextBlock { Text = Strings.Bar_CustomNone, Opacity = 0.7 });
         foreach (var b in _model.Buttons)
@@ -85,42 +77,11 @@ internal sealed partial class ToolbarQuadrantEditor
                 var room = ToolbarEditorView.Check(_model, new CustomButton("x", "x", ToolbarModel.DefaultIcon, null, "x", false), adding: true);
                 if (room != CustomProblem.None) { Notice(ToolbarCustomButtonDialog.Message(room), InfoBarSeverity.Warning); return; }
             }
-            var (next, pictureReplaced) = await ToolbarCustomButtonDialog.ShowAsync(_model, existing, _quickActions(), _showDialog, XamlRoot, _log.Info, _chat());
+            var (next, pictureReplaced) = await ToolbarCustomButtonDialog.ShowAsync(_model, existing, _quickActions(), _session.StagePicture, _showDialog, XamlRoot, _log.Info);
+            if (next is null && !pictureReplaced) return; // cancelled, or nothing changed
             var focus = existing is null ? "bar-custom-add" : "bar-custom-edit-" + existing.Id;
-            // The new picture is already in icons\ (the dialog stored it): kept only once toolbar.json is saved with it.
-            var pictureId = existing?.Id ?? next?.Buttons.LastOrDefault()?.Id;
-            var saved = false;
-            if (next is not null)
-            {
-                saved = Edit(_ => next, existing?.Id, (focus, "bar-custom-add"));
-                if (pictureReplaced && pictureId is not null)
-                {
-                    if (saved) CustomIcons.Commit(CustomButtonPicture.Folder, pictureId);
-                    else if (CustomIcons.Rollback(CustomButtonPicture.Folder, pictureId))
-                    {
-                        _log.Info($"button rows: the picture of {pictureId} was put back (toolbar.json wasn't saved)");
-                        if (_notice.IsOpen is false) Notice(Strings.Bar_PictureNotSaved, InfoBarSeverity.Error);
-                    }
-                }
-            }
-            else if (pictureReplaced)
-            {
-                // A picture-only edit must respect the same on-disk conflict rule as a model edit.
-                if (_pictureToolbarStamp is null || ToolbarFile.Fingerprint(PictureToolbarPath) != _pictureToolbarStamp)
-                {
-                    if (existing is not null) CustomIcons.Rollback(CustomButtonPicture.Folder, existing.Id);
-                    _log.Info("button rows: toolbar.json changed on disk; picture rolled back");
-                    if (_reload() is { } fresh) _model = fresh;
-                    Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
-                }
-                else if (existing is not null)
-                {
-                    CustomIcons.Commit(CustomButtonPicture.Folder, existing.Id);
-                    saved = true;
-                }
-                _focus = (focus, "bar-custom-add");
-                QueueRebuild(); // redraw the list
-            }
+            // A staged picture is stored by the session only once toolbar.json is saved; a picture-only edit saves just the picture.
+            var saved = Edit(m => next ?? m, existing?.Id, (focus, "bar-custom-add"));
             if (saved && existing?.IconFile is not null) ForgetPicture(existing.Id);
         }
         catch (Exception ex) { _log.Error("button rows: custom button dialog failed", ex); }

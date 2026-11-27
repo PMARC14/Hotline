@@ -27,7 +27,7 @@ public sealed class ToolbarReviewTests : TempDirTest
     public void Shortcut_cards_share_latest_model_and_stamp_but_refuse_outside_edits()
     {
         Put("""{"version":3}""");
-        var page = new ToolbarShortcutSession(Path_, _files);
+        var page = new ToolbarSession(Path_, _files);
         var firstCard = page;
         var secondCard = page;
         var first = firstCard.SetShortcut("PIN", "Ctrl+Q");

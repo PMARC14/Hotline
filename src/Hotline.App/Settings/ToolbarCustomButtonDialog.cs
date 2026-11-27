@@ -39,8 +39,8 @@ internal static class ToolbarCustomButtonDialog
     /// <summary>The model with the button added or changed (null when cancelled or nothing in it changed), and whether the
     /// button's picture file was replaced (its name stays the same, so the model alone doesn't show that).</summary>
     public static async Task<(ToolbarModel? Model, bool PictureReplaced)> ShowAsync(ToolbarModel model, CustomButton? existing,
-        IReadOnlyList<string> actionFiles, Func<ContentDialog, Task<ContentDialogResult>> show, XamlRoot root, Action<string> log,
-        ChatSettings chat)
+        IReadOnlyList<string> actionFiles, Func<string, string, CustomIconProblem> stagePicture,
+        Func<ContentDialog, Task<ContentDialogResult>> show, XamlRoot root, Action<string> log)
     {
         var adding = existing is null;
         var label = new TextBox { Header = Strings.Bar_CustomLabel, Text = existing?.Label ?? "", MaxLength = 40 };
@@ -207,9 +207,9 @@ internal static class ToolbarCustomButtonDialog
             {
                 if (picked is not null)
                 {
-                    // Copied only now, after the checks: a refused or cancelled button leaves no file behind.
-                    var (stored, iconProblem) = CustomIcons.Import(picked, CustomButtonPicture.Folder, button.Id);
-                    if (stored is null)
+                    // Staged only now, after the checks (the session writes it once toolbar.json is saved): a refused or cancelled button leaves no file behind.
+                    var iconProblem = stagePicture(button.Id, picked);
+                    if (iconProblem != CustomIconProblem.None)
                     {
                         log($"button rows: storing the picture of {button.Id} failed ({iconProblem})");
                         (pictureError.Message, pictureError.IsOpen, e.Cancel) = (Message(iconProblem), true, true);

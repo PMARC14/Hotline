@@ -18,7 +18,7 @@ public sealed class ToolbarSaveFlowTests : TempDirTest
     public void A_failed_shortcut_save_keeps_the_model_and_the_stamp_so_a_retry_works()
     {
         Put("""{"version":3}""");
-        var session = new ToolbarShortcutSession(Path_, _files);
+        var session = new ToolbarSession(Path_, _files);
         _files.Fail = c => c.Operation == "WriteDurable";
         var failed = session.SetShortcut("pin", "Ctrl+Q");
         Assert.False(failed.ChangedOnDisk);
@@ -35,7 +35,7 @@ public sealed class ToolbarSaveFlowTests : TempDirTest
     public void The_conflict_check_runs_before_the_edit_so_even_a_no_op_reports_a_changed_file()
     {
         Put("""{"version":3}""");
-        var session = new ToolbarShortcutSession(Path_, _files);
+        var session = new ToolbarSession(Path_, _files);
         Put("""{"version":3,"shortcuts":{"pin":"Ctrl+Q"}}""");
         Assert.True(session.SetShortcut("pin", null).ChangedOnDisk);
     }
@@ -44,7 +44,7 @@ public sealed class ToolbarSaveFlowTests : TempDirTest
     public void Rewriting_the_same_bytes_is_not_a_conflict_but_any_other_change_is()
     {
         Put("""{"version":3}""");
-        var session = new ToolbarShortcutSession(Path_, _files);
+        var session = new ToolbarSession(Path_, _files);
         Put("""{"version":3}""");
         Assert.False(session.SetShortcut("pin", "Ctrl+Q").ChangedOnDisk);
         _files.Files.Remove(Path_);
@@ -56,7 +56,7 @@ public sealed class ToolbarSaveFlowTests : TempDirTest
     {
         Put("""{"version":99,"shortcuts":{"pin":"Ctrl+Q"}}""");
         var before = _files.Files[Path_];
-        var session = new ToolbarShortcutSession(Path_, _files);
+        var session = new ToolbarSession(Path_, _files);
         var result = session.SetShortcut("pin", "Ctrl+K");
         Assert.False(result.ChangedOnDisk);
         Assert.NotNull(result.Error);
@@ -68,7 +68,7 @@ public sealed class ToolbarSaveFlowTests : TempDirTest
     public void An_unreadable_file_loads_as_defaults_with_an_error()
     {
         Put("{broken");
-        var session = new ToolbarShortcutSession(Path_, _files);
+        var session = new ToolbarSession(Path_, _files);
         Assert.NotNull(session.Load.Error);
         Assert.Equal(ToolbarModel.Defaults, session.Load.Model);
         Assert.Empty(_files.Writes);
