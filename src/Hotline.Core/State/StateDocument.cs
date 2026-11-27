@@ -271,4 +271,44 @@ public sealed record StateDocument(
         value = anchor;
         return true;
     }
+
+    /// <summary>
+    /// Reset: removes every section this version knows, readable or not, by structure rather than by model (a later 1.x
+    /// may read more shapes, so nothing "reset" can come back): the shown flags, the panel items' value/over, all grants
+    /// and lastWritten entries, the upgrade record. Unknown keys stay; containers left empty go.
+    /// </summary>
+    public static void ClearKnown(JsonObject tree)
+    {
+        ClearKeys(tree, "shown", FlagKey(ShownFlag.FirstRun), FlagKey(ShownFlag.SupportNote), FlagKey(ShownFlag.UpgradeNotice));
+        if (JsonFile.FindKey(tree, "panel") is { } panelKey)
+        {
+            if (tree[panelKey] is JsonObject panel)
+            {
+                foreach (var item in new[] { "width", "chatHeight", "anchor" }) ClearKeys(panel, item, "value", "over");
+                if (panel.Count == 0) tree.Remove(panelKey);
+            }
+            else tree.Remove(panelKey);
+        }
+        Remove(tree, "grants");
+        Remove(tree, "lastWritten");
+        ClearKeys(tree, "upgrade", "at", "backup");
+    }
+
+    /// <summary>Removes <paramref name="keys"/> from the object at <paramref name="name"/> (any case), and the object itself
+    /// when it is left empty or isn't an object.</summary>
+    private static void ClearKeys(JsonObject parent, string name, params string[] keys)
+    {
+        if (JsonFile.FindKey(parent, name) is not { } key) return;
+        if (parent[key] is JsonObject obj)
+        {
+            foreach (var k in keys) Remove(obj, k);
+            if (obj.Count == 0) parent.Remove(key);
+        }
+        else parent.Remove(key);
+    }
+
+    private static void Remove(JsonObject obj, string name)
+    {
+        while (JsonFile.FindKey(obj, name) is { } key) obj.Remove(key); // every spelling of it
+    }
 }

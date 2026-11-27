@@ -167,7 +167,8 @@ public sealed class StateStore(string filePath, TimeProvider? time = null, IFile
         {
             if (!PrepareWrite()) return false;
             var exists = _files.FileExists(FilePath);
-            var edited = Edit(StateDocument.Empty);
+            var edited = (JsonObject)_tree.DeepClone();
+            StateDocument.ClearKnown(edited);
             var changed = !JsonNode.DeepEquals(edited, _tree);
             _tree = edited;
             _doc = StateDocument.Read(_tree);

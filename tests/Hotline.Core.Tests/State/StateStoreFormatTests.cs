@@ -159,4 +159,33 @@ public sealed class StateStoreFormatTests : TempDirTest
         Assert.Equal(2, root["Grants"]!.AsArray().Count);
         Assert.NotNull(root["Shown"]!["supportNote"]);
     }
+
+    // Reset settings resets state.json: every known section goes, readable or not (a later 1.x may read more shapes, so a
+    // "reset" grant must not come back), and unknown keys stay.
+    [Fact]
+    public void Clear_removes_known_sections_even_when_unreadable_and_keeps_unknown_keys()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(StatePath, """
+            {
+              "version": 1,
+              "shown": { "firstRun": 5, "custom": true },
+              "panel": { "width": { "value": "x", "over": null, "note": 1 }, "chatHeight": 7, "anchor": null },
+              "grants": [ { "server": "bad" }, 7 ],
+              "lastWritten": { "toolbar.json": 5, "icons/a.png": "" },
+              "upgrade": { "at": "not a date", "backup": 3, "extra": "keep" },
+              "future": { "a": 1 }
+            }
+            """);
+        var store = new StateStore(StatePath);
+
+        Assert.True(store.Clear());
+
+        var root = JsonNode.Parse(File.ReadAllText(StatePath))!.AsObject();
+        Assert.Equal(["version", "shown", "panel", "upgrade", "future"], root.Select(p => p.Key).ToArray());
+        Assert.Equal("""{"custom":true}""", root["shown"]!.ToJsonString());
+        Assert.Equal("""{"width":{"note":1}}""", root["panel"]!.ToJsonString());
+        Assert.Equal("""{"extra":"keep"}""", root["upgrade"]!.ToJsonString());
+        Assert.Empty(store.GetGrants());
+    }
 }
