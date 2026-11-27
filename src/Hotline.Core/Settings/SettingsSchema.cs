@@ -37,13 +37,21 @@ public sealed record TextItem(SettingsPage Page, string Header, string? Descript
     public Func<string, bool>? Validate { get; init; }
     /// <summary>What to say when <see cref="Validate"/> rejects a value.</summary>
     public string? Invalid { get; init; }
-    /// <summary>Rejects a value that conflicts with the rest of the settings (toolbar.json included: the caller sets
-    /// <c>Chat.Toolbar</c> from the file first).</summary>
-    public Func<HotlineSettings, string, bool>? ValidateFor { get; init; }
-    /// <summary>What to say when <see cref="ValidateFor"/> rejects a value (null: <see cref="Invalid"/>).</summary>
-    public string? InvalidFor { get; init; }
-    public Action<HotlineSettings>? Reset { get; init; }
-    public string? ToolbarShortcutId { get; init; }
+}
+
+/// <summary>
+/// A panel command's shortcut. It lives in toolbar.json (not settings.json): Settings reads and saves it through a
+/// <c>ToolbarSession</c>, and checks a value against the toolbar it was read from.
+/// </summary>
+public sealed record ShortcutItem(SettingsPage Page, string Header, string? Description, string Id, string Default)
+    : SettingItem(Page, Header, Description, false)
+{
+    /// <summary>Rejects text that isn't a binding this command accepts (blank turns it off).</summary>
+    public Func<string, bool> Validate { get; init; } = _ => true;
+    /// <summary>Rejects a binding another command or custom button holds in <paramref name="toolbar"/>.</summary>
+    public Func<Windowing.ToolbarModel, string, bool> ValidateFor { get; init; } = (_, _) => true;
+    /// <summary>What to say when either check rejects a value.</summary>
+    public string? Invalid { get; init; }
 }
 
 /// <summary>
@@ -184,15 +192,11 @@ public static class SettingsSchema
         Choice(SettingsPage.Chat, nameof(Strings.Set_Selection), nameof(Strings.Set_Selection_Desc),
             [(AttachSelectionMode.Auto, nameof(Strings.Set_Selection_Auto)), (AttachSelectionMode.Clipboard, nameof(Strings.Set_Selection_Clipboard)), (AttachSelectionMode.Off, nameof(Strings.Set_Selection_Off))],
             s => s.Chat.AttachSelection, (s, v) => s.Chat.AttachSelection = v),
-        .. ChatShortcuts.Defaults.Select(pair => new TextItem(SettingsPage.Chat, pair.Key == "stop" ? nameof(Strings.Set_Stop) : "Bar_" + pair.Key,
-            pair.Key == "stop" ? nameof(Strings.Set_Stop_Desc) : nameof(Strings.Set_Shortcuts_Desc),
-            pair.Value, s => s.Chat.Toolbar.ShortcutText(pair.Key),
-            (s, v) => s.Chat.Toolbar = Windowing.ToolbarEditor.SetShortcut(s.Chat.Toolbar, pair.Key, v?.Trim() ?? ""))
+        .. ChatShortcuts.Defaults.Select(pair => new ShortcutItem(SettingsPage.Chat, pair.Key == "stop" ? nameof(Strings.Set_Stop) : "Bar_" + pair.Key,
+            pair.Key == "stop" ? nameof(Strings.Set_Stop_Desc) : nameof(Strings.Set_Shortcuts_Desc), pair.Key, pair.Value)
         {
-            ToolbarShortcutId = pair.Key,
             Validate = v => string.IsNullOrWhiteSpace(v) || ChatShortcuts.TryParse(pair.Key, v, out _),
-            ValidateFor = (s, v) => ChatShortcuts.CanBind(s.Chat.Toolbar, pair.Key, v),
-            Reset = s => s.Chat.Toolbar = Windowing.ToolbarEditor.SetShortcut(s.Chat.Toolbar, pair.Key, null),
+            ValidateFor = (toolbar, v) => ChatShortcuts.CanBind(toolbar, pair.Key, v),
             Invalid = nameof(Strings.Shortcuts_InvalidOrConflict),
         }),
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Memory), nameof(Strings.Set_Memory_Desc),

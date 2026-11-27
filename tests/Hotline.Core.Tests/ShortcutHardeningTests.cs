@@ -196,12 +196,10 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Blank_settings_row_disables_instead_of_resetting()
     {
-        var settings = new HotlineSettings();
-        var row = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == "Bar_pin"));
-        Assert.True(row.Validate!(""));
+        var row = Assert.IsType<ShortcutItem>(SettingsSchema.Items.Single(i => i.Header == "Bar_pin"));
+        Assert.True(row.Validate(""));
         Assert.False(row.Validate("Shift+A"));
-        row.Set(settings, "");
-        Assert.Equal("", row.Get(settings));
+        Assert.True(row.ValidateFor(ToolbarModel.Defaults, ""));
     }
 
     [Fact]
@@ -228,17 +226,15 @@ public sealed class ShortcutHardeningTests : TempDirTest
     [Fact]
     public void Settings_row_rejects_stop_builtin_custom_conflicts_and_reset_removes_override()
     {
-        var settings = new HotlineSettings();
-        settings.Chat.Toolbar = ToolbarModel.Resolve("""{"version":3,"shortcuts":{"stop":"Ctrl+J"},"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+K"}}}""");
-        var row = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i.Header == "Bar_pin"));
-        Assert.False(row.ValidateFor!(settings, "Ctrl+J"));
-        Assert.False(row.ValidateFor(settings, "Ctrl+N"));
-        Assert.False(row.ValidateFor(settings, "Ctrl+K"));
-        Assert.True(row.ValidateFor(settings, "Ctrl+Q"));
-        row.Set(settings, "Ctrl+Q");
-        Assert.Equal("Ctrl+Q", settings.Chat.Toolbar.ShortcutText("pin"));
-        row.Reset!(settings);
-        Assert.False(settings.Chat.Toolbar.Shortcuts!.ContainsKey("pin"));
+        var toolbar = ToolbarModel.Resolve("""{"version":3,"shortcuts":{"stop":"Ctrl+J"},"buttons":{"mine":{"text":"hi","shortcut":"Ctrl+K"}}}""");
+        var row = Assert.IsType<ShortcutItem>(SettingsSchema.Items.Single(i => i.Header == "Bar_pin"));
+        Assert.False(row.ValidateFor(toolbar, "Ctrl+J"));
+        Assert.False(row.ValidateFor(toolbar, "Ctrl+N"));
+        Assert.False(row.ValidateFor(toolbar, "Ctrl+K"));
+        Assert.True(row.ValidateFor(toolbar, "Ctrl+Q"));
+        var set = ToolbarEditor.SetShortcut(toolbar, "pin", "Ctrl+Q");
+        Assert.Equal("Ctrl+Q", set.ShortcutText("pin"));
+        Assert.False(ToolbarEditor.SetShortcut(set, "pin", null).Shortcuts!.ContainsKey("pin"));
     }
 
     [Fact]

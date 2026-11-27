@@ -15,18 +15,17 @@ public sealed partial class SettingsWindow
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
     /// <summary>toolbar.json as this page build read it: once per page, not once per shortcut row (cleared by ShowPage).</summary>
-    private ToolbarShortcutSession? _pageToolbar;
+    private ToolbarSession? _pageToolbar;
 
-    private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
+    private Border ToolbarShortcutCard(Hotline.Core.Settings.ShortcutItem row, string header, string? description)
     {
-        var page = _pageToolbar ??= new ToolbarShortcutSession(ToolbarPath, state: _state);
-        if (page.Load.Error is { } problem) return Card(header, problem, null);
-        var id = row.ToolbarShortcutId!;
-        var box = new TextBox { Text = page.Load.Model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
+        var page = _pageToolbar ??= new ToolbarSession(ToolbarPath, state: _state);
+        if (page.Error is { } problem) return Card(header, problem, null);
+        var id = row.Id;
+        var box = new TextBox { Text = page.Model.ShortcutText(id), PlaceholderText = row.Default, Width = 240 };
         bool Accept(string value)
         {
-            _settings.Current.Chat.Toolbar = page.Load.Model;
-            var valid = row.Validate!(value) && row.ValidateFor!(_settings.Current, value);
+            var valid = row.Validate(value) && row.ValidateFor(page.Model, value);
             box.Header = valid ? null : L.Get(row.Invalid!);
             return valid;
         }
@@ -37,31 +36,29 @@ public sealed partial class SettingsWindow
             try
             {
                 var result = page.SetShortcut(id, value);
-                if (result.ChangedOnDisk) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-                if (result.Error is { } problem)
+                if (result.Status == ToolbarSaveStatus.ChangedOnDisk)
                 {
-                    Fail("saving toolbar shortcut failed", new IOException(problem));
+                    // Not saved: the file changed since the page read it. Show it as it is now and say why.
+                    ShowPage(_currentPage);
+                    PageHost.Children.Insert(1, new InfoBar
+                    {
+                        IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
+                        Message = Strings.Bar_ChangedOnDisk,
+                    });
                     return;
                 }
-                var next = page.Load.Model;
-                _settings.Current.Chat.Toolbar = next;
-                box.Text = next.ShortcutText(id);
-                DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
-            }
-            catch (ToolbarQuadrantEditor.ChangedOnDiskException)
-            {
-                // Not saved: the file changed since the page read it. Show it as it is now and say why.
-                ShowPage(_currentPage);
-                PageHost.Children.Insert(1, new InfoBar
+                if (result.Error is { } error)
                 {
-                    IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
-                    Message = Strings.Bar_ChangedOnDisk,
-                });
+                    Fail("saving toolbar shortcut failed", new IOException(error));
+                    return;
+                }
+                box.Text = page.Model.ShortcutText(id);
+                DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
             }
             catch (Exception ex) { Fail("saving toolbar shortcut failed", ex); }
         }
-        box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != page.Load.Model.ShortcutText(id)) Save(value); };
-        var capture = ShortcutBinder.Create(() => page.Load.Model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true, stop: id == "stop");
+        box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != page.Model.ShortcutText(id)) Save(value); };
+        var capture = ShortcutBinder.Create(() => page.Model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true, stop: id == "stop");
         var reset = new Button { Content = Strings.Bar_Reset };
         reset.Click += (_, _) => Save(null);
         return Card(header, description, new StackPanel { Spacing = 6, Children = { box, capture, reset } });

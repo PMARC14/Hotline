@@ -251,9 +251,10 @@ public sealed partial class SettingsWindow : Window
             }
             case HotkeyItem hk:
                 return Card(header, description, HotkeyBinder(hk));
+            case ShortcutItem sc:
+                return ToolbarShortcutCard(sc, header, description);
             case TextItem tx:
             {
-                if (tx.ToolbarShortcutId is not null) return ToolbarShortcutCard(tx, header, description);
                 var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder is null ? "" : L.Get(tx.Placeholder), Width = 240 };
                 box.LostFocus += (_, _) =>
                 {
@@ -261,17 +262,6 @@ public sealed partial class SettingsWindow : Window
                     {
                         box.Header = tx.Invalid is null ? Strings.Settings_InvalidValue : L.Get(tx.Invalid);
                         return;
-                    }
-                    if (tx.ValidateFor is { } validFor && !string.IsNullOrWhiteSpace(box.Text))
-                    {
-                        // Checked against toolbar.json as it is now (the Stop row: a panel command's binding).
-                        var toolbar = Hotline.Core.Windowing.ToolbarFile.Load(ToolbarPath);
-                        if (toolbar.Error is null) _settings.Current.Chat.Toolbar = toolbar.Model;
-                        if (!validFor(_settings.Current, box.Text.Trim()))
-                        {
-                            box.Header = L.Get(tx.InvalidFor ?? tx.Invalid ?? nameof(Strings.Settings_InvalidValue));
-                            return;
-                        }
                     }
                     box.Header = null;
                     if ((tx.Get(_settings.Current) ?? "") != box.Text.Trim()) _settings.Update(x => tx.Set(x, box.Text));
