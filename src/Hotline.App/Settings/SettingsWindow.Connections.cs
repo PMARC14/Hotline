@@ -462,7 +462,14 @@ public sealed partial class SettingsWindow
             var value = IsDefault(m) ? null : m;
             if (value != p.Model) await Save(x => x.Model = value);
         };
-        model.TextSubmitted += async (_, e) => await Save(x => x.Model = IsDefault(e.Text) ? null : e.Text.Trim());
+        model.TextSubmitted += async (_, e) =>
+        {
+            // Handled before the first await: otherwise the ComboBox also selects the typed text, SelectionChanged saves
+            // it a second time (a second backup set) and a slow first save can land after it.
+            e.Handled = true;
+            var value = IsDefault(e.Text) || string.IsNullOrWhiteSpace(e.Text) ? null : e.Text.Trim();
+            if (value != p.Model) await Save(x => x.Model = value);
+        };
         host.Children.Add(Card(Strings.Conn_DefaultModel, null, model));
 
         if (info.EffortLevels.Count > 0)
