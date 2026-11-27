@@ -188,4 +188,33 @@ public sealed class StateStoreFormatTests : TempDirTest
         Assert.Equal("""{"extra":"keep"}""", root["upgrade"]!.ToJsonString());
         Assert.Empty(store.GetGrants());
     }
+
+    // A hand-edited path ("/Icons/A.png") is read as "Icons/A.png": updating or removing it must edit that same key, never
+    // leave it behind or add a second one.
+    [Fact]
+    public void A_hand_written_lastWritten_path_is_updated_and_removed_in_place()
+    {
+        Directory.CreateDirectory(_dir);
+        File.WriteAllText(StatePath, """{ "version": 1, "lastWritten": { "/Icons/A.png": "h1", "toolbar.json": "t" } }""");
+        var store = new StateStore(StatePath);
+        Assert.Equal("h1", store.GetLastWritten("Icons/A.png"));
+
+        Assert.True(store.SetLastWritten("Icons/A.png", "h2"));
+        var after = JsonNode.Parse(File.ReadAllText(StatePath))!["lastWritten"]!.AsObject();
+        Assert.Equal(["/Icons/A.png", "toolbar.json"], after.Select(p => p.Key).ToArray());
+        Assert.Equal("h2", after["/Icons/A.png"]!.GetValue<string>());
+
+        Assert.True(store.SetLastWritten("Icons/A.png", null));
+        after = JsonNode.Parse(File.ReadAllText(StatePath))!["lastWritten"]!.AsObject();
+        Assert.Equal(["toolbar.json"], after.Select(p => p.Key).ToArray());
+    }
+
+    [Fact]
+    public void Changing_a_returned_anchor_does_not_change_the_store()
+    {
+        var store = Store();
+        Assert.True(store.SavePanelSpot(640, null, null, null, new PanelAnchor { Monitor = "active", X = 0.3, Y = 0.8 }, null));
+        store.GetPanelSpot().Anchor!.Value.X = 0.9;
+        Assert.Equal(0.3, store.GetPanelSpot().Anchor!.Value.X);
+    }
 }

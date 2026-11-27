@@ -113,6 +113,8 @@ public sealed record StateDocument(
         if (!JsonNode.DeepEquals(oldModel["upgrade"], newModel["upgrade"]) && after.Upgrade is not null)
             Prefill(EnsureObject(tree, "upgrade"), "at", "backup");
 
+        AlignPaths(tree, oldModel);
+        AlignPaths(tree, newModel);
         JsonFile.Merge(tree, oldModel, newModel);
         if (!before.Grants.SequenceEqual(after.Grants)) ReconcileGrants(tree, after.Grants);
 
@@ -122,6 +124,21 @@ public sealed record StateDocument(
                 var parent = Walk(tree, path[..^1])!;
                 parent.Remove(JsonFile.FindKey(parent, path[^1])!);
             }
+    }
+
+    /// <summary>The model's lastWritten keys take the file's own spelling of the same path ("/Icons/A.png" on disk is read as
+    /// "Icons/A.png"), so an update or removal edits that key instead of adding a second one or missing it.</summary>
+    private static void AlignPaths(JsonObject tree, JsonObject model)
+    {
+        if (Child(tree, "lastWritten") is not { } disk || model["lastWritten"] is not JsonObject paths) return;
+        foreach (var key in paths.Select(p => p.Key).ToArray())
+        {
+            var diskKey = disk.Select(p => p.Key).FirstOrDefault(k => string.Equals(NormalizePath(k), key, StringComparison.OrdinalIgnoreCase));
+            if (diskKey is null || diskKey == key) continue;
+            var value = paths[key];
+            paths.Remove(key);
+            paths[diskKey] = value?.DeepClone();
+        }
     }
 
     private JsonObject ToModel()

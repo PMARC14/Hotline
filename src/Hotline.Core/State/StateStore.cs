@@ -69,7 +69,14 @@ public sealed class StateStore(string filePath, TimeProvider? time = null, IFile
 
     // ---- Saved panel spot ----------------------------------------------------------------------
 
-    public PanelSpot GetPanelSpot() => Read(d => d.Panel);
+    /// <summary>The saved spot. Its anchors are copies: <see cref="PanelAnchor"/> is mutable, and a caller changing one must
+    /// not change the cached state (the next write would then miss the difference).</summary>
+    public PanelSpot GetPanelSpot() => Read(d => d.Panel with
+    {
+        Anchor = d.Panel.Anchor is { } a
+            ? new(PanelSpotPolicy.CloneAnchor(a.Value), a.Over is { } over ? PanelSpotPolicy.CloneAnchor(over) : null)
+            : null,
+    });
 
     public bool SavePanelSpot(int widthPx, WidthOver? overWidth, int? chatHeight, int? overChatHeight, PanelAnchor anchor, PanelAnchor? overAnchor)
     {
