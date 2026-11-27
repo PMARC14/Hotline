@@ -133,9 +133,6 @@ secret scrubbing, the single-`RichTextBlock` transcript.
 - **Mixed-DPI drags:** a drop across monitors may keep the old width; a live move between stacked monitors of different DPI can
   jitter; `FramePx` is read before the panel moves to its monitor; keyboard Move and Resize stay on the current monitor.
 - **Processes:** a CLI child joins the kill-on-close job after `Process.Start`; anything it spawns first can outlive a crash.
-- **Small:** ComboBox `TextSubmitted` `e.Handled`; `CopyImage` on the UI thread; sounds don't reload a replaced `.wav`; the
-  fallback hotkey isn't re-registered on a settings change; the Language box is blank for `"en-us"`; code-fence parity in
-  `MarkdownModel`.
 - **Windows AI:** code to the stable `LanguageModel` surface, never a model name; hidden unless probed supported.
 
 ## Glossary
