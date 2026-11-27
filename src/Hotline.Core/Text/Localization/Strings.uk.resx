@@ -541,7 +541,7 @@
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Не вдалося зберегти рядки кнопок і сполучення клавіш.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Зображення не змінено: не вдалося зберегти toolbar.json.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Кнопку збережено, але не вдалося зберегти її зображення. Виберіть зображення ще раз, щоб повторити спробу.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Більше</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Тут нічого немає</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Меню кнопки «…»</value></data>

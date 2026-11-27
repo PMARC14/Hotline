@@ -541,7 +541,7 @@ Zabroń:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Nie można zapisać wierszy przycisków i skrótów.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Obraz nie został zmieniony: nie udało się zapisać pliku toolbar.json.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Przycisk został zapisany, ale nie udało się zachować jego obrazu. Wybierz obraz ponownie, aby spróbować jeszcze raz.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Więcej</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nic tu nie ma</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu przycisku …</value></data>

@@ -541,7 +541,7 @@ Reddet:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Düğme satırları ve kısayollar kaydedilemedi.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Resim değiştirilmedi: toolbar.json kaydedilemedi.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Düğme kaydedildi ancak resmi depolanamadı. Yeniden denemek için resmi tekrar seçin.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Daha fazla</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Burada hiçbir şey yok</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… düğmesinin menüsü</value></data>

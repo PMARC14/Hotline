@@ -104,7 +104,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         if (result.PicturesFailed is { Count: > 0 } failed)
         {
             _log.Info($"button rows: the picture of {string.Join(", ", failed)} couldn't be stored");
-            Notice(ToolbarCustomButtonDialog.Message(CustomIconProblem.Unreadable), InfoBarSeverity.Error);
+            Notice(Strings.Bar_PictureNotSaved, InfoBarSeverity.Error);
         }
         _focus = focus ?? _focus;
         QueueRebuild();
