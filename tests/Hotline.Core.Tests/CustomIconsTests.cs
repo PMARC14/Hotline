@@ -181,29 +181,4 @@ public sealed class CustomIconsTests : TempDirTest
                      @"\??\UNC\server\share\a.png", @"\??\C:\a.png", "/??/C:/a.png", @"\a.png", "a.png", @"C:a.png", "" })
             Assert.Equal((null, CustomIconProblem.Unreadable), CustomIcons.Read(source));
     }
-
-    [Fact]
-    public void Delete_removes_only_the_buttons_own_file()
-    {
-        Directory.CreateDirectory(Icons);
-        File.WriteAllBytes(Path.Combine(Icons, "b1.png"), Real16);
-        File.WriteAllBytes(Path.Combine(Icons, "b2.png"), Real16);
-        File.WriteAllBytes(Path.Combine(_dir, "outside.png"), Real16);
-        Assert.True(CustomIcons.Delete(Icons, "b1"));
-        Assert.False(CustomIcons.Delete(Icons, "b1")); // already gone
-        Assert.False(CustomIcons.Delete(Icons, "../outside"));
-        Assert.False(CustomIcons.Delete(Path.Combine(_dir, "nowhere"), "b2"));
-        Assert.Equal(["b2.png"], Directory.GetFiles(Icons).Select(Path.GetFileName));
-        Assert.True(File.Exists(Path.Combine(_dir, "outside.png")));
-    }
-
-    [Fact]
-    public void Delete_keeps_old_backups()
-    {
-        Directory.CreateDirectory(Icons);
-        File.WriteAllBytes(Path.Combine(Icons, "b1.png"), Real16);
-        File.WriteAllText(Path.Combine(Icons, "b1.png.old.bak"), "old backup");
-        Assert.True(CustomIcons.Delete(Icons, "b1"));
-        Assert.Equal(["b1.png.old.bak"], Directory.GetFiles(Icons).Select(Path.GetFileName));
-    }
 }

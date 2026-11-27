@@ -235,4 +235,89 @@ public sealed class ToolbarSessionTests : TempDirTest
         Assert.Equal(CustomIconProblem.Unreadable, session.StagePicture("mine", source));
         Assert.False(Directory.Exists(Icons));
     }
+
+    private const string WithMine = """{"version":3,"buttons":{"mine":{"label":"mine","icon":"","text":"hi","iconFile":"mine.png"}},"layout":{"topLeft":["mine"]}}""";
+
+    private string[] BackupFolders() =>
+        Directory.Exists(Path.Combine(_dir, "backups")) ? Directory.GetDirectories(Path.Combine(_dir, "backups")) : [];
+
+    // A newer toolbar.json is read as far as understood and never written: its pictures aren't either.
+    [Fact]
+    public void A_picture_only_edit_of_a_newer_file_writes_nothing()
+    {
+        var session = Open(WithMine.Replace("\"version\":3", "\"version\":4"));
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "mine.png"), [1, 2, 3]);
+        Assert.Equal(CustomIconProblem.None, session.StagePicture("mine", Source(Real16)));
+
+        Assert.Equal(ToolbarSaveStatus.Failed, session.Edit(m => m).Status);
+        Assert.Equal([1, 2, 3], File.ReadAllBytes(Path.Combine(Icons, "mine.png")));
+        Assert.Empty(BackupFolders());
+    }
+
+    // One save is one operation: toolbar.json and the pictures it replaces go to the same backup folder.
+    [Fact]
+    public void One_save_makes_one_backup_set_for_toolbar_json_and_pictures()
+    {
+        var session = Open(WithMine);
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "mine.png"), [1, 2, 3]);
+        session.StagePicture("mine", Source(Real16));
+
+        var result = session.Edit(m => ToolbarEditor.UpdateCustom(m, m.Buttons.Single(b => b.Id == "mine") with { Label = "Mine!" }));
+
+        Assert.Equal(ToolbarSaveStatus.Saved, result.Status);
+        var set = Assert.Single(BackupFolders());
+        Assert.True(File.Exists(Path.Combine(set, "toolbar.json")));
+        Assert.Equal([1, 2, 3], File.ReadAllBytes(Path.Combine(set, "icons", "mine.png")));
+    }
+
+    // Removing a button, or taking its picture away, removes the picture file too, after backing it up in the same set.
+    [Theory]
+    [InlineData(true)]
+    [InlineData(false)]
+    public void A_picture_the_saved_bar_no_longer_uses_is_backed_up_and_removed(bool deleteButton)
+    {
+        var session = Open(WithMine);
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "mine.png"), [1, 2, 3]);
+
+        var result = session.Edit(m => deleteButton
+            ? ToolbarEditor.RemoveCustom(m, "mine")
+            : ToolbarEditor.UpdateCustom(m, m.Buttons.Single(b => b.Id == "mine") with { IconFile = null }));
+
+        Assert.Equal(ToolbarSaveStatus.Saved, result.Status);
+        Assert.False(File.Exists(Path.Combine(Icons, "mine.png")));
+        var set = Assert.Single(BackupFolders());
+        Assert.True(File.Exists(Path.Combine(set, "toolbar.json")));
+        Assert.Equal([1, 2, 3], File.ReadAllBytes(Path.Combine(set, "icons", "mine.png")));
+    }
+
+    [Fact]
+    public void A_picture_still_used_after_a_save_stays()
+    {
+        var session = Open(WithMine);
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "mine.png"), [1, 2, 3]);
+        Assert.Equal(ToolbarSaveStatus.Saved, session.SetShortcut("pin", "Ctrl+Q").Status);
+        Assert.Equal([1, 2, 3], File.ReadAllBytes(Path.Combine(Icons, "mine.png")));
+    }
+
+    // Only a button's own icons\<id>.png is ever removed: nothing outside the folder, no other button's picture, old
+    // backup-like files stay.
+    [Fact]
+    public void Removing_a_picture_touches_only_that_buttons_own_file()
+    {
+        var session = Open(WithMine);
+        Directory.CreateDirectory(Icons);
+        File.WriteAllBytes(Path.Combine(Icons, "mine.png"), [1]);
+        File.WriteAllBytes(Path.Combine(Icons, "other.png"), [2]);
+        File.WriteAllText(Path.Combine(Icons, "mine.png.old.bak"), "old");
+        File.WriteAllBytes(Path.Combine(_dir, "outside.png"), [3]);
+
+        Assert.Equal(ToolbarSaveStatus.Saved, session.Edit(m => ToolbarEditor.RemoveCustom(m, "mine")).Status);
+
+        Assert.Equal(["mine.png.old.bak", "other.png"], Directory.GetFiles(Icons).Select(Path.GetFileName).Order());
+        Assert.True(File.Exists(Path.Combine(_dir, "outside.png")));
+    }
 }

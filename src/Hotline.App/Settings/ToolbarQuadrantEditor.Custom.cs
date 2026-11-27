@@ -58,14 +58,6 @@ internal sealed partial class ToolbarQuadrantEditor
         return slot;
     }
 
-    /// <summary>Deletes a button's picture file once the saved model no longer uses it (the button was deleted, or went back
-    /// to a built-in icon). Not when saving failed: the file on disk still names it.</summary>
-    private void ForgetPicture(string id)
-    {
-        if (_model.Buttons.Any(b => b.Id == id && b.IconFile is not null)) return;
-        if (CustomIcons.Delete(CustomButtonPicture.Folder, id)) _log.Info($"button rows: deleted the picture of {id}");
-    }
-
     /// <summary>Adds (<paramref name="existing"/> null) or edits a custom button. Adding with no room says so at once.</summary>
     private async Task EditCustomAsync(CustomButton? existing)
     {
@@ -80,9 +72,8 @@ internal sealed partial class ToolbarQuadrantEditor
             var (next, pictureReplaced) = await ToolbarCustomButtonDialog.ShowAsync(_model, existing, _quickActions(), _session.StagePicture, _showDialog, XamlRoot, _log.Info);
             if (next is null && !pictureReplaced) return; // cancelled, or nothing changed
             var focus = existing is null ? "bar-custom-add" : "bar-custom-edit-" + existing.Id;
-            // A staged picture is stored by the session only once toolbar.json is saved; a picture-only edit saves just the picture.
-            var saved = Edit(m => next ?? m, existing?.Id, (focus, "bar-custom-add"));
-            if (saved && existing?.IconFile is not null) ForgetPicture(existing.Id);
+            // The session stores a staged picture once toolbar.json is saved, and removes (backed up) one the bar stopped using.
+            Edit(m => next ?? m, existing?.Id, (focus, "bar-custom-add"));
         }
         catch (Exception ex) { _log.Error("button rows: custom button dialog failed", ex); }
     }
@@ -97,10 +88,7 @@ internal sealed partial class ToolbarQuadrantEditor
                 PrimaryButtonText = Strings.Common_Delete, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
             };
             if (await _showDialog(confirm) != ContentDialogResult.Primary) return;
-            if (Edit(m => ToolbarEditor.RemoveCustom(m, b.Id), null, ("bar-custom-add", "bar-custom-add")))
-            {
-                if (!_model.Buttons.Any(x => x.Id == b.Id)) ForgetPicture(b.Id);
-            }
+            Edit(m => ToolbarEditor.RemoveCustom(m, b.Id), null, ("bar-custom-add", "bar-custom-add")); // its picture goes with it (backed up)
         }
         catch (Exception ex) { _log.Error("button rows: deleting a custom button failed", ex); }
     }

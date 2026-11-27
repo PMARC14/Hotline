@@ -35,13 +35,28 @@ public static class ToolbarFile
     }
 
     /// <summary>Applies only typed differences to the disk tree. A no-op preserves the original bytes, including whitespace.</summary>
-    public static string? Save(string path, ToolbarModel model, IFileSystem? fileSystem = null, StateStore? state = null)
+    /// <param name="backup">The operation's backup set, when the caller writes more files in the same operation (pictures);
+    /// otherwise a new one.</param>
+    public static string? Save(string path, ToolbarModel model, IFileSystem? fileSystem = null, StateStore? state = null, BackupSet? backup = null)
     {
-        try { return SaveCore(path, model, fileSystem, state); }
+        try { return SaveCore(path, model, fileSystem, state, backup); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return Strings.Bar_WriteFailed; }
     }
 
-    private static string? SaveCore(string path, ToolbarModel model, IFileSystem? fileSystem, StateStore? state)
+    /// <summary>The notice for a toolbar.json newer than this version (read as far as understood, never written, and nor are
+    /// its pictures); null when it isn't newer or can't be read.</summary>
+    public static string? NewerVersionError(string path, IFileSystem? fileSystem = null)
+    {
+        var files = fileSystem ?? new RealFileSystem();
+        try
+        {
+            return files.FileExists(path) && Files.JsonFile.ReadVersion(files.ReadAllBytes(path)) is { } version && version > ToolbarModel.CurrentVersion
+                ? L.F(Strings.Toolbar_NewerVersion, version) : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    private static string? SaveCore(string path, ToolbarModel model, IFileSystem? fileSystem, StateStore? state, BackupSet? backup)
     {
         path = Path.GetFullPath(path);
         var files = fileSystem ?? new RealFileSystem();
@@ -76,7 +91,7 @@ public static class ToolbarFile
             }
         }
         var relative = Path.GetFileName(path);
-        var result = new SafeFile(files).Replace(path, bytes, new BackupSet(folder, BackupReason.Save, files),
+        var result = new SafeFile(files).Replace(path, bytes, backup ?? new BackupSet(folder, BackupReason.Save, files),
             ToolbarModel.CurrentVersion, state?.GetLastWritten(relative));
         if (result == SafeFileResult.Written) state?.SetLastWritten(relative, SafeFile.Hash(bytes));
         return result switch

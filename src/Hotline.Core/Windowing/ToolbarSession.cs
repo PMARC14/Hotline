@@ -17,7 +17,7 @@ public enum ToolbarSaveStatus
 }
 
 /// <summary>The outcome of one save. <see cref="PicturesFailed"/> lists buttons whose staged picture could not be stored
-/// after toolbar.json was saved (their button shows its glyph).</summary>
+/// after toolbar.json was saved: the button keeps the picture it had (or its glyph when it had none) until it is picked again.</summary>
 public sealed record ToolbarSaveResult(ToolbarSaveStatus Status, string? Error = null, IReadOnlyList<string>? PicturesFailed = null)
 {
     public bool Saved => Status == ToolbarSaveStatus.Saved;
@@ -114,25 +114,48 @@ public sealed class ToolbarSession
         return new(ToolbarSaveStatus.Saved);
     }
 
+    /// <summary>One save is one operation with one backup set: toolbar.json first, then the staged pictures, then the pictures
+    /// the saved bar no longer uses. A newer toolbar.json is never written, nor are its pictures.</summary>
     private ToolbarSaveResult Commit(ToolbarModel next)
     {
         if (ChangedOnDisk) return new(ToolbarSaveStatus.ChangedOnDisk);
-        if (!ReferenceEquals(next, Load.Model))
+        if (ToolbarFile.NewerVersionError(_path, _files) is { } newer) return new(ToolbarSaveStatus.Failed, newer);
+        var backup = new BackupSet(Path.GetDirectoryName(_path)!, BackupReason.Save, _files);
+        var previous = Load.Model;
+        if (!ReferenceEquals(next, previous))
         {
-            var error = ToolbarFile.Save(_path, next, _files, _state);
+            var error = ToolbarFile.Save(_path, next, _files, _state, backup);
             if (error is not null) return new(ToolbarSaveStatus.Failed, error);
             Load = new(next, null);
             _stamp = ToolbarFile.Fingerprint(_path, _files);
         }
-        return new(ToolbarSaveStatus.Saved, null, WritePictures(next));
+        var failed = WritePictures(next, backup);
+        RemoveUnusedPictures(previous, next, backup);
+        return new(ToolbarSaveStatus.Saved, null, failed);
+    }
+
+    /// <summary>A button's own picture file (icons\&lt;id&gt;.png) is removed once the saved bar no longer uses it (the button
+    /// was deleted, or went back to a built-in icon), backed up first into the save's set. Kept when the backup fails.</summary>
+    private void RemoveUnusedPictures(ToolbarModel before, ToolbarModel after, BackupSet backup)
+    {
+        var files = _files ?? new RealFileSystem();
+        foreach (var old in before.Buttons.Where(b => ToolbarModel.IsCustomId(b.Id) && CustomIcons.IsFileName(b.IconFile, b.Id)))
+        {
+            if (after.Buttons.Any(b => b.Id.Equals(old.Id, StringComparison.OrdinalIgnoreCase) && CustomIcons.IsFileName(b.IconFile, b.Id))) continue;
+            var path = Path.Combine(IconsFolder, old.Id + ".png");
+            try
+            {
+                if (!files.FileExists(path) || !backup.TryBackup(path)) continue;
+                files.DeleteFile(path);
+            }
+            catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { } // the file stays: harmless
+        }
     }
 
     /// <summary>Stores each staged picture whose button the saved model names; returns the ids that could not be stored.</summary>
-    private List<string>? WritePictures(ToolbarModel saved)
+    private List<string>? WritePictures(ToolbarModel saved, BackupSet backup)
     {
         List<string>? failed = null;
-        var folder = Path.GetDirectoryName(_path)!;
-        var backup = new BackupSet(folder, BackupReason.Save, _files);
         foreach (var (id, bytes) in _pictures)
         {
             var button = saved.Buttons.FirstOrDefault(b => b.Id.Equals(id, StringComparison.OrdinalIgnoreCase));

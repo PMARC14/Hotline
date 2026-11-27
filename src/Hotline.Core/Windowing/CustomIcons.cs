@@ -90,25 +90,6 @@ public static class CustomIcons
         }
     }
 
-    /// <summary>Deletes a button's own picture (only &lt;buttonId&gt;.png inside <paramref name="iconsFolder"/>). Best effort:
-    /// false when there was none or it can't be deleted.</summary>
-    public static bool Delete(string iconsFolder, string buttonId)
-    {
-        if (!ToolbarModel.IsCustomId(buttonId)) return false;
-        try
-        {
-            // Old backups stay on disk.
-            var path = Path.Combine(iconsFolder, buttonId + ".png");
-            if (!File.Exists(path)) return false;
-            File.Delete(path);
-            return true;
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-        {
-            return false;
-        }
-    }
-
     /// <summary>A drive path (C:\… or C:/…) only: every network, device or rooted form (\\server, //server, \\?\, \\.\,
     /// \??\UNC\…, \x) and every relative one is refused.</summary>
     private static bool IsLocalPath(string? path) =>
