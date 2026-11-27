@@ -39,6 +39,31 @@ public static class PanelSpotPolicy
             ? WidthOver.FromPercent(width.ToString())
             : WidthOver.FromPixels((int)Math.Round(width.Value));
 
+    /// <summary>Applies each saved item only while the current setting still equals the value it was saved over.</summary>
+    public static ResolvedPanelSpot ResolveSaved(PanelSpot saved, WidthOver? currentWidth, int? currentChatHeight, PanelAnchor currentAnchor)
+    {
+        ArgumentNullException.ThrowIfNull(saved);
+        ArgumentNullException.ThrowIfNull(currentAnchor);
+        var widthApplied = saved.Width is { } w && Equals(currentWidth, w.Over);
+        var chatApplied = saved.ChatHeight is { } ch && currentChatHeight == ch.Over;
+        var anchorApplied = saved.Anchor is { } a && AnchorsEqual(currentAnchor, a.Over);
+
+        return new ResolvedPanelSpot(
+            widthApplied ? saved.Width!.Value : null,
+            chatApplied ? saved.ChatHeight!.Value : currentChatHeight,
+            anchorApplied ? CloneAnchor(saved.Anchor!.Value) : CloneAnchor(currentAnchor),
+            widthApplied,
+            chatApplied,
+            anchorApplied);
+    }
+
+    /// <summary>Monitor mode compares without case; coordinates within 1e-9.</summary>
+    public static bool AnchorsEqual(PanelAnchor current, PanelAnchor? over) =>
+        over is not null
+        && string.Equals(current.Monitor, over.Monitor, StringComparison.OrdinalIgnoreCase)
+        && Math.Abs(current.X - over.X) <= 1e-9
+        && Math.Abs(current.Y - over.Y) <= 1e-9;
+
     public static EffectivePanelSpot Resolve(StateStore? state, WindowSettings settings)
     {
         ArgumentNullException.ThrowIfNull(settings);
@@ -54,7 +79,7 @@ public static class PanelSpotPolicy
                 AnchorApplied: false);
         }
 
-        var resolved = state.ResolvePanelSpot(ToWidthOver(settings.Width), settings.ChatHeight, currentAnchor);
+        var resolved = ResolveSaved(state.GetPanelSpot(), ToWidthOver(settings.Width), settings.ChatHeight, currentAnchor);
         var width = resolved.WidthApplied && resolved.Width is { } savedWidth
             ? new PanelWidth(SettingsRanges.All["WindowSettings.MinWidth"].Clamp(savedWidth))
             : settings.Width;
@@ -115,7 +140,8 @@ public static class PanelSpotPolicy
         return new PanelOverride<int?, int?>(chatRange.Clamp(activeChat), settings.ChatHeight);
     }
 
-    private static PanelAnchor CloneAnchor(PanelAnchor anchor) => new()
+    /// <summary>A copy with a blank monitor mode normalised to <c>active</c>.</summary>
+    public static PanelAnchor CloneAnchor(PanelAnchor anchor) => new()
     {
         Monitor = string.IsNullOrWhiteSpace(anchor.Monitor) ? PanelAnchor.Active : anchor.Monitor,
         X = anchor.X,

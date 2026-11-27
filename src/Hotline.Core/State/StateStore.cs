@@ -6,6 +6,7 @@ using System.Text.Json;
 using System.Text.Json.Nodes;
 using Hotline.Core.Files;
 using Hotline.Core.Settings;
+using Hotline.Core.Windowing;
 
 namespace Hotline.Core.State;
 
@@ -215,24 +216,7 @@ public sealed class StateStore(string filePath, TimeProvider? time = null, IFile
     public ResolvedPanelSpot ResolvePanelSpot(WidthOver? currentWidth, int? currentChatHeight, PanelAnchor currentAnchor)
     {
         ArgumentNullException.ThrowIfNull(currentAnchor);
-        PanelSpot saved;
-        lock (_gate)
-        {
-            SyncFromDiskLocked();
-            saved = ReadPanelSpotLocked();
-        }
-
-        var widthApplied = saved.Width is { } w && Equals(currentWidth, w.Over);
-        var chatApplied = saved.ChatHeight is { } ch && currentChatHeight == ch.Over;
-        var anchorApplied = saved.Anchor is { } a && AnchorsEqual(currentAnchor, a.Over);
-
-        return new ResolvedPanelSpot(
-            widthApplied ? saved.Width!.Value : null,
-            chatApplied ? saved.ChatHeight!.Value : currentChatHeight,
-            anchorApplied ? CloneAnchor(saved.Anchor!.Value) : CloneAnchor(currentAnchor),
-            widthApplied,
-            chatApplied,
-            anchorApplied);
+        return PanelSpotPolicy.ResolveSaved(GetPanelSpot(), currentWidth, currentChatHeight, currentAnchor);
     }
 
     // ---- Tool grants ---------------------------------------------------------------------------
@@ -790,19 +774,6 @@ public sealed class StateStore(string filePath, TimeProvider? time = null, IFile
         SetProperty(obj, "x", JsonValue.Create(anchor.X));
         SetProperty(obj, "y", JsonValue.Create(anchor.Y));
     }
-
-    private static PanelAnchor CloneAnchor(PanelAnchor anchor) => new()
-    {
-        Monitor = string.IsNullOrWhiteSpace(anchor.Monitor) ? PanelAnchor.Active : anchor.Monitor,
-        X = anchor.X,
-        Y = anchor.Y,
-    };
-
-    private static bool AnchorsEqual(PanelAnchor current, PanelAnchor? over) =>
-        over is not null
-        && string.Equals(current.Monitor, over.Monitor, StringComparison.OrdinalIgnoreCase)
-        && Math.Abs(current.X - over.X) <= 1e-9
-        && Math.Abs(current.Y - over.Y) <= 1e-9;
 
     private UpgradeRecord? ReadUpgradeLocked()
     {
