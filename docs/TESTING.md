@@ -7,6 +7,7 @@ Run the automatic checks first, then the hands-on checklist for physical input, 
 ```powershell
 dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj   # unit tests (Core logic, schemas, fixtures, localization)
 powershell -File tests\smoke\smoke.ps1 -Install                           # builds, installs, drives the real app (-WithAgy optional)
+bash scripts/ci-local.sh --repeat 3                                       # the CI workflow's steps on this PC (no Actions minutes needed)
 ```
 
 `smoke.ps1` launches the installed package, tests protocol/fast-path/hotkey/live-reload/corrupt-settings/quit behavior, and waits for `selftest complete: <n> checks, <m> failed` (failing on any `FAILED` line). Do not type while it runs; it leaves Hotline running in the tray.
