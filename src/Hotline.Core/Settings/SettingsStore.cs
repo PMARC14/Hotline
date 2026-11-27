@@ -127,19 +127,9 @@ public sealed class SettingsStore
         }
     }
 
-    private static JsonElement? LastMember(JsonElement obj, string name)
-    {
-        JsonElement? found = null;
-        foreach (var member in obj.EnumerateObject())
-            if (member.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) found = member.Value;
-        return found;
-    }
-
     // A ceiling capped at int32 preserves the newer/current/pre-freeze classification in the typed model.
-    private static int ReadVersion(JsonElement root) => root.ValueKind == JsonValueKind.Object
-        && LastMember(root, "version") is { ValueKind: JsonValueKind.Number } version
-        && version.TryGetDouble(out var number) && number >= 1
-            ? (int)Math.Min(int.MaxValue, Math.Ceiling(number)) : 0;
+    private static int ReadVersion(JsonElement root) => Files.JsonFile.VersionValue(root) is { } number && number >= 1
+        ? (int)Math.Min(int.MaxValue, Math.Ceiling(number)) : 0;
 
     private List<ConnectionProfile> ReadConnections(List<string> order)
     {

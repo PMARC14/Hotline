@@ -189,7 +189,7 @@ public static partial class McpSecrets
         if (root is null)
             return new McpMoveResult(false, McpMoveStatus.Failed, SafeFileResult.WriteFailed, L.F(Strings.Mcp_MoveNotFound, serverName, envKey));
 
-        if (root["version"] is JsonValue ver && ver.TryGetValue<double>(out var version) && version > McpConfig.CurrentVersion)
+        if (Files.JsonFile.VersionValue(root) is { } version && version > McpConfig.CurrentVersion)
             return new McpMoveResult(false, McpMoveStatus.Failed, SafeFileResult.NewerVersion, L.F(Strings.Mcp_MoveNewerVersion, version));
 
         if (root["mcpServers"] is not JsonObject servers

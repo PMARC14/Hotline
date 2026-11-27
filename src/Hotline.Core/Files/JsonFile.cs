@@ -40,36 +40,58 @@ public static class JsonFile
         catch (Exception ex) when (ex is JsonException or ArgumentException or DecoderFallbackException) { return false; }
     }
 
-    /// <summary>The <c>version</c> number of a JSON object (key matched in any case, exact spelling first). Fractions round up.
-    /// Null when the bytes are not an object or carry no numeric version.</summary>
+    // The one rule for a file's version, used by every reader and writer: the HIGHEST numeric value among all keys named
+    // "version" in any case (a hand edit can leave several). No writer then replaces a file any reader treats as newer.
+    // VersionValue is the raw number (pre-freeze checks compare it); ReadVersion rounds it up to an int.
+
+    /// <summary>The file's version (see the rule above), fractions rounded up; null when the bytes are not an object or carry
+    /// no numeric version. Lenient: comments, trailing commas, duplicate keys and trailing text are still checked.</summary>
     public static int? ReadVersion(ReadOnlySpan<byte> bytes)
     {
         try
         {
-            // Lenient on purpose: a file with duplicate keys is still checked, so it is never taken for an older one.
             var reader = new Utf8JsonReader(StripBom(bytes), new JsonReaderOptions { CommentHandling = JsonCommentHandling.Skip, AllowTrailingCommas = true });
             using var document = JsonDocument.ParseValue(ref reader);
-            if (document.RootElement.ValueKind != JsonValueKind.Object) return null;
-            JsonElement? found = null;
-            foreach (var member in document.RootElement.EnumerateObject())
-                if (member.Name == "version") found = member.Value;
-            if (found is null)
-                foreach (var member in document.RootElement.EnumerateObject())
-                    if (member.Name.Equals("version", StringComparison.OrdinalIgnoreCase)) { found = member.Value; break; }
-            return found is { ValueKind: JsonValueKind.Number } n && n.TryGetDouble(out var d) && double.IsFinite(d)
-                ? (int)Math.Clamp(Math.Ceiling(d), int.MinValue, int.MaxValue) : null;
+            return Rounded(VersionValue(document.RootElement));
         }
         catch (JsonException) { return null; }
     }
 
-    public static int? ReadVersion(JsonObject root)
+    public static int? ReadVersion(JsonObject root) => Rounded(VersionValue(root));
+
+    public static double? VersionValue(JsonElement root)
+    {
+        if (root.ValueKind != JsonValueKind.Object) return null;
+        double? highest = null;
+        foreach (var member in root.EnumerateObject())
+            if (member.Name.Equals("version", StringComparison.OrdinalIgnoreCase) && member.Value.ValueKind == JsonValueKind.Number
+                && member.Value.TryGetDouble(out var d) && !double.IsNaN(d) && (highest is null || d > highest))
+                highest = d;
+        return highest;
+    }
+
+    public static double? VersionValue(JsonObject root)
     {
         ArgumentNullException.ThrowIfNull(root);
-        if (FindKey(root, "version") is not { } key || root[key] is not JsonValue value) return null;
-        if (value.TryGetValue<int>(out var whole)) return whole;
-        if (value.TryGetValue<double>(out var d) && double.IsFinite(d)) return (int)Math.Clamp(Math.Ceiling(d), int.MinValue, int.MaxValue);
-        return null;
+        double? highest = null;
+        foreach (var (key, node) in root)
+            if (key.Equals("version", StringComparison.OrdinalIgnoreCase) && node is JsonValue value
+                && value.GetValueKind() == JsonValueKind.Number && Number(value) is { } d && (highest is null || d > highest))
+                highest = d;
+        return highest;
     }
+
+    /// <summary>A number node as a double, whether parsed (element-backed) or built in code (int, long, decimal...). A number
+    /// too large for a double (e.g. 1e400) is +infinity: newer than anything, never written over.</summary>
+    private static double? Number(JsonValue value) =>
+        value.TryGetValue<double>(out var d) ? (double.IsNaN(d) ? null : d)
+        : value.TryGetValue<long>(out var l) ? l
+        : value.TryGetValue<int>(out var i) ? i
+        : value.TryGetValue<decimal>(out var m) ? (double)m
+        : null;
+
+    private static int? Rounded(double? version) =>
+        version is { } d ? (int)Math.Clamp(Math.Ceiling(d), int.MinValue, int.MaxValue) : null;
 
     /// <summary>Exact key if present, otherwise the first key equal in any case.</summary>
     public static string? FindKey(JsonObject obj, string name)

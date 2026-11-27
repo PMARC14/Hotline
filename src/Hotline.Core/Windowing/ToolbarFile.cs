@@ -85,10 +85,9 @@ public static class ToolbarFile
             catch (JsonException) { }
             if (tree is not null)
             {
-                if (tree["version"] is JsonValue v && v.TryGetValue<double>(out var version) && version > ToolbarModel.CurrentVersion)
-                    return L.F(Strings.Toolbar_NewerVersion, version);
-                if (tree["version"] is not JsonValue old || !old.TryGetValue<int>(out var number) || number < ToolbarModel.CurrentVersion)
-                    return Strings.Bar_OldVersionUnsupported;
+                var version = Files.JsonFile.VersionValue(tree);
+                if (version > ToolbarModel.CurrentVersion) return L.F(Strings.Toolbar_NewerVersion, version);
+                if (version is null || version < ToolbarModel.CurrentVersion) return Strings.Bar_OldVersionUnsupported;
                 var before = JsonNode.Parse(ToolbarModel.Resolve(tree, []).ToJson())!.AsObject();
                 var after = JsonNode.Parse(model.ToJson())!.AsObject();
                 PreserveIdSpelling(tree, before, after);

@@ -24,6 +24,49 @@ public sealed class JsonFileTests
     public void ReadVersion_is_case_insensitive_and_lenient(string json, int? expected) =>
         Assert.Equal(expected, JsonFile.ReadVersion(B(json)));
 
+    // Several version keys (a hand edit): every reader takes the highest, so no writer ever replaces a file any reader
+    // would treat as newer, and the loaders and SafeFile can't disagree.
+    [Theory]
+    [InlineData("{\"version\":1,\"Version\":9}", 9)]
+    [InlineData("{\"Version\":9,\"VERSION\":1}", 9)]
+    [InlineData("{\"version\":1,\"version\":3}", 3)]
+    [InlineData("{\"version\":\"9\",\"Version\":2}", 2)]
+    public void Several_version_keys_give_the_highest(string json, int expected)
+    {
+        Assert.Equal(expected, JsonFile.ReadVersion(B(json)));
+        Assert.True(SafeFile.IsNewer(B(json), expected - 1));
+        Assert.False(SafeFile.IsNewer(B(json), expected));
+    }
+
+    [Fact]
+    public void A_version_too_large_for_a_double_is_newer_and_never_written_over()
+    {
+        Assert.True(SafeFile.IsNewer(B("{\"version\":1e400}"), 1));
+        Assert.Equal(int.MaxValue, JsonFile.ReadVersion(B("{\"version\":1e400}")));
+    }
+
+    [Fact]
+    public void A_tree_with_several_version_keys_gives_the_highest()
+    {
+        var tree = new JsonObject { ["version"] = 1, ["Version"] = 9 };
+        Assert.Equal(9, JsonFile.ReadVersion(tree));
+        Assert.Equal(9.0, JsonFile.VersionValue(tree));
+    }
+
+    [Fact]
+    public void The_settings_loader_agrees_with_SafeFile()
+    {
+        var dir = Directory.CreateTempSubdirectory("hotline-ver").FullName;
+        try
+        {
+            File.WriteAllText(Path.Combine(dir, "settings.json"), "{\"version\":1,\"Version\":9}");
+            var store = new Hotline.Core.Settings.SettingsStore(dir);
+            store.Load();
+            Assert.Equal(9, store.NewerVersionFile); // the loader sees it as newer, as SafeFile does
+        }
+        finally { Directory.Delete(dir, true); }
+    }
+
     [Fact]
     public void Merge_keeps_the_disk_key_spelling_and_unknown_keys()
     {
