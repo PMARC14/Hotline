@@ -1,10 +1,10 @@
 using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Security.Cryptography;
-using System.Text;
 using System.Text.Encodings.Web;
 using System.Text.Json;
 using System.Text.Json.Nodes;
+using Hotline.Core.Files;
 using Hotline.Core.Settings;
 
 namespace Hotline.Core.State;
@@ -14,17 +14,10 @@ namespace Hotline.Core.State;
 /// <c>lastWritten</c> file hashes and the upgrade record. Preserves unknown keys at every level, writes durably
 /// via <see cref="DurableFile"/> without backups, never writes on load, and never overwrites a newer-version file.
 /// </summary>
-public sealed class StateStore(string filePath, TimeProvider? time = null) : IGrantStore
+public sealed class StateStore(string filePath, TimeProvider? time = null, IFileSystem? fileSystem = null) : IGrantStore
 {
     public const int CurrentVersion = 1;
     public const string FileName = "state.json";
-
-    private static readonly JsonDocumentOptions ReadOptions = new()
-    {
-        CommentHandling = JsonCommentHandling.Skip,
-        AllowTrailingCommas = true,
-        AllowDuplicateProperties = false,
-    };
 
     private static readonly JsonSerializerOptions WriteOptions = new()
     {
@@ -32,9 +25,8 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
         Encoder = JavaScriptEncoder.UnsafeRelaxedJsonEscaping,
     };
 
-    private static readonly UTF8Encoding Utf8NoBom = new(encoderShouldEmitUTF8Identifier: false);
-
     private readonly TimeProvider _time = time ?? TimeProvider.System;
+    private readonly IFileSystem _files = fileSystem ?? new RealFileSystem();
     // One lock per file, shared by every instance: import, reset and the App each hold their own store.
     private static readonly System.Collections.Concurrent.ConcurrentDictionary<string, Lock> Gates = new(StringComparer.OrdinalIgnoreCase);
     private readonly Lock _gate = Gates.GetOrAdd(Path.GetFullPath(filePath), _ => new Lock());
@@ -457,7 +449,7 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
         lock (_gate)
         {
             if (!PrepareWriteLocked()) return false;
-            var fileExists = File.Exists(FilePath);
+            var fileExists = _files.FileExists(FilePath);
 
             var changed = ClearObjectKeys(_root, "shown", "firstRun", "supportNote", "upgradeNotice");
             changed |= ClearPanelLocked();
@@ -490,7 +482,7 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
     private void SyncFromDiskLocked(bool readingForWrite, out bool diskBlocked)
     {
         diskBlocked = false;
-        if (!File.Exists(FilePath))
+        if (!_files.FileExists(FilePath))
         {
             if (!_loaded || (_lastDiskBytes is not null && !_dirtyInMemory))
             {
@@ -507,7 +499,7 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
         byte[] bytes;
         try
         {
-            bytes = File.ReadAllBytes(FilePath);
+            bytes = _files.ReadAllBytes(FilePath);
         }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
         {
@@ -529,10 +521,10 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
         _loaded = true;
         _dirtyInMemory = false;
 
-        if (TryParseObject(bytes, out var obj))
+        if (JsonFile.TryParseObject(bytes, out var obj))
         {
             _corruptOnDisk = false;
-            if (TryGetVersion(obj, out var ver) && ver > CurrentVersion)
+            if (JsonFile.ReadVersion(obj) is { } ver && ver > CurrentVersion)
             {
                 _newerVersionFile = ver; // read as far as understood; SaveLocked never writes it
                 _root = obj;
@@ -555,27 +547,26 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
         if (_newerVersionFile is not null) return false;
         EnsureVersionLocked();
 
-        var json = _root.ToJsonString(WriteOptions);
-        var bytes = Utf8NoBom.GetBytes(json);
-        if (_lastDiskBytes is not null && bytes.AsSpan().SequenceEqual(_lastDiskBytes) && File.Exists(FilePath))
+        var bytes = JsonFile.ToBytes(_root, WriteOptions);
+        if (_lastDiskBytes is not null && bytes.AsSpan().SequenceEqual(_lastDiskBytes) && _files.FileExists(FilePath))
             return true;
 
-        try
+        var saved = JsonFile.Save(_files, FilePath, bytes, CurrentVersion);
+        if (saved.Result == SafeFileResult.NewerVersion)
         {
-            var dir = Path.GetDirectoryName(FilePath);
-            if (!string.IsNullOrEmpty(dir)) Directory.CreateDirectory(dir);
-            DurableFile.WriteBytes(FilePath, bytes);
-            _lastDiskBytes = bytes;
-            _loaded = true;
-            _dirtyInMemory = false;
-            _corruptOnDisk = false;
-            return true;
+            _newerVersionFile = saved.DiskVersion;
+            return false;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
+        if (!saved.Ok)
         {
             _dirtyInMemory = true;
             return false;
         }
+        _lastDiskBytes = bytes;
+        _loaded = true;
+        _dirtyInMemory = false;
+        _corruptOnDisk = false;
+        return true;
     }
 
     private void EnsureVersionLocked()
@@ -645,40 +636,6 @@ public sealed class StateStore(string filePath, TimeProvider? time = null) : IGr
     // ---- JSON helpers --------------------------------------------------------------------------
 
     private static JsonObject CreateEmptyTree() => new() { ["version"] = CurrentVersion };
-
-    private static bool TryParseObject(byte[] bytes, out JsonObject obj)
-    {
-        obj = null!;
-        try
-        {
-            ReadOnlySpan<byte> span = bytes;
-            ReadOnlySpan<byte> bom = [0xEF, 0xBB, 0xBF];
-            if (span.StartsWith(bom)) span = span[3..];
-            var text = Encoding.UTF8.GetString(span);
-            if (string.IsNullOrWhiteSpace(text)) return false;
-            if (JsonNode.Parse(text, documentOptions: ReadOptions) is not JsonObject parsed) return false;
-            obj = parsed;
-            return true;
-        }
-        catch (Exception ex) when (ex is JsonException or ArgumentException or DecoderFallbackException)
-        {
-            return false;
-        }
-    }
-
-    private static bool TryGetVersion(JsonObject root, out int version)
-    {
-        version = 0;
-        var node = GetNode(root, "version");
-        if (node is not JsonValue v) return false;
-        if (v.TryGetValue<int>(out version)) return true;
-        if (v.TryGetValue<double>(out var d) && double.IsFinite(d) && d > CurrentVersion)
-        {
-            version = (int)Math.Min(int.MaxValue, Math.Ceiling(d));
-            return true;
-        }
-        return false;
-    }
 
     private static string FlagKey(ShownFlag flag) => flag switch
     {
