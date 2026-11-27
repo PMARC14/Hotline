@@ -92,7 +92,7 @@ public static class ClaudeCodeProtocol
             sb.Append("</previous_conversation>\n\nNew message:\n");
         }
         foreach (var (name, content) in textFiles)
-            sb.Append("Attached file ").Append(name).AppendLine(":").AppendLine("```").AppendLine(content).AppendLine("```").AppendLine();
+            sb.Append(AttachedFileText.Wrap(name, content));
         sb.Append(text.Length > 0 ? text : "Please look at the attachment(s).");
         return sb.ToString();
     }

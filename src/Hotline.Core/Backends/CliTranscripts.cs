@@ -74,8 +74,7 @@ public static partial class CliTranscripts
         foreach (Match m in AttachedImages().Matches(text))
             attached.AddRange(m.Groups[1].Value.Split('\n', StringSplitOptions.RemoveEmptyEntries).Select(l => Path.GetFileName(l.TrimStart('-', ' ').Trim())));
         text = AttachedImages().Replace(text, "");
-        foreach (Match m in AttachedFile().Matches(text)) attached.Add(m.Groups[1].Value);
-        text = AttachedFile().Replace(text, "").Trim();
+        text = AttachedFileText.Strip(text, attached.Add).Trim();
         // Hotline's stand-in for "attachments only" isn't something the user typed.
         text = string.Join("\n", text.Split('\n').Where(l => l.Trim() is not ("Please look at the attached file(s)." or "Please look at the attachment(s)."))).Trim();
         return string.Join("\n", new[] { text }.Concat(attached.Select(a => $"[attached: {a}]")).Where(s => s.Length > 0));
@@ -112,7 +111,4 @@ public static partial class CliTranscripts
 
     [GeneratedRegex(@"Attached images \([^\n]*\):\n((?:- [^\n]*\n?)+)\n?")]
     private static partial Regex AttachedImages();
-
-    [GeneratedRegex(@"Attached file ([^\n]+):\n```\n[\s\S]*?\n```\n\n?")]
-    private static partial Regex AttachedFile();
 }

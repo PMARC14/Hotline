@@ -32,7 +32,7 @@ public static partial class ApiCommon
         var files = m.Attachments.Where(a => a.Kind == AttachmentKind.Text).ToList();
         if (files.Count == 0) return m.Text;
         var sb = new StringBuilder();
-        foreach (var f in files) sb.Append("Attached file ").Append(f.Name).Append(":\n```\n").Append(f.AsText()).Append("\n```\n\n");
+        foreach (var f in files) sb.Append(AttachedFileText.Wrap(f.Name, f.AsText()));
         sb.Append(m.Text.Length > 0 ? m.Text : "Please look at the attachment(s).");
         return sb.ToString();
     }

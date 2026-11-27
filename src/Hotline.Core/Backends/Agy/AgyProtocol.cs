@@ -38,7 +38,7 @@ public static class AgyProtocol
             sb.AppendLine();
         }
         foreach (var (name, content) in textFiles)
-            sb.Append("Attached file ").Append(name).AppendLine(":").AppendLine("```").AppendLine(content).AppendLine("```").AppendLine();
+            sb.Append(AttachedFileText.Wrap(name, content));
         sb.Append(text.Length > 0 ? text : "Please look at the attached file(s).");
         return sb.ToString();
     }
