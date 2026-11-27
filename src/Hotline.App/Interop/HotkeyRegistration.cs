@@ -14,6 +14,7 @@ internal sealed class HotkeyRegistration
     private readonly WindowMessageHook _hook;
     private readonly FileLog _log;
     private Hotkey? _registered;
+    private string? _appliedText; // the setting's text last applied (null before the first Apply)
 
     public HotkeyRegistration(WindowMessageHook hook, Action onPressed, FileLog log)
     {
@@ -41,6 +42,11 @@ internal sealed class HotkeyRegistration
     /// </summary>
     public void Apply(string? text)
     {
+        // Settings change for many reasons: act only when this setting's text changed (an invalid or taken hotkey is then
+        // reported once, not on every theme or model change; editing the text, or a restart, tries again).
+        var normalized = text?.Trim() ?? "";
+        if (_appliedText is not null && string.Equals(normalized, _appliedText, StringComparison.OrdinalIgnoreCase)) return;
+        _appliedText = normalized;
         Hotkey? wanted = null;
         if (!string.IsNullOrWhiteSpace(text))
         {

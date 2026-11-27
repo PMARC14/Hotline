@@ -60,7 +60,8 @@ internal static class SoundPlayer
         if (Players.TryGetValue(path, out var existing))
         {
             if (existing.Stamp == stamp) return existing.Player;
-            existing.Player.Dispose(); // the file was replaced: load the new one
+            (existing.Player.Source as IDisposable)?.Dispose(); // the file was replaced: release the old source and player
+            existing.Player.Dispose();
             Players.Remove(path);
         }
         try
