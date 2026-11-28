@@ -541,7 +541,7 @@
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>无法保存按钮行和快捷键。</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>图片未更改：无法保存 toolbar.json。</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>按钮已保存，但无法存储其图片。请重新选择图片以重试。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>此处为空</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>“…”按钮菜单</value></data>

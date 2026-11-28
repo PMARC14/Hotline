@@ -57,7 +57,7 @@ From the Neon design review, agreed 2026-11-22: do steps 1-3 before new 1.0 feat
 |---|---|---|---|
 | 1 | `Files/JsonFile` (BOM, one case-insensitive `ReadVersion`, merge wrapper); `StateStore` rebuilt on a typed `StateDocument` + `JsonMerge` + `IFileSystem`, one instance injected everywhere (drop the static lock map); spot math into `PanelSpotPolicy` | M | before 1.0 |
 | 2 | Split `PopupWindow` (953 lines): Core `MonitorChoice`, `PopupBlurPolicy`, `PopupSessionState`; App `Windowing/PopupPlacement`; delete dead `PopupGeometry.ChatWidthPx`/`RelativeWidthPx`. Also move `OnPanelKey`, `ConnectionLifecycle`, `ModelSelection` (no localized "Default" sentinel), attachment intake and the copy-last-answer rule to Core | L | before 1.0 |
-| 3 | One Core `ToolbarSession` (load, fingerprint, edit, shortcuts, reset, picture staging through `SafeFile`); remove `ChatSettings.Toolbar`, `ToolbarShortcutSession`, `CustomIcons` `.prev` and `PendingPictures` | M | before 1.0 |
+| 3 | **Done.** One Core `ToolbarSession` (load, fingerprint, edit, shortcuts, reset, picture staging through `SafeFile`); remove `ChatSettings.Toolbar`, `ToolbarShortcutSession`, `CustomIcons` `.prev` and `PendingPictures` | M | before 1.0 |
 | 4 | Split `ToolbarModel` into model, reader, `JsonObject` writer; move `ChatShortcuts` to `Windowing/PanelShortcuts` | M | after 1.0 |
 | 5 | `SettingsWindow` partials into page classes with a `SettingsPageContext`; split `ToolbarRenderer` (styler, picture loader); shared CLI turn and API tool-round helpers; typed warning codes | M | after 1.0 |
 
@@ -71,7 +71,7 @@ secret scrubbing, the single-`RichTextBlock` transcript.
   (`ChatController`, `HistoryStore`, prompts, quick actions, memory), `Files/` (`IFileSystem`, `SafeFile`, `BackupSet`, `JsonMerge`, `JsonFile`),
   `Settings/` (`HotlineSettings`, `SettingsStore`, `LenientReader`, `SettingsService`, `SettingsSchema`, reset, package),
   `State/` (`StateStore` facade, `StateDocument`; one instance, created in `App`), `Tools/` (MCP host, rules, grants, secrets, `OdrDiscovery`), `Upgrade/` (`PreFreezeUpgrade`,
-  `StarterFiles`), `Windowing/` (`PanelWidth`, placement, spot policy, toolbar model, plan, layout, editor), `Defaults/*.json`.
+  `StarterFiles`), `Windowing/` (`PanelWidth`, placement, spot policy, toolbar model, plan, layout, editor, `ToolbarSession`), `Defaults/*.json`.
 - `src/Hotline.App` (WinUI 3, packaged MSIX): `App*.cs` composition root (upgrade → starter files → load → watchers),
   `PopupWindow`, `ActivationRouter`, `ToolbarRenderer`, `Chat/` (`ChatPresenter` and one class per job), `Settings/` (pages from
   `SettingsSchema`, toolbar editor), `Interop/` (tray, Copilot fast path, hotkey, job object, selection reader).

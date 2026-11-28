@@ -7,7 +7,7 @@ namespace Hotline.Core.Windowing;
 public enum CustomIconProblem { None, NotPng, TooLarge, TooSmall, TooBig, Corrupt, Unreadable }
 
 /// <summary>
-/// Pictures as custom button icons: PNG only, at most 256 KB, each side 16-256 px. A chosen file is copied to
+/// Pictures as custom button icons: PNG only, at most 256 KB, each side 16-256 px. A chosen file is stored as
 /// icons\&lt;button id&gt;.png in the data folder, so toolbar.json only ever names a file Hotline made itself (the user's
 /// original is never touched, and no name from outside becomes a path). <see cref="Validate"/> reads the header only:
 /// it never decodes pixels and never allocates from a size read out of the file.
@@ -87,103 +87,6 @@ public static class CustomIcons
             or System.Security.SecurityException)
         {
             return (null, CustomIconProblem.Unreadable);
-        }
-    }
-
-    /// <summary>
-    /// Copies a valid picture to <paramref name="iconsFolder"/>\&lt;buttonId&gt;.png (made on demand) through a temporary
-    /// file, so an existing icon is replaced whole or not at all. Returns the stored name, or null and the problem.
-    /// Never throws.
-    /// </summary>
-    public static (string? FileName, CustomIconProblem Problem) Import(string sourcePath, string iconsFolder, string buttonId)
-    {
-        if (!ToolbarModel.IsCustomId(buttonId)) return (null, CustomIconProblem.Unreadable);
-        var (bytes, problem) = Read(sourcePath);
-        if (bytes is null) return (null, problem);
-        var name = buttonId + ".png";
-        try
-        {
-            Directory.CreateDirectory(iconsFolder);
-            // The picture being replaced is kept (not as a .png, so nothing lists it) until Commit or Rollback.
-            var target = Path.Combine(iconsFolder, name);
-            var previous = PreviousPath(iconsFolder, buttonId);
-            var backup = new Hotline.Core.Files.BackupSet(Path.GetDirectoryName(Path.GetFullPath(iconsFolder))!, Hotline.Core.Files.BackupReason.Save);
-            if (File.Exists(target) && !backup.TryBackup(target)) return (null, CustomIconProblem.Unreadable);
-            File.Delete(previous);
-            if (File.Exists(target)) File.Copy(target, previous, overwrite: true);
-            lock (PendingPictures) PendingPictures[previous] = !File.Exists(previous);
-            var result = new Hotline.Core.Files.SafeFile().Replace(target, bytes, backup, 0);
-            if (result is not (Hotline.Core.Files.SafeFileResult.Written or Hotline.Core.Files.SafeFileResult.Unchanged))
-                return (null, CustomIconProblem.Unreadable);
-            return (name, CustomIconProblem.None);
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-        {
-            return (null, CustomIconProblem.Unreadable);
-        }
-    }
-
-    /// <summary>Active imports by .prev path; true when rollback must delete the first picture.</summary>
-    private static readonly Dictionary<string, bool> PendingPictures = new(StringComparer.OrdinalIgnoreCase);
-
-    private static string PreviousPath(string iconsFolder, string buttonId) => Path.Combine(iconsFolder, $".{buttonId}.prev");
-
-    /// <summary>The toolbar change that went with an <see cref="Import"/> was saved: discard the rollback copy, keeping the stamped backup.</summary>
-    public static void Commit(string iconsFolder, string buttonId)
-    {
-        if (!ToolbarModel.IsCustomId(buttonId)) return;
-        try
-        {
-            var previous = PreviousPath(iconsFolder, buttonId);
-            lock (PendingPictures) PendingPictures.Remove(previous);
-            File.Delete(previous);
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { }
-    }
-
-    /// <summary>The toolbar change that went with an <see cref="Import"/> failed: the picture before it is put back (a first
-    /// picture is removed). False when there was nothing to undo or it can't be done. Never throws.</summary>
-    public static bool Rollback(string iconsFolder, string buttonId)
-    {
-        if (!ToolbarModel.IsCustomId(buttonId)) return false;
-        try
-        {
-            var previous = PreviousPath(iconsFolder, buttonId);
-            var target = Path.Combine(iconsFolder, buttonId + ".png");
-            bool first;
-            lock (PendingPictures)
-            {
-                if (!PendingPictures.Remove(previous, out first)) return false;
-            }
-            if (File.Exists(previous)) File.Move(previous, target, overwrite: true);
-            else if (first) File.Delete(target); // there was no picture before this import
-            else return false; // nothing pending (committed, or never imported)
-            return true;
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-        {
-            return false;
-        }
-    }
-
-    /// <summary>Deletes a button's own picture (only &lt;buttonId&gt;.png inside <paramref name="iconsFolder"/>). Best effort:
-    /// false when there was none or it can't be deleted.</summary>
-    public static bool Delete(string iconsFolder, string buttonId)
-    {
-        if (!ToolbarModel.IsCustomId(buttonId)) return false;
-        try
-        {
-            // Old backups and rollback copies stay on disk; this button no longer has a pending import.
-            var previous = PreviousPath(iconsFolder, buttonId);
-            lock (PendingPictures) PendingPictures.Remove(previous);
-            var path = Path.Combine(iconsFolder, buttonId + ".png");
-            if (!File.Exists(path)) return false;
-            File.Delete(path);
-            return true;
-        }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException)
-        {
-            return false;
         }
     }
 

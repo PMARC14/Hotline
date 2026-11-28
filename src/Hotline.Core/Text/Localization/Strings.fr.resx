@@ -541,7 +541,7 @@ Refuser :
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Impossible d'enregistrer les rangées de boutons et raccourcis.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>L'image n'a pas été modifiée : impossible d'enregistrer toolbar.json.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Le bouton a été enregistré, mais son image n’a pas pu être stockée. Choisissez de nouveau l’image pour réessayer.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Plus</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Rien ici</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu du bouton …</value></data>

@@ -62,16 +62,13 @@ public sealed class ChatShortcutTests
     {
         foreach (var (id, combo) in ChatShortcuts.Defaults)
         {
-            var row = Assert.IsType<TextItem>(SettingsSchema.Items.Single(i => i is TextItem t && t.ToolbarShortcutId == id));
-            var settings = new HotlineSettings();
-            Assert.Equal(combo, row.Get(settings));
-            Assert.Equal(id == "stop", row.Validate!("Esc"));
-            Assert.True(row.Validate!("Ctrl+Q"));
-            Assert.False(row.Validate!("Enter"));
-            row.Set(settings, "");
-            Assert.Equal("", row.Get(settings));
-            row.Reset!(settings);
-            Assert.Equal(combo, row.Get(settings));
+            var row = Assert.IsType<ShortcutItem>(SettingsSchema.Items.Single(i => i is ShortcutItem t && t.Id == id));
+            Assert.Equal(combo, row.Default);
+            Assert.Equal(id == "stop", row.Validate("Esc"));
+            Assert.True(row.Validate("Ctrl+Q"));
+            Assert.False(row.Validate("Enter"));
+            Assert.True(row.Validate(""));
+            Assert.True(row.ValidateFor(ToolbarModel.Defaults, ""));
         }
     }
 }

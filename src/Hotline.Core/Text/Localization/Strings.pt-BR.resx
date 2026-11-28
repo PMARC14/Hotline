@@ -541,7 +541,7 @@ Negar:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Não foi possível salvar as linhas de botões e atalhos.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>A imagem não foi alterada: toolbar.json não pôde ser salvo.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>O botão foi salvo, mas a imagem dele não pôde ser armazenada. Escolha a imagem novamente para tentar de novo.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Mais</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nada aqui</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu do botão …</value></data>

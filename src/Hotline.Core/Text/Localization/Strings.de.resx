@@ -541,7 +541,7 @@ Verweigern:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Schaltflächenreihen und Tastenkombinationen konnten nicht gespeichert werden.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Das Bild wurde nicht geändert: toolbar.json konnte nicht gespeichert werden.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Die Schaltfläche wurde gespeichert, aber ihr Bild konnte nicht abgelegt werden. Wählen Sie das Bild erneut aus, um es noch einmal zu versuchen.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Mehr</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Hier ist nichts</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menü der Schaltfläche „…“</value></data>

@@ -541,7 +541,7 @@ Tolak:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Tidak dapat menyimpan baris tombol dan pintasan.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Gambar tidak diubah: toolbar.json tidak dapat disimpan.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Tombol telah disimpan, tetapi gambarnya tidak dapat disimpan. Pilih gambar lagi untuk mencoba kembali.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Lainnya</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Tidak ada apa-apa di sini</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu tombol …</value></data>

@@ -541,7 +541,7 @@ Denegar:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>No se pudieron guardar las filas de botones y accesos directos.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>No se cambió la imagen: no se pudo guardar toolbar.json.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>El botón se guardó, pero su imagen no se pudo almacenar. Vuelve a elegir la imagen para intentarlo de nuevo.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Más</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Nada por aquí</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menú del botón …</value></data>

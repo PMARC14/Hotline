@@ -9,36 +9,6 @@ namespace Hotline.Core.Windowing;
 
 public sealed record ToolbarLoad(ToolbarModel Model, string? Error);
 
-/// <summary>One Settings page's toolbar snapshot, shared by all its shortcut cards.</summary>
-public sealed class ToolbarShortcutSession
-{
-    private readonly string _path;
-    private readonly IFileSystem? _files;
-    private readonly StateStore? _state;
-    private string? _stamp;
-    public ToolbarLoad Load { get; private set; }
-
-    public ToolbarShortcutSession(string path, IFileSystem? fileSystem = null, StateStore? state = null)
-    {
-        _path = path;
-        _files = fileSystem;
-        _state = state;
-        Load = ToolbarFile.Load(path, fileSystem);
-        _stamp = ToolbarFile.Fingerprint(path, fileSystem);
-    }
-
-    public (bool ChangedOnDisk, string? Error) SetShortcut(string id, string? text)
-    {
-        if (ToolbarFile.Fingerprint(_path, _files) != _stamp) return (true, null);
-        var next = ToolbarEditor.SetShortcut(Load.Model, id, text);
-        var error = ToolbarFile.Save(_path, next, _files, _state);
-        if (error is not null) return (false, error);
-        Load = new(next, null);
-        _stamp = ToolbarFile.Fingerprint(_path, _files);
-        return (false, null);
-    }
-}
-
 /// <summary>Read-only loading and lossless, backed-up saves of toolbar.json v3.</summary>
 public static class ToolbarFile
 {
@@ -65,13 +35,28 @@ public static class ToolbarFile
     }
 
     /// <summary>Applies only typed differences to the disk tree. A no-op preserves the original bytes, including whitespace.</summary>
-    public static string? Save(string path, ToolbarModel model, IFileSystem? fileSystem = null, StateStore? state = null)
+    /// <param name="backup">The operation's backup set, when the caller writes more files in the same operation (pictures);
+    /// otherwise a new one.</param>
+    public static string? Save(string path, ToolbarModel model, IFileSystem? fileSystem = null, StateStore? state = null, BackupSet? backup = null)
     {
-        try { return SaveCore(path, model, fileSystem, state); }
+        try { return SaveCore(path, model, fileSystem, state, backup); }
         catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return Strings.Bar_WriteFailed; }
     }
 
-    private static string? SaveCore(string path, ToolbarModel model, IFileSystem? fileSystem, StateStore? state)
+    /// <summary>The notice for a toolbar.json newer than this version (read as far as understood, never written, and nor are
+    /// its pictures); null when it isn't newer or can't be read.</summary>
+    public static string? NewerVersionError(string path, IFileSystem? fileSystem = null)
+    {
+        var files = fileSystem ?? new RealFileSystem();
+        try
+        {
+            return files.FileExists(path) && Files.JsonFile.ReadVersion(files.ReadAllBytes(path)) is { } version && version > ToolbarModel.CurrentVersion
+                ? L.F(Strings.Toolbar_NewerVersion, version) : null;
+        }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { return null; }
+    }
+
+    private static string? SaveCore(string path, ToolbarModel model, IFileSystem? fileSystem, StateStore? state, BackupSet? backup)
     {
         path = Path.GetFullPath(path);
         var files = fileSystem ?? new RealFileSystem();
@@ -106,7 +91,7 @@ public static class ToolbarFile
             }
         }
         var relative = Path.GetFileName(path);
-        var result = new SafeFile(files).Replace(path, bytes, new BackupSet(folder, BackupReason.Save, files),
+        var result = new SafeFile(files).Replace(path, bytes, backup ?? new BackupSet(folder, BackupReason.Save, files),
             ToolbarModel.CurrentVersion, state?.GetLastWritten(relative));
         if (result == SafeFileResult.Written) state?.SetLastWritten(relative, SafeFile.Hash(bytes));
         return result switch

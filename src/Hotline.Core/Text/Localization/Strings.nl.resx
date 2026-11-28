@@ -541,7 +541,7 @@ Weigeren:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Kan de knoppenrijen en sneltoetsen niet opslaan.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>De afbeelding is niet gewijzigd: toolbar.json kon niet worden opgeslagen.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>De knop is opgeslagen, maar de afbeelding kon niet worden bewaard. Kies de afbeelding opnieuw om het nog eens te proberen.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Meer</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niets hier</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu van knop …</value></data>

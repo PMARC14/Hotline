@@ -541,7 +541,7 @@
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>ボタン行とショートカットを保存できませんでした。</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>画像は変更されませんでした: toolbar.json を保存できませんでした。</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>ボタンは保存されましたが、画像を保存できませんでした。もう一度画像を選んで再試行してください。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>その他</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>ここには何もありません</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>… ボタンのメニュー</value></data>

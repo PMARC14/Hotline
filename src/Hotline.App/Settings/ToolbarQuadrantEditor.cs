@@ -31,7 +31,7 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
         ["recent"] = "\uE81C", ["continueIn"] = "\uE756", ["newChat"] = "\uE8BD", ["settings"] = "\uE713", ["more"] = "\uE712", ["copyLastAnswer"] = "\uE8C8",
     };
 
-    private readonly Action<ToolbarModel> _save;
+    private readonly ToolbarSession _session;
     private readonly Func<IReadOnlyList<string>> _quickActions;
     private readonly Func<ContentDialog, Task<ContentDialogResult>> _showDialog;
     private readonly Style _cardStyle;
@@ -43,27 +43,21 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
     private readonly Dictionary<ListViewItem, (Rectangle Before, Rectangle After)> _markers = [];
     private readonly List<Shape> _litMarkers = [];
     private Border? _litCard;
-    private ToolbarModel _model;
+    /// <summary>The model as the session last read or saved it.</summary>
+    private ToolbarModel _model => _session.Model;
     private string? _dragId;
     private bool _rebuildQueued, _rebuildPending;
     private int _flyoutsOpen;
     /// <summary>What gets keyboard focus after the next rebuild: the element with the first id, else the second.</summary>
     private (string Preferred, string Fallback)? _focus;
 
-    /// <summary>Thrown by the save callback when toolbar.json changed on disk since this editor read or last saved it.</summary>
-    public sealed class ChangedOnDiskException : Exception;
+    /// <summary>Called when toolbar.json can't be read any more (the page then shows the error and Reset).</summary>
+    private readonly Action _unreadable;
 
-    /// <summary>Reads toolbar.json anew (and notes its fingerprint) after <see cref="ChangedOnDiskException"/>; null when it can't be used.</summary>
-    private readonly Func<ToolbarModel?> _reload;
-    private readonly Func<Hotline.Core.Settings.ChatSettings> _chat;
-
-    public ToolbarQuadrantEditor(ToolbarModel model, Action<ToolbarModel> save, Func<IReadOnlyList<string>> quickActions,
-        Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Func<double>? barRoom = null,
-        Func<ToolbarModel?>? reload = null, Func<Hotline.Core.Settings.ChatSettings>? chat = null)
+    public ToolbarQuadrantEditor(ToolbarSession session, Func<IReadOnlyList<string>> quickActions,
+        Func<ContentDialog, Task<ContentDialogResult>> showDialog, Style cardStyle, FileLog log, Action unreadable, Func<double>? barRoom = null)
     {
-        (_model, _save, _quickActions, _showDialog, _cardStyle, _log, _barRoom) = (model, save, quickActions, showDialog, cardStyle, log, barRoom);
-        _reload = reload ?? (() => null);
-        _chat = chat ?? (() => new());
+        (_session, _quickActions, _showDialog, _cardStyle, _log, _unreadable, _barRoom) = (session, quickActions, showDialog, cardStyle, log, unreadable, barRoom);
         Spacing = 8;
         Children.Add(_notice);
         Children.Add(new TextBlock { Text = Strings.Bar_EditorIntro, TextWrapping = TextWrapping.Wrap, Opacity = 0.8 });
@@ -76,40 +70,42 @@ internal sealed partial class ToolbarQuadrantEditor : StackPanel
 
     // ---- editing ----
 
-    /// <summary>Runs one edit; when it changes the model, saves it (keeping the last good model if that fails), moves a style
-    /// override between the item and the stash when it is hidden or shown, and rebuilds this control, then focuses
-    /// <paramref name="focus"/> (see <see cref="_focus"/>).</summary>
+    /// <summary>Runs one edit through the session; when it changes the model (or stores a staged picture), the file is saved
+    /// (the last good model stays if that fails), then this control is rebuilt and <paramref name="focus"/> focused (see
+    /// <see cref="_focus"/>). A style override moves between the item and the stash in <see cref="ToolbarEditor"/>.</summary>
     private bool Edit(Func<ToolbarModel, ToolbarModel> edit, string? id, (string Preferred, string Fallback)? focus = null)
     {
-        var before = _model;
-        ToolbarModel next;
-        try { next = edit(before); }
+        ToolbarSaveResult result;
+        try { result = _session.Edit(edit); }
         catch (Exception ex) { _log.Error("button rows: edit failed", ex); return false; } // ToolbarEditor never throws; a drop must never fail anyway
-        if (ReferenceEquals(next, before)) return false;
-        try { _save(next); }
-        catch (ChangedOnDiskException)
+        switch (result.Status)
         {
-            // A hand edit or an import changed the file meanwhile: show what it holds now instead of overwriting it.
-            _log.Info("button rows: toolbar.json changed on disk; reloaded instead of saving");
-            if (_reload() is { } fresh)
-            {
-                _model = fresh;
-                Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
+            case ToolbarSaveStatus.Unchanged:
+                return false;
+            case ToolbarSaveStatus.ChangedOnDisk:
+                // A hand edit or an import changed the file meanwhile: show what it holds now instead of overwriting it.
+                _log.Info("button rows: toolbar.json changed on disk; reloaded instead of saving");
+                if (_session.Reload().Error is null)
+                {
+                    Notice(Strings.Bar_ChangedOnDisk, InfoBarSeverity.Warning);
+                    _focus = focus ?? _focus;
+                    QueueRebuild();
+                }
+                else _unreadable();
+                return false;
+            case ToolbarSaveStatus.Failed:
+                _log.Error("saving toolbar.json failed", new IOException(result.Error));
+                Notice(L.F(Strings.Bar_SaveFailed, result.Error), InfoBarSeverity.Error);
                 _focus = focus ?? _focus;
-                QueueRebuild();
-            }
-            return false;
+                QueueRebuild(); // back to what the file holds
+                return false;
         }
-        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException)
-        {
-            _log.Error("saving toolbar.json failed", ex);
-            Notice(L.F(Strings.Bar_SaveFailed, ex.Message), InfoBarSeverity.Error);
-            _focus = focus ?? _focus;
-            QueueRebuild(); // back to what the file holds
-            return false;
-        }
-        _model = next;
         if (_notice.Severity == InfoBarSeverity.Error) _notice.IsOpen = false;
+        if (result.PicturesFailed is { Count: > 0 } failed)
+        {
+            _log.Info($"button rows: the picture of {string.Join(", ", failed)} couldn't be stored");
+            Notice(Strings.Bar_PictureNotSaved, InfoBarSeverity.Error);
+        }
         _focus = focus ?? _focus;
         QueueRebuild();
         return true;

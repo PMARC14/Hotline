@@ -218,8 +218,6 @@ public sealed class ChatSettings
     public OcrMode Ocr { get; set; } = SettingsDefaults.Get<OcrMode>("chat", "ocr");
     /// <summary>Voice key action: send the message when the key is released (off = review it first).</summary>
     public bool VoiceAutoSend { get; set; } = SettingsDefaults.Get<bool>("chat", "voiceAutoSend");
-    [System.Text.Json.Serialization.JsonIgnore]
-    public Windowing.ToolbarModel Toolbar { get; set; } = Windowing.ToolbarModel.Defaults;
     /// <summary>Add ~/.hotline/memory.md to every chat's system prompt.</summary>
     public bool Memory { get; set; } = SettingsDefaults.Get<bool>("chat", "memory");
     /// <summary>Whether API models may save to memory.md with the remember tool (Ask = approve each one in the panel).</summary>

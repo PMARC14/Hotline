@@ -541,7 +541,7 @@
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>無法儲存按鈕列和快速鍵。</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>圖片未變更：無法儲存 toolbar.json。</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>按鈕已儲存，但無法儲存其圖片。請重新選擇圖片以重試。</value></data>
   <data name="Bar_more" xml:space="preserve"><value>更多</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>這裡沒有任何內容</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>「…」按鈕選單</value></data>

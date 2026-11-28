@@ -541,7 +541,7 @@ Nega:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Impossibile salvare le righe di pulsanti e delle scorciatoie.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>L'immagine non è stata modificata: impossibile salvare toolbar.json.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Il pulsante è stato salvato, ma non è stato possibile archiviarne l’immagine. Scegli di nuovo l’immagine per riprovare.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Altro</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Niente qui</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu del pulsante …</value></data>

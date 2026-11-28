@@ -15,18 +15,17 @@ public sealed partial class SettingsWindow
     private string ToolbarPath => Path.Combine(DataDirectory, "toolbar.json");
 
     /// <summary>toolbar.json as this page build read it: once per page, not once per shortcut row (cleared by ShowPage).</summary>
-    private ToolbarShortcutSession? _pageToolbar;
+    private ToolbarSession? _pageToolbar;
 
-    private Border ToolbarShortcutCard(Hotline.Core.Settings.TextItem row, string header, string? description)
+    private Border ToolbarShortcutCard(Hotline.Core.Settings.ShortcutItem row, string header, string? description)
     {
-        var page = _pageToolbar ??= new ToolbarShortcutSession(ToolbarPath, state: _state);
-        if (page.Load.Error is { } problem) return Card(header, problem, null);
-        var id = row.ToolbarShortcutId!;
-        var box = new TextBox { Text = page.Load.Model.ShortcutText(id), PlaceholderText = row.Placeholder ?? "", Width = 240 };
+        var page = _pageToolbar ??= new ToolbarSession(ToolbarPath, state: _state);
+        if (page.Error is { } problem) return Card(header, problem, null);
+        var id = row.Id;
+        var box = new TextBox { Text = page.Model.ShortcutText(id), PlaceholderText = row.Default, Width = 240 };
         bool Accept(string value)
         {
-            _settings.Current.Chat.Toolbar = page.Load.Model;
-            var valid = row.Validate!(value) && row.ValidateFor!(_settings.Current, value);
+            var valid = row.Validate(value) && row.ValidateFor(page.Model, value);
             box.Header = valid ? null : L.Get(row.Invalid!);
             return valid;
         }
@@ -37,31 +36,29 @@ public sealed partial class SettingsWindow
             try
             {
                 var result = page.SetShortcut(id, value);
-                if (result.ChangedOnDisk) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-                if (result.Error is { } problem)
+                if (result.Status == ToolbarSaveStatus.ChangedOnDisk)
                 {
-                    Fail("saving toolbar shortcut failed", new IOException(problem));
+                    // Not saved: the file changed since the page read it. Show it as it is now and say why.
+                    ShowPage(_currentPage);
+                    PageHost.Children.Insert(1, new InfoBar
+                    {
+                        IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
+                        Message = Strings.Bar_ChangedOnDisk,
+                    });
                     return;
                 }
-                var next = page.Load.Model;
-                _settings.Current.Chat.Toolbar = next;
-                box.Text = next.ShortcutText(id);
-                DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
-            }
-            catch (ToolbarQuadrantEditor.ChangedOnDiskException)
-            {
-                // Not saved: the file changed since the page read it. Show it as it is now and say why.
-                ShowPage(_currentPage);
-                PageHost.Children.Insert(1, new InfoBar
+                if (result.Error is { } error)
                 {
-                    IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
-                    Message = Strings.Bar_ChangedOnDisk,
-                });
+                    Fail("saving toolbar shortcut failed", new IOException(error));
+                    return;
+                }
+                box.Text = page.Model.ShortcutText(id);
+                DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
             }
             catch (Exception ex) { Fail("saving toolbar shortcut failed", ex); }
         }
-        box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != page.Load.Model.ShortcutText(id)) Save(value); };
-        var capture = ShortcutBinder.Create(() => page.Load.Model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true, stop: id == "stop");
+        box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != page.Model.ShortcutText(id)) Save(value); };
+        var capture = ShortcutBinder.Create(() => page.Model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true, stop: id == "stop");
         var reset = new Button { Content = Strings.Bar_Reset };
         reset.Click += (_, _) => Save(null);
         return Card(header, description, new StackPanel { Spacing = 6, Children = { box, capture, reset } });
@@ -79,13 +76,13 @@ public sealed partial class SettingsWindow
         {
             Text = Strings.Bar_RowsTitle, Style = (Style)Application.Current.Resources["SubtitleTextBlockStyle"], Margin = new Thickness(0, 16, 0, 4),
         });
-        var load = ToolbarFile.Load(ToolbarPath);
-        if (load.Error is { } error)
+        var session = new ToolbarSession(ToolbarPath, state: _state);
+        if (session.Error is { } error)
         {
             PageHost.Children.Add(Card(Strings.Bar_FileError, L.F(Strings.Bar_FileError_Desc, error), ResetToolbarButton()));
             return;
         }
-        var warnings = load.Model.ResolveShortcuts().Warnings;
+        var warnings = session.Model.ResolveShortcuts().Warnings;
         if (warnings.Count > 0)
             PageHost.Children.Add(new InfoBar
             {
@@ -95,25 +92,9 @@ public sealed partial class SettingsWindow
                         ? "\n" + L.F(Strings.Settings_AndMore, warnings.Count - MaxToolbarProblemLines) : ""),
             });
         var actions = new QuickActions(Path.Combine(DataDirectory, "actions"));
-        // The file as this page read or last saved it: an edit made while the page is open is never overwritten.
-        var stamp = ToolbarFile.Fingerprint(ToolbarPath);
-        void Save(ToolbarModel model)
-        {
-            if (ToolbarFile.Fingerprint(ToolbarPath) != stamp) throw new ToolbarQuadrantEditor.ChangedOnDiskException();
-            var problem = ToolbarFile.Save(ToolbarPath, model, state: _state);
-            if (problem is not null) throw new IOException(problem);
-            stamp = ToolbarFile.Fingerprint(ToolbarPath);
-        }
-        ToolbarModel? Reload()
-        {
-            stamp = ToolbarFile.Fingerprint(ToolbarPath);
-            var again = ToolbarFile.Load(ToolbarPath);
-            if (again.Error is null) return again.Model;
-            ShowPage(_currentPage); // unreadable now: the page shows the error and Reset
-            return null;
-        }
-        PageHost.Children.Add(new ToolbarQuadrantEditor(load.Model, Save,
-            () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync, (Style)Root.Resources["CardStyle"], _log, _barRoom, Reload, () => _settings.Current.Chat));
+        // The session notes the file as this page read or last saved it: an edit made while the page is open is never overwritten.
+        PageHost.Children.Add(new ToolbarQuadrantEditor(session, () => [.. actions.List().Select(a => a.Name)], ShowDialogAsync,
+            (Style)Root.Resources["CardStyle"], _log, () => ShowPage(_currentPage), _barRoom)); // unreadable now: the page shows the error and Reset
         PageHost.Children.Add(new StackPanel { Orientation = Orientation.Horizontal, Margin = new Thickness(0, 8, 0, 0), Children = { ResetToolbarButton() } });
     }
 
@@ -182,9 +163,8 @@ public sealed partial class SettingsWindow
         {
             try
             {
-                var current = ToolbarFile.Load(ToolbarPath);
-                var problem = ToolbarFile.Save(ToolbarPath, ToolbarModel.ResetLayout(current.Error is null ? current.Model : null), state: _state);
-                if (problem is not null) throw new IOException(problem);
+                var result = new ToolbarSession(ToolbarPath, state: _state).ResetLayout();
+                if (result.Error is { } problem) throw new IOException(problem);
                 ShowPage(_currentPage); // only on success: a rebuilt page would hide the error
             }
             catch (Exception ex) when (ex is IOException or UnauthorizedAccessException) { Fail("saving toolbar.json failed", ex); }

@@ -97,6 +97,7 @@ public sealed partial class LocalizationTests : TempDirTest
                     break;
                 case NumberItem n: Check(n.Unit); break;
                 case TextItem t: Check(t.Placeholder); Check(t.Invalid); break;
+                case ShortcutItem sc: Check(sc.Invalid); break;
             }
         }
         Assert.Empty(missing);

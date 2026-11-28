@@ -541,7 +541,7 @@ Từ chối:
   <data name="Bar_WriteFailed" xml:space="preserve">
     <value>Không thể lưu các hàng nút và phím tắt.</value>
   </data>
-  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Hình ảnh không thay đổi: không thể lưu toolbar.json.</value></data>
+  <data name="Bar_PictureNotSaved" xml:space="preserve"><value>Đã lưu nút, nhưng không thể lưu hình ảnh của nút. Hãy chọn lại hình ảnh để thử lại.</value></data>
   <data name="Bar_more" xml:space="preserve"><value>Thêm</value></data>
   <data name="Bar_NothingHere" xml:space="preserve"><value>Không có gì ở đây</value></data>
   <data name="Bar_MoreMenu" xml:space="preserve"><value>Menu của nút …</value></data>

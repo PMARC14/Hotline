@@ -172,16 +172,16 @@ public sealed class PanelSpotPolicyTests : TempDirTest
     }
 
     [Fact]
-    public void ToolbarShortcutSession_uses_passed_StateStore_for_lastWritten()
+    public void ToolbarSession_uses_passed_StateStore_for_lastWritten()
     {
         Directory.CreateDirectory(_dir);
         var toolbarPath = Path.Combine(_dir, "toolbar.json");
         var state = new StateStore(StatePath);
-        var session = new ToolbarShortcutSession(toolbarPath, state: state);
+        var session = new ToolbarSession(toolbarPath, state: state);
 
-        var (changedOnDisk, error) = session.SetShortcut("pin", "Ctrl+Q");
-        Assert.False(changedOnDisk);
-        Assert.Null(error);
+        var result = session.SetShortcut("pin", "Ctrl+Q");
+        Assert.False(result.ChangedOnDisk);
+        Assert.Null(result.Error);
         Assert.Equal(Hotline.Core.Files.SafeFile.Hash(File.ReadAllBytes(toolbarPath)), state.GetLastWritten("toolbar.json"));
     }
 
