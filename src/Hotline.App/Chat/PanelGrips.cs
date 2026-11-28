@@ -143,7 +143,8 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
         _timer.Tick += (_, _) => Update();
         popup.Shown += () => _timer.Start();
         popup.DirectionChanged += _ => { if (popup.GripLayer.Visibility == Visibility.Visible) SyncDirection(); };
-        popup.Hidden += () => { EndKeyboard(); _timer.Stop(); SetVisible(false); };
+        popup.Hiding += () => { EndKeyboard(); EndPointerDrag(); }; // before the close decides the spot
+        popup.Hidden += () => { _timer.Stop(); SetVisible(false); };
     }
 
     private bool? _keyboardResize;
@@ -269,15 +270,16 @@ internal sealed class PanelGrips(PopupWindow popup, FileLog log)
             }
             e.Handled = true;
         };
-        void End()
-        {
-            if (!_dragging) return;
-            _dragging = false;
-            popup.EndUserDrag(_resized, _widthChanged);
-            log.Info($"panel {(_resized ? "resized" : "moved")} to {popup.WindowRect}");
-        }
-        element.PointerReleased += (_, e) => { element.ReleasePointerCapture(e.Pointer); End(); e.Handled = true; };
-        element.PointerCaptureLost += (_, _) => End();
+        element.PointerReleased += (_, e) => { element.ReleasePointerCapture(e.Pointer); EndPointerDrag(); e.Handled = true; };
+        element.PointerCaptureLost += (_, _) => EndPointerDrag();
+    }
+
+    private void EndPointerDrag()
+    {
+        if (!_dragging) return;
+        _dragging = false;
+        popup.EndUserDrag(_resized, _widthChanged);
+        log.Info($"panel {(_resized ? "resized" : "moved")} to {popup.WindowRect}");
     }
 
     /// <summary>A grip with a resize/move pointer shape (ProtectedCursor is only settable from a subclass).</summary>

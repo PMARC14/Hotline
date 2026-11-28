@@ -210,7 +210,7 @@ Type `/` in the message box (`↑`/`↓`, `Tab`/`Enter` to pick, `Esc` to close)
 
 ## Moving and resizing the panel
 
-Hold **Alt** over the focused panel to show the move grip and edge handles. Dragging the grip moves the panel; dragging an edge resizes it for the current opening. Right-click the grip for **Save position and size as default** (writes `panel.anchor`, `width`, and `chatHeight` in scaled pixels to `state.json`, leaving `settings.json` untouched; each saved item yields if you later change its `settings.json` key) or **Back to the default spot**. Pinning keeps a moved panel's spot until unpinned, blurred, or restarted.
+Hold **Alt** over the focused panel to show the move grip and edge handles. Dragging the grip moves the panel; dragging an edge resizes it for the current opening. Right-click the grip for **Save position and size as default** (writes `panel.anchor`, `width`, and `chatHeight` in scaled pixels to `state.json`, leaving `settings.json` untouched; each saved item yields if you later change its `settings.json` key; the anchor keeps `window.anchor.monitor`, so with `active` the spot applies on whichever monitor you work on) or **Back to the default spot**. Pinning keeps a moved panel's spot until unpinned, blurred, or restarted.
 
 ## toolbar.json
 

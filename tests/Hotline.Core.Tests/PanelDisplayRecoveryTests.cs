@@ -37,4 +37,38 @@ public class PanelDisplayRecoveryTests
         Assert.Equal(new RectI(40, 400, 600, 60), r.Bar);
         Assert.Null(r.FixedHeight);
     }
+
+    // WM_DPICHANGED: Windows proposes the window scaled by the DPI ratio. When Hotline placed the panel for that DPI already
+    // (opening on a monitor of another scale), its own rect is the answer; otherwise (a drag across monitors, a scaling change
+    // under a pinned panel) Windows' suggestion stands and RecoverDisplay rebuilds around it.
+    [Fact]
+    public void A_dpi_change_to_the_planned_scale_keeps_the_planned_rect()
+    {
+        var planned = new RectI(1320, 1529, 1200, 199);
+        var suggested = new RectI(1320, 1529, 1800, 299);
+        Assert.Equal(planned, PanelDisplayRecovery.RectForDpiChange(plannedScale: 1.5, newDpi: 144, planned, suggested, userMoving: false));
+    }
+
+    [Fact]
+    public void A_dpi_change_to_another_scale_takes_windows_suggestion()
+    {
+        var planned = new RectI(1320, 1529, 1200, 199);
+        var suggested = new RectI(4272, 1506, 800, 133);
+        Assert.Equal(suggested, PanelDisplayRecovery.RectForDpiChange(1.5, 96, planned, suggested, false));
+    }
+
+    [Fact]
+    public void A_drag_across_monitors_takes_windows_suggestion()
+    {
+        var planned = new RectI(1320, 1529, 1200, 199);
+        var suggested = new RectI(1300, 1500, 1800, 299);
+        Assert.Equal(suggested, PanelDisplayRecovery.RectForDpiChange(1.5, 144, planned, suggested, userMoving: true));
+    }
+
+    [Fact]
+    public void Nothing_planned_takes_windows_suggestion()
+    {
+        var suggested = new RectI(0, 0, 900, 300);
+        Assert.Equal(suggested, PanelDisplayRecovery.RectForDpiChange(1.5, 144, null, suggested, false));
+    }
 }

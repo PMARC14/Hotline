@@ -29,6 +29,14 @@ internal static class ScreenCapture
         return new RectI(b.X, b.Y, b.Width, b.Height);
     }
 
+    /// <summary>A monitor's full bounds, by its handle (primary when it's gone).</summary>
+    public static RectI MonitorRectOf(nint monitor)
+    {
+        var area = DisplayArea.GetFromDisplayId(Win32Interop.GetDisplayIdFromMonitor(monitor)) ?? DisplayArea.Primary;
+        var b = area.OuterBounds;
+        return new RectI(b.X, b.Y, b.Width, b.Height);
+    }
+
     /// <summary>The monitor under the mouse pointer (region capture happens where you're looking).</summary>
     public static RectI CursorMonitorRect()
     {

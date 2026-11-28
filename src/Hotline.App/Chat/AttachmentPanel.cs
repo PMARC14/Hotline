@@ -79,7 +79,9 @@ internal sealed class AttachmentPanel(PopupWindow popup, AttachmentTray tray, Ho
             target = popup.RevalidateCaptureTarget(target);
             Hotline.Core.Windowing.RectI w = default;
             usedWindow = window && ScreenCapture.TryGetWindowRect(target, out w);
-            var rect = usedWindow ? w : ScreenCapture.MonitorRect(target != 0 ? target : popup.Hwnd);
+            var rect = usedWindow ? w
+                : PopupWindow.ValidMonitor(popup.UserMonitor) is { } opened ? ScreenCapture.MonitorRectOf(opened.Monitor) // opened from that monitor's desktop/taskbar
+                : ScreenCapture.MonitorRect(target != 0 ? target : popup.Hwnd);
             var bgra = ScreenCapture.GrabBgra(rect);
             return await ImageProcessor.EncodeBgraPngAsync(bgra, rect.Width, rect.Height, settings.Chat.MaxImagePixels);
         });

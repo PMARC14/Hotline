@@ -53,6 +53,19 @@ public sealed class ForegroundWindowTracker : IDisposable
     private WindowCandidate _remembered;
     private WindowCandidate _showTarget;
 
+    /// <summary>What an "active monitor" open follows: the remembered app, or the cursor after a click on the desktop or a taskbar.</summary>
+    public PlaceBy PlaceBy { get; private set; }
+
+    private nint _location;
+    private string _lastClass = ""; // the class of the last window that took focus (any kind)
+
+    /// <summary>The panel took focus (its own events aren't hooked): what follows is no longer the key frame's hand-off.</summary>
+    public void NotePanelFocused() => _lastClass = "";
+
+    /// <summary>The desktop or taskbar the user moved to (placement follows the cursor), while it still exists; otherwise 0.</summary>
+    public nint UserLocation => PlaceBy == PlaceBy.Cursor && _location != 0 && Native.IsWindow(_location) ? _location : 0;
+
+
     public Func<uint, bool>? IsOurProcess { get; set; }
 
     public ForegroundWindowTracker(FileLog log, Func<uint, bool>? isOurProcess = null)
@@ -137,6 +150,11 @@ public sealed class ForegroundWindowTracker : IDisposable
     {
         var candidate = Snapshot(hwnd);
         _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
+        var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, _lastClass);
+        if (ForegroundWindowPolicy.IsUserLocation(candidate, _lastClass)) _location = hwnd;
+        _lastClass = candidate.ClassName;
+        if (placeBy != PlaceBy) _log.Info($"placement follows {(placeBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({candidate.ClassName})");
+        PlaceBy = placeBy;
     }
 
     private WindowCandidate Snapshot(nint hwnd, WindowCandidate? expectedIdentity = null)

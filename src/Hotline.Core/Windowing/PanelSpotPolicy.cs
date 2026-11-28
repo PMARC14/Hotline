@@ -76,7 +76,6 @@ public static class PanelSpotPolicy
         double scale,
         int? fixedHeightPx,
         int barHeightPx,
-        string? monitorDevice,
         WindowSettings settings,
         StateStore? state = null)
     {
@@ -89,7 +88,7 @@ public static class PanelSpotPolicy
 
         var currentAnchor = settings.Anchor ?? new PanelAnchor();
         var anchor = PanelPlacement.AnchorFor(bar, work);
-        anchor.Monitor = !string.IsNullOrWhiteSpace(monitorDevice) ? monitorDevice : currentAnchor.Monitor;
+        anchor.Monitor = currentAnchor.Monitor; // the monitor mode (active, primary, a named one) stays: the spot applies wherever that puts the panel
         var anchorOverride = new PanelOverride<PanelAnchor, PanelAnchor?>(anchor, CloneAnchor(currentAnchor));
 
         return new PanelSpot(widthOverride, chatOverride, anchorOverride);

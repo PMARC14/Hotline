@@ -7,6 +7,7 @@ Run the automatic checks first, then the hands-on checklist for physical input, 
 ```powershell
 dotnet test --project tests\Hotline.Core.Tests\Hotline.Core.Tests.csproj   # unit tests (Core logic, schemas, fixtures, localization)
 powershell -File tests\smoke\smoke.ps1 -Install                           # builds, installs, drives the real app (-WithAgy optional)
+bash scripts/ci-local.sh --repeat 3                                       # the CI workflow's steps on this PC (no Actions minutes needed)
 ```
 
 `smoke.ps1` launches the installed package, tests protocol/fast-path/hotkey/live-reload/corrupt-settings/quit behavior, and waits for `selftest complete: <n> checks, <m> failed` (failing on any `FAILED` line). Do not type while it runs; it leaves Hotline running in the tray.
@@ -51,13 +52,19 @@ Headless self-tests (requires `"diagnostics": { "testLinks": true }` in `setting
 - [ ] **MCP tools & Continue in**: test read-only auto-run vs `Allow once`/`Always`/`Deny`, `ask` rules hiding Always, **Revoke** in Settings › Tools, **Move to Credential Locker** (`backups\<stamp>-save\mcp.json`), server shutdown on exit, App Actions (Click to Do), and **Continue in** targets (CLIs, Open WebUI, `llama.cpp`, LM Studio).
 - [ ] **Notices, guards & Narrator**: clear `shown.firstRun` / `shown.supportNote` in `state.json` and verify one-time notices + `chat.notifyShowsText` on/off toasts. Close Settings during failing saves or open dialogs, toggle flyouts rapidly, quit/relaunch (`hotline://tray`) with one tray icon, and spot-check Narrator names on bar items, remove chips, and Settings rows.
 
-### Not yet checked by hand (0.6.3 and 0.7 fixes)
+### Not yet checked by hand (0.6.3, 0.7 and multi-monitor fixes)
 - [ ] `Ctrl+Shift+F10` then Move or Resize with the arrow keys, Enter and Esc; tray icon by keyboard (Tab to the tray, Enter).
 - [ ] **Capture window** from the Copilot key on a second monitor gives `window-HHmmss.png` of the window you were in; minimized,
       it shows a notice. If not, read the `toggle:` and `deactivated:` lines in `hotline.log`.
 - [ ] Unplug a monitor, change scaling or move the taskbar under an open pinned panel: it recovers on screen at the right width.
 - [ ] Hold Esc while an answer streams (stops, panel stays). Tap the voice button and click another app (stops listening).
 - [ ] A Windows App Action (Click to Do › Summarize) with a draft already in the box only fills the box; it never sends the draft.
+      Needs a Copilot+ PC.
+- [ ] Two monitors of different scaling: each first open on the other monitor has the right size (log `place: DPI change to …:
+      keeping …`). Click the other monitor's empty desktop or taskbar, press the key: it opens there, reopens there after a key
+      or Esc close, and focus goes back to that desktop or taskbar. Click an app: the next open follows the app.
+- [ ] Close the panel during Ctrl+Shift+F10 Move or an Alt-drag (unpinned): the next open uses the default spot. Capture screen
+      after opening from the other monitor's desktop grabs that monitor.
 - [ ] **Move to Credential Locker** opens its dialog; **Reset the bar** keeps your shortcuts; a height-only Alt-drag keeps the
       chat width growing; a saved width wider than `maxWidth` reopens at that width.
 - [ ] The upgrade notice appears once on the first panel open after upgrading and names the backup folder.

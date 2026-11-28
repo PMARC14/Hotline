@@ -32,4 +32,35 @@ public static class ForegroundWindowPolicy
 
     public static WindowCandidate UpdateRemembered(WindowCandidate incoming, WindowCandidate remembered) =>
         IsReal(incoming) ? incoming : remembered;
+
+    /// <summary>
+    /// What an "active monitor" open follows after <paramref name="incoming"/> took focus: a real app brings it back to the
+    /// remembered window; the desktop or a taskbar (the user moved to another monitor's empty desktop) switches it to the
+    /// cursor, since the desktop window spans every monitor; anything else (the Copilot key's focus frame, Start) keeps it.
+    /// </summary>
+    /// <param name="previousClass">The class of the window that had focus before: focus handed on by the Copilot key's
+    /// focus frame (26H2) is Windows' choice once the key is released, not the user moving, so it keeps the source.</param>
+    public static PlaceBy UpdatePlaceBy(WindowCandidate incoming, PlaceBy current, string previousClass = "")
+    {
+        if (ShellSurfaces.IsKeyFocusFrame(previousClass)) return current;
+        if (IsReal(incoming)) return PlaceBy.RememberedWindow;
+        return IsUserLocation(incoming, previousClass) ? PlaceBy.Cursor : current;
+    }
+
+    /// <summary>The user moved to the desktop or a taskbar: a live shell location that took focus by itself (not handed on by
+    /// the Copilot key's focus frame). Focus goes back there when the panel closes.</summary>
+    public static bool IsUserLocation(WindowCandidate incoming, string previousClass = "") =>
+        !ShellSurfaces.IsKeyFocusFrame(previousClass) && incoming.Handle != 0 && incoming.Exists && !incoming.IsHotline &&
+        !incoming.IsOwnedDialog && ShellSurfaces.IsUserLocation(incoming.ClassName);
+
+    /// <summary>
+    /// Whether closing the panel gives focus back: only when the panel itself or the Copilot key's focus frame has it (no
+    /// window would have focus afterwards). A close because the user went elsewhere (an app, Start, Search, a flyout, the
+    /// taskbar) leaves focus there.
+    /// </summary>
+    public static bool GivesFocusBackOnClose(bool panelHasFocus, string foregroundClass) =>
+        panelHasFocus || ShellSurfaces.IsKeyFocusFrame(foregroundClass);
 }
+
+/// <summary>Where an "active monitor" open goes: the remembered app window's monitor, or the cursor's.</summary>
+public enum PlaceBy { RememberedWindow, Cursor }

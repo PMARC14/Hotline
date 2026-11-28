@@ -5,7 +5,7 @@ Codex, agy (Antigravity), Anthropic, Gemini, OpenAI-compatible or local servers,
 **State:** 0.7 (S1 schema freeze) is merged to `main` (PR #66); the owner hand-checks it on a new PC, then promotes it and
 uploads the Store bundle. Next work: the refactor plan, then the Road to 1.0.
 
-Then read `CLAUDE.md` (working rules, git-ignored) and, if present, `docs/local/HANDOFF-PRIVATE.md` (machine notes). Docs:
+Then read `CLAUDE.md` (working rules) and, if present, `docs/local/HANDOFF-PRIVATE.md` (machine notes). Docs:
 [README](../README.md) (users, Copilot key, translations), [configuration.md](configuration.md) (every file and setting, file
 rules), [TESTING.md](TESTING.md) (tests and hand checks), [RELEASING.md](RELEASING.md) (versions, signing, Store).
 
@@ -16,7 +16,7 @@ rules), [TESTING.md](TESTING.md) (tests and hand checks), [RELEASING.md](RELEASI
 
 | Item | Value |
 |---|---|
-| Stable release | v0.6.3 (GitHub). Pushes to `main` publish prereleases; **Actions › Promote** makes one stable |
+| Stable release | v0.6.4 (GitHub). Pushes to `main` publish prereleases; **Actions › Promote** makes one stable |
 | Branch | `main` at 0.7 (`version.txt` 0.7, 3,140 Core tests green); `personal/gemini-web` is the owner's own build, kept merged with `main`, never merged into it |
 | Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; next upload 0.7.0.0 (bundle built locally, carried by hand) |
 
@@ -105,8 +105,13 @@ secret scrubbing, the single-`RichTextBlock` transcript.
 
 **Windows and the key**
 - 26H2 gives focus to Explorer's `CopilotKeyPressFocusFrame` ~0.1 s before Hotline's toggle; an open panel closes when that frame
-  takes focus. The key needs package identity (MSIX); cold start arrives as `ProtocolForResults`; tap and hold arrive only through
+  takes focus. After the key is released the frame hands focus to a window of Windows' choosing: not the user moving. The key needs package identity (MSIX); cold start arrives as `ProtocolForResults`; tap and hold arrive only through
   the `WM_APP+1` fast path.
+- Moving a window onto a monitor of another scale sends `WM_DPICHANGED` with the window scaled by the DPI ratio; WinUI applies
+  it. When placement already used the new scale, answer with the planned rect (`PopupWindow.OnDpiChanged`) or it is 1.5x off.
+- The foreground change `AppWindow.Hide()` causes is delivered to the WinEvent hook while `Hide` runs: hide under
+  `ForegroundWindowTracker.Suppress()` and give focus back explicitly.
+- The desktop (`Progman`/`WorkerW`) spans every monitor: a click there says where the user is only through the cursor.
 - Clipboard restore needs a real owner window (`ClipboardOwner`). Never send Ctrl+C unless UI Automation reports no text pattern.
 - Credential Locker names ignore case: never delete an "old" entry that differs from the new one only by case.
 - Probing a `\\server\share` path makes Windows connect and send the user's hash: check `SafeDirectory` first.
@@ -126,7 +131,8 @@ secret scrubbing, the single-`RichTextBlock` transcript.
 - **Security:** a plain `hotline://key` web link can read the selection; Markdig takes ~15 s on adversarial nesting; MCP
   `readOnlyHint` is trusted from the server; unsigned inner packages in the signed bundle.
 - **Mixed-DPI drags:** a drop across monitors may keep the old width; a live move between stacked monitors of different DPI can
-  jitter; `FramePx` is read before the panel moves to its monitor.
+  jitter; `FramePx` is read before the panel moves to its monitor; keyboard Move and Resize stay on the current monitor.
+- **Processes:** a CLI child joins the kill-on-close job after `Process.Start`; anything it spawns first can outlive a crash.
 - **Small:** ComboBox `TextSubmitted` `e.Handled`; `CopyImage` on the UI thread; sounds don't reload a replaced `.wav`; the
   fallback hotkey isn't re-registered on a settings change; the Language box is blank for `"en-us"`; code-fence parity in
   `MarkdownModel`.

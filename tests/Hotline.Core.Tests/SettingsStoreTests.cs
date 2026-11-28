@@ -237,10 +237,12 @@ public sealed class SettingsStoreTests : TempDirTest
             }
             return false;
         };
-        var save = Task.Run(() => store.Save(s), TestContext.Current.CancellationToken);
+        // Its own thread: this test and others block pool threads on purpose, so on a busy runner a pool task can start late.
+        var save = Task.Factory.StartNew(() => store.Save(s), TestContext.Current.CancellationToken,
+            TaskCreationOptions.LongRunning, TaskScheduler.Default);
         try
         {
-            await writing.Task.WaitAsync(TimeSpan.FromSeconds(5), TestContext.Current.CancellationToken);
+            await writing.Task.WaitAsync(TimeSpan.FromSeconds(30), TestContext.Current.CancellationToken); // a hang guard only
             Assert.Same(connections, s.Chat.Connections);
             Assert.Equal("a", Assert.Single(s.Chat.Connections).Id);
         }
