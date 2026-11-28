@@ -945,7 +945,7 @@ Las claves de API se guardan en Windows Credential Locker, nunca en un archivo.<
   <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Restablecer todos los atajos</value></data>
   <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Devuelve cada atajo del panel de arriba a su valor predeterminado. Las filas de botones y los atajos de tus botones personalizados se quedan como están.</value></data>
   <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>¿Restablecer todos los atajos?</value></data>
-  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Cada atajo del panel vuelve a su valor predeterminado. Antes se hace una copia de seguridad del toolbar.json actual.</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Cada atajo del panel vuelve a su valor predeterminado. Antes se hace una copia de seguridad del toolbar.json actual. Un botón personalizado que use una de las combinaciones predeterminadas se la cede a ese comando.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Atajo</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: atajo no válido; desactivado.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combinación ya en uso; desactivada.</value></data>

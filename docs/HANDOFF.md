@@ -2,8 +2,9 @@
 
 Start here. Hotline is a Windows 11 app that takes over the Copilot key: a native WinUI 3 popup that chats with Claude Code,
 Codex, agy (Antigravity), Anthropic, Gemini, OpenAI-compatible or local servers, configured by files in `%USERPROFILE%\.hotline`.
-**State:** 0.7 (S1 schema freeze) is merged to `main` (PR #66); the owner hand-checks it on a new PC, then promotes it and
-uploads the Store bundle. Next work: the refactor plan, then the Road to 1.0.
+**State:** 0.7 (S1 schema freeze) and refactor steps 1 and 3 are merged to `main`, hand-checked on the owner's desktop PC.
+Promote and Store upload wait for GitHub Actions minutes (no prerelease built since #66). Next work: refactor step 2, then the
+Road to 1.0.
 
 Then read `CLAUDE.md` (working rules) and, if present, `docs/local/HANDOFF-PRIVATE.md` (machine notes). Docs:
 [README](../README.md) (users, Copilot key, translations), [configuration.md](configuration.md) (every file and setting, file
@@ -17,7 +18,7 @@ rules), [TESTING.md](TESTING.md) (tests and hand checks), [RELEASING.md](RELEASI
 | Item | Value |
 |---|---|
 | Stable release | v0.6.4 (GitHub). Pushes to `main` publish prereleases; **Actions › Promote** makes one stable |
-| Branch | `main` at 0.7 (`version.txt` 0.7, 3,140 Core tests green); `personal/gemini-web` is the owner's own build, kept merged with `main`, never merged into it |
+| Branch | `main` at 0.7 (`version.txt` 0.7, 3,239 Core tests green; `bash scripts/ci-local.sh --repeat 3` while Actions minutes are out); `personal/gemini-web` is the owner's own build, kept merged with `main`, never merged into it |
 | Store | **Hotline AI** `9PMW5CR6G3BC`; last upload 0.3.0.0; next upload 0.7.0.0 (bundle built locally, carried by hand) |
 
 S1 replaced every config format with a versioned one, one writer (`SafeFile`), backup sets, `state.json`, toolbar v3 and a

@@ -945,7 +945,7 @@ API 密钥保存在 Windows Credential Locker 中，绝不会写入文件.</valu
   <data name="Shortcuts_ResetAll" xml:space="preserve"><value>重置所有快捷键</value></data>
   <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>将上方的每个面板快捷键恢复为默认值。按钮行和自定义按钮的快捷键保持不变。</value></data>
   <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>重置所有快捷键?</value></data>
-  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>每个面板快捷键都会恢复为默认值。会先备份当前的 toolbar.json。</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>每个面板快捷键都会恢复为默认值。会先备份当前的 toolbar.json。使用默认组合的自定义按钮会把该组合让给对应的命令。</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>快捷键</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut：快捷键无效，已禁用。</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut：组合键已被使用，已禁用。</value></data>

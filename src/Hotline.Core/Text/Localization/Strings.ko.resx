@@ -945,7 +945,7 @@ API 키는 Windows Credential Locker에 보관되며, 파일에는 절대 저장
   <data name="Shortcuts_ResetAll" xml:space="preserve"><value>모든 바로 가기 초기화</value></data>
   <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>위의 모든 패널 바로 가기를 기본값으로 되돌립니다. 버튼 행과 사용자 지정 버튼의 바로 가기는 그대로 유지됩니다.</value></data>
   <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>모든 바로 가기를 초기화할까요?</value></data>
-  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>모든 패널 바로 가기가 기본값으로 돌아갑니다. 먼저 현재 toolbar.json을 백업합니다.</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>모든 패널 바로 가기가 기본값으로 돌아갑니다. 먼저 현재 toolbar.json을 백업합니다. 기본 조합 중 하나를 사용하는 사용자 지정 버튼은 그 조합을 해당 명령에 넘겨줍니다.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>바로 가기</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: 잘못된 바로 가기이므로 비활성화했습니다.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: 이미 사용 중인 조합이므로 비활성화했습니다.</value></data>

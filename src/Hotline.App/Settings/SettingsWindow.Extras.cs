@@ -53,7 +53,7 @@ public sealed partial class SettingsWindow
     private Border ResetShortcutsCard(string header, string? description)
     {
         var page = _pageToolbar ??= new ToolbarSession(ToolbarPath, state: _state);
-        var button = new Button { Content = Strings.Shortcuts_ResetAll, IsEnabled = page.Error is null };
+        var button = new Button { Content = Strings.Shortcuts_Reset, IsEnabled = page.Error is null };
         button.Click += async (_, _) =>
         {
             var confirm = new ContentDialog
