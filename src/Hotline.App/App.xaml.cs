@@ -312,8 +312,10 @@ public partial class App : Application
         hook.On(0x0112 /* WM_SYSCOMMAND */, (wParam, _) => ((long)wParam & 0xFFF0) == 0xF100 /* SC_KEYMENU */);
         hook.On(0x02E0 /* WM_DPICHANGED */, _popup.OnDpiChanged);
         CopilotFastPath.Register(hook, e => _router.OnKey(e, KeySource.FastPath), _log);
-        HotkeyRegistration.TryRegister(hook, settings.Activation.FallbackHotkey,
-            () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
+        var hotkey = new HotkeyRegistration(hook, () => _router.OnKey(KeyEvent.Tap, KeySource.Hotkey), _log);
+        hotkey.Apply(settings.Activation.FallbackHotkey);
+        // A changed activation.fallbackHotkey applies at once (Settings or settings.json), on the window's thread.
+        _settingsService!.Changed += () => _popup.DispatcherQueue.TryEnqueue(() => hotkey.Apply(_settingsService.Current.Activation.FallbackHotkey));
         _tray = new TrayIcon(hook, Path.Combine(AppContext.BaseDirectory, "Assets", "Hotline.ico"),
             onToggle: _router.TogglePopup,
             onOpenSettings: () => _settingsHost?.Show(),

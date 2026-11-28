@@ -462,7 +462,21 @@ public sealed partial class SettingsWindow
             var value = IsDefault(m) ? null : m;
             if (value != p.Model) await Save(x => x.Model = value);
         };
-        model.TextSubmitted += async (_, e) => await Save(x => x.Model = IsDefault(e.Text) ? null : e.Text.Trim());
+        model.TextSubmitted += async (_, e) =>
+        {
+            // Handled before the first await: otherwise the ComboBox also selects the typed text, SelectionChanged saves
+            // it a second time (a second backup set) and a slow first save can land after it.
+            e.Handled = true;
+            var value = IsDefault(e.Text) || string.IsNullOrWhiteSpace(e.Text) ? null : e.Text.Trim();
+            // The box shows what was saved: the typed model becomes an item and the selection (LoadModels keeps the
+            // selected item over the text, so a stale selection would put the old model back on the next refill).
+            filling = true;
+            var shown = value ?? def;
+            if (!model.Items.Contains(shown)) model.Items.Add(shown);
+            model.SelectedItem = shown;
+            filling = false;
+            if (value != p.Model) await Save(x => x.Model = value);
+        };
         host.Children.Add(Card(Strings.Conn_DefaultModel, null, model));
 
         if (info.EffortLevels.Count > 0)

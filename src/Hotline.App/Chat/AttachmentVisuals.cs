@@ -71,12 +71,13 @@ internal sealed class AttachmentVisuals(PanelTheme theme, NoticeArea notices, Fi
         catch (Exception ex) { log.Error("thumbnail failed", ex); } // the name still shows
     }
 
-    private void CopyImage(byte[] png)
+    /// <summary>Writes the picture without blocking the UI thread; the clipboard is set back on it (after the await).</summary>
+    private async void CopyImage(byte[] png)
     {
         try
         {
             var stream = new InMemoryRandomAccessStream();
-            stream.WriteAsync(png.AsBuffer()).AsTask().GetAwaiter().GetResult();
+            await stream.WriteAsync(png.AsBuffer());
             stream.Seek(0);
             var package = new DataPackage();
             package.SetBitmap(RandomAccessStreamReference.CreateFromStream(stream));

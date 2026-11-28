@@ -14,7 +14,14 @@ namespace Hotline.App.Interop;
 internal static class SoundPlayer
 {
     private const string Scheme = @"AppEvents\Schemes\Apps\.Default";
-    private static readonly Dictionary<string, MediaPlayer> Players = new(StringComparer.OrdinalIgnoreCase);
+    /// <summary>One player per file, with the file's stamp when it was loaded: a .wav replaced under the same name loads again.</summary>
+    private static readonly Dictionary<string, (MediaPlayer Player, (DateTime Written, long Length) Stamp)> Players = new(StringComparer.OrdinalIgnoreCase);
+
+    private static (DateTime Written, long Length) StampOf(string path)
+    {
+        try { var f = new FileInfo(path); return f.Exists ? (f.LastWriteTimeUtc, f.Length) : default; }
+        catch (Exception ex) when (ex is IOException or UnauthorizedAccessException or ArgumentException or NotSupportedException) { return default; }
+    }
     private static readonly Dictionary<string, string?> Resolved = new(StringComparer.OrdinalIgnoreCase);
 
     public static string Directory(string dataDirectory) => Path.Combine(dataDirectory, "sounds");
@@ -49,7 +56,14 @@ internal static class SoundPlayer
             if (path is null) log.Info($"sound '{key}' not found; nothing will play");
         }
         if (path is null) return null;
-        if (Players.TryGetValue(path, out var existing)) return existing;
+        var stamp = StampOf(path);
+        if (Players.TryGetValue(path, out var existing))
+        {
+            if (existing.Stamp == stamp) return existing.Player;
+            (existing.Player.Source as IDisposable)?.Dispose(); // the file was replaced: release the old source and player
+            existing.Player.Dispose();
+            Players.Remove(path);
+        }
         try
         {
             var player = new MediaPlayer
@@ -58,7 +72,7 @@ internal static class SoundPlayer
                 Source = MediaSource.CreateFromUri(new Uri(path)),
                 AutoPlay = false,
             };
-            Players[path] = player;
+            Players[path] = (player, stamp);
             return player;
         }
         catch (Exception ex) { log.Error($"loading sound {path} failed", ex); return null; }
