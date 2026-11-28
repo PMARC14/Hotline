@@ -120,8 +120,7 @@ public static partial class SettingsPackage
                     return parsed.Settings is null ? "not readable as settings" : parsed.Failure is not null ? "from Hotline 0.6 or older" : null;
                 case SettingsCategory.Toolbar:
                     if (ToolbarModel.Parse(text, []) is not JsonObject toolbar) return "not a JSON object"; // field-level problems are the reader's warnings
-                    return toolbar.LastOrDefault(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase)).Value is JsonValue v
-                        && v.TryGetValue<double>(out var version) && version >= ToolbarModel.CurrentVersion ? null : "from Hotline 0.6 or older";
+                    return Files.JsonFile.VersionValue(toolbar) is { } version && version >= ToolbarModel.CurrentVersion ? null : "from Hotline 0.6 or older";
                 case SettingsCategory.Mcp:
                     McpConfig.Parse(text);
                     return null;

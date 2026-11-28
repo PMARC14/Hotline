@@ -58,7 +58,6 @@ public static partial class SettingsPackage
         var skipped = plan.Skipped.ToList();
         var files = fileSystem ?? new RealFileSystem();
         var root = plan.RootDirectory;
-        state ??= new StateStore(Path.Combine(root, StateStore.FileName));
         var backup = new BackupSet(root, BackupReason.Import, files, () => (now ?? DateTimeOffset.Now).LocalDateTime);
         var writer = new SafeFile(files);
         // Complete the backup phase before publishing any of the reviewed bytes.
@@ -77,7 +76,7 @@ public static partial class SettingsPackage
             if (result is SafeFileResult.Written or SafeFileResult.Unchanged)
             {
                 written.Add(path);
-                if (result == SafeFileResult.Written) state.SetLastWritten(path, SafeFile.Hash(data));
+                if (result == SafeFileResult.Written) state?.SetLastWritten(path, SafeFile.Hash(data));
             }
             else skipped.Add(new(path, result == SafeFileResult.NewerVersion ? "newer version left untouched" : "couldn't be written (in use or read-only)"));
         }
@@ -92,7 +91,8 @@ public static partial class SettingsPackage
     /// </summary>
     public static ImportResult Import(string dataDirectory, Stream package, IEnumerable<SettingsCategory> categories,
         string backupDirectory, DateTimeOffset? now = null) =>
-        Import(PrepareImport(dataDirectory, package, categories), backupDirectory, executionConfirmed: false, now);
+        Import(PrepareImport(dataDirectory, package, categories), backupDirectory, executionConfirmed: false, now,
+            state: new StateStore(Path.Combine(dataDirectory, StateStore.FileName)));
 
     /// <summary>
     /// The connections just imported that have no API key stored on this PC (keys are never in a package), by id. Connections

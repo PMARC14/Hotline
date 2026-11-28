@@ -62,18 +62,18 @@ public sealed class ToolbarFileTests : TempDirTest
     {
         Directory.CreateDirectory(_dir);
         var state = new StateStore(Path.Combine(_dir, StateStore.FileName));
-        Assert.Null(ToolbarFile.Save(File_, ToolbarModel.Defaults));
+        Assert.Null(ToolbarFile.Save(File_, ToolbarModel.Defaults, state: state));
         Assert.Equal(SafeFile.Hash(File.ReadAllBytes(File_)), state.GetLastWritten("toolbar.json"));
-        Assert.Null(ToolbarFile.Save(File_, ToolbarEditor.SetShortcut(ToolbarModel.Defaults, "pin", "Ctrl+Q")));
+        Assert.Null(ToolbarFile.Save(File_, ToolbarEditor.SetShortcut(ToolbarModel.Defaults, "pin", "Ctrl+Q"), state: state));
         Assert.False(Directory.Exists(Path.Combine(_dir, "backups")));
         var edited = "// hand edit\n" + File.ReadAllText(File_);
         File.WriteAllText(File_, edited);
         var next = ToolbarEditor.SetShortcut(ToolbarFile.Load(File_).Model, "pin", "Ctrl+K");
-        Assert.Null(ToolbarFile.Save(File_, next));
+        Assert.Null(ToolbarFile.Save(File_, next, state: state));
         var backup = Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "toolbar.json", SearchOption.AllDirectories));
         Assert.Contains("-save", backup);
         Assert.Equal(edited, File.ReadAllText(backup));
-        Assert.Null(ToolbarFile.Save(File_, next));
+        Assert.Null(ToolbarFile.Save(File_, next, state: state));
         Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "toolbar.json", SearchOption.AllDirectories));
         Assert.Equal(next, ToolbarFile.Load(File_).Model);
     }

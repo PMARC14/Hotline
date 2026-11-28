@@ -194,4 +194,38 @@ public sealed class PanelSpotPolicyTests : TempDirTest
         var spot = PanelSpotPolicy.BuildSaveSpot(new RectI(300, 800, 1280, 160), Work, 2.0, null, 160, settings);
         Assert.Equal(monitor, spot.Anchor?.Value.Monitor);
     }
+
+    [Fact]
+    public void ResolveSaved_applies_each_item_only_while_its_setting_equals_over()
+    {
+        var saved = new PanelSpot(
+            new PanelOverride<int, WidthOver?>(700, WidthOver.FromPercent("40%")),
+            new PanelOverride<int?, int?>(450, null),
+            new PanelOverride<PanelAnchor, PanelAnchor?>(
+                new PanelAnchor { Monitor = "active", X = 0.1, Y = 0.2 },
+                new PanelAnchor { Monitor = "Active", X = 0.5, Y = 0.8 }));
+        var current = new PanelAnchor { Monitor = "active", X = 0.5 + 5e-10, Y = 0.8 };
+
+        var same = PanelSpotPolicy.ResolveSaved(saved, WidthOver.FromPercent("40%"), null, current);
+        Assert.True(same.WidthApplied && same.ChatHeightApplied && same.AnchorApplied);
+        Assert.Equal(700, same.Width);
+        Assert.Equal(450, same.ChatHeight);
+        Assert.Equal(0.1, same.Anchor.X);
+
+        var changed = PanelSpotPolicy.ResolveSaved(saved, WidthOver.FromPercent("50%"), 300, new PanelAnchor { Monitor = "primary", X = 0.5, Y = 0.8 });
+        Assert.False(changed.WidthApplied || changed.ChatHeightApplied || changed.AnchorApplied);
+        Assert.Null(changed.Width);
+        Assert.Equal(300, changed.ChatHeight);
+        Assert.Equal("primary", changed.Anchor.Monitor);
+    }
+
+    [Fact]
+    public void AnchorsEqual_and_CloneAnchor_edge_cases()
+    {
+        Assert.False(PanelSpotPolicy.AnchorsEqual(new PanelAnchor(), null));
+        Assert.False(PanelSpotPolicy.AnchorsEqual(new PanelAnchor { X = 0.5 }, new PanelAnchor { X = 0.5001 }));
+        var clone = PanelSpotPolicy.CloneAnchor(new PanelAnchor { Monitor = " ", X = 1, Y = 2 });
+        Assert.Equal(PanelAnchor.Active, clone.Monitor);
+        Assert.Equal((1d, 2d), (clone.X, clone.Y));
+    }
 }

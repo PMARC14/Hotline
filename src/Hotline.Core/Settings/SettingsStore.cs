@@ -27,8 +27,11 @@ public sealed class SettingsStore
         _directory = Path.GetFullPath(directory);
         _files = fileSystem ?? new RealFileSystem();
         _writer = new SafeFile(_files);
-        _state = state ?? new StateStore(Path.Combine(_directory, "state.json"));
+        _state = state ?? new StateStore(Path.Combine(_directory, StateStore.FileName)); // tests; the app passes its one instance
     }
+
+    /// <summary>The <c>state.json</c> store this settings store records <c>lastWritten</c> hashes in; reset and import use the same one.</summary>
+    public StateStore State => _state;
 
     public string FilePath => Path.Combine(_directory, FileName);
     public string ConnectionsDirectory => Path.Combine(_directory, ConnectionsFolder);
@@ -124,19 +127,9 @@ public sealed class SettingsStore
         }
     }
 
-    private static JsonElement? LastMember(JsonElement obj, string name)
-    {
-        JsonElement? found = null;
-        foreach (var member in obj.EnumerateObject())
-            if (member.Name.Equals(name, StringComparison.OrdinalIgnoreCase)) found = member.Value;
-        return found;
-    }
-
     // A ceiling capped at int32 preserves the newer/current/pre-freeze classification in the typed model.
-    private static int ReadVersion(JsonElement root) => root.ValueKind == JsonValueKind.Object
-        && LastMember(root, "version") is { ValueKind: JsonValueKind.Number } version
-        && version.TryGetDouble(out var number) && number >= 1
-            ? (int)Math.Min(int.MaxValue, Math.Ceiling(number)) : 0;
+    private static int ReadVersion(JsonElement root) => Files.JsonFile.VersionValue(root) is { } number && number >= 1
+        ? (int)Math.Min(int.MaxValue, Math.Ceiling(number)) : 0;
 
     private List<ConnectionProfile> ReadConnections(List<string> order)
     {

@@ -220,11 +220,9 @@ public static class PreFreezeUpgrade
         return new(changed, backupPath, reset, failed.ToList());
     }
 
-    /// <summary>The last <c>version</c> key in any case, as the loader reads it.</summary>
-    private static JsonNode? VersionNode(JsonObject tree) =>
-        tree.LastOrDefault(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase)).Value;
     private static bool HasVersion(JsonObject tree) => tree.Any(p => p.Key.Equals("version", StringComparison.OrdinalIgnoreCase));
-    private static double Version(JsonObject tree) => VersionNode(tree) is JsonValue v && v.TryGetValue<double>(out var n) ? n : 0;
+    /// <summary>The version as every reader takes it (<see cref="Files.JsonFile.VersionValue(JsonObject)"/>).</summary>
+    private static double Version(JsonObject tree) => Files.JsonFile.VersionValue(tree) ?? 0;
     private static string? Text(JsonNode? node) => node is JsonValue v && v.TryGetValue<string>(out var text) ? text : null;
 
     private static string MakeId(string oldId, HashSet<string?> reserved)

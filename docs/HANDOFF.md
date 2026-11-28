@@ -68,9 +68,9 @@ secret scrubbing, the single-`RichTextBlock` transcript.
 
 - `src/Hotline.Core` (net10.0, no UI, unit-tested): `Activation/` (key events, `hotline://` planner, App Actions), `Backends/`
   (`ConnectionProfile`, catalog, CLI backends in `Agy/`, `ClaudeCode/`, `Codex/`; APIs in `Api/` on `ApiCommon`), `Chat/`
-  (`ChatController`, `HistoryStore`, prompts, quick actions, memory), `Files/` (`IFileSystem`, `SafeFile`, `BackupSet`, `JsonMerge`),
+  (`ChatController`, `HistoryStore`, prompts, quick actions, memory), `Files/` (`IFileSystem`, `SafeFile`, `BackupSet`, `JsonMerge`, `JsonFile`),
   `Settings/` (`HotlineSettings`, `SettingsStore`, `LenientReader`, `SettingsService`, `SettingsSchema`, reset, package),
-  `State/` (`StateStore`), `Tools/` (MCP host, rules, grants, secrets, `OdrDiscovery`), `Upgrade/` (`PreFreezeUpgrade`,
+  `State/` (`StateStore` facade, `StateDocument`; one instance, created in `App`), `Tools/` (MCP host, rules, grants, secrets, `OdrDiscovery`), `Upgrade/` (`PreFreezeUpgrade`,
   `StarterFiles`), `Windowing/` (`PanelWidth`, placement, spot policy, toolbar model, plan, layout, editor), `Defaults/*.json`.
 - `src/Hotline.App` (WinUI 3, packaged MSIX): `App*.cs` composition root (upgrade → starter files → load → watchers),
   `PopupWindow`, `ActivationRouter`, `ToolbarRenderer`, `Chat/` (`ChatPresenter` and one class per job), `Settings/` (pages from
