@@ -940,7 +940,12 @@ API कुंजियाँ Windows Credential Locker में रखी ज�
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: अज्ञात बटन {0}; अनदेखा किया गया।</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: दो बार दिया गया है; अंतिम प्रविष्टि लागू होगी।</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>पैनल के शॉर्टकट</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>पैनल में Ctrl+N नया चैट, Ctrl+H इतिहास और Ctrl+Shift+C अंतिम पूर्ण उत्तर की कॉपी खोलता है। बटन पर माउस रखने से कुंजियाँ दिखती हैं; चयनकर्ता कुंजियाँ सूची में आगे बढ़ती हैं। सेटिंग्स &gt; चैट और इतिहास या toolbar.json के shortcuts में बदलें। खाली रखने से अक्षम होता है; रीसेट डिफ़ॉल्ट लौटाता है। रोकें को प्राथमिकता है। दोहराव, AltGr और IME रचना टूलबार कमांड नहीं चलाते।</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>पैनल में Ctrl+N नया चैट, Ctrl+H इतिहास और Ctrl+Shift+C अंतिम पूर्ण उत्तर की कॉपी खोलता है। बटन पर माउस रखने से कुंजियाँ दिखती हैं; चयनकर्ता कुंजियाँ सूची में आगे बढ़ती हैं। सेटिंग्स &gt; चैट और इतिहास या toolbar.json के shortcuts में बदलें। खाली रखने से अक्षम होता है; रीसेट डिफ़ॉल्ट लौटाता है। रोकें को प्राथमिकता है। दोहराव, AltGr और IME रचना टूलबार कमांड नहीं चलाते। “सभी शॉर्टकट रीसेट करें” सबको एक साथ वापस लाता है।</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>रीसेट करें</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>सभी शॉर्टकट रीसेट करें</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>ऊपर दिए गए हर पैनल शॉर्टकट को उसके डिफ़ॉल्ट पर लौटाता है। बटन की पंक्तियाँ और आपके अपने बटनों के शॉर्टकट जैसे हैं वैसे ही रहते हैं।</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>सभी शॉर्टकट रीसेट करें?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>हर पैनल शॉर्टकट अपने डिफ़ॉल्ट पर लौट जाता है। पहले मौजूदा toolbar.json का बैकअप लिया जाता है। जो कस्टम बटन किसी डिफ़ॉल्ट संयोजन का उपयोग करता है, वह उसे उस कमांड को दे देता है।</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>शॉर्टकट</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: अमान्य शॉर्टकट; अक्षम किया गया।</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: यह संयोजन पहले से उपयोग में है; अक्षम किया गया।</value></data>

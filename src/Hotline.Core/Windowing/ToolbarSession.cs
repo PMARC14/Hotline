@@ -101,6 +101,14 @@ public sealed class ToolbarSession
         return Edit(m => ToolbarEditor.SetShortcut(m, id, text));
     }
 
+    /// <summary>Puts every panel command's shortcut back to its default (<see cref="ToolbarEditor.ResetShortcuts"/>), keeping
+    /// the layout. Like <see cref="SetShortcut"/> it checks the file first; an unreadable or newer file is refused.</summary>
+    public ToolbarSaveResult ResetShortcuts()
+    {
+        if (ChangedOnDisk) { _pictures.Clear(); return new(ToolbarSaveStatus.ChangedOnDisk); }
+        return Edit(ToolbarEditor.ResetShortcuts);
+    }
+
     /// <summary>Puts the layout and look back to the defaults, keeping shortcuts. Works from the file as it is now (also when
     /// it is unreadable, which is what Reset is for); a newer file is refused.</summary>
     public ToolbarSaveResult ResetLayout()

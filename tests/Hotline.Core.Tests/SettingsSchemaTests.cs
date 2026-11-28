@@ -71,4 +71,14 @@ public class SettingsSchemaTests
             Assert.True(t.Get(s) is null || t.Get(s) == t.Placeholder, $"{t.Header}: {t.Get(s)}");
         }
     }
+
+    // Chat and history: "Reset all shortcuts" follows the last shortcut card.
+    [Fact]
+    public void Reset_all_shortcuts_follows_the_shortcut_cards()
+    {
+        var chat = SettingsSchema.Items.Where(i => i.Page == SettingsPage.Chat).ToList();
+        var last = chat.FindLastIndex(i => i is ShortcutItem);
+        Assert.IsType<ResetShortcutsItem>(chat[last + 1]);
+        Assert.Single(SettingsSchema.Items.OfType<ResetShortcutsItem>());
+    }
 }

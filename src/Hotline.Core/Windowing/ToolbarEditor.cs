@@ -20,6 +20,20 @@ public static class ToolbarEditor
         if (text is not null) map[command] = text;
         return model with { Shortcuts = map };
     }
+
+    /// <summary>"Reset all shortcuts": drops every panel command's override (any case), so each one is back to its shipped
+    /// default. Keys for commands this version doesn't know and custom buttons' own shortcuts stay; where a button holds a
+    /// command's default, the command wins as on load. Nothing to drop returns the input instance.</summary>
+    public static ToolbarModel ResetShortcuts(ToolbarModel model)
+    {
+        if (model.Shortcuts is null) return model;
+        bool Known(string key) => Settings.ChatShortcuts.Defaults.Keys.Any(k => k.Equals(key, StringComparison.OrdinalIgnoreCase));
+        if (!model.Shortcuts.Any(p => Known(p.Key))) return model;
+        var map = (System.Text.Json.Nodes.JsonObject)model.Shortcuts.DeepClone();
+        foreach (var key in map.Select(p => p.Key).Where(Known).ToList()) map.Remove(key);
+        return (model with { Shortcuts = map }).ResolveShortcuts();
+    }
+
     private static readonly Quadrant[] Order = Enum.GetValues<Quadrant>();
 
     /// <summary>Moves an item <paramref name="delta"/> places within its quadrant, stopping at the ends.</summary>

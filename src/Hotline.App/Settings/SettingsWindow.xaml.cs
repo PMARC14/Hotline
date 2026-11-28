@@ -253,6 +253,8 @@ public sealed partial class SettingsWindow : Window
                 return Card(header, description, HotkeyBinder(hk));
             case ShortcutItem sc:
                 return ToolbarShortcutCard(sc, header, description);
+            case ResetShortcutsItem:
+                return ResetShortcutsCard(header, description);
             case TextItem tx:
             {
                 var box = new TextBox { Text = tx.Get(s) ?? "", PlaceholderText = tx.Placeholder is null ? "" : L.Get(tx.Placeholder), Width = 240 };

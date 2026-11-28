@@ -55,6 +55,13 @@ public sealed record ShortcutItem(SettingsPage Page, string Header, string? Desc
 }
 
 /// <summary>
+/// "Reset all shortcuts" after the shortcut cards: every panel command's shortcut back to its default, the bar layout and custom
+/// buttons kept (<c>ToolbarSession.ResetShortcuts</c>). Settings asks first.
+/// </summary>
+public sealed record ResetShortcutsItem(SettingsPage Page, string Header, string? Description)
+    : SettingItem(Page, Header, Description, false);
+
+/// <summary>
 /// A global hotkey, set by pressing it (Settings shows a key binder; see Activation.HotkeyCapture). The value is the
 /// text settings.json holds, e.g. "Ctrl+Alt+H"; null = none.
 /// </summary>
@@ -199,6 +206,7 @@ public static class SettingsSchema
             ValidateFor = (toolbar, v) => ChatShortcuts.CanBind(toolbar, pair.Key, v),
             Invalid = nameof(Strings.Shortcuts_InvalidOrConflict),
         }),
+        new ResetShortcutsItem(SettingsPage.Chat, nameof(Strings.Shortcuts_ResetAll), nameof(Strings.Shortcuts_ResetAll_Desc)),
         new ToggleItem(SettingsPage.Chat, nameof(Strings.Set_Memory), nameof(Strings.Set_Memory_Desc),
             s => s.Chat.Memory, (s, v) => s.Chat.Memory = v),
         Choice(SettingsPage.Chat, nameof(Strings.Set_MemoryTool), nameof(Strings.Set_MemoryTool_Desc),

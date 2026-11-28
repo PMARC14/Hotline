@@ -940,7 +940,12 @@ API keys are kept in Windows Credential Locker, never in a file.</value></data>
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: unknown button {0}; ignored.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: listed twice; the last entry wins.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Panel shortcuts</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>With the panel focused, Ctrl+N starts a chat, Ctrl+H opens history, and Ctrl+Shift+C copies the last completed answer. Hover over toolbar buttons to see their keys. Picker keys cycle their lists. Change keys in Settings &gt; Chat and history, or shortcuts in toolbar.json. Blank disables; Reset restores the default. Stop has priority. Repeats, AltGr and IME composition do not run toolbar commands.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>With the panel focused, Ctrl+N starts a chat, Ctrl+H opens history, and Ctrl+Shift+C copies the last completed answer. Hover over toolbar buttons to see their keys. Picker keys cycle their lists. Change keys in Settings &gt; Chat and history, or shortcuts in toolbar.json. Blank disables; Reset restores the default. Stop has priority. Repeats, AltGr and IME composition do not run toolbar commands. Reset all shortcuts puts every one back at once.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Reset all shortcuts</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Puts every panel shortcut above back to its default. The button rows and your custom buttons' shortcuts stay as they are.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Reset all shortcuts?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Every panel shortcut goes back to its default. The current toolbar.json is backed up first. A custom button that uses one of the default combinations gives it up to that command.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Shortcut</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: invalid shortcut; disabled.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combo already in use; disabled.</value></data>

@@ -79,7 +79,7 @@ public sealed class ToolbarPlanTests
     {
         var m = ToolbarModel.Defaults;
         Assert.Equal(new RowPlan(["effort"], ["model"], ["provider"]), ToolbarPlan.Row(m, top: true));
-        Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion"], ["prompt", "continueIn"], ["recent", "newChat", "settings"]),
+        Assert.Equal(new RowPlan(["pin", "captureWindow", "captureScreen", "captureRegion", "copyLastAnswer"], ["prompt", "continueIn"], ["recent", "newChat", "settings"]),
             ToolbarPlan.Row(m, top: false));
         Assert.Equal(["effort", "model", "provider"], ToolbarPlan.PickerOrder(m));
     }

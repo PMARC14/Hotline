@@ -108,6 +108,67 @@ public sealed class ToolbarSessionTests : TempDirTest
         Assert.Single(Directory.GetFiles(Path.Combine(_dir, "backups"), "toolbar.json", SearchOption.AllDirectories).Where(f => File.ReadAllText(f) == "{broken"));
     }
 
+    // Reset all shortcuts: every panel command back to its default; layout, custom buttons and unknown keys stay.
+    [Fact]
+    public void ResetShortcuts_resets_every_command_and_keeps_everything_else()
+    {
+        var session = Open("""{"version":3,"future":1,"shortcuts":{"PIN":"Ctrl+K","recent":"","stop":"Ctrl+Q","laterCommand":"Ctrl+L"},"bottom":{"left":["settings"]},"buttons":{"mine":{"label":"Mine","text":"hi","shortcut":"Ctrl+Shift+Y"}}}""");
+        var result = session.ResetShortcuts();
+        Assert.Equal(ToolbarSaveStatus.Saved, result.Status);
+        foreach (var (id, text) in Hotline.Core.Settings.ChatShortcuts.Defaults) Assert.Equal(text, session.Model.ShortcutText(id));
+        var tree = JsonNode.Parse(Disk)!;
+        var map = tree["shortcuts"]!.AsObject();
+        Assert.Equal(["laterCommand"], map.Select(p => p.Key));
+        Assert.Equal(1, tree["future"]!.GetValue<int>());
+        Assert.Equal(["settings"], session.Model.Items(Quadrant.BottomLeft));
+        Assert.Equal("Ctrl+Shift+Y", tree["buttons"]!["mine"]!["shortcut"]!.GetValue<string>());
+        Assert.Single(BackupFolders());
+        Assert.False(session.ChangedOnDisk);
+    }
+
+    [Fact]
+    public void ResetShortcuts_with_nothing_to_reset_writes_nothing()
+    {
+        var session = Open("// kept\n{\"version\":3,\"shortcuts\":{\"laterCommand\":\"Ctrl+L\"}}");
+        var before = File.ReadAllBytes(ToolbarPath);
+        Assert.Equal(ToolbarSaveStatus.Unchanged, session.ResetShortcuts().Status);
+        Assert.Equal(before, File.ReadAllBytes(ToolbarPath));
+        Assert.Empty(BackupFolders());
+    }
+
+    [Fact]
+    public void ResetShortcuts_refuses_an_outside_edit_a_newer_file_and_an_unreadable_one()
+    {
+        var session = Open("""{"version":3,"shortcuts":{"pin":"Ctrl+K"}}""");
+        File.WriteAllText(ToolbarPath, """{"version":3,"shortcuts":{"pin":"Ctrl+J"}}""");
+        Assert.Equal(ToolbarSaveStatus.ChangedOnDisk, session.ResetShortcuts().Status);
+        Assert.Contains("Ctrl+J", Disk);
+
+        var newer = Open("""{"version":99,"shortcuts":{"pin":"Ctrl+K"}}""");
+        var before = File.ReadAllBytes(ToolbarPath);
+        Assert.Equal(ToolbarSaveStatus.Failed, newer.ResetShortcuts().Status);
+        Assert.Equal(before, File.ReadAllBytes(ToolbarPath));
+
+        var broken = Open("{broken");
+        Assert.Equal(ToolbarSaveStatus.Failed, broken.ResetShortcuts().Status);
+        Assert.Equal("{broken", Disk);
+        Assert.Empty(BackupFolders());
+    }
+
+    // A custom button holding a command's default: the command wins (as on load), the button keeps what it asked for.
+    [Fact]
+    public void ResetShortcuts_lets_commands_win_over_a_custom_button_that_holds_a_default()
+    {
+        var session = Open("""{"version":3,"shortcuts":{"pin":"Ctrl+K"},"buttons":{"mine":{"label":"Mine","text":"hi","shortcut":"Ctrl+P"}}}""");
+        Assert.Equal(ToolbarSaveStatus.Saved, session.ResetShortcuts().Status);
+        Assert.Equal("Ctrl+P", session.Model.ShortcutText("pin"));
+        Assert.Null(session.Model.Buttons.Single(b => b.Id == "mine").Shortcut);
+        Assert.Equal("Ctrl+P", JsonNode.Parse(Disk)!["buttons"]!["mine"]!["shortcut"]!.GetValue<string>());
+        var fresh = new ToolbarSession(ToolbarPath).Model;
+        Assert.Null(fresh.Buttons.Single(b => b.Id == "mine").Shortcut);
+        Assert.NotEmpty(fresh.Warnings);
+    }
+
     [Fact]
     public void ResetLayout_refuses_a_newer_file()
     {

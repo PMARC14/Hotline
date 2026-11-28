@@ -940,7 +940,12 @@ API 金鑰儲存在 Windows Credential Locker 中，絕不存於檔案。</value
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts：未知按鈕 {0}，已忽略。</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}：重複列出；使用最後一個項目。</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>面板快速鍵</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>在面板內，Ctrl+N 開始聊天，Ctrl+H 開啟歷史，Ctrl+Shift+C 複製最後一個已完成回答。將游標移到按鈕上可查看快捷鍵；選擇器快捷鍵循環切換清單。可在設定 &gt; 聊天與歷史，或 toolbar.json 的 shortcuts 中修改。留空停用；重設恢復預設值。停止優先。按鍵重複、AltGr 和 IME 組合輸入不會執行工具列命令。</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>在面板內，Ctrl+N 開始聊天，Ctrl+H 開啟歷史，Ctrl+Shift+C 複製最後一個已完成回答。將游標移到按鈕上可查看快捷鍵；選擇器快捷鍵循環切換清單。可在設定 &gt; 聊天與歷史，或 toolbar.json 的 shortcuts 中修改。留空停用；重設恢復預設值。停止優先。按鍵重複、AltGr 和 IME 組合輸入不會執行工具列命令。「重設所有快速鍵」可一次全部還原。</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>重設</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>重設所有快速鍵</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>將上方的每個面板快速鍵還原為預設值。按鈕列和自訂按鈕的快速鍵保持不變。</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>重設所有快速鍵?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>每個面板快速鍵都會還原為預設值。會先備份目前的 toolbar.json。使用預設組合的自訂按鈕會把該組合讓給對應的命令。</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>快速鍵</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut：快速鍵無效，已停用。</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut：組合鍵已被使用，已停用。</value></data>

@@ -72,7 +72,7 @@
           "type": ["array", "null"],
           "maxItems": 40,
           "items": { "type": "string", "minLength": 1 },
-          "default": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+          "default": ["pin", "captureWindow", "captureScreen", "captureRegion", "copyLastAnswer"],
           "description": "Item ids in the bottom-left group (unit: id array)."
         },
         "center": {

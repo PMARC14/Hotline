@@ -940,7 +940,12 @@ Kunci API disimpan di Windows Credential Locker, tidak pernah di dalam file.</va
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: tombol tidak dikenal {0}; diabaikan.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: terdaftar dua kali; entri terakhir berlaku.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Pintasan panel</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Di panel, Ctrl+N memulai chat, Ctrl+H membuka riwayat, dan Ctrl+Shift+C menyalin jawaban selesai terakhir. Arahkan penunjuk ke tombol untuk melihat pintasannya; tombol pemilih menggilir daftar. Ubah di Pengaturan &gt; Chat dan riwayat atau shortcuts di toolbar.json. Kosong menonaktifkan; Atur ulang memulihkan default. Hentikan diprioritaskan. Pengulangan, AltGr dan komposisi IME tidak menjalankan perintah bilah.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Di panel, Ctrl+N memulai chat, Ctrl+H membuka riwayat, dan Ctrl+Shift+C menyalin jawaban selesai terakhir. Arahkan penunjuk ke tombol untuk melihat pintasannya; tombol pemilih menggilir daftar. Ubah di Pengaturan &gt; Chat dan riwayat atau shortcuts di toolbar.json. Kosong menonaktifkan; Atur ulang memulihkan default. Hentikan diprioritaskan. Pengulangan, AltGr dan komposisi IME tidak menjalankan perintah bilah. Reset semua pintasan mengembalikan semuanya sekaligus.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Reset</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Reset semua pintasan</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Mengembalikan setiap pintasan panel di atas ke bawaannya. Baris tombol dan pintasan tombol kustom Anda tetap seperti adanya.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Reset semua pintasan?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Setiap pintasan panel kembali ke bawaannya. toolbar.json saat ini dicadangkan terlebih dahulu. Tombol kustom yang memakai salah satu kombinasi bawaan menyerahkannya ke perintah itu.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Pintasan</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: pintasan tidak valid; dinonaktifkan.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: kombinasi sudah digunakan; dinonaktifkan.</value></data>
