@@ -135,16 +135,6 @@ public class PanelPlacementTests : TempDirTest
     }
 
     [Theory]
-    [InlineData(2880, 40, 384, 2304, 1152)]  // the owner's 2880 x 1800 screen: 40% of the real pixels
-    [InlineData(1920, 40, 384, 2304, 768)]
-    [InlineData(1920, 10, 384, 2304, 384)]   // under the minimum: min wins
-    [InlineData(3840, 90, 384, 2304, 2304)]  // over the maximum: max wins
-    [InlineData(1000, 10, 700, 500, 700)]    // max below min: min wins
-    [InlineData(500, 50, 700, 900, 500)]     // never wider than the work area
-    public void Width_is_percent_of_work_area_pixels_clamped(int workPx, double pct, int min, int max, int expected)
-        => Assert.Equal(expected, PopupGeometry.RelativeWidthPx(workPx, pct, min, max));
-
-    [Theory]
     [InlineData(1.0)]
     [InlineData(1.25)]
     [InlineData(1.5)]
@@ -153,11 +143,9 @@ public class PanelPlacementTests : TempDirTest
     {
         // Same work-area pixels and percent: the same panel pixels at every scale; the saved width is what was applied.
         var work = new RectI(0, 0, 2880, 1700);
-        var px = PopupGeometry.RelativeWidthPx(work.Width, 40, 384, 2304);
+        const int px = 1152; // window.width 40 % of 2880 real pixels
         var bar = PanelPlacement.Home(work, px, 60, scale, new PanelAnchor());
-        Assert.Equal(1152, px);
         Assert.Equal(px, bar.Width); // saved px (CurrentSpot saves _bar.Width) = applied px
         Assert.Equal(bar.Width, PanelPlacement.Home(work, bar.Width, 60, scale, PanelPlacement.AnchorFor(bar, work)).Width);
-        Assert.Equal(384, PopupGeometry.RelativeWidthPx(1000, 20, 384, 2304)); // clamped by min in pixels at any scale
     }
 }

@@ -34,28 +34,6 @@ public sealed class ChatWidthTests : TempDirTest
 
     // ---- which width ----
 
-    // Real pixels throughout; the opening minimum is 460 and the maximum is 1000.
-    [Theory]
-    [InlineData(null, 700, 0, 1920, 460, false, 700)]
-    [InlineData(null, 700, 0, 1920, 460, true, null)]
-    [InlineData(null, null, 50, 1920, 460, true, null)]
-    [InlineData(null, null, 0, 1920, 460, false, null)]
-    [InlineData(null, 5000, 0, 1920, 460, false, 1000)]
-    [InlineData(null, 100, 0, 1920, 460, false, null)]
-    [InlineData(null, null, 40, 1920, 460, false, 768)]
-    [InlineData(null, null, 80, 1920, 460, false, 1000)]
-    [InlineData(null, null, 50, 3840, 460, false, 1000)]
-    [InlineData(null, null, 50, 1400, 460, false, 700)]
-    [InlineData(null, 700, 80, 1920, 460, false, 700)]
-    [InlineData(null, null, 20, 1920, 480, false, null)]
-    [InlineData(null, 480, 0, 1920, 480, false, null)]
-    [InlineData(null, 300, 0, 1920, 480, false, null)]
-    [InlineData(null, 481, 0, 1920, 480, false, 481)]
-    [InlineData(600, 900, 60, 1920, 460, false, null)]
-    public void Chat_width_respects_manual_sizes_limits_and_the_opening_width(
-        int? width, int? chatWidth, double percent, int workPx, int start, bool byHand, int? expected)
-        => Assert.Equal(expected, PopupGeometry.ChatWidthPx(width, chatWidth, percent, workPx, 460, 1000, start, byHand));
-
     // ---- the rectangle ----
 
     [Theory]

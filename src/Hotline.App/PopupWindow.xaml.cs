@@ -420,27 +420,28 @@ public sealed partial class PopupWindow : Window, IPlacementSource
             // toggle ~0.1 s later. A panel still showing when the toggle hides it (pinned, or kept because Hotline's own
             // Settings window took focus) made Explorer play its warning sound. So any open panel closes now; the pinned
             // spot is kept, and the toggle that follows counts as this close. A long press reopens it through its action.
-            if (AppWindow.IsVisible && _modal == 0 && Native.ClassNameOf(taker) == "CopilotKeyPressFocusFrame" && KeepOnKeyPress?.Invoke() != true)
+            if (PopupBlurPolicy.ClosesOnKeyPress(AppWindow.IsVisible, _modal, Native.ClassNameOf(taker), () => KeepOnKeyPress?.Invoke() == true))
             {
                 _log.Info("Copilot key pressed while the panel is open: closing now");
                 HidePopup();
                 return;
             }
         }
-        if (e.WindowActivationState == WindowActivationState.Deactivated && Pinned && _modal == 0 && _geometry.HasSessionSpot)
+        if (e.WindowActivationState == WindowActivationState.Deactivated && PopupBlurPolicy.WatchesClickAway(Pinned, _modal, _geometry.HasSessionSpot))
         {
-            // Clicking into another app while pinned forgets the moved spot. Decided a moment later:
-            // the Copilot key itself takes focus briefly (and then closes the panel), which is not clicking away.
+            // Clicking into another app while pinned forgets the moved spot, decided a moment later (see PopupBlurPolicy).
             var timer = DispatcherQueue.CreateTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(600);
+            timer.Interval = TimeSpan.FromMilliseconds(PopupBlurPolicy.ClickAwayCheckMs);
             timer.IsRepeating = false;
             timer.Tick += (_, _) =>
             {
-                if (!AppWindow.IsVisible || !Pinned) return; // closed by the key (or unpinned, which forgets anyway)
                 var fg = Native.GetForegroundWindow();
-                if (fg == 0 || fg == Hwnd || Hotline.Core.Windowing.ShellSurfaces.IsShell(Native.ClassNameOf(fg))) return;
-                Native.GetWindowThreadProcessId(fg, out var pid);
-                if (pid == Environment.ProcessId || IsOurProcess?.Invoke(pid) == true || IsHotline(pid)) return;
+                bool Ours()
+                {
+                    Native.GetWindowThreadProcessId(fg, out var pid);
+                    return pid == Environment.ProcessId || IsOurProcess?.Invoke(pid) == true || IsHotline(pid);
+                }
+                if (!PopupBlurPolicy.IsClickAway(AppWindow.IsVisible, Pinned, fg, Hwnd, fg == 0 ? "" : Native.ClassNameOf(fg), Ours)) return;
                 _log.Info($"clicked into {Describe(fg)} while pinned");
                 ForgetSessionSpot();
             };
@@ -450,7 +451,7 @@ public sealed partial class PopupWindow : Window, IPlacementSource
         // On a cold start (Hotline launched by the key) Windows can hand focus back to the previous window right
         // after we appear. That isn't the user clicking away: take focus back instead of hiding (once per show; up to
         // three times on the first show after launch, when focus can bounce more than once).
-        if (Environment.TickCount64 - _shownAtMs < 1500 && _reclaimed < (_shows <= 1 ? 3 : 1))
+        if (PopupBlurPolicy.ReclaimsFocus(Environment.TickCount64 - _shownAtMs, _reclaimed, _shows))
         {
             _reclaimed++;
             _log.Info("lost focus right after opening; taking it back");
@@ -494,45 +495,35 @@ public sealed partial class PopupWindow : Window, IPlacementSource
     /// </summary>
     private void ConsiderBlur(bool retried)
     {
-        if (!AppWindow.IsVisible || !_settings.HideOnBlur || _modal != 0 || Pinned) return; // may have changed during the retry
         var fg = Native.GetForegroundWindow();
-        if (fg == Hwnd) return; // it came back
-        if (fg == 0 && !retried)
+        switch (PopupBlurPolicy.Consider(AppWindow.IsVisible, _settings.HideOnBlur, _modal, Pinned, fg, Hwnd, retried, () => IsOurConsole(fg)))
         {
-            // Mid-switch there may be no foreground window yet: look again in a moment.
-            var timer = DispatcherQueue.CreateTimer();
-            timer.Interval = TimeSpan.FromMilliseconds(150);
-            timer.IsRepeating = false;
-            timer.Tick += (_, _) => ConsiderBlur(retried: true);
-            timer.Start();
-            return;
+            case BlurAction.Retry:
+                // Mid-switch there may be no foreground window yet: look again in a moment.
+                var timer = DispatcherQueue.CreateTimer();
+                timer.Interval = TimeSpan.FromMilliseconds(PopupBlurPolicy.RetryMs);
+                timer.IsRepeating = false;
+                timer.Tick += (_, _) => ConsiderBlur(retried: true);
+                timer.Start();
+                break;
+            case BlurAction.Reclaim:
+                _consoleReclaimLaunch = Hotline.Core.Processes.ProcessLaunches.Last; // once per launch: never a tug of war
+                _log.Info($"a window from a program Hotline started ({Native.ClassNameOf(fg)}) took focus; keeping the panel");
+                if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back");
+                break;
+            case BlurAction.Hide:
+                HidePopup();
+                break;
         }
-        if (fg != 0 && IsOurConsole(fg))
-        {
-            _consoleReclaimLaunch = Hotline.Core.Processes.ProcessLaunches.Last; // once per launch: never a tug of war
-            _log.Info($"a window from a program Hotline started ({Native.ClassNameOf(fg)}) took focus; keeping the panel");
-            if (!Native.ForceForeground(Hwnd)) _log.Error("could not take focus back");
-            return;
-        }
-        HidePopup();
     }
 
-    /// <summary>
-    /// Only console/terminal windows count (never a browser a CLI opens to sign in), at most once per program launch:
-    /// a plain console must belong to a process Hotline started (its job); a Windows Terminal window (owned by
-    /// WindowsTerminal.exe, so the job can't tell) must appear within 2 s of a launch.
-    /// </summary>
-    private bool IsOurConsole(nint window)
-    {
-        if (Hotline.Core.Processes.ProcessLaunches.Last == _consoleReclaimLaunch) return false;
-        var cls = Native.ClassNameOf(window);
-        if (cls is "ConsoleWindowClass" or "PseudoConsoleWindow")
+    /// <summary>A console of a program Hotline started (see <see cref="PopupBlurPolicy.IsOurConsole"/>).</summary>
+    private bool IsOurConsole(nint window) =>
+        PopupBlurPolicy.IsOurConsole(Native.ClassNameOf(window), () =>
         {
             Native.GetWindowThreadProcessId(window, out var pid);
-            return IsOurProcess?.Invoke(pid) == true || Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
-        }
-        return cls == "CASCADIA_HOSTING_WINDOW_CLASS" && Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2));
-    }
+            return IsOurProcess?.Invoke(pid) == true;
+        }, Hotline.Core.Processes.ProcessLaunches.Recent(TimeSpan.FromSeconds(2)), Hotline.Core.Processes.ProcessLaunches.Last == _consoleReclaimLaunch);
 
     internal bool IsComposing { get; private set; }
 
