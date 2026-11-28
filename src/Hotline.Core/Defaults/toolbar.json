@@ -23,7 +23,7 @@
     "right": ["provider"]
   },
   "bottom": {
-    "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+    "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "copyLastAnswer"],
     "center": ["prompt", "continueIn"],
     "right": ["recent", "newChat", "settings"]
   },

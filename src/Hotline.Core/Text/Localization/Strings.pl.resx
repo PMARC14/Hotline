@@ -940,7 +940,12 @@ Klucze API są przechowywane w Windows Credential Locker, nigdy w pliku.</value>
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: nieznany przycisk {0}; pominięto.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: wpis powtórzony; obowiązuje ostatni.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Skróty panelu</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>W panelu Ctrl+N rozpoczyna czat, Ctrl+H otwiera historię, a Ctrl+Shift+C kopiuje ostatnią ukończoną odpowiedź. Najedź na przycisk, aby zobaczyć skrót; skróty selektorów przełączają ich listy. Zmień w Ustawienia &gt; Czat i historia lub shortcuts w toolbar.json. Puste pole wyłącza; Resetuj przywraca domyślną wartość. Zatrzymaj ma pierwszeństwo. Powtarzanie, AltGr i kompozycja IME nie uruchamiają poleceń paska.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>W panelu Ctrl+N rozpoczyna czat, Ctrl+H otwiera historię, a Ctrl+Shift+C kopiuje ostatnią ukończoną odpowiedź. Najedź na przycisk, aby zobaczyć skrót; skróty selektorów przełączają ich listy. Zmień w Ustawienia &gt; Czat i historia lub shortcuts w toolbar.json. Puste pole wyłącza; Resetuj przywraca domyślną wartość. Zatrzymaj ma pierwszeństwo. Powtarzanie, AltGr i kompozycja IME nie uruchamiają poleceń paska. „Resetuj wszystkie skróty” przywraca je wszystkie naraz.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Resetuj</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Resetuj wszystkie skróty</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Przywraca domyślne ustawienie każdego skrótu panelu powyżej. Rzędy przycisków i skróty własnych przycisków pozostają bez zmian.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Zresetować wszystkie skróty?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Każdy skrót panelu wraca do ustawienia domyślnego. Najpierw tworzona jest kopia zapasowa bieżącego pliku toolbar.json.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Skrót klawiszowy</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: nieprawidłowy skrót; wyłączono.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: kombinacja jest już używana; wyłączono.</value></data>

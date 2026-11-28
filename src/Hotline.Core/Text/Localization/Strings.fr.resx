@@ -940,7 +940,12 @@ Les clés API sont stockées dans Windows Credential Locker, jamais dans un fich
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts : bouton inconnu {0} ; ignoré.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0} : entrée répétée ; la dernière est utilisée.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Raccourcis du panneau</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Dans le panneau, Ctrl+N démarre un chat, Ctrl+H ouvre l’historique et Ctrl+Shift+C copie la dernière réponse terminée. Survolez les boutons pour voir leurs touches ; celles des sélecteurs parcourent leurs listes. Modifiez-les dans Paramètres &gt; Chat et historique ou shortcuts dans toolbar.json. Vide désactive ; Réinitialiser rétablit la valeur par défaut. Arrêter est prioritaire. La répétition, AltGr et la composition IME ne lancent aucun bouton.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Dans le panneau, Ctrl+N démarre un chat, Ctrl+H ouvre l’historique et Ctrl+Shift+C copie la dernière réponse terminée. Survolez les boutons pour voir leurs touches ; celles des sélecteurs parcourent leurs listes. Modifiez-les dans Paramètres &gt; Chat et historique ou shortcuts dans toolbar.json. Vide désactive ; Réinitialiser rétablit la valeur par défaut. Arrêter est prioritaire. La répétition, AltGr et la composition IME ne lancent aucun bouton. « Réinitialiser tous les raccourcis » les remet tous d'un coup.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Réinitialiser</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Réinitialiser tous les raccourcis</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Remet chaque raccourci du panneau ci-dessus à sa valeur par défaut. Les rangées de boutons et les raccourcis de vos boutons personnalisés restent tels quels.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Réinitialiser tous les raccourcis ?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Chaque raccourci du panneau revient à sa valeur par défaut. Le fichier toolbar.json actuel est d'abord sauvegardé.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Raccourci</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut : raccourci non valide ; désactivé.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut : combinaison déjà utilisée ; désactivée.</value></data>

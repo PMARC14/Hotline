@@ -940,7 +940,12 @@ API-Schlüssel werden in Windows Credential Locker gespeichert, niemals in einer
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: unbekannte Schaltfläche {0}; ignoriert.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: doppelt aufgeführt; der letzte Eintrag gilt.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Tastenkombinationen im Panel</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Im Panel startet Ctrl+N einen Chat, Ctrl+H öffnet den Verlauf und Ctrl+Shift+C kopiert die letzte abgeschlossene Antwort. Tooltips zeigen die Tasten; Auswahltasten wechseln Einträge. Änderungen unter Einstellungen &gt; Chat und Verlauf oder shortcuts in toolbar.json. Leer deaktiviert, Zurücksetzen stellt den Standard her. Stopp hat Vorrang. Wiederholung, AltGr und IME lösen keine Toolbar-Befehle aus.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Im Panel startet Ctrl+N einen Chat, Ctrl+H öffnet den Verlauf und Ctrl+Shift+C kopiert die letzte abgeschlossene Antwort. Tooltips zeigen die Tasten; Auswahltasten wechseln Einträge. Änderungen unter Einstellungen &gt; Chat und Verlauf oder shortcuts in toolbar.json. Leer deaktiviert, Zurücksetzen stellt den Standard her. Stopp hat Vorrang. Wiederholung, AltGr und IME lösen keine Toolbar-Befehle aus. „Alle Tastenkombinationen zurücksetzen“ stellt alle auf einmal wieder her.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Zurücksetzen</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Alle Tastenkombinationen zurücksetzen</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Setzt jede Tastenkombination im Panel oben auf ihren Standard zurück. Die Schaltflächenleisten und die Tastenkombinationen deiner eigenen Schaltflächen bleiben, wie sie sind.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Alle Tastenkombinationen zurücksetzen?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Jede Tastenkombination im Panel wird auf ihren Standard zurückgesetzt. Die aktuelle toolbar.json wird vorher gesichert.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Tastenkombination</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: ungültige Tastenkombination; deaktiviert.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: Tastenkombination bereits belegt; deaktiviert.</value></data>

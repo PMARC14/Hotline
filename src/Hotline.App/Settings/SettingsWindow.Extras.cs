@@ -35,23 +35,7 @@ public sealed partial class SettingsWindow
             if (!Accept(value ?? Hotline.Core.Settings.ChatShortcuts.Defaults.GetValueOrDefault(id, ""))) return;
             try
             {
-                var result = page.SetShortcut(id, value);
-                if (result.Status == ToolbarSaveStatus.ChangedOnDisk)
-                {
-                    // Not saved: the file changed since the page read it. Show it as it is now and say why.
-                    ShowPage(_currentPage);
-                    PageHost.Children.Insert(1, new InfoBar
-                    {
-                        IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
-                        Message = Strings.Bar_ChangedOnDisk,
-                    });
-                    return;
-                }
-                if (result.Error is { } error)
-                {
-                    Fail("saving toolbar shortcut failed", new IOException(error));
-                    return;
-                }
+                if (!Saved(page.SetShortcut(id, value), "saving toolbar shortcut failed")) return;
                 box.Text = page.Model.ShortcutText(id);
                 DispatcherQueue.TryEnqueue(() => ShowPage(_currentPage));
             }
@@ -59,9 +43,54 @@ public sealed partial class SettingsWindow
         }
         box.LostFocus += (_, _) => { var value = box.Text.Trim(); if (value != page.Model.ShortcutText(id)) Save(value); };
         var capture = ShortcutBinder.Create(() => page.Model.ShortcutText(id), value => Save(value ?? ""), Accept, panel: true, stop: id == "stop");
-        var reset = new Button { Content = Strings.Bar_Reset };
+        var reset = new Button { Content = Strings.Shortcuts_Reset };
         reset.Click += (_, _) => Save(null);
         return Card(header, description, new StackPanel { Spacing = 6, Children = { box, capture, reset } });
+    }
+
+    /// <summary>Chat and history › Reset all shortcuts: asks, then puts every panel command's shortcut back to its default
+    /// in one save (the bar layout and custom buttons stay). Off while toolbar.json can't be used (the cards above say why).</summary>
+    private Border ResetShortcutsCard(string header, string? description)
+    {
+        var page = _pageToolbar ??= new ToolbarSession(ToolbarPath, state: _state);
+        var button = new Button { Content = Strings.Shortcuts_ResetAll, IsEnabled = page.Error is null };
+        button.Click += async (_, _) =>
+        {
+            var confirm = new ContentDialog
+            {
+                Title = Strings.Shortcuts_ResetAllTitle, Content = Strings.Shortcuts_ResetAllConfirm,
+                PrimaryButtonText = Strings.Shortcuts_Reset, CloseButtonText = Strings.Common_Cancel, DefaultButton = ContentDialogButton.Close,
+            };
+            if (await ShowDialogAsync(confirm) != ContentDialogResult.Primary) return;
+            try
+            {
+                if (Saved(page.ResetShortcuts(), "resetting toolbar shortcuts failed")) ShowPage(_currentPage);
+            }
+            catch (Exception ex) { Fail("resetting toolbar shortcuts failed", ex); }
+        };
+        return Card(header, description, button);
+    }
+
+    /// <summary>True when a shortcut save went through (or changed nothing). When toolbar.json changed on disk since the page
+    /// read it, nothing was saved: the page is shown as the file is now, with a note. Any other failure is reported.</summary>
+    private bool Saved(ToolbarSaveResult result, string what)
+    {
+        if (result.Status == ToolbarSaveStatus.ChangedOnDisk)
+        {
+            ShowPage(_currentPage);
+            PageHost.Children.Insert(1, new InfoBar
+            {
+                IsOpen = true, IsClosable = true, Severity = InfoBarSeverity.Warning, Margin = new Thickness(0, 0, 0, 8),
+                Message = Strings.Bar_ChangedOnDisk,
+            });
+            return false;
+        }
+        if (result.Error is { } error)
+        {
+            Fail(what, new IOException(error));
+            return false;
+        }
+        return true;
     }
 
     /// <summary>

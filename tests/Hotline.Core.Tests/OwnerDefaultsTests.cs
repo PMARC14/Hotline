@@ -13,7 +13,7 @@ public sealed class OwnerDefaultsTests
         Assert.Equal(["effort"], d.Items(Quadrant.TopLeft));
         Assert.Equal(["model"], d.Items(Quadrant.TopCenter));
         Assert.Equal(["provider"], d.Items(Quadrant.TopRight));
-        Assert.Equal(["pin", "captureWindow", "captureScreen", "captureRegion"], d.Items(Quadrant.BottomLeft));
+        Assert.Equal(["pin", "captureWindow", "captureScreen", "captureRegion", "copyLastAnswer"], d.Items(Quadrant.BottomLeft));
         Assert.Equal(["prompt", "continueIn"], d.Items(Quadrant.BottomCenter));
         Assert.Equal(["recent", "newChat", "settings"], d.Items(Quadrant.BottomRight));
         Assert.Equal(new ButtonStyle(1, false, false, Fill: true), d.Style);

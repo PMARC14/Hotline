@@ -940,7 +940,12 @@ API anahtarları Windows Credential Locker içinde saklanır, asla bir dosyada t
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: bilinmeyen düğme {0}; yok sayıldı.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: iki kez listelenmiş; son giriş geçerli.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Panel kısayolları</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Panelde Ctrl+N sohbet başlatır, Ctrl+H geçmişi açar ve Ctrl+Shift+C son tamamlanmış yanıtı kopyalar. Tuşları görmek için düğmelerin üzerine gelin; seçici tuşları listelerde ilerler. Ayarlar &gt; Sohbet ve geçmiş veya toolbar.json içindeki shortcuts ile değiştirin. Boş alan devre dışı bırakır; Sıfırla varsayılanı getirir. Durdur önceliklidir. Tekrar, AltGr ve IME bileşimi araç çubuğu komutlarını çalıştırmaz.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Panelde Ctrl+N sohbet başlatır, Ctrl+H geçmişi açar ve Ctrl+Shift+C son tamamlanmış yanıtı kopyalar. Tuşları görmek için düğmelerin üzerine gelin; seçici tuşları listelerde ilerler. Ayarlar &gt; Sohbet ve geçmiş veya toolbar.json içindeki shortcuts ile değiştirin. Boş alan devre dışı bırakır; Sıfırla varsayılanı getirir. Durdur önceliklidir. Tekrar, AltGr ve IME bileşimi araç çubuğu komutlarını çalıştırmaz. “Tüm kısayolları sıfırla” hepsini bir kerede geri getirir.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Sıfırla</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Tüm kısayolları sıfırla</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Yukarıdaki her panel kısayolunu varsayılanına döndürür. Düğme sıraları ve özel düğmelerinizin kısayolları olduğu gibi kalır.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Tüm kısayollar sıfırlansın mı?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Her panel kısayolu varsayılanına döner. Önce geçerli toolbar.json yedeklenir.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Kısayol</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: geçersiz kısayol; devre dışı bırakıldı.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: tuş birleşimi zaten kullanımda; devre dışı bırakıldı.</value></data>

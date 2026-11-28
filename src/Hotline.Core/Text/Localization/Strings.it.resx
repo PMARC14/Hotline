@@ -940,7 +940,12 @@ Le chiavi API sono conservate in Windows Credential Locker, mai in un file.</val
   <data name="Shortcuts_Unknown" xml:space="preserve"><value>shortcuts: pulsante sconosciuto {0}; ignorato.</value></data>
   <data name="Shortcuts_Duplicate" xml:space="preserve"><value>shortcuts.{0}: elencato due volte; vale l’ultima voce.</value></data>
   <data name="Guide_Shortcuts_Title" xml:space="preserve"><value>Scorciatoie del pannello</value></data>
-  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Nel pannello, Ctrl+N avvia una chat, Ctrl+H apre la cronologia e Ctrl+Shift+C copia l’ultima risposta completata. Passa sui pulsanti per vedere i tasti; quelli dei selettori scorrono gli elenchi. Modifica in Impostazioni &gt; Chat e cronologia o shortcuts in toolbar.json. Vuoto disattiva; Ripristina recupera il valore predefinito. Interrompi ha priorità. Ripetizioni, AltGr e composizione IME non eseguono comandi della barra.</value></data>
+  <data name="Guide_Shortcuts_Body" xml:space="preserve"><value>Nel pannello, Ctrl+N avvia una chat, Ctrl+H apre la cronologia e Ctrl+Shift+C copia l’ultima risposta completata. Passa sui pulsanti per vedere i tasti; quelli dei selettori scorrono gli elenchi. Modifica in Impostazioni &gt; Chat e cronologia o shortcuts in toolbar.json. Vuoto disattiva; Ripristina recupera il valore predefinito. Interrompi ha priorità. Ripetizioni, AltGr e composizione IME non eseguono comandi della barra. «Reimposta tutte le scorciatoie» le riporta tutte insieme.</value></data>
+  <data name="Shortcuts_Reset" xml:space="preserve"><value>Reimposta</value></data>
+  <data name="Shortcuts_ResetAll" xml:space="preserve"><value>Reimposta tutte le scorciatoie</value></data>
+  <data name="Shortcuts_ResetAll_Desc" xml:space="preserve"><value>Riporta ogni scorciatoia del pannello qui sopra al suo valore predefinito. Le righe di pulsanti e le scorciatoie dei tuoi pulsanti personalizzati restano come sono.</value></data>
+  <data name="Shortcuts_ResetAllTitle" xml:space="preserve"><value>Reimpostare tutte le scorciatoie?</value></data>
+  <data name="Shortcuts_ResetAllConfirm" xml:space="preserve"><value>Ogni scorciatoia del pannello torna al suo valore predefinito. Prima viene fatto un backup del toolbar.json attuale.</value></data>
   <data name="Bar_CustomShortcut" xml:space="preserve"><value>Scorciatoia</value></data>
   <data name="BarW_ShortcutInvalid" xml:space="preserve"><value>buttons.{0}.shortcut: scorciatoia non valida; disattivata.</value></data>
   <data name="BarW_ShortcutConflict" xml:space="preserve"><value>buttons.{0}.shortcut: combinazione già in uso; disattivata.</value></data>

@@ -221,7 +221,7 @@ Format `"version": 3`. Edited by Settings › Window › Button rows and Setting
   "version": 3,
   "shortcuts": { "stop": "Esc", "pin": "Ctrl+K", "captureScreen": "" },
   "top": { "left": ["effort"], "center": ["model"], "right": ["provider"] },
-  "bottom": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion"],
+  "bottom": { "left": ["pin", "captureWindow", "captureScreen", "captureRegion", "copyLastAnswer"],
               "center": ["prompt", "continueIn"], "right": ["recent", "newChat", "settings"] },
   "menu": [],
   "style": { "width": 1, "fill": true, "outline": false, "filled": false },
@@ -249,6 +249,7 @@ Built-in layout ids: `pin`, `captureWindow`, `captureScreen`, `captureRegion`, `
 - **Overflow:** short rows move `center` then `left` last buttons, then `right` first buttons, into an automatic `...` menu (keeping at least the rightmost button, and keeping `more` as long as possible).
 - **Custom buttons:** `label` (≤ 40 chars), `icon` (Segoe Fluent hex `E000–F8FF`), optional `<id>.png` in `icons\` (PNG ≤ 256 KB, `16–256` px), one action (`quickAction` name or `text` ≤ 2000 chars + `send`), and optional `shortcut`.
 - **Reading and saving:** follows [File rules](#file-rules) and [Backups](#backups). Files below v3 use defaults with a warning; higher versions load read-only. Outside edits trigger a reload notice in Settings.
+- **Defaults:** the example above is the shipped bar. A file that lists an area keeps it as written, so a bar saved before `copyLastAnswer` joined the default gets it only by adding it or by **Reset the bar** (layout and look back to the defaults; `shortcuts` kept).
 
 ### Panel shortcuts
 
@@ -273,6 +274,8 @@ Apply only while the panel has focus. Built-in commands use `toolbar.json` `shor
 | `more` | `Ctrl+Shift+O` | Open placed More menu, else first automatic overflow |
 
 Conflict priority: `stop` > built-ins in table order > custom buttons in file order; losers disable with a warning while keeping the requested string. Only `stop` accepts bare typing keys; other commands require `Ctrl`, `Alt`, or `Win` (or `F1–F24`). `Enter` and editing combos (`Ctrl+A/C/V/X/Y/Z`, `Ctrl+Tab`, `Ctrl+Backspace`, `Ctrl+Shift+Z/Tab`) are reserved. `""` disables; `null`/omitted uses default. Repeats (except `stop`), AltGr, and IME composition are ignored.
+
+Settings › Chat and history › **Reset all shortcuts** (after a confirmation) removes every built-in command from `shortcuts` in one save with one backup set, so each command is back to its default. Unknown keys, the layout and custom buttons' shortcuts stay; a custom button that holds a default loses it to the command with the usual warning. Each command's own **Reset** does the same for one command.
 
 ## Backup (Settings > Backup)
 

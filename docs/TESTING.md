@@ -37,6 +37,8 @@ Headless self-tests (requires `"diagnostics": { "testLinks": true }` in `setting
 - [ ] **Outline & themes**: test `outline` and `filled` on bar and pickers (`effort`, `model`, `provider`) across light, dark, high contrast, and Windows contrast themes.
 - [ ] **Custom buttons & icons**: add quick-action and text/send buttons with custom `.png` icons; verify icon replacement, missing quick-action notice, and case-insensitive id matching.
 - [ ] **Panel shortcuts**: verify all defaults, Stop (`Esc` and remapped), conflict order (Stop > built-ins > custom), `""` disable, AltGr pass-through, IME composition suppression, and that `toolbar.json` stays `"version": 3`.
+- [ ] **Reset all shortcuts** (Settings › Chat and history, after the shortcut cards): Cancel changes nothing; Reset puts every command back to its default, keeps the bar layout, unknown `shortcuts` keys and custom buttons' shortcuts, and makes one `backups\<stamp>-save\` folder. With `toolbar.json` edited outside meanwhile it saves nothing and shows the reload note. Each card's own button reads **Reset**.
+- [ ] **Default bar**: with no `toolbar.json` (or after **Reset the bar**) bottom-left ends with Copy last answer; an existing file keeps its layout.
 
 ### Files, upgrade, reset, and backup
 - [ ] **Safe edits**: add unknown keys to `settings.json`, `connections\*.json`, and `toolbar.json`; save a Settings edit and verify unknown keys survive, `version` stays `1`/`3`, originals go to one `backups\<stamp>-save\` folder, and no `.bak`/`.bad` files are created.

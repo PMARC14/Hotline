@@ -93,10 +93,10 @@ public sealed class ToolbarGridTests
     [Fact]
     public void The_default_bottom_row_fits_a_480_room_with_nothing_in_the_menu()
     {
-        // Nine shipped buttons take one cell each.
+        // Ten shipped buttons take one cell each.
         var f = ToolbarPlan.PlanRow(ToolbarModel.Defaults, top: false, 480, ToolbarPlan.CellGap);
         Assert.Empty(f.Menu);
-        Assert.Equal(9 * 40, f.Used);
+        Assert.Equal(10 * 40, f.Used);
     }
 
     [Fact]
