@@ -6,9 +6,9 @@ using Hotline.Core.Windowing;
 namespace Hotline.App.Interop;
 
 /// <summary>
-/// Tracks the last real foreground application window via <c>SetWinEventHook(EVENT_SYSTEM_FOREGROUND)</c>
-/// on the UI message-loop thread so popup monitor placement and window capture still know which window
-/// the user was in after Explorer's <c>CopilotKeyPressFocusFrame</c> briefly takes focus.
+/// Feeds <c>SetWinEventHook(EVENT_SYSTEM_FOREGROUND)</c> (on the UI message-loop thread) to the Core
+/// <see cref="PlacementTracker"/>, which decides from it where the panel opens, what a capture targets and where focus goes
+/// back, also after Explorer's <c>CopilotKeyPressFocusFrame</c> briefly takes focus. This class only reads windows.
 /// </summary>
 public sealed class ForegroundWindowTracker : IDisposable
 {
@@ -50,20 +50,16 @@ public sealed class ForegroundWindowTracker : IDisposable
     private readonly WinEventDelegate _callback;
     private nint _hook;
     private int _suppressed;
-    private WindowCandidate _remembered;
-    private WindowCandidate _showTarget;
+    private readonly PlacementTracker _tracker;
 
     /// <summary>What an "active monitor" open follows: the remembered app, or the cursor after a click on the desktop or a taskbar.</summary>
-    public PlaceBy PlaceBy { get; private set; }
-
-    private nint _location;
-    private string _lastClass = ""; // the class of the last window that took focus (any kind)
+    public PlaceBy PlaceBy => _tracker.PlaceBy;
 
     /// <summary>The panel took focus (its own events aren't hooked): what follows is no longer the key frame's hand-off.</summary>
-    public void NotePanelFocused() => _lastClass = "";
+    public void NotePanelFocused() => _tracker.NotePanelFocused();
 
     /// <summary>The desktop or taskbar the user moved to (placement follows the cursor), while it still exists; otherwise 0.</summary>
-    public nint UserLocation => PlaceBy == PlaceBy.Cursor && _location != 0 && Native.IsWindow(_location) ? _location : 0;
+    public nint UserLocation => _tracker.Location;
 
 
     public Func<uint, bool>? IsOurProcess { get; set; }
@@ -73,6 +69,7 @@ public sealed class ForegroundWindowTracker : IDisposable
         _log = log;
         IsOurProcess = isOurProcess;
         _callback = OnWinEvent;
+        _tracker = new PlacementTracker(Snapshot);
         try { TryRemember(Native.GetForegroundWindow()); }
         catch (Exception ex) { _log.Error("seeding foreground window tracker failed", ex); }
 
@@ -96,48 +93,10 @@ public sealed class ForegroundWindowTracker : IDisposable
     }
 
     /// <summary>Resolves the target window when the popup opens, preferring a real live foreground window over the revalidated remembered one.</summary>
-    public nint ResolveForShow()
-    {
-        var live = Snapshot(Native.GetForegroundWindow());
-        var remembered = _remembered.Handle != 0 ? Snapshot(_remembered.Handle, _remembered) : default;
-        if (!ForegroundWindowPolicy.IsReal(remembered))
-            _remembered = default;
-
-        var chosen = ForegroundWindowPolicy.Choose(live, remembered);
-        if (chosen != 0)
-        {
-            var winner = chosen == live.Handle && ForegroundWindowPolicy.IsReal(live) ? live : remembered;
-            _remembered = winner;
-            _showTarget = winner;
-        }
-        else
-        {
-            _showTarget = default;
-        }
-        return chosen;
-    }
+    public nint ResolveForShow() => _tracker.ResolveForShow(Native.GetForegroundWindow());
 
     /// <summary>Revalidates a show-time target window (identity, existence, visibility, non-minimized, non-cloaked) before use.</summary>
-    public nint RevalidateShowTarget(nint hwnd)
-    {
-        if (hwnd == 0)
-        {
-            _showTarget = default;
-            return 0;
-        }
-        var expected = _showTarget.Handle == hwnd ? _showTarget
-            : _remembered.Handle == hwnd ? _remembered
-            : (WindowCandidate?)null;
-        var candidate = Snapshot(hwnd, expected);
-        if (ForegroundWindowPolicy.IsReal(candidate))
-        {
-            _showTarget = candidate;
-            return hwnd;
-        }
-        if (_showTarget.Handle == hwnd) _showTarget = default;
-        if (_remembered.Handle == hwnd) _remembered = default;
-        return 0;
-    }
+    public nint RevalidateShowTarget(nint hwnd) => _tracker.RevalidateShowTarget(hwnd);
 
     private void OnWinEvent(nint hWinEventHook, uint eventType, nint hwnd, int idObject, int idChild, uint idEventThread, uint dwmsEventTime)
     {
@@ -148,16 +107,11 @@ public sealed class ForegroundWindowTracker : IDisposable
 
     private void TryRemember(nint hwnd)
     {
-        var candidate = Snapshot(hwnd);
-        _remembered = ForegroundWindowPolicy.UpdateRemembered(candidate, _remembered);
-        var placeBy = ForegroundWindowPolicy.UpdatePlaceBy(candidate, PlaceBy, _lastClass);
-        if (ForegroundWindowPolicy.IsUserLocation(candidate, _lastClass)) _location = hwnd;
-        _lastClass = candidate.ClassName;
-        if (placeBy != PlaceBy) _log.Info($"placement follows {(placeBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({candidate.ClassName})");
-        PlaceBy = placeBy;
+        if (_tracker.NoteForeground(hwnd))
+            _log.Info($"placement follows {(_tracker.PlaceBy == PlaceBy.Cursor ? "the cursor" : "the app")} ({_tracker.LastClass})");
     }
 
-    private WindowCandidate Snapshot(nint hwnd, WindowCandidate? expectedIdentity = null)
+    private WindowCandidate Snapshot(nint hwnd, WindowCandidate? expectedIdentity)
     {
         if (hwnd == 0) return default;
         var exists = Native.IsWindow(hwnd);
@@ -215,7 +169,7 @@ public sealed class ForegroundWindowTracker : IDisposable
 
     private bool IsHotlineOwnedDialog(nint hwnd)
     {
-        if (_suppressed > 0 && hwnd != _showTarget.Handle && hwnd != _remembered.Handle)
+        if (_suppressed > 0 && !_tracker.IsTracked(hwnd))
             return true;
         var cur = hwnd;
         for (var depth = 0; depth < 8 && cur != 0; depth++)
